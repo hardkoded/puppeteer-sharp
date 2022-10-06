@@ -1,0 +1,757 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IMouse
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IMouse
+   ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Input.IMouse">
+  
+  
+  <h1 id="PuppeteerSharp_Input_IMouse" data-uid="PuppeteerSharp.Input.IMouse" class="text-break">Interface IMouse
+  </h1>
+  <div class="markdown level0 summary"><p>Provides methods to interact with the mouse</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Input.html">PuppeteerSharp.Input</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Input_IMouse_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IMouse</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ClickAsync(Decimal, Decimal, ClickOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L17">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L17">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_ClickAsync_" data-uid="PuppeteerSharp.Input.IMouse.ClickAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_ClickAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_ClickOptions_" data-uid="PuppeteerSharp.Input.IMouse.ClickAsync(System.Decimal,System.Decimal,PuppeteerSharp.Input.ClickOptions)">ClickAsync(Decimal, Decimal, ClickOptions)</h4>
+  <div class="markdown level1 summary"><p>Shortcut for <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_MoveAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_MoveOptions_">MoveAsync(Decimal, Decimal, MoveOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_">DownAsync(ClickOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_">UpAsync(ClickOptions)</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task ClickAsync(decimal x, decimal y, ClickOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The target mouse X location to click.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The target mouse Y location to click.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.ClickOptions.html">ClickOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options to apply to the click operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DownAsync(ClickOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L24">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L24">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DownAsync_" data-uid="PuppeteerSharp.Input.IMouse.DownAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_" data-uid="PuppeteerSharp.Input.IMouse.DownAsync(PuppeteerSharp.Input.ClickOptions)">DownAsync(ClickOptions)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>mousedown</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DownAsync(ClickOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.ClickOptions.html">ClickOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options to apply to the mouse down operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DragAndDropAsync(Decimal, Decimal, Decimal, Decimal, Int32)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L35">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L35">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DragAndDropAsync_" data-uid="PuppeteerSharp.Input.IMouse.DragAndDropAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DragAndDropAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_System_Int32_" data-uid="PuppeteerSharp.Input.IMouse.DragAndDropAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.Int32)">DragAndDropAsync(Decimal, Decimal, Decimal, Decimal, Int32)</h4>
+  <div class="markdown level1 summary"><p>Performs a drag, dragenter, dragover, and drop in sequence.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">startX</span></td>
+        <td><p>Start X coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">startY</span></td>
+        <td><p>Start Y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">endX</span></td>
+        <td><p>End X coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">endY</span></td>
+        <td><p>End Y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">delay</span></td>
+        <td><p>If specified, is the time to wait between <code>dragover</code> and <code>drop</code> in milliseconds.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>A Task that resolves when the message was confirmed by the browser</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DragAsync(Decimal, Decimal, Decimal, Decimal)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L45">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L45">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DragAsync_" data-uid="PuppeteerSharp.Input.IMouse.DragAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DragAsync_System_Decimal_System_Decimal_System_Decimal_System_Decimal_" data-uid="PuppeteerSharp.Input.IMouse.DragAsync(System.Decimal,System.Decimal,System.Decimal,System.Decimal)">DragAsync(Decimal, Decimal, Decimal, Decimal)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>drag</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;DragData&gt; DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">startX</span></td>
+        <td><p>Start X coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">startY</span></td>
+        <td><p>Start Y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">endX</span></td>
+        <td><p>End X coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">endY</span></td>
+        <td><p>End Y coordinate</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.DragData.html">DragData</a>&gt;</td>
+        <td><p>A Task that resolves when the message was confirmed by the browser with the drag data</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DragEnterAsync(Decimal, Decimal, DragData)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L54">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L54">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DragEnterAsync_" data-uid="PuppeteerSharp.Input.IMouse.DragEnterAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DragEnterAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_" data-uid="PuppeteerSharp.Input.IMouse.DragEnterAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)">DragEnterAsync(Decimal, Decimal, DragData)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>dragenter</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DragEnterAsync(decimal x, decimal y, DragData data)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>x coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.DragData.html">DragData</a></td>
+        <td><span class="parametername">data</span></td>
+        <td><p>Drag data containing items and operations mask.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>A Task that resolves when the message was confirmed by the browser</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DragOverAsync(Decimal, Decimal, DragData)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L63">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L63">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DragOverAsync_" data-uid="PuppeteerSharp.Input.IMouse.DragOverAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DragOverAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_" data-uid="PuppeteerSharp.Input.IMouse.DragOverAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)">DragOverAsync(Decimal, Decimal, DragData)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>dragover</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DragOverAsync(decimal x, decimal y, DragData data)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>x coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.DragData.html">DragData</a></td>
+        <td><span class="parametername">data</span></td>
+        <td><p>Drag data containing items and operations mask.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>A Task that resolves when the message was confirmed by the browser</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DropAsync(Decimal, Decimal, DragData)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L72">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L72">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_DropAsync_" data-uid="PuppeteerSharp.Input.IMouse.DropAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_DropAsync_System_Decimal_System_Decimal_PuppeteerSharp_DragData_" data-uid="PuppeteerSharp.Input.IMouse.DropAsync(System.Decimal,System.Decimal,PuppeteerSharp.DragData)">DropAsync(Decimal, Decimal, DragData)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>drop</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DropAsync(decimal x, decimal y, DragData data)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>x coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>y coordinate</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.DragData.html">DragData</a></td>
+        <td><span class="parametername">data</span></td>
+        <td><p>Drag data containing items and operations mask.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>A Task that resolves when the message was confirmed by the browser</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MoveAsync(Decimal, Decimal, MoveOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L81">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L81">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_MoveAsync_" data-uid="PuppeteerSharp.Input.IMouse.MoveAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_MoveAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_MoveOptions_" data-uid="PuppeteerSharp.Input.IMouse.MoveAsync(System.Decimal,System.Decimal,PuppeteerSharp.Input.MoveOptions)">MoveAsync(Decimal, Decimal, MoveOptions)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>mousemove</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task MoveAsync(decimal x, decimal y, MoveOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The destination mouse X coordinate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The destination mouse Y coordinate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.MoveOptions.html">MoveOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options to apply to the move operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20UpAsync(ClickOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L88">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L88">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_UpAsync_" data-uid="PuppeteerSharp.Input.IMouse.UpAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_" data-uid="PuppeteerSharp.Input.IMouse.UpAsync(PuppeteerSharp.Input.ClickOptions)">UpAsync(ClickOptions)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>mouseup</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task UpAsync(ClickOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.ClickOptions.html">ClickOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>Options to apply to the mouse up operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WheelAsync(Decimal, Decimal)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L96">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L96">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IMouse_WheelAsync_" data-uid="PuppeteerSharp.Input.IMouse.WheelAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IMouse_WheelAsync_System_Decimal_System_Decimal_" data-uid="PuppeteerSharp.Input.IMouse.WheelAsync(System.Decimal,System.Decimal)">WheelAsync(Decimal, Decimal)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>wheel</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task WheelAsync(decimal deltaX, decimal deltaY)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">deltaX</span></td>
+        <td><p>Delta X.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Decimal</span></td>
+        <td><span class="parametername">deltaY</span></td>
+        <td><p>Delta Y.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IMouse&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/%23L8" class="contribution-link">Request doc improvement</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IMouse.cs/#L8" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5></h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,622 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IJSHandle
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IJSHandle
+   ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.IJSHandle">
+  
+  
+  <h1 id="PuppeteerSharp_IJSHandle" data-uid="PuppeteerSharp.IJSHandle" class="text-break">Interface IJSHandle
+  </h1>
+  <div class="markdown level0 summary"><p>IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_IJSHandle_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IJSHandle</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disposed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L18">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L18">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_Disposed_" data-uid="PuppeteerSharp.IJSHandle.Disposed*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_Disposed" data-uid="PuppeteerSharp.IJSHandle.Disposed">Disposed</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> is disposed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Disposed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><p><code>true</code> if disposed; otherwise, <code>false</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ExecutionContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L24">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L24">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_ExecutionContext_" data-uid="PuppeteerSharp.IJSHandle.ExecutionContext*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_ExecutionContext" data-uid="PuppeteerSharp.IJSHandle.ExecutionContext">ExecutionContext</h4>
+  <div class="markdown level1 summary"><p>Gets the execution context.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IExecutionContext ExecutionContext { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a></td>
+        <td><p>The execution context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20RemoteObject&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L30">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L30">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_RemoteObject_" data-uid="PuppeteerSharp.IJSHandle.RemoteObject*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_RemoteObject" data-uid="PuppeteerSharp.IJSHandle.RemoteObject">RemoteObject</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the remote object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">RemoteObject RemoteObject { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Messaging.RemoteObject.html">RemoteObject</a></td>
+        <td><p>The remote object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L42">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L42">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;JToken&gt; EvaluateFunctionAsync(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">JToken</span>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L55">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L55">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a function in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;T&gt; EvaluateFunctionAsync&lt;T&gt;(string script, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Arguments to pass to script</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to deserialize the result to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_EvaluateFunctionAsync__1_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionHandleAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L67">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L67">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_EvaluateFunctionHandleAsync_" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_EvaluateFunctionHandleAsync_System_String_System_Object___" data-uid="PuppeteerSharp.IJSHandle.EvaluateFunctionHandleAsync(System.String,System.Object[])">EvaluateFunctionHandleAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;IJSHandle&gt; EvaluateFunctionHandleAsync(string pageFunction, params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">pageFunction</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Function arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_EvaluateFunctionHandleAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetPropertiesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L82">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L82">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_GetPropertiesAsync_" data-uid="PuppeteerSharp.IJSHandle.GetPropertiesAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_GetPropertiesAsync" data-uid="PuppeteerSharp.IJSHandle.GetPropertiesAsync">GetPropertiesAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a <see cref="!:Dictionary&lt;TKey, TValue>"></see> with property names as keys and <a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances for the property values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;Dictionary&lt;string, IJSHandle&gt;&gt; GetPropertiesAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">Dictionary</span>&lt;<span class="xref">System.String</span>, <a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;&gt;</td>
+        <td><p>Task which resolves to a <see cref="!:Dictionary&lt;TKey, TValue>"></see></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_GetPropertiesAsync_examples">Examples</h5>
+  <pre><code>var handle = await page.EvaluateExpressionHandle(&quot;({window, document})&quot;);
+var properties = await handle.GetPropertiesAsync();
+var windowHandle = properties[&quot;window&quot;];
+var documentHandle = properties[&quot;document&quot;];
+await handle.DisposeAsync();</code></pre>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetPropertyAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L89">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L89">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_GetPropertyAsync_" data-uid="PuppeteerSharp.IJSHandle.GetPropertyAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_GetPropertyAsync_System_String_" data-uid="PuppeteerSharp.IJSHandle.GetPropertyAsync(System.String)">GetPropertyAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Fetches a single property from the referenced object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;IJSHandle&gt; GetPropertyAsync(string propertyName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">propertyName</span></td>
+        <td><p>property to get</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;</td>
+        <td><p>Task of <a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20JsonValueAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L98">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L98">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_JsonValueAsync_" data-uid="PuppeteerSharp.IJSHandle.JsonValueAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_JsonValueAsync" data-uid="PuppeteerSharp.IJSHandle.JsonValueAsync">JsonValueAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a JSON representation of the object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;object&gt; JsonValueAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.Object</span>&gt;</td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_JsonValueAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20JsonValueAsync&lt;T&gt;()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L108">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L108">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IJSHandle_JsonValueAsync_" data-uid="PuppeteerSharp.IJSHandle.JsonValueAsync*"></a>
+  <h4 id="PuppeteerSharp_IJSHandle_JsonValueAsync__1" data-uid="PuppeteerSharp.IJSHandle.JsonValueAsync``1">JsonValueAsync&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Returns a JSON representation of the object</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;T&gt; JsonValueAsync&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>A strongly typed object to parse to</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IJSHandle_JsonValueAsync__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references</p>
+</div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.PuppeteerHandleExtensions.html#PuppeteerSharp_PuppeteerHandleExtensions_EvaluateFunctionAsync__1_PuppeteerSharp_IJSHandle_System_String_System_Object___">PuppeteerHandleExtensions.EvaluateFunctionAsync&lt;T&gt;(IJSHandle, String, Object[])</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IJSHandle&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/%23L12" class="contribution-link">Request doc improvement</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IJSHandle.cs/#L12" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5></h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

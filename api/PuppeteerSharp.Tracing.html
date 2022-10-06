@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Tracing
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_Tracing" data-uid="PuppeteerSharp.Tracing" class="text-break">Class Tracing
   </h1>
-  <div class="markdown level0 summary"><p>You can use <a class="xref" href="PuppeteerSharp.Tracing.html#PuppeteerSharp_Tracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a> and <a class="xref" href="PuppeteerSharp.Tracing.html#PuppeteerSharp_Tracing_StopAsync">StopAsync()</a> to create a trace file which can be opened in Chrome DevTools or timeline viewer.</p>
+  <div class="markdown level0 summary"><p>You can use <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a> and <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StopAsync">StopAsync()</a> to create a trace file which can be opened in Chrome DevTools or timeline viewer.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -81,11 +81,15 @@
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">Tracing</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.ITracing.html">ITracing</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Tracing_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Tracing</code></pre>
+    <pre><code class="lang-csharp hljs">public class Tracing : object, ITracing</code></pre>
   </div>
   <h5 id="PuppeteerSharp_Tracing_examples"><strong>Examples</strong></h5>
   <pre><code>await Page.Tracing.StartAsync(new TracingOptions
@@ -100,10 +104,10 @@ await Page.Tracing.StopAsync();</code></pre>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StartAsync(TracingOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/%23L61">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StartAsync(TracingOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/%23L62">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/#L61">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/#L62">View Source</a>
   </span>
   <a id="PuppeteerSharp_Tracing_StartAsync_" data-uid="PuppeteerSharp.Tracing.StartAsync*"></a>
   <h4 id="PuppeteerSharp_Tracing_StartAsync_PuppeteerSharp_TracingOptions_" data-uid="PuppeteerSharp.Tracing.StartAsync(PuppeteerSharp.TracingOptions)">StartAsync(TracingOptions)</h4>
@@ -142,7 +146,7 @@ await Page.Tracing.StopAsync();</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Start task</p>
 </td>
       </tr>
@@ -150,10 +154,10 @@ await Page.Tracing.StopAsync();</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StopAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/%23L89">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20StopAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/%23L90">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/#L89">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Tracing.cs/#L90">View Source</a>
   </span>
   <a id="PuppeteerSharp_Tracing_StopAsync_" data-uid="PuppeteerSharp.Tracing.StopAsync*"></a>
   <h4 id="PuppeteerSharp_Tracing_StopAsync" data-uid="PuppeteerSharp.Tracing.StopAsync">StopAsync()</h4>
@@ -174,12 +178,16 @@ await Page.Tracing.StopAsync();</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
         <td><p>Stop task</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.ITracing.html">ITracing</a>
+  </div>
 </article>
           </div>
           

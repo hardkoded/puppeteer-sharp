@@ -1,0 +1,1024 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IBrowser
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IBrowser
+   ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.IBrowser">
+  
+  
+  <h1 id="PuppeteerSharp_IBrowser" data-uid="PuppeteerSharp.IBrowser" class="text-break">Interface IBrowser
+  </h1>
+  <div class="markdown level0 summary"><p>Provides methods to interact with a browser in Chromium.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_IBrowser_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IBrowser</code></pre>
+  </div>
+  <h5 id="PuppeteerSharp_IBrowser_examples"><strong>Examples</strong></h5>
+  <p>An example of using a <a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a> to create a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>:</p>
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
+var page = await browser.NewPageAsync();
+await page.GoToAsync(&quot;https://example.com&quot;);
+await browser.CloseAsync();</code></pre>
+<p>An example of disconnecting from and reconnecting to a <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>:</p>
+<pre><code>var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
+var browserWSEndpoint = browser.WebSocketEndpoint;
+browser.Disconnect();
+var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint });
+await browser2.CloseAsync();</code></pre>
+
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L65">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L65">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_DefaultContext_" data-uid="PuppeteerSharp.IBrowser.DefaultContext*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_DefaultContext" data-uid="PuppeteerSharp.IBrowser.DefaultContext">DefaultContext</h4>
+  <div class="markdown level1 summary"><p>Returns the default browser context. The default browser context can not be closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IBrowserContext DefaultContext { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></td>
+        <td><p>The default context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DefaultWaitForTimeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L70">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L70">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_DefaultWaitForTimeout_" data-uid="PuppeteerSharp.IBrowser.DefaultWaitForTimeout*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_DefaultWaitForTimeout" data-uid="PuppeteerSharp.IBrowser.DefaultWaitForTimeout">DefaultWaitForTimeout</h4>
+  <div class="markdown level1 summary"><p>Dafault wait time in milliseconds. Defaults to 30 seconds.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int DefaultWaitForTimeout { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IgnoreHTTPSErrors&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L75">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L75">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_IgnoreHTTPSErrors_" data-uid="PuppeteerSharp.IBrowser.IgnoreHTTPSErrors*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_IgnoreHTTPSErrors" data-uid="PuppeteerSharp.IBrowser.IgnoreHTTPSErrors">IgnoreHTTPSErrors</h4>
+  <div class="markdown level1 summary"><p>Gets or Sets whether to ignore HTTPS errors during navigation</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IgnoreHTTPSErrors { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L80">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L80">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_IsClosed_" data-uid="PuppeteerSharp.IBrowser.IsClosed*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_IsClosed" data-uid="PuppeteerSharp.IBrowser.IsClosed">IsClosed</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating if the browser is closed</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IsClosed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsConnected&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L85">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L85">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_IsConnected_" data-uid="PuppeteerSharp.IBrowser.IsConnected*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_IsConnected" data-uid="PuppeteerSharp.IBrowser.IsConnected">IsConnected</h4>
+  <div class="markdown level1 summary"><p>Indicates that the browser is connected.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IsConnected { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Process&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L90">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L90">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_Process_" data-uid="PuppeteerSharp.IBrowser.Process*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_Process" data-uid="PuppeteerSharp.IBrowser.Process">Process</h4>
+  <div class="markdown level1 summary"><p>Gets the spawned browser process. Returns <code>null</code> if the browser instance was created with <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_">ConnectAsync(ConnectOptions, ILoggerFactory)</a> method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Process Process { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Process</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Target&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L95">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L95">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_Target_" data-uid="PuppeteerSharp.IBrowser.Target*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_Target" data-uid="PuppeteerSharp.IBrowser.Target">Target</h4>
+  <div class="markdown level1 summary"><p>A target associated with the browser.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ITarget Target { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WebSocketEndpoint&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L107">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L107">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_WebSocketEndpoint_" data-uid="PuppeteerSharp.IBrowser.WebSocketEndpoint*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_WebSocketEndpoint" data-uid="PuppeteerSharp.IBrowser.WebSocketEndpoint">WebSocketEndpoint</h4>
+  <div class="markdown level1 summary"><p>Gets the Browser websocket url</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">string WebSocketEndpoint { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IBrowser_WebSocketEndpoint_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Browser websocket endpoint which can be used as an argument to <a class="xref" href="PuppeteerSharp.Puppeteer.html#PuppeteerSharp_Puppeteer_ConnectAsync_PuppeteerSharp_ConnectOptions_ILoggerFactory_">ConnectAsync(ConnectOptions, ILoggerFactory)</a>.
+The format is <code>ws://${host}:${port}/devtools/browser/[id]</code>
+You can find the <code>webSocketDebuggerUrl</code> from <code>http://${host}:${port}/json/version</code>.
+Learn more about the devtools protocol <a href="https://chromedevtools.github.io/devtools-protocol">https://chromedevtools.github.io/devtools-protocol</a>
+and the browser endpoint <a href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target">https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target</a></p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserContexts()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L113">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L113">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_BrowserContexts_" data-uid="PuppeteerSharp.IBrowser.BrowserContexts*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_BrowserContexts" data-uid="PuppeteerSharp.IBrowser.BrowserContexts">BrowserContexts()</h4>
+  <div class="markdown level1 summary"><p>Returns an array of all open <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a>. In a newly created browser, this will return a single instance of <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IBrowserContext[] BrowserContexts()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a>[]</td>
+        <td><p>An array of <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a> objects</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ClearCustomQueryHandlers()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L225">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L225">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_ClearCustomQueryHandlers_" data-uid="PuppeteerSharp.IBrowser.ClearCustomQueryHandlers*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_ClearCustomQueryHandlers" data-uid="PuppeteerSharp.IBrowser.ClearCustomQueryHandlers">ClearCustomQueryHandlers()</h4>
+  <div class="markdown level1 summary"><p>Clears all registered handlers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void ClearCustomQueryHandlers()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L119">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L119">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_CloseAsync_" data-uid="PuppeteerSharp.IBrowser.CloseAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_CloseAsync" data-uid="PuppeteerSharp.IBrowser.CloseAsync">CloseAsync()</h4>
+  <div class="markdown level1 summary"><p>Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task CloseAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CreateIncognitoBrowserContextAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L140">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L140">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_CreateIncognitoBrowserContextAsync_" data-uid="PuppeteerSharp.IBrowser.CreateIncognitoBrowserContextAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_CreateIncognitoBrowserContextAsync" data-uid="PuppeteerSharp.IBrowser.CreateIncognitoBrowserContextAsync">CreateIncognitoBrowserContextAsync()</h4>
+  <div class="markdown level1 summary"><p>Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;IBrowserContext&gt; CreateIncognitoBrowserContextAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a>&gt;</td>
+        <td><p>Task which resolves to a new <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a> object</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IBrowser_CreateIncognitoBrowserContextAsync_examples">Examples</h5>
+  <pre><code>using(var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
+{
+    // Create a new incognito browser context.
+    var context = await browser.CreateIncognitoBrowserContextAsync();
+    // Create a new page in a pristine context.
+    var page = await context.NewPageAsync();
+    // Do stuff
+    await page.GoToAsync(&quot;https://example.com&quot;);
+}</code></pre>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnect()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L145">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L145">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_Disconnect_" data-uid="PuppeteerSharp.IBrowser.Disconnect*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_Disconnect" data-uid="PuppeteerSharp.IBrowser.Disconnect">Disconnect()</h4>
+  <div class="markdown level1 summary"><p>Disconnects Puppeteer from the browser, but leaves the process running. After calling <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_Disconnect">Disconnect()</a>, the browser object is considered disposed and cannot be used anymore</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Disconnect()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetUserAgentAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L154">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L154">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_GetUserAgentAsync_" data-uid="PuppeteerSharp.IBrowser.GetUserAgentAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_GetUserAgentAsync" data-uid="PuppeteerSharp.IBrowser.GetUserAgentAsync">GetUserAgentAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the browser's original user agent</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;string&gt; GetUserAgentAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>Task which resolves to the browser's original user agent</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IBrowser_GetUserAgentAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Pages can override browser user agent with <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_SetUserAgentAsync_System_String_PuppeteerSharp_UserAgentMetadata_">SetUserAgentAsync(String, UserAgentMetadata)</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20GetVersionAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L163">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L163">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_GetVersionAsync_" data-uid="PuppeteerSharp.IBrowser.GetVersionAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_GetVersionAsync" data-uid="PuppeteerSharp.IBrowser.GetVersionAsync">GetVersionAsync()</h4>
+  <div class="markdown level1 summary"><p>Gets the browser's version</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;string&gt; GetVersionAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><p>For headless Chromium, this is similar to <code>HeadlessChrome/61.0.3153.0</code>. For non-headless, this is similar to <code>Chrome/61.0.3153.0</code></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IBrowser_GetVersionAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>the format of <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_GetVersionAsync">GetVersionAsync()</a> might change with future releases of Chromium</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20NewPageAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L169">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L169">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_NewPageAsync_" data-uid="PuppeteerSharp.IBrowser.NewPageAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_NewPageAsync" data-uid="PuppeteerSharp.IBrowser.NewPageAsync">NewPageAsync()</h4>
+  <div class="markdown level1 summary"><p>Creates a new page</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;IPage&gt; NewPageAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>&gt;</td>
+        <td><p>Task which resolves to a new <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> object</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PagesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L178">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L178">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_PagesAsync_" data-uid="PuppeteerSharp.IBrowser.PagesAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_PagesAsync" data-uid="PuppeteerSharp.IBrowser.PagesAsync">PagesAsync()</h4>
+  <div class="markdown level1 summary"><p>Returns a Task which resolves to an array of all open pages.
+Non visible pages, such as <code>&quot;background_page&quot;</code>, will not be listed here. You can find them using <a class="xref" href="PuppeteerSharp.Target.html#PuppeteerSharp_Target_PageAsync">PageAsync()</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;IPage[]&gt; PagesAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>[]&gt;</td>
+        <td><p>Task which resolves to an array of all open pages inside the Browser.
+In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20RegisterCustomQueryHandler(String, CustomQueryHandler)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L214">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L214">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_RegisterCustomQueryHandler_" data-uid="PuppeteerSharp.IBrowser.RegisterCustomQueryHandler*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_RegisterCustomQueryHandler_System_String_PuppeteerSharp_CustomQueryHandler_" data-uid="PuppeteerSharp.IBrowser.RegisterCustomQueryHandler(System.String,PuppeteerSharp.CustomQueryHandler)">RegisterCustomQueryHandler(String, CustomQueryHandler)</h4>
+  <div class="markdown level1 summary"><p>Registers a custom query handler.
+After registration, the handler can be used everywhere where a selector is
+expected by prepending the selection string with <code>name/</code>. The name is
+only allowed to consist of lower- and upper case latin letters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>The name that the custom query handler will be registered under.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.CustomQueryHandler.html">CustomQueryHandler</a></td>
+        <td><span class="parametername">queryHandler</span></td>
+        <td><p>The query handler to register</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_IBrowser_RegisterCustomQueryHandler_System_String_PuppeteerSharp_CustomQueryHandler__examples">Examples</h5>
+  <p>Puppeteer.RegisterCustomQueryHandler(&quot;text&quot;, &quot;{ … }&quot;);
+var aHandle = await page.QuerySelectorAsync(&quot;text/…&quot;);</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Targets()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L184">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L184">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_Targets_" data-uid="PuppeteerSharp.IBrowser.Targets*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_Targets" data-uid="PuppeteerSharp.IBrowser.Targets">Targets()</h4>
+  <div class="markdown level1 summary"><p>Returns An Array of all active targets</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ITarget[] Targets()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>[]</td>
+        <td><p>An Array of all active targets</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20UnregisterCustomQueryHandler(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L220">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L220">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_UnregisterCustomQueryHandler_" data-uid="PuppeteerSharp.IBrowser.UnregisterCustomQueryHandler*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_UnregisterCustomQueryHandler_System_String_" data-uid="PuppeteerSharp.IBrowser.UnregisterCustomQueryHandler(System.String)">UnregisterCustomQueryHandler(String)</h4>
+  <div class="markdown level1 summary"><p>Unregisters a custom query handler</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void UnregisterCustomQueryHandler(string name)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>The name of the query handler to unregistered.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForTargetAsync(Func&lt;ITarget, Boolean&gt;, WaitForOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L200">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L200">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_IBrowser_WaitForTargetAsync_" data-uid="PuppeteerSharp.IBrowser.WaitForTargetAsync*"></a>
+  <h4 id="PuppeteerSharp_IBrowser_WaitForTargetAsync_Func_PuppeteerSharp_ITarget_System_Boolean__PuppeteerSharp_WaitForOptions_" data-uid="PuppeteerSharp.IBrowser.WaitForTargetAsync(Func{PuppeteerSharp.ITarget,System.Boolean},PuppeteerSharp.WaitForOptions)">WaitForTargetAsync(Func&lt;ITarget, Boolean&gt;, WaitForOptions)</h4>
+  <div class="markdown level1 summary"><p>This searches for a target in this specific browser context.
+<example><p>
+<pre><code>await page.EvaluateAsync(&quot;() => window.open(&apos;https://www.example.com/&apos;)&quot;);
+var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target.Url == &quot;https://www.example.com/&quot;);</code></pre>
+</example>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;ITarget&gt; WaitForTargetAsync(Func&lt;ITarget, bool&gt; predicate, WaitForOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Func</span>&lt;<a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>, <span class="xref">System.Boolean</span>&gt;</td>
+        <td><span class="parametername">predicate</span></td>
+        <td><p>A function to be run for every target</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.WaitForOptions.html">WaitForOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>&gt;</td>
+        <td><p>Resolves to the first target found that matches the predicate function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Closed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L37">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L37">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_IBrowser_Closed" data-uid="PuppeteerSharp.IBrowser.Closed">Closed</h4>
+  <div class="markdown level1 summary"><p>Raised when the <a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a> gets closed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler Closed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnected&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L44">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L44">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_IBrowser_Disconnected" data-uid="PuppeteerSharp.IBrowser.Disconnected">Disconnected</h4>
+  <div class="markdown level1 summary"><p>Raised when puppeteer gets disconnected from the Chromium instance. This might happen because one of the following</p>
+<ul>
+<li>Chromium is closed or crashed</li>
+<li><a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_Disconnect">Disconnect()</a> method was called</li>
+</ul>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler Disconnected</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetChanged&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L49">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L49">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_IBrowser_TargetChanged" data-uid="PuppeteerSharp.IBrowser.TargetChanged">TargetChanged</h4>
+  <div class="markdown level1 summary"><p>Raised when the url of a target changes</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler&lt;TargetChangedArgs&gt; TargetChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetCreated&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L54">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L54">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_IBrowser_TargetCreated" data-uid="PuppeteerSharp.IBrowser.TargetCreated">TargetCreated</h4>
+  <div class="markdown level1 summary"><p>Raised when a target is created, for example when a new page is opened by <code>window.open</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open">https://developer.mozilla.org/en-US/docs/Web/API/Window/open</a> or <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_NewPageAsync">NewPageAsync()</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler&lt;TargetChangedArgs&gt; TargetCreated</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetDestroyed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L59">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L59">View Source</a>
+  </span>
+  <h4 id="PuppeteerSharp_IBrowser_TargetDestroyed" data-uid="PuppeteerSharp.IBrowser.TargetDestroyed">TargetDestroyed</h4>
+  <div class="markdown level1 summary"><p>Raised when a target is destroyed, for example when a page is closed</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event EventHandler&lt;TargetChangedArgs&gt; TargetDestroyed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IBrowser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/%23L32" class="contribution-link">Request doc improvement</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/IBrowser.cs/#L32" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5></h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

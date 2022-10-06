@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class LaunchOptions
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -90,7 +90,7 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_LaunchOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class LaunchOptions : IBrowserOptions, IConnectionOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class LaunchOptions : object, IBrowserOptions, IConnectionOptions</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -318,7 +318,7 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Collections.Generic.IDictionary</span>&lt;<span class="xref">System.String</span>, <span class="xref">System.String</span>&gt;</td>
+        <td><span class="xref">IDictionary</span>&lt;<span class="xref">System.String</span>, <span class="xref">System.String</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -394,7 +394,7 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </span>
   <a id="PuppeteerSharp_LaunchOptions_IgnoredDefaultArgs_" data-uid="PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs*"></a>
   <h4 id="PuppeteerSharp_LaunchOptions_IgnoredDefaultArgs" data-uid="PuppeteerSharp.LaunchOptions.IgnoredDefaultArgs">IgnoredDefaultArgs</h4>
-  <div class="markdown level1 summary"><p>if <a class="xref" href="PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs">IgnoreDefaultArgs</a> is set to <code>false</code> this list will be used to filter <span class="xref">PuppeteerSharp.Puppeteer.DefaultArgs</span></p>
+  <div class="markdown level1 summary"><p>if <a class="xref" href="PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs">IgnoreDefaultArgs</a> is set to <code>false</code> this list will be used to filter <span class="xref">PuppeteerSharp.ChromiumLauncher.DefaultArgs</span></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -425,7 +425,7 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </span>
   <a id="PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs_" data-uid="PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs*"></a>
   <h4 id="PuppeteerSharp_LaunchOptions_IgnoreDefaultArgs" data-uid="PuppeteerSharp.LaunchOptions.IgnoreDefaultArgs">IgnoreDefaultArgs</h4>
-  <div class="markdown level1 summary"><p>If <code>true</code>, then do not use <span class="xref">PuppeteerSharp.Puppeteer.DefaultArgs</span>.
+  <div class="markdown level1 summary"><p>If <code>true</code>, then do not use <span class="xref">PuppeteerSharp.ChromiumLauncher.DefaultArgs</span>.
 Dangerous option; use with care. Defaults to <code>false</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -493,8 +493,7 @@ Dangerous option; use with care. Defaults to <code>false</code>.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)&quot;)]
-public int KeepAliveInterval { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int KeepAliveInterval { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -630,7 +629,7 @@ public int KeepAliveInterval { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<a class="xref" href="PuppeteerSharp.TargetInfo.html">TargetInfo</a>, <span class="xref">System.Boolean</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<a class="xref" href="PuppeteerSharp.TargetInfo.html">TargetInfo</a>, <span class="xref">System.Boolean</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -680,8 +679,7 @@ public int KeepAliveInterval { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use TransportFactory instead&quot;)]
-public IConnectionTransport Transport { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IConnectionTransport Transport { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -769,7 +767,7 @@ public IConnectionTransport Transport { get; set; }</code></pre>
   </span>
   <a id="PuppeteerSharp_LaunchOptions_WebSocketFactory_" data-uid="PuppeteerSharp.LaunchOptions.WebSocketFactory*"></a>
   <h4 id="PuppeteerSharp_LaunchOptions_WebSocketFactory" data-uid="PuppeteerSharp.LaunchOptions.WebSocketFactory">WebSocketFactory</h4>
-  <div class="markdown level1 summary"><p>Optional factory for <span class="xref">System.Net.WebSockets.WebSocket</span> implementations.
+  <div class="markdown level1 summary"><p>Optional factory for <see cref="!:WebSocket"></see> implementations.
 If <a class="xref" href="PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_Transport">Transport</a> is set this property will be ignored.</p>
 </div>
   <div class="markdown level1 conceptual"></div>

@@ -8,7 +8,7 @@
     <title> </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content=" ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,14 +78,14 @@
       <section><p>Options to use when clicking</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Input.DownOptions.html">DownOptions</a></h4>
-      <section><p>options to use with <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a></p>
+      <section><p>options to use with <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Input.Key.html">Key</a></h4>
       <section><p>Utility class to be used with <a class="xref" href="PuppeteerSharp.Input.Keyboard.html">Keyboard</a> operations</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Input.Keyboard.html">Keyboard</a></h4>
-      <section><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
-<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
+      <section><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
+<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Input.Mouse.html">Mouse</a></h4>
       <section><p>Provides methods to interact with the mouse</p>
@@ -102,10 +102,22 @@
       <h4><a class="xref" href="PuppeteerSharp.Input.TypeOptions.html">TypeOptions</a></h4>
       <section><p>Options to use when typing</p>
 </section>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="PuppeteerSharp.Input.IKeyboard.html">IKeyboard</a></h4>
+      <section><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
+<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.Input.IMouse.html">IMouse</a></h4>
+      <section><p>Provides methods to interact with the mouse</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.Input.ITouchscreen.html">ITouchscreen</a></h4>
+      <section><p>Provides methods to interact with the touch screen</p>
+</section>
     <h3 id="enums">Enums
   </h3>
       <h4><a class="xref" href="PuppeteerSharp.Input.MouseButton.html">MouseButton</a></h4>
-      <section><p>The type of button click to use with <a class="xref" href="PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_DownAsync_PuppeteerSharp_Input_ClickOptions_">DownAsync(ClickOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_UpAsync_PuppeteerSharp_Input_ClickOptions_">UpAsync(ClickOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.Mouse.html#PuppeteerSharp_Input_Mouse_ClickAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_ClickOptions_">ClickAsync(Decimal, Decimal, ClickOptions)</a></p>
+      <section><p>The type of button click to use with <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_DownAsync_PuppeteerSharp_Input_ClickOptions_">DownAsync(ClickOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_UpAsync_PuppeteerSharp_Input_ClickOptions_">UpAsync(ClickOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.IMouse.html#PuppeteerSharp_Input_IMouse_ClickAsync_System_Decimal_System_Decimal_PuppeteerSharp_Input_ClickOptions_">ClickAsync(Decimal, Decimal, ClickOptions)</a></p>
 </section>
 </article>
           </div>

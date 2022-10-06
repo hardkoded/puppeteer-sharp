@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class NavigationOptions
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_NavigationOptions" data-uid="PuppeteerSharp.NavigationOptions" class="text-break">Class NavigationOptions
   </h1>
-  <div class="markdown level0 summary"><p>Navigation options used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_">WaitForNavigationAsync(NavigationOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_">SetContentAsync(String, NavigationOptions)</a></p>
+  <div class="markdown level0 summary"><p>Navigation options used by <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_">WaitForNavigationAsync(NavigationOptions)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_">SetContentAsync(String, NavigationOptions)</a></p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -85,7 +85,7 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_NavigationOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class NavigationOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class NavigationOptions : object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -98,7 +98,7 @@
   </span>
   <a id="PuppeteerSharp_NavigationOptions_Referer_" data-uid="PuppeteerSharp.NavigationOptions.Referer*"></a>
   <h4 id="PuppeteerSharp_NavigationOptions_Referer" data-uid="PuppeteerSharp.NavigationOptions.Referer">Referer</h4>
-  <div class="markdown level1 summary"><p>Referer header value. If provided it will take prefrence over the referer header value set by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetExtraHttpHeadersAsync_System_Collections_Generic_Dictionary_System_String_System_String__">SetExtraHttpHeadersAsync(Dictionary&lt;String, String&gt;)</a></p>
+  <div class="markdown level1 summary"><p>Referer header value. If provided it will take prefrence over the referer header value set by <see cref="!:IPage.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary&lt;string, string>)"></see></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -153,7 +153,7 @@
     </tbody>
   </table>
   <h5 id="PuppeteerSharp_NavigationOptions_Timeout_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The default value can be changed by setting the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_DefaultNavigationTimeout">DefaultNavigationTimeout</a> or <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_DefaultTimeout">DefaultTimeout</a> property.</p>
+  <div class="markdown level1 remarks"><p>The default value can be changed by setting the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_DefaultNavigationTimeout">DefaultNavigationTimeout</a> or <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_DefaultTimeout">DefaultTimeout</a> property.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>

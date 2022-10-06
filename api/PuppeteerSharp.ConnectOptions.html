@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ConnectOptions
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -90,7 +90,7 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ConnectOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConnectOptions : IBrowserOptions, IConnectionOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class ConnectOptions : object, IBrowserOptions, IConnectionOptions</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -108,8 +108,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;No longer required and usages should be removed&quot;)]
-public bool AppMode { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public bool AppMode { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -334,12 +333,12 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   </span>
   <a id="PuppeteerSharp_ConnectOptions_InitAction_" data-uid="PuppeteerSharp.ConnectOptions.InitAction*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_InitAction" data-uid="PuppeteerSharp.ConnectOptions.InitAction">InitAction</h4>
-  <div class="markdown level1 summary"><p>Optional callback to initialize properties as soon as the <a class="xref" href="PuppeteerSharp.Browser.html">Browser</a> instance is created, i.e., set up event handlers.</p>
+  <div class="markdown level1 summary"><p>Optional callback to initialize properties as soon as the <a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a> instance is created, i.e., set up event handlers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Action&lt;Browser&gt; InitAction { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Action&lt;IBrowser&gt; InitAction { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -351,7 +350,7 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Action</span>&lt;<a class="xref" href="PuppeteerSharp.Browser.html">Browser</a>&gt;</td>
+        <td><span class="xref">Action</span>&lt;<a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -370,8 +369,7 @@ Setting this to <code>false</code> proved to work in .NET Core but it tends to f
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)&quot;)]
-public int KeepAliveInterval { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int KeepAliveInterval { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -445,7 +443,7 @@ public int KeepAliveInterval { get; set; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<a class="xref" href="PuppeteerSharp.TargetInfo.html">TargetInfo</a>, <span class="xref">System.Boolean</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<a class="xref" href="PuppeteerSharp.TargetInfo.html">TargetInfo</a>, <span class="xref">System.Boolean</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -464,8 +462,7 @@ public int KeepAliveInterval { get; set; }</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use TransportFactory instead&quot;)]
-public IConnectionTransport Transport { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IConnectionTransport Transport { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -522,7 +519,7 @@ public IConnectionTransport Transport { get; set; }</code></pre>
   </span>
   <a id="PuppeteerSharp_ConnectOptions_WebSocketFactory_" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory*"></a>
   <h4 id="PuppeteerSharp_ConnectOptions_WebSocketFactory" data-uid="PuppeteerSharp.ConnectOptions.WebSocketFactory">WebSocketFactory</h4>
-  <div class="markdown level1 summary"><p>Optional factory for <span class="xref">System.Net.WebSockets.WebSocket</span> implementations.
+  <div class="markdown level1 summary"><p>Optional factory for <see cref="!:WebSocket"></see> implementations.
 If <a class="xref" href="PuppeteerSharp.ConnectOptions.html#PuppeteerSharp_ConnectOptions_Transport">Transport</a> is set this property will be ignored.</p>
 </div>
   <div class="markdown level1 conceptual"></div>

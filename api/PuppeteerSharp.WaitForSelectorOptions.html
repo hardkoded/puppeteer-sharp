@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class WaitForSelectorOptions
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,7 +85,7 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_WaitForSelectorOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class WaitForSelectorOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class WaitForSelectorOptions : object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -122,6 +122,37 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Root&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForSelectorOptions.cs/%23L30">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForSelectorOptions.cs/#L30">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_WaitForSelectorOptions_Root_" data-uid="PuppeteerSharp.WaitForSelectorOptions.Root*"></a>
+  <h4 id="PuppeteerSharp_WaitForSelectorOptions_Root" data-uid="PuppeteerSharp.WaitForSelectorOptions.Root">Root</h4>
+  <div class="markdown level1 summary"><p>Root element</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IElementHandle Root { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IElementHandle.html">IElementHandle</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Timeout&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/WaitForSelectorOptions.cs/%23L15">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -131,7 +162,7 @@
   <h4 id="PuppeteerSharp_WaitForSelectorOptions_Timeout" data-uid="PuppeteerSharp.WaitForSelectorOptions.Timeout">Timeout</h4>
   <div class="markdown level1 summary"><p>Maximum time to wait for in milliseconds. Defaults to <code>30000</code> (30 seconds).
 Pass <code>0</code> to disable timeout.
-The default value can be changed by using <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_DefaultTimeout">DefaultTimeout</a>  method</p>
+The default value can be changed by using <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_DefaultTimeout">DefaultTimeout</a>  method</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -186,8 +217,8 @@ The default value can be changed by using <a class="xref" href="PuppeteerSharp.P
   </table>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync(String, WaitForSelectorOptions)</a></div>
-      <div><a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync(String, WaitForSelectorOptions)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync</a>(<span class="xref">System.String</span>, <a class="xref" href="PuppeteerSharp.WaitForSelectorOptions.html">WaitForSelectorOptions</a>)</div>
+      <div><a class="xref" href="PuppeteerSharp.IFrame.html#PuppeteerSharp_IFrame_WaitForSelectorAsync_System_String_PuppeteerSharp_WaitForSelectorOptions_">WaitForSelectorAsync</a>(<span class="xref">System.String</span>, <a class="xref" href="PuppeteerSharp.WaitForSelectorOptions.html">WaitForSelectorOptions</a>)</div>
   </div>
 </article>
           </div>

@@ -8,7 +8,7 @@
     <title> </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content=" ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -75,10 +75,10 @@
     <h3 id="classes">Classes
   </h3>
       <h4><a class="xref" href="PuppeteerSharp.AddTagOptions.html">AddTagOptions</a></h4>
-      <section><p>Options used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddScriptTagAsync_PuppeteerSharp_AddTagOptions_">AddScriptTagAsync(AddTagOptions)</a> &amp; <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AddStyleTagAsync_PuppeteerSharp_AddTagOptions_">AddStyleTagAsync(AddTagOptions)</a>.</p>
+      <section><p>Options used by <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_AddScriptTagAsync_PuppeteerSharp_AddTagOptions_">AddScriptTagAsync(AddTagOptions)</a> &amp; <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_AddStyleTagAsync_PuppeteerSharp_AddTagOptions_">AddStyleTagAsync(AddTagOptions)</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.BoundingBox.html">BoundingBox</a></h4>
-      <section><p>Bounding box data returned by <a class="xref" href="PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_BoundingBoxAsync">BoundingBoxAsync()</a>.</p>
+      <section><p>Bounding box data returned by <a class="xref" href="PuppeteerSharp.IElementHandle.html#PuppeteerSharp_IElementHandle_BoundingBoxAsync">BoundingBoxAsync()</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.BoxModel.html">BoxModel</a></h4>
       <section><p>Represents boxes of the element.</p>
@@ -88,7 +88,7 @@
 </section>
       <h4><a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></h4>
       <section><p>BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-a single <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.Page.html">Page</a> in the default <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></p>
+a single <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> in the default <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.BrowserFetcher.html">BrowserFetcher</a></h4>
       <section><p>BrowserFetcher can download and manage different versions of Chromium.
@@ -100,8 +100,8 @@ BrowserFetcher operates on revision strings that specify a precise version of Ch
       <h4><a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></h4>
       <section><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
 <ul>
-<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
-<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> event.</li>
+<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
+<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_MessageReceived">MessageReceived</a> event.</li>
 </ul>
 <p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
 <pre><code>var client = await Page.Target.CreateCDPSessionAsync();
@@ -134,10 +134,10 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Options for connecting to an existing browser.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ConsoleEventArgs.html">ConsoleEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Console">Console</a> data.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Console">Console</a> data.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ConsoleMessage.html">ConsoleMessage</a></h4>
-      <section><p>ConsoleMessage is part of <a class="xref" href="PuppeteerSharp.ConsoleEventArgs.html">ConsoleEventArgs</a> used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Console">Console</a>.</p>
+      <section><p>ConsoleMessage is part of <a class="xref" href="PuppeteerSharp.ConsoleEventArgs.html">ConsoleEventArgs</a> used by <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Console">Console</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ConsoleMessageLocation.html">ConsoleMessageLocation</a></h4>
       <section><p>Console message location.</p>
@@ -146,13 +146,17 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Cookie data.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Credentials.html">Credentials</a></h4>
-      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_AuthenticateAsync_PuppeteerSharp_Credentials_">AuthenticateAsync(Credentials)</a></p>
+      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_AuthenticateAsync_PuppeteerSharp_Credentials_">AuthenticateAsync(Credentials)</a></p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.CustomQueryHandler.html">CustomQueryHandler</a></h4>
+      <section><p>Contains two functions <code>queryOne</code> and <code>queryAll</code> to be used as custom query handlers
+The functions <code>queryOne</code> and <code>queryAll</code> are executed in the page context.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Dialog.html">Dialog</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Dialog.html">Dialog</a> objects are dispatched by page via the 'dialog' event.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.DialogEventArgs.html">DialogEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Dialog">Dialog</a> arguments.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Dialog">Dialog</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.DragData.html">DragData</a></h4>
       <section><p>Data returned by the drag methods.</p>
@@ -161,25 +165,24 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Item returned by drag methods.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a></h4>
-      <section><p>Inherits from <a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>. It represents an in-page DOM element.
-ElementHandles can be created by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a> or <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a>.</p>
+      <section><p>IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.EmulateIdleOverrides.html">EmulateIdleOverrides</a></h4>
-      <section><p>Options for <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_">EmulateIdleStateAsync(EmulateIdleOverrides)</a></p>
+      <section><p>Options for <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EmulateIdleStateAsync_PuppeteerSharp_EmulateIdleOverrides_">EmulateIdleStateAsync(EmulateIdleOverrides)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ErrorEventArgs.html">ErrorEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Error">Error</a> arguments.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Error">Error</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.EvaluationFailedException.html">EvaluationFailedException</a></h4>
       <section><p>Exception thrown by <span class="xref">PuppeteerSharp.ExecutionContext.ExecuteEvaluationAsync(System.String,System.Object)</span>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a></h4>
       <section><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-Each <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
+Each <a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a>
 All kind of web workers have their own contexts</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a> objects are returned via the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForFileChooserAsync_PuppeteerSharp_WaitForFileChooserOptions_">WaitForFileChooserAsync(WaitForFileChooserOptions)</a> method.
+      <section><p><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a> objects are returned via the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WaitForFileChooserAsync_PuppeteerSharp_WaitForFileChooserOptions_">WaitForFileChooserAsync(WaitForFileChooserOptions)</a> method.
 File choosers let you react to the page requesting for a file.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.FirefoxLauncher.html">FirefoxLauncher</a></h4>
@@ -187,23 +190,23 @@ File choosers let you react to the page requesting for a file.</p>
 by Puppeteer and therefore must be cleaned up when no longer needed.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></h4>
-      <section><p>Provides methods to interact with a single page frame in Chromium. One <a class="xref" href="PuppeteerSharp.Page.html">Page</a> instance might have multiple <a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> instances.
-At every point of time, page exposes its current frame tree via the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_MainFrame">MainFrame</a> and <a class="xref" href="PuppeteerSharp.Frame.html#PuppeteerSharp_Frame_ChildFrames">ChildFrames</a> properties.</p>
-<p><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a> object's lifecycle is controlled by three events, dispatched on the page object</p>
+      <section><p>Provides methods to interact with a single page frame in Chromium. One <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> instance might have multiple <a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a> instances.
+At every point of time, page exposes its current frame tree via the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_MainFrame">MainFrame</a> and <a class="xref" href="PuppeteerSharp.IFrame.html#PuppeteerSharp_IFrame_ChildFrames">ChildFrames</a> properties.</p>
+<p><a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a> object's lifecycle is controlled by three events, dispatched on the page object</p>
 <ul>
-<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameAttached">FrameAttached</a> - fires when the frame gets attached to the page. A Frame can be attached to the page only once</li>
-<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameNavigated">FrameNavigated</a> - fired when the frame commits navigation to a different URL</li>
-<li><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameDetached">FrameDetached</a> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once</li>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameAttached">FrameAttached</a> - fires when the frame gets attached to the page. A Frame can be attached to the page only once</li>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameNavigated">FrameNavigated</a> - fired when the frame commits navigation to a different URL</li>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameDetached">FrameDetached</a> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once</li>
 </ul>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.FrameEventArgs.html">FrameEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameAttached">FrameAttached</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameDetached">FrameDetached</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_FrameNavigated">FrameNavigated</a> arguments.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameAttached">FrameAttached</a>, <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameDetached">FrameDetached</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameNavigated">FrameNavigated</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.GeolocationOption.html">GeolocationOption</a></h4>
       <section><p>Geolocation option.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a></h4>
-      <section><p>JSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
+      <section><p>IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Launcher.html">Launcher</a></h4>
       <section><p>Launcher controls the creation of processes or the connection remote ones.</p>
@@ -216,7 +219,7 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Options for launching the Chrome/ium browser.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MediaFeatureValue.html">MediaFeatureValue</a></h4>
-      <section><p>Media Feature. <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__">EmulateMediaFeaturesAsync(IEnumerable&lt;MediaFeatureValue&gt;)</a></p>
+      <section><p>Media Feature. <see cref="!:IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable&lt;MediaFeatureValue>)"></see></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MessageEventArgs.html">MessageEventArgs</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> arguments.</p>
@@ -225,19 +228,19 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Exception thrown by <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_">SendAsync&lt;T&gt;(String, Object)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MetricEventArgs.html">MetricEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Metrics">Metrics</a> arguments.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Metrics">Metrics</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.NavigationException.html">NavigationException</a></h4>
-      <section><p>Exception thrown when a <a class="xref" href="PuppeteerSharp.Page.html">Page</a> fails to navigate an URL.</p>
+      <section><p>Exception thrown when a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> fails to navigate an URL.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.NavigationOptions.html">NavigationOptions</a></h4>
-      <section><p>Navigation options used by <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_">WaitForNavigationAsync(NavigationOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_">SetContentAsync(String, NavigationOptions)</a></p>
+      <section><p>Navigation options used by <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WaitForNavigationAsync_PuppeteerSharp_NavigationOptions_">WaitForNavigationAsync(NavigationOptions)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_SetContentAsync_System_String_PuppeteerSharp_NavigationOptions_">SetContentAsync(String, NavigationOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.NetworkConditions.html">NetworkConditions</a></h4>
-      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateNetworkConditionsAsync_PuppeteerSharp_NetworkConditions_">EmulateNetworkConditionsAsync(NetworkConditions)</a></p>
+      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EmulateNetworkConditionsAsync_PuppeteerSharp_NetworkConditions_">EmulateNetworkConditionsAsync(NetworkConditions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Page.html">Page</a></h4>
-      <section><p>Provides methods to interact with a single tab in Chromium. One <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Browser">Browser</a> instance might have multiple <a class="xref" href="PuppeteerSharp.Page.html">Page</a> instances.</p>
+      <section><p>Provides methods to interact with a single tab in Chromium. One <a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a> instance might have multiple <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> instances.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PageCloseOptions.html">PageCloseOptions</a></h4>
       <section><p>Page close options.</p>
@@ -249,10 +252,10 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Payload information.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PdfOptions.html">PdfOptions</a></h4>
-      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_PdfAsync_System_String_PuppeteerSharp_PdfOptions_">PdfAsync(String, PdfOptions)</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_PdfStreamAsync_PuppeteerSharp_PdfOptions_">PdfStreamAsync(PdfOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_PdfDataAsync_PuppeteerSharp_PdfOptions_">PdfDataAsync(PdfOptions)</a></p>
+      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_PdfAsync_System_String_PuppeteerSharp_PdfOptions_">PdfAsync(String, PdfOptions)</a>, <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_PdfStreamAsync_PuppeteerSharp_PdfOptions_">PdfStreamAsync(PdfOptions)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_PdfDataAsync_PuppeteerSharp_PdfOptions_">PdfDataAsync(PdfOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PopupEventArgs.html">PopupEventArgs</a></h4>
-      <section><p>Popup event arguments. <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Popup">Popup</a></p>
+      <section><p>Popup event arguments. <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Popup">Popup</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PredefinedNetworkConditions.html">PredefinedNetworkConditions</a></h4>
       <section><p>Predefined network conditions.</p>
@@ -267,33 +270,33 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Base exception used to identify any exception thrown by PuppeteerSharp</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PuppeteerHandleExtensions.html">PuppeteerHandleExtensions</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> and <a class="xref" href="PuppeteerSharp.ElementHandle.html">ElementHandle</a> Extensions.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> and <a class="xref" href="PuppeteerSharp.IElementHandle.html">IElementHandle</a> Extensions.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.RemoteAddress.html">RemoteAddress</a></h4>
       <section><p>Remote server address.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Request.html">Request</a></h4>
       <section><p>Whenever the page sends a request, the following events are emitted by puppeteer's page:
-<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Request">Request</a> emitted when the request is issued by the page.
-<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> emitted when/if the response is received for the request.
-<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> emitted when the response body is downloaded and the request is complete.</p>
-<p>If request fails at some point, then instead of <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> event (and possibly instead of <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> event), the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFailed">RequestFailed</a> event is emitted.</p>
-<p>If request gets a 'redirect' response, the request is successfully finished with the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_RequestFinished">RequestFinished</a> event, and a new request is issued to a redirected url.</p>
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Request">Request</a> emitted when the request is issued by the page.
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Response">Response</a> emitted when/if the response is received for the request.
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> emitted when the response body is downloaded and the request is complete.</p>
+<p>If request fails at some point, then instead of <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> event (and possibly instead of <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Response">Response</a> event), the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFailed">RequestFailed</a> event is emitted.</p>
+<p>If request gets a 'redirect' response, the request is successfully finished with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> event, and a new request is issued to a redirected url.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.RequestEventArgs.html">RequestEventArgs</a></h4>
-      <section><p>Arguments used by <a class="xref" href="PuppeteerSharp.Page.html">Page</a> events.</p>
+      <section><p>Arguments used by <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> events.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Response.html">Response</a></h4>
       <section><p><a class="xref" href="PuppeteerSharp.Response.html">Response</a> class represents responses which are received by page.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ResponseCreatedEventArgs.html">ResponseCreatedEventArgs</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Response">Response</a> arguments.</p>
+      <section><p><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Response">Response</a> arguments.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.RevisionInfo.html">RevisionInfo</a></h4>
       <section><p>Revision info.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ScreenshotOptions.html">ScreenshotOptions</a></h4>
-      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
+      <section><p>Options to be used in <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.SecurityDetails.html">SecurityDetails</a></h4>
       <section><p>Represents the security details when response was received over the secure connection.</p>
@@ -314,13 +317,20 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
       <section><p>Target info.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Tracing.html">Tracing</a></h4>
-      <section><p>You can use <a class="xref" href="PuppeteerSharp.Tracing.html#PuppeteerSharp_Tracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a> and <a class="xref" href="PuppeteerSharp.Tracing.html#PuppeteerSharp_Tracing_StopAsync">StopAsync()</a> to create a trace file which can be opened in Chrome DevTools or timeline viewer.</p>
+      <section><p>You can use <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a> and <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StopAsync">StopAsync()</a> to create a trace file which can be opened in Chrome DevTools or timeline viewer.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.TracingOptions.html">TracingOptions</a></h4>
-      <section><p>Tracing options used on <a class="xref" href="PuppeteerSharp.Tracing.html#PuppeteerSharp_Tracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a>.</p>
+      <section><p>Tracing options used on <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a>.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.UserAgentBrandVersion.html">UserAgentBrandVersion</a></h4>
+      <section><p>Used to specify User Agent Cient Hints to emulate. See <a href="https://wicg.github.io/ua-client-hints">https://wicg.github.io/ua-client-hints</a></p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.UserAgentMetadata.html">UserAgentMetadata</a></h4>
+      <section><p>Used to specify User Agent Cient Hints to emulate. See <a href="https://wicg.github.io/ua-client-hints">https://wicg.github.io/ua-client-hints</a>
+Missing optional values will be filled in by the target with what it would normally use.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ViewPortOptions.html">ViewPortOptions</a></h4>
-      <section><p>View port options used on <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetViewportAsync_PuppeteerSharp_ViewPortOptions_">SetViewportAsync(ViewPortOptions)</a>.</p>
+      <section><p>View port options used on <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_SetViewportAsync_PuppeteerSharp_ViewPortOptions_">SetViewportAsync(ViewPortOptions)</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.WaitForFileChooserOptions.html">WaitForFileChooserOptions</a></h4>
       <section><p>Optional waiting parameters.</p>
@@ -342,7 +352,7 @@ by Puppeteer and therefore must be cleaned up when no longer needed.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.Worker.html">Worker</a></h4>
       <section><p>The Worker class represents a WebWorker (<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API</a>).
-The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WorkerCreated">WorkerCreated</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WorkerDestroyed">WorkerDestroyed</a> are emitted on the page object to signal the worker lifecycle.</p>
+The events <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WorkerCreated">WorkerCreated</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WorkerDestroyed">WorkerDestroyed</a> are emitted on the page object to signal the worker lifecycle.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.WorkerEventArgs.html">WorkerEventArgs</a></h4>
       <section><p>Workder created event arguments.</p>
@@ -350,18 +360,100 @@ The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Wo
     <h3 id="structs">Structs
   </h3>
       <h4><a class="xref" href="PuppeteerSharp.BoxModelPoint.html">BoxModelPoint</a></h4>
-      <section><p>Represents a <a class="xref" href="PuppeteerSharp.BoxModel.html">BoxModel</a> point</p>
+      <section><p>Represents a point</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.Offset.html">Offset</a></h4>
+      <section><p>Offset used in conjunction with <a class="xref" href="PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_ClickablePointAsync_System_Nullable_PuppeteerSharp_Offset__">ClickablePointAsync(Nullable&lt;Offset&gt;)</a></p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.Point.html">Point</a></h4>
+      <section><p>Represents a Point</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.ResponseData.html">ResponseData</a></h4>
       <section><p>Response that will fulfill a request.</p>
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
+      <h4><a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a></h4>
+      <section><p>Provides methods to interact with a browser in Chromium.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></h4>
+      <section><p>BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
+a single <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> in the default <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IBrowserFetcher.html">IBrowserFetcher</a></h4>
+      <section><p>BrowserFetcher can download and manage different versions of Chromium.
+BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. 533271. Revision strings can be obtained from omahaproxy.appspot.com.</p>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.IBrowserOptions.html">IBrowserOptions</a></h4>
       <section><p>Browser options.</p>
 </section>
+      <h4><a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a></h4>
+      <section><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
+<ul>
+<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
+<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_MessageReceived">MessageReceived</a> event.</li>
+</ul>
+<p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
+<pre><code>var client = await Page.Target.CreateCDPSessionAsync();
+await client.SendAsync(&quot;Animation.enable&quot;);
+client.MessageReceived += (sender, e) =>
+{
+     if (e.MessageID == &quot;Animation.animationCreated&quot;)
+     {
+         Console.WriteLine(&quot;Animation created!&quot;);
+     }
+};
+JObject response = await client.SendAsync(&quot;Animation.getPlaybackRate&quot;);
+Console.WriteLine(&quot;playback rate is &quot; + response.playbackRate);
+await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
+{
+    playbackRate = Convert.ToInt32(response.playbackRate / 2)
+});</code></pre>
+</section>
       <h4><a class="xref" href="PuppeteerSharp.IConnectionOptions.html">IConnectionOptions</a></h4>
       <section><p>Options for <a class="xref" href="PuppeteerSharp.Connection.html">Connection</a> creation.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IElementHandle.html">IElementHandle</a></h4>
+      <section><p>Inherits from <a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>. It represents an in-page DOM element.
+ElementHandles can be created by <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_QuerySelectorAsync_System_String_">QuerySelectorAsync(String)</a> or <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_QuerySelectorAllAsync_System_String_">QuerySelectorAllAsync(String)</a>.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a></h4>
+      <section><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
+Each <a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a>
+All kind of web workers have their own contexts</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a></h4>
+      <section><p>Provides methods to interact with a single page frame in Chromium. One <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> instance might have multiple <a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a> instances.
+At every point of time, page exposes its current frame tree via the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_MainFrame">MainFrame</a> and <a class="xref" href="PuppeteerSharp.IFrame.html#PuppeteerSharp_IFrame_ChildFrames">ChildFrames</a> properties.</p>
+<p><a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a> object's lifecycle is controlled by three events, dispatched on the page object</p>
+<ul>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameAttached">FrameAttached</a> - fires when the frame gets attached to the page. A Frame can be attached to the page only once</li>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameNavigated">FrameNavigated</a> - fired when the frame commits navigation to a different URL</li>
+<li><a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_FrameDetached">FrameDetached</a> - fired when the frame gets detached from the page.  A Frame can be detached from the page only once</li>
+</ul>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a></h4>
+      <section><p>IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync(String)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EvaluateFunctionHandleAsync_System_String_System_Object___">EvaluateFunctionHandleAsync(String, Object[])</a> methods.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IPage.html">IPage</a></h4>
+      <section><p>Provides methods to interact with a single tab in Chromium. One <a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a> instance might have multiple <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> instances.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IRequest.html">IRequest</a></h4>
+      <section><p>Whenever the page sends a request, the following events are emitted by puppeteer's page:
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Request">Request</a> emitted when the request is issued by the page.
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Response">Response</a> emitted when/if the response is received for the request.
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> emitted when the response body is downloaded and the request is complete.</p>
+<p>If request fails at some point, then instead of <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> event (and possibly instead of <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_Response">Response</a> event), the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFailed">RequestFailed</a> event is emitted.</p>
+<p>If request gets a 'redirect' response, the request is successfully finished with the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_RequestFinished">RequestFinished</a> event, and a new request is issued to a redirected url.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.IResponse.html">IResponse</a></h4>
+      <section><p><a class="xref" href="PuppeteerSharp.Response.html">Response</a> class represents responses which are received by page.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a></h4>
+      <section><p>Target.</p>
+</section>
+      <h4><a class="xref" href="PuppeteerSharp.ITracing.html">ITracing</a></h4>
+      <section><p>You can use <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StartAsync_PuppeteerSharp_TracingOptions_">StartAsync(TracingOptions)</a> and <a class="xref" href="PuppeteerSharp.ITracing.html#PuppeteerSharp_ITracing_StopAsync">StopAsync()</a> to create a trace file which can be opened in Chrome DevTools or timeline viewer.</p>
 </section>
     <h3 id="enums">Enums
   </h3>
@@ -375,7 +467,7 @@ The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Wo
       <section><p>Drag operations available on <a class="xref" href="PuppeteerSharp.DragData.html">DragData</a>.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.MediaFeature.html">MediaFeature</a></h4>
-      <section><p>Meadia Feature. See <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateMediaFeaturesAsync_System_Collections_Generic_IEnumerable_PuppeteerSharp_MediaFeatureValue__">EmulateMediaFeaturesAsync(IEnumerable&lt;MediaFeatureValue&gt;)</a></p>
+      <section><p>Meadia Feature. See <see cref="!:IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable&lt;MediaFeatureValue>)"></see></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.OverridePermission.html">OverridePermission</a></h4>
       <section><p>Override permission.</p>
@@ -402,7 +494,7 @@ The events <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_Wo
       <section><p>Target type.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.VisionDeficiency.html">VisionDeficiency</a></h4>
-      <section><p>Types of vision deficiency to emulate using <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_">EmulateVisionDeficiencyAsync(VisionDeficiency)</a></p>
+      <section><p>Types of vision deficiency to emulate using <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_EmulateVisionDeficiencyAsync_PuppeteerSharp_VisionDeficiency_">EmulateVisionDeficiencyAsync(VisionDeficiency)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.WaitForFunctionPollingOption.html">WaitForFunctionPollingOption</a></h4>
       <section><p>An interval at which the <code>pageFunction</code> is executed.</p>

@@ -1,0 +1,430 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IKeyboard
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IKeyboard
+   ">
+    <meta name="generator" content="docfx 2.59.4.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle"></a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="PuppeteerSharp.Input.IKeyboard">
+  
+  
+  <h1 id="PuppeteerSharp_Input_IKeyboard" data-uid="PuppeteerSharp.Input.IKeyboard" class="text-break">Interface IKeyboard
+  </h1>
+  <div class="markdown level0 summary"><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
+<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Input.html">PuppeteerSharp.Input</a></h6>
+  <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
+  <h5 id="PuppeteerSharp_Input_IKeyboard_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IKeyboard</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DownAsync(String, DownOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L23">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L23">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IKeyboard_DownAsync_" data-uid="PuppeteerSharp.Input.IKeyboard.DownAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_" data-uid="PuppeteerSharp.Input.IKeyboard.DownAsync(System.String,PuppeteerSharp.Input.DownOptions)">DownAsync(String, DownOptions)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>keydown</code> event</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task DownAsync(string key, DownOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>Name of key to press, such as <code>ArrowLeft</code>. <span class="xref">PuppeteerSharp.Input.KeyDefinitions</span> for a list of all key names.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.DownOptions.html">DownOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>down options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code>key</code> is a single character and no modifier keys besides <code>Shift</code> are being held down, a <code>keypress</code>/<code>input</code> event will also generated. The <code>text</code> option can be specified to force an input event to be generated.
+If <code>key</code> is a modifier key, <code>Shift</code>, <code>Meta</code>, <code>Control</code>, or <code>Alt</code>, subsequent key presses will be sent with that modifier active. To release the modifier key, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>
+After the key is pressed once, subsequent calls to <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> will have <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</a> set to <code>true</code>. To release the key, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PressAsync(String, PressOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L35">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L35">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IKeyboard_PressAsync_" data-uid="PuppeteerSharp.Input.IKeyboard.PressAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IKeyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_" data-uid="PuppeteerSharp.Input.IKeyboard.PressAsync(System.String,PuppeteerSharp.Input.PressOptions)">PressAsync(String, PressOptions)</h4>
+  <div class="markdown level1 summary"><p>Shortcut for <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a></p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task PressAsync(string key, PressOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>Name of key to press, such as <code>ArrowLeft</code>. <span class="xref">PuppeteerSharp.Input.KeyDefinitions</span> for a list of all key names.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.PressOptions.html">PressOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>press options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Input_IKeyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code data-dev-comment-type="paramref" class="paramref">key</code> is a single character and no modifier keys besides <code>Shift</code> are being held down, a <code>keypress</code>/<code>input</code> event will also generated. The <a class="xref" href="PuppeteerSharp.Input.DownOptions.html#PuppeteerSharp_Input_DownOptions_Text">Text</a> option can be specified to force an input event to be generated.
+Modifier keys DO effect <a class="xref" href="PuppeteerSharp.IElementHandle.html#PuppeteerSharp_IElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a>. Holding down <code>Shift</code> will type the text in upper case.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendCharacterAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L42">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L42">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_" data-uid="PuppeteerSharp.Input.IKeyboard.SendCharacterAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_" data-uid="PuppeteerSharp.Input.IKeyboard.SendCharacterAsync(System.String)">SendCharacterAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>keypress</code> and <code>input</code> event. This does not send a <code>keydown</code> or <code>keyup</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task SendCharacterAsync(string charText)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">charText</span></td>
+        <td><p>Character to send into the page</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TypeAsync(String, TypeOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L53">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L53">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IKeyboard_TypeAsync_" data-uid="PuppeteerSharp.Input.IKeyboard.TypeAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_" data-uid="PuppeteerSharp.Input.IKeyboard.TypeAsync(System.String,PuppeteerSharp.Input.TypeOptions)">TypeAsync(String, TypeOptions)</h4>
+  <div class="markdown level1 summary"><p>Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task TypeAsync(string text, TypeOptions options = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">text</span></td>
+        <td><p>A text to type into a focused element</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.Input.TypeOptions.html">TypeOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>type options</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>To press a special key, like <code>Control</code> or <code>ArrowDown</code>, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a></p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20UpAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L60">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L60">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_Input_IKeyboard_UpAsync_" data-uid="PuppeteerSharp.Input.IKeyboard.UpAsync*"></a>
+  <h4 id="PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_" data-uid="PuppeteerSharp.Input.IKeyboard.UpAsync(System.String)">UpAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Dispatches a <code>keyup</code> event.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task UpAsync(string key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>Name of key to release, such as <code>ArrowLeft</code>. See <span class="xref">PuppeteerSharp.Input.KeyDefinitions</span> for a list of all key names.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>Task</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IKeyboard&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/%23L10" class="contribution-link">Request doc improvement</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/IKeyboard.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5></h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                
+                <span>Generated by <strong>DocFX</strong></span>
+              </div>
+              <div class="col-md-4">
+                <p class="text-center">
+                  <a href="https://www.hardkoded.com">www.hardkoded.com</a>
+                </p>
+              </div>
+              <div class="col-md-4">
+                <span class="pull-right">
+                  <a href="#top">Back to top</a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-586295-9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-586295-9');
+    </script>
+  </body>
+</html>

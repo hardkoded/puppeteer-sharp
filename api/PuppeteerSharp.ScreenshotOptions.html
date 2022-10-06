@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ScreenshotOptions
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_ScreenshotOptions" data-uid="PuppeteerSharp.ScreenshotOptions" class="text-break">Class ScreenshotOptions
   </h1>
-  <div class="markdown level0 summary"><p>Options to be used in <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
+  <div class="markdown level0 summary"><p>Options to be used in <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotAsync_System_String_PuppeteerSharp_ScreenshotOptions_">ScreenshotAsync(String, ScreenshotOptions)</a>, <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotStreamAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotStreamAsync(ScreenshotOptions)</a> and <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_ScreenshotDataAsync_PuppeteerSharp_ScreenshotOptions_">ScreenshotDataAsync(ScreenshotOptions)</a></p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -85,22 +85,22 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ScreenshotOptions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ScreenshotOptions</code></pre>
+    <pre><code class="lang-csharp hljs">public class ScreenshotOptions : object</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BurstMode&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L65">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BurstMode&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L70">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L65">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L70">View Source</a>
   </span>
   <a id="PuppeteerSharp_ScreenshotOptions_BurstMode_" data-uid="PuppeteerSharp.ScreenshotOptions.BurstMode*"></a>
   <h4 id="PuppeteerSharp_ScreenshotOptions_BurstMode" data-uid="PuppeteerSharp.ScreenshotOptions.BurstMode">BurstMode</h4>
   <div class="markdown level1 summary"><p>When BurstMode is <code>true</code> the screenshot process will only execute all the screenshot setup actions (background and metrics overrides)
 before the first screenshot call and it will ignore the reset actions after the screenshoot is taken.
-<a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_SetBurstModeOffAsync">SetBurstModeOffAsync()</a> needs to be called after the last screenshot is taken.</p>
+<a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_SetBurstModeOffAsync">SetBurstModeOffAsync()</a> needs to be called after the last screenshot is taken.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -169,10 +169,10 @@ await page.SetBurstModeOffAsync();</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20FullPage&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L31">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20FullPage&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L32">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L31">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L32">View Source</a>
   </span>
   <a id="PuppeteerSharp_ScreenshotOptions_FullPage_" data-uid="PuppeteerSharp.ScreenshotOptions.FullPage*"></a>
   <h4 id="PuppeteerSharp_ScreenshotOptions_FullPage" data-uid="PuppeteerSharp.ScreenshotOptions.FullPage">FullPage</h4>
@@ -201,10 +201,10 @@ await page.SetBurstModeOffAsync();</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20OmitBackground&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L36">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20OmitBackground&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L38">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L36">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L38">View Source</a>
   </span>
   <a id="PuppeteerSharp_ScreenshotOptions_OmitBackground_" data-uid="PuppeteerSharp.ScreenshotOptions.OmitBackground*"></a>
   <h4 id="PuppeteerSharp_ScreenshotOptions_OmitBackground" data-uid="PuppeteerSharp.ScreenshotOptions.OmitBackground">OmitBackground</h4>
@@ -233,10 +233,10 @@ await page.SetBurstModeOffAsync();</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Quality&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L46">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Quality&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L50">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L46">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L50">View Source</a>
   </span>
   <a id="PuppeteerSharp_ScreenshotOptions_Quality_" data-uid="PuppeteerSharp.ScreenshotOptions.Quality*"></a>
   <h4 id="PuppeteerSharp_ScreenshotOptions_Quality" data-uid="PuppeteerSharp.ScreenshotOptions.Quality">Quality</h4>
@@ -265,10 +265,10 @@ await page.SetBurstModeOffAsync();</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L41">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/%23L44">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L41">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ScreenshotOptions.cs/#L44">View Source</a>
   </span>
   <a id="PuppeteerSharp_ScreenshotOptions_Type_" data-uid="PuppeteerSharp.ScreenshotOptions.Type*"></a>
   <h4 id="PuppeteerSharp_ScreenshotOptions_Type" data-uid="PuppeteerSharp.ScreenshotOptions.Type">Type</h4>

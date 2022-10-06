@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ExecutionContext
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,7 +74,7 @@
   <h1 id="PuppeteerSharp_ExecutionContext" data-uid="PuppeteerSharp.ExecutionContext" class="text-break">Class ExecutionContext
   </h1>
   <div class="markdown level0 summary"><p>The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-Each <a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.ExecutionContext.html">ExecutionContext</a>
+Each <a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_Frame">Frame</a> has a separate <a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a>
 All kind of web workers have their own contexts</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -83,20 +83,24 @@ All kind of web workers have their own contexts</p>
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">ExecutionContext</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ExecutionContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ExecutionContext</code></pre>
+    <pre><code class="lang-csharp hljs">public class ExecutionContext : object, IExecutionContext</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Frame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L45">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Frame&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L41">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L45">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L41">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_Frame_" data-uid="PuppeteerSharp.ExecutionContext.Frame*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_Frame" data-uid="PuppeteerSharp.ExecutionContext.Frame">Frame</h4>
@@ -105,7 +109,7 @@ All kind of web workers have their own contexts</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Frame Frame { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IFrame Frame { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -117,7 +121,7 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Frame.html">Frame</a></td>
+        <td><a class="xref" href="PuppeteerSharp.IFrame.html">IFrame</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -129,10 +133,10 @@ All kind of web workers have their own contexts</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L57">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L44">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L57">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L44">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_System_String_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync(System.String)">EvaluateExpressionAsync(String)</h4>
@@ -171,7 +175,7 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">JToken</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">JToken</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -182,15 +186,14 @@ All kind of web workers have their own contexts</p>
 </div>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_System_String__seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</a></div>
-      <div><span class="xref">PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync(System.String)</span></div>
+      <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;</a>(<span class="xref">System.String</span>, <span class="xref">System.Object</span>[])</div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L70">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionAsync&lt;T&gt;(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L47">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L70">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L47">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionAsync``1(System.String)">EvaluateExpressionAsync&lt;T&gt;(String)</h4>
@@ -229,7 +232,7 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -256,15 +259,68 @@ All kind of web workers have their own contexts</p>
 </div>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String__seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</a></div>
-      <div><span class="xref">PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync(System.String)</span></div>
+      <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___">EvaluateFunctionAsync&lt;T&gt;</a>(<span class="xref">System.String</span>, <span class="xref">System.Object</span>[])</div>
+      <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_EvaluateExpressionHandleAsync_System_String_">EvaluateExpressionHandleAsync</a>(<span class="xref">System.String</span>)</div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L87">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateExpressionHandleAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L51">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L87">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L51">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ExecutionContext_EvaluateExpressionHandleAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionHandleAsync_System_String_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateExpressionHandleAsync(System.String)">EvaluateExpressionHandleAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public async Task&lt;IJSHandle&gt; EvaluateExpressionHandleAsync(string script)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td><p>Script to be evaluated in browser context</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ExecutionContext_EvaluateExpressionHandleAsync_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L59">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L59">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object___" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync(System.String,System.Object[])">EvaluateFunctionAsync(String, Object[])</h4>
@@ -309,7 +365,7 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">JToken</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">JToken</span>&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -317,18 +373,18 @@ All kind of web workers have their own contexts</p>
   </table>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object____remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
 </div>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_System_String_System_Object____seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;(String)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;</a>(<span class="xref">System.String</span>)</div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L101">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionAsync&lt;T&gt;(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L62">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L101">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L62">View Source</a>
   </span>
   <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync*"></a>
   <h4 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object___" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionAsync``1(System.String,System.Object[])">EvaluateFunctionAsync&lt;T&gt;(String, Object[])</h4>
@@ -373,7 +429,7 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>Task which resolves to script return value</p>
 </td>
       </tr>
@@ -397,27 +453,27 @@ All kind of web workers have their own contexts</p>
   </table>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object____remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a> instances can be passed as arguments</p>
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
 </div>
   <h5 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionAsync__1_System_String_System_Object____seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="PuppeteerSharp.ExecutionContext.html#PuppeteerSharp_ExecutionContext_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;(String)</a></div>
+      <div><a class="xref" href="PuppeteerSharp.IExecutionContext.html#PuppeteerSharp_IExecutionContext_EvaluateExpressionAsync__1_System_String_">EvaluateExpressionAsync&lt;T&gt;</a>(<span class="xref">System.String</span>)</div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QueryObjectsAsync(JSHandle)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L112">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20EvaluateFunctionHandleAsync(String, Object[])&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L55">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L112">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L55">View Source</a>
   </span>
-  <a id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync*"></a>
-  <h4 id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_PuppeteerSharp_JSHandle_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync(PuppeteerSharp.JSHandle)">QueryObjectsAsync(JSHandle)</h4>
-  <div class="markdown level1 summary"><p>The method iterates JavaScript heap and finds all the objects with the given prototype.</p>
+  <a id="PuppeteerSharp_ExecutionContext_EvaluateFunctionHandleAsync_" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionHandleAsync*"></a>
+  <h4 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionHandleAsync_System_String_System_Object___" data-uid="PuppeteerSharp.ExecutionContext.EvaluateFunctionHandleAsync(System.String,System.Object[])">EvaluateFunctionHandleAsync(String, Object[])</h4>
+  <div class="markdown level1 summary"><p>Executes a script in browser context</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;JSHandle&gt; QueryObjectsAsync(JSHandle prototypeHandle)</code></pre>
+    <pre><code class="lang-csharp hljs">public async Task&lt;IJSHandle&gt; EvaluateFunctionHandleAsync(string script, params object[] args)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -430,7 +486,66 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a></td>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">script</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Object</span>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td><p>Function arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;</td>
+        <td><p>Task which resolves to script return value</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="PuppeteerSharp_ExecutionContext_EvaluateFunctionHandleAsync_System_String_System_Object____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
+<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a> instances can be passed as arguments</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20QueryObjectsAsync(IJSHandle)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L66">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L66">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync*"></a>
+  <h4 id="PuppeteerSharp_ExecutionContext_QueryObjectsAsync_PuppeteerSharp_IJSHandle_" data-uid="PuppeteerSharp.ExecutionContext.QueryObjectsAsync(PuppeteerSharp.IJSHandle)">QueryObjectsAsync(IJSHandle)</h4>
+  <div class="markdown level1 summary"><p>The method iterates JavaScript heap and finds all the objects with the given prototype.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public async Task&lt;IJSHandle&gt; QueryObjectsAsync(IJSHandle prototypeHandle)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a></td>
         <td><span class="parametername">prototypeHandle</span></td>
         <td><p>A handle to the object prototype.</p>
 </td>
@@ -447,12 +562,16 @@ All kind of web workers have their own contexts</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.JSHandle.html">JSHandle</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IJSHandle.html">IJSHandle</a>&gt;</td>
         <td><p>A task which resolves to a handle to an array of objects with this prototype.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.IExecutionContext.html">IExecutionContext</a>
+  </div>
 </article>
           </div>
           
@@ -461,10 +580,10 @@ All kind of web workers have their own contexts</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ExecutionContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L18" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ExecutionContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/%23L14" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ExecutionContext.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

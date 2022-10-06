@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Target
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,20 +81,24 @@
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">Target</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Target_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Target</code></pre>
+    <pre><code class="lang-csharp hljs">public class Target : object, ITarget</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L100">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L94">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L100">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L94">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_Browser_" data-uid="PuppeteerSharp.Target.Browser*"></a>
   <h4 id="PuppeteerSharp_Target_Browser" data-uid="PuppeteerSharp.Target.Browser">Browser</h4>
@@ -103,7 +107,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Browser Browser { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IBrowser Browser { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -115,17 +119,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Browser.html">Browser</a></td>
+        <td><a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L105">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L99">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L105">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L99">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_BrowserContext_" data-uid="PuppeteerSharp.Target.BrowserContext*"></a>
   <h4 id="PuppeteerSharp_Target_BrowserContext" data-uid="PuppeteerSharp.Target.BrowserContext">BrowserContext</h4>
@@ -134,7 +138,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BrowserContext BrowserContext { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IBrowserContext BrowserContext { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -146,17 +150,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></td>
+        <td><a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Opener&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L94">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Opener&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L88">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L94">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L88">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_Opener_" data-uid="PuppeteerSharp.Target.Opener*"></a>
   <h4 id="PuppeteerSharp_Target_Opener" data-uid="PuppeteerSharp.Target.Opener">Opener</h4>
@@ -165,7 +169,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Target Opener { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public ITarget Opener { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -177,7 +181,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Target.html">Target</a></td>
+        <td><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -187,10 +191,10 @@
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetId&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L86">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetId&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L80">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L86">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L80">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_TargetId_" data-uid="PuppeteerSharp.Target.TargetId*"></a>
   <h4 id="PuppeteerSharp_Target_TargetId" data-uid="PuppeteerSharp.Target.TargetId">TargetId</h4>
@@ -219,10 +223,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L80">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Type&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L74">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L80">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L74">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_Type_" data-uid="PuppeteerSharp.Target.Type*"></a>
   <h4 id="PuppeteerSharp_Target_Type" data-uid="PuppeteerSharp.Target.Type">Type</h4>
@@ -252,10 +256,10 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L74">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Url&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L67">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L74">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L67">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_Url_" data-uid="PuppeteerSharp.Target.Url*"></a>
   <h4 id="PuppeteerSharp_Target_Url" data-uid="PuppeteerSharp.Target.Url">Url</h4>
@@ -298,7 +302,7 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;CDPSession&gt; CreateCDPSessionAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">public async Task&lt;ICDPSession&gt; CreateCDPSessionAsync()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -310,27 +314,27 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a>&gt;</td>
-        <td><p>A task that returns a <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a></p>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a>&gt;</td>
+        <td><p>A task that returns a <a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a></p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PageAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L120">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PageAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L117">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L120">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L117">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_PageAsync_" data-uid="PuppeteerSharp.Target.PageAsync*"></a>
   <h4 id="PuppeteerSharp_Target_PageAsync" data-uid="PuppeteerSharp.Target.PageAsync">PageAsync()</h4>
-  <div class="markdown level1 summary"><p>Returns the <a class="xref" href="PuppeteerSharp.Page.html">Page</a> associated with the target. If the target is not <code>&quot;page&quot;</code> or <code>&quot;background_page&quot;</code> returns <code>null</code></p>
+  <div class="markdown level1 summary"><p>Returns the <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> associated with the target. If the target is not <code>&quot;page&quot;</code> or <code>&quot;background_page&quot;</code> returns <code>null</code></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;Page&gt; PageAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;IPage&gt; PageAsync()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -342,18 +346,18 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>&gt;</td>
-        <td><p>a task that returns a <a class="xref" href="PuppeteerSharp.Page.html">Page</a></p>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>&gt;</td>
+        <td><p>a task that returns a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a></p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WorkerAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L134">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WorkerAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L131">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L134">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L131">View Source</a>
   </span>
   <a id="PuppeteerSharp_Target_WorkerAsync_" data-uid="PuppeteerSharp.Target.WorkerAsync*"></a>
   <h4 id="PuppeteerSharp_Target_WorkerAsync" data-uid="PuppeteerSharp.Target.WorkerAsync">WorkerAsync()</h4>
@@ -374,12 +378,16 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Worker.html">Worker</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.Worker.html">Worker</a>&gt;</td>
         <td><p>A task that returns a <a class="xref" href="PuppeteerSharp.Worker.html">Worker</a></p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>
+  </div>
 </article>
           </div>
           
@@ -388,10 +396,10 @@ Can be <code>&amp;quot;page&amp;quot;</code>, <code>&amp;quot;background_page&am
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Target&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L13" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Target&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/%23L11" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Target.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

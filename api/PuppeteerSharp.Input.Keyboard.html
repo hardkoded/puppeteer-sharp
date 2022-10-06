@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Keyboard
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,8 +73,8 @@
   
   <h1 id="PuppeteerSharp_Input_Keyboard" data-uid="PuppeteerSharp.Input.Keyboard" class="text-break">Class Keyboard
   </h1>
-  <div class="markdown level0 summary"><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
-<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
+  <div class="markdown level0 summary"><p>Keyboard provides an api for managing a virtual keyboard. The high level api is <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_">TypeAsync(String, TypeOptions)</a>, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.</p>
+<p>For finer control, you can use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a>, <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>, and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_SendCharacterAsync_System_String_">SendCharacterAsync(String)</a> to manually fire events as if they were generated from a real keyboard.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -82,20 +82,24 @@
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">Keyboard</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.Input.IKeyboard.html">IKeyboard</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.Input.html">PuppeteerSharp.Input</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Input_Keyboard_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Keyboard</code></pre>
+    <pre><code class="lang-csharp hljs">public class Keyboard : object, IKeyboard</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DownAsync(String, DownOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L36">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DownAsync(String, DownOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L22">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L36">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L22">View Source</a>
   </span>
   <a id="PuppeteerSharp_Input_Keyboard_DownAsync_" data-uid="PuppeteerSharp.Input.Keyboard.DownAsync*"></a>
   <h4 id="PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_" data-uid="PuppeteerSharp.Input.Keyboard.DownAsync(System.String,PuppeteerSharp.Input.DownOptions)">DownAsync(String, DownOptions)</h4>
@@ -140,7 +144,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
@@ -148,19 +152,19 @@
   </table>
   <h5 id="PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If <code>key</code> is a single character and no modifier keys besides <code>Shift</code> are being held down, a <code>keypress</code>/<code>input</code> event will also generated. The <code>text</code> option can be specified to force an input event to be generated.
-If <code>key</code> is a modifier key, <code>Shift</code>, <code>Meta</code>, <code>Control</code>, or <code>Alt</code>, subsequent key presses will be sent with that modifier active. To release the modifier key, use <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a>
-After the key is pressed once, subsequent calls to <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> will have <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</a> set to <code>true</code>. To release the key, use <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a></p>
+If <code>key</code> is a modifier key, <code>Shift</code>, <code>Meta</code>, <code>Control</code>, or <code>Alt</code>, subsequent key presses will be sent with that modifier active. To release the modifier key, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a>
+After the key is pressed once, subsequent calls to <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> will have <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat">repeat</a> set to <code>true</code>. To release the key, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a></p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PressAsync(String, PressOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L141">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PressAsync(String, PressOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L102">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L141">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L102">View Source</a>
   </span>
   <a id="PuppeteerSharp_Input_Keyboard_PressAsync_" data-uid="PuppeteerSharp.Input.Keyboard.PressAsync*"></a>
   <h4 id="PuppeteerSharp_Input_Keyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_" data-uid="PuppeteerSharp.Input.Keyboard.PressAsync(System.String,PuppeteerSharp.Input.PressOptions)">PressAsync(String, PressOptions)</h4>
-  <div class="markdown level1 summary"><p>Shortcut for <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_UpAsync_System_String_">UpAsync(String)</a></p>
+  <div class="markdown level1 summary"><p>Shortcut for <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_DownAsync_System_String_PuppeteerSharp_Input_DownOptions_">DownAsync(String, DownOptions)</a> and <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_UpAsync_System_String_">UpAsync(String)</a></p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -201,7 +205,7 @@ After the key is pressed once, subsequent calls to <a class="xref" href="Puppete
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
@@ -209,14 +213,14 @@ After the key is pressed once, subsequent calls to <a class="xref" href="Puppete
   </table>
   <h5 id="PuppeteerSharp_Input_Keyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If <code data-dev-comment-type="paramref" class="paramref">key</code> is a single character and no modifier keys besides <code>Shift</code> are being held down, a <code>keypress</code>/<code>input</code> event will also generated. The <a class="xref" href="PuppeteerSharp.Input.DownOptions.html#PuppeteerSharp_Input_DownOptions_Text">Text</a> option can be specified to force an input event to be generated.
-Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#PuppeteerSharp_ElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a>. Holding down <code>Shift</code> will type the text in upper case.</p>
+Modifier keys DO effect <a class="xref" href="PuppeteerSharp.IElementHandle.html#PuppeteerSharp_IElementHandle_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a>. Holding down <code>Shift</code> will type the text in upper case.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendCharacterAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L89">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendCharacterAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L67">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L89">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L67">View Source</a>
   </span>
   <a id="PuppeteerSharp_Input_Keyboard_SendCharacterAsync_" data-uid="PuppeteerSharp.Input.Keyboard.SendCharacterAsync*"></a>
   <h4 id="PuppeteerSharp_Input_Keyboard_SendCharacterAsync_System_String_" data-uid="PuppeteerSharp.Input.Keyboard.SendCharacterAsync(System.String)">SendCharacterAsync(String)</h4>
@@ -255,7 +259,7 @@ Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
@@ -263,10 +267,10 @@ Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TypeAsync(String, TypeOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L104">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TypeAsync(String, TypeOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L74">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L104">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L74">View Source</a>
   </span>
   <a id="PuppeteerSharp_Input_Keyboard_TypeAsync_" data-uid="PuppeteerSharp.Input.Keyboard.TypeAsync*"></a>
   <h4 id="PuppeteerSharp_Input_Keyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions_" data-uid="PuppeteerSharp.Input.Keyboard.TypeAsync(System.String,PuppeteerSharp.Input.TypeOptions)">TypeAsync(String, TypeOptions)</h4>
@@ -311,21 +315,21 @@ Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 id="PuppeteerSharp_Input_Keyboard_TypeAsync_System_String_PuppeteerSharp_Input_TypeOptions__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>To press a special key, like <code>Control</code> or <code>ArrowDown</code>, use <a class="xref" href="PuppeteerSharp.Input.Keyboard.html#PuppeteerSharp_Input_Keyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a></p>
+  <div class="markdown level1 remarks"><p>To press a special key, like <code>Control</code> or <code>ArrowDown</code>, use <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html#PuppeteerSharp_Input_IKeyboard_PressAsync_System_String_PuppeteerSharp_Input_PressOptions_">PressAsync(String, PressOptions)</a></p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20UpAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L66">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20UpAsync(String)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L48">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L66">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L48">View Source</a>
   </span>
   <a id="PuppeteerSharp_Input_Keyboard_UpAsync_" data-uid="PuppeteerSharp.Input.Keyboard.UpAsync*"></a>
   <h4 id="PuppeteerSharp_Input_Keyboard_UpAsync_System_String_" data-uid="PuppeteerSharp.Input.Keyboard.UpAsync(System.String)">UpAsync(String)</h4>
@@ -364,12 +368,16 @@ Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.Input.IKeyboard.html">IKeyboard</a>
+  </div>
 </article>
           </div>
           
@@ -378,10 +386,10 @@ Modifier keys DO effect <a class="xref" href="PuppeteerSharp.ElementHandle.html#
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Keyboard&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L13" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Keyboard&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/%23L9" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Input/Keyboard.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

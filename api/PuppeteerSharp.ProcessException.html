@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ProcessException
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -79,22 +79,15 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><span class="xref">System.Object</span></div>
-    <div class="level1"><span class="xref">System.Exception</span></div>
-    <div class="level2"><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></div>
-    <div class="level3"><a class="xref" href="PuppeteerSharp.ChromiumProcessException.html">ChromiumProcessException</a></div>
-    <div class="level4"><span class="xref">ProcessException</span></div>
-  </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><span class="xref">System.Runtime.InteropServices._Exception</span></div>
-    <div><span class="xref">System.Runtime.Serialization.ISerializable</span></div>
+    <div class="level1"><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></div>
+    <div class="level2"><a class="xref" href="PuppeteerSharp.ChromiumProcessException.html">ChromiumProcessException</a></div>
+    <div class="level3"><span class="xref">ProcessException</span></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_ProcessException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Serializable]
-public class ProcessException : ChromiumProcessException, _Exception, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public class ProcessException : ChromiumProcessException</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -122,7 +115,7 @@ public class ProcessException : ChromiumProcessException, _Exception, ISerializa
     <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L43">View Source</a>
   </span>
   <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
-  <h4 id="PuppeteerSharp_ProcessException__ctor_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ProcessException(SerializationInfo, StreamingContext)</h4>
+  <h4 id="PuppeteerSharp_ProcessException__ctor_SerializationInfo_StreamingContext_" data-uid="PuppeteerSharp.ProcessException.#ctor(SerializationInfo,StreamingContext)">ProcessException(SerializationInfo, StreamingContext)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.ProcessException.html">ProcessException</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -141,13 +134,13 @@ public class ProcessException : ChromiumProcessException, _Exception, ISerializa
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Runtime.Serialization.SerializationInfo</span></td>
+        <td><span class="xref">SerializationInfo</span></td>
         <td><span class="parametername">info</span></td>
         <td><p>The serialization collection for custom serializations.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Runtime.Serialization.StreamingContext</span></td>
+        <td><span class="xref">StreamingContext</span></td>
         <td><span class="parametername">context</span></td>
         <td><p>Provides additional caller-provided context.</p>
 </td>
@@ -196,7 +189,7 @@ public class ProcessException : ChromiumProcessException, _Exception, ISerializa
     <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/ProcessException.cs/#L34">View Source</a>
   </span>
   <a id="PuppeteerSharp_ProcessException__ctor_" data-uid="PuppeteerSharp.ProcessException.#ctor*"></a>
-  <h4 id="PuppeteerSharp_ProcessException__ctor_System_String_System_Exception_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.String,System.Exception)">ProcessException(String, Exception)</h4>
+  <h4 id="PuppeteerSharp_ProcessException__ctor_System_String_Exception_" data-uid="PuppeteerSharp.ProcessException.#ctor(System.String,Exception)">ProcessException(String, Exception)</h4>
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="PuppeteerSharp.ProcessException.html">ProcessException</a> class.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -221,20 +214,13 @@ public class ProcessException : ChromiumProcessException, _Exception, ISerializa
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Exception</span></td>
+        <td><span class="xref">Exception</span></td>
         <td><span class="parametername">innerException</span></td>
         <td><p>Inner exception.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <span class="xref">System.Runtime.InteropServices._Exception</span>
-  </div>
-  <div>
-      <span class="xref">System.Runtime.Serialization.ISerializable</span>
-  </div>
 </article>
           </div>
           

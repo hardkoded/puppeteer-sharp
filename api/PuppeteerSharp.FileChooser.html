@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FileChooser
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="PuppeteerSharp_FileChooser" data-uid="PuppeteerSharp.FileChooser" class="text-break">Class FileChooser
   </h1>
-  <div class="markdown level0 summary"><p><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a> objects are returned via the <a class="xref" href="PuppeteerSharp.Page.html#PuppeteerSharp_Page_WaitForFileChooserAsync_PuppeteerSharp_WaitForFileChooserOptions_">WaitForFileChooserAsync(WaitForFileChooserOptions)</a> method.
+  <div class="markdown level0 summary"><p><a class="xref" href="PuppeteerSharp.FileChooser.html">FileChooser</a> objects are returned via the <a class="xref" href="PuppeteerSharp.IPage.html#PuppeteerSharp_IPage_WaitForFileChooserAsync_PuppeteerSharp_WaitForFileChooserOptions_">WaitForFileChooserAsync(WaitForFileChooserOptions)</a> method.
 File choosers let you react to the page requesting for a file.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -86,7 +86,7 @@ File choosers let you react to the page requesting for a file.</p>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_FileChooser_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FileChooser</code></pre>
+    <pre><code class="lang-csharp hljs">public class FileChooser : object</code></pre>
   </div>
   <h5 id="PuppeteerSharp_FileChooser_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>In browsers, only one file chooser can be opened at a time.
@@ -180,7 +180,7 @@ If some of the filePaths are relative paths, then they are resolved relative to 
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>A task that resolves after the accept message is processed by the browser</p>
 </td>
       </tr>

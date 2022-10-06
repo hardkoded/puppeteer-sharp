@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CDPSession
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -75,8 +75,8 @@
   </h1>
   <div class="markdown level0 summary"><p>The CDPSession instances are used to talk raw Chrome Devtools Protocol:</p>
 <ul>
-<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
-<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.CDPSession.html#PuppeteerSharp_CDPSession_MessageReceived">MessageReceived</a> event.</li>
+<li>Protocol methods can be called with <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_SendAsync_System_String_System_Object_System_Boolean_">SendAsync(String, Object, Boolean)</a> method.</li>
+<li>Protocol events, using the <a class="xref" href="PuppeteerSharp.ICDPSession.html#PuppeteerSharp_ICDPSession_MessageReceived">MessageReceived</a> event.</li>
 </ul>
 <p>Documentation on DevTools Protocol can be found here: <a href="https://chromedevtools.github.io/devtools-protocol/">https://chromedevtools.github.io/devtools-protocol/</a>.</p>
 <pre><code>var client = await Page.Target.CreateCDPSessionAsync();
@@ -101,20 +101,24 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">CDPSession</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_CDPSession_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CDPSession</code></pre>
+    <pre><code class="lang-csharp hljs">public class CDPSession : object, ICDPSession</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseReason&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L93">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseReason&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L47">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L93">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L47">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_CloseReason_" data-uid="PuppeteerSharp.CDPSession.CloseReason*"></a>
   <h4 id="PuppeteerSharp_CDPSession_CloseReason" data-uid="PuppeteerSharp.CDPSession.CloseReason">CloseReason</h4>
@@ -142,14 +146,46 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L88">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Id&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L38">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L88">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L38">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_CDPSession_Id_" data-uid="PuppeteerSharp.CDPSession.Id*"></a>
+  <h4 id="PuppeteerSharp_CDPSession_Id" data-uid="PuppeteerSharp.CDPSession.Id">Id</h4>
+  <div class="markdown level1 summary"><p>Gets the session identifier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Id { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><p>The session identifier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsClosed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L44">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L44">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_IsClosed_" data-uid="PuppeteerSharp.CDPSession.IsClosed*"></a>
   <h4 id="PuppeteerSharp_CDPSession_IsClosed" data-uid="PuppeteerSharp.CDPSession.IsClosed">IsClosed</h4>
-  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="PuppeteerSharp.CDPSession.html">CDPSession</a> is closed.</p>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a> is closed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -174,10 +210,10 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LoggerFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L99">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20LoggerFactory&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L50">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L99">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L50">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_LoggerFactory_" data-uid="PuppeteerSharp.CDPSession.LoggerFactory*"></a>
   <h4 id="PuppeteerSharp_CDPSession_LoggerFactory" data-uid="PuppeteerSharp.CDPSession.LoggerFactory">LoggerFactory</h4>
@@ -206,42 +242,10 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SessionId&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L64">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetType&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L35">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L64">View Source</a>
-  </span>
-  <a id="PuppeteerSharp_CDPSession_SessionId_" data-uid="PuppeteerSharp.CDPSession.SessionId*"></a>
-  <h4 id="PuppeteerSharp_CDPSession_SessionId" data-uid="PuppeteerSharp.CDPSession.SessionId">SessionId</h4>
-  <div class="markdown level1 summary"><p>Gets the session identifier.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string SessionId { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">System.String</span></td>
-        <td><p>The session identifier.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetType&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L58">Request doc improvement</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L58">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L35">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_TargetType_" data-uid="PuppeteerSharp.CDPSession.TargetType*"></a>
   <h4 id="PuppeteerSharp_CDPSession_TargetType" data-uid="PuppeteerSharp.CDPSession.TargetType">TargetType</h4>
@@ -272,10 +276,10 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DetachAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L173">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20DetachAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L101">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L173">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L101">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_DetachAsync_" data-uid="PuppeteerSharp.CDPSession.DetachAsync*"></a>
   <h4 id="PuppeteerSharp_CDPSession_DetachAsync" data-uid="PuppeteerSharp.CDPSession.DetachAsync">DetachAsync()</h4>
@@ -296,8 +300,9 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
-        <td></td>
+        <td><span class="xref">Task</span></td>
+        <td><p>A Task that when awaited detaches from the session target</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -312,17 +317,17 @@ await client.SendAsync(&quot;Animation.setPlaybackRate&quot;, new
     <tbody>
       <tr>
         <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
-        <td><p>If the <span class="xref">PuppeteerSharp.CDPSession.Connection</span> is closed.</p>
+        <td><p>If the <a class="xref" href="PuppeteerSharp.Connection.html">Connection</a> is closed.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String, Object, Boolean)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L131">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync(String, Object, Boolean)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L63">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L131">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L63">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_SendAsync_" data-uid="PuppeteerSharp.CDPSession.SendAsync*"></a>
   <h4 id="PuppeteerSharp_CDPSession_SendAsync_System_String_System_Object_System_Boolean_" data-uid="PuppeteerSharp.CDPSession.SendAsync(System.String,System.Object,System.Boolean)">SendAsync(String, Object, Boolean)</h4>
@@ -374,7 +379,7 @@ If <code>false</code> the task will be considered complete after sending the mes
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">JObject</span>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">JObject</span>&gt;</td>
         <td><p>The task.</p>
 </td>
       </tr>
@@ -391,17 +396,17 @@ If <code>false</code> the task will be considered complete after sending the mes
     <tbody>
       <tr>
         <td><a class="xref" href="PuppeteerSharp.PuppeteerException.html">PuppeteerException</a></td>
-        <td><p>If the <span class="xref">PuppeteerSharp.CDPSession.Connection</span> is closed.</p>
+        <td><p>If the <a class="xref" href="PuppeteerSharp.Connection.html">Connection</a> is closed.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync&lt;T&gt;(String, Object)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L114">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20SendAsync&lt;T&gt;(String, Object)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L56">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L114">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L56">View Source</a>
   </span>
   <a id="PuppeteerSharp_CDPSession_SendAsync_" data-uid="PuppeteerSharp.CDPSession.SendAsync*"></a>
   <h4 id="PuppeteerSharp_CDPSession_SendAsync__1_System_String_System_Object_" data-uid="PuppeteerSharp.CDPSession.SendAsync``1(System.String,System.Object)">SendAsync&lt;T&gt;(String, Object)</h4>
@@ -446,7 +451,7 @@ If <code>false</code> the task will be considered complete after sending the mes
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task.</p>
 </td>
       </tr>
@@ -472,10 +477,10 @@ If <code>false</code> the task will be considered complete after sending the mes
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnected&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L80">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Disconnected&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L30">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L80">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L30">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_CDPSession_Disconnected" data-uid="PuppeteerSharp.CDPSession.Disconnected">Disconnected</h4>
   <div class="markdown level1 summary"><p>Occurs when the connection is closed.</p>
@@ -495,17 +500,17 @@ If <code>false</code> the task will be considered complete after sending the mes
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.EventHandler</span></td>
+        <td><span class="xref">EventHandler</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L75">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20MessageReceived&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L27">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L75">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L27">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_CDPSession_MessageReceived" data-uid="PuppeteerSharp.CDPSession.MessageReceived">MessageReceived</h4>
   <div class="markdown level1 summary"><p>Occurs when message received from Chromium.</p>
@@ -525,11 +530,15 @@ If <code>false</code> the task will be considered complete after sending the mes
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.MessageEventArgs.html">MessageEventArgs</a>&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.MessageEventArgs.html">MessageEventArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.ICDPSession.html">ICDPSession</a>
+  </div>
 </article>
           </div>
           
@@ -538,10 +547,10 @@ If <code>false</code> the task will be considered complete after sending the mes
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CDPSession&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L38" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CDPSession&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/%23L13" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L38" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/CDPSession.cs/#L13" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

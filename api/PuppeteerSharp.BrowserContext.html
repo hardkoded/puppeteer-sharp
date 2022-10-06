@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BrowserContext
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,7 +74,7 @@
   <h1 id="PuppeteerSharp_BrowserContext" data-uid="PuppeteerSharp.BrowserContext" class="text-break">Class BrowserContext
   </h1>
   <div class="markdown level0 summary"><p>BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-a single <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.Browser.html#PuppeteerSharp_Browser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.Page.html">Page</a> in the default <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContext</a></p>
+a single <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a> used by default. The method <a class="xref" href="PuppeteerSharp.IBrowser.html#PuppeteerSharp_IBrowser_NewPageAsync">NewPageAsync()</a> creates a <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> in the default <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -82,25 +82,28 @@ a single <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContex
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">BrowserContext</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a></div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="PuppeteerSharp.html">PuppeteerSharp</a></h6>
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_BrowserContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class BrowserContext</code></pre>
+    <pre><code class="lang-csharp hljs">public class BrowserContext : object, IBrowserContext</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L52">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Browser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L35">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L52">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L35">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_Browser_" data-uid="PuppeteerSharp.BrowserContext.Browser*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_Browser" data-uid="PuppeteerSharp.BrowserContext.Browser">Browser</h4>
-  <div class="markdown level1 summary"><p>Gets the browser this browser context belongs to</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -123,10 +126,10 @@ a single <a class="xref" href="PuppeteerSharp.BrowserContext.html">BrowserContex
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsIncognito&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L47">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IsIncognito&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L32">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L47">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L32">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_IsIncognito_" data-uid="PuppeteerSharp.BrowserContext.IsIncognito*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_IsIncognito" data-uid="PuppeteerSharp.BrowserContext.IsIncognito">IsIncognito</h4>
@@ -160,10 +163,10 @@ The default browser context is the only non-incognito browser context</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ClearPermissionOverridesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L135">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20ClearPermissionOverridesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L77">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L135">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L77">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_ClearPermissionOverridesAsync_" data-uid="PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_ClearPermissionOverridesAsync" data-uid="PuppeteerSharp.BrowserContext.ClearPermissionOverridesAsync">ClearPermissionOverridesAsync()</h4>
@@ -184,7 +187,7 @@ The default browser context is the only non-incognito browser context</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task.</p>
 </td>
       </tr>
@@ -192,10 +195,10 @@ The default browser context is the only non-incognito browser context</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L98">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20CloseAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L57">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L98">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L57">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_CloseAsync_" data-uid="PuppeteerSharp.BrowserContext.CloseAsync*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_CloseAsync" data-uid="PuppeteerSharp.BrowserContext.CloseAsync">CloseAsync()</h4>
@@ -216,7 +219,7 @@ The default browser context is the only non-incognito browser context</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>Task</p>
 </td>
       </tr>
@@ -224,10 +227,10 @@ The default browser context is the only non-incognito browser context</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20NewPageAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L92">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20NewPageAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L54">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L92">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L54">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_NewPageAsync_" data-uid="PuppeteerSharp.BrowserContext.NewPageAsync*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_NewPageAsync" data-uid="PuppeteerSharp.BrowserContext.NewPageAsync">NewPageAsync()</h4>
@@ -236,7 +239,7 @@ The default browser context is the only non-incognito browser context</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;Page&gt; NewPageAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;IPage&gt; NewPageAsync()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -248,21 +251,21 @@ The default browser context is the only non-incognito browser context</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>&gt;</td>
-        <td><p>Task which resolves to a new <a class="xref" href="PuppeteerSharp.Page.html">Page</a> object</p>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>&gt;</td>
+        <td><p>Task which resolves to a new <a class="xref" href="PuppeteerSharp.IPage.html">IPage</a> object</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20OverridePermissionsAsync(String, IEnumerable&lt;OverridePermission&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L123">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20OverridePermissionsAsync(String, IEnumerable&lt;OverridePermission&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L68">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L123">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L68">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_" data-uid="PuppeteerSharp.BrowserContext.OverridePermissionsAsync*"></a>
-  <h4 id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission__" data-uid="PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String,System.Collections.Generic.IEnumerable{PuppeteerSharp.OverridePermission})">OverridePermissionsAsync(String, IEnumerable&lt;OverridePermission&gt;)</h4>
+  <h4 id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_IEnumerable_PuppeteerSharp_OverridePermission__" data-uid="PuppeteerSharp.BrowserContext.OverridePermissionsAsync(System.String,IEnumerable{PuppeteerSharp.OverridePermission})">OverridePermissionsAsync(String, IEnumerable&lt;OverridePermission&gt;)</h4>
   <div class="markdown level1 summary"><p>Overrides the browser context permissions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -287,7 +290,7 @@ The default browser context is the only non-incognito browser context</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="PuppeteerSharp.OverridePermission.html">OverridePermission</a>&gt;</td>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="PuppeteerSharp.OverridePermission.html">OverridePermission</a>&gt;</td>
         <td><span class="parametername">permissions</span></td>
         <td><p>An array of permissions to grant. All permissions that are not listed here will be automatically denied.</p>
 </td>
@@ -304,26 +307,22 @@ The default browser context is the only non-incognito browser context</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission___examples">Examples</h5>
-  <p>var context = browser.DefaultBrowserContext;
-await context.OverridePermissionsAsync(&quot;https://html5demos.com&quot;, new List&lt;string&gt; {&quot;geolocation&quot;});</p>
-
-  <h5 id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_System_Collections_Generic_IEnumerable_PuppeteerSharp_OverridePermission___seealso">See Also</h5>
+  <h5 id="PuppeteerSharp_BrowserContext_OverridePermissionsAsync_System_String_IEnumerable_PuppeteerSharp_OverridePermission___seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="https://developer.mozilla.org/en-US/docs/Glossary/Origin">https://developer.mozilla.org/en-US/docs/Glossary/Origin</a></span></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PagesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L83">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20PagesAsync()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L48">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L83">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L48">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_PagesAsync_" data-uid="PuppeteerSharp.BrowserContext.PagesAsync*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_PagesAsync" data-uid="PuppeteerSharp.BrowserContext.PagesAsync">PagesAsync()</h4>
@@ -332,7 +331,7 @@ await context.OverridePermissionsAsync(&quot;https://html5demos.com&quot;, new L
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;Page[]&gt; PagesAsync()</code></pre>
+    <pre><code class="lang-csharp hljs">public async Task&lt;IPage[]&gt; PagesAsync()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -344,20 +343,20 @@ await context.OverridePermissionsAsync(&quot;https://html5demos.com&quot;, new L
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Page.html">Page</a>[]&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.IPage.html">IPage</a>[]&gt;</td>
         <td><p>Task which resolves to an array of all open pages.
 Non visible pages, such as <code>&quot;background_page&quot;</code>, will not be listed here.
-You can find them using <a class="xref" href="PuppeteerSharp.Target.html#PuppeteerSharp_Target_PageAsync">PageAsync()</a>.</p>
+You can find them using <a class="xref" href="PuppeteerSharp.ITarget.html#PuppeteerSharp_ITarget_PageAsync">PageAsync()</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Targets()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L58">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20Targets()&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L41">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L58">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L41">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_Targets_" data-uid="PuppeteerSharp.BrowserContext.Targets*"></a>
   <h4 id="PuppeteerSharp_BrowserContext_Targets" data-uid="PuppeteerSharp.BrowserContext.Targets">Targets()</h4>
@@ -366,7 +365,7 @@ You can find them using <a class="xref" href="PuppeteerSharp.Target.html#Puppete
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Target[] Targets()</code></pre>
+    <pre><code class="lang-csharp hljs">public ITarget[] Targets()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -378,7 +377,7 @@ You can find them using <a class="xref" href="PuppeteerSharp.Target.html#Puppete
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="PuppeteerSharp.Target.html">Target</a>[]</td>
+        <td><a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>[]</td>
         <td><p>An array of all active targets inside the browser context</p>
 </td>
       </tr>
@@ -386,13 +385,13 @@ You can find them using <a class="xref" href="PuppeteerSharp.Target.html#Puppete
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForTargetAsync(Func&lt;Target, Boolean&gt;, WaitForOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L74">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WaitForTargetAsync(Func&lt;ITarget, Boolean&gt;, WaitForOptions)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L44">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L74">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L44">View Source</a>
   </span>
   <a id="PuppeteerSharp_BrowserContext_WaitForTargetAsync_" data-uid="PuppeteerSharp.BrowserContext.WaitForTargetAsync*"></a>
-  <h4 id="PuppeteerSharp_BrowserContext_WaitForTargetAsync_System_Func_PuppeteerSharp_Target_System_Boolean__PuppeteerSharp_WaitForOptions_" data-uid="PuppeteerSharp.BrowserContext.WaitForTargetAsync(System.Func{PuppeteerSharp.Target,System.Boolean},PuppeteerSharp.WaitForOptions)">WaitForTargetAsync(Func&lt;Target, Boolean&gt;, WaitForOptions)</h4>
+  <h4 id="PuppeteerSharp_BrowserContext_WaitForTargetAsync_Func_PuppeteerSharp_ITarget_System_Boolean__PuppeteerSharp_WaitForOptions_" data-uid="PuppeteerSharp.BrowserContext.WaitForTargetAsync(Func{PuppeteerSharp.ITarget,System.Boolean},PuppeteerSharp.WaitForOptions)">WaitForTargetAsync(Func&lt;ITarget, Boolean&gt;, WaitForOptions)</h4>
   <div class="markdown level1 summary"><p>This searches for a target in this specific browser context.
 <example><p>
 <pre><code>await page.EvaluateAsync(&quot;() => window.open(&apos;https://www.example.com/&apos;)&quot;);
@@ -402,7 +401,7 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;Target&gt; WaitForTargetAsync(Func&lt;Target, bool&gt; predicate, WaitForOptions options = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;ITarget&gt; WaitForTargetAsync(Func&lt;ITarget, bool&gt; predicate, WaitForOptions options = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -415,7 +414,7 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<a class="xref" href="PuppeteerSharp.Target.html">Target</a>, <span class="xref">System.Boolean</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>, <span class="xref">System.Boolean</span>&gt;</td>
         <td><span class="parametername">predicate</span></td>
         <td><p>A function to be run for every target</p>
 </td>
@@ -438,7 +437,7 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<a class="xref" href="PuppeteerSharp.Target.html">Target</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="PuppeteerSharp.ITarget.html">ITarget</a>&gt;</td>
         <td><p>Resolves to the first target found that matches the predicate function.</p>
 </td>
       </tr>
@@ -448,10 +447,10 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetChanged&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L28">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetChanged&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L23">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L28">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L23">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_BrowserContext_TargetChanged" data-uid="PuppeteerSharp.BrowserContext.TargetChanged">TargetChanged</h4>
   <div class="markdown level1 summary"><p>Raised when the url of a target changes</p>
@@ -471,20 +470,20 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetCreated&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L33">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetCreated&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L26">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L33">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L26">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_BrowserContext_TargetCreated" data-uid="PuppeteerSharp.BrowserContext.TargetCreated">TargetCreated</h4>
-  <div class="markdown level1 summary"><p>Raised when a target is created, for example when a new page is opened by <code>window.open</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open">https://developer.mozilla.org/en-US/docs/Web/API/Window/open</a> or <a class="xref" href="PuppeteerSharp.BrowserContext.html#PuppeteerSharp_BrowserContext_NewPageAsync">NewPageAsync()</a>.</p>
+  <div class="markdown level1 summary"><p>Raised when a target is created, for example when a new page is opened by <code>window.open</code> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open">https://developer.mozilla.org/en-US/docs/Web/API/Window/open</a> or <a class="xref" href="PuppeteerSharp.IBrowserContext.html#PuppeteerSharp_IBrowserContext_NewPageAsync">NewPageAsync()</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -501,17 +500,17 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetDestroyed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L38">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20TargetDestroyed&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L29">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L38">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L29">View Source</a>
   </span>
   <h4 id="PuppeteerSharp_BrowserContext_TargetDestroyed" data-uid="PuppeteerSharp.BrowserContext.TargetDestroyed">TargetDestroyed</h4>
   <div class="markdown level1 summary"><p>Raised when a target is destroyed, for example when a page is closed</p>
@@ -531,11 +530,48 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;<a class="xref" href="PuppeteerSharp.TargetChangedArgs.html">TargetChangedArgs</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20IBrowserContext.Browser&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L38">Request doc improvement</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L38">View Source</a>
+  </span>
+  <a id="PuppeteerSharp_BrowserContext_PuppeteerSharp_IBrowserContext_Browser_" data-uid="PuppeteerSharp.BrowserContext.PuppeteerSharp#IBrowserContext#Browser*"></a>
+  <h4 id="PuppeteerSharp_BrowserContext_PuppeteerSharp_IBrowserContext_Browser" data-uid="PuppeteerSharp.BrowserContext.PuppeteerSharp#IBrowserContext#Browser">IBrowserContext.Browser</h4>
+  <div class="markdown level1 summary"><p>Gets the browser this browser context belongs to</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IBrowser IBrowserContext.Browser { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="PuppeteerSharp.IBrowser.html">IBrowser</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="PuppeteerSharp.IBrowserContext.html">IBrowserContext</a>
+  </div>
 </article>
           </div>
           
@@ -544,10 +580,10 @@ var newWindowTarget = await browserContext.WaitForTargetAsync((target) => target
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L13" class="contribution-link">Request doc improvement</a>
+                    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20BrowserContext&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/%23L10" class="contribution-link">Request doc improvement</a>
                   </li>
                   <li>
-                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/BrowserContext.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

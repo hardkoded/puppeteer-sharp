@@ -8,7 +8,7 @@
     <title> </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content=" ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -84,10 +84,21 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
 By default, Puppeteer tries to approximate this filtering, exposing only the &quot;interesting&quot; nodes of the tree.</p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PageAccessibility.AccessibilitySnapshotOptions.html">AccessibilitySnapshotOptions</a></h4>
-      <section><p><a class="xref" href="PuppeteerSharp.PageAccessibility.Accessibility.html#PuppeteerSharp_PageAccessibility_Accessibility_SnapshotAsync_PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_">SnapshotAsync(AccessibilitySnapshotOptions)</a></p>
+      <section><p><a class="xref" href="PuppeteerSharp.PageAccessibility.IAccessibility.html#PuppeteerSharp_PageAccessibility_IAccessibility_SnapshotAsync_PuppeteerSharp_PageAccessibility_AccessibilitySnapshotOptions_">SnapshotAsync(AccessibilitySnapshotOptions)</a></p>
 </section>
       <h4><a class="xref" href="PuppeteerSharp.PageAccessibility.SerializedAXNode.html">SerializedAXNode</a></h4>
       <section><p>AXNode.</p>
+</section>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="PuppeteerSharp.PageAccessibility.IAccessibility.html">IAccessibility</a></h4>
+      <section><p>The Accessibility class provides methods for inspecting Chromium's accessibility tree.
+The accessibility tree is used by assistive technology such as screen readers or switches.</p>
+<p>Accessibility is a very platform-specific thing. On different platforms, there are different screen readers that might have wildly different output.
+Blink - Chrome's rendering engine - has a concept of &quot;accessibility tree&quot;, which is than translated into different platform-specific APIs.
+Accessibility namespace gives users access to the Blink Accessibility Tree.
+Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
+By default, Puppeteer tries to approximate this filtering, exposing only the &quot;interesting&quot; nodes of the tree.</p>
 </section>
     <h3 id="enums">Enums
   </h3>

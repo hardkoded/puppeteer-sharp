@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TaskHelper
    ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.4.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,25 +85,25 @@
   <h6><strong>Assembly</strong>: PuppeteerSharp.dll</h6>
   <h5 id="PuppeteerSharp_Helpers_TaskHelper_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class TaskHelper</code></pre>
+    <pre><code class="lang-csharp hljs">public static class TaskHelper : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Func&lt;Task&gt;, Int32, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L59">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Func&lt;Task&gt;, Int32, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L62">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L59">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L62">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Func_System_Threading_Tasks_Task__System_Int32_System_Threading_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task},System.Int32,System.Threading.CancellationToken)">WithTimeout(Task, Func&lt;Task&gt;, Int32, CancellationToken)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_Task_Func_Task__System_Int32_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(Task,Func{Task},System.Int32,CancellationToken)">WithTimeout(Task, Func&lt;Task&gt;, Int32, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after <code data-dev-comment-type="paramref" class="paramref">milliseconds</code> milliseconds</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, Func&lt;Task&gt; timeoutAction, int milliseconds = 1000, CancellationToken cancellationToken = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, Func&lt;Task&gt; timeoutAction, int milliseconds = 1000, CancellationToken cancellationToken = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -116,13 +116,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.Threading.Tasks.Task</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">Task</span>&gt;</td>
         <td><span class="parametername">timeoutAction</span></td>
         <td><p>Action to be executed on Timeout.</p>
 </td>
@@ -134,7 +134,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">cancellationToken</span></td>
         <td><p>Cancellation token.</p>
 </td>
@@ -151,7 +151,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -159,13 +159,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Func&lt;Task&gt;, TimeSpan, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L75">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Func&lt;Task&gt;, TimeSpan, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L79">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L75">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L79">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Func_System_Threading_Tasks_Task__System_TimeSpan_System_Threading_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(System.Threading.Tasks.Task,System.Func{System.Threading.Tasks.Task},System.TimeSpan,System.Threading.CancellationToken)">WithTimeout(Task, Func&lt;Task&gt;, TimeSpan, CancellationToken)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_Task_Func_Task__TimeSpan_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(Task,Func{Task},TimeSpan,CancellationToken)">WithTimeout(Task, Func&lt;Task&gt;, TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after a given <code data-dev-comment-type="paramref" class="paramref">timeout</code> period</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -184,25 +184,25 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.Threading.Tasks.Task</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">Task</span>&gt;</td>
         <td><span class="parametername">timeoutAction</span></td>
         <td><p>Action to be executed on Timeout.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.TimeSpan</span></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The timeout period.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">cancellationToken</span></td>
         <td><p>Cancellation token.</p>
 </td>
@@ -219,7 +219,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -227,19 +227,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Int32, Func&lt;TimeSpan, Exception&gt;, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L24">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, Int32, Func&lt;TimeSpan, Exception&gt;, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L25">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L24">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L25">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_Int32_System_Func_System_TimeSpan_System_Exception__System_Threading_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(System.Threading.Tasks.Task,System.Int32,System.Func{System.TimeSpan,System.Exception},System.Threading.CancellationToken)">WithTimeout(Task, Int32, Func&lt;TimeSpan, Exception&gt;, CancellationToken)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_Task_System_Int32_Func_TimeSpan_Exception__CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(Task,System.Int32,Func{TimeSpan,Exception},CancellationToken)">WithTimeout(Task, Int32, Func&lt;TimeSpan, Exception&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after <code data-dev-comment-type="paramref" class="paramref">milliseconds</code> milliseconds</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, int milliseconds = 1000, Func&lt;TimeSpan, Exception&gt; exceptionFactory = null, CancellationToken cancellationToken = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, int milliseconds = 1000, Func&lt;TimeSpan, Exception&gt; exceptionFactory = null, CancellationToken cancellationToken = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -252,7 +252,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
@@ -264,13 +264,13 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.TimeSpan</span>, <span class="xref">System.Exception</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">TimeSpan</span>, <span class="xref">Exception</span>&gt;</td>
         <td><span class="parametername">exceptionFactory</span></td>
         <td><p>Optional timeout exception factory.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">cancellationToken</span></td>
         <td><p>Cancellation token.</p>
 </td>
@@ -287,7 +287,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -295,19 +295,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, TimeSpan, Func&lt;TimeSpan, Exception&gt;, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L40">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout(Task, TimeSpan, Func&lt;TimeSpan, Exception&gt;, CancellationToken)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L42">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L40">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L42">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_System_Threading_Tasks_Task_System_TimeSpan_System_Func_System_TimeSpan_System_Exception__System_Threading_CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(System.Threading.Tasks.Task,System.TimeSpan,System.Func{System.TimeSpan,System.Exception},System.Threading.CancellationToken)">WithTimeout(Task, TimeSpan, Func&lt;TimeSpan, Exception&gt;, CancellationToken)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_Task_TimeSpan_Func_TimeSpan_Exception__CancellationToken_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout(Task,TimeSpan,Func{TimeSpan,Exception},CancellationToken)">WithTimeout(Task, TimeSpan, Func&lt;TimeSpan, Exception&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after a given <code data-dev-comment-type="paramref" class="paramref">timeout</code> period</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, TimeSpan timeout, Func&lt;TimeSpan, Exception&gt; exceptionFactory = null, CancellationToken cancellationToken = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task WithTimeout(this Task task, TimeSpan timeout, Func&lt;TimeSpan, Exception&gt; exceptionFactory = null, CancellationToken cancellationToken = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -320,25 +320,25 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.TimeSpan</span></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The timeout period.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.TimeSpan</span>, <span class="xref">System.Exception</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">TimeSpan</span>, <span class="xref">Exception</span>&gt;</td>
         <td><span class="parametername">exceptionFactory</span></td>
         <td><p>Optional timeout exception factory.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Threading.CancellationToken</span></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">cancellationToken</span></td>
         <td><p>Cancellation token.</p>
 </td>
@@ -355,7 +355,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -363,13 +363,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, Int32)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L103">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, Int32)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L108">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L103">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L108">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Action_System_Int32_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(System.Threading.Tasks.Task{``0},System.Action,System.Int32)">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, Int32)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_Task___0__Action_System_Int32_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(Task{``0},Action,System.Int32)">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, Int32)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after <code data-dev-comment-type="paramref" class="paramref">milliseconds</code> milliseconds</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -388,13 +388,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Action</span></td>
+        <td><span class="xref">Action</span></td>
         <td><span class="parametername">timeoutAction</span></td>
         <td><p>Action to be executed on Timeout.</p>
 </td>
@@ -417,7 +417,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -441,13 +441,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, TimeSpan)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L115">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, TimeSpan)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L121">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L115">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L121">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Action_System_TimeSpan_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(System.Threading.Tasks.Task{``0},System.Action,System.TimeSpan)">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, TimeSpan)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_Task___0__Action_TimeSpan_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(Task{``0},Action,TimeSpan)">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Action, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after a given <code data-dev-comment-type="paramref" class="paramref">timeout</code> period</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -466,19 +466,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Action</span></td>
+        <td><span class="xref">Action</span></td>
         <td><span class="parametername">timeoutAction</span></td>
         <td><p>Action to be executed on Timeout.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.TimeSpan</span></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The timeout period.</p>
 </td>
@@ -495,7 +495,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -519,13 +519,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Int32, Func&lt;TimeSpan, Exception&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L145">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, Int32, Func&lt;TimeSpan, Exception&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L152">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L145">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L152">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_Int32_System_Func_System_TimeSpan_System_Exception__" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(System.Threading.Tasks.Task{``0},System.Int32,System.Func{System.TimeSpan,System.Exception})">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Int32, Func&lt;TimeSpan, Exception&gt;)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_Task___0__System_Int32_Func_TimeSpan_Exception__" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(Task{``0},System.Int32,Func{TimeSpan,Exception})">WithTimeout&lt;T&gt;(Task&lt;T&gt;, Int32, Func&lt;TimeSpan, Exception&gt;)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after <code data-dev-comment-type="paramref" class="paramref">milliseconds</code> milliseconds</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -544,7 +544,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
@@ -556,7 +556,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.TimeSpan</span>, <span class="xref">System.Exception</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">TimeSpan</span>, <span class="xref">Exception</span>&gt;</td>
         <td><span class="parametername">exceptionFactory</span></td>
         <td><p>Optional timeout exception factory.</p>
 </td>
@@ -573,7 +573,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task result.</p>
 </td>
       </tr>
@@ -597,13 +597,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, TimeSpan, Func&lt;TimeSpan, Exception&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L157">Request doc improvement</a>
+    <a href="https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20WithTimeout&lt;T&gt;(Task&lt;T&gt;, TimeSpan, Func&lt;TimeSpan, Exception&gt;)&amp;body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved.%0ASource URL: https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/%23L165">Request doc improvement</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L157">View Source</a>
+    <a href="https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp/Helpers/TaskHelper.cs/#L165">View Source</a>
   </span>
   <a id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout_" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout*"></a>
-  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_System_Threading_Tasks_Task___0__System_TimeSpan_System_Func_System_TimeSpan_System_Exception__" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(System.Threading.Tasks.Task{``0},System.TimeSpan,System.Func{System.TimeSpan,System.Exception})">WithTimeout&lt;T&gt;(Task&lt;T&gt;, TimeSpan, Func&lt;TimeSpan, Exception&gt;)</h4>
+  <h4 id="PuppeteerSharp_Helpers_TaskHelper_WithTimeout__1_Task___0__TimeSpan_Func_TimeSpan_Exception__" data-uid="PuppeteerSharp.Helpers.TaskHelper.WithTimeout``1(Task{``0},TimeSpan,Func{TimeSpan,Exception})">WithTimeout&lt;T&gt;(Task&lt;T&gt;, TimeSpan, Func&lt;TimeSpan, Exception&gt;)</h4>
   <div class="markdown level1 summary"><p>Cancels the <code data-dev-comment-type="paramref" class="paramref">task</code> after a given <code data-dev-comment-type="paramref" class="paramref">timeout</code> period</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -622,19 +622,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>Task to wait for.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.TimeSpan</span></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The timeout period.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">System.Func</span>&lt;<span class="xref">System.TimeSpan</span>, <span class="xref">System.Exception</span>&gt;</td>
+        <td><span class="xref">Func</span>&lt;<span class="xref">TimeSpan</span>, <span class="xref">Exception</span>&gt;</td>
         <td><span class="parametername">exceptionFactory</span></td>
         <td><p>Optional timeout exception factory.</p>
 </td>
@@ -651,7 +651,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task result.</p>
 </td>
       </tr>
