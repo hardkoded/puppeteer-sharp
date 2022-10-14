@@ -48,7 +48,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public BrowserFetcher()
         {
-            DownloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".local-chromium");
+            DownloadsFolder = Path.Combine(GetExecutablePath(), ".local-chromium");
             DownloadHost = _hosts[Product.Chrome];
             Platform = GetCurrentPlatform();
             Product = Product.Chrome;
@@ -69,7 +69,7 @@ namespace PuppeteerSharp
             }
 
             DownloadsFolder = string.IsNullOrEmpty(options.Path) ?
-               Path.Combine(Directory.GetCurrentDirectory(), options.Product == Product.Chrome ? ".local-chromium" : ".local-firefox") :
+               Path.Combine(GetExecutablePath(), options.Product == Product.Chrome ? ".local-chromium" : ".local-firefox") :
                options.Path;
             DownloadHost = string.IsNullOrEmpty(options.Host) ? _hosts[options.Product] : options.Host;
             Platform = options.Platform ?? GetCurrentPlatform();
@@ -256,6 +256,18 @@ namespace PuppeteerSharp
             }
 
             return RevisionInfo(revision);
+        }
+
+        internal static string GetExecutablePath()
+        {
+            DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, "PuppeteerSharp.dll")))
+            {
+                var assemblyLocation = typeof(Puppeteer).Assembly.Location;
+                assemblyDirectory = new FileInfo(assemblyLocation).Directory;
+            }
+
+            return assemblyDirectory.FullName;
         }
 
         private Task InstallDMGAsync(string dmgPath, string folderPath)
