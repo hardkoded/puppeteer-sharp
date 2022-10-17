@@ -13,10 +13,11 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class ExecutionContext : IExecutionContext
     {
+        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
+
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
-        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
 
         internal ExecutionContext(
             CDPSession client,
@@ -61,6 +62,25 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
+
+        private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
+        {
+            if (exceptionDetails.Exception != null)
+            {
+                return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
+            }
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
+            {
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
+                {
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
+                    message += $"\n at ${functionName} (${location})";
+                }
+            }
+            return message;
+        }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
@@ -180,25 +200,6 @@ namespace PuppeteerSharp
             {
                 Value = arg,
             };
-        }
-
-        private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
-        {
-            if (exceptionDetails.Exception != null)
-            {
-                return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
-            }
-            var message = exceptionDetails.Text;
-            if (exceptionDetails.StackTrace != null)
-            {
-                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
-                {
-                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
-                    message += $"\n at ${functionName} (${location})";
-                }
-            }
-            return message;
         }
 
         internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)

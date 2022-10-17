@@ -28,9 +28,6 @@ namespace PuppeteerSharp
 
 #pragma warning restore CA1724
     {
-        private readonly CDPSession _client;
-        private bool _recording;
-        private string _path;
         private static readonly List<string> _defaultCategories = new List<string>
         {
             "-*",
@@ -46,7 +43,10 @@ namespace PuppeteerSharp
             "disabled-by-default-v8.cpu_profiler",
         };
 
+        private readonly CDPSession _client;
         private readonly ILogger _logger;
+        private bool _recording;
+        private string _path;
 
         internal Tracing(CDPSession client)
         {

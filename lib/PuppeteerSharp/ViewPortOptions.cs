@@ -16,6 +16,15 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Default Viewport
+        /// </summary>
+        public static ViewPortOptions Default => new ViewPortOptions
+        {
+            Width = 800,
+            Height = 600,
+        };
+
+        /// <summary>
         /// Gets or sets the width
         /// </summary>
         /// <value>The page width width in pixels.</value>
@@ -50,14 +59,5 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Specifies if viewport supports touch events. Defaults to <c>false</c>.</value>
         public bool HasTouch { get; set; }
-
-        /// <summary>
-        /// Default Viewport
-        /// </summary>
-        public static ViewPortOptions Default => new ViewPortOptions
-        {
-            Width = 800,
-            Height = 600,
-        };
     }
 }

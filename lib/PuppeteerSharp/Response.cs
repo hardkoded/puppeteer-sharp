@@ -13,10 +13,10 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class Response : IResponse
     {
+        private static readonly Regex _extraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
         private readonly CDPSession _client;
         private readonly bool _fromDiskCache;
         private byte[] _buffer;
-        private static readonly Regex _extraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
 
         internal Response(
             CDPSession client,

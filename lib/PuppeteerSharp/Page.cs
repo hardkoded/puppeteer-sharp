@@ -26,19 +26,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IPage
     {
-        private readonly TaskQueue _screenshotTaskQueue;
-        private readonly EmulationManager _emulationManager;
-        private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
-        private readonly IDictionary<string, Worker> _workers;
-        private readonly ILogger _logger;
-        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TimeoutSettings _timeoutSettings;
-        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
-        private PageGetLayoutMetricsResponse _burstModeMetrics;
-        private bool _screenshotBurstModeOn;
-        private ScreenshotOptions _screenshotBurstModeOptions;
-        private TaskCompletionSource<bool> _sessionClosedTcs;
-
         private static readonly Dictionary<string, decimal> _unitToPixels = new()
         {
             { "px", 1 },
@@ -64,6 +51,19 @@ namespace PuppeteerSharp
             "JSHeapUsedSize",
             "JSHeapTotalSize",
         };
+
+        private readonly TaskQueue _screenshotTaskQueue;
+        private readonly EmulationManager _emulationManager;
+        private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
+        private readonly IDictionary<string, Worker> _workers;
+        private readonly ILogger _logger;
+        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TimeoutSettings _timeoutSettings;
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private PageGetLayoutMetricsResponse _burstModeMetrics;
+        private bool _screenshotBurstModeOn;
+        private ScreenshotOptions _screenshotBurstModeOptions;
+        private TaskCompletionSource<bool> _sessionClosedTcs;
 
         private Page(
             CDPSession client,
@@ -258,6 +258,24 @@ namespace PuppeteerSharp
 
                 return _sessionClosedTcs.Task;
             }
+        }
+
+        internal static async Task<Page> CreateAsync(
+            CDPSession client,
+            Target target,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewPort,
+            TaskQueue screenshotTaskQueue)
+        {
+            var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
+            await page.InitializeAsync().ConfigureAwait(false);
+
+            if (defaultViewPort != null)
+            {
+                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+            }
+
+            return page;
         }
 
         /// <inheritdoc/>
@@ -1126,24 +1144,6 @@ namespace PuppeteerSharp
         }
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
-
-        internal static async Task<Page> CreateAsync(
-            CDPSession client,
-            Target target,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
-            TaskQueue screenshotTaskQueue)
-        {
-            var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
-            await page.InitializeAsync().ConfigureAwait(false);
-
-            if (defaultViewPort != null)
-            {
-                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
-            }
-
-            return page;
-        }
 
         private async Task InitializeAsync()
         {
