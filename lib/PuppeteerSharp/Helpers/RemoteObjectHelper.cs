@@ -89,6 +89,7 @@ namespace PuppeteerSharp.Helpers
             {
                 return new BigInteger(decimalValue);
             }
+
             switch (unserializableValue)
             {
                 case "-0":

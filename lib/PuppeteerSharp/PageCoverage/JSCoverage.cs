@@ -62,6 +62,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 throw new InvalidOperationException("JSCoverage is not enabled");
             }
+
             _enabled = false;
 
             var profileResponseTask = _client.SendAsync<ProfilerTakePreciseCoverageResponse>("Profiler.takePreciseCoverage");
@@ -80,6 +81,7 @@ namespace PuppeteerSharp.PageCoverage
                 {
                     url = "debugger://VM" + entry.ScriptId;
                 }
+
                 if (string.IsNullOrEmpty(url) ||
                     !_scriptSources.TryGetValue(entry.ScriptId, out var text))
                 {
@@ -95,6 +97,7 @@ namespace PuppeteerSharp.PageCoverage
                     Text = text,
                 });
             }
+
             return coverage.ToArray();
         }
 

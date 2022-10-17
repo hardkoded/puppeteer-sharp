@@ -41,11 +41,13 @@ namespace PuppeteerSharp
                     {
                         return;
                     }
+
                     var openerPage = (Page)await openerPageTask.ConfigureAwait(false);
                     if (!openerPage.HasPopupEventListeners)
                     {
                         return;
                     }
+
                     var popupPage = await PageAsync().ConfigureAwait(false);
                     openerPage.OnPopup(popupPage);
                 },
@@ -134,6 +136,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             if (_workerTask == null)
             {
                 _workerTask = WorkerInternalAsync();

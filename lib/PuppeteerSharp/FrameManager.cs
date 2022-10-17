@@ -98,6 +98,7 @@ namespace PuppeteerSharp
             {
                 _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
             }
+
             return context;
         }
 
@@ -293,10 +294,12 @@ namespace PuppeteerSharp
                 {
                     continue;
                 }
+
                 if (context.World != null)
                 {
                     context.World.SetContext(null);
                 }
+
                 _contextIdToContext.TryRemove(key, out var _);
             }
         }
@@ -344,6 +347,7 @@ namespace PuppeteerSharp
             {
                 world.SetContext(context);
             }
+
             var key = $"{session.Id}:{contextPayload.Id}";
             _contextIdToContext[key] = context;
         }
@@ -389,6 +393,7 @@ namespace PuppeteerSharp
                     {
                         _frames.TryRemove(frame.Id, out _);
                     }
+
                     frame.Id = framePayload.Id;
                 }
                 else
@@ -396,6 +401,7 @@ namespace PuppeteerSharp
                     // Initial main frame navigation.
                     frame = new Frame(this, null, framePayload.Id, Client);
                 }
+
                 _asyncFrames.AddItem(framePayload.Id, frame);
                 MainFrame = frame;
             }
@@ -426,6 +432,7 @@ namespace PuppeteerSharp
             {
                 RemoveFramesRecursively(frame.ChildFrames[0]);
             }
+
             ((Frame)frame).Detach();
             _frames.TryRemove(frame.Id, out _);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
@@ -442,6 +449,7 @@ namespace PuppeteerSharp
                 {
                     existingFrame.UpdateClient(session);
                 }
+
                 return;
             }
 
@@ -479,6 +487,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _isolatedWorlds.Add(key);
             await session.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {

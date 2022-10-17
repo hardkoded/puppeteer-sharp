@@ -55,6 +55,7 @@ namespace PuppeteerSharp.PageCoverage
             {
                 throw new InvalidOperationException("CSSCoverage is not enabled");
             }
+
             _enabled = false;
 
             var trackingResponse = await _client.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
@@ -77,6 +78,7 @@ namespace PuppeteerSharp.PageCoverage
                     ranges = new List<CoverageResponseRange>();
                     styleSheetIdToCoverage[entry.StyleSheetId] = ranges;
                 }
+
                 ranges.Add(new CoverageResponseRange
                 {
                     StartOffset = entry.StartOffset,
@@ -100,6 +102,7 @@ namespace PuppeteerSharp.PageCoverage
                     Text = text,
                 });
             }
+
             return coverage.ToArray();
         }
 

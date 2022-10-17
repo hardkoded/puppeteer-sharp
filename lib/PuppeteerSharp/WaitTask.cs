@@ -130,6 +130,7 @@ async function waitForPredicatePageFunction(
             {
                 throw new ArgumentNullException(nameof(predicateBody));
             }
+
             if (pollingInterval <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
@@ -204,6 +205,7 @@ async function waitForPredicatePageFunction(
 
                 return;
             }
+
             if (exception == null &&
                 await _world.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(
@@ -238,6 +240,7 @@ async function waitForPredicatePageFunction(
             {
                 _taskCompletion.TrySetResult(success);
             }
+
             Cleanup();
         }
 
@@ -254,6 +257,7 @@ async function waitForPredicatePageFunction(
             {
                 _cts.Cancel();
             }
+
             _world.WaitTasks.Remove(this);
         }
 

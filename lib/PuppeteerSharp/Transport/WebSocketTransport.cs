@@ -46,6 +46,7 @@ namespace PuppeteerSharp.Transport
             {
                 throw new ArgumentNullException(nameof(client));
             }
+
             if (scheduler == null)
             {
                 throw new ArgumentNullException(nameof(scheduler));

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -30,6 +30,7 @@ namespace PuppeteerSharp
                 {
                     return null;
                 }
+
                 return res.First().BackendDOMNodeId;
             };
 
@@ -40,6 +41,7 @@ namespace PuppeteerSharp
                 {
                     return null;
                 }
+
                 return await ((ElementHandle)element).Frame.SecondaryWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
             };
 
@@ -126,6 +128,7 @@ namespace PuppeteerSharp
                 {
                     queryOptions.Role = NormalizeValue(match.Groups["value"].Value);
                 }
+
                 return string.Empty;
             }));
 

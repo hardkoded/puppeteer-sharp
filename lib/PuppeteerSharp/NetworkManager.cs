@@ -82,6 +82,7 @@ namespace PuppeteerSharp
             {
                 _extraHTTPHeaders[item.Key.ToLower(CultureInfo.CurrentCulture)] = item.Value;
             }
+
             return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
             {
                 Headers = _extraHTTPHeaders,
@@ -352,6 +353,7 @@ namespace PuppeteerSharp
                 response = "ProvideCredentials";
                 _attemptedAuthentications.Add(e.RequestId);
             }
+
             var credentials = _credentials ?? new Credentials();
             try
             {
@@ -475,6 +477,7 @@ namespace PuppeteerSharp
             {
                 request.FromMemoryCache = true;
             }
+
             RequestServedFromCache?.Invoke(this, new RequestEventArgs { Request = request });
         }
 
@@ -522,6 +525,7 @@ namespace PuppeteerSharp
 
                 return;
             }
+
             await OnRequestAsync(e, null).ConfigureAwait(false);
         }
 
@@ -541,6 +545,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _protocolRequestInterceptionEnabled = enabled;
             if (enabled)
             {

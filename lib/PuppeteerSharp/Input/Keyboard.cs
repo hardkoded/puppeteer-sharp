@@ -93,6 +93,7 @@ namespace PuppeteerSharp.Input
                     {
                         await Task.Delay(delay).ConfigureAwait(false);
                     }
+
                     await SendCharacterAsync(letter.ToString()).ConfigureAwait(false);
                 }
             }
@@ -106,6 +107,7 @@ namespace PuppeteerSharp.Input
             {
                 await Task.Delay((int)options.Delay).ConfigureAwait(false);
             }
+
             await UpAsync(key).ConfigureAwait(false);
         }
 
@@ -115,18 +117,22 @@ namespace PuppeteerSharp.Input
             {
                 return 1;
             }
+
             if (key == "Control")
             {
                 return 2;
             }
+
             if (key == "Meta")
             {
                 return 4;
             }
+
             if (key == "Shift")
             {
                 return 8;
             }
+
             return 0;
         }
 

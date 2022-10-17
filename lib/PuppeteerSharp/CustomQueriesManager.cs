@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,6 +94,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Custom query handler names may only contain [a-zA-Z]");
             }
+
             var internalHandler = MakeQueryHandler(queryHandler);
 
             _queryHandlers.Add(name, internalHandler);

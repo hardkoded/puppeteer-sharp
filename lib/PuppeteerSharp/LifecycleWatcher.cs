@@ -91,6 +91,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _newDocumentNavigation = true;
             CheckLifecycleComplete();
         }
@@ -116,6 +117,7 @@ namespace PuppeteerSharp
                 Terminate(new PuppeteerException("Navigating frame was detached"));
                 return;
             }
+
             CheckLifecycleComplete();
         }
 
@@ -126,12 +128,14 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _lifecycleTaskWrapper.TrySetResult(true);
 
             if (_hasSameDocumentNavigation)
             {
                 _sameDocumentNavigationTaskWrapper.TrySetResult(true);
             }
+
             if (_swapped || _newDocumentNavigation)
             {
                 _newDocumentNavigationTaskWrapper.TrySetResult(true);
@@ -146,6 +150,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _navigationRequest = e.Request;
         }
 
@@ -155,6 +160,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             _hasSameDocumentNavigation = true;
             CheckLifecycleComplete();
         }
@@ -168,6 +174,7 @@ namespace PuppeteerSharp
                     return false;
                 }
             }
+
             foreach (Frame child in frame.ChildFrames)
             {
                 if (child.HasStartedLoading && !CheckLifecycle(child, expectedLifecycle))
@@ -175,6 +182,7 @@ namespace PuppeteerSharp
                     return false;
                 }
             }
+
             return true;
         }
 

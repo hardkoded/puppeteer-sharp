@@ -26,6 +26,7 @@ namespace PuppeteerSharp.PageAccessibility
                 }).ConfigureAwait(false);
                 backendNodeId = node.Node.BackendNodeId;
             }
+
             var defaultRoot = AXNode.CreateTree(nodes);
             var needle = defaultRoot;
             if (backendNodeId != null)
@@ -48,6 +49,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return null;
             }
+
             return SerializeTree(needle, interestingNodes)[0];
         }
 
@@ -57,10 +59,12 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 collection.Add(node);
             }
+
             if (node.IsLeafNode())
             {
                 return;
             }
+
             insideControl = insideControl || node.IsControl();
             foreach (var child in node.Children)
             {
@@ -75,6 +79,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 children.AddRange(SerializeTree(child, whitelistedNodes));
             }
+
             if (whitelistedNodes?.Contains(node) == false)
             {
                 return children.ToArray();
@@ -85,6 +90,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 serializedNode.Children = children.ToArray();
             }
+
             return new[] { serializedNode };
         }
     }
