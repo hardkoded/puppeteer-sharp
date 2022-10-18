@@ -98,6 +98,8 @@ namespace PuppeteerSharp
 
         internal AsyncMessageQueue MessageQueue { get; }
 
+        internal static Connection FromSession(CDPSession session) => session.Connection;
+
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
         internal Task RawSendASync(int id, string method, object args, string sessionId = null)
@@ -182,8 +184,6 @@ namespace PuppeteerSharp
             _callbacks.Clear();
             MessageQueue.Dispose();
         }
-
-        internal static Connection FromSession(CDPSession session) => session.Connection;
 
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 

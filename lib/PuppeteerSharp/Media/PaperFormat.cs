@@ -22,18 +22,6 @@ namespace PuppeteerSharp.Media
         }
 
         /// <summary>
-        /// Page width in inches
-        /// </summary>
-        /// <value>The width.</value>
-        public decimal Width { get; set; }
-
-        /// <summary>
-        /// Page height in inches
-        /// </summary>
-        /// <value>The Height.</value>
-        public decimal Height { get; set; }
-
-        /// <summary>
         /// Letter: 8.5 inches x 11 inches.
         /// </summary>
         public static PaperFormat Letter => new PaperFormat(8.5m, 11);
@@ -87,6 +75,18 @@ namespace PuppeteerSharp.Media
         /// A6: 4.13 inches by 5.83 inches
         /// </summary>
         public static PaperFormat A6 => new PaperFormat(4.13m, 5.83m);
+
+        /// <summary>
+        /// Page width in inches
+        /// </summary>
+        /// <value>The width.</value>
+        public decimal Width { get; set; }
+
+        /// <summary>
+        /// Page height in inches
+        /// </summary>
+        /// <value>The Height.</value>
+        public decimal Height { get; set; }
 
         /// <inheritdoc/>
         public static bool operator ==(PaperFormat left, PaperFormat right)

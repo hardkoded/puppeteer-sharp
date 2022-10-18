@@ -102,6 +102,102 @@ namespace PuppeteerSharp
             set => _webClient.Proxy = value;
         }
 
+        private static void ExtractTar(string zipPath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = "tar";
+            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
+        /// <inheritdoc/>
+        public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
+        {
+            if (product == Product.Chrome)
+            {
+                switch (platform)
+                {
+                    case Platform.MacOS:
+                        return Path.Combine(
+                            folderPath,
+                            GetArchiveName(product, platform, revision),
+                            "Chromium.app",
+                            "Contents",
+                            "MacOS",
+                            "Chromium");
+                    case Platform.Linux:
+                        return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome");
+                    case Platform.Win32:
+                    case Platform.Win64:
+                        return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome.exe");
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+            else
+            {
+                switch (platform)
+                {
+                    case Platform.MacOS:
+                        return Path.Combine(
+                            folderPath,
+                            "Firefox Nightly.app",
+                            "Contents",
+                            "MacOS",
+                            "firefox");
+                    case Platform.Linux:
+                        return Path.Combine(folderPath, "firefox", "firefox");
+                    case Platform.Win32:
+                    case Platform.Win64:
+                        return Path.Combine(folderPath, "firefox", "firefox.exe");
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+        }
+
+        private static string GetArchiveName(Product product, Platform platform, string revision)
+        {
+            if (product == Product.Chrome)
+            {
+                switch (platform)
+                {
+                    case Platform.Linux:
+                        return "chrome-linux";
+                    case Platform.MacOS:
+                        return "chrome-mac";
+                    case Platform.Win32:
+                    case Platform.Win64:
+                        return int.TryParse(revision, out var revValue) && revValue > 591479 ? "chrome-win" : "chrome-win32";
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+            else
+            {
+                switch (platform)
+                {
+                    case Platform.Linux:
+                        return "linux";
+                    case Platform.MacOS:
+                        return "mac";
+                    case Platform.Win32:
+                        return "win32";
+                    case Platform.Win64:
+                        return "win64";
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+        }
+
+        private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
+            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
+
         /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
         {
@@ -352,67 +448,9 @@ namespace PuppeteerSharp
             }
         }
 
-        private static void ExtractTar(string zipPath, string folderPath)
-        {
-            new DirectoryInfo(folderPath).Create();
-            using var process = new Process();
-            process.StartInfo.FileName = "tar";
-            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.Start();
-            process.WaitForExit();
-        }
-
         /// <inheritdoc/>
         public string GetExecutablePath(string revision)
             => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
-
-        /// <inheritdoc/>
-        public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
-        {
-            if (product == Product.Chrome)
-            {
-                switch (platform)
-                {
-                    case Platform.MacOS:
-                        return Path.Combine(
-                            folderPath,
-                            GetArchiveName(product, platform, revision),
-                            "Chromium.app",
-                            "Contents",
-                            "MacOS",
-                            "Chromium");
-                    case Platform.Linux:
-                        return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome");
-                    case Platform.Win32:
-                    case Platform.Win64:
-                        return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome.exe");
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-            else
-            {
-                switch (platform)
-                {
-                    case Platform.MacOS:
-                        return Path.Combine(
-                            folderPath,
-                            "Firefox Nightly.app",
-                            "Contents",
-                            "MacOS",
-                            "firefox");
-                    case Platform.Linux:
-                        return Path.Combine(folderPath, "firefox", "firefox");
-                    case Platform.Win32:
-                    case Platform.Win64:
-                        return Path.Combine(folderPath, "firefox", "firefox.exe");
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-        }
 
         internal static Platform GetCurrentPlatform()
         {
@@ -479,44 +517,6 @@ namespace PuppeteerSharp
 
             return DefaultFirefoxRevision;
         }
-
-        private static string GetArchiveName(Product product, Platform platform, string revision)
-        {
-            if (product == Product.Chrome)
-            {
-                switch (platform)
-                {
-                    case Platform.Linux:
-                        return "chrome-linux";
-                    case Platform.MacOS:
-                        return "chrome-mac";
-                    case Platform.Win32:
-                    case Platform.Win64:
-                        return int.TryParse(revision, out var revValue) && revValue > 591479 ? "chrome-win" : "chrome-win32";
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-            else
-            {
-                switch (platform)
-                {
-                    case Platform.Linux:
-                        return "linux";
-                    case Platform.MacOS:
-                        return "mac";
-                    case Platform.Win32:
-                        return "win32";
-                    case Platform.Win64:
-                        return "win64";
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-        }
-
-        private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
-            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
 
         /// <inheritdoc/>
         public void Dispose()
