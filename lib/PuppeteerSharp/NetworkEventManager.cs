@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -37,6 +36,7 @@ namespace PuppeteerSharp
                     new List<ResponseReceivedExtraInfoResponse>(),
                     (_, __) => new List<ResponseReceivedExtraInfoResponse>());
             }
+
             _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var result);
             return result;
         }
@@ -47,6 +47,7 @@ namespace PuppeteerSharp
             {
                 _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
             }
+
             _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
             return result;
         }

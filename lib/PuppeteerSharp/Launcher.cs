@@ -181,6 +181,7 @@ namespace PuppeteerSharp
             {
                 throw new FileNotFoundException("Failed to launch browser! path to executable does not exist", browserExecutable);
             }
+
             return browserExecutable;
         }
 
@@ -194,6 +195,7 @@ namespace PuppeteerSharp
                 {
                     throw new FileNotFoundException("Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable", executablePath);
                 }
+
                 return executablePath;
             }
 
@@ -208,13 +210,16 @@ namespace PuppeteerSharp
                 {
                     throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
                 }
+
                 return revisionInfo.ExecutablePath;
             }
+
             revisionInfo = await browserFetcher.GetRevisionInfoAsync().ConfigureAwait(false);
             if (!revisionInfo.Local)
             {
                 throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);
             }
+
             return revisionInfo.ExecutablePath;
         }
     }

@@ -290,10 +290,12 @@ namespace PuppeteerSharp
             {
                 throw new ArgumentException($"Invalid longitude '{options.Longitude}': precondition - 180 <= LONGITUDE <= 180 failed.");
             }
+
             if (options.Latitude < -90 || options.Latitude > 90)
             {
                 throw new ArgumentException($"Invalid latitude '{options.Latitude}': precondition - 90 <= LATITUDE <= 90 failed.");
             }
+
             if (options.Accuracy < 0)
             {
                 throw new ArgumentException($"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed.");
@@ -324,6 +326,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.TapAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -407,6 +410,7 @@ namespace PuppeteerSharp
                 {
                     cookie.Url = Url;
                 }
+
                 if (cookie.Url == "about:blank")
                 {
                     throw new PuppeteerException($"Blank page can not have cookie \"{cookie.Name}\"");
@@ -434,6 +438,7 @@ namespace PuppeteerSharp
                 {
                     cookie.Url = pageURL;
                 }
+
                 await Client.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
             }
         }
@@ -542,6 +547,7 @@ namespace PuppeteerSharp
                 {
                     paperWidth = ConvertPrintParameterToInches(options.Width);
                 }
+
                 if (options.Height != null)
                 {
                     paperHeight = ConvertPrintParameterToInches(options.Height);
@@ -592,6 +598,7 @@ namespace PuppeteerSharp
             {
                 return Task.CompletedTask;
             }
+
             JavascriptEnabled = enabled;
             return Client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
             {
@@ -663,6 +670,7 @@ namespace PuppeteerSharp
                     options.Quality = 90;
                 }
             }
+
             var data = await ScreenshotDataAsync(options).ConfigureAwait(false);
 
             using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
@@ -708,10 +716,12 @@ namespace PuppeteerSharp
                     throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
                 }
             }
+
             if (options?.Clip?.Width == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
             }
+
             if (options?.Clip?.Height == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
@@ -948,6 +958,7 @@ namespace PuppeteerSharp
             {
                 await SessionClosedTask.ConfigureAwait(false);
             }
+
             return await requestTcs.Task.ConfigureAwait(false);
         }
 
@@ -988,6 +999,7 @@ namespace PuppeteerSharp
                     return frame;
                 }
             }
+
             await eventRace.ConfigureAwait(false);
 
             if (SessionClosedTask.IsFaulted)
@@ -1036,6 +1048,7 @@ namespace PuppeteerSharp
             {
                 await SessionClosedTask.ConfigureAwait(false);
             }
+
             return await responseTcs.Task.ConfigureAwait(false);
         }
 
@@ -1180,6 +1193,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var entry = history.Entries[history.CurrentIndex + delta];
             var waitTask = WaitForNavigationAsync(options);
 
@@ -1305,6 +1319,7 @@ namespace PuppeteerSharp
             {
                 await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
             }
+
             return result.Data;
         }
 
@@ -1550,6 +1565,7 @@ namespace PuppeteerSharp
                 {
                     _logger.LogError(ex.ToString());
                 }
+
                 return;
             }
 
@@ -1568,6 +1584,7 @@ namespace PuppeteerSharp
                     await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
                 }
             }
+
             if (e.Entry.Source != TargetType.Worker)
             {
                 Console?.Invoke(this, new ConsoleEventArgs(new ConsoleMessage(
@@ -1604,6 +1621,7 @@ namespace PuppeteerSharp
             {
                 return exceptionDetails.Exception.Description;
             }
+
             var message = exceptionDetails.Text;
             if (exceptionDetails.StackTrace != null)
             {
@@ -1614,6 +1632,7 @@ namespace PuppeteerSharp
                     message += $"\n at {functionName} ({location})";
                 }
             }
+
             return message;
         }
 
@@ -1629,6 +1648,7 @@ namespace PuppeteerSharp
             {
                 return Task.CompletedTask;
             }
+
             var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, Client);
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
@@ -1666,6 +1686,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
+
             _pageBindings.TryAdd(name, puppeteerFunction);
 
             const string addPageBinding = @"function addPageBinding(type, bindingName) {

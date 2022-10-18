@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -132,6 +131,7 @@ namespace PuppeteerSharp.Input
                     _client.MessageReceived -= DragIntercepted;
                 }
             }
+
             _client.MessageReceived += DragIntercepted;
             await MoveAsync(startX, startY).ConfigureAwait(false);
             await DownAsync().ConfigureAwait(false);
@@ -190,6 +190,7 @@ namespace PuppeteerSharp.Input
             {
                 await Task.Delay(delay).ConfigureAwait(false);
             }
+
             await DropAsync(endX, endY, data).ConfigureAwait(false);
             await UpAsync().ConfigureAwait(false);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +84,7 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
 
             if (
@@ -104,6 +105,7 @@ namespace PuppeteerSharp
                 {
                     throw new PuppeteerException($"Bound function {payload.Name} is not found");
                 }
+
                 var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
 
                 await context.EvaluateFunctionAsync(
@@ -121,6 +123,7 @@ namespace PuppeteerSharp
                 {
                     return;
                 }
+
                 _logger.LogError(ex.ToString());
             }
         }
@@ -170,6 +173,7 @@ namespace PuppeteerSharp
                         return;
                     }
                 }
+
                 _ctxBindings.Add(GetBindingIdentifier(name, context.ContextId));
             }
 
@@ -242,6 +246,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\"(are you trying to evaluate?)");
             }
+
             return _contextResolveTaskWrapper.Task;
         }
 
@@ -443,6 +448,7 @@ namespace PuppeteerSharp
                 await jsHandle.DisposeAsync().ConfigureAwait(false);
                 return null;
             }
+
             return elementHandle;
         }
 
@@ -511,6 +517,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.ClickAsync(options).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -522,6 +529,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.HoverAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -533,6 +541,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.FocusAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -543,6 +552,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             var result = await handle.SelectAsync(values).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
             return result;
@@ -555,6 +565,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.TapAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -566,6 +577,7 @@ namespace PuppeteerSharp
             {
                 throw new SelectorException($"No node found for selector: {selector}", selector);
             }
+
             await handle.TypeAsync(text, options).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -638,6 +650,7 @@ namespace PuppeteerSharp
                 {
                     throw new PuppeteerException("Document is null");
                 }
+
                 return element;
             }
 
@@ -655,6 +668,7 @@ namespace PuppeteerSharp
                 var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
                 _documentCompletionSource.TrySetResult(document as IElementHandle);
             }
+
             return await _documentCompletionSource.Task.ConfigureAwait(false);
         }
 
@@ -744,8 +758,10 @@ namespace PuppeteerSharp
                 {
                     await handle.DisposeAsync().ConfigureAwait(false);
                 }
+
                 return null;
             }
+
             return elementHandle;
         }
     }

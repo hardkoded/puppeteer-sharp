@@ -41,6 +41,7 @@ namespace PuppeteerSharp
                     Headers[keyValue.Key] = keyValue.Value;
                 }
             }
+
             SecurityDetails = responseMessage.SecurityDetails;
             RemoteAddress = new RemoteAddress
             {
@@ -101,6 +102,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var firstLine = lines[0];
 
             var match = _extraInfoLines.Match(firstLine);
@@ -108,6 +110,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var statusText = match.Groups["text"].Value;
             return statusText;
         }

@@ -92,6 +92,7 @@ namespace PuppeteerSharp.Helpers
             {
                 await timeoutAction().ConfigureAwait(false);
             }
+
             await task.ConfigureAwait(false);
         }
 

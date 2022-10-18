@@ -92,6 +92,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
             var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
@@ -141,14 +142,17 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Node is either not visible or not an HTMLElement");
             }
+
             if (boundingBox.Width == 0)
             {
                 throw new PuppeteerException("Node has 0 width.");
             }
+
             if (boundingBox.Height == 0)
             {
                 throw new PuppeteerException("Node has 0 height.");
             }
+
             var getLayoutMetricsResponse = await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
             var clip = boundingBox;
@@ -317,6 +321,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var (offsetX, offsetY) = await GetOOPIFOffsetsAsync(Frame).ConfigureAwait(false);
             var quad = result.Model.Border;
 
@@ -521,11 +526,13 @@ namespace PuppeteerSharp
                     {
                         minX = point.X;
                     }
+
                     if (point.Y < minY)
                     {
                         minY = point.Y;
                     }
                 }
+
                 if (
                   minX != decimal.MaxValue &&
                   minY != decimal.MaxValue)
@@ -537,6 +544,7 @@ namespace PuppeteerSharp
                     };
                 }
             }
+
             var x = 0m;
             var y = 0m;
 
@@ -569,6 +577,7 @@ namespace PuppeteerSharp
                     frame = parent;
                     continue;
                 }
+
                 var frameOwner = await parent.Client.SendAsync<DomGetFrameOwnerResponse>(
                         "DOM.getFrameOwner",
                         new DomGetFrameOwnerRequest
@@ -674,6 +683,7 @@ namespace PuppeteerSharp
                 var p2 = quad[(i + 1) % quad.Length];
                 area += ((p1.X * p2.Y) - (p2.X * p1.Y)) / 2;
             }
+
             return Math.Abs(area);
         }
     }

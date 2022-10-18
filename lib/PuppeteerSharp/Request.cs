@@ -102,10 +102,12 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             if (!_allowInterception)
             {
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
+
             if (_interceptionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
@@ -161,6 +163,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
+
             if (_interceptionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
@@ -229,10 +232,12 @@ namespace PuppeteerSharp
             {
                 return;
             }
+
             if (!_allowInterception)
             {
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
+
             if (_interceptionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");

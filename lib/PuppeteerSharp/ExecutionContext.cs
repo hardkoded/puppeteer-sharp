@@ -69,6 +69,7 @@ namespace PuppeteerSharp
             {
                 return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
             }
+
             var message = exceptionDetails.Text;
             if (exceptionDetails.StackTrace != null)
             {
@@ -79,6 +80,7 @@ namespace PuppeteerSharp
                     message += $"\n at ${functionName} (${location})";
                 }
             }
+
             return message;
         }
 
@@ -156,6 +158,7 @@ namespace PuppeteerSharp
                 {
                     return default;
                 }
+
                 throw new EvaluationFailedException(ex.Message, ex);
             }
         }
@@ -196,6 +199,7 @@ namespace PuppeteerSharp
                 case JSHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
+
             return new RuntimeCallFunctionOnRequestArgument
             {
                 Value = arg,
@@ -208,6 +212,7 @@ namespace PuppeteerSharp
             {
                 throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
             }
+
             if (World == null)
             {
                 throw new PuppeteerException("Cannot adopt handle without DOMWorld");

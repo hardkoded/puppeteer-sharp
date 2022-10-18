@@ -44,6 +44,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 nodeById[payload.NodeId] = new AXNode(payload);
             }
+
             foreach (var node in nodeById.Values)
             {
                 foreach (var childId in node.Payload.ChildIds)
@@ -51,6 +52,7 @@ namespace PuppeteerSharp.PageAccessibility
                     node.Children.Add(nodeById[childId]);
                 }
             }
+
             return nodeById.Values.FirstOrDefault();
         }
 
@@ -68,6 +70,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 _cachedHasFocusableChild = Children.Any(c => c.Focusable || c.HasFocusableChild());
             }
+
             return _cachedHasFocusableChild.Value;
         }
 
@@ -77,6 +80,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return this;
             }
+
             foreach (var child in Children)
             {
                 var result = child.Find(predicate);
@@ -85,6 +89,7 @@ namespace PuppeteerSharp.PageAccessibility
                     return result;
                 }
             }
+
             return null;
         }
 
@@ -126,14 +131,17 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return false;
             }
+
             if (Focusable && !string.IsNullOrEmpty(_name))
             {
                 return true;
             }
+
             if (_role == "heading" && !string.IsNullOrEmpty(_name))
             {
                 return true;
             }
+
             return false;
         }
 
@@ -190,6 +198,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 return false;
             }
+
             return IsLeafNode() && !string.IsNullOrEmpty(_name);
         }
 
@@ -209,10 +218,12 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 properties["name"] = Payload.Name.Value;
             }
+
             if (Payload.Value != null)
             {
                 properties["value"] = Payload.Value.Value;
             }
+
             if (Payload.Description != null)
             {
                 properties["description"] = Payload.Description.Value;

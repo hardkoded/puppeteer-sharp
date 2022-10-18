@@ -76,6 +76,7 @@ namespace PuppeteerSharp
 
                 result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
             }
+
             return result;
         }
 

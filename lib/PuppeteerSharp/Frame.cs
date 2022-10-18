@@ -117,6 +117,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
             var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
@@ -131,6 +132,7 @@ namespace PuppeteerSharp
             {
                 return null;
             }
+
             var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
             var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
@@ -255,6 +257,7 @@ namespace PuppeteerSharp
                 LoaderId = loaderId;
                 LifecycleEvents.Clear();
             }
+
             LifecycleEvents.Add(name);
         }
 
@@ -276,6 +279,7 @@ namespace PuppeteerSharp
             {
                 ((Frame)ParentFrame).RemoveChildFrame(this);
             }
+
             ParentFrame = null;
         }
 

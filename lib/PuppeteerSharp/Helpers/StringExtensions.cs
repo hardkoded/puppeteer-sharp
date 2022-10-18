@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Helpers
             {
                 value = string.Concat("\"", value, "\"");
             }
+
             return value;
         }
 
