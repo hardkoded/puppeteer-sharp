@@ -26,6 +26,11 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
+        /// Browser Context Id
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
         /// Gets the browser this browser context belongs to
         /// </summary>
         IBrowser Browser { get; }
