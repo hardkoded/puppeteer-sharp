@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,6 +35,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 }
                 Assert.Contains("empty.html", e.Request.Url);
                 Assert.NotNull(e.Request.Headers);
+                Assert.NotNull(e.Request.Headers["user-agent"]);
+                Assert.NotNull(e.Request.Headers["accept"]);
                 Assert.Equal(HttpMethod.Get, e.Request.Method);
                 Assert.Null(e.Request.PostData);
                 Assert.True(e.Request.IsNavigationRequest);
