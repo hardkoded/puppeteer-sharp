@@ -10,13 +10,12 @@ namespace PuppeteerSharp
     public class BrowserContext : IBrowserContext
     {
         private readonly Connection _connection;
-        private readonly string _id;
 
         internal BrowserContext(Connection connection, Browser browser, string contextId)
         {
             _connection = connection;
             Browser = browser;
-            _id = contextId;
+            Id = contextId;
         }
 
         /// <inheritdoc/>
@@ -29,7 +28,10 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <inheritdoc/>
-        public bool IsIncognito => _id != null;
+        public string Id { get; }
+
+        /// <inheritdoc/>
+        public bool IsIncognito => Id != null;
 
         /// <inheritdoc/>
         public Browser Browser { get; }
@@ -51,17 +53,17 @@ namespace PuppeteerSharp
             .Where(p => p != null).ToArray();
 
         /// <inheritdoc/>
-        public Task<IPage> NewPageAsync() => Browser.CreatePageInContextAsync(_id);
+        public Task<IPage> NewPageAsync() => Browser.CreatePageInContextAsync(Id);
 
         /// <inheritdoc/>
         public Task CloseAsync()
         {
-            if (_id == null)
+            if (Id == null)
             {
                 throw new PuppeteerException("Non-incognito profiles cannot be closed!");
             }
 
-            return Browser.DisposeContextAsync(_id);
+            return Browser.DisposeContextAsync(Id);
         }
 
         /// <inheritdoc/>
@@ -69,7 +71,7 @@ namespace PuppeteerSharp
             => _connection.SendAsync("Browser.grantPermissions", new BrowserGrantPermissionsRequest
             {
                 Origin = origin,
-                BrowserContextId = _id,
+                BrowserContextId = Id,
                 Permissions = permissions.ToArray(),
             });
 
@@ -77,7 +79,7 @@ namespace PuppeteerSharp
         public Task ClearPermissionOverridesAsync()
             => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
             {
-                BrowserContextId = _id,
+                BrowserContextId = Id,
             });
 
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
