@@ -152,34 +152,5 @@ namespace PuppeteerSharp
             list.Insert(0, this);
             return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
-
-        internal object FormatArgument(ExecutionContext context)
-        {
-            if (ExecutionContext != context)
-            {
-                throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
-            }
-
-            if (Disposed)
-            {
-                throw new PuppeteerException("JSHandle is disposed!");
-            }
-
-            var unserializableValue = RemoteObject.UnserializableValue;
-
-            if (unserializableValue != null)
-            {
-                return new { unserializableValue };
-            }
-
-            if (RemoteObject.ObjectId == null)
-            {
-                return new { RemoteObject.Value };
-            }
-
-            var objectId = RemoteObject.ObjectId;
-
-            return new { objectId };
-        }
     }
 }

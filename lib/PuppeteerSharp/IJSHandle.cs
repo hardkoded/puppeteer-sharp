@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         IExecutionContext ExecutionContext { get; }
 
         /// <summary>
-        /// Gets or sets the remote object.
+        /// Gets the remote object.
         /// </summary>
         /// <value>The remote object.</value>
         RemoteObject RemoteObject { get; }

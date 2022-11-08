@@ -196,7 +196,7 @@ namespace PuppeteerSharp
 
                     break;
 
-                case JSHandle objectHandle:
+                case IJSHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
 
