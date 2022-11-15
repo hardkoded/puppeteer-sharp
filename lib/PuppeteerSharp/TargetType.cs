@@ -58,19 +58,19 @@ namespace PuppeteerSharp
         Network,
 
         /// <summary>
-        /// Target type network
+        /// Target type deprecation.
         /// </summary>
         [EnumMember(Value = "deprecation")]
         Deprecation,
 
         /// <summary>
-        /// Target type security
+        /// Target type security.
         /// </summary>
         [EnumMember(Value = "security")]
         Security,
 
         /// <summary>
-        /// Target type recommendation
+        /// Target type recommendation.
         /// </summary>
         [EnumMember(Value = "recommendation")]
         Recommendation,
@@ -86,5 +86,11 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "iframe")]
         IFrame,
+
+        /// <summary>
+        /// Target type rendering.
+        /// </summary>
+        [EnumMember(Value = "rendering")]
+        Rendering,
     }
 }
