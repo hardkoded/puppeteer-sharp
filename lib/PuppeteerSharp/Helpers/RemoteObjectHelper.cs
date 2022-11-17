@@ -8,37 +8,8 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {
-    internal static class RemoteObjectHelper
+    internal class RemoteObjectHelper
     {
-        internal static object FormatArgument(this IJSHandle jSHandle, ExecutionContext context)
-        {
-            if (jSHandle.Disposed)
-            {
-                throw new PuppeteerException("JSHandle is disposed!");
-            }
-
-            if (jSHandle.ExecutionContext != context)
-            {
-                throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
-            }
-
-            var unserializableValue = jSHandle.RemoteObject.UnserializableValue;
-
-            if (unserializableValue != null)
-            {
-                return new { unserializableValue };
-            }
-
-            if (jSHandle.RemoteObject.ObjectId == null)
-            {
-                return new { jSHandle.RemoteObject.Value };
-            }
-
-            var objectId = jSHandle.RemoteObject.ObjectId;
-
-            return new { objectId };
-        }
-
         internal static object ValueFromRemoteObject<T>(RemoteObject remoteObject, bool stringify = false)
         {
             var unserializableValue = remoteObject.UnserializableValue;

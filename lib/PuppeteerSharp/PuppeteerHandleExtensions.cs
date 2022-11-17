@@ -112,5 +112,34 @@ namespace PuppeteerSharp
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;
         }
+
+        internal static object FormatArgument(this IJSHandle jSHandle, ExecutionContext context)
+        {
+            if (jSHandle.Disposed)
+            {
+                throw new PuppeteerException("JSHandle is disposed!");
+            }
+
+            if (jSHandle.ExecutionContext != context)
+            {
+                throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
+            }
+
+            var unserializableValue = jSHandle.RemoteObject.UnserializableValue;
+
+            if (unserializableValue != null)
+            {
+                return new { unserializableValue };
+            }
+
+            if (jSHandle.RemoteObject.ObjectId == null)
+            {
+                return new { jSHandle.RemoteObject.Value };
+            }
+
+            var objectId = jSHandle.RemoteObject.ObjectId;
+
+            return new { objectId };
+        }
     }
 }
