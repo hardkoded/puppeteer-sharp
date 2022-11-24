@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private readonly List<string> _manuallyAttached = new();
         private int _lastId;
 
         /// <summary>
@@ -142,13 +144,24 @@ namespace PuppeteerSharp
             return response.ToObject<T>(true);
         }
 
-        internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
+        internal bool IsAutoAttached(string targetId)
+            => !_manuallyAttached.Contains(targetId);
+
+        internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo, bool isAutoAttachEmulated)
         {
-            var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
+            if (!isAutoAttachEmulated)
             {
-                TargetId = targetInfo.TargetId,
-                Flatten = true,
-            }).ConfigureAwait(false)).SessionId;
+                _manuallyAttached.Add(targetInfo.TargetId);
+            }
+
+            var sessionId = (await SendAsync<TargetAttachToTargetResponse>(
+                "Target.attachToTarget",
+                new TargetAttachToTargetRequest
+                {
+                    TargetId = targetInfo.TargetId,
+                    Flatten = true,
+                }).ConfigureAwait(false)).SessionId;
+            _manuallyAttached.Remove(targetInfo.TargetId);
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 

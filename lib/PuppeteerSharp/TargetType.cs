@@ -92,5 +92,10 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "rendering")]
         Rendering,
+
+        /// <summary>
+        /// Webview
+        /// </summary>
+        Webview,
     }
 }
