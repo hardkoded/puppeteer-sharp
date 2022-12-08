@@ -32,7 +32,7 @@ namespace CefSharp.Dom.Helpers
             return await tcs.Task.WithTimeout(
                 new Action(() =>
                     throw new PuppeteerException(string.Format(CultureInfo.CurrentCulture, _timeoutMessage, key))),
-                1000).ConfigureAwait(false);
+                2000).ConfigureAwait(false);
         }
 
         internal async Task<TValue> TryGetItemAsync(TKey key)
@@ -46,7 +46,7 @@ namespace CefSharp.Dom.Helpers
                 return item;
             }
 
-            return await tcs.Task.WithTimeout(() => { }, 1000).ConfigureAwait(false);
+            return await tcs.Task.WithTimeout(() => { }, 2000).ConfigureAwait(false);
         }
 
         internal void AddItem(TKey key, TValue value)
