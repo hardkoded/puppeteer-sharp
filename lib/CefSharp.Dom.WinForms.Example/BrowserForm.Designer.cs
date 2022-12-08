@@ -43,6 +43,7 @@ namespace CefSharp.Dom.WinForms.Example
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.devToolsExampleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highlightLinksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.waitForSelectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer.ContentPanel.SuspendLayout();
             this.toolStripContainer.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer.SuspendLayout();
@@ -184,7 +185,8 @@ namespace CefSharp.Dom.WinForms.Example
             // devToolsExampleToolStripMenuItem
             // 
             this.devToolsExampleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.highlightLinksToolStripMenuItem});
+            this.highlightLinksToolStripMenuItem,
+            this.waitForSelectorToolStripMenuItem});
             this.devToolsExampleToolStripMenuItem.Name = "devToolsExampleToolStripMenuItem";
             this.devToolsExampleToolStripMenuItem.Size = new System.Drawing.Size(114, 20);
             this.devToolsExampleToolStripMenuItem.Text = "DevTools Example";
@@ -195,6 +197,13 @@ namespace CefSharp.Dom.WinForms.Example
             this.highlightLinksToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.highlightLinksToolStripMenuItem.Text = "Highlight Links";
             this.highlightLinksToolStripMenuItem.Click += new System.EventHandler(this.HighlightLinksToolStripMenuItemClick);
+            // 
+            // waitForSelectorToolStripMenuItem
+            // 
+            this.waitForSelectorToolStripMenuItem.Name = "waitForSelectorToolStripMenuItem";
+            this.waitForSelectorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.waitForSelectorToolStripMenuItem.Text = "Wait for Selector";
+            this.waitForSelectorToolStripMenuItem.Click += new System.EventHandler(this.OnWaitForSelectorToolStripMenuItemClick);
             // 
             // BrowserForm
             // 
@@ -239,5 +248,6 @@ namespace CefSharp.Dom.WinForms.Example
 		private System.Windows.Forms.ToolStripMenuItem showDevToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem devToolsExampleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem highlightLinksToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem waitForSelectorToolStripMenuItem;
     }
 }

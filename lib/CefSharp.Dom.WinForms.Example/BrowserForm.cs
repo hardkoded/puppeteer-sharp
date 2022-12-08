@@ -5,6 +5,8 @@
 using CefSharp.Dom.WinForms.Example.Controls;
 using CefSharp.WinForms;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CefSharp.Dom.WinForms.Example
@@ -211,6 +213,26 @@ namespace CefSharp.Dom.WinForms.Example
             {
                 await link.GetStyleAsync().AndThen(x => x.SetPropertyAsync("background-color", color));
             }
+
+            await devToolsContext.DisposeAsync();
+        }
+
+        private async void OnWaitForSelectorToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            _ = await browser.LoadUrlAsync("https://developers.google.com/web/");
+
+            var devToolsContext = await browser.CreateDevToolsContextAsync();
+
+            var inputSelector = "input[name='q']";
+            var waitForSelectorOptions = new WaitForSelectorOptions { Timeout = 30000 };
+            var emailInput = await devToolsContext.WaitForSelectorAsync(inputSelector, waitForSelectorOptions);
+            await emailInput.TypeAsync("Headless");
+
+            // Artifically sleep a little for demo purposes
+            await Task.Delay(5000);
+
+            var emailInput1 = await devToolsContext.WaitForSelectorAsync(inputSelector, waitForSelectorOptions);
+            await emailInput1.TypeAsync(" Chrome");
 
             await devToolsContext.DisposeAsync();
         }
