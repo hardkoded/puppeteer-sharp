@@ -220,7 +220,14 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
         {
             if (!_cts.IsCancellationRequested)
             {
-                _cts.Cancel();
+                try
+                {
+                    _cts.Cancel();
+                }
+                catch
+                {
+                    // Ignore as we're cleanining up
+                }
             }
             _world.WaitTasks.Remove(this);
         }
