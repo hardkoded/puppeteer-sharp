@@ -349,7 +349,7 @@ namespace CefSharp.Dom
                 var isMainFrame = string.IsNullOrEmpty(parentFrameId);
                 var parentFrame = _frames[parentFrameId];
                 var frame = new Frame(this, parentFrame, frameId, isMainFrame);
-                _frames[frame.Id] = frame;
+                _asyncFrames.AddItem(frameId, frame);
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }
         }
