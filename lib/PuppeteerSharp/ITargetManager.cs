@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -14,10 +16,14 @@ namespace PuppeteerSharp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        Dictionary<string, Target> GetAvailableTargets();
+        ConcurrentDictionary<string, Target> GetAvailableTargets();
 
-        Dictionary<string, Target> GetAllTargets();
+        ConcurrentDictionary<string, Target> GetAllTargets();
 
         public Task InitializeAsync();
+
+        public void AddTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor);
+
+        public void RemoveTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor);
     }
 }

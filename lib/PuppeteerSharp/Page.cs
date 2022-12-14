@@ -90,11 +90,17 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
+            target.TargetManager.AddTargetInterceptor(Client, OnAttachedToTarget);
+
+            target.TargetManager.TargetGone += OnDetachedFromTarget;
+
             _ = target.CloseTask.ContinueWith(
                 _ =>
                 {
                     try
                     {
+                        target.TargetManager.RemoveTargetInterceptor(Client, OnAttachedToTarget);
+                        target.TargetManager.TargetGone -= OnDetachedFromTarget;
                         Close?.Invoke(this, EventArgs.Empty);
                     }
                     finally
@@ -1431,12 +1437,6 @@ namespace PuppeteerSharp
                     case "Performance.metrics":
                         EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
                         break;
-                    case "Target.attachedToTarget":
-                        await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
-                        break;
-                    case "Target.detachedFromTarget":
-                        OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
-                        break;
                     case "Log.entryAdded":
                         await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
                         break;
@@ -1538,9 +1538,11 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
+        private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
         {
-            var sessionId = e.SessionId;
+            var sessionId = e.Target.Session?.Id;
+
+            FrameManager.OnDetachedFromTarget(e);
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
@@ -1548,31 +1550,23 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
+        private void OnAttachedToTarget(TargetChangedArgs e)
         {
+            FrameManager.OnAttachedToTarget(e);
             var targetInfo = e.TargetInfo;
-            var sessionId = e.SessionId;
-            if (targetInfo.Type != TargetType.Worker && targetInfo.Type != TargetType.IFrame)
+            var sessionId = e.Target.Session.Id;
+            if (targetInfo.Type == TargetType.Worker)
             {
-                try
-                {
-                    await Client.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
-                    {
-                        SessionId = sessionId,
-                    }).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.ToString());
-                }
-
-                return;
+                var session = Connection.FromSession(Client).GetSession(sessionId);
+                var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
+                _workers[sessionId] = worker;
+                WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
 
-            var session = Connection.FromSession(Client).GetSession(sessionId);
-            var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
-            _workers[sessionId] = worker;
-            WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
+            if (e.Target.Session != null)
+            {
+                e.Target.TargetManager.AddTargetInterceptor(e.Target.Session, OnAttachedToTarget);
+            }
         }
 
         private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)

@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser
     /// </summary>
-    public class Connection : IDisposable
+    public class Connection : IDisposable, ICDPConnection
     {
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new TaskQueue();
@@ -61,7 +61,9 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
 
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+        internal event EventHandler<SessionEventArgs> SessionAttached;
+
+        internal event EventHandler<SessionEventArgs> SessionDetached;
 
         /// <summary>
         /// Gets the WebSocket URL.
@@ -114,7 +116,8 @@ namespace PuppeteerSharp
             return Transport.SendAsync(message);
         }
 
-        internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        /// <inheritdoc/>
+        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (IsClosed)
             {
@@ -138,7 +141,8 @@ namespace PuppeteerSharp
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
-        internal async Task<T> SendAsync<T>(string method, object args = null)
+        /// <inheritdoc/>
+        public async Task<T> SendAsync<T>(string method, object args = null)
         {
             var response = await SendAsync(method, args).ConfigureAwait(false);
             return response.ToObject<T>(true);
@@ -249,7 +253,7 @@ namespace PuppeteerSharp
                 var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
                 _asyncSessions.AddItem(sessionId, session);
 
-                SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
+                SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
 
                 if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
                 {
@@ -262,6 +266,7 @@ namespace PuppeteerSharp
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {
                     session.Close("Target.detachedFromTarget");
+                    SessionDetached?.Invoke(this, new SessionEventArgs() { Session = session });
                 }
             }
 

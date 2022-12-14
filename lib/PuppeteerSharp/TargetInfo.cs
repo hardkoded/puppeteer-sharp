@@ -43,5 +43,11 @@ namespace PuppeteerSharp
         /// </summary>
         [JsonProperty]
         public string OpenerId { get; internal set; }
+
+        /// <summary>
+        /// Gets whether the target is attached
+        /// </summary>
+        [JsonProperty]
+        public bool Attached { get; internal set; }
     }
 }

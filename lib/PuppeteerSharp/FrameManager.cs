@@ -62,30 +62,37 @@ namespace PuppeteerSharp
 
         internal async Task InitializeAsync(CDPSession client = null)
         {
-            client ??= Client;
-            var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
-            var autoAttachTask = client != Client
-                ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-                {
-                    AutoAttach = true,
-                    WaitForDebuggerOnStart = false,
-                    Flatten = true,
-                })
-                : Task.CompletedTask;
+            try
+            {
+                client ??= Client;
+                var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
+                var autoAttachTask = client != Client
+                    ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+                    {
+                        AutoAttach = true,
+                        WaitForDebuggerOnStart = false,
+                        Flatten = true,
+                    })
+                    : Task.CompletedTask;
 
-            await Task.WhenAll(
-                client.SendAsync("Page.enable"),
-                getFrameTreeTask,
-                autoAttachTask).ConfigureAwait(false);
+                await Task.WhenAll(
+                    client.SendAsync("Page.enable"),
+                    getFrameTreeTask,
+                    autoAttachTask).ConfigureAwait(false);
 
-            await HandleFrameTreeAsync(client, new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
+                await HandleFrameTreeAsync(client, new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
 
-            await Task.WhenAll(
-                client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
-                client.SendAsync("Runtime.enable"),
-                client == Client ? NetworkManager.InitializeAsync() : Task.CompletedTask).ConfigureAwait(false);
+                await Task.WhenAll(
+                    client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
+                    client.SendAsync("Runtime.enable"),
+                    client == Client ? NetworkManager.InitializeAsync() : Task.CompletedTask).ConfigureAwait(false);
 
-            await EnsureIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
+                await EnsureIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to initialize session in frame manager");
+            }
         }
 
         internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
@@ -213,12 +220,6 @@ namespace PuppeteerSharp
                         case "Page.lifecycleEvent":
                             OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
                             break;
-                        case "Target.attachedToTarget":
-                            await OnAttachedToTargetAsync(e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
-                            break;
-                        case "Target.detachedFromTarget":
-                            OnDetachedFromTarget(e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
-                            break;
                         default:
                             break;
                     }
@@ -232,16 +233,16 @@ namespace PuppeteerSharp
             });
         }
 
-        private void OnDetachedFromTarget(TargetDetachedFromTargetResponse e)
+        internal void OnDetachedFromTarget(TargetChangedArgs e)
         {
-            _frames.TryGetValue(e.TargetId, out var frame);
+            _frames.TryGetValue(e.Target.TargetId, out var frame);
             if (frame != null && frame.IsOopFrame)
             {
               RemoveFramesRecursively(frame);
             }
         }
 
-        private async Task OnAttachedToTargetAsync(TargetAttachedToTargetResponse e)
+        internal void OnAttachedToTarget(TargetChangedArgs e)
         {
             if (e.TargetInfo.Type != TargetType.IFrame)
             {
@@ -249,14 +250,13 @@ namespace PuppeteerSharp
             }
 
             _frames.TryGetValue(e.TargetInfo.TargetId, out var frame);
-            var session = Connection.FromSession(Client).GetSession(e.SessionId);
             if (frame != null)
             {
-                frame.UpdateClient(session);
+                frame.UpdateClient(e.Target.Session);
             }
 
-            session.MessageReceived += Client_MessageReceived;
-            await InitializeAsync(session).ConfigureAwait(false);
+            e.Target.Session.MessageReceived += Client_MessageReceived;
+            _ = InitializeAsync(e.Target.Session);
         }
 
         private void OnFrameStartedLoading(BasicFrameResponse e)

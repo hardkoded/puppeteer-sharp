@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS0067 // Temporal, do not merge with this
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -30,11 +31,15 @@ namespace PuppeteerSharp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public Dictionary<string, Target> GetAllTargets() => throw new NotImplementedException();
-
-        public Dictionary<string, Target> GetAvailableTargets() => throw new NotImplementedException();
-
         public Task InitializeAsync() => throw new NotImplementedException();
+
+        public void AddTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor) => throw new NotImplementedException();
+
+        public void RemoveTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor) => throw new NotImplementedException();
+
+        ConcurrentDictionary<string, Target> ITargetManager.GetAvailableTargets() => throw new NotImplementedException();
+
+        ConcurrentDictionary<string, Target> ITargetManager.GetAllTargets() => throw new NotImplementedException();
     }
 }
 #pragma warning restore CS0067

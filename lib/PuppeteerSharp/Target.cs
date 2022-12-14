@@ -39,6 +39,7 @@ namespace PuppeteerSharp
             _screenshotTaskQueue = screenshotTaskQueue;
             BrowserContext = context;
             PageTask = null;
+            TargetManager = targetManager;
 
             _ = InitializedTaskWrapper.Task.ContinueWith(
                 async initializedTask =>
@@ -107,6 +108,8 @@ namespace PuppeteerSharp
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
 
         internal Task<IPage> PageTask { get; set; }
+
+        internal ITargetManager TargetManager { get; }
 
         internal bool IsInitialized { get; set; }
 
