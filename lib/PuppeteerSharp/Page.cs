@@ -1550,22 +1550,23 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnAttachedToTarget(TargetChangedArgs e)
+        private void OnAttachedToTarget(Target target, Target parentTarget)
         {
-            FrameManager.OnAttachedToTarget(e);
-            var targetInfo = e.TargetInfo;
-            var sessionId = e.Target.Session.Id;
+            FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = target });
+            var targetInfo = target.TargetInfo;
+            var sessionId = target.Session.Id;
+
             if (targetInfo.Type == TargetType.Worker)
             {
-                var session = Connection.FromSession(Client).GetSession(sessionId);
+                var session = target.Session;
                 var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
                 _workers[sessionId] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
 
-            if (e.Target.Session != null)
+            if (target.Session != null)
             {
-                e.Target.TargetManager.AddTargetInterceptor(e.Target.Session, OnAttachedToTarget);
+                target.TargetManager.AddTargetInterceptor(target.Session, OnAttachedToTarget);
             }
         }
 

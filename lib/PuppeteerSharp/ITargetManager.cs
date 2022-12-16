@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
+    internal delegate void TargetInterceptor(Target createdTarget, Target parentTarget);
+
     internal interface ITargetManager
     {
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -18,12 +22,10 @@ namespace PuppeteerSharp
 
         ConcurrentDictionary<string, Target> GetAvailableTargets();
 
-        ConcurrentDictionary<string, Target> GetAllTargets();
-
         public Task InitializeAsync();
 
-        public void AddTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor);
+        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
 
-        public void RemoveTargetInterceptor(CDPSession session, Action<TargetChangedArgs> interceptor);
+        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
     }
 }

@@ -70,7 +70,7 @@ namespace PuppeteerSharp
                 TaskScheduler.Default);
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            IsInitialized = TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url);
+            IsInitialized = _isPageTargetFunc(TargetInfo) || !string.IsNullOrEmpty(TargetInfo.Url);
 
             if (IsInitialized)
             {
@@ -89,7 +89,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public ITarget Opener => TargetInfo.OpenerId != null ?
-            ((Browser)Browser).TargetManager.GetAllTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
+            ((Browser)Browser).TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
 
         /// <inheritdoc/>
         public IBrowser Browser => BrowserContext.Browser;
@@ -101,7 +101,7 @@ namespace PuppeteerSharp
 
         internal Task<bool> InitializedTask => InitializedTaskWrapper.Task;
 
-        internal TaskCompletionSource<bool> InitializedTaskWrapper => new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Task CloseTask => CloseTaskWrapper.Task;
 

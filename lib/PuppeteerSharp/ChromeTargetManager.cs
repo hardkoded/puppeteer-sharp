@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS0067 // Temporal, do not merge with this
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +21,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsByTargetId = new();
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
-        private readonly ConcurrentDictionary<ICDPConnection, List<Func<Target, Target, Task>>> _targetInterceptors = new();
+        private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
         private readonly List<string> _targetsIdsForInit = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
@@ -46,8 +45,9 @@ namespace PuppeteerSharp
                     new TargetSetDiscoverTargetsRequest.DiscoverFilter()
                     {
                         Type = "tab",
-                        Exlude = true,
+                        Exclude = true,
                     },
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
                 },
             }).ContinueWith(
                 t =>
@@ -88,8 +88,6 @@ namespace PuppeteerSharp
             FinishInitializationIfReady();
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
-
-        private void FinishInitializationIfReady(string targetId = null) => throw new NotImplementedException();
 
         private void StoreExistingTargetsForInit()
         {
@@ -232,13 +230,28 @@ namespace PuppeteerSharp
             {
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
+                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                {
+                    return;
+                }
+
+                var workerTarget = _targetFactoryFunc(targetInfo, null);
+                _attachedTargetsByTargetId.TryAdd(targetInfo.TargetId, workerTarget);
+                TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = workerTarget });
                 return;
+            }
+
+            if (_targetFilterFunc?.Invoke(targetInfo) == false)
+            {
+                _ignoredTargets.Add(targetInfo.TargetId);
+                FinishInitializationIfReady(targetInfo.TargetId);
+                await silentDetach().ConfigureAwait(false);
             }
 
             var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             if (!existingTarget)
             {
-                _targetFactoryFunc(targetInfo, session);
+                target = _targetFactoryFunc(targetInfo, session);
             }
 
             session.MessageReceived += OnMessageReceived;
@@ -263,7 +276,7 @@ namespace PuppeteerSharp
                         throw new PuppeteerException("Parent session not found in attached targets");
                     }
 
-                    await interceptor(target, parentTarget).ConfigureAwait(false);
+                    interceptor(target, parentTarget);
                 }
             }
 
@@ -293,21 +306,39 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnDetachedToTarget(object sender, TargetDetachedFromTargetResponse e) => throw new NotImplementedException();
+        private void FinishInitializationIfReady(string targetId = null)
+        {
+            if (targetId != null)
+            {
+                _targetsIdsForInit.Remove(targetId);
+            }
 
-        public ConcurrentDictionary<string, Target> GetAllTargets() => throw new NotImplementedException();
+            if (_targetsIdsForInit.Count == 0)
+            {
+                _initializeCompletionSource.TrySetResult(true);
+            }
+        }
 
-        Task ITargetManager.InitializeAsync() => throw new NotImplementedException();
+        private void OnDetachedToTarget(object sender, TargetDetachedFromTargetResponse e)
+        {
+            if (!_attachedTargetsBySessionId.TryRemove(e.SessionId, out var target))
+            {
+                return;
+            }
 
-        public void AddTargetInterceptor(CDPSession session, Func<Target, Target, Task> interceptor)
+            _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
+            TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+        }
+
+        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
         {
             lock (_targetInterceptors)
             {
                 _targetInterceptors.TryGetValue(session, out var interceptors);
 
-                if (interceptor == null)
+                if (interceptors == null)
                 {
-                    interceptors = new List<Func<Target, Target, Task>>();
+                    interceptors = new List<TargetInterceptor>();
                     _targetInterceptors.TryAdd(session, interceptors);
                 }
 
@@ -315,15 +346,14 @@ namespace PuppeteerSharp
             }
         }
 
-        public void RemoveTargetInterceptor(CDPSession session, Func<Target, Target, Task> interceptor)
+        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
         {
             _targetInterceptors.TryGetValue(session, out var interceptors);
 
-            if (interceptor != null)
+            if (interceptors != null)
             {
                 interceptors.Remove(interceptor);
             }
         }
     }
 }
-#pragma warning restore CS0067

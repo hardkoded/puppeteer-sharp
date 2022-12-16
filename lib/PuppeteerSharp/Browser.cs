@@ -37,7 +37,7 @@ namespace PuppeteerSharp
             LauncherBase launcher,
             Func<Task> closeCallback = null,
             Func<TargetInfo, bool> targetFilter = null,
-            Func<TargetInfo, bool> isPageTargetCallback = null)
+            Func<TargetInfo, bool> isPageTargetFunc = null)
         {
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
@@ -47,7 +47,7 @@ namespace PuppeteerSharp
             _closeCallback = closeCallback;
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
             _isPageTargetFunc =
-                isPageTargetCallback ??
+                isPageTargetFunc ??
                 new Func<TargetInfo, bool>((TargetInfo target) =>
                 {
                     return
@@ -429,9 +429,8 @@ namespace PuppeteerSharp
             return browser;
         }
 
-        private Target CreateTarget(TargetCreatedResponse e, CDPSession session)
+        private Target CreateTarget(TargetInfo targetInfo, CDPSession session)
         {
-            var targetInfo = e.TargetInfo;
             var browserContextId = targetInfo.BrowserContextId;
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
@@ -440,7 +439,7 @@ namespace PuppeteerSharp
             }
 
             return new Target(
-                e.TargetInfo,
+                targetInfo,
                 session,
                 context,
                 TargetManager,

@@ -7,8 +7,8 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="ICDPSession.SendAsync(string, object, bool)"/> method.
-    ///  * Protocol events, using the <see cref="ICDPSession.MessageReceived"/> event.
+    ///  * Protocol methods can be called with <see cref="ICDPConnection.SendAsync(string, object, bool)"/> method.
+    ///  * Protocol events, using the <see cref="ICDPConnection.MessageReceived"/> event.
     ///
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
     ///

@@ -43,7 +43,7 @@ namespace PuppeteerSharp
         private bool _isDisposed;
 
         /// <inheritdoc/>
-        public const string DefaultChromiumRevision = "970485";
+        public const string DefaultChromiumRevision = "1069273";
 
         /// <inheritdoc/>
         public BrowserFetcher()
