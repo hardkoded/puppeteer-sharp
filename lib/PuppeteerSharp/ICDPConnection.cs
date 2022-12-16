@@ -37,4 +37,3 @@ namespace PuppeteerSharp
         Task<T> SendAsync<T>(string method, object args = null);
     }
 }
-
