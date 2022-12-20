@@ -233,15 +233,6 @@ namespace PuppeteerSharp
             });
         }
 
-        internal void OnDetachedFromTarget(TargetChangedArgs e)
-        {
-            _frames.TryGetValue(e.Target.TargetId, out var frame);
-            if (frame != null && frame.IsOopFrame)
-            {
-              RemoveFramesRecursively(frame);
-            }
-        }
-
         internal void OnAttachedToTarget(TargetChangedArgs e)
         {
             if (e.TargetInfo.Type != TargetType.IFrame)

@@ -198,26 +198,20 @@ namespace PuppeteerSharp
 
             Func<Task> silentDetach = async () =>
             {
-                await session.SendAsync("Runtime.runIfWaitingForDebugger")
-                    .ContinueWith(
-                        t => _logger.LogError(t.Exception, "Runtime.runIfWaitingForDebugger failed."),
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnFaulted,
-                        TaskScheduler.Default)
-                    .ConfigureAwait(false);
-
-                await parent.SendAsync(
-                    "Target.detachFromTarget",
-                    new TargetDetachFromTargetRequest
-                    {
-                        SessionId = session.Id,
-                    })
-                    .ContinueWith(
-                        t => _logger.LogError(t.Exception, "Runtime.runIfWaitingForDebugger failed."),
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnFaulted,
-                        TaskScheduler.Default)
-                    .ConfigureAwait(false);
+                try
+                {
+                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                    await parent.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest
+                        {
+                            SessionId = session.Id,
+                        }).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "silentDetach failed.");
+                }
             };
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))

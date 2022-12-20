@@ -1541,8 +1541,6 @@ namespace PuppeteerSharp
         private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
         {
             var sessionId = e.Target.Session?.Id;
-
-            FrameManager.OnDetachedFromTarget(e);
             if (_workers.TryGetValue(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
