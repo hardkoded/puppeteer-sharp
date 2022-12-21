@@ -70,7 +70,7 @@ namespace PuppeteerSharp
                 TaskScheduler.Default);
 
             CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            IsInitialized = _isPageTargetFunc(TargetInfo) || !string.IsNullOrEmpty(TargetInfo.Url);
+            IsInitialized = !_isPageTargetFunc(TargetInfo) || !string.IsNullOrEmpty(TargetInfo.Url);
 
             if (IsInitialized)
             {
