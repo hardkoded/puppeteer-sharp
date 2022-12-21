@@ -55,7 +55,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
-        private readonly IDictionary<string, Worker> _workers;
+        private readonly ConcurrentDictionary<string, Worker> _workers;
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings;
@@ -1541,10 +1541,9 @@ namespace PuppeteerSharp
         private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
         {
             var sessionId = e.Target.Session?.Id;
-            if (_workers.TryGetValue(sessionId, out var worker))
+            if (sessionId != null && _workers.TryRemove(sessionId, out var worker))
             {
                 WorkerDestroyed?.Invoke(this, new WorkerEventArgs(worker));
-                _workers.Remove(sessionId);
             }
         }
 

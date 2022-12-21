@@ -111,7 +111,7 @@ namespace PuppeteerSharp
                         await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
                         return;
                     case "Target.detachedFromTarget":
-                        OnDetachedToTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
+                        OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
                         return;
                     case "Target.targetCreated":
                         OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>(true));
@@ -313,7 +313,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnDetachedToTarget(object sender, TargetDetachedFromTargetResponse e)
+        private void OnDetachedFromTarget(object sender, TargetDetachedFromTargetResponse e)
         {
             if (!_attachedTargetsBySessionId.TryRemove(e.SessionId, out var target))
             {
