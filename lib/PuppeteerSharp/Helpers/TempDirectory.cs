@@ -42,6 +42,11 @@ namespace PuppeteerSharp.Helpers
             Dispose(true);
         }
 
+        public override string ToString() => Path;
+
+        public Task DeleteAsync(CancellationToken cancellationToken = default)
+            => _deleteTask ?? (_deleteTask = DeleteAsync(Path, CancellationToken.None));
+
         protected void Dispose(bool disposing)
         {
             if (_deleteTask == null)
@@ -49,11 +54,6 @@ namespace PuppeteerSharp.Helpers
                 _ = DeleteAsync();
             }
         }
-
-        public override string ToString() => Path;
-
-        public Task DeleteAsync(CancellationToken cancellationToken = default)
-            => _deleteTask ?? (_deleteTask = DeleteAsync(Path, CancellationToken.None));
 
         private static async Task DeleteAsync(string path, CancellationToken cancellationToken = default)
         {
