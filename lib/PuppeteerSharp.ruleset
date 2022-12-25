@@ -24,7 +24,7 @@
     <Rule Id="SA1124" Action="Error" /> <!-- Error SA1124: Don't use regions-->
     <Rule Id="SA1009" Action="Error" /> <!-- Error SA1009: Closing parenthesis should not be preceded by a space. (SA1009)-->
     <Rule Id="SA1413" Action="Error" /> <!-- Error SA1413: Use trailing comma in multi-line initializers (SA1413)-->
-    <Rule Id="SA1602" Action="None" /> <!-- Error SA1602: Enumeration items should be documented (SA1602)-->
+    <Rule Id="SA1602" Action="Error" /> <!-- Error SA1602: Enumeration items should be documented (SA1602)-->
     <Rule Id="SA1005" Action="Error" /> <!-- Error SA1005: Single line comment should begin with a space. (SA1005)-->
     <Rule Id="SA1203" Action="Error" /> <!-- Error SA1203: Constant fields should appear before non-constant fields (SA1203)-->
     <Rule Id="SA1720" Action="Error" /> <!-- Error SA1720: Name contains type-->
