@@ -199,16 +199,95 @@ namespace PuppeteerSharp
             => CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
 
         /// <inheritdoc/>
-        internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => CustomQueriesManager.GetCustomQueryHandlerNames();
-
-        /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)
             => CustomQueriesManager.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
             => CustomQueriesManager.ClearCustomQueryHandlers();
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
+        /// created by Puppeteer.
+        /// </summary>
+        /// <returns>ValueTask</returns>
+        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
+
+        internal static async Task<Browser> CreateAsync(
+            Connection connection,
+            string[] contextIds,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewPort,
+            LauncherBase launcher,
+            Func<TargetInfo, bool> targetFilter,
+            Action<IBrowser> initAction = null)
+        {
+            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
+
+            initAction?.Invoke(browser);
+
+            await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
+            {
+                Discover = true,
+            }).ConfigureAwait(false);
+
+            return browser;
+        }
+
+        /// <inheritdoc/>
+        internal IEnumerable<string> GetCustomQueryHandlerNames()
+            => CustomQueriesManager.GetCustomQueryHandlerNames();
+
+        internal void ChangeTarget(Target target)
+        {
+            var args = new TargetChangedArgs { Target = target };
+            TargetChanged?.Invoke(this, args);
+            ((BrowserContext)target.BrowserContext).OnTargetChanged(this, args);
+        }
+
+        internal async Task<IPage> CreatePageInContextAsync(string contextId)
+        {
+            var createTargetRequest = new TargetCreateTargetRequest
+            {
+                Url = "about:blank",
+            };
+
+            if (contextId != null)
+            {
+                createTargetRequest.BrowserContextId = contextId;
+            }
+
+            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)).TargetId;
+            var target = TargetsMap[targetId];
+            await target.InitializedTask.ConfigureAwait(false);
+            return await target.PageAsync().ConfigureAwait(false);
+        }
+
+        internal async Task DisposeContextAsync(string contextId)
+        {
+            await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
+            {
+                BrowserContextId = contextId,
+            }).ConfigureAwait(false);
+            _contexts.TryRemove(contextId, out var _);
+        }
+
+        /// <summary>
+        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
+        /// created by Puppeteer.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync()
+            .ContinueWith(
+                _ => ScreenshotTaskQueue.DisposeAsync(), TaskScheduler.Default);
 
         private async Task CloseCoreAsync()
         {
@@ -257,41 +336,6 @@ namespace PuppeteerSharp
             }
 
             Closed?.Invoke(this, new EventArgs());
-        }
-
-        internal void ChangeTarget(Target target)
-        {
-            var args = new TargetChangedArgs { Target = target };
-            TargetChanged?.Invoke(this, args);
-            ((BrowserContext)target.BrowserContext).OnTargetChanged(this, args);
-        }
-
-        internal async Task<IPage> CreatePageInContextAsync(string contextId)
-        {
-            var createTargetRequest = new TargetCreateTargetRequest
-            {
-                Url = "about:blank",
-            };
-
-            if (contextId != null)
-            {
-                createTargetRequest.BrowserContextId = contextId;
-            }
-
-            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
-                .ConfigureAwait(false)).TargetId;
-            var target = TargetsMap[targetId];
-            await target.InitializedTask.ConfigureAwait(false);
-            return await target.PageAsync().ConfigureAwait(false);
-        }
-
-        internal async Task DisposeContextAsync(string contextId)
-        {
-            await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
-            {
-                BrowserContextId = contextId,
-            }).ConfigureAwait(false);
-            _contexts.TryRemove(contextId, out var _);
         }
 
         private async void Connection_Disconnected(object sender, EventArgs e)
@@ -402,50 +446,5 @@ namespace PuppeteerSharp
                 context.OnTargetCreated(this, args);
             }
         }
-
-        internal static async Task<Browser> CreateAsync(
-            Connection connection,
-            string[] contextIds,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
-            LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter,
-            Action<IBrowser> initAction = null)
-        {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
-
-            initAction?.Invoke(browser);
-
-            await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-            }).ConfigureAwait(false);
-
-            return browser;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
-        /// created by Puppeteer.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _ = CloseAsync()
-            .ContinueWith(
-                _ => ScreenshotTaskQueue.DisposeAsync(),
-                TaskScheduler.Default);
-
-        /// <summary>
-        /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
-        /// created by Puppeteer.
-        /// </summary>
-        /// <returns>ValueTask</returns>
-        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
     }
 }
