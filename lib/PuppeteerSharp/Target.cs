@@ -145,23 +145,13 @@ namespace PuppeteerSharp
             return _workerTask;
         }
 
-        private async Task<Worker> WorkerInternalAsync()
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the target.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        public async Task<ICDPSession> CreateCDPSessionAsync()
         {
-            var client = await _sessionFactory().ConfigureAwait(false);
-            return new Worker(
-                client,
-                TargetInfo.Url,
-                (_, _, _) => Task.CompletedTask,
-                _ => { });
-        }
-
-        private async Task<IPage> CreatePageAsync()
-        {
-            var session = await _sessionFactory().ConfigureAwait(false);
-
-            var borwser = (Browser)Browser;
-
-            return await Page.CreateAsync(session, this, borwser.IgnoreHTTPSErrors, borwser.DefaultViewport, borwser.ScreenshotTaskQueue).ConfigureAwait(false);
+            return await ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo).ConfigureAwait(false);
         }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
@@ -182,13 +172,23 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <summary>
-        /// Creates a Chrome Devtools Protocol session attached to the target.
-        /// </summary>
-        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
-        public async Task<ICDPSession> CreateCDPSessionAsync()
+        private async Task<Worker> WorkerInternalAsync()
         {
-            return await ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo).ConfigureAwait(false);
+            var client = await _sessionFactory().ConfigureAwait(false);
+            return new Worker(
+                client,
+                TargetInfo.Url,
+                (_, _, _) => Task.CompletedTask,
+                _ => { });
+        }
+
+        private async Task<IPage> CreatePageAsync()
+        {
+            var session = await _sessionFactory().ConfigureAwait(false);
+
+            var borwser = (Browser)Browser;
+
+            return await Page.CreateAsync(session, this, borwser.IgnoreHTTPSErrors, borwser.DefaultViewport, borwser.ScreenshotTaskQueue).ConfigureAwait(false);
         }
     }
 }
