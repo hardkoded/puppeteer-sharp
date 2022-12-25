@@ -14,6 +14,20 @@ namespace PuppeteerSharp.Helpers
 
         internal TaskQueue() => _semaphore = new SemaphoreSlim(1);
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        [SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Per MSDN instructions for implementing the IAsyncDisposable pattern.")]
+        public async ValueTask DisposeAsync()
+        {
+            await DisposeAsyncCore();
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
         internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
@@ -40,12 +54,6 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected virtual void Dispose(bool dispose)
         {
             if (_isDisposed)
@@ -59,14 +67,6 @@ namespace PuppeteerSharp.Helpers
             }
 
             _isDisposed = true;
-        }
-
-        [SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Per MSDN instructions for implementing the IAsyncDisposable pattern.")]
-        public async ValueTask DisposeAsync()
-        {
-            await DisposeAsyncCore();
-            Dispose(false);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual async ValueTask DisposeAsyncCore()
