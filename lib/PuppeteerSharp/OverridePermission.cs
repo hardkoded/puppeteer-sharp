@@ -54,7 +54,7 @@ namespace PuppeteerSharp
         BackgroundSync,
 
         /// <summary>
-        /// Ambient light sensor, Accelerometer, Gyroscope, Magnetometer
+        /// Ambient light sensor, Accelerometer, Gyroscope, Magnetometer.
         /// </summary>
         [EnumMember(Value = "sensors")]
         Sensors,

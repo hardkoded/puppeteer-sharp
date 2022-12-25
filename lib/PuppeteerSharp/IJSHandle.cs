@@ -30,46 +30,46 @@ namespace PuppeteerSharp
         RemoteObject RemoteObject { get; }
 
         /// <summary>
-        /// Executes a function in browser context
+        /// Executes a function in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
-        /// Executes a function in browser context
+        /// Executes a function in browser context.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<T> EvaluateFunctionAsync<T>(string script, params object[] args);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <param name="pageFunction">Script to be evaluated in browser context</param>
-        /// <param name="args">Function arguments</param>
+        /// <param name="pageFunction">Script to be evaluated in browser context.</param>
+        /// <param name="args">Function arguments.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args);
 
         /// <summary>
         /// Returns a <see cref="Dictionary{TKey, TValue}"/> with property names as keys and <see cref="IJSHandle"/> instances for the property values.
         /// </summary>
-        /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/></returns>
+        /// <returns>Task which resolves to a <see cref="Dictionary{TKey, TValue}"/>.</returns>
         /// <example>
         /// <code>
         /// var handle = await page.EvaluateExpressionHandle("({window, document})");
@@ -82,28 +82,28 @@ namespace PuppeteerSharp
         Task<Dictionary<string, IJSHandle>> GetPropertiesAsync();
 
         /// <summary>
-        /// Fetches a single property from the referenced object
+        /// Fetches a single property from the referenced object.
         /// </summary>
-        /// <param name="propertyName">property to get</param>
-        /// <returns>Task of <see cref="IJSHandle"/></returns>
+        /// <param name="propertyName">property to get.</param>
+        /// <returns>Task of <see cref="IJSHandle"/>.</returns>
         Task<IJSHandle> GetPropertyAsync(string propertyName);
 
         /// <summary>
-        /// Returns a JSON representation of the object
+        /// Returns a JSON representation of the object.
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         /// <remarks>
-        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
+        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
         /// </remarks>
         Task<object> JsonValueAsync();
 
         /// <summary>
-        /// Returns a JSON representation of the object
+        /// Returns a JSON representation of the object.
         /// </summary>
-        /// <typeparam name="T">A strongly typed object to parse to</typeparam>
-        /// <returns>Task</returns>
+        /// <typeparam name="T">A strongly typed object to parse to.</typeparam>
+        /// <returns>Task.</returns>
         /// <remarks>
-        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references
+        /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
         /// </remarks>
         Task<T> JsonValueAsync<T>();
     }

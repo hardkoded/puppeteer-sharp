@@ -1,7 +1,7 @@
 namespace PuppeteerSharp.Input
 {
     /// <summary>
-    /// Utility class to be used with <see cref="Keyboard"/> operations
+    /// Utility class to be used with <see cref="Keyboard"/> operations.
     /// </summary>
     public class Key
     {
@@ -515,9 +515,9 @@ namespace PuppeteerSharp.Input
         private Key(string value) => _value = value;
 
         /// <summary>
-        /// Converts the <paramref name="key"/> to its underlining string value
+        /// Converts the <paramref name="key"/> to its underlining string value.
         /// </summary>
-        /// <param name="key">The key</param>
+        /// <param name="key">The key.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
         public static implicit operator string(Key key)
         {

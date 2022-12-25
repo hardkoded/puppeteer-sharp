@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Default Viewport
+        /// Default Viewport.
         /// </summary>
         public static ViewPortOptions Default => new ViewPortOptions
         {
@@ -25,7 +25,7 @@ namespace PuppeteerSharp
         };
 
         /// <summary>
-        /// Gets or sets the width
+        /// Gets or sets the width.
         /// </summary>
         /// <value>The page width width in pixels.</value>
         public int Width { get; set; }

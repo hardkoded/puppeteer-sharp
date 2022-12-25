@@ -59,7 +59,7 @@ namespace PuppeteerSharp
         public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
 
         /// <summary>
-        /// Returns an array of argument based on the options provided and the platform where the library is running
+        /// Returns an array of argument based on the options provided and the platform where the library is running.
         /// </summary>
         /// <returns>Chromium arguments.</returns>
         /// <param name="options">Options.</param>
@@ -71,8 +71,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.
         /// </summary>
-        /// <param name="options">Options for launching Chrome</param>
-        /// <param name="loggerFactory">The logger factory</param>
+        /// <param name="options">Options for launching Chrome.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <returns>A connected browser.</returns>
         /// <remarks>
         /// See <a href="https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/">this article</a>
@@ -93,7 +93,7 @@ namespace PuppeteerSharp
         /// Attaches Puppeteer to an existing Chromium instance. The browser will be closed when the Browser is disposed.
         /// </summary>
         /// <param name="options">Options for connecting.</param>
-        /// <param name="loggerFactory">The logger factory</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <returns>A connected browser.</returns>
         public static Task<IBrowser> ConnectAsync(ConnectOptions options, ILoggerFactory loggerFactory = null)
             => new Launcher(loggerFactory).ConnectAsync(options);

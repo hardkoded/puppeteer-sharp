@@ -7,37 +7,37 @@
     public class UserAgentMetadata
     {
         /// <summary>
-        /// Brands
+        /// Brands.
         /// </summary>
         public UserAgentBrandVersion[] Brands { get; set; }
 
         /// <summary>
-        /// Full version
+        /// Full version.
         /// </summary>
         public string FullVersion { get; set; }
 
         /// <summary>
-        /// Platform
+        /// Platform.
         /// </summary>
         public string Platform { get; set; }
 
         /// <summary>
-        /// Platform version
+        /// Platform version.
         /// </summary>
         public string PlatformVersion { get; set; }
 
         /// <summary>
-        /// Architecture
+        /// Architecture.
         /// </summary>
         public string Architecture { get; set; }
 
         /// <summary>
-        /// Model
+        /// Model.
         /// </summary>
         public string Model { get; set; }
 
         /// <summary>
-        /// Mobile
+        /// Mobile.
         /// </summary>
         public bool Mobile { get; set; }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PuppeteerSharp.Media
 {
     /// <summary>
-    /// margin options used in <see cref="PdfOptions"/>
+    /// margin options used in <see cref="PdfOptions"/>.
     /// </summary>
     public class MarginOptions : IEquatable<MarginOptions>
     {
@@ -16,22 +16,22 @@ namespace PuppeteerSharp.Media
         }
 
         /// <summary>
-        /// Top margin, accepts values labeled with units
+        /// Top margin, accepts values labeled with units.
         /// </summary>
         public string Top { get; set; }
 
         /// <summary>
-        /// Left margin, accepts values labeled with units
+        /// Left margin, accepts values labeled with units.
         /// </summary>
         public string Left { get; set; }
 
         /// <summary>
-        /// Bottom margin, accepts values labeled with units
+        /// Bottom margin, accepts values labeled with units.
         /// </summary>
         public string Bottom { get; set; }
 
         /// <summary>
-        /// Right margin, accepts values labeled with units
+        /// Right margin, accepts values labeled with units.
         /// </summary>
         public string Right { get; set; }
 

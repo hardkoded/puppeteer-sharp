@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Offset used in conjunction with <see cref="ElementHandle.ClickablePointAsync(Offset?)"/>
+    /// Offset used in conjunction with <see cref="ElementHandle.ClickablePointAsync(Offset?)"/>.
     /// </summary>
     public struct Offset
     {

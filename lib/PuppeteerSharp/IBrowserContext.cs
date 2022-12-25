@@ -6,7 +6,7 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
-    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>
+    /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>.
     /// </summary>
     public interface IBrowserContext
     {
@@ -26,21 +26,21 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
-        /// Browser Context Id
+        /// Browser Context Id.
         /// </summary>
         string Id { get; }
 
         /// <summary>
-        /// Gets the browser this browser context belongs to
+        /// Gets the browser this browser context belongs to.
         /// </summary>
         IBrowser Browser { get; }
 
         /// <summary>
         /// Returns whether BrowserContext is incognito
-        /// The default browser context is the only non-incognito browser context
+        /// The default browser context is the only non-incognito browser context.
         /// </summary>
         /// <remarks>
-        /// The default browser context cannot be closed
+        /// The default browser context cannot be closed.
         /// </remarks>
         bool IsIncognito { get; }
 
@@ -51,22 +51,22 @@ namespace PuppeteerSharp
         Task ClearPermissionOverridesAsync();
 
         /// <summary>
-        /// Closes the browser context. All the targets that belong to the browser context will be closed
+        /// Closes the browser context. All the targets that belong to the browser context will be closed.
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task CloseAsync();
 
         /// <summary>
-        /// Creates a new page
+        /// Creates a new page.
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
         Task<IPage> NewPageAsync();
 
         /// <summary>
         /// Overrides the browser context permissions.
         /// </summary>
         /// <returns>The task.</returns>
-        /// <param name="origin">The origin to grant permissions to, e.g. "https://example.com"</param>
+        /// <param name="origin">The origin to grant permissions to, e.g. "https://example.com".</param>
         /// <param name="permissions">
         /// An array of permissions to grant. All permissions that are not listed here will be automatically denied.
         /// </param>
@@ -90,7 +90,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets an array of all active targets inside the browser context.
         /// </summary>
-        /// <returns>An array of all active targets inside the browser context</returns>
+        /// <returns>An array of all active targets inside the browser context.</returns>
         ITarget[] Targets();
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="predicate">A function to be run for every target</param>
-        /// <param name="options">options</param>
+        /// <param name="predicate">A function to be run for every target.</param>
+        /// <param name="options">options.</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
     }

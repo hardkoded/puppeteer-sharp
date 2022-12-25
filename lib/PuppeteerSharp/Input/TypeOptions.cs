@@ -1,7 +1,7 @@
 namespace PuppeteerSharp.Input
 {
     /// <summary>
-    /// Options to use when typing
+    /// Options to use when typing.
     /// </summary>
     /// <seealso cref="IPage.TypeAsync(string, string, TypeOptions)"/>
     /// <seealso cref="IElementHandle.TypeAsync(string, TypeOptions)"/>

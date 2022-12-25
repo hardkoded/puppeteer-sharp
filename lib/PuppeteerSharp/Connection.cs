@@ -14,7 +14,7 @@ using PuppeteerSharp.Transport;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// A connection handles the communication with a Chromium browser
+    /// A connection handles the communication with a Chromium browser.
     /// </summary>
     public class Connection : IDisposable
     {

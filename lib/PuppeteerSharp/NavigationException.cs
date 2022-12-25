@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Url that caused the exception
+        /// Url that caused the exception.
         /// </summary>
         /// <value>The URL.</value>
         public string Url { get; }

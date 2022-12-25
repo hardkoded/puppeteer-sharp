@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
+        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
+        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
+        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
+        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
+        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
+        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds
+        /// Cancels the <paramref name="task"/> after <paramref name="milliseconds"/> milliseconds.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>
@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Helpers
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
         /// <summary>
-        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period
+        /// Cancels the <paramref name="task"/> after a given <paramref name="timeout"/> period.
         /// </summary>
         /// <returns>The task result.</returns>
         /// <param name="task">Task to wait for.</param>

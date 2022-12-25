@@ -75,15 +75,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
-        /// <returns>A Task that when awaited detaches from the session target</returns>
+        /// <returns>A Task that when awaited detaches from the session target.</returns>
         /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         Task DetachAsync();
 
         /// <summary>
         /// Protocol methods can be called with this method.
         /// </summary>
-        /// <param name="method">The method name</param>
-        /// <param name="args">The method args</param>
+        /// <param name="method">The method name.</param>
+        /// <param name="args">The method args.</param>
         /// <param name="waitForCallback">
         /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
         /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
@@ -95,8 +95,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Protocol methods can be called with this method.
         /// </summary>
-        /// <param name="method">The method name</param>
-        /// <param name="args">The method args</param>
+        /// <param name="method">The method name.</param>
+        /// <param name="args">The method args.</param>
         /// <typeparam name="T">Return type.</typeparam>
         /// <returns>The task.</returns>
         Task<T> SendAsync<T>(string method, object args = null);

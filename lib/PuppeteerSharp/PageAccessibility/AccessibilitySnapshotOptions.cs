@@ -1,7 +1,7 @@
 namespace PuppeteerSharp.PageAccessibility
 {
     /// <summary>
-    /// <see cref="IAccessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>
+    /// <see cref="IAccessibility.SnapshotAsync(AccessibilitySnapshotOptions)"/>.
     /// </summary>
     /// <seealso cref="IPage.Accessibility"/>
     public class AccessibilitySnapshotOptions

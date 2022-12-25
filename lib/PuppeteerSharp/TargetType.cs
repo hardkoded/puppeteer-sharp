@@ -52,7 +52,7 @@ namespace PuppeteerSharp
         Javascript,
 
         /// <summary>
-        /// Target type network
+        /// Target type network.
         /// </summary>
         [EnumMember(Value = "network")]
         Network,

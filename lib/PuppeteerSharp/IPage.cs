@@ -180,7 +180,7 @@ namespace PuppeteerSharp
         ICDPSession Client { get; }
 
         /// <summary>
-        /// Gets this page's coverage
+        /// Gets this page's coverage.
         /// </summary>
         ICoverage Coverage { get; }
 
@@ -192,7 +192,7 @@ namespace PuppeteerSharp
         /// - <see cref="ReloadAsync(NavigationOptions)"/>
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
-        /// **NOTE** <see cref="DefaultNavigationTimeout"/> takes priority over <seealso cref="DefaultTimeout"/>
+        /// **NOTE** <see cref="DefaultNavigationTimeout"/> takes priority over. <seealso cref="DefaultTimeout"/>
         /// </summary>
         int DefaultNavigationTimeout { get; set; }
 
@@ -209,7 +209,7 @@ namespace PuppeteerSharp
         /// - <see cref="WaitForResponseAsync(string, WaitForOptions)"/>
         /// - <see cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// - <see cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
+        /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>.
         /// </summary>
         int DefaultTimeout { get; set; }
 
@@ -230,12 +230,12 @@ namespace PuppeteerSharp
         bool IsDragInterceptionEnabled { get; }
 
         /// <summary>
-        /// Gets this page's keyboard
+        /// Gets this page's keyboard.
         /// </summary>
         IKeyboard Keyboard { get; }
 
         /// <summary>
-        /// Gets page's main frame
+        /// Gets page's main frame.
         /// </summary>
         /// <remarks>
         /// Page is guaranteed to have a main frame which persists during navigations.
@@ -243,7 +243,7 @@ namespace PuppeteerSharp
         IFrame MainFrame { get; }
 
         /// <summary>
-        /// Gets this page's mouse
+        /// Gets this page's mouse.
         /// </summary>
         IMouse Mouse { get; }
 
@@ -253,22 +253,22 @@ namespace PuppeteerSharp
         ITarget Target { get; }
 
         /// <summary>
-        /// Gets this page's touchscreen
+        /// Gets this page's touchscreen.
         /// </summary>
         ITouchscreen Touchscreen { get; }
 
         /// <summary>
-        /// Gets this page's tracing
+        /// Gets this page's tracing.
         /// </summary>
         ITracing Tracing { get; }
 
         /// <summary>
-        /// Shortcut for <c>page.MainFrame.Url</c>
+        /// Shortcut for <c>page.MainFrame.Url</c>.
         /// </summary>
         string Url { get; }
 
         /// <summary>
-        /// Gets this page's viewport
+        /// Gets this page's viewport.
         /// </summary>
         ViewPortOptions Viewport { get; }
 
@@ -278,54 +278,54 @@ namespace PuppeteerSharp
         Worker[] Workers { get; }
 
         /// <summary>
-        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
         /// </summary>
-        /// <param name="options">add script tag options</param>
+        /// <param name="options">add script tag options.</param>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>
+        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(options)</c>.
         /// </remarks>
-        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame.</returns>
         /// <seealso cref="IFrame.AddScriptTagAsync(AddTagOptions)"/>
         Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
 
         /// <summary>
-        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content
+        /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
         /// </summary>
-        /// <param name="url">script url</param>
+        /// <param name="url">script url.</param>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(new AddTagOptions { Url = url })</c>
+        /// Shortcut for <c>page.MainFrame.AddScriptTagAsync(new AddTagOptions { Url = url })</c>.
         /// </remarks>
-        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame</returns>
+        /// <returns>Task which resolves to the added tag when the script's onload fires or when the script content was injected into frame.</returns>
         Task<IElementHandle> AddScriptTagAsync(string url);
 
         /// <summary>
-        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content.
         /// </summary>
-        /// <param name="options">add style tag options</param>
+        /// <param name="options">add style tag options.</param>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>
+        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(options)</c>.
         /// </remarks>
-        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.</returns>
         /// <seealso cref="IFrame.AddStyleTagAsync(AddTagOptions)"/>
         Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <summary>
-        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content
+        /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content.
         /// </summary>
-        /// <param name="url">stylesheel url</param>
+        /// <param name="url">stylesheel url.</param>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })</c>
+        /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })</c>.
         /// </remarks>
-        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame</returns>
+        /// <returns>Task which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.</returns>
         Task<IElementHandle> AddStyleTagAsync(string url);
 
         /// <summary>
-        /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>
+        /// Provide credentials for http authentication <see href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication"/>.
         /// </summary>
-        /// <param name="credentials">The credentials</param>
-        /// <returns>A Task which resolves after the message is sent to the browser</returns>
+        /// <param name="credentials">The credentials.</param>
+        /// <returns>A Task which resolves after the message is sent to the browser.</returns>
         /// <remarks>
-        /// To disable authentication, pass <c>null</c>
+        /// To disable authentication, pass <c>null</c>.
         /// </remarks>
         Task AuthenticateAsync(Credentials credentials);
 
@@ -339,9 +339,9 @@ namespace PuppeteerSharp
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Mouse"/> to click in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.</param>
-        /// <param name="options">click options</param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked</returns>
+        /// <param name="options">click options.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully clicked.</returns>
         Task ClickAsync(string selector, ClickOptions options = null);
 
         /// <summary>
@@ -352,10 +352,10 @@ namespace PuppeteerSharp
         Task CloseAsync(PageCloseOptions options = null);
 
         /// <summary>
-        /// Deletes cookies from the page
+        /// Deletes cookies from the page.
         /// </summary>
-        /// <param name="cookies">Cookies to delete</param>
-        /// <returns>Task</returns>
+        /// <param name="cookies">Cookies to delete.</param>
+        /// <returns>Task.</returns>
         Task DeleteCookieAsync(params CookieParam[] cookies);
 
         /// <summary>
@@ -403,14 +403,14 @@ namespace PuppeteerSharp
         /// await page.EmulateIdleStateAsync();
         /// </code>
         /// </example>
-        /// <param name="idleOverrides">Overrides</param>
+        /// <param name="idleOverrides">Overrides.</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
         Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <summary>
         /// Given an array of media feature objects, emulates CSS media features on the page.
         /// </summary>
-        /// <param name="features">Features to apply</param>
+        /// <param name="features">Features to apply.</param>
         /// <example>
         /// <code>
         /// <![CDATA[
@@ -444,7 +444,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        /// <returns>Emulate features task</returns>
+        /// <returns>Emulate features task.</returns>
         Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features);
 
         /// <summary>
@@ -475,12 +475,12 @@ namespace PuppeteerSharp
         Task EmulateMediaTypeAsync(MediaType type);
 
         /// <summary>
-        /// Emulates network conditions
+        /// Emulates network conditions.
         /// </summary>
         /// <param name="networkConditions">Passing <c>null</c> disables network condition emulation.</param>
-        /// <returns>Result task</returns>
+        /// <returns>Result task.</returns>
         /// <remarks>
-        /// **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+        /// **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644).
         /// </remarks>
         Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions);
 
@@ -497,16 +497,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <example>
         /// await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
-        /// await Page.ScreenshotAsync("Achromatopsia.png");
+        /// await Page.ScreenshotAsync("Achromatopsia.png").
         /// </example>
         /// <param name="type">The type of deficiency to simulate, or <see cref="VisionDeficiency.None"/> to reset.</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
         Task EmulateVisionDeficiencyAsync(VisionDeficiency type);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
@@ -527,37 +527,37 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso href="https://www.newtonsoft.com/json/help/html/t_newtonsoft_json_linq_jtoken.htm"/>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<JToken> EvaluateExpressionAsync(string script);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="script">Script to be evaluated in browser context.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<T> EvaluateExpressionAsync<T>(string script);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<IJSHandle> EvaluateExpressionHandleAsync(string script);
 
         /// <summary>
         /// Adds a function which would be invoked in one of the following scenarios:
         /// - whenever the page is navigated
-        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame.
         /// </summary>
-        /// <param name="expression">Javascript expression to be evaluated in browser context</param>
+        /// <param name="expression">Javascript expression to be evaluated in browser context.</param>
         /// <remarks>
         /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
         /// </remarks>
@@ -567,55 +567,55 @@ namespace PuppeteerSharp
         /// await page.EvaluateExpressionOnNewDocumentAsync("window.__example = true;");
         /// </code>
         /// </example>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task EvaluateExpressionOnNewDocumentAsync(string expression);
 
         /// <summary>
-        /// Executes a function in browser context
+        /// Executes a function in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
-        /// Executes a function in browser context
+        /// Executes a function in browser context.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<T> EvaluateFunctionAsync<T>(string script, params object[] args);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <param name="pageFunction">Script to be evaluated in browser context</param>
-        /// <param name="args">Function arguments</param>
+        /// <param name="pageFunction">Script to be evaluated in browser context.</param>
+        /// <param name="args">Function arguments.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args);
 
         /// <summary>
         /// Adds a function which would be invoked in one of the following scenarios:
         /// - whenever the page is navigated
-        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
+        /// - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame.
         /// </summary>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
         /// <remarks>
         /// The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed <c>Math.random</c>.
         /// </remarks>
@@ -625,108 +625,108 @@ namespace PuppeteerSharp
         /// await page.EvaluateFunctionOnNewDocumentAsync("() => window.__example = true");
         /// </code>
         /// </example>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves when <paramref name="puppeteerFunction"/> completes.
         /// </summary>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync(string, Action)"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync(string, Action)"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync(string name, Action puppeteerFunction);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <typeparam name="T">The parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T, TResult}(string, Func{T, TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T, TResult}(string, Func{T, TResult})"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync<T, TResult>(string name, Func<T, TResult> puppeteerFunction);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T4">The fourth parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, T4, TResult}(string, Func{T1, T2, T3, T4, TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, T4, TResult}(string, Func{T1, T2, T3, T4, TResult})"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T3">The third parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{T1, T2, T3, TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, T3, TResult}(string, Func{T1, T2, T3, TResult})"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync<T1, T2, T3, TResult>(string name, Func<T1, T2, T3, TResult> puppeteerFunction);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/></typeparam>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <typeparam name="T1">The first parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="T2">The second parameter of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, TResult}(string, Func{T1, T2, TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{T1, T2, TResult}(string, Func{T1, T2, TResult})"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync<T1, T2, TResult>(string name, Func<T1, T2, TResult> puppeteerFunction);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
         /// When called, the function executes <paramref name="puppeteerFunction"/> in C# and returns a <see cref="Task"/> which resolves to the return value of <paramref name="puppeteerFunction"/>.
         /// </summary>
-        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/></typeparam>
-        /// <param name="name">Name of the function on the window object</param>
+        /// <typeparam name="TResult">The result of <paramref name="puppeteerFunction"/>.</typeparam>
+        /// <param name="name">Name of the function on the window object.</param>
         /// <param name="puppeteerFunction">Callback function which will be called in Puppeteer's context.</param>
         /// <remarks>
         /// If the <paramref name="puppeteerFunction"/> returns a <see cref="Task"/>, it will be awaited.
-        /// Functions installed via <see cref="ExposeFunctionAsync{TResult}(string, Func{TResult})"/> survive navigations
+        /// Functions installed via <see cref="ExposeFunctionAsync{TResult}(string, Func{TResult})"/> survive navigations.
         /// </remarks>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ExposeFunctionAsync<TResult>(string name, Func<TResult> puppeteerFunction);
 
         /// <summary>
-        /// Fetches an element with <paramref name="selector"/> and focuses it
+        /// Fetches an element with <paramref name="selector"/> and focuses it.
         /// </summary>
         /// <param name="selector">A selector to search for element to focus. If there are multiple elements satisfying the selector, the first will be focused.</param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused</returns>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully focused.</returns>
         Task FocusAsync(string selector);
 
         /// <summary>
@@ -737,10 +737,10 @@ namespace PuppeteerSharp
         Task<string> GetContentAsync();
 
         /// <summary>
-        /// Returns the page's cookies
+        /// Returns the page's cookies.
         /// </summary>
-        /// <param name="urls">Url's to return cookies for</param>
-        /// <returns>Array of cookies</returns>
+        /// <param name="urls">Url's to return cookies for.</param>
+        /// <returns>Array of cookies.</returns>
         /// <remarks>
         /// If no URLs are specified, this method returns cookies for the current page URL.
         /// If URLs are specified, only cookies for those URLs are returned.
@@ -748,9 +748,9 @@ namespace PuppeteerSharp
         Task<CookieParam[]> GetCookiesAsync(params string[] urls);
 
         /// <summary>
-        /// Returns page's title
+        /// Returns page's title.
         /// </summary>
-        /// <returns>page's title</returns>
+        /// <returns>page's title.</returns>
         /// <see cref="IFrame.GetTitleAsync"/>
         Task<string> GetTitleAsync();
 
@@ -771,17 +771,17 @@ namespace PuppeteerSharp
         Task<IResponse> GoForwardAsync(NavigationOptions options = null);
 
         /// <summary>
-        /// Navigates to an url
+        /// Navigates to an url.
         /// </summary>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
-        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
         Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
-        /// Navigates to an url
+        /// Navigates to an url.
         /// </summary>
         /// <remarks>
         /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will throw an error if:
@@ -799,7 +799,7 @@ namespace PuppeteerSharp
         ///
         /// > **NOTE** Headless mode doesn't support navigation to a PDF document. See the <see fref="https://bugs.chromium.org/p/chromium/issues/detail?id=761295">upstream issue</see>.
         ///
-        /// Shortcut for <seealso cref="IFrame.GoToAsync(string, int?, WaitUntilNavigation[])"/>
+        /// Shortcut for. <seealso cref="IFrame.GoToAsync(string, int?, WaitUntilNavigation[])"/>
         /// </remarks>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="options">Navigation parameters.</param>
@@ -808,11 +808,11 @@ namespace PuppeteerSharp
         Task<IResponse> GoToAsync(string url, NavigationOptions options);
 
         /// <summary>
-        /// Navigates to an url
+        /// Navigates to an url.
         /// </summary>
         /// <param name="url">URL to navigate page to. The url should include scheme, e.g. https://.</param>
         /// <param name="waitUntil">When to consider navigation succeeded.</param>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="GoToAsync(string, NavigationOptions)"/>
         Task<IResponse> GoToAsync(string url, WaitUntilNavigation waitUntil);
 
@@ -820,75 +820,75 @@ namespace PuppeteerSharp
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Mouse"/> to hover over the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.</param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered</returns>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully hovered.</returns>
         Task HoverAsync(string selector);
 
         /// <summary>
-        /// Returns metrics
+        /// Returns metrics.
         /// </summary>
-        /// <returns>Task which resolves into a list of metrics</returns>
+        /// <returns>Task which resolves into a list of metrics.</returns>
         /// <remarks>
         /// All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
         /// </remarks>
         Task<Dictionary<string, decimal>> MetricsAsync();
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
-        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <returns>A Task which resolves after the PDF is generated</returns>
+        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>
+        /// <returns>A Task which resolves after the PDF is generated.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task PdfAsync(string file);
 
         /// <summary>
-        ///  generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        ///  generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
-        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <param name="options">pdf options</param>
-        /// <returns>A Task which resolves after the PDF is generated</returns>
+        /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>
+        /// <param name="options">pdf options.</param>
+        /// <returns>A Task which resolves after the PDF is generated.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task PdfAsync(string file, PdfOptions options);
 
         /// <summary>
-        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task<byte[]> PdfDataAsync();
 
         /// <summary>
-        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
-        /// <param name="options">pdf options</param>
+        /// <param name="options">pdf options.</param>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the PDF data.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task<byte[]> PdfDataAsync(PdfOptions options);
 
         /// <summary>
-        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task<Stream> PdfStreamAsync();
 
         /// <summary>
-        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>
+        /// Generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
-        /// <param name="options">pdf options</param>
+        /// <param name="options">pdf options.</param>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the PDF data.</returns>
         /// <remarks>
-        /// Generating a pdf is currently only supported in Chrome headless
+        /// Generating a pdf is currently only supported in Chrome headless.
         /// </remarks>
         Task<Stream> PdfStreamAsync(PdfOptions options);
 
@@ -903,48 +903,48 @@ namespace PuppeteerSharp
         /// <summary>
         /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
         /// </summary>
-        /// <param name="selector">A selector to query page for</param>
-        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <param name="selector">A selector to query page for.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
         /// <seealso cref="IFrame.QuerySelectorAllAsync(string)"/>
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
-        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
         /// </summary>
-        /// <param name="selector">A selector to query page for</param>
-        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        /// <param name="selector">A selector to query page for.</param>
+        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result.</returns>
         Task<IJSHandle> QuerySelectorAllHandleAsync(string selector);
 
         /// <summary>
         /// The method runs <c>document.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
         /// </summary>
-        /// <param name="selector">A selector to query page for</param>
-        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element</returns>
+        /// <param name="selector">A selector to query page for.</param>
+        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element.</returns>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>
+        /// Shortcut for <c>page.MainFrame.QuerySelectorAsync(selector)</c>.
         /// </remarks>
         /// <seealso cref="IFrame.QuerySelectorAsync(string)"/>
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
-        /// Reloads the page
+        /// Reloads the page.
         /// </summary>
         /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
-        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired</param>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="ReloadAsync(NavigationOptions)"/>
         Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
-        /// Reloads the page
+        /// Reloads the page.
         /// </summary>
-        /// <param name="options">Navigation options</param>
-        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect</returns>
+        /// <param name="options">Navigation options.</param>
+        /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
         Task<IResponse> ReloadAsync(NavigationOptions options);
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>The screenshot task.</returns>
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
@@ -953,7 +953,7 @@ namespace PuppeteerSharp
         Task ScreenshotAsync(string file);
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>The screenshot task.</returns>
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
@@ -963,39 +963,39 @@ namespace PuppeteerSharp
         Task ScreenshotAsync(string file, ScreenshotOptions options);
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         Task<string> ScreenshotBase64Async();
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
         Task<string> ScreenshotBase64Async(ScreenshotOptions options);
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         Task<byte[]> ScreenshotDataAsync();
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
         Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options);
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         Task<Stream> ScreenshotStreamAsync();
 
         /// <summary>
-        /// Takes a screenshot of the page
+        /// Takes a screenshot of the page.
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
@@ -1005,8 +1005,8 @@ namespace PuppeteerSharp
         /// Triggers a change and input event once all the provided options have been selected.
         /// If there's no <![CDATA[<select>]]> element matching selector, the method throws an error.
         /// </summary>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <param name="selector">A selector to query page for</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <param name="selector">A selector to query page for.</param>
         /// <param name="values">Values of options to select. If the <![CDATA[<select>]]> has the multiple attribute,
         /// all values are considered, otherwise only the first one is taken into account.</param>
         /// <returns>Returns an array of option values that have been successfully selected.</returns>
@@ -1023,7 +1023,7 @@ namespace PuppeteerSharp
         /// Toggles bypassing page's Content-Security-Policy.
         /// </summary>
         /// <param name="enabled">sets bypassing of page's Content-Security-Policy.</param>
-        /// <returns>A Task which resolves after the message is sent to the browser</returns>
+        /// <returns>A Task which resolves after the message is sent to the browser.</returns>
         /// <remarks>
         /// CSP bypassing happens at the moment of CSP initialization rather then evaluation.
         /// Usually this means that <see cref="SetBypassCSPAsync(bool)"/> should be called before navigating to the domain.
@@ -1033,24 +1033,24 @@ namespace PuppeteerSharp
         /// <summary>
         /// Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
         /// </summary>
-        /// <param name="enabled">sets the <c>enabled</c> state of the cache</param>
-        /// <returns>Task</returns>
+        /// <param name="enabled">sets the <c>enabled</c> state of the cache.</param>
+        /// <returns>Task.</returns>
         Task SetCacheEnabledAsync(bool enabled = true);
 
         /// <summary>
-        /// Sets the HTML markup to the page
+        /// Sets the HTML markup to the page.
         /// </summary>
         /// <param name="html">HTML markup to assign to the page.</param>
-        /// <param name="options">The navigations options</param>
+        /// <param name="options">The navigations options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IFrame.SetContentAsync(string, NavigationOptions)"/>
         Task SetContentAsync(string html, NavigationOptions options = null);
 
         /// <summary>
-        /// Clears all of the current cookies and then sets the cookies for the page
+        /// Clears all of the current cookies and then sets the cookies for the page.
         /// </summary>
-        /// <param name="cookies">Cookies to set</param>
-        /// <returns>Task</returns>
+        /// <param name="cookies">Cookies to set.</param>
+        /// <returns>Task.</returns>
         Task SetCookieAsync(params CookieParam[] cookies);
 
         /// <summary>
@@ -1061,15 +1061,15 @@ namespace PuppeteerSharp
         /// methods This provides the capability to capture drag events emitted
         /// on the page, which can then be used to simulate drag-and-drop.
         /// </remarks>
-        /// <param name="enabled">Interception enabled</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <param name="enabled">Interception enabled.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task SetDragInterceptionAsync(bool enabled);
 
         /// <summary>
-        /// Sets extra HTTP headers that will be sent with every request the page initiates
+        /// Sets extra HTTP headers that will be sent with every request the page initiates.
         /// </summary>
-        /// <param name="headers">Additional http headers to be sent with every request</param>
-        /// <returns>Task</returns>
+        /// <param name="headers">Additional http headers to be sent with every request.</param>
+        /// <returns>Task.</returns>
         Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers);
 
         /// <summary>
@@ -1083,7 +1083,7 @@ namespace PuppeteerSharp
         Task SetGeolocationAsync(GeolocationOption options);
 
         /// <summary>
-        /// Enables/Disables Javascript on the page
+        /// Enables/Disables Javascript on the page.
         /// </summary>
         /// <returns>Task.</returns>
         /// <param name="enabled">Whether or not to enable JavaScript on the page.</param>
@@ -1092,7 +1092,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Set offline mode for the page.
         /// </summary>
-        /// <returns>Result task</returns>
+        /// <returns>Result task.</returns>
         /// <param name="value">When <c>true</c> enables offline mode for the page.</param>
         Task SetOfflineModeAsync(bool value);
 
@@ -1105,11 +1105,11 @@ namespace PuppeteerSharp
         Task SetRequestInterceptionAsync(bool value);
 
         /// <summary>
-        /// Sets the user agent to be used in this page
+        /// Sets the user agent to be used in this page.
         /// </summary>
-        /// <param name="userAgent">Specific user agent to use in this page</param>
-        /// <param name="userAgentData">Specific user agent client hint data to use in this page</param>
-        /// <returns>Task</returns>
+        /// <param name="userAgent">Specific user agent to use in this page.</param>
+        /// <param name="userAgentData">Specific user agent client hint data to use in this page.</param>
+        /// <returns>Task.</returns>
         Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
 
         /// <summary>
@@ -1139,19 +1139,19 @@ namespace PuppeteerSharp
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Touchscreen"/> to tap in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked.</param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
-        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully tapped</returns>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully tapped.</returns>
         Task TapAsync(string selector);
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
         /// </summary>
         /// <param name="selector">A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.</param>
-        /// <param name="text">A text to type into a focused element</param>
+        /// <param name="text">A text to type into a focused element.</param>
         /// <param name="options">The options to apply to the type operation.</param>
-        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/></exception>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
         /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="IKeyboard.PressAsync(string, PressOptions)"/>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="IKeyboard.PressAsync(string, PressOptions)"/>.
         /// </remarks>
         /// <example>
         /// <code>
@@ -1159,15 +1159,15 @@ namespace PuppeteerSharp
         /// await page.TypeAsync("#mytextarea", "World", new TypeOptions { Delay = 100 }); // Types slower, like a user
         /// </code>
         /// </example>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task TypeAsync(string selector, string text, TypeOptions options = null);
 
         /// <summary>
-        /// Waits for an expression to be evaluated to a truthy value
+        /// Waits for an expression to be evaluated to a truthy value.
         /// </summary>
-        /// <param name="script">Expression to be evaluated in browser context</param>
-        /// <param name="options">Optional waiting parameters</param>
-        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <param name="script">Expression to be evaluated in browser context.</param>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         /// <seealso cref="IFrame.WaitForExpressionAsync(string, WaitForFunctionOptions)"/>
         Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null);
 
@@ -1202,7 +1202,7 @@ namespace PuppeteerSharp
         public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
-        /// Waits for a page to open a file picker
+        /// Waits for a page to open a file picker.
         /// </summary>
         /// <remarks>
         /// In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
@@ -1229,34 +1229,34 @@ namespace PuppeteerSharp
         Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null);
 
         /// <summary>
-        /// Waits for a function to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value.
         /// </summary>
-        /// <param name="script">Function to be evaluated in browser context</param>
-        /// <param name="options">Optional waiting parameters</param>
-        /// <param name="args">Arguments to pass to <c>script</c></param>
-        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <param name="script">Function to be evaluated in browser context.</param>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <param name="args">Arguments to pass to <c>script</c>.</param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         /// <seealso cref="IFrame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
         Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args);
 
         /// <summary>
-        /// Waits for a function to be evaluated to a truthy value
+        /// Waits for a function to be evaluated to a truthy value.
         /// </summary>
-        /// <param name="script">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>script</c></param>
-        /// <returns>A task that resolves when the <c>script</c> returns a truthy value</returns>
+        /// <param name="script">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>script</c>.</param>
+        /// <returns>A task that resolves when the <c>script</c> returns a truthy value.</returns>
         Task<IJSHandle> WaitForFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// This resolves when the page navigates to a new URL or reloads.
         /// It is useful for when you run code which will indirectly cause the page to navigate.
         /// </summary>
-        /// <param name="options">navigation options</param>
+        /// <param name="options">navigation options.</param>
         /// <returns>Task which resolves to the main resource response.
         /// In case of multiple redirects, the navigation will resolve with the response of the last redirect.
         /// In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
         /// </returns>
         /// <remarks>
-        /// Usage of the <c>History API</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"/> to change the URL is considered a navigation
+        /// Usage of the <c>History API</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/History_API"/> to change the URL is considered a navigation.
         /// </remarks>
         /// <example>
         /// <code>
@@ -1270,10 +1270,10 @@ namespace PuppeteerSharp
         Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <summary>
-        /// Waits for Network Idle
+        /// Waits for Network Idle.
         /// </summary>
-        /// <param name="options">Optional waiting parameters</param>
-        /// <returns>returns Task which resolves when network is idle</returns>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>returns Task which resolves when network is idle.</returns>
         /// <example>
         /// <code>
         /// <![CDATA[
@@ -1365,10 +1365,10 @@ namespace PuppeteerSharp
         Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null);
 
         /// <summary>
-        /// Waits for a selector to be added to the DOM
+        /// Waits for a selector to be added to the DOM.
         /// </summary>
-        /// <param name="selector">A selector of an element to wait for</param>
-        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="selector">A selector of an element to wait for.</param>
+        /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
@@ -1376,18 +1376,18 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
-        /// Waits for a timeout
+        /// Waits for a timeout.
         /// </summary>
         /// <param name="milliseconds">The amount of time to wait.</param>
-        /// <returns>A task that resolves when after the timeout</returns>
+        /// <returns>A task that resolves when after the timeout.</returns>
         /// <seealso cref="IFrame.WaitForTimeoutAsync(int)"/>
         Task WaitForTimeoutAsync(int milliseconds);
 
         /// <summary>
-        /// Waits for a xpath selector to be added to the DOM
+        /// Waits for a xpath selector to be added to the DOM.
         /// </summary>
-        /// <param name="xpath">A xpath selector of an element to wait for</param>
-        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="xpath">A xpath selector of an element to wait for.</param>
+        /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task which resolves when element specified by xpath string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.</returns>
         /// <example>
@@ -1413,12 +1413,12 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null);
 
         /// <summary>
-        /// Evaluates the XPath expression
+        /// Evaluates the XPath expression.
         /// </summary>
-        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
-        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/></returns>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/>.</param>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
         /// <remarks>
-        /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>
+        /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>.
         /// </remarks>
         /// <seealso cref="IFrame.XPathAsync(string)"/>
         Task<IElementHandle[]> XPathAsync(string expression);

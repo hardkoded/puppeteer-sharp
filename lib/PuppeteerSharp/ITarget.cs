@@ -18,7 +18,7 @@ namespace PuppeteerSharp
         IBrowserContext BrowserContext { get; }
 
         /// <summary>
-        /// Get the target that opened this target
+        /// Get the target that opened this target.
         /// </summary>
         /// <remarks>
         /// Top-level targets return <c>null</c>.
@@ -47,19 +47,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
-        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
         Task<ICDPSession> CreateCDPSessionAsync();
 
         /// <summary>
-        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
+        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>.
         /// </summary>
-        /// <returns>a task that returns a <see cref="IPage"/></returns>
+        /// <returns>a task that returns a <see cref="IPage"/>.</returns>
         Task<IPage> PageAsync();
 
         /// <summary>
         /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
         /// </summary>
-        /// <returns>A task that returns a <see cref="Worker"/></returns>
+        /// <returns>A task that returns a <see cref="Worker"/>.</returns>
         Task<Worker> WorkerAsync();
     }
 }

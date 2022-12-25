@@ -21,14 +21,14 @@ namespace PuppeteerSharp
         /// <summary>
         /// Starts tracing.
         /// </summary>
-        /// <returns>Start task</returns>
-        /// <param name="options">Tracing options</param>
+        /// <returns>Start task.</returns>
+        /// <param name="options">Tracing options.</param>
         Task StartAsync(TracingOptions options = null);
 
         /// <summary>
-        /// Stops tracing
+        /// Stops tracing.
         /// </summary>
-        /// <returns>Stop task</returns>
+        /// <returns>Stop task.</returns>
         Task<string> StopAsync();
     }
 }
