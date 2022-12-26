@@ -6,8 +6,19 @@ namespace PuppeteerSharp.Messaging
     [JsonConverter(typeof(FlexibleStringEnumConverter), Unknown)]
     internal enum FrameDetachedReason
     {
+        /// <summary>
+        /// Unknown
+        /// </summary>
         Unknown = -1,
+
+        /// <summary>
+        /// Remove
+        /// </summary>
         Remove,
+
+        /// <summary>
+        /// Swap
+        /// </summary>
         Swap,
     }
 
