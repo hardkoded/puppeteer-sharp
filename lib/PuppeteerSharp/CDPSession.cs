@@ -38,9 +38,6 @@ namespace PuppeteerSharp
         public string Id { get; }
 
         /// <inheritdoc/>
-        internal Connection Connection { get; private set; }
-
-        /// <inheritdoc/>
         public bool IsClosed { get; internal set; }
 
         /// <inheritdoc/>
@@ -49,8 +46,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
-        internal void Send(string method, object args = null)
-            => _ = SendAsync(method, args, false);
+        /// <inheritdoc/>
+        internal Connection Connection { get; private set; }
 
         /// <inheritdoc/>
         public async Task<T> SendAsync<T>(string method, object args = null)
@@ -110,6 +107,9 @@ namespace PuppeteerSharp
                 SessionId = Id,
             });
         }
+
+        internal void Send(string method, object args = null)
+            => _ = SendAsync(method, args, false);
 
         internal bool HasPendingCallbacks() => _callbacks.Count != 0;
 

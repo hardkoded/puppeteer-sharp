@@ -58,76 +58,6 @@ namespace PuppeteerSharp
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
 
-        private async void Client_MessageReceived(object sender, MessageEventArgs e)
-        {
-            try
-            {
-                switch (e.MessageID)
-                {
-                    case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                var message = $"DOMWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                Logger.LogError(ex, message);
-                _client.Close(message);
-            }
-        }
-
-        private async Task OnBindingCalled(BindingCalledResponse e)
-        {
-            var payload = e.BindingPayload;
-            if (!HasContext)
-            {
-                return;
-            }
-
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-
-            if (
-                e.BindingPayload.Type != "internal" ||
-                !_ctxBindings.Contains(GetBindingIdentifier(payload.Name, context.ContextId)))
-            {
-                return;
-            }
-
-            if (context.ContextId != e.ExecutionContextId)
-            {
-                return;
-            }
-
-            try
-            {
-                if (!BoundFunctions.TryGetValue(payload.Name, out var fn))
-                {
-                    throw new PuppeteerException($"Bound function {payload.Name} is not found");
-                }
-
-                var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
-
-                await context.EvaluateFunctionAsync(
-                    @"(name, seq, result) => {
-                      globalThis[name].callbacks.get(seq).resolve(result);
-                      globalThis[name].callbacks.delete(seq);
-                    }",
-                    payload.Name,
-                    payload.Seq,
-                    result).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Protocol error"))
-                {
-                    return;
-                }
-
-                _logger.LogError(ex.ToString());
-            }
-        }
-
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
             // Previous operation added the binding so we are done.
@@ -180,27 +110,6 @@ namespace PuppeteerSharp
             _settingUpBinding = BindAsync(name);
             await _settingUpBinding.ConfigureAwait(false);
             _settingUpBinding = null;
-        }
-
-        private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
-
-        internal void SetContext(ExecutionContext context)
-        {
-            _documentTask = null;
-            if (context != null)
-            {
-                _ctxBindings.Clear();
-                _contextResolveTaskWrapper.TrySetResult(context);
-                foreach (var waitTask in WaitTasks)
-                {
-                    _ = waitTask.Rerun();
-                }
-            }
-            else
-            {
-                _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
-            }
         }
 
         internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
@@ -637,7 +546,7 @@ namespace PuppeteerSharp
         {
             if (_documentTask != null)
             {
-              return _documentTask;
+                return _documentTask;
             }
 
             async Task<ElementHandle> EvalauteDocumentInContext()
@@ -658,6 +567,96 @@ namespace PuppeteerSharp
 
             return _documentTask;
         }
+
+        internal void SetContext(ExecutionContext context)
+        {
+            _documentTask = null;
+            if (context != null)
+            {
+                _ctxBindings.Clear();
+                _contextResolveTaskWrapper.TrySetResult(context);
+                foreach (var waitTask in WaitTasks)
+                {
+                    _ = waitTask.Rerun();
+                }
+            }
+            else
+            {
+                _documentCompletionSource = null;
+                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+        }
+
+        private async void Client_MessageReceived(object sender, MessageEventArgs e)
+        {
+            try
+            {
+                switch (e.MessageID)
+                {
+                    case "Runtime.bindingCalled":
+                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"DOMWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                Logger.LogError(ex, message);
+                _client.Close(message);
+            }
+        }
+
+        private async Task OnBindingCalled(BindingCalledResponse e)
+        {
+            var payload = e.BindingPayload;
+            if (!HasContext)
+            {
+                return;
+            }
+
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+
+            if (e.BindingPayload.Type != "internal" ||
+                !_ctxBindings.Contains(GetBindingIdentifier(payload.Name, context.ContextId)))
+            {
+                return;
+            }
+
+            if (context.ContextId != e.ExecutionContextId)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!BoundFunctions.TryGetValue(payload.Name, out var fn))
+                {
+                    throw new PuppeteerException($"Bound function {payload.Name} is not found");
+                }
+
+                var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
+
+                await context.EvaluateFunctionAsync(
+                    @"(name, seq, result) => {
+                      globalThis[name].callbacks.get(seq).resolve(result);
+                      globalThis[name].callbacks.delete(seq);
+                    }",
+                    payload.Name,
+                    payload.Seq,
+                    result).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Protocol error"))
+                {
+                    return;
+                }
+
+                _logger.LogError(ex.ToString());
+            }
+        }
+
+        private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
 
         private async Task<IElementHandle> GetDocument()
         {

@@ -52,12 +52,6 @@ namespace PuppeteerSharp
             Dispose(false);
         }
 
-        internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal TaskCompletionSource<string> StartCompletionSource { get; } = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal LaunchOptions Options { get; }
-
         /// <summary>
         /// Gets Base process details.
         /// </summary>
@@ -80,6 +74,12 @@ namespace PuppeteerSharp
         /// </summary>
         public bool HasExited => _stateManager.CurrentState.IsExited;
 
+        internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal TaskCompletionSource<string> StartCompletionSource { get; } = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal LaunchOptions Options { get; }
+
         internal TempDirectory TempUserDataDir { get; set; }
 
         /// <summary>
@@ -93,12 +93,6 @@ namespace PuppeteerSharp
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Disposes Base process and any temporary user directory.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
 
         /// <summary>
         /// Asynchronously starts Base process.
@@ -177,5 +171,11 @@ namespace PuppeteerSharp
                 }
             }
         }
+
+        /// <summary>
+        /// Disposes Base process and any temporary user directory.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
     }
 }

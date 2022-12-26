@@ -56,10 +56,10 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsOopFrame => Client != FrameManager.Client;
 
-        internal FrameManager FrameManager { get; }
-
         /// <inheritdoc/>
         public string Id { get; internal set; }
+
+        internal FrameManager FrameManager { get; }
 
         internal string LoaderId { get; set; }
 

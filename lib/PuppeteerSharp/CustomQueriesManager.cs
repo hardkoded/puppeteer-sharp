@@ -100,6 +100,39 @@ namespace PuppeteerSharp
             _queryHandlers.Add(name, internalHandler);
         }
 
+        internal (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        {
+            var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
+            if (!customQueryHandlerMatch.Success)
+            {
+                return (selector, _defaultHandler);
+            }
+
+            var name = customQueryHandlerMatch.Groups["query"].Value;
+            var updatedSelector = customQueryHandlerMatch.Groups["selector"].Value;
+
+            if (!_queryHandlers.TryGetValue(name, out var queryHandler))
+            {
+                throw new PuppeteerException($"Query set to use \"{name}\", but no query handler of that name was found");
+            }
+
+            return (updatedSelector, queryHandler);
+        }
+
+        internal IEnumerable<string> GetCustomQueryHandlerNames()
+            => _queryHandlers.Keys;
+
+        internal void UnregisterCustomQueryHandler(string name)
+            => _queryHandlers.Remove(name);
+
+        internal void ClearCustomQueryHandlers()
+        {
+            foreach (var name in CustomQueryHandlerNames())
+            {
+                UnregisterCustomQueryHandler(name);
+            }
+        }
+
         private static InternalQueryHandler MakeQueryHandler(CustomQueryHandler handler)
         {
             var internalHandler = new InternalQueryHandler();
@@ -156,39 +189,6 @@ namespace PuppeteerSharp
             }
 
             return internalHandler;
-        }
-
-        internal (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
-        {
-            var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
-            if (!customQueryHandlerMatch.Success)
-            {
-                return (selector, _defaultHandler);
-            }
-
-            var name = customQueryHandlerMatch.Groups["query"].Value;
-            var updatedSelector = customQueryHandlerMatch.Groups["selector"].Value;
-
-            if (!_queryHandlers.TryGetValue(name, out var queryHandler))
-            {
-                throw new PuppeteerException($"Query set to use \"{name}\", but no query handler of that name was found");
-            }
-
-            return (updatedSelector, queryHandler);
-        }
-
-        internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => _queryHandlers.Keys;
-
-        internal void UnregisterCustomQueryHandler(string name)
-            => _queryHandlers.Remove(name);
-
-        internal void ClearCustomQueryHandlers()
-        {
-            foreach (var name in CustomQueryHandlerNames())
-            {
-                UnregisterCustomQueryHandler(name);
-            }
         }
 
         private IEnumerable<string> CustomQueryHandlerNames()

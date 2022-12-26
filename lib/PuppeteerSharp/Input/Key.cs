@@ -5,8 +5,6 @@ namespace PuppeteerSharp.Input
     /// </summary>
     public class Key
     {
-        private readonly string _value;
-
         /// <summary>
         /// Cancel key.
         /// </summary>
@@ -511,6 +509,8 @@ namespace PuppeteerSharp.Input
         /// ZoomOut key.
         /// </summary>
         public static readonly Key ZoomOut = new Key("ZoomOut");
+
+        private readonly string _value;
 
         private Key(string value) => _value = value;
 

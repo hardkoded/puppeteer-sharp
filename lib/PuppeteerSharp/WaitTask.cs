@@ -169,6 +169,12 @@ async function waitForPredicatePageFunction(
 
         internal Task<IJSHandle> Task => _taskCompletion.Task;
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         internal async Task Rerun()
         {
             var runCount = Interlocked.Increment(ref _runCount);
@@ -251,22 +257,6 @@ async function waitForPredicatePageFunction(
             Cleanup();
         }
 
-        private void Cleanup()
-        {
-            if (!_cts.IsCancellationRequested)
-            {
-                _cts.Cancel();
-            }
-
-            _world.WaitTasks.Remove(this);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected virtual void Dispose(bool dispose)
         {
             if (_isDisposing)
@@ -277,6 +267,16 @@ async function waitForPredicatePageFunction(
             _cts.Dispose();
 
             _isDisposing = true;
+        }
+
+        private void Cleanup()
+        {
+            if (!_cts.IsCancellationRequested)
+            {
+                _cts.Cancel();
+            }
+
+            _world.WaitTasks.Remove(this);
         }
     }
 }

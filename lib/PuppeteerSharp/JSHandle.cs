@@ -33,12 +33,12 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public RemoteObject RemoteObject { get; }
 
+        internal CDPSession Client { get; }
+
         /// <summary>
         /// Logger.
         /// </summary>
         protected ILogger Logger { get; }
-
-        internal CDPSession Client { get; }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> GetPropertyAsync(string propertyName)

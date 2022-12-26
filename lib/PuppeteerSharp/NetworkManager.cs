@@ -103,15 +103,6 @@ namespace PuppeteerSharp
             await UpdateNetworkConditionsAsync().ConfigureAwait(false);
         }
 
-        private Task UpdateNetworkConditionsAsync()
-            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
-            {
-                Offline = _emulatedNetworkConditions.Offline,
-                Latency = _emulatedNetworkConditions.Latency,
-                UploadThroughput = _emulatedNetworkConditions.Upload,
-                DownloadThroughput = _emulatedNetworkConditions.Download,
-            });
-
         internal Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata)
             => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
             {
@@ -130,6 +121,15 @@ namespace PuppeteerSharp
             _userRequestInterceptionEnabled = value;
             return UpdateProtocolRequestInterceptionAsync();
         }
+
+        private Task UpdateNetworkConditionsAsync()
+            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            });
 
         private Task UpdateProtocolCacheDisabledAsync()
             => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
