@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "documentationRules": {
+      "documentInterfaces": true,
+      "documentInternalElements": false
+    }
+  }
+}
