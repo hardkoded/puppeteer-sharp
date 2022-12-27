@@ -1195,12 +1195,6 @@ namespace PuppeteerSharp
             networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
 
             await Task.WhenAll(
-               Client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
-               {
-                   AutoAttach = true,
-                   WaitForDebuggerOnStart = false,
-                   Flatten = true,
-               }),
                Client.SendAsync("Performance.enable", null),
                Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
         }
