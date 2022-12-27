@@ -104,7 +104,15 @@ namespace PuppeteerSharp
             set => _webClient.Proxy = value;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Get executable path.
+        /// </summary>
+        /// <param name="product"><see cref="Product"/></param>
+        /// <param name="platform"><see cref="Platform"/></param>
+        /// <param name="revision">chromium revision</param>
+        /// <param name="folderPath">folder path</param>
+        /// <returns>executable path</returns>
+        /// <exception cref="ArgumentException">For not supported <see cref="Platform"/></exception>
         public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
         {
             if (product == Product.Chrome)
@@ -349,7 +357,10 @@ namespace PuppeteerSharp
             return assemblyDirectory.FullName;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose <see cref="WebClient"/>.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)
