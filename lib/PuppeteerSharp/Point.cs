@@ -1,17 +1,17 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Represents a Point
+    /// Represents a Point.
     /// </summary>
     public struct Point
     {
         /// <summary>
-        /// Gets the X point
+        /// Gets the X point.
         /// </summary>
         public decimal X { get; set; }
 
         /// <summary>
-        /// Gets the y point
+        /// Gets the y point.
         /// </summary>
         public decimal Y { get; set; }
     }

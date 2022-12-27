@@ -8,19 +8,19 @@ namespace PuppeteerSharp.Messaging
     internal enum FileChooserAction
     {
         /// <summary>
-        /// Accept
+        /// Accept.
         /// </summary>
         [EnumMember(Value = "accept")]
         Accept,
 
         /// <summary>
-        /// Fallback
+        /// Fallback.
         /// </summary>
         [EnumMember(Value = "fallback")]
         Fallback,
 
         /// <summary>
-        /// Cancel
+        /// Cancel.
         /// </summary>
         [EnumMember(Value = "cancel")]
         Cancel,

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Base exception used to identify any exception thrown by PuppeteerSharp
+    /// Base exception used to identify any exception thrown by PuppeteerSharp.
     /// </summary>
     [Serializable]
     public class PuppeteerException : Exception

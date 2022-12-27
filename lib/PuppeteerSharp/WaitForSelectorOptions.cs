@@ -10,7 +10,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
         /// Pass `0` to disable timeout.
-        /// The default value can be changed by using <seealso cref="IPage.DefaultTimeout"/>  method
+        /// The default value can be changed by using <seealso cref="IPage.DefaultTimeout"/>  method.
         /// </summary>
         public int? Timeout { get; set; }
 
@@ -25,7 +25,7 @@ namespace PuppeteerSharp
         public bool Hidden { get; set; }
 
         /// <summary>
-        /// Root element
+        /// Root element.
         /// </summary>
         public IElementHandle Root { get; set; }
     }

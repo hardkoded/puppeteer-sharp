@@ -9,25 +9,25 @@ namespace PuppeteerSharp
     public static class PuppeteerHandleExtensions
     {
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument.
         /// </summary>
-        /// <param name="elementHandleTask">A task that returns an <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task</returns>
-        /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c></exception>
+        /// <param name="elementHandleTask">A task that returns an <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c>.</exception>
         public static Task EvaluateFunctionAsync(this Task<IElementHandle> elementHandleTask, string pageFunction, params object[] args)
             => elementHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="elementHandleTask"/> as the first argument.
         /// </summary>
-        /// <typeparam name="T">The type of the response</typeparam>
-        /// <param name="elementHandleTask">A task that returns an <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
-        /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c></exception>
+        /// <typeparam name="T">The type of the response.</typeparam>
+        /// <param name="elementHandleTask">A task that returns an <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
+        /// <exception cref="SelectorException">If <paramref name="elementHandleTask"/> resolves to <c>null</c>.</exception>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<IElementHandle> elementHandleTask, string pageFunction, params object[] args)
         {
             if (elementHandleTask == null)
@@ -45,14 +45,14 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome the <paramref name="elementHandle"/> as the first argument
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome the <paramref name="elementHandle"/> as the first argument.
         /// </summary>
-        /// <typeparam name="T">The type of the response</typeparam>
-        /// <param name="elementHandle">An <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
-        /// <exception cref="SelectorException">If <paramref name="elementHandle"/> is <c>null</c></exception>
+        /// <typeparam name="T">The type of the response.</typeparam>
+        /// <param name="elementHandle">An <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
+        /// <exception cref="SelectorException">If <paramref name="elementHandle"/> is <c>null</c>.</exception>
         public static async Task<T> EvaluateFunctionAsync<T>(this IElementHandle elementHandle, string pageFunction, params object[] args)
         {
             if (elementHandle == null)
@@ -66,23 +66,23 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>.
         /// </summary>
-        /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task</returns>
+        /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task.</returns>
         public static Task EvaluateFunctionAsync(this Task<IJSHandle> arrayHandleTask, string pageFunction, params object[] args)
             => arrayHandleTask.EvaluateFunctionAsync<object>(pageFunction, args);
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandleTask"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="arrayHandleTask">A task that returns an <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this Task<IJSHandle> arrayHandleTask, string pageFunction, params object[] args)
         {
             if (arrayHandleTask == null)
@@ -94,13 +94,13 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>
+        /// Runs <paramref name="pageFunction"/> within the frame and passes it the outcome of <paramref name="arrayHandle"/> as the first argument. Use only after <see cref="IPage.QuerySelectorAllHandleAsync(string)"/>.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="arrayHandle">An <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/></param>
-        /// <param name="pageFunction">Function to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to <c>pageFunction</c></param>
-        /// <returns>Task which resolves to the return value of <c>pageFunction</c></returns>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="arrayHandle">An <see cref="IJSHandle"/> that represents an array of <see cref="IElementHandle"/> that will be used as the first argument in <paramref name="pageFunction"/>.</param>
+        /// <param name="pageFunction">Function to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to <c>pageFunction</c>.</param>
+        /// <returns>Task which resolves to the return value of <c>pageFunction</c>.</returns>
         public static async Task<T> EvaluateFunctionAsync<T>(this IJSHandle arrayHandle, string pageFunction, params object[] args)
         {
             if (arrayHandle == null)

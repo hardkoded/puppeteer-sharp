@@ -14,7 +14,7 @@ namespace PuppeteerSharp
         public PageErrorEventArgs(string message) => Message = message;
 
         /// <summary>
-        /// Error Message
+        /// Error Message.
         /// </summary>
         /// <value>The message.</value>
         public string Message { get; set; }

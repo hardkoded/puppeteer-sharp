@@ -4,7 +4,7 @@ namespace PuppeteerSharp.Transport
 {
     /// <summary>
     /// Message received event arguments.
-    /// <see cref="IConnectionTransport.MessageReceived"/>
+    /// <see cref="IConnectionTransport.MessageReceived"/>.
     /// </summary>
     public class MessageReceivedEventArgs : EventArgs
     {

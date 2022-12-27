@@ -6,7 +6,7 @@
     public partial class DragData
     {
         /// <summary>
-        /// Drag items
+        /// Drag items.
         /// </summary>
         public DragDataItem[] Items { get; set; }
 

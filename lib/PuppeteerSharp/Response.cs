@@ -91,9 +91,9 @@ namespace PuppeteerSharp
         internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
 
         /// <summary>
-        /// Returns a Task which resolves to a buffer with response body
+        /// Returns a Task which resolves to a buffer with response body.
         /// </summary>
-        /// <returns>A Task which resolves to a buffer with response body</returns>
+        /// <returns>A Task which resolves to a buffer with response body.</returns>
         public async ValueTask<byte[]> BufferAsync()
         {
             if (_buffer == null)

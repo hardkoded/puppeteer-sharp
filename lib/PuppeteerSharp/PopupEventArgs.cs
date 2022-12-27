@@ -3,7 +3,7 @@ using System;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Popup event arguments. <see cref="IPage.Popup"/>
+    /// Popup event arguments. <see cref="IPage.Popup"/>.
     /// </summary>
     public class PopupEventArgs : EventArgs
     {

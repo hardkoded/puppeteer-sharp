@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Navigation options used by <see cref="IPage.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="IPage.SetContentAsync(string, NavigationOptions)"/>
+    /// Navigation options used by <see cref="IPage.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="IPage.SetContentAsync(string, NavigationOptions)"/>.
     /// </summary>
     public class NavigationOptions
     {
@@ -14,12 +14,12 @@ namespace PuppeteerSharp
         public int? Timeout { get; set; }
 
         /// <summary>
-        /// When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired
+        /// When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.
         /// </summary>
         public WaitUntilNavigation[] WaitUntil { get; set; }
 
         /// <summary>
-        /// Referer header value. If provided it will take prefrence over the referer header value set by <see cref="IPage.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>
+        /// Referer header value. If provided it will take prefrence over the referer header value set by <see cref="IPage.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>.
         /// </summary>
         /// <value>The referer.</value>
         public string Referer { get; set; }

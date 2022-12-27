@@ -15,7 +15,7 @@ namespace PuppeteerSharp
         int SlowMo { get; set; }
 
         /// <summary>
-        /// Keep alive value (in milliseconds)
+        /// Keep alive value (in milliseconds).
         /// </summary>
         [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
         int KeepAliveInterval { get; set; }

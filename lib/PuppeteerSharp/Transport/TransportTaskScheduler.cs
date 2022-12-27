@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Transport
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Delegate for scheduling of long-running transport tasks
+    /// Delegate for scheduling of long-running transport tasks.
     /// </summary>
     /// <param name="taskFactory">Delegate that creates the task to be scheduled.</param>
     /// <param name="cancellationToken">Cancellation token for the task to be scheduled.</param>

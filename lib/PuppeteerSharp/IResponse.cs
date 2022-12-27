@@ -28,7 +28,7 @@ namespace PuppeteerSharp
         Dictionary<string, string> Headers { get; }
 
         /// <summary>
-        /// Contains the status code of the response
+        /// Contains the status code of the response.
         /// </summary>
         /// <value>The status.</value>
         HttpStatusCode Status { get; }
@@ -79,30 +79,30 @@ namespace PuppeteerSharp
         IFrame Frame { get; }
 
         /// <summary>
-        /// Returns a Task which resolves to a buffer with response body
+        /// Returns a Task which resolves to a buffer with response body.
         /// </summary>
-        /// <returns>A Task which resolves to a buffer with response body</returns>
+        /// <returns>A Task which resolves to a buffer with response body.</returns>
         ValueTask<byte[]> BufferAsync();
 
         /// <summary>
-        /// Returns a Task which resolves to a text representation of response body
+        /// Returns a Task which resolves to a text representation of response body.
         /// </summary>
-        /// <returns>A Task which resolves to a text representation of response body</returns>
+        /// <returns>A Task which resolves to a text representation of response body.</returns>
         Task<string> TextAsync();
 
         /// <summary>
-        /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body
+        /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body.
         /// </summary>
         /// <seealso cref="JsonAsync{T}"/>
-        /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body</returns>
+        /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body.</returns>
         Task<JObject> JsonAsync();
 
         /// <summary>
-        /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body
+        /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body.
         /// </summary>
-        /// <typeparam name="T">The type of the response</typeparam>
+        /// <typeparam name="T">The type of the response.</typeparam>
         /// <seealso cref="JsonAsync"/>
-        /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body</returns>
+        /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body.</returns>
         Task<T> JsonAsync<T>();
     }
 }

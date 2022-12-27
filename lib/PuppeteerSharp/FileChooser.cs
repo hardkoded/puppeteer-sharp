@@ -47,8 +47,8 @@ namespace PuppeteerSharp
         /// Accept the file chooser request with given paths.
         /// If some of the filePaths are relative paths, then they are resolved relative to the current working directory.
         /// </summary>
-        /// <param name="filePaths">File paths to send to the file chooser</param>
-        /// <returns>A task that resolves after the accept message is processed by the browser</returns>
+        /// <param name="filePaths">File paths to send to the file chooser.</param>
+        /// <returns>A task that resolves after the accept message is processed by the browser.</returns>
         public Task AcceptAsync(params string[] filePaths)
         {
             if (_handled)

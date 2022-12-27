@@ -1,17 +1,17 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Abort error codes. used by <see cref="Request.AbortAsync(RequestAbortErrorCode)"/>
+    /// Abort error codes. used by <see cref="Request.AbortAsync(RequestAbortErrorCode)"/>.
     /// </summary>
     public enum RequestAbortErrorCode
     {
         /// <summary>
-        /// An operation was aborted (due to user action)
+        /// An operation was aborted (due to user action).
         /// </summary>
         Aborted,
 
         /// <summary>
-        /// Permission to access a resource, other than the network, was denied
+        /// Permission to access a resource, other than the network, was denied.
         /// </summary>
         AccessDenied,
 
