@@ -217,7 +217,7 @@ namespace PuppeteerSharp
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
         /// created by Puppeteer.
         /// </summary>
-        /// <returns>ValueTask</returns>
+        /// <returns>ValueTask.</returns>
         public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
 
         internal static async Task<Browser> CreateAsync(

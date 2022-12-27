@@ -8,19 +8,19 @@ namespace PuppeteerSharp.Messaging
     internal enum DragEventType
     {
         /// <summary>
-        /// Drag event
+        /// Drag event.
         /// </summary>
         [EnumMember(Value = "dragEnter")]
         DragEnter,
 
         /// <summary>
-        /// Drag over
+        /// Drag over.
         /// </summary>
         [EnumMember(Value = "dragOver")]
         DragOver,
 
         /// <summary>
-        /// Drop
+        /// Drop.
         /// </summary>
         [EnumMember(Value = "drop")]
         Drop,

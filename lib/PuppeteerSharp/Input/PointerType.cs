@@ -8,13 +8,13 @@ namespace PuppeteerSharp.Input
     internal enum PointerType
     {
         /// <summary>
-        /// Mouse
+        /// Mouse.
         /// </summary>
         [EnumMember(Value = "mouse")]
         Mouse,
 
         /// <summary>
-        /// Pen
+        /// Pen.
         /// </summary>
         [EnumMember(Value = "pen")]
         Pen,

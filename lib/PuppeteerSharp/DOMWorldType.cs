@@ -8,18 +8,18 @@ namespace PuppeteerSharp
     internal enum DOMWorldType
     {
         /// <summary>
-        /// Other type
+        /// Other type.
         /// </summary>
         Other,
 
         /// <summary>
-        /// Isolated type
+        /// Isolated type.
         /// </summary>
         [EnumMember(Value = "isolated")]
         Isolated,
 
         /// <summary>
-        /// Default type
+        /// Default type.
         /// </summary>
         [EnumMember(Value = "default")]
         Default,

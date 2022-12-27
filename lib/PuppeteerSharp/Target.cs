@@ -82,7 +82,7 @@ namespace PuppeteerSharp
         public string TargetId => TargetInfo.TargetId;
 
         /// <summary>
-        /// Get the target that opened this target
+        /// Get the target that opened this target.
         /// </summary>
         /// <remarks>
         /// Top-level targets return <c>null</c>.
@@ -113,9 +113,9 @@ namespace PuppeteerSharp
         internal TargetInfo TargetInfo { get; set; }
 
         /// <summary>
-        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>
+        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>.
         /// </summary>
-        /// <returns>a task that returns a <see cref="IPage"/></returns>
+        /// <returns>a task that returns a <see cref="IPage"/>.</returns>
         public Task<IPage> PageAsync()
         {
             if ((TargetInfo.Type == TargetType.Page || TargetInfo.Type == TargetType.BackgroundPage) && PageTask == null)
@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
         /// </summary>
-        /// <returns>A task that returns a <see cref="Worker"/></returns>
+        /// <returns>A task that returns a <see cref="Worker"/>.</returns>
         public Task<Worker> WorkerAsync()
         {
             if (TargetInfo.Type != TargetType.ServiceWorker && TargetInfo.Type != TargetType.SharedWorker)
@@ -148,7 +148,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.
         /// </summary>
-        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
         public async Task<ICDPSession> CreateCDPSessionAsync()
         {
             return await ((Browser)Browser).Connection.CreateSessionAsync(TargetInfo).ConfigureAwait(false);
