@@ -20,7 +20,9 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class BrowserFetcher : IBrowserFetcher
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Default chromium revision
+        /// </summary>
         public const string DefaultChromiumRevision = "970485";
 
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
@@ -45,7 +47,7 @@ namespace PuppeteerSharp
         private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
         {
             DownloadsFolder = Path.Combine(GetExecutablePath(), ".local-chromium");
@@ -55,12 +57,12 @@ namespace PuppeteerSharp
             _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(Product product) : this(new BrowserFetcherOptions { Product = product })
         {
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(BrowserFetcherOptions options)
         {
             if (options == null)

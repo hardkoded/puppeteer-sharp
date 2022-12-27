@@ -64,7 +64,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool Ok => Status == 0 || ((int)Status >= 200 && (int)Status <= 299);
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Request"/>
         public Request Request { get; }
 
         /// <inheritdoc/>

@@ -163,7 +163,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler<PopupEventArgs> Popup;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="CDPSession"/>
         public CDPSession Client { get; }
 
         ICDPSession IPage.Client => Client;

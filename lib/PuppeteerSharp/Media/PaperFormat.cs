@@ -88,11 +88,17 @@ namespace PuppeteerSharp.Media
         /// <value>The Height.</value>
         public decimal Height { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary>Overriding == operator for <see cref="PaperFormat"/> </summary>
+        /// <param name="left">the value to compare against <paramref name="right" /></param>
+        /// <param name="right">the value to compare against <paramref name="left" /></param>
+        /// <returns><c>true</c> if the two instances are equal to the same value</returns>
         public static bool operator ==(PaperFormat left, PaperFormat right)
             => EqualityComparer<PaperFormat>.Default.Equals(left, right);
 
-        /// <inheritdoc/>
+        /// <summary>Overriding != operator for <see cref="PaperFormat"/> </summary>
+        /// <param name="left">the value to compare against <paramref name="right" /></param>
+        /// <param name="right">the value to compare against <paramref name="left" /></param>
+        /// <returns><c>true</c> if the two instances are not equal to the same value</returns>
         public static bool operator !=(PaperFormat left, PaperFormat right) => !(left == right);
 
         /// <inheritdoc/>

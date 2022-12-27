@@ -9,7 +9,7 @@ namespace PuppeteerSharp.PageAccessibility
     {
         private readonly CDPSession _client;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Accessibility"/>
         public Accessibility(CDPSession client) => _client = client;
 
         /// <inheritdoc/>

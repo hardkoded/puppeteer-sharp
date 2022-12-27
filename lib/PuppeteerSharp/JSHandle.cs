@@ -21,7 +21,7 @@ namespace PuppeteerSharp
             RemoteObject = remoteObject;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="ExecutionContext"/>
         public ExecutionContext ExecutionContext { get; }
 
         /// <inheritdoc/>
