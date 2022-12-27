@@ -20,6 +20,9 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class BrowserFetcher : IBrowserFetcher
     {
+        /// <inheritdoc/>
+        public const string DefaultChromiumRevision = "1069273";
+
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
             [Product.Chrome] = "https://storage.googleapis.com",
@@ -41,9 +44,6 @@ namespace PuppeteerSharp
         private readonly WebClient _webClient = new WebClient();
         private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
-
-        /// <inheritdoc/>
-        public const string DefaultChromiumRevision = "1069273";
 
         /// <inheritdoc/>
         public BrowserFetcher()
@@ -102,18 +102,6 @@ namespace PuppeteerSharp
             set => _webClient.Proxy = value;
         }
 
-        private static void ExtractTar(string zipPath, string folderPath)
-        {
-            new DirectoryInfo(folderPath).Create();
-            using var process = new Process();
-            process.StartInfo.FileName = "tar";
-            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.Start();
-            process.WaitForExit();
-        }
-
         /// <inheritdoc/>
         public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
         {
@@ -159,44 +147,6 @@ namespace PuppeteerSharp
                 }
             }
         }
-
-        private static string GetArchiveName(Product product, Platform platform, string revision)
-        {
-            if (product == Product.Chrome)
-            {
-                switch (platform)
-                {
-                    case Platform.Linux:
-                        return "chrome-linux";
-                    case Platform.MacOS:
-                        return "chrome-mac";
-                    case Platform.Win32:
-                    case Platform.Win64:
-                        return int.TryParse(revision, out var revValue) && revValue > 591479 ? "chrome-win" : "chrome-win32";
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-            else
-            {
-                switch (platform)
-                {
-                    case Platform.Linux:
-                        return "linux";
-                    case Platform.MacOS:
-                        return "mac";
-                    case Platform.Win32:
-                        return "win32";
-                    case Platform.Win64:
-                        return "win64";
-                    default:
-                        throw new ArgumentException("Invalid platform", nameof(platform));
-                }
-            }
-        }
-
-        private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
-            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
 
         /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
@@ -354,6 +304,17 @@ namespace PuppeteerSharp
             return RevisionInfo(revision);
         }
 
+        /// <inheritdoc/>
+        public string GetExecutablePath(string revision)
+            => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         internal static string GetExecutablePath()
         {
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
@@ -365,6 +326,92 @@ namespace PuppeteerSharp
 
             return assemblyDirectory.FullName;
         }
+
+        internal static Platform GetCurrentPlatform()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return Platform.MacOS;
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return Platform.Linux;
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
+            }
+
+            return Platform.Unknown;
+        }
+
+        /// <inheritdoc/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _webClient.Dispose();
+            }
+
+            _isDisposed = true;
+        }
+
+        private static void ExtractTar(string zipPath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = "tar";
+            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static string GetArchiveName(Product product, Platform platform, string revision)
+        {
+            if (product == Product.Chrome)
+            {
+                switch (platform)
+                {
+                    case Platform.Linux:
+                        return "chrome-linux";
+                    case Platform.MacOS:
+                        return "chrome-mac";
+                    case Platform.Win32:
+                    case Platform.Win64:
+                        return int.TryParse(revision, out var revValue) && revValue > 591479 ? "chrome-win" : "chrome-win32";
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+            else
+            {
+                switch (platform)
+                {
+                    case Platform.Linux:
+                        return "linux";
+                    case Platform.MacOS:
+                        return "mac";
+                    case Platform.Win32:
+                        return "win32";
+                    case Platform.Win64:
+                        return "win64";
+                    default:
+                        throw new ArgumentException("Invalid platform", nameof(platform));
+                }
+            }
+        }
+
+        private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
+            => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
 
         private Task InstallDMGAsync(string dmgPath, string folderPath)
         {
@@ -448,30 +495,6 @@ namespace PuppeteerSharp
             }
         }
 
-        /// <inheritdoc/>
-        public string GetExecutablePath(string revision)
-            => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
-
-        internal static Platform GetCurrentPlatform()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return Platform.MacOS;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return Platform.Linux;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
-            }
-
-            return Platform.Unknown;
-        }
-
         private string GetFolderPath(string revision)
             => Path.Combine(DownloadsFolder, $"{Platform}-{revision}");
 
@@ -516,29 +539,6 @@ namespace PuppeteerSharp
             }
 
             return DefaultFirefoxRevision;
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <inheritdoc/>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                _webClient.Dispose();
-            }
-
-            _isDisposed = true;
         }
     }
 }

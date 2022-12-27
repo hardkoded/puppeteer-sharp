@@ -82,6 +82,19 @@ namespace PuppeteerSharp
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
+        public void Dispose()
+        {
+            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
+            _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
+            _frameManager.FrameNavigated -= Navigated;
+            _frameManager.FrameDetached -= OnFrameDetached;
+            _frameManager.NetworkManager.Request -= OnRequest;
+            _frameManager.Client.Disconnected -= OnClientDisconnected;
+            _frameManager.FrameSwapped -= FrameManager_FrameSwapped;
+            _terminationCancellationToken.Cancel();
+            _terminationCancellationToken.Dispose();
+        }
+
         private void OnClientDisconnected(object sender, EventArgs e)
             => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
 
@@ -184,19 +197,6 @@ namespace PuppeteerSharp
             }
 
             return true;
-        }
-
-        public void Dispose()
-        {
-            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
-            _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
-            _frameManager.FrameNavigated -= Navigated;
-            _frameManager.FrameDetached -= OnFrameDetached;
-            _frameManager.NetworkManager.Request -= OnRequest;
-            _frameManager.Client.Disconnected -= OnClientDisconnected;
-            _frameManager.FrameSwapped -= FrameManager_FrameSwapped;
-            _terminationCancellationToken.Cancel();
-            _terminationCancellationToken.Dispose();
         }
     }
 }

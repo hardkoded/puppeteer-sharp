@@ -19,6 +19,12 @@ namespace PuppeteerSharp
     /// </summary>
     public class Connection : IDisposable, ICDPConnection
     {
+        /// <summary>
+        /// Gets default web socket factory implementation.
+        /// </summary>
+        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
+        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
+
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new TaskQueue();
 
@@ -27,12 +33,6 @@ namespace PuppeteerSharp
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
         private readonly List<string> _manuallyAttached = new();
         private int _lastId;
-
-        /// <summary>
-        /// Gets default web socket factory implementation.
-        /// </summary>
-        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
-        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
 
         internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
         {
@@ -102,18 +102,11 @@ namespace PuppeteerSharp
 
         internal AsyncMessageQueue MessageQueue { get; }
 
-        internal static Connection FromSession(CDPSession session) => session.Connection;
-
-        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
-
-        internal Task RawSendASync(int id, string method, object args, string sessionId = null)
+        /// <inheritdoc />
+        public void Dispose()
         {
-            var message = JsonConvert.SerializeObject(
-                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
-                JsonHelper.DefaultJsonSerializerSettings);
-            _logger.LogTrace("Send ► {Message}", message);
-
-            return Transport.SendAsync(message);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>
@@ -146,6 +139,34 @@ namespace PuppeteerSharp
         {
             var response = await SendAsync(method, args).ConfigureAwait(false);
             return response.ToObject<T>(true);
+        }
+
+        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
+        {
+#pragma warning disable 618
+            var transport = connectionOptions.Transport;
+#pragma warning restore 618
+            if (transport == null)
+            {
+                var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
+                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
+            }
+
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
+        }
+
+        internal static Connection FromSession(CDPSession session) => session.Connection;
+
+        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+
+        internal Task RawSendASync(int id, string method, object args, string sessionId = null)
+        {
+            var message = JsonConvert.SerializeObject(
+                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
+                JsonHelper.DefaultJsonSerializerSettings);
+            _logger.LogTrace("Send ► {Message}", message);
+
+            return Transport.SendAsync(message);
         }
 
         internal bool IsAutoAttached(string targetId)
@@ -205,6 +226,25 @@ namespace PuppeteerSharp
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
         internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
+
+        /// <summary>
+        /// Releases all resource used by the <see cref="Connection"/> object.
+        /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
+        /// </summary>
+        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Connection"/>. The
+        /// <see cref="Dispose()"/> method leaves the <see cref="Connection"/> in an unusable state.
+        /// After calling <see cref="Dispose()"/>, you must release all references to the
+        /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
+        /// <see cref="Connection"/> was occupying.</remarks>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Close("Connection disposed");
+            Transport.MessageReceived -= Transport_MessageReceived;
+            Transport.Closed -= Transport_Closed;
+            Transport.Dispose();
+            _callbackQueue.Dispose();
+        }
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
             => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
@@ -295,45 +335,5 @@ namespace PuppeteerSharp
         }
 
         private void Transport_Closed(object sender, TransportClosedEventArgs e) => Close(e.CloseReason);
-
-        internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
-        {
-#pragma warning disable 618
-            var transport = connectionOptions.Transport;
-#pragma warning restore 618
-            if (transport == null)
-            {
-                var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
-                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
-            }
-
-            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases all resource used by the <see cref="Connection"/> object.
-        /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
-        /// </summary>
-        /// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Connection"/>. The
-        /// <see cref="Dispose()"/> method leaves the <see cref="Connection"/> in an unusable state.
-        /// After calling <see cref="Dispose()"/>, you must release all references to the
-        /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
-        /// <see cref="Connection"/> was occupying.</remarks>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            Close("Connection disposed");
-            Transport.MessageReceived -= Transport_MessageReceived;
-            Transport.Closed -= Transport_Closed;
-            Transport.Dispose();
-            _callbackQueue.Dispose();
-        }
     }
 }

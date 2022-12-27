@@ -13,9 +13,9 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class ExecutionContext : IExecutionContext
     {
-        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
-
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
+
+        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$", RegexOptions.Multiline);
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
 
@@ -30,6 +30,9 @@ namespace PuppeteerSharp
             World = world;
         }
 
+        /// <inheritdoc/>
+        public IFrame Frame => World?.Frame;
+
         internal int ContextId { get; }
 
         internal string ContextName { get; }
@@ -37,9 +40,6 @@ namespace PuppeteerSharp
         internal CDPSession Client { get; }
 
         internal DOMWorld World { get; }
-
-        /// <inheritdoc/>
-        public IFrame Frame => World?.Frame;
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
@@ -62,27 +62,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
-
-        private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
-        {
-            if (exceptionDetails.Exception != null)
-            {
-                return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
-            }
-
-            var message = exceptionDetails.Text;
-            if (exceptionDetails.StackTrace != null)
-            {
-                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
-                {
-                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
-                    message += $"\n at ${functionName} (${location})";
-                }
-            }
-
-            return message;
-        }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
@@ -108,6 +87,58 @@ namespace PuppeteerSharp
             }).ConfigureAwait(false);
 
             return CreateJSHandle(response.Objects);
+        }
+
+        internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
+            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
+                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
+                : new JSHandle(this, Client, remoteObject);
+
+        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
+        {
+            if (elementHandle.ExecutionContext == this)
+            {
+                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
+            }
+
+            if (World == null)
+            {
+                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
+            }
+
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            {
+                ObjectId = elementHandle.RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+
+            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            {
+                BackendNodeId = nodeInfo.Node.BackendNodeId,
+                ExecutionContextId = ContextId,
+            }).ConfigureAwait(false);
+
+            return CreateJSHandle(obj.Object) as ElementHandle;
+        }
+
+        private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
+        {
+            if (exceptionDetails.Exception != null)
+            {
+                return exceptionDetails.Exception.Description ?? exceptionDetails.Exception.Value;
+            }
+
+            var message = exceptionDetails.Text;
+            if (exceptionDetails.StackTrace != null)
+            {
+                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
+                {
+                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
+                    var functionName = string.IsNullOrEmpty(callframe.FunctionName) ? "<anonymous>" : callframe.FunctionName;
+                    message += $"\n at ${functionName} (${location})";
+                }
+            }
+
+            return message;
         }
 
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
@@ -163,11 +194,6 @@ namespace PuppeteerSharp
             }
         }
 
-        internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
-            => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
-                : new JSHandle(this, Client, remoteObject);
-
         private object FormatArgument(object arg)
         {
             switch (arg)
@@ -204,32 +230,6 @@ namespace PuppeteerSharp
             {
                 Value = arg,
             };
-        }
-
-        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
-        {
-            if (elementHandle.ExecutionContext == this)
-            {
-                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
-            }
-
-            if (World == null)
-            {
-                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
-            }
-
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
-            {
-                ObjectId = elementHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
-
-            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
-            {
-                BackendNodeId = nodeInfo.Node.BackendNodeId,
-                ExecutionContextId = ContextId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(obj.Object) as ElementHandle;
         }
     }
 }

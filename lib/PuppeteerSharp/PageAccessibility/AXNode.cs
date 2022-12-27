@@ -56,24 +56,6 @@ namespace PuppeteerSharp.PageAccessibility
             return nodeById.Values.FirstOrDefault();
         }
 
-        private bool IsPlainTextField()
-            => !_richlyEditable && (_editable || _role == "textbox" || _role == "ComboBox" || _role == "searchbox");
-
-        private bool IsTextOnlyObject()
-            => _role == "LineBreak" ||
-                _role == "text" ||
-                _role == "InlineTextBox";
-
-        private bool HasFocusableChild()
-        {
-            if (!_cachedHasFocusableChild.HasValue)
-            {
-                _cachedHasFocusableChild = Children.Any(c => c.Focusable || c.HasFocusableChild());
-            }
-
-            return _cachedHasFocusableChild.Value;
-        }
-
         internal AXNode Find(Func<AXNode, bool> predicate)
         {
             if (predicate(this))
@@ -262,6 +244,24 @@ namespace PuppeteerSharp.PageAccessibility
             };
 
             return node;
+        }
+
+        private bool IsPlainTextField()
+            => !_richlyEditable && (_editable || _role == "textbox" || _role == "ComboBox" || _role == "searchbox");
+
+        private bool IsTextOnlyObject()
+            => _role == "LineBreak" ||
+                _role == "text" ||
+                _role == "InlineTextBox";
+
+        private bool HasFocusableChild()
+        {
+            if (!_cachedHasFocusableChild.HasValue)
+            {
+                _cachedHasFocusableChild = Children.Any(c => c.Focusable || c.HasFocusableChild());
+            }
+
+            return _cachedHasFocusableChild.Value;
         }
 
         private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;

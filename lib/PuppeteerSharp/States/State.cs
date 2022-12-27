@@ -66,10 +66,6 @@ namespace PuppeteerSharp.States
 
         public bool IsExited => this == StateManager.Exited || this == StateManager.Disposed;
 
-        internal virtual void Leave(LauncherBase p)
-        {
-        }
-
         public virtual Task EnterFromAsync(LauncherBase p, State fromState) => EnterFromAsync(p, fromState, TimeSpan.Zero);
 
         public virtual Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout) => Task.FromException(InvalidOperation("enterFrom"));
@@ -90,8 +86,9 @@ namespace PuppeteerSharp.States
             return name.Substring(0, name.Length - "State".Length);
         }
 
-        private Exception InvalidOperation(string operationName)
-            => new InvalidOperationException($"Cannot {operationName} in state {this}");
+        internal virtual void Leave(LauncherBase p)
+        {
+        }
 
         protected static void Kill(LauncherBase p)
         {
@@ -107,5 +104,8 @@ namespace PuppeteerSharp.States
                 // Ignore
             }
         }
+
+        private Exception InvalidOperation(string operationName)
+            => new InvalidOperationException($"Cannot {operationName} in state {this}");
     }
 }

@@ -85,35 +85,10 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public RemoteAddress RemoteAddress { get; }
 
-        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
-
         /// <inheritdoc/>
         public IFrame Frame => Request.Frame;
 
-        private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
-        {
-            if (extraInfo == null || extraInfo.HeadersText == null)
-            {
-                return null;
-            }
-
-            var lines = extraInfo.HeadersText.Split('\r');
-            if (lines.Length == 0)
-            {
-                return null;
-            }
-
-            var firstLine = lines[0];
-
-            var match = _extraInfoLines.Match(firstLine);
-            if (!match.Success)
-            {
-                return null;
-            }
-
-            var statusText = match.Groups["text"].Value;
-            return statusText;
-        }
+        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
 
         /// <summary>
         /// Returns a Task which resolves to a buffer with response body
@@ -153,5 +128,30 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>(true);
+
+        private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
+        {
+            if (extraInfo == null || extraInfo.HeadersText == null)
+            {
+                return null;
+            }
+
+            var lines = extraInfo.HeadersText.Split('\r');
+            if (lines.Length == 0)
+            {
+                return null;
+            }
+
+            var firstLine = lines[0];
+
+            var match = _extraInfoLines.Match(firstLine);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            var statusText = match.Groups["text"].Value;
+            return statusText;
+        }
     }
 }

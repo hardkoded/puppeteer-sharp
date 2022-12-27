@@ -150,6 +150,25 @@ namespace PuppeteerSharp
             return _workerTask;
         }
 
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the target.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
+        public async Task<ICDPSession> CreateCDPSessionAsync() => await _sessionFactory(false).ConfigureAwait(false);
+
+        internal void TargetInfoChanged(TargetInfo targetInfo)
+        {
+            var previousUrl = TargetInfo.Url;
+            TargetInfo = targetInfo;
+
+            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
+            {
+                IsInitialized = true;
+                InitializedTaskWrapper.TrySetResult(true);
+                return;
+            }
+        }
+
         private async Task<Worker> WorkerInternalAsync()
         {
             var client = Session ?? await _sessionFactory(false).ConfigureAwait(false);
@@ -173,24 +192,5 @@ namespace PuppeteerSharp
                 _defaultViewport,
                 _screenshotTaskQueue).ConfigureAwait(false);
         }
-
-        internal void TargetInfoChanged(TargetInfo targetInfo)
-        {
-            var previousUrl = TargetInfo.Url;
-            TargetInfo = targetInfo;
-
-            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
-            {
-                IsInitialized = true;
-                InitializedTaskWrapper.TrySetResult(true);
-                return;
-            }
-        }
-
-        /// <summary>
-        /// Creates a Chrome Devtools Protocol session attached to the target.
-        /// </summary>
-        /// <returns>A task that returns a <see cref="ICDPSession"/></returns>
-        public async Task<ICDPSession> CreateCDPSessionAsync() => await _sessionFactory(false).ConfigureAwait(false);
     }
 }

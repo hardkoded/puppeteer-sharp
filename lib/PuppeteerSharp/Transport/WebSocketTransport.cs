@@ -72,28 +72,6 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         public bool IsClosed { get; private set; }
 
-        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
-        {
-            var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
-            return result;
-        }
-
-        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
-        {
-            var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
-            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
-            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
-        }
-
-        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
-            => Task.Factory.StartNew(
-                () => taskFactory(cancellationToken),
-                cancellationToken,
-                TaskCreationOptions.LongRunning,
-                TaskScheduler.Default);
-
         /// <summary>
         /// Sends a message using the transport.
         /// </summary>
@@ -141,6 +119,28 @@ namespace PuppeteerSharp.Transport
             _client?.Dispose();
             _socketQueue.Dispose();
         }
+
+        private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
+        {
+            var result = new ClientWebSocket();
+            result.Options.KeepAliveInterval = TimeSpan.Zero;
+            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
+            return result;
+        }
+
+        private static async Task<IConnectionTransport> CreateDefaultTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
+        {
+            var webSocketFactory = connectionOptions.WebSocketFactory ?? DefaultWebSocketFactory;
+            var webSocket = await webSocketFactory(url, connectionOptions, cancellationToken).ConfigureAwait(false);
+            return new WebSocketTransport(webSocket, DefaultTransportScheduler, connectionOptions.EnqueueTransportMessages);
+        }
+
+        private static void ScheduleTransportTask(Func<CancellationToken, Task> taskFactory, CancellationToken cancellationToken)
+            => Task.Factory.StartNew(
+                () => taskFactory(cancellationToken),
+                cancellationToken,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
 
         /// <summary>
         /// Starts listening the socket

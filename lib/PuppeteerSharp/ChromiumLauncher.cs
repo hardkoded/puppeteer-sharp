@@ -62,6 +62,39 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
 
+        internal static string[] GetDefaultArgs(LaunchOptions options)
+        {
+            var chromiumArguments = new List<string>(DefaultArgs);
+
+            if (!string.IsNullOrEmpty(options.UserDataDir))
+            {
+                chromiumArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
+            }
+
+            if (options.Devtools)
+            {
+                chromiumArguments.Add("--auto-open-devtools-for-tabs");
+            }
+
+            if (options.Headless)
+            {
+                chromiumArguments.AddRange(new[]
+                {
+                    "--headless",
+                    "--hide-scrollbars",
+                    "--mute-audio",
+                });
+            }
+
+            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
+            {
+                chromiumArguments.Add("about:blank");
+            }
+
+            chromiumArguments.AddRange(options.Args);
+            return chromiumArguments.ToArray();
+        }
+
         private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
             var chromiumArgs = new List<string>();
@@ -94,39 +127,6 @@ namespace PuppeteerSharp
             }
 
             return (chromiumArgs, tempUserDataDirectory);
-        }
-
-        internal static string[] GetDefaultArgs(LaunchOptions options)
-        {
-            var chromiumArguments = new List<string>(DefaultArgs);
-
-            if (!string.IsNullOrEmpty(options.UserDataDir))
-            {
-                chromiumArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
-            }
-
-            if (options.Devtools)
-            {
-                chromiumArguments.Add("--auto-open-devtools-for-tabs");
-            }
-
-            if (options.Headless)
-            {
-                chromiumArguments.AddRange(new[]
-                {
-                    "--headless",
-                    "--hide-scrollbars",
-                    "--mute-audio",
-                });
-            }
-
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
-            {
-                chromiumArguments.Add("about:blank");
-            }
-
-            chromiumArguments.AddRange(options.Args);
-            return chromiumArguments.ToArray();
         }
     }
 }

@@ -26,14 +26,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IPage
     {
-        private static readonly Dictionary<string, decimal> _unitToPixels = new()
-        {
-            { "px", 1 },
-            { "in", 96 },
-            { "cm", 37.8m },
-            { "mm", 3.78m },
-        };
-
         /// <inheritdoc/>
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
@@ -50,6 +42,14 @@ namespace PuppeteerSharp
             "TaskDuration",
             "JSHeapUsedSize",
             "JSHeapTotalSize",
+        };
+
+        private static readonly Dictionary<string, decimal> _unitToPixels = new()
+        {
+            { "px", 1 },
+            { "in", 96 },
+            { "cm", 37.8m },
+            { "mm", 3.78m },
         };
 
         private readonly TaskQueue _screenshotTaskQueue;
@@ -264,24 +264,6 @@ namespace PuppeteerSharp
 
                 return _sessionClosedTcs.Task;
             }
-        }
-
-        internal static async Task<Page> CreateAsync(
-            CDPSession client,
-            Target target,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
-            TaskQueue screenshotTaskQueue)
-        {
-            var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
-            await page.InitializeAsync().ConfigureAwait(false);
-
-            if (defaultViewPort != null)
-            {
-                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
-            }
-
-            return page;
         }
 
         /// <inheritdoc/>
@@ -535,66 +517,6 @@ namespace PuppeteerSharp
             }
 
             return PdfInternalAsync(null, options);
-        }
-
-        internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
-        {
-            var paperWidth = PaperFormat.Letter.Width;
-            var paperHeight = PaperFormat.Letter.Height;
-
-            if (options.Format != null)
-            {
-                paperWidth = options.Format.Width;
-                paperHeight = options.Format.Height;
-            }
-            else
-            {
-                if (options.Width != null)
-                {
-                    paperWidth = ConvertPrintParameterToInches(options.Width);
-                }
-
-                if (options.Height != null)
-                {
-                    paperHeight = ConvertPrintParameterToInches(options.Height);
-                }
-            }
-
-            var marginTop = ConvertPrintParameterToInches(options.MarginOptions.Top);
-            var marginLeft = ConvertPrintParameterToInches(options.MarginOptions.Left);
-            var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
-            var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
-
-            if (options.OmitBackground)
-            {
-                await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
-            }
-
-            var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
-            {
-                TransferMode = "ReturnAsStream",
-                Landscape = options.Landscape,
-                DisplayHeaderFooter = options.DisplayHeaderFooter,
-                HeaderTemplate = options.HeaderTemplate,
-                FooterTemplate = options.FooterTemplate,
-                PrintBackground = options.PrintBackground,
-                Scale = options.Scale,
-                PaperWidth = paperWidth,
-                PaperHeight = paperHeight,
-                MarginTop = marginTop,
-                MarginBottom = marginBottom,
-                MarginLeft = marginLeft,
-                MarginRight = marginRight,
-                PageRanges = options.PageRanges,
-                PreferCSSPageSize = options.PreferCSSPageSize,
-            }).ConfigureAwait(false);
-
-            if (options.OmitBackground)
-            {
-                await ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
-            }
-
-            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -1162,7 +1084,99 @@ namespace PuppeteerSharp
             });
         }
 
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
+        public ValueTask DisposeAsync() => new(CloseAsync());
+
+        internal static async Task<Page> CreateAsync(
+            CDPSession client,
+            Target target,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewPort,
+            TaskQueue screenshotTaskQueue)
+        {
+            var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
+            await page.InitializeAsync().ConfigureAwait(false);
+
+            if (defaultViewPort != null)
+            {
+                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+            }
+
+            return page;
+        }
+
+        internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
+        {
+            var paperWidth = PaperFormat.Letter.Width;
+            var paperHeight = PaperFormat.Letter.Height;
+
+            if (options.Format != null)
+            {
+                paperWidth = options.Format.Width;
+                paperHeight = options.Format.Height;
+            }
+            else
+            {
+                if (options.Width != null)
+                {
+                    paperWidth = ConvertPrintParameterToInches(options.Width);
+                }
+
+                if (options.Height != null)
+                {
+                    paperHeight = ConvertPrintParameterToInches(options.Height);
+                }
+            }
+
+            var marginTop = ConvertPrintParameterToInches(options.MarginOptions.Top);
+            var marginLeft = ConvertPrintParameterToInches(options.MarginOptions.Left);
+            var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
+            var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
+
+            if (options.OmitBackground)
+            {
+                await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+            }
+
+            var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
+            {
+                TransferMode = "ReturnAsStream",
+                Landscape = options.Landscape,
+                DisplayHeaderFooter = options.DisplayHeaderFooter,
+                HeaderTemplate = options.HeaderTemplate,
+                FooterTemplate = options.FooterTemplate,
+                PrintBackground = options.PrintBackground,
+                Scale = options.Scale,
+                PaperWidth = paperWidth,
+                PaperHeight = paperHeight,
+                MarginTop = marginTop,
+                MarginBottom = marginBottom,
+                MarginLeft = marginLeft,
+                MarginRight = marginRight,
+                PageRanges = options.PageRanges,
+                PreferCSSPageSize = options.PreferCSSPageSize,
+            }).ConfigureAwait(false);
+
+            if (options.OmitBackground)
+            {
+                await ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
+            }
+
+            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
+        }
+
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+
+        /// <inheritdoc/>
+        protected virtual void Dispose(bool disposing)
+            => _ = DisposeAsync();
 
         private async Task InitializeAsync()
         {
@@ -1718,19 +1732,5 @@ namespace PuppeteerSharp
                         TaskScheduler.Default)))
                 .ConfigureAwait(false);
         }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <inheritdoc/>
-        protected virtual void Dispose(bool disposing)
-            => _ = DisposeAsync();
-
-        /// <inheritdoc/>
-        public ValueTask DisposeAsync() => new(CloseAsync());
     }
 }

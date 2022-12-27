@@ -37,6 +37,45 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
+        internal static string[] GetDefaultArgs(LaunchOptions options)
+        {
+            var firefoxArguments = new List<string>(_defaultArgs);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                firefoxArguments.Add("--foreground");
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                firefoxArguments.Add("--wait-for-browser");
+            }
+
+            if (!string.IsNullOrEmpty(options.UserDataDir))
+            {
+                firefoxArguments.Add("--profile");
+                firefoxArguments.Add($"{options.UserDataDir.Quote()}");
+            }
+
+            if (options.Headless)
+            {
+                firefoxArguments.Add("--headless");
+            }
+
+            if (options.Devtools)
+            {
+                firefoxArguments.Add("--devtools");
+            }
+
+            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
+            {
+                firefoxArguments.Add("about:blank");
+            }
+
+            firefoxArguments.AddRange(options.Args);
+            return firefoxArguments.ToArray();
+        }
+
         private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArgs = new List<string>();
@@ -306,45 +345,6 @@ namespace PuppeteerSharp
                 string.Join("\n", defaultPreferences.Select(i => $"user_pref({JsonConvert.SerializeObject(i.Key)}, {JsonConvert.SerializeObject(i.Value)});").ToArray()));
 
             File.WriteAllText(Path.Combine(tempUserDataDirectory.Path, "prefs.js"), string.Empty);
-        }
-
-        internal static string[] GetDefaultArgs(LaunchOptions options)
-        {
-            var firefoxArguments = new List<string>(_defaultArgs);
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                firefoxArguments.Add("--foreground");
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                firefoxArguments.Add("--wait-for-browser");
-            }
-
-            if (!string.IsNullOrEmpty(options.UserDataDir))
-            {
-                firefoxArguments.Add("--profile");
-                firefoxArguments.Add($"{options.UserDataDir.Quote()}");
-            }
-
-            if (options.Headless)
-            {
-                firefoxArguments.Add("--headless");
-            }
-
-            if (options.Devtools)
-            {
-                firefoxArguments.Add("--devtools");
-            }
-
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
-            {
-                firefoxArguments.Add("about:blank");
-            }
-
-            firefoxArguments.AddRange(options.Args);
-            return firefoxArguments.ToArray();
         }
     }
 }

@@ -89,6 +89,32 @@ namespace PuppeteerSharp
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
+        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
+        {
+            lock (_targetInterceptors)
+            {
+                _targetInterceptors.TryGetValue(session, out var interceptors);
+
+                if (interceptors == null)
+                {
+                    interceptors = new List<TargetInterceptor>();
+                    _targetInterceptors.TryAdd(session, interceptors);
+                }
+
+                interceptors.Add(interceptor);
+            }
+        }
+
+        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
+        {
+            _targetInterceptors.TryGetValue(session, out var interceptors);
+
+            if (interceptors != null)
+            {
+                interceptors.Remove(interceptor);
+            }
+        }
+
         private void StoreExistingTargetsForInit()
         {
             foreach (var kv in _discoveredTargetsByTargetId)
@@ -322,32 +348,6 @@ namespace PuppeteerSharp
 
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
-        }
-
-        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            lock (_targetInterceptors)
-            {
-                _targetInterceptors.TryGetValue(session, out var interceptors);
-
-                if (interceptors == null)
-                {
-                    interceptors = new List<TargetInterceptor>();
-                    _targetInterceptors.TryAdd(session, interceptors);
-                }
-
-                interceptors.Add(interceptor);
-            }
-        }
-
-        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            _targetInterceptors.TryGetValue(session, out var interceptors);
-
-            if (interceptors != null)
-            {
-                interceptors.Remove(interceptor);
-            }
         }
     }
 }

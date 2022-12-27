@@ -60,6 +60,55 @@ namespace PuppeteerSharp
 
         internal TimeoutSettings TimeoutSettings { get; }
 
+        public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
+        {
+            var referrer = string.IsNullOrEmpty(options.Referer)
+               ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
+               : options.Referer;
+            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+
+            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
+            {
+                try
+                {
+                    var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
+                    var task = await Task.WhenAny(
+                        watcher.TimeoutOrTerminationTask,
+                        navigateTask).ConfigureAwait(false);
+
+                    await task.ConfigureAwait(false);
+
+                    task = await Task.WhenAny(
+                        watcher.TimeoutOrTerminationTask,
+                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
+
+                    await task.ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    throw new NavigationException(ex.Message, ex);
+                }
+
+                return watcher.NavigationResponse;
+            }
+        }
+
+        public async Task<IResponse> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
+        {
+            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
+            {
+                var raceTask = await Task.WhenAny(
+                    watcher.NewDocumentNavigationTask,
+                    watcher.SameDocumentNavigationTask,
+                    watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
+
+                await raceTask.ConfigureAwait(false);
+
+                return watcher.NavigationResponse;
+            }
+        }
+
         internal async Task InitializeAsync(CDPSession client = null)
         {
             try
@@ -109,38 +158,28 @@ namespace PuppeteerSharp
             return context;
         }
 
-        public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
+        internal void OnAttachedToTarget(TargetChangedArgs e)
         {
-            var referrer = string.IsNullOrEmpty(options.Referer)
-               ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
-               : options.Referer;
-            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
-
-            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
+            if (e.TargetInfo.Type != TargetType.IFrame)
             {
-                try
-                {
-                    var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
-                    var task = await Task.WhenAny(
-                        watcher.TimeoutOrTerminationTask,
-                        navigateTask).ConfigureAwait(false);
-
-                    await task.ConfigureAwait(false);
-
-                    task = await Task.WhenAny(
-                        watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
-
-                    await task.ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new NavigationException(ex.Message, ex);
-                }
-
-                return watcher.NavigationResponse;
+                return;
             }
+
+            _frames.TryGetValue(e.TargetInfo.TargetId, out var frame);
+            if (frame != null)
+            {
+                frame.UpdateClient(e.Target.Session);
+            }
+
+            e.Target.Session.MessageReceived += Client_MessageReceived;
+            _ = InitializeAsync(e.Target.Session);
         }
+
+        internal Frame[] GetFrames() => _frames.Values.ToArray();
+
+        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
+
+        internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
         {
@@ -156,22 +195,6 @@ namespace PuppeteerSharp
             if (!string.IsNullOrEmpty(response.ErrorText))
             {
                 throw new NavigationException(response.ErrorText, url);
-            }
-        }
-
-        public async Task<IResponse> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
-        {
-            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
-            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
-            {
-                var raceTask = await Task.WhenAny(
-                    watcher.NewDocumentNavigationTask,
-                    watcher.SameDocumentNavigationTask,
-                    watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
-
-                await raceTask.ConfigureAwait(false);
-
-                return watcher.NavigationResponse;
             }
         }
 
@@ -231,23 +254,6 @@ namespace PuppeteerSharp
                     Client.Close(message);
                 }
             });
-        }
-
-        internal void OnAttachedToTarget(TargetChangedArgs e)
-        {
-            if (e.TargetInfo.Type != TargetType.IFrame)
-            {
-                return;
-            }
-
-            _frames.TryGetValue(e.TargetInfo.TargetId, out var frame);
-            if (frame != null)
-            {
-                frame.UpdateClient(e.Target.Session);
-            }
-
-            e.Target.Session.MessageReceived += Client_MessageReceived;
-            _ = InitializeAsync(e.Target.Session);
         }
 
         private void OnFrameStartedLoading(BasicFrameResponse e)
@@ -403,8 +409,6 @@ namespace PuppeteerSharp
             FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        internal Frame[] GetFrames() => _frames.Values.ToArray();
-
         private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
         {
             if (_frames.TryGetValue(e.FrameId, out var frame))
@@ -502,9 +506,5 @@ namespace PuppeteerSharp
                 _logger.LogError(ex.ToString());
             }
         }
-
-        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
-
-        internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
     }
 }

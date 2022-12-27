@@ -41,17 +41,6 @@ namespace PuppeteerSharp
             return result;
         }
 
-        private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId)
-        {
-            if (!_queuedRedirectInfoMap.ContainsKey(fetchRequestId))
-            {
-                _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
-            }
-
-            _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
-            return result;
-        }
-
         internal void QueueRedirectInfo(string fetchRequestId, RedirectInfo redirectInfo)
             => QueuedRedirectInfo(fetchRequestId).Add(redirectInfo);
 
@@ -134,5 +123,16 @@ namespace PuppeteerSharp
         // Puppeteer doesn't have this. but it seems that .NET needs this to avoid race conditions
         internal void ForgetQueuedEventGroup(string networkRequestId)
             => _queuedEventGroupMap.TryRemove(networkRequestId, out _);
+
+        private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId)
+        {
+            if (!_queuedRedirectInfoMap.ContainsKey(fetchRequestId))
+            {
+                _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
+            }
+
+            _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
+            return result;
+        }
     }
 }

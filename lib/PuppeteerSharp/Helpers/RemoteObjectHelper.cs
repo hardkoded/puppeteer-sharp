@@ -42,6 +42,28 @@ namespace PuppeteerSharp.Helpers
             return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type, stringify);
         }
 
+        internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
+        {
+            if (remoteObject.ObjectId == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await client.SendAsync("Runtime.releaseObject", new RuntimeReleaseObjectRequest
+                {
+                    ObjectId = remoteObject.ObjectId,
+                }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Exceptions might happen in case of a page been navigated or closed.
+                // Swallow these since they are harmless and we don't leak anything in this case.
+                logger.LogWarning(ex.ToString());
+            }
+        }
+
         private static object ValueFromType<T>(JToken value, RemoteObjectType objectType, bool stringify = false)
         {
             if (stringify)
@@ -102,28 +124,6 @@ namespace PuppeteerSharp.Helpers
                     return double.NegativeInfinity;
                 default:
                     throw new Exception("Unsupported unserializable value: " + unserializableValue);
-            }
-        }
-
-        internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
-        {
-            if (remoteObject.ObjectId == null)
-            {
-                return;
-            }
-
-            try
-            {
-                await client.SendAsync("Runtime.releaseObject", new RuntimeReleaseObjectRequest
-                {
-                    ObjectId = remoteObject.ObjectId,
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                // Exceptions might happen in case of a page been navigated or closed.
-                // Swallow these since they are harmless and we don't leak anything in this case.
-                logger.LogWarning(ex.ToString());
             }
         }
     }

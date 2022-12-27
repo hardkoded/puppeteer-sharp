@@ -148,6 +148,12 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <summary>
+        /// Gets the executable path.
+        /// </summary>
+        /// <returns>The executable path.</returns>
+        public Task<string> GetExecutablePathAsync() => ResolveExecutablePathAsync();
+
         private async Task<string> GetWSEndpointAsync(string browserURL)
         {
             try
@@ -170,12 +176,6 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"Failed to fetch browser webSocket url from {browserURL}.", ex);
             }
         }
-
-        /// <summary>
-        /// Gets the executable path.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        public Task<string> GetExecutablePathAsync() => ResolveExecutablePathAsync();
 
         private void EnsureSingleLaunchOrConnect()
         {

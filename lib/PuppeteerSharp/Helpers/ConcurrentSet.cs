@@ -129,17 +129,6 @@ namespace PuppeteerSharp.Helpers
             return new KeyEnumerator(_dictionary);
         }
 
-        private IEnumerator<T> GetEnumeratorImpl()
-        {
-            // PERF: Do not use dictionary.Keys here because that creates a snapshot
-            // of the collection resulting in a List<T> allocation. Instead, use the
-            // KeyValuePair enumerator and pick off the Key part.
-            foreach (var kvp in _dictionary)
-            {
-                yield return kvp.Key;
-            }
-        }
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return GetEnumeratorImpl();
@@ -163,6 +152,17 @@ namespace PuppeteerSharp.Helpers
             foreach (var element in this)
             {
                 array[arrayIndex++] = element;
+            }
+        }
+
+        private IEnumerator<T> GetEnumeratorImpl()
+        {
+            // PERF: Do not use dictionary.Keys here because that creates a snapshot
+            // of the collection resulting in a List<T> allocation. Instead, use the
+            // KeyValuePair enumerator and pick off the Key part.
+            foreach (var kvp in _dictionary)
+            {
+                yield return kvp.Key;
             }
         }
 

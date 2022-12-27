@@ -34,14 +34,14 @@ namespace PuppeteerSharp
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        private string DebuggerDisplay =>
-            string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
-
         internal IPage Page { get; }
 
         internal Frame Frame { get; }
 
         internal CustomQueriesManager CustomQueriesManager => ((Browser)Page.Browser).CustomQueriesManager;
+
+        private string DebuggerDisplay =>
+            string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ScreenshotOptions());
@@ -227,21 +227,6 @@ namespace PuppeteerSharp
                     Files = files,
                     BackendNodeId = backendNodeId,
                 }).ConfigureAwait(false);
-            }
-        }
-
-        private void CheckForFileAccess(string[] files)
-        {
-            foreach (var file in files)
-            {
-                try
-                {
-                    File.Open(file, FileMode.Open).Dispose();
-                }
-                catch (Exception ex)
-                {
-                    throw new PuppeteerException($"{files} does not exist or is not readable", ex);
-                }
             }
         }
 
@@ -561,6 +546,54 @@ namespace PuppeteerSharp
             };
         }
 
+        /// <inheritdoc/>
+        public async Task ScrollIntoViewIfNeededAsync()
+        {
+            var errorMessage = await EvaluateFunctionAsync<string>(
+                @"async(element, pageJavascriptEnabled) => {
+                    if (!element.isConnected)
+                        return 'Node is detached from document';
+                    if (element.nodeType !== Node.ELEMENT_NODE)
+                        return 'Node is not of type HTMLElement';
+                    // force-scroll if page's javascript is disabled.
+                    if (!pageJavascriptEnabled) {
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                        return null;
+                    }
+                    const visibleRatio = await new Promise(resolve => {
+                    const observer = new IntersectionObserver(entries => {
+                        resolve(entries[0].intersectionRatio);
+                        observer.disconnect();
+                    });
+                    observer.observe(element);
+                    });
+                    if (visibleRatio !== 1.0)
+                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+                    return null;
+                }",
+                ((Page)Page).JavascriptEnabled).ConfigureAwait(false);
+
+            if (errorMessage != null)
+            {
+                throw new PuppeteerException(errorMessage);
+            }
+        }
+
+        private void CheckForFileAccess(string[] files)
+        {
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Open(file, FileMode.Open).Dispose();
+                }
+                catch (Exception ex)
+                {
+                    throw new PuppeteerException($"{files} does not exist or is not readable", ex);
+                }
+            }
+        }
+
         private IEnumerable<BoxModelPoint> ApplyOffsetsToQuad(BoxModelPoint[] quad, decimal offsetX, decimal offsetY)
             => quad.Select((part) => new BoxModelPoint() { X = part.X + offsetX, Y = part.Y + offsetY });
 
@@ -615,39 +648,6 @@ namespace PuppeteerSharp
                 X = Math.Min(Math.Max(point.X, 0), size.ClientWidth),
                 Y = Math.Min(Math.Max(point.Y, 0), size.ClientHeight),
             });
-        }
-
-        /// <inheritdoc/>
-        public async Task ScrollIntoViewIfNeededAsync()
-        {
-            var errorMessage = await EvaluateFunctionAsync<string>(
-                @"async(element, pageJavascriptEnabled) => {
-                    if (!element.isConnected)
-                        return 'Node is detached from document';
-                    if (element.nodeType !== Node.ELEMENT_NODE)
-                        return 'Node is not of type HTMLElement';
-                    // force-scroll if page's javascript is disabled.
-                    if (!pageJavascriptEnabled) {
-                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-                        return null;
-                    }
-                    const visibleRatio = await new Promise(resolve => {
-                    const observer = new IntersectionObserver(entries => {
-                        resolve(entries[0].intersectionRatio);
-                        observer.disconnect();
-                    });
-                    observer.observe(element);
-                    });
-                    if (visibleRatio !== 1.0)
-                        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
-                    return null;
-                }",
-                ((Page)Page).JavascriptEnabled).ConfigureAwait(false);
-
-            if (errorMessage != null)
-            {
-                throw new PuppeteerException(errorMessage);
-            }
         }
 
         private async Task<DomGetBoxModelResponse> GetBoxModelAsync()
