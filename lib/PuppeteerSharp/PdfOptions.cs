@@ -92,17 +92,17 @@ namespace PuppeteerSharp
         /// </summary>
         public bool OmitBackground { get; set; }
 
-        /// <summary>Overriding == operator for <see cref="PdfOptions"/></summary>
-        /// <param name="left">the value to compare against <paramref name="right" /></param>
-        /// <param name="right">the value to compare against <paramref name="left" /></param>
-        /// <returns><c>true</c> if the two instances are equal to the same value</returns>
+        /// <summary>Overriding == operator for <see cref="PdfOptions"/>.</summary>
+        /// <param name="left">the value to compare against <paramref name="right" />.</param>
+        /// <param name="right">the value to compare against <paramref name="left" />.</param>
+        /// <returns><c>true</c> if the two instances are equal to the same value.</returns>
         public static bool operator ==(PdfOptions left, PdfOptions right)
             => EqualityComparer<PdfOptions>.Default.Equals(left, right);
 
-        /// <summary>Overriding != operator for <see cref="PdfOptions"/></summary>
-        /// <param name="left">the value to compare against <paramref name="right" /></param>
-        /// <param name="right">the value to compare against <paramref name="left" /></param>
-        /// <returns><c>true</c> if the two instances are not equal to the same value</returns>
+        /// <summary>Overriding != operator for <see cref="PdfOptions"/>.</summary>
+        /// <param name="left">the value to compare against <paramref name="right" />.</param>
+        /// <param name="right">the value to compare against <paramref name="left" />.</param>
+        /// <returns><c>true</c> if the two instances are not equal to the same value.</returns>
         public static bool operator !=(PdfOptions left, PdfOptions right) => !(left == right);
 
         /// <inheritdoc/>

@@ -547,10 +547,10 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Scroll into views if needed.
+        /// Scroll into view if needed.
         /// </summary>
-        /// <returns><see cref="Task"/></returns>
-        /// <exception cref="PuppeteerException">Puppeteer exception</exception>
+        /// <returns><see cref="Task"/>.</returns>
+        /// <exception cref="PuppeteerException">Puppeteer exception.</exception>
         public async Task ScrollIntoViewIfNeededAsync()
         {
             var errorMessage = await EvaluateFunctionAsync<string>(

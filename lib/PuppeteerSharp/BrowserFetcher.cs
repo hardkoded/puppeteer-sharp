@@ -21,7 +21,7 @@ namespace PuppeteerSharp
     public class BrowserFetcher : IBrowserFetcher
     {
         /// <summary>
-        /// Default chromium revision
+        /// Default chromium revision.
         /// </summary>
         public const string DefaultChromiumRevision = "970485";
 
@@ -107,12 +107,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Get executable path.
         /// </summary>
-        /// <param name="product"><see cref="Product"/></param>
-        /// <param name="platform"><see cref="Platform"/></param>
-        /// <param name="revision">chromium revision</param>
-        /// <param name="folderPath">folder path</param>
-        /// <returns>executable path</returns>
-        /// <exception cref="ArgumentException">For not supported <see cref="Platform"/></exception>
+        /// <param name="product"><see cref="Product"/>.</param>
+        /// <param name="platform"><see cref="Platform"/>.</param>
+        /// <param name="revision">chromium revision.</param>
+        /// <param name="folderPath">folder path.</param>
+        /// <returns>executable path.</returns>
+        /// <exception cref="ArgumentException">For not supported <see cref="Platform"/>.</exception>
         public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
         {
             if (product == Product.Chrome)
