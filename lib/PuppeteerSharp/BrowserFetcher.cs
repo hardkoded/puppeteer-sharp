@@ -20,7 +20,9 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class BrowserFetcher : IBrowserFetcher
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// Default chromium revision.
+        /// </summary>
         public const string DefaultChromiumRevision = "970485";
 
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
@@ -45,7 +47,7 @@ namespace PuppeteerSharp
         private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
         {
             DownloadsFolder = Path.Combine(GetExecutablePath(), ".local-chromium");
@@ -55,12 +57,12 @@ namespace PuppeteerSharp
             _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(Product product) : this(new BrowserFetcherOptions { Product = product })
         {
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher(BrowserFetcherOptions options)
         {
             if (options == null)
@@ -102,7 +104,15 @@ namespace PuppeteerSharp
             set => _webClient.Proxy = value;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Get executable path.
+        /// </summary>
+        /// <param name="product"><see cref="Product"/>.</param>
+        /// <param name="platform"><see cref="Platform"/>.</param>
+        /// <param name="revision">chromium revision.</param>
+        /// <param name="folderPath">folder path.</param>
+        /// <returns>executable path.</returns>
+        /// <exception cref="ArgumentException">For not supported <see cref="Platform"/>.</exception>
         public static string GetExecutablePath(Product product, Platform platform, string revision, string folderPath)
         {
             if (product == Product.Chrome)
@@ -347,7 +357,10 @@ namespace PuppeteerSharp
             return assemblyDirectory.FullName;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose <see cref="WebClient"/>.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_isDisposed)

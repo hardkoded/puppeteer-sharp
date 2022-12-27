@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Input
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Touchscreen"/>
         public Touchscreen(CDPSession client, Keyboard keyboard)
         {
             _client = client;

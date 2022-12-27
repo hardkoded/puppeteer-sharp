@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Connection"/>
         internal Connection Connection { get; private set; }
 
         /// <inheritdoc/>

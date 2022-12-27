@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Input
         private decimal _y = 0;
         private MouseButton _button = MouseButton.None;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
         {
             _client = client;

@@ -241,7 +241,6 @@ namespace PuppeteerSharp
             return browser;
         }
 
-        /// <inheritdoc/>
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQueriesManager.GetCustomQueryHandlerNames();
 
