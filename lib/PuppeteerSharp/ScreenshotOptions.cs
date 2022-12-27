@@ -7,7 +7,7 @@ using PuppeteerSharp.Media;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="IPage.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IPage.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/>
+    /// Options to be used in <see cref="IPage.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IPage.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/>.
     /// </summary>
     public class ScreenshotOptions
     {
@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         public bool FullPage { get; set; }
 
         /// <summary>
-        /// Hides default white background and allows capturing screenshots with transparency. Defaults to <c>false</c>
+        /// Hides default white background and allows capturing screenshots with transparency. Defaults to <c>false</c>.
         /// </summary>
         /// <value><c>true</c> if omit background; otherwise, <c>false</c>.</value>
         public bool OmitBackground { get; set; }

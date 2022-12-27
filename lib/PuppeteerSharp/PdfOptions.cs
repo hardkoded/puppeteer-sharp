@@ -5,7 +5,7 @@ using PuppeteerSharp.Media;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="IPage.PdfAsync(string, PdfOptions)"/>, <see cref="IPage.PdfStreamAsync(PdfOptions)"/> and <see cref="IPage.PdfDataAsync(PdfOptions)"/>
+    /// Options to be used in <see cref="IPage.PdfAsync(string, PdfOptions)"/>, <see cref="IPage.PdfStreamAsync(PdfOptions)"/> and <see cref="IPage.PdfDataAsync(PdfOptions)"/>.
     /// </summary>
     public class PdfOptions : IEquatable<PdfOptions>
     {
@@ -22,7 +22,7 @@ namespace PuppeteerSharp
         public decimal Scale { get; set; } = 1;
 
         /// <summary>
-        /// Display header and footer. Defaults to <c>false</c>
+        /// Display header and footer. Defaults to <c>false</c>.
         /// </summary>
         public bool DisplayHeaderFooter { get; set; }
 
@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         ///   <c>title</c> - document title
         ///   <c>url</c> - document location
         ///   <c>pageNumber</c> - current page number
-        ///   <c>totalPages</c> - total pages in the document
+        ///   <c>totalPages</c> - total pages in the document.
         /// </summary>
         public string HeaderTemplate { get; set; } = string.Empty;
 
@@ -42,42 +42,42 @@ namespace PuppeteerSharp
         ///   <c>title</c> - document title
         ///   <c>url</c> - document location
         ///   <c>pageNumber</c> - current page number
-        ///   <c>totalPages</c> - total pages in the document
+        ///   <c>totalPages</c> - total pages in the document.
         /// </summary>
         public string FooterTemplate { get; set; } = string.Empty;
 
         /// <summary>
-        /// Print background graphics. Defaults to <c>false</c>
+        /// Print background graphics. Defaults to <c>false</c>.
         /// </summary>
         public bool PrintBackground { get; set; }
 
         /// <summary>
-        /// Paper orientation.. Defaults to <c>false</c>
+        /// Paper orientation.. Defaults to <c>false</c>.
         /// </summary>
         public bool Landscape { get; set; }
 
         /// <summary>
-        /// Paper ranges to print, e.g., <c>1-5, 8, 11-13</c>. Defaults to the empty string, which means print all pages
+        /// Paper ranges to print, e.g., <c>1-5, 8, 11-13</c>. Defaults to the empty string, which means print all pages.
         /// </summary>
         public string PageRanges { get; set; } = string.Empty;
 
         /// <summary>
-        /// Paper format. If set, takes priority over <see cref="Width"/> and <see cref="Height"/>
+        /// Paper format. If set, takes priority over <see cref="Width"/> and <see cref="Height"/>.
         /// </summary>
         public PaperFormat Format { get; set; }
 
         /// <summary>
-        /// Paper width, accepts values labeled with units
+        /// Paper width, accepts values labeled with units.
         /// </summary>
         public object Width { get; set; }
 
         /// <summary>
-        /// Paper height, accepts values labeled with units
+        /// Paper height, accepts values labeled with units.
         /// </summary>
         public object Height { get; set; }
 
         /// <summary>
-        /// Paper margins, defaults to none
+        /// Paper margins, defaults to none.
         /// </summary>
         public MarginOptions MarginOptions { get; set; } = new MarginOptions();
 

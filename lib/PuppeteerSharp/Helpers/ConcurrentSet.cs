@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Helpers
     /// <summary>
     /// A concurrent, simplified HashSet.
     /// </summary>
-    /// <typeparam name="T">The type</typeparam>
+    /// <typeparam name="T">The type.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     internal sealed class ConcurrentSet<T> : ICollection<T>
     {
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Helpers
         private const int DefaultConcurrencyLevel = 2;
 
         /// <summary>
-        /// Taken from ConcurrentDictionary.DEFAULT_CAPACITY
+        /// Taken from ConcurrentDictionary.DEFAULT_CAPACITY.
         /// </summary>
         private const int DefaultCapacity = 31;
 
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Helpers
         }
 
         /// <summary>
-        /// Clear the set
+        /// Clear the set.
         /// </summary>
         public void Clear()
         {

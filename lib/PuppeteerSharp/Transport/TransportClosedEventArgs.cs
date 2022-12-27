@@ -3,7 +3,7 @@ using System;
 namespace PuppeteerSharp.Transport
 {
     /// <summary>
-    /// <see cref="IConnectionTransport.Closed"/>
+    /// <see cref="IConnectionTransport.Closed"/>.
     /// </summary>
     public class TransportClosedEventArgs : EventArgs
     {

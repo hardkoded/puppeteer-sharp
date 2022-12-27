@@ -19,12 +19,12 @@ namespace PuppeteerSharp.Transport
         public static readonly TransportFactory DefaultTransportFactory = CreateDefaultTransport;
 
         /// <summary>
-        /// Gets the default <see cref="TransportFactory"/>
+        /// Gets the default <see cref="TransportFactory"/>.
         /// </summary>
         public static readonly WebSocketFactory DefaultWebSocketFactory = CreateDefaultWebSocket;
 
         /// <summary>
-        /// Gets the default <see cref="TransportTaskScheduler"/>
+        /// Gets the default <see cref="TransportTaskScheduler"/>.
         /// </summary>
         public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
 
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketTransport"/> class.
         /// </summary>
-        /// <param name="client">The web socket</param>
+        /// <param name="client">The web socket.</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
         /// <param name="queueRequests">Indicates whether requests should be queued.</param>
         public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Transport
         }
 
         /// <summary>
-        /// Close the WebSocketTransport
+        /// Close the WebSocketTransport.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Transport
                 TaskScheduler.Default);
 
         /// <summary>
-        /// Starts listening the socket
+        /// Starts listening the socket.
         /// </summary>
         /// <returns>The start.</returns>
         private async Task<object> GetResponseAsync(CancellationToken cancellationToken)

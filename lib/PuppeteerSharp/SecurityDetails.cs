@@ -22,11 +22,11 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes a new instance of the <see cref="SecurityDetails"/> class.
         /// </summary>
-        /// <param name="subjectName">Subject name</param>
-        /// <param name="issuer">Issuer</param>
-        /// <param name="validFrom">Valid from</param>
-        /// <param name="validTo">Valid to</param>
-        /// <param name="protocol">Protocol</param>
+        /// <param name="subjectName">Subject name.</param>
+        /// <param name="issuer">Issuer.</param>
+        /// <param name="validFrom">Valid from.</param>
+        /// <param name="validTo">Valid to.</param>
+        /// <param name="protocol">Protocol.</param>
         public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol)
         {
             SubjectName = subjectName;

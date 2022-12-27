@@ -8,25 +8,25 @@ namespace PuppeteerSharp.Messaging
     internal enum MouseEventType
     {
         /// <summary>
-        /// Mouse moved
+        /// Mouse moved.
         /// </summary>
         [EnumMember(Value = "mouseMoved")]
         MouseMoved,
 
         /// <summary>
-        /// Mouse clicked
+        /// Mouse clicked.
         /// </summary>
         [EnumMember(Value = "mousePressed")]
         MousePressed,
 
         /// <summary>
-        /// Mouse click released
+        /// Mouse click released.
         /// </summary>
         [EnumMember(Value = "mouseReleased")]
         MouseReleased,
 
         /// <summary>
-        /// Mouse wheel
+        /// Mouse wheel.
         /// </summary>
         [EnumMember(Value = "mouseWheel")]
         MouseWheel,

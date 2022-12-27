@@ -8,13 +8,13 @@ namespace PuppeteerSharp
     public class TracingOptions
     {
         /// <summary>
-        /// Gets or sets a value indicating whether Tracing should capture screenshots in the trace
+        /// Gets or sets a value indicating whether Tracing should capture screenshots in the trace.
         /// </summary>
-        /// <value>Screenshots option</value>
+        /// <value>Screenshots option.</value>
         public bool Screenshots { get; set; }
 
         /// <summary>
-        /// A path to write the trace file to
+        /// A path to write the trace file to.
         /// </summary>
         /// <value>The path.</value>
         public string Path { get; set; }

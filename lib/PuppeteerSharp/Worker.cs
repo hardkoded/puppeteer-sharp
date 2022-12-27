@@ -79,53 +79,53 @@ namespace PuppeteerSharp
         internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="script">Script to be evaluated in browser context.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
         /// <seealso cref="ExecutionContext.EvaluateExpressionAsync(string)"/>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
 
         /// <summary>
-        /// Executes a function in browser context
+        /// Executes a function in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
-        /// Executes a function in the context
+        /// Executes a function in the context.
         /// </summary>
-        /// <typeparam name="T">The type to deserialize the result to</typeparam>
-        /// <param name="script">Script to be evaluated in browser context</param>
-        /// <param name="args">Arguments to pass to script</param>
+        /// <typeparam name="T">The type to deserialize the result to.</typeparam>
+        /// <param name="script">Script to be evaluated in browser context.</param>
+        /// <param name="args">Arguments to pass to script.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
-        /// <see cref="IJSHandle"/> instances can be passed as arguments
+        /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
 
         /// <summary>
-        /// Executes a script in browser context
+        /// Executes a script in browser context.
         /// </summary>
-        /// <param name="script">Script to be evaluated in browser context</param>
+        /// <param name="script">Script to be evaluated in browser context.</param>
         /// <remarks>
         /// If the script, returns a Promise, then the method would wait for the promise to resolve and return its value.
         /// </remarks>
-        /// <returns>Task which resolves to script return value</returns>
+        /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionHandleAsync(script).ConfigureAwait(false);

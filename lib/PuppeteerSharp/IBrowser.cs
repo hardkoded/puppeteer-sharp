@@ -70,12 +70,12 @@ namespace PuppeteerSharp
         int DefaultWaitForTimeout { get; set; }
 
         /// <summary>
-        /// Gets or Sets whether to ignore HTTPS errors during navigation
+        /// Gets or Sets whether to ignore HTTPS errors during navigation.
         /// </summary>
         bool IgnoreHTTPSErrors { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if the browser is closed
+        /// Gets a value indicating if the browser is closed.
         /// </summary>
         bool IsClosed { get; }
 
@@ -95,33 +95,33 @@ namespace PuppeteerSharp
         ITarget Target { get; }
 
         /// <summary>
-        /// Gets the Browser websocket url
+        /// Gets the Browser websocket url.
         /// </summary>
         /// <remarks>
         /// Browser websocket endpoint which can be used as an argument to <see cref="Puppeteer.ConnectAsync(ConnectOptions, ILoggerFactory)"/>.
         /// The format is <c>ws://${host}:${port}/devtools/browser/[id]</c>
         /// You can find the <c>webSocketDebuggerUrl</c> from <c>http://${host}:${port}/json/version</c>.
         /// Learn more about the devtools protocol <see href="https://chromedevtools.github.io/devtools-protocol"/>
-        /// and the browser endpoint <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>
+        /// and the browser endpoint <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>.
         /// </remarks>
         string WebSocketEndpoint { get; }
 
         /// <summary>
-        /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>
+        /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>.
         /// </summary>
-        /// <returns>An array of <see cref="IBrowserContext"/> objects</returns>
+        /// <returns>An array of <see cref="IBrowserContext"/> objects.</returns>
         IBrowserContext[] BrowserContexts();
 
         /// <summary>
-        /// Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore
+        /// Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore.
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task CloseAsync();
 
         /// <summary>
         /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="IBrowserContext"/> object</returns>
+        /// <returns>Task which resolves to a new <see cref="IBrowserContext"/> object.</returns>
         /// <example>
         /// <code>
         /// <![CDATA[
@@ -140,37 +140,37 @@ namespace PuppeteerSharp
         Task<IBrowserContext> CreateIncognitoBrowserContextAsync();
 
         /// <summary>
-        /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore
+        /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore.
         /// </summary>
         void Disconnect();
 
         /// <summary>
-        /// Gets the browser's original user agent
+        /// Gets the browser's original user agent.
         /// </summary>
-        /// <returns>Task which resolves to the browser's original user agent</returns>
+        /// <returns>Task which resolves to the browser's original user agent.</returns>
         /// <remarks>
-        /// Pages can override browser user agent with <see cref="IPage.SetUserAgentAsync(string, UserAgentMetadata)"/>
+        /// Pages can override browser user agent with <see cref="IPage.SetUserAgentAsync(string, UserAgentMetadata)"/>.
         /// </remarks>
         Task<string> GetUserAgentAsync();
 
         /// <summary>
-        /// Gets the browser's version
+        /// Gets the browser's version.
         /// </summary>
-        /// <returns>For headless Chromium, this is similar to <c>HeadlessChrome/61.0.3153.0</c>. For non-headless, this is similar to <c>Chrome/61.0.3153.0</c></returns>
+        /// <returns>For headless Chromium, this is similar to <c>HeadlessChrome/61.0.3153.0</c>. For non-headless, this is similar to <c>Chrome/61.0.3153.0</c>.</returns>
         /// <remarks>
-        /// the format of <see cref="GetVersionAsync"/> might change with future releases of Chromium
+        /// the format of <see cref="GetVersionAsync"/> might change with future releases of Chromium.
         /// </remarks>
         Task<string> GetVersionAsync();
 
         /// <summary>
-        /// Creates a new page
+        /// Creates a new page.
         /// </summary>
-        /// <returns>Task which resolves to a new <see cref="IPage"/> object</returns>
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
         Task<IPage> NewPageAsync();
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
-        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="PuppeteerSharp.Target.PageAsync"/>
+        /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="PuppeteerSharp.Target.PageAsync"/>.
         /// </summary>
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
@@ -178,9 +178,9 @@ namespace PuppeteerSharp
         Task<IPage[]> PagesAsync();
 
         /// <summary>
-        /// Returns An Array of all active targets
+        /// Returns An Array of all active targets.
         /// </summary>
-        /// <returns>An Array of all active targets</returns>
+        /// <returns>An Array of all active targets.</returns>
         ITarget[] Targets();
 
         /// <summary>
@@ -194,8 +194,8 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="predicate">A function to be run for every target</param>
-        /// <param name="options">options</param>
+        /// <param name="predicate">A function to be run for every target.</param>
+        /// <param name="options">options.</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
         Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
 
@@ -207,14 +207,14 @@ namespace PuppeteerSharp
         /// </summary>
         /// <example>
         /// Puppeteer.RegisterCustomQueryHandler("text", "{ … }");
-        /// var aHandle = await page.QuerySelectorAsync("text/…");
+        /// var aHandle = await page.QuerySelectorAsync("text/…").
         /// </example>
         /// <param name="name">The name that the custom query handler will be registered under.</param>
-        /// <param name="queryHandler">The query handler to register</param>
+        /// <param name="queryHandler">The query handler to register.</param>
         void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler);
 
         /// <summary>
-        /// Unregisters a custom query handler
+        /// Unregisters a custom query handler.
         /// </summary>
         /// <param name="name">The name of the query handler to unregistered.</param>
         void UnregisterCustomQueryHandler(string name);

@@ -4,28 +4,28 @@ using PuppeteerSharp.Helpers.Json;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// SameSite values in cookies
+    /// SameSite values in cookies.
     /// </summary>
     [JsonConverter(typeof(FlexibleStringEnumConverter), None)]
     public enum SameSite
     {
         /// <summary>
-        /// None
+        /// None.
         /// </summary>
         None,
 
         /// <summary>
-        /// Strict
+        /// Strict.
         /// </summary>
         Strict,
 
         /// <summary>
-        /// Lax
+        /// Lax.
         /// </summary>
         Lax,
 
         /// <summary>
-        /// Extended
+        /// Extended.
         /// </summary>
         Extended,
     }

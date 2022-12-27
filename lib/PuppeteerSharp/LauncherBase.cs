@@ -105,7 +105,7 @@ namespace PuppeteerSharp
         /// Kills the Base process if it has not exited within this period.
         /// </summary>
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
-        /// <returns>Task which resolves when the process is exited or killed</returns>
+        /// <returns>Task which resolves when the process is exited or killed.</returns>
         public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
             ? _stateManager.CurrentState.ExitAsync(this, timeout.Value)
             : _stateManager.CurrentState.KillAsync(this);
@@ -113,7 +113,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Asynchronously kills Base process.
         /// </summary>
-        /// <returns>Task which resolves when the process is killed</returns>
+        /// <returns>Task which resolves when the process is killed.</returns>
         public Task KillAsync() => _stateManager.CurrentState.KillAsync(this);
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Set Env Variables
+        /// Set Env Variables.
         /// </summary>
         /// <param name="environment">The environment.</param>
         /// <param name="customEnv">The customEnv.</param>

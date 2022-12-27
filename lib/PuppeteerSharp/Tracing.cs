@@ -57,8 +57,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Starts tracing.
         /// </summary>
-        /// <returns>Start task</returns>
-        /// <param name="options">Tracing options</param>
+        /// <returns>Start task.</returns>
+        /// <param name="options">Tracing options.</param>
         public Task StartAsync(TracingOptions options = null)
         {
             if (_recording)
@@ -84,9 +84,9 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Stops tracing
+        /// Stops tracing.
         /// </summary>
-        /// <returns>Stop task</returns>
+        /// <returns>Stop task.</returns>
         public async Task<string> StopAsync()
         {
             var taskWrapper = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);

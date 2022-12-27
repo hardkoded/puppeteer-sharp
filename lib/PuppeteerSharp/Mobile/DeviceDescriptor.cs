@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Mobile
         public string Name { get; internal set; }
 
         /// <summary>
-        /// User Agent
+        /// User Agent.
         /// </summary>
         /// <value>The user agent.</value>
         public string UserAgent { get; internal set; }

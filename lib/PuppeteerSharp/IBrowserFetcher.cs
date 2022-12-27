@@ -50,7 +50,7 @@ namespace PuppeteerSharp
         Product Product { get; }
 
         /// <summary>
-        /// Proxy used by the WebClient in <see cref="DownloadAsync()"/>, <see cref="DownloadAsync(string)"/> and <see cref="CanDownloadAsync"/>
+        /// Proxy used by the WebClient in <see cref="DownloadAsync()"/>, <see cref="DownloadAsync(string)"/> and <see cref="CanDownloadAsync"/>.
         /// </summary>
         IWebProxy WebProxy { get; set; }
 

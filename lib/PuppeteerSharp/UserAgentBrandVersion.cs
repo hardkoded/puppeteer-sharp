@@ -1,17 +1,17 @@
 ﻿namespace PuppeteerSharp
 {
     /// <summary>
-    /// Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints
+    /// Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints.
     /// </summary>
     public class UserAgentBrandVersion
     {
         /// <summary>
-        /// Brand
+        /// Brand.
         /// </summary>
         public string Brand { get; set; }
 
         /// <summary>
-        /// Version
+        /// Version.
         /// </summary>
         public string Version { get; set; }
     }

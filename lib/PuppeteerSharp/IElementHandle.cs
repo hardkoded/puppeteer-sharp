@@ -27,72 +27,72 @@ namespace PuppeteerSharp
         /// <summary>
         /// Returns the middle point within an element unless a specific offset is provided.
         /// </summary>
-        /// <param name="offset">Optional offset</param>
-        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement</exception>
-        /// <returns>A <see cref="Task"/> that resolves to the clickable point</returns>
+        /// <param name="offset">Optional offset.</param>
+        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement.</exception>
+        /// <returns>A <see cref="Task"/> that resolves to the clickable point.</returns>
         public Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null);
 
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="PuppeteerSharp.IPage.Mouse"/> to click in the center of the element.
         /// </summary>
-        /// <param name="options">click options</param>
-        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
-        /// <returns>Task which resolves when the element is successfully clicked</returns>
+        /// <param name="options">click options.</param>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM.</exception>
+        /// <returns>Task which resolves when the element is successfully clicked.</returns>
         Task ClickAsync(ClickOptions options = null);
 
         /// <summary>
         /// Content frame for element handles referencing iframe nodes, or null otherwise.
         /// </summary>
-        /// <returns>Resolves to the content frame</returns>
+        /// <returns>Resolves to the content frame.</returns>
         Task<IFrame> ContentFrameAsync();
 
         /// <summary>
         /// Performs a drag, dragenter, dragover, and drop in sequence.
         /// </summary>
-        /// <param name="target">Target element</param>
+        /// <param name="target">Target element.</param>
         /// <param name="delay">If specified, is the time to wait between `dragover` and `drop` in milliseconds.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task DragAndDropAsync(IElementHandle target, int delay = 0);
 
         /// <summary>
         /// This method creates and captures a dragevent from the element.
         /// </summary>
-        /// <param name="x">X coordinate</param>
-        /// <param name="y">Y coordinate</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data</returns>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data.</returns>
         Task<DragData> DragAsync(decimal x, decimal y);
 
         /// <summary>
         /// Dispatches a `dragenter` event.
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task DragEnterAsync(DragData data);
 
         /// <summary>
         /// Dispatches a `dragover` event.
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task DragOverAsync(DragData data);
 
         /// <summary>
         /// Performs a dragenter, dragover, and drop in sequence.
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser</returns>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task DropAsync(DragData data);
 
         /// <summary>
         /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task FocusAsync();
 
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="IPage.Mouse"/> to hover over the center of the element.
         /// </summary>
-        /// <returns>Task which resolves when the element is successfully hovered</returns>
+        /// <returns>Task which resolves when the element is successfully hovered.</returns>
         Task HoverAsync();
 
         /// <summary>
@@ -105,39 +105,39 @@ namespace PuppeteerSharp
         /// Focuses the element, and then uses <see cref="IKeyboard.DownAsync(string, DownOptions)"/> and <see cref="IKeyboard.UpAsync(string)"/>.
         /// </summary>
         /// <param name="key">Name of key to press, such as <c>ArrowLeft</c>. See <see cref="KeyDefinitions"/> for a list of all key names.</param>
-        /// <param name="options">press options</param>
+        /// <param name="options">press options.</param>
         /// <remarks>
         /// If <c>key</c> is a single character and no modifier keys besides <c>Shift</c> are being held down, a <c>keypress</c>/<c>input</c> event will also be generated. The <see cref="DownOptions.Text"/> option can be specified to force an input event to be generated.
         /// </remarks>
-        /// <returns>Task which resolves when the key is successfully pressed</returns>
+        /// <returns>Task which resolves when the key is successfully pressed.</returns>
         Task PressAsync(string key, PressOptions options = null);
 
         /// <summary>
         /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
         /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to ElementHandles pointing to the frame elements</returns>
+        /// <param name="selector">A selector to query element for.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
-        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>
+        /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
         /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result</returns>
+        /// <param name="selector">A selector to query element for.</param>
+        /// <returns>Task which resolves to a <see cref="IJSHandle"/> of <c>document.querySelectorAll</c> result.</returns>
         Task<IJSHandle> QuerySelectorAllHandleAsync(string selector);
 
         /// <summary>
         /// The method runs <c>element.querySelector</c> within the page. If no element matches the selector, the return value resolve to <c>null</c>.
         /// </summary>
-        /// <param name="selector">A selector to query element for</param>
-        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element</returns>
+        /// <param name="selector">A selector to query element for.</param>
+        /// <returns>Task which resolves to <see cref="IElementHandle"/> pointing to the frame element.</returns>
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
-        /// <returns>The task</returns>
+        /// <returns>The task.</returns>
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
@@ -147,7 +147,7 @@ namespace PuppeteerSharp
         /// This method scrolls element into view if needed, and then uses <seealso cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
-        /// <returns>The task</returns>
+        /// <returns>The task.</returns>
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
@@ -216,17 +216,17 @@ namespace PuppeteerSharp
         /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="Touchscreen.TapAsync(decimal, decimal)"/> to tap in the center of the element.
         /// </summary>
-        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
-        /// <returns>Task which resolves when the element is successfully tapped</returns>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM.</exception>
+        /// <returns>Task which resolves when the element is successfully tapped.</returns>
         Task TapAsync();
 
         /// <summary>
         /// Focuses the element, and sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
         /// </summary>
-        /// <param name="text">A text to type into a focused element</param>
-        /// <param name="options">type options</param>
+        /// <param name="text">A text to type into a focused element.</param>
+        /// <param name="options">type options.</param>
         /// <remarks>
-        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="IElementHandle.PressAsync(string, PressOptions)"/>
+        /// To press a special key, like <c>Control</c> or <c>ArrowDown</c> use <see cref="IElementHandle.PressAsync(string, PressOptions)"/>.
         /// </remarks>
         /// <example>
         /// <code>
@@ -240,31 +240,31 @@ namespace PuppeteerSharp
         /// await elementHandle.PressAsync("Enter");
         /// </code>
         /// </example>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task TypeAsync(string text, TypeOptions options = null);
 
         /// <summary>
-        /// Uploads files
+        /// Uploads files.
         /// </summary>
-        /// <param name="resolveFilePaths">Set to true to resolve paths using <see cref="Path.GetFullPath(string)"/></param>
-        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
-        /// <returns>Task</returns>
+        /// <param name="resolveFilePaths">Set to true to resolve paths using <see cref="Path.GetFullPath(string)"/>.</param>
+        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>
+        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/>. </remarks>
+        /// <returns>Task.</returns>
         Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths);
 
         /// <summary>
-        /// Uploads files
+        /// Uploads files.
         /// </summary>
-        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/></param>
-        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/> </remarks>
-        /// <returns>Task</returns>
+        /// <param name="filePaths">Sets the value of the file input to these paths. Paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>
+        /// <remarks>This method expects <c>elementHandle</c> to point to an <c>input element</c> <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"/>. </remarks>
+        /// <returns>Task.</returns>
         Task UploadFileAsync(params string[] filePaths);
 
         /// <summary>
-        /// Waits for a selector to be added to the DOM
+        /// Waits for a selector to be added to the DOM.
         /// </summary>
-        /// <param name="selector">A selector of an element to wait for</param>
-        /// <param name="options">Optional waiting parameters</param>
+        /// <param name="selector">A selector of an element to wait for.</param>
+        /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
@@ -272,8 +272,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
         /// </summary>
-        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/></param>
-        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/></returns>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/>.</param>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
         Task<IElementHandle[]> XPathAsync(string expression);
     }
 }

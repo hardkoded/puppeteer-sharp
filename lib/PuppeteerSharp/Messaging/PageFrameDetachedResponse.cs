@@ -7,17 +7,17 @@ namespace PuppeteerSharp.Messaging
     internal enum FrameDetachedReason
     {
         /// <summary>
-        /// Unknown
+        /// Unknown.
         /// </summary>
         Unknown = -1,
 
         /// <summary>
-        /// Remove
+        /// Remove.
         /// </summary>
         Remove,
 
         /// <summary>
-        /// Swap
+        /// Swap.
         /// </summary>
         Swap,
     }

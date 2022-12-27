@@ -53,7 +53,7 @@ namespace PuppeteerSharp
         IFrame Frame { get; }
 
         /// <summary>
-        /// Gets whether this request is driving frame's navigation
+        /// Gets whether this request is driving frame's navigation.
         /// </summary>
         bool IsNavigationRequest { get; }
 
@@ -110,22 +110,22 @@ namespace PuppeteerSharp
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="payloadOverrides">Optional request overwrites.</param>
-        /// <returns>Task</returns>
+        /// <returns>Task.</returns>
         Task ContinueAsync(Payload payloadOverrides = null);
 
         /// <summary>
         /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
         /// </summary>
-        /// <param name="response">Response that will fulfill this request</param>
-        /// <returns>Task</returns>
+        /// <param name="response">Response that will fulfill this request.</param>
+        /// <returns>Task.</returns>
         Task RespondAsync(ResponseData response);
 
         /// <summary>
         /// Aborts request. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>.
         /// Exception is immediately thrown if the request interception is not enabled.
         /// </summary>
-        /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/></param>
-        /// <returns>Task</returns>
+        /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/>.</param>
+        /// <returns>Task.</returns>
         Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed);
     }
 }

@@ -54,13 +54,13 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Timeout that caused the exception
+        /// Timeout that caused the exception.
         /// </summary>
         /// <value>The timeout.</value>
         public int Timeout { get; }
 
         /// <summary>
-        /// Element type the WaitTask was waiting for
+        /// Element type the WaitTask was waiting for.
         /// </summary>
         /// <value>The element.</value>
         public string ElementType { get; }
