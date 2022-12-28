@@ -166,6 +166,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public CDPSession Client { get; }
 
+        /// <inheritdoc cref="ICDPSession"/>
         ICDPSession IPage.Client => Client;
 
         /// <inheritdoc/>
