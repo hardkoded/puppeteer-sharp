@@ -252,7 +252,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         new SerializedAXNode
                         {
                             Role = "StaticText",
-                            Name = "Edit this image:"
+                            Name = "Edit this image: "
                         },
                         new SerializedAXNode
                         {
@@ -284,13 +284,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                         new SerializedAXNode
                         {
                             Role = "StaticText",
-                            Name = "Edit this image:"
+                            Name = "Edit this image: "
                         },
-                        new SerializedAXNode
-                        {
-                            Role = "img",
-                            Name = "my fake image"
-                        }
                     }
                 },
                 (await Page.Accessibility.SnapshotAsync()).Children[0]);
