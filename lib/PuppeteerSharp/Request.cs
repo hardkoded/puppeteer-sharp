@@ -51,7 +51,7 @@ namespace PuppeteerSharp
             FromMemoryCache = false;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Response"/>
         public Response Response { get; internal set; }
 
         /// <inheritdoc/>

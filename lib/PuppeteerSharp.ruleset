@@ -37,7 +37,7 @@
     <Rule Id="SA1518" Action="None" /> <!-- Error SA1518: File is required to end with a single newline character (SA1518)-->
     <Rule Id="SA1012" Action="Error" /> <!-- Error SA1012: Opening brace should be followed by a space. (SA1012) -->
     <Rule Id="SA1512" Action="Error" /> <!-- Error SA1502: Element should not be on a single line (SA1502) -->
-    <Rule Id="SA1648" Action="None" /> <!-- Error SA1648: inheritdoc should be used with inheriting class (SA1648) -->
+    <Rule Id="SA1648" Action="Error" /> <!-- Error SA1648: inheritdoc should be used with inheriting class (SA1648) -->
     <Rule Id="SA1616" Action="Error" /> <!-- Error SA1616: Element return value documentation should have text (SA1616)-->
     <Rule Id="SA1627" Action="Error" /> <!-- Error SA1627: The documentation text within the \'exception\' tag should not be empty. (SA1627)-->
     <Rule Id="SA1643" Action="Error" /> <!-- Error SA1643: Destructor summary documentation should begin with standard text (SA1643) -->

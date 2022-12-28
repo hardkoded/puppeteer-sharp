@@ -26,7 +26,9 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Page {Url}")]
     public class Page : IPage
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// List of supported metrics.
+        /// </summary>
         public static readonly IEnumerable<string> SupportedMetrics = new List<string>
         {
             "Timestamp",
@@ -169,7 +171,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler<PopupEventArgs> Popup;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="CDPSession"/>
         public CDPSession Client { get; }
 
         ICDPSession IPage.Client => Client;
@@ -1174,7 +1176,10 @@ namespace PuppeteerSharp
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
             => _ = DisposeAsync();
 

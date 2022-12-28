@@ -33,7 +33,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsIncognito => Id != null;
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Browser"/>
         public Browser Browser { get; }
 
         /// <inheritdoc/>

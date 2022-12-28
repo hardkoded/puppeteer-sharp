@@ -23,11 +23,17 @@ namespace PuppeteerSharp
         /// </summary>
         public int? ColumnNumber { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary>Overriding == operator for <see cref="ConsoleMessageLocation"/>.</summary>
+        /// <param name="location1">the value to compare against <paramref name="location2" />.</param>
+        /// <param name="location2">the value to compare against <paramref name="location1" />.</param>
+        /// <returns><c>true</c> if the two instances are equal to the same value.</returns>
         public static bool operator ==(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
             => EqualityComparer<ConsoleMessageLocation>.Default.Equals(location1, location2);
 
-        /// <inheritdoc/>
+        /// <summary>Overriding != operator for <see cref="ConsoleMessageLocation"/>.</summary>
+        /// <param name="location1">the value to compare against <paramref name="location2" />.</param>
+        /// <param name="location2">the value to compare against <paramref name="location1" />.</param>
+        /// <returns><c>true</c> if the two instances are not equal to the same value.</returns>
         public static bool operator !=(ConsoleMessageLocation location1, ConsoleMessageLocation location2)
             => !(location1 == location2);
 
