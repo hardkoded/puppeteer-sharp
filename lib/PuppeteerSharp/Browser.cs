@@ -212,6 +212,14 @@ namespace PuppeteerSharp
 
             try
             {
+                foreach (var target in Targets())
+                {
+                    if (predicate(target))
+                    {
+                        return target;
+                    }
+                }
+
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
 

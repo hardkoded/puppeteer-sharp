@@ -140,12 +140,11 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldCreateAWorkerFromASharedWorker()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var targetTask = Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
             await Page.EvaluateFunctionAsync(@"() =>
             {
                 new SharedWorker('data:text/javascript,console.log(""hi"")');
             }");
-            var target = await targetTask;
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
             var worker = await target.WorkerAsync();
             Assert.Equal("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
         }
