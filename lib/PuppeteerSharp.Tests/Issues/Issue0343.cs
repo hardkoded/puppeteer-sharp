@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact(Skip = "It seems something's changed in chrommium and this is no longer valid")]
+        [Fact(Skip = "It seems something's changed in chromium and this is no longer valid")]
         public async Task ShouldSupportLongExpiresValueInCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

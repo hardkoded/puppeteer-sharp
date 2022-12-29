@@ -12,20 +12,20 @@ namespace PuppeteerSharp
 
     internal interface ITargetManager
     {
-        public event EventHandler<TargetChangedArgs> TargetAvailable;
+        event EventHandler<TargetChangedArgs> TargetAvailable;
 
-        public event EventHandler<TargetChangedArgs> TargetGone;
+        event EventHandler<TargetChangedArgs> TargetGone;
 
-        public event EventHandler<TargetChangedArgs> TargetChanged;
+        event EventHandler<TargetChangedArgs> TargetChanged;
 
-        public event EventHandler<TargetChangedArgs> TargetDiscovered;
+        event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         ConcurrentDictionary<string, Target> GetAvailableTargets();
 
-        public Task InitializeAsync();
+        Task InitializeAsync();
 
-        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
+        void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
 
-        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
+        void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor);
     }
 }

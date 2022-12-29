@@ -315,15 +315,15 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public string GetExecutablePath(string revision)
-            => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
-
-        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        /// <inheritdoc/>
+        public string GetExecutablePath(string revision)
+            => GetExecutablePath(Product, Platform, revision, GetFolderPath(revision));
 
         internal static Platform GetCurrentPlatform()
         {
@@ -376,18 +376,6 @@ namespace PuppeteerSharp
             _isDisposed = true;
         }
 
-        private static void ExtractTar(string zipPath, string folderPath)
-        {
-            new DirectoryInfo(folderPath).Create();
-            using var process = new Process();
-            process.StartInfo.FileName = "tar";
-            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.Start();
-            process.WaitForExit();
-        }
-
         private static string GetArchiveName(Product product, Platform platform, string revision)
         {
             if (product == Product.Chrome)
@@ -425,6 +413,64 @@ namespace PuppeteerSharp
 
         private static string GetDownloadURL(Product product, Platform platform, string host, string revision)
             => string.Format(CultureInfo.CurrentCulture, _downloadUrls[(product, platform)], host, revision, GetArchiveName(product, platform, revision));
+
+        private static void ExtractTar(string zipPath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = "tar";
+            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private string GetFolderPath(string revision)
+            => Path.Combine(DownloadsFolder, $"{Platform}-{revision}");
+
+        private void NativeExtractToDirectory(string zipPath, string folderPath)
+        {
+            using var process = new Process();
+            process.StartInfo.FileName = "unzip";
+            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private string GetRevisionFromPath(string folderName)
+        {
+            var splits = folderName.Split('-');
+            if (splits.Length != 2)
+            {
+                return "0";
+            }
+
+            if (!Enum.TryParse<Platform>(splits[0], out var platform))
+            {
+                platform = Platform.Unknown;
+            }
+
+            if (!_downloadUrls.Keys.Contains((Product, platform)))
+            {
+                return "0";
+            }
+
+            return splits[1];
+        }
+
+        private async Task<string> GetDefaultFirefoxRevisionAsync()
+        {
+            if (DefaultFirefoxRevision == "latest")
+            {
+                using var client = new HttpClient();
+                var response = await client.GetStringAsync("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
+                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
+                DefaultFirefoxRevision = version["FIREFOX_NIGHTLY"];
+            }
+
+            return DefaultFirefoxRevision;
+        }
 
         private Task InstallDMGAsync(string dmgPath, string folderPath)
         {
@@ -506,52 +552,6 @@ namespace PuppeteerSharp
             {
                 // swallow
             }
-        }
-
-        private string GetFolderPath(string revision)
-            => Path.Combine(DownloadsFolder, $"{Platform}-{revision}");
-
-        private void NativeExtractToDirectory(string zipPath, string folderPath)
-        {
-            using var process = new Process();
-            process.StartInfo.FileName = "unzip";
-            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
-            process.Start();
-            process.WaitForExit();
-        }
-
-        private string GetRevisionFromPath(string folderName)
-        {
-            var splits = folderName.Split('-');
-            if (splits.Length != 2)
-            {
-                return "0";
-            }
-
-            if (!Enum.TryParse<Platform>(splits[0], out var platform))
-            {
-                platform = Platform.Unknown;
-            }
-
-            if (!_downloadUrls.Keys.Contains((Product, platform)))
-            {
-                return "0";
-            }
-
-            return splits[1];
-        }
-
-        private async Task<string> GetDefaultFirefoxRevisionAsync()
-        {
-            if (DefaultFirefoxRevision == "latest")
-            {
-                using var client = new HttpClient();
-                var response = await client.GetStringAsync("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
-                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
-                DefaultFirefoxRevision = version["FIREFOX_NIGHTLY"];
-            }
-
-            return DefaultFirefoxRevision;
         }
     }
 }
