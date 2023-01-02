@@ -10,7 +10,7 @@
 
     <Rule Id="SA1624" Action="Error" /> <!-- Error SA1624: Because the property only contains a visible get accessor, the documentation summary text should begin with 'Gets'. (SA1624)-->
     <Rule Id="SA1028" Action="Error" /> <!-- Error SA1028: Code should not contain trailing whitespace (SA1028)-->
-    <Rule Id="SA1600" Action="None" /> <!-- Error SA1600: Elements should be documented (SA1600)-->
+    <Rule Id="SA1600" Action="Error" /> <!-- Error SA1600: Elements should be documented (SA1600)-->
     <Rule Id="SA1516" Action="Error" /> <!-- Error SA1516: Elements should be separated by blank line (SA1516)-->
     <Rule Id="SA1629" Action="Error" /> <!-- Error SA1629: Documentation text should end with a period (SA1629)-->
     <Rule Id="SA1514" Action="Error" /> <!-- Error SA1514: Element documentation header should be preceded by blank line (SA1514)-->

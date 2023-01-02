@@ -57,4 +57,7 @@
   <ItemGroup>
     <None Remove="System.Text.Encodings.Web" />
   </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
 </Project>
