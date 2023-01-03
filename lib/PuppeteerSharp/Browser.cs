@@ -22,34 +22,61 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
+        private readonly Func<TargetInfo, bool> _isPageTargetFunc;
         private readonly BrowserContext _defaultContext;
         private readonly CustomQueriesManager _customQueriesManager = new();
-
+        private readonly Func<Task> _closeCallback;
         private Task _closeTask;
 
         internal Browser(
+            Product? product,
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
             LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter)
+            Func<Task> closeCallback = null,
+            Func<TargetInfo, bool> targetFilter = null,
+            Func<TargetInfo, bool> isPageTargetFunc = null)
         {
-            Connection = connection;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
-            TargetsMap = new ConcurrentDictionary<string, Target>();
             ScreenshotTaskQueue = new TaskQueue();
+            Launcher = launcher;
+            Connection = connection;
+            _closeCallback = closeCallback;
+            _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
+            _isPageTargetFunc =
+                isPageTargetFunc ??
+                new Func<TargetInfo, bool>((TargetInfo target) =>
+                {
+                    return
+                        target.Type == TargetType.Page ||
+                        target.Type == TargetType.BackgroundPage ||
+                        target.Type == TargetType.Webview;
+                });
+
             _defaultContext = new BrowserContext(Connection, this, null);
             _contexts = new ConcurrentDictionary<string, BrowserContext>(contextIds.ToDictionary(
                 contextId => contextId,
                 contextId => new BrowserContext(Connection, this, contextId)));
-            Connection.Disconnected += Connection_Disconnected;
-            Connection.MessageReceived += Connect_MessageReceived;
 
-            Launcher = launcher;
+            if (product == Product.Firefox)
+            {
+                TargetManager = new FirefoxTargetManager(
+                        connection,
+                        CreateTarget,
+                        _targetFilterCallback);
+            }
+            else
+            {
+                TargetManager = new ChromeTargetManager(
+                    connection,
+                    CreateTarget,
+                    _targetFilterCallback);
+            }
+
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
-            _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
         }
 
         /// <inheritdoc/>
@@ -66,6 +93,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
+
+        /// <inheritdoc/>
+        public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <inheritdoc/>
         public string WebSocketEndpoint => Connection.Url;
@@ -110,15 +140,15 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; set; }
 
-        internal IDictionary<string, Target> TargetsMap { get; }
-
         internal CustomQueriesManager CustomQueriesManager => _customQueriesManager;
+
+        internal ITargetManager TargetManager { get; }
 
         /// <inheritdoc/>
         public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
 
         /// <inheritdoc/>
-        public ITarget[] Targets() => TargetsMap.Values.Where(target => target.IsInitialized).ToArray();
+        public ITarget[] Targets() => TargetManager.GetAvailableTargets().Values.ToArray();
 
         /// <inheritdoc/>
         public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync()
@@ -182,6 +212,14 @@ namespace PuppeteerSharp
 
             try
             {
+                foreach (var target in Targets())
+                {
+                    if (predicate(target))
+                    {
+                        return target;
+                    }
+                }
+
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
 
@@ -221,35 +259,36 @@ namespace PuppeteerSharp
         public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
 
         internal static async Task<Browser> CreateAsync(
+            Product? product,
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
             LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter,
+            Func<Task> closeCallback = null,
+            Func<TargetInfo, bool> targetFilter = null,
+            Func<TargetInfo, bool> isPageTargetCallback = null,
             Action<IBrowser> initAction = null)
         {
-            var browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewPort, launcher, targetFilter);
+            var browser = new Browser(
+                product,
+                connection,
+                contextIds,
+                ignoreHTTPSErrors,
+                defaultViewPort,
+                launcher,
+                closeCallback,
+                targetFilter,
+                isPageTargetCallback);
 
             initAction?.Invoke(browser);
 
-            await connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-            }).ConfigureAwait(false);
-
+            await browser.AttachAsync().ConfigureAwait(false);
             return browser;
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQueriesManager.GetCustomQueryHandlerNames();
-
-        internal void ChangeTarget(Target target)
-        {
-            var args = new TargetChangedArgs { Target = target };
-            TargetChanged?.Invoke(this, args);
-            ((BrowserContext)target.BrowserContext).OnTargetChanged(this, args);
-        }
 
         internal async Task<IPage> CreatePageInContextAsync(string contextId)
         {
@@ -265,7 +304,7 @@ namespace PuppeteerSharp
 
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
-            var target = TargetsMap[targetId];
+            var target = TargetManager.GetAvailableTargets()[targetId];
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
         }
@@ -286,7 +325,64 @@ namespace PuppeteerSharp
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing) => _ = CloseAsync()
             .ContinueWith(
-                _ => ScreenshotTaskQueue.DisposeAsync(), TaskScheduler.Default);
+                _ => ScreenshotTaskQueue.DisposeAsync(),
+                TaskScheduler.Default);
+
+        private void TargetManager_TargetDiscovered(object sender, TargetChangedArgs e)
+            => TargetDiscovered?.Invoke(this, e);
+
+        private void TargetManager_TargetChanged(object sender, TargetChangedArgs e)
+        {
+            var previousURL = e.Target.Url;
+            var wasInitialized = e.Target.IsInitialized;
+            e.Target.TargetInfoChanged(e.TargetInfo);
+            if (wasInitialized && previousURL != e.Target.Url)
+            {
+                var args = new TargetChangedArgs { Target = e.Target };
+                TargetChanged?.Invoke(this, args);
+                ((BrowserContext)e.Target.BrowserContext).OnTargetChanged(this, args);
+            }
+        }
+
+        private async void TargetManager_TargetGone(object sender, TargetChangedArgs e)
+        {
+            try
+            {
+                e.Target.InitializedTaskWrapper.TrySetResult(false);
+                e.Target.CloseTaskWrapper.TrySetResult(true);
+
+                if (await e.Target.InitializedTask.ConfigureAwait(false))
+                {
+                    var args = new TargetChangedArgs { Target = e.Target };
+                    TargetDestroyed?.Invoke(this, args);
+                    ((BrowserContext)e.Target.BrowserContext).OnTargetDestroyed(this, args);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                Connection.Close(message);
+            }
+        }
+
+        private async void TargetManager_TargetAvailable(object sender, TargetChangedArgs e)
+        {
+            try
+            {
+                if (await e.Target.InitializedTask.ConfigureAwait(false))
+                {
+                    var args = new TargetChangedArgs { Target = e.Target };
+                    TargetCreated?.Invoke(this, args);
+                    e.Target.BrowserContext.OnTargetCreated(this, args);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Browser failed to process Target Available. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+            }
+        }
 
         private async Task CloseCoreAsync()
         {
@@ -327,13 +423,6 @@ namespace PuppeteerSharp
                 }
             }
 
-            // Ensure that remaining targets are always marked closed, so that asynchronous page close
-            // operations on any associated pages don't get blocked.
-            foreach (var target in TargetsMap.Values)
-            {
-                target.CloseTaskWrapper.TrySetResult(false);
-            }
-
             Closed?.Invoke(this, new EventArgs());
         }
 
@@ -352,98 +441,44 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void Connect_MessageReceived(object sender, MessageEventArgs e)
+        private Task AttachAsync()
         {
-            try
-            {
-                switch (e.MessageID)
-                {
-                    case "Target.targetCreated":
-                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>(true)).ConfigureAwait(false);
-                        return;
-
-                    case "Target.targetDestroyed":
-                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>(true)).ConfigureAwait(false);
-                        return;
-
-                    case "Target.targetInfoChanged":
-                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>(true));
-                        return;
-                }
-            }
-            catch (Exception ex)
-            {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                Connection.Close(message);
-            }
+            Connection.Disconnected += Connection_Disconnected;
+            TargetManager.TargetAvailable += TargetManager_TargetAvailable;
+            TargetManager.TargetGone += TargetManager_TargetGone;
+            TargetManager.TargetChanged += TargetManager_TargetChanged;
+            TargetManager.TargetDiscovered += TargetManager_TargetDiscovered;
+            return TargetManager.InitializeAsync();
         }
 
-        private void ChangeTargetInfo(TargetCreatedResponse e)
+        private void Detach()
         {
-            if (!TargetsMap.ContainsKey(e.TargetInfo.TargetId))
-            {
-                throw new InvalidTargetException("Target should exists before ChangeTargetInfo");
-            }
-
-            var target = TargetsMap[e.TargetInfo.TargetId];
-            target.TargetInfoChanged(e.TargetInfo);
+            Connection.Disconnected -= Connection_Disconnected;
+            TargetManager.TargetAvailable -= TargetManager_TargetAvailable;
+            TargetManager.TargetGone -= TargetManager_TargetGone;
+            TargetManager.TargetChanged -= TargetManager_TargetChanged;
+            TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
         }
 
-        private async Task DestroyTargetAsync(TargetDestroyedResponse e)
+        private Target CreateTarget(TargetInfo targetInfo, CDPSession session)
         {
-            if (!TargetsMap.ContainsKey(e.TargetId))
-            {
-                throw new InvalidTargetException("Target should exists before DestroyTarget");
-            }
-
-            var target = TargetsMap[e.TargetId];
-            TargetsMap.Remove(e.TargetId);
-
-            target.CloseTaskWrapper.TrySetResult(true);
-
-            if (await target.InitializedTask.ConfigureAwait(false))
-            {
-                var args = new TargetChangedArgs { Target = target };
-                TargetDestroyed?.Invoke(this, args);
-                ((BrowserContext)target.BrowserContext).OnTargetDestroyed(this, args);
-            }
-        }
-
-        private async Task CreateTargetAsync(TargetCreatedResponse e)
-        {
-            var targetInfo = e.TargetInfo;
             var browserContextId = targetInfo.BrowserContextId;
-
-            var shouldAttachToTarget = _targetFilterCallback(targetInfo);
-            if (!shouldAttachToTarget)
-            {
-                return;
-            }
 
             if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
             {
                 context = _defaultContext;
             }
 
-            var target = new Target(
-                e.TargetInfo,
-                () => Connection.CreateSessionAsync(targetInfo),
-                context);
-
-            if (TargetsMap.ContainsKey(e.TargetInfo.TargetId))
-            {
-                _logger.LogError("Target should not exist before targetCreated");
-            }
-
-            TargetsMap[e.TargetInfo.TargetId] = target;
-
-            if (await target.InitializedTask.ConfigureAwait(false))
-            {
-                var args = new TargetChangedArgs { Target = target };
-                TargetCreated?.Invoke(this, args);
-                context.OnTargetCreated(this, args);
-            }
+            return new Target(
+                targetInfo,
+                session,
+                context,
+                TargetManager,
+                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
+                IgnoreHTTPSErrors,
+                DefaultViewport,
+                ScreenshotTaskQueue,
+                _isPageTargetFunc);
         }
     }
 }

@@ -92,5 +92,16 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "rendering")]
         Rendering,
+
+        /// <summary>
+        /// Webview.
+        /// </summary>
+        Webview,
+
+        /// <summary>
+        /// Target type tab.
+        /// </summary>
+        [EnumMember(Value = "tab")]
+        Tab,
     }
 }

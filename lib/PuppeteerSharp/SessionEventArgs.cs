@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    internal class SessionAttachedEventArgs
+    internal class SessionEventArgs
     {
         public CDPSession Session { get; set; }
     }

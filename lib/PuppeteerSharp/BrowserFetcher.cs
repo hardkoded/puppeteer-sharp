@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default chromium revision.
         /// </summary>
-        public const string DefaultChromiumRevision = "970485";
+        public const string DefaultChromiumRevision = "1069273";
 
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {

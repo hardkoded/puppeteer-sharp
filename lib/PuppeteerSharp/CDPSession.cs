@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler Disconnected;
 
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+        internal event EventHandler<SessionEventArgs> SessionAttached;
 
         /// <inheritdoc/>
         public TargetType TargetType { get; }
@@ -155,6 +155,6 @@ namespace PuppeteerSharp
         }
 
         internal void OnSessionAttached(CDPSession session)
-            => SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
+            => SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
     }
 }

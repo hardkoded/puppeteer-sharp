@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser.
     /// </summary>
-    public class Connection : IDisposable
+    public class Connection : IDisposable, ICDPConnection
     {
         /// <summary>
         /// Gets default web socket factory implementation.
@@ -30,6 +31,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private readonly List<string> _manuallyAttached = new();
         private int _lastId;
 
         internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
@@ -59,7 +61,9 @@ namespace PuppeteerSharp
         /// </summary>
         public event EventHandler<MessageEventArgs> MessageReceived;
 
-        internal event EventHandler<SessionAttachedEventArgs> SessionAttached;
+        internal event EventHandler<SessionEventArgs> SessionAttached;
+
+        internal event EventHandler<SessionEventArgs> SessionDetached;
 
         /// <summary>
         /// Gets the WebSocket URL.
@@ -105,6 +109,38 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc/>
+        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        {
+            if (IsClosed)
+            {
+                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+            }
+
+            var id = GetMessageID();
+
+            MessageTask callback = null;
+            if (waitForCallback)
+            {
+                callback = new MessageTask
+                {
+                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
+                    Method = method,
+                };
+                _callbacks[id] = callback;
+            }
+
+            await RawSendASync(id, method, args).ConfigureAwait(false);
+            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> SendAsync<T>(string method, object args = null)
+        {
+            var response = await SendAsync(method, args).ConfigureAwait(false);
+            return response.ToObject<T>(true);
+        }
+
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
 #pragma warning disable 618
@@ -133,43 +169,24 @@ namespace PuppeteerSharp
             return Transport.SendAsync(message);
         }
 
-        internal async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        internal bool IsAutoAttached(string targetId)
+            => !_manuallyAttached.Contains(targetId);
+
+        internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo, bool isAutoAttachEmulated)
         {
-            if (IsClosed)
+            if (!isAutoAttachEmulated)
             {
-                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+                _manuallyAttached.Add(targetInfo.TargetId);
             }
 
-            var id = GetMessageID();
-
-            MessageTask callback = null;
-            if (waitForCallback)
-            {
-                callback = new MessageTask
+            var sessionId = (await SendAsync<TargetAttachToTargetResponse>(
+                "Target.attachToTarget",
+                new TargetAttachToTargetRequest
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
-                    Method = method,
-                };
-                _callbacks[id] = callback;
-            }
-
-            await RawSendASync(id, method, args).ConfigureAwait(false);
-            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
-        }
-
-        internal async Task<T> SendAsync<T>(string method, object args = null)
-        {
-            var response = await SendAsync(method, args).ConfigureAwait(false);
-            return response.ToObject<T>(true);
-        }
-
-        internal async Task<CDPSession> CreateSessionAsync(TargetInfo targetInfo)
-        {
-            var sessionId = (await SendAsync<TargetAttachToTargetResponse>("Target.attachToTarget", new TargetAttachToTargetRequest
-            {
-                TargetId = targetInfo.TargetId,
-                Flatten = true,
-            }).ConfigureAwait(false)).SessionId;
+                    TargetId = targetInfo.TargetId,
+                    Flatten = true,
+                }).ConfigureAwait(false)).SessionId;
+            _manuallyAttached.Remove(targetInfo.TargetId);
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 
@@ -276,7 +293,7 @@ namespace PuppeteerSharp
                 var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
                 _asyncSessions.AddItem(sessionId, session);
 
-                SessionAttached?.Invoke(this, new SessionAttachedEventArgs { Session = session });
+                SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
 
                 if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
                 {
@@ -289,6 +306,7 @@ namespace PuppeteerSharp
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {
                     session.Close("Target.detachedFromTarget");
+                    SessionDetached?.Invoke(this, new SessionEventArgs() { Session = session });
                 }
             }
 

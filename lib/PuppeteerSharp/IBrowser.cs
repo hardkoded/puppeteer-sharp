@@ -59,6 +59,11 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
+        /// Raised when a target is discovered
+        /// </summary>
+        public event EventHandler<TargetChangedArgs> TargetDiscovered;
+
+        /// <summary>
         /// Returns the default browser context. The default browser context can not be closed.
         /// </summary>
         /// <value>The default context.</value>

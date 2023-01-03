@@ -7,8 +7,8 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// The CDPSession instances are used to talk raw Chrome Devtools Protocol:
-    ///  * Protocol methods can be called with <see cref="ICDPSession.SendAsync(string, object, bool)"/> method.
-    ///  * Protocol events, using the <see cref="ICDPSession.MessageReceived"/> event.
+    ///  * Protocol methods can be called with <see cref="ICDPConnection.SendAsync(string, object, bool)"/> method.
+    ///  * Protocol events, using the <see cref="ICDPConnection.MessageReceived"/> event.
     ///
     /// Documentation on DevTools Protocol can be found here: <see href="https://chromedevtools.github.io/devtools-protocol/"/>.
     ///
@@ -31,17 +31,12 @@ namespace PuppeteerSharp
     /// });
     /// ]]></code>
     /// </summary>
-    public interface ICDPSession
+    public interface ICDPSession : ICDPConnection
     {
         /// <summary>
         /// Occurs when the connection is closed.
         /// </summary>
         event EventHandler Disconnected;
-
-        /// <summary>
-        /// Occurs when message received from Chromium.
-        /// </summary>
-        event EventHandler<MessageEventArgs> MessageReceived;
 
         /// <summary>
         /// Connection close reason.
@@ -78,27 +73,5 @@ namespace PuppeteerSharp
         /// <returns>A Task that when awaited detaches from the session target.</returns>
         /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         Task DetachAsync();
-
-        /// <summary>
-        /// Protocol methods can be called with this method.
-        /// </summary>
-        /// <param name="method">The method name.</param>
-        /// <param name="args">The method args.</param>
-        /// <param name="waitForCallback">
-        /// If <c>true</c> the method will return a task to be completed when the message is confirmed by Chromium.
-        /// If <c>false</c> the task will be considered complete after sending the message to Chromium.
-        /// </param>
-        /// <returns>The task.</returns>
-        /// <exception cref="PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
-        Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true);
-
-        /// <summary>
-        /// Protocol methods can be called with this method.
-        /// </summary>
-        /// <param name="method">The method name.</param>
-        /// <param name="args">The method args.</param>
-        /// <typeparam name="T">Return type.</typeparam>
-        /// <returns>The task.</returns>
-        Task<T> SendAsync<T>(string method, object args = null);
     }
 }

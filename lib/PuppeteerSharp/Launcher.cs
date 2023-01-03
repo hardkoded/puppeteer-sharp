@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -67,7 +68,15 @@ namespace PuppeteerSharp
                         .ConfigureAwait(false);
 
                     var browser = await Browser
-                        .CreateAsync(connection, Array.Empty<string>(), options.IgnoreHTTPSErrors, options.DefaultViewport, Process, options.TargetFilter)
+                        .CreateAsync(
+                            options.Product,
+                            connection,
+                            Array.Empty<string>(),
+                            options.IgnoreHTTPSErrors,
+                            options.DefaultViewport,
+                            Process,
+                            null,
+                            options.TargetFilter)
                         .ConfigureAwait(false);
 
                     await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
@@ -111,15 +120,25 @@ namespace PuppeteerSharp
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
                 var connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+
+                var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
+
+                var product = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
+                  ? Product.Firefox
+                  : Product.Chrome;
+
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await Browser
                     .CreateAsync(
+                        product,
                         connection,
                         response.BrowserContextIds,
                         options.IgnoreHTTPSErrors,
                         options.DefaultViewport,
                         null,
+                        null,
                         options.TargetFilter,
+                        null,
                         options.InitAction)
                     .ConfigureAwait(false);
             }
