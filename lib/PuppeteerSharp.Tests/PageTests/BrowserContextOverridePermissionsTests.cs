@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
@@ -112,6 +114,18 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal("granted", await GetPermissionAsync(otherPage, "geolocation"));
 
             await otherContext.CloseAsync();
+        }
+
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task AllEnumsdAreValid()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Context.OverridePermissionsAsync(
+                TestConstants.EmptyPage,
+                Enum.GetValues(typeof(OverridePermission)).Cast<OverridePermission>().ToArray());
+            Assert.Equal("granted", await GetPermissionAsync(Page, "geolocation"));
+            await Context.ClearPermissionOverridesAsync();
+            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
     }
 }
