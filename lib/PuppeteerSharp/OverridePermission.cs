@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -30,12 +31,6 @@ namespace PuppeteerSharp
         Notifications,
 
         /// <summary>
-        /// Push.
-        /// </summary>
-        [EnumMember(Value = "push")]
-        Push,
-
-        /// <summary>
         /// Camera.
         /// </summary>
         [EnumMember(Value = "videoCapture")]
@@ -66,16 +61,10 @@ namespace PuppeteerSharp
         AccessibilityEvents,
 
         /// <summary>
-        /// Clipboard read.
+        /// Clipboard read/write.
         /// </summary>
-        [EnumMember(Value = "clipboardRead")]
-        ClipboardRead,
-
-        /// <summary>
-        /// Clipboard write.
-        /// </summary>
-        [EnumMember(Value = "clipboardWrite")]
-        ClipboardWrite,
+        [EnumMember(Value = "clipboardReadWrite")]
+        ClipboardReadWrite,
 
         /// <summary>
         /// Payment handler.
@@ -94,5 +83,11 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "idleDetection")]
         IdleDetection,
+
+        /// <summary>
+        /// Persistent Storage.
+        /// </summary>
+        [EnumMember(Value = "durableStorage")]
+        PersistentStorage,
     }
 }
