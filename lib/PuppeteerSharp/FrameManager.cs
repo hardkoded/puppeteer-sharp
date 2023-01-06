@@ -452,7 +452,7 @@ namespace PuppeteerSharp
             {
                 var parentFrame = _frames[parentFrameId];
                 var frame = new Frame(this, parentFrame, frameId, session);
-                _frames[frame.Id] = frame;
+                _asyncFrames.AddItem(frame.Id, frame);
                 FrameAttached?.Invoke(this, new FrameEventArgs(frame));
             }
         }
