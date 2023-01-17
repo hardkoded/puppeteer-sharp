@@ -198,5 +198,26 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             // 4. Connect to the popup and make sure it doesn't throw.
             await popupTarget.PageAsync();
         }
+
+        [SkipBrowserFact(skipFirefox: true)]
+        public async Task ShouldNotFailForNullArgument()
+        {
+            var consoleTcs = new TaskCompletionSource<string>();
+
+            void EventHandler(object sender, ConsoleEventArgs e)
+            {
+                consoleTcs.TrySetResult(e.Message.Text);
+                Page.Console -= EventHandler;
+            }
+
+            Page.Console += EventHandler;
+
+            await Task.WhenAll(
+                consoleTcs.Task,
+                Page.EvaluateExpressionAsync("console.debug(null);")
+            );
+
+            Assert.Equal("JSHandle:null", await consoleTcs.Task);
+        }
     }
 }

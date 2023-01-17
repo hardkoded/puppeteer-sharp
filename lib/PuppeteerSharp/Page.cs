@@ -1669,7 +1669,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject.ObjectId != null || i.RemoteObject.Value.Type == JTokenType.Object
+            var tokens = values.Select(i => i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
