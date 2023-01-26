@@ -350,8 +350,25 @@ namespace PuppeteerSharp
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
             if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, "PuppeteerSharp.dll")))
             {
-                var assemblyLocation = typeof(Puppeteer).Assembly.Location;
+                string assemblyLocation;
+                var assembly = typeof(Puppeteer).Assembly;
+#pragma warning disable SYSLIB0012 // 'Assembly.CodeBase' is obsolete: 'Assembly.CodeBase and Assembly.EscapedCodeBase are only included for .NET Framework compatibility.
+                if (Uri.TryCreate(assembly.CodeBase, UriKind.Absolute, out var codeBase) && codeBase.IsFile)
+#pragma warning restore SYSLIB0012 // 'Assembly.CodeBase' is obsolete: 'Assembly.CodeBase and Assembly.EscapedCodeBase are only included for .NET Framework compatibility.
+                {
+                    assemblyLocation = codeBase.LocalPath;
+                }
+                else
+                {
+                    assemblyLocation = assembly.Location;
+                }
+
                 assemblyDirectory = new FileInfo(assemblyLocation).Directory;
+            }
+
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, "PuppeteerSharp.dll")))
+            {
+                assemblyDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
             }
 
             return assemblyDirectory.FullName;
