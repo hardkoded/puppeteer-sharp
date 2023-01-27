@@ -6,7 +6,6 @@
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/hardkoded/puppeteer-sharp</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Summary>Headless Browser .NET API</Summary>
     <PackageTags>headless,chrome,puppeteer</PackageTags>
@@ -14,32 +13,28 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>9.0.0</PackageVersion>
-    <ReleaseVersion>9.0.0</ReleaseVersion>
-    <AssemblyVersion>9.0.0.0</AssemblyVersion>
-    <FileVersion>9.0.0.0</FileVersion>
+    <PackageVersion>9.0.2</PackageVersion>
+    <ReleaseVersion>9.0.2</ReleaseVersion>
+    <AssemblyVersion>9.0.2.0</AssemblyVersion>
+    <FileVersion>9.0.2.0</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="../Common/SignAssembly.props" />
   <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
-    <ContinuousIntegrationBuild Condition="'$(APPVEYOR)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
