@@ -1,12 +1,13 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
       - release-*
   pull_request:
-    branches: [ master ]
+    branches: [ master, release ]
     paths:
     - '**.cs'
     - '**.csproj'
@@ -23,12 +24,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        browser: [FIREFOX,CHROME]
+        browser: [CHROME]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -39,12 +40,21 @@ jobs:
         sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
         sudo update-ca-certificates
     - name: Build
-      run: dotnet build lib/PuppeteerSharp.sln
+      run: dotnet build lib/PuppeteerSharp.sln --configuration Release
     - name: Test
+      run: dotnet test lib/PuppeteerSharp.sln --no-build --verbosity normal --configuration Release
+    - name: NugetPush to int.nugettest.org
       env:
-        PRODUCT: ${{ matrix.browser }}
+        NUGET_TOKEN_TEST_EXISTS: ${{ secrets.NUGET_TEST_TOKEN }}
+      if: env.NUGET_TOKEN_TEST_EXISTS != '' && github.ref == 'refs/heads/master'
       run: |
-          Xvfb :1 -screen 5 1024x768x8 &
-          export DISPLAY=:1.5
-          cd lib/PuppeteerSharp.Tests
-          dotnet test -f net6.0 -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml"
+        ls ./lib/PuppeteerSharp/bin/Release
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TEST_TOKEN}} --source https://apiint.nugettest.org/v3/index.json
+    - name: NugetPush to nuget.org
+      env:
+        NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_TOKEN  }}
+      if: env.NUGET_TOKEN_EXISTS != '' && github.ref == 'refs/heads/release'
+      run: |
+        ls ./lib/PuppeteerSharp/bin/Release
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+      
