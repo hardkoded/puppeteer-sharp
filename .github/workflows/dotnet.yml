@@ -28,6 +28,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: browser-actions/setup-firefox@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
@@ -39,8 +40,7 @@ jobs:
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
         sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
         sudo update-ca-certificates
-        sudo snap remove firefox
-        sudo apt-get install firefox
+        firefox --version
     - name: Build
       run: dotnet build lib/PuppeteerSharp.sln
     - name: Test
