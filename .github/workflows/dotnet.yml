@@ -51,7 +51,7 @@ jobs:
           dotnet test -f net6.0 -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml"
 
   deployRelease:
-    if: github.ref == 'refs/heads/release'
+    if: startsWith( github.ref, 'refs/heads/release-' )
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -71,7 +71,7 @@ jobs:
         dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
   deployMaster:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: build
     steps:
