@@ -17,7 +17,6 @@ env:
 
 jobs:
   build:
-
     name: build-${{ matrix.browser }}/${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -25,7 +24,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         browser: [FIREFOX,CHROME]
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -49,43 +47,3 @@ jobs:
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
           dotnet test -f net6.0 -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml"
-
-  deployRelease:
-    if: github.ref == 'refs/heads/release'
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Build
-      run: dotnet build  lib/PuppeteerSharp.sln --configuration Release --no-restore
-    - name: NugetPush to nuget.org
-      env:
-        NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_TOKEN  }}
-      if: env.NUGET_TOKEN_EXISTS != '' && startsWith( github.ref, 'refs/heads/release-' )
-      run: |
-        ls ./lib/PuppeteerSharp/bin/Release
-        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
-
-  deployMaster:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Build
-      run: dotnet build  lib/PuppeteerSharp.sln --configuration Release --no-restore
-    - name: NugetPush to nuget.org
-      env:
-        NUGET_TOKEN_TEST_EXISTS: ${{ secrets.NUGET_TEST_TOKEN }}
-      if: env.NUGET_TOKEN_TEST_EXISTS != '' && github.ref == 'refs/heads/master'
-      run: |
-        ls ./lib/PuppeteerSharp/bin/Release
-        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --skip-duplicate --api-key ${{secrets.NUGET_TEST_TOKEN}} --source https://apiint.nugettest.org/v3/index.json
