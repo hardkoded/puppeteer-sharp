@@ -1,4 +1,4 @@
-name: build
+name: PushToIntNugetOrg
 
 on:
   workflow_dispatch:
