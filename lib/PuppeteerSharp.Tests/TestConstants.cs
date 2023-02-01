@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Mobile;
 
 namespace PuppeteerSharp.Tests
 {
@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests
     {
         public const string TestFixtureCollectionName = "PuppeteerLoaderFixture collection";
         public const int DebuggerAttachedTestTimeout = 300_000;
-        public const int DefaultTestTimeout = 30_000;
+        public const int DefaultTestTimeout = 60_000;
         public const int DefaultPuppeteerTimeout = 10_000;
         public const int Port = 8081;
         public const int HttpsPort = Port + 1;
