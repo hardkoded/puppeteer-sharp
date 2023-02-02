@@ -15,8 +15,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore lib/PuppeteerSharp.sln
+    - name: Install dependencies
+      run: |
+        dotnet restore lib/PuppeteerSharp.sln
+        dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
     - name: Build
       run: dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
     - name: NugetPush to int.nuget.org
