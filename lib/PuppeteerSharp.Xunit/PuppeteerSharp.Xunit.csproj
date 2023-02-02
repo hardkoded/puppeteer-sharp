@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net48</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT' ">net48;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' ">net6.0</TargetFrameworks>
 	</PropertyGroup>
 	<Import Project="../Common/SignAssembly.props" />
 </Project>

@@ -19,7 +19,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Build
-      run: dotnet build  lib/PuppeteerSharp.sln --configuration Release --no-restore
+      run: dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
     - name: NugetPush to nuget.org
       env:
         NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_API_KEY  }}
