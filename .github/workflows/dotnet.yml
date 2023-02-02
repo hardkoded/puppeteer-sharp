@@ -1,6 +1,7 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -16,7 +17,6 @@ env:
 
 jobs:
   build:
-
     name: build-${{ matrix.browser }}/${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -24,11 +24,10 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         browser: [FIREFOX,CHROME]
-
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 

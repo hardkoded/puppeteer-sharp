@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net48;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT' ">net48;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' ">net6.0</TargetFrameworks>
 		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 	<ItemGroup>
