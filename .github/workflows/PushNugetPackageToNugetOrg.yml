@@ -2,6 +2,9 @@ name: PushToNugetOrg
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+        - v*
 
 env:
   DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
