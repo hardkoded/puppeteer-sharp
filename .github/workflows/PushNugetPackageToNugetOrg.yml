@@ -23,12 +23,12 @@ jobs:
         dotnet restore lib/PuppeteerSharp.sln
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
     - name: Build
-      run: dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
+      run: |
+        dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
+        ls ./lib/PuppeteerSharp/bin/Release
     - name: NugetPush to nuget.org
       env:
         NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_API_KEY  }}
       if: env.NUGET_TOKEN_EXISTS != ''
       run: |
-        ls ./lib/PuppeteerSharp/bin/Release
         dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
-

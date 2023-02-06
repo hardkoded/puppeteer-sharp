@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackOnBuild>true</PackOnBuild>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
@@ -20,15 +19,14 @@
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../PuppeteerSharp.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Import Project="../Common/SignAssembly.props" />
-  <PropertyGroup>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+  <Import Project="../Common/SignAssembly.props" />
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
