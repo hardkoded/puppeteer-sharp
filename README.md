@@ -13,28 +13,23 @@
 [CodeFactorUrl]: https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp
 [Backers]: https://opencollective.com/hardkoded-projects
 
-
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/puppeteer/puppeteer).
 
-# Puppeteer-Sharp 3 is here!
-
-Check out the [blog post](https://www.hardkoded.com/blog/puppeteer-sharp-3-is-here)!
-
-# Useful links
+## Useful links
 
 * [API Documentation](http://www.puppeteersharp.com/api/index.html)
 * Slack channel [#puppeteer-sharp](https://www.hardkoded.com/goto/pptr-slack)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
+* [Blog](https://www.hardkoded.com/)
 
-# Prerequisites
+## Prerequisites
 
- * As Puppeteer-Sharp is a NetStandard 2.0 library, the minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
- * The minimum **Windows** versions supporting the WebSocket library are Windows 8 and Windows Server 2012. [Read more](https://docs.microsoft.com/en-us/dotnet/api/system.net.websockets?redirectedfrom=MSDN&view=netframework-4.7.2). If you need to run Puppeteer-Sharp on Windows 7 you can use [System.Net.WebSockets.Client.Managed](https://www.nuget.org/packages/System.Net.WebSockets.Client.Managed/) through the [LaunchOptions.WebSocketFactory](https://www.puppeteersharp.com/api/PuppeteerSharp.LaunchOptions.html#PuppeteerSharp_LaunchOptions_WebSocketFactory) property.
- * If you have issues running Chrome on Linux, the Puppeteer repo has a [great troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md).
- * X-server is required on Linux.
+* As Puppeteer-Sharp is a NetStandard 2.0 library, the minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
+* If you have issues running Chrome on Linux, the Puppeteer repo has a [great troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md).
+* X-server is required on Linux.
 
- # How to Contribute and Provide Feedback
+## How to Contribute and Provide Feedback
 
 Some of the best ways to contribute are to try things out file bugs and fix issues.
 
@@ -47,7 +42,7 @@ If you have an issue or a question:
 
 See [this document](https://github.com/hardkoded/puppeteer-sharp/blob/master/CONTRIBUTING.md) for information on how to contribute.
 
-# Usage
+## Usage
 
 ## Take screenshots
 
@@ -79,8 +74,7 @@ await Page.SetViewportAsync(new ViewPortOptions
 <sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L21-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-
-## Generate PDF files
+### Generate PDF files
 
 <!-- snippet: PdfAsync -->
 <a id='snippet-pdfasync'></a>
@@ -96,7 +90,7 @@ await page.PdfAsync(outputFile);
 <sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L29-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## Inject HTML
+### Inject HTML
 
 <!-- snippet: SetContentAsync -->
 <a id='snippet-setcontentasync'></a>
@@ -108,7 +102,7 @@ var result = await page.GetContentAsync();
 <sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L21-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## Evaluate Javascript
+### Evaluate Javascript
 
 <!-- snippet: Evaluate -->
 <a id='snippet-evaluate'></a>
@@ -121,7 +115,7 @@ Console.WriteLine(someObject.a);
 <sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L19-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
-## Wait For Selector
+### Wait For Selector
 
 ```cs
 using (var page = await browser.NewPageAsync())
@@ -132,7 +126,8 @@ using (var page = await browser.NewPageAsync())
 }
 ```
 
-## Wait For Function
+### Wait For Function
+
 ```cs
 using (var page = await browser.NewPageAsync())
 {
@@ -143,7 +138,7 @@ using (var page = await browser.NewPageAsync())
 }
 ```
 
-## Connect to a remote browser
+### Connect to a remote browser
 
 ```cs
 var options = new ConnectOptions()
@@ -163,17 +158,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 }
 ```
 
-# Monthly reports
- * [August 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-aug-2019)
- * [July 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jul-2019)
- * [June 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jun-2019)
- * [May 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-may-2019)
- * [April 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-apr-2019)
- * [March 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-mar-2019)
- * [February 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-feb-2019)
- * [January 2019](http://www.hardkoded.com/blog/puppeteer-sharp-monthly-jan-2019)
-
-# Backers
+## Backers
 
 Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/hardkoded-projects).
 
@@ -183,8 +168,6 @@ Support us with a monthly donation and help us continue our activities. [Become 
 <a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/3/avatar.svg"></a>
 <a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/4/avatar.svg"></a>
 
-# Thanks
+## Thanks
 
 Thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper license to use on this project.
-
-
