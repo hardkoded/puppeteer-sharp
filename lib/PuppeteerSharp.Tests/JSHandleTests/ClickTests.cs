@@ -42,12 +42,12 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             await TestUtils.ShortWaitForCollectionToHaveAtLeastNElementsAsync(clicks, 2);
 
             // margin + middle point offset
-            Assert.Equal(clicks[0].X, 45 + 60);
-            Assert.Equal(clicks[0].Y, 45 + 30);
+            Assert.Equal(45 + 60, clicks[0].X);
+            Assert.Equal(45 + 30, clicks[0].Y);
 
             // margin + offset
-            Assert.Equal(clicks[1].X, 30 + 10);
-            Assert.Equal(clicks[1].Y, 30 + 15);
+            Assert.Equal(30 + 10, clicks[1].X);
+            Assert.Equal(30 + 15, clicks[1].Y);
         }
     }
 }

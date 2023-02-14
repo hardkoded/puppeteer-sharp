@@ -12,19 +12,15 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
         {
             var tempPath = Path.GetTempPath();
             var actualFilePath = Path.Combine(tempPath, $"google.jpg");
+            var actualWindowsBinary = DotnetPublishFolderProfileWindows("PuppeteerSharp.Tests.SingleFileDeployment");
 
-            if (File.Exists(actualFilePath))
-            {
-                File.Delete(actualFilePath);
-            }
-
-            var acutualWindowsBinary = DotnetPublishFolderProfileWindows("PuppeteerSharp.SingleFileDeployment");
+            DeleteIfExists(actualFilePath);
 
             using var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = acutualWindowsBinary,
+                    FileName = actualWindowsBinary,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -60,10 +56,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
             var absolutePath = Path.GetFullPath("../../../../" + projectName);
             var expectedBinaryPath = Path.Combine(absolutePath, $"bin/Release/net6.0/publish/{projectName}.exe");
 
-            if (File.Exists(expectedBinaryPath))
-            {
-                File.Delete(expectedBinaryPath);
-            }
+            DeleteIfExists(expectedBinaryPath);
 
             using var process = new Process
             {
@@ -89,6 +82,14 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
             Assert.True(File.Exists(expectedBinaryPath), outputResult);
 
             return expectedBinaryPath;
+        }
+
+        private static void DeleteIfExists(string actualFilePath)
+        {
+            if (File.Exists(actualFilePath))
+            {
+                File.Delete(actualFilePath);
+            }
         }
     }
 }
