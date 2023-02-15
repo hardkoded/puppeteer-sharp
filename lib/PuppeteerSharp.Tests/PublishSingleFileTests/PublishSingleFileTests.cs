@@ -54,8 +54,8 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
 
         private static string DotnetPublishSingleFile(string projectName)
         {
-            var absolutePath = Path.GetFullPath("../../../../" + projectName);
-            var expectedBinaryPath = Path.Combine(absolutePath, $"bin/Release/net6.0/win-x64/publish/{projectName}.exe");
+            var absolutePath = Path.GetFullPath(Path.Combine("../../../../", projectName));
+            var expectedBinaryPath = Path.Combine(absolutePath, $"publish/{projectName}.exe");
 
             DeleteIfExists(expectedBinaryPath);
 
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = $"publish {absolutePath} --configuration Release -r win-x64 -p:PublishSingleFile=true --self-contained false --use-current-runtime",
+                    Arguments = $"publish {absolutePath} --configuration Release -r win-x64 -p:PublishSingleFile=true --self-contained false --use-current-runtime -o ./publish",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
