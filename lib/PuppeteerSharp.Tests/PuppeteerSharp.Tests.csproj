@@ -23,7 +23,6 @@
 	<Import Project="../Common/SignAssembly.props" />
 	<ItemGroup>
 		<Folder Include="Issues\" />
-		<Folder Include="Attributes\" />
 		<Folder Include="ClickTests\" />
 		<Folder Include="KeyboardTests\" />
 		<Folder Include="MouseTests\" />

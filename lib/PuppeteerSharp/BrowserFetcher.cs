@@ -353,18 +353,17 @@ namespace PuppeteerSharp
 
         internal static string GetExecutablePath()
         {
-            DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, nameof(Puppeteer) + ".dll")))
-            {
-                string assemblyLocation;
-                var assembly = typeof(Puppeteer).Assembly;
+            var assembly = typeof(Puppeteer).Assembly;
+            var assemblyName = assembly.GetName().Name + ".dll";
 
-                assemblyLocation = assembly.Location;
+            DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
+            {
+                var assemblyLocation = assembly.Location;
 
                 if (string.IsNullOrEmpty(assemblyLocation))
                 {
                     var singleFilePublishFilePathForBrowserExecutables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(Puppeteer));
-
                     if (!Directory.Exists(singleFilePublishFilePathForBrowserExecutables))
                     {
                         Directory.CreateDirectory(singleFilePublishFilePathForBrowserExecutables);
@@ -376,7 +375,7 @@ namespace PuppeteerSharp
                 assemblyDirectory = new FileInfo(assemblyLocation).Directory;
             }
 
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, nameof(Puppeteer) + ".dll")))
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
                 assemblyDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
             }

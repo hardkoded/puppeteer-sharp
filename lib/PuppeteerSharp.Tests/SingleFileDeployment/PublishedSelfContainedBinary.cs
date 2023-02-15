@@ -1,18 +1,19 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using PuppeteerSharp.Tests.Attributes;
 using Xunit;
 
 namespace PuppeteerSharp.Tests.SingleFileDeployment
 {
     public class PublishedSelfContainedBinary
     {
-        [FactRunableOnWindows]
+        [SkipNonWindowsFact]
         public void PublishedSelfContainedBinaryShouldWork()
         {
             var tempPath = Path.GetTempPath();
             var actualFilePath = Path.Combine(tempPath, $"google.jpg");
-            var actualWindowsBinary = DotnetPublishFolderProfileWindows("PuppeteerSharp.Tests.SingleFileDeployment");
+            var actualWindowsBinary = DotnetPublishSingleFile("PuppeteerSharp.Tests.SingleFileDeployment");
 
             DeleteIfExists(actualFilePath);
 
@@ -51,10 +52,10 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
             return outputReadTask.Result;
         }
 
-        private static string DotnetPublishFolderProfileWindows(string projectName)
+        private static string DotnetPublishSingleFile(string projectName)
         {
             var absolutePath = Path.GetFullPath("../../../../" + projectName);
-            var expectedBinaryPath = Path.Combine(absolutePath, $"bin/Release/net6.0/publish/{projectName}.exe");
+            var expectedBinaryPath = Path.Combine(absolutePath, $"bin/Release/net6.0/win-x64/publish/{projectName}.exe");
 
             DeleteIfExists(expectedBinaryPath);
 
@@ -63,7 +64,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = $"publish {absolutePath} --configuration Release -f net6.0 -p:PublishProfile=FolderProfile",
+                    Arguments = $"publish {absolutePath} --configuration Release -r win-x64 -p:PublishSingleFile=true --self-contained false --use-current-runtime",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,

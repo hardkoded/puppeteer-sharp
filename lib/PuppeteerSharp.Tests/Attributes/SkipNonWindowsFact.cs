@@ -1,11 +1,11 @@
 using System.Runtime.InteropServices;
 using Xunit;
 
-namespace PuppeteerSharp.Tests.SingleFileDeployment
+namespace PuppeteerSharp.Tests.Attributes
 {
-    internal class FactRunableOnWindowsAttribute : FactAttribute
+    internal class SkipNonWindowsFact : FactAttribute
     {
-        public FactRunableOnWindowsAttribute()
+        public SkipNonWindowsFact()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
