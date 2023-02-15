@@ -6,10 +6,10 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.SingleFileDeployment
 {
-    public class PublishedSelfContainedBinary
+    public class PublishSingleFileTests
     {
         [SkipNonWindowsFact]
-        public void PublishedSelfContainedBinaryShouldWork()
+        public void ShouldWork()
         {
             var tempPath = Path.GetTempPath();
             var actualFilePath = Path.Combine(tempPath, $"google.jpg");

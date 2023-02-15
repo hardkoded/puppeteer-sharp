@@ -355,8 +355,8 @@ namespace PuppeteerSharp
         {
             var assembly = typeof(Puppeteer).Assembly;
             var assemblyName = assembly.GetName().Name + ".dll";
-
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
+
             if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
                 var assemblyLocation = assembly.Location;
