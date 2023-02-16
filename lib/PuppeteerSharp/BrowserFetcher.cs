@@ -25,6 +25,8 @@ namespace PuppeteerSharp
         /// </summary>
         public const string DefaultChromiumRevision = "1069273";
 
+        private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
+
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
             [Product.Chrome] = "https://storage.googleapis.com",
@@ -363,7 +365,7 @@ namespace PuppeteerSharp
 
                 if (string.IsNullOrEmpty(assemblyLocation))
                 {
-                    var singleFilePublishFilePathForBrowserExecutables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameof(Puppeteer));
+                    var singleFilePublishFilePathForBrowserExecutables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), PublishSingleFileLocalApplicationDataFolderName);
                     if (!Directory.Exists(singleFilePublishFilePathForBrowserExecutables))
                     {
                         Directory.CreateDirectory(singleFilePublishFilePathForBrowserExecutables);
