@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = $"publish {absolutePath} --configuration Release -r win-x64 -p:PublishSingleFile=true --self-contained false --use-current-runtime -o ./publish",
+                    Arguments = $"publish {absolutePath} --configuration Release -p:PublishSingleFile=true --self-contained false --use-current-runtime -o ./publish",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
