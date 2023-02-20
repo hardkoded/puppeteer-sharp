@@ -21,7 +21,7 @@ namespace CefSharp.Dom.Helpers
             return dic.ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
-#if NETFRAMEWORK
+#if NETFRAMEWORK || NETSTANDARD2_0
         /// <summary>
         /// GetValue or default
         /// </summary>
