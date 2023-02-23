@@ -111,7 +111,7 @@ namespace PuppeteerSharp
         internal void Send(string method, object args = null)
             => _ = SendAsync(method, args, false);
 
-        internal bool HasPendingCallbacks() => _callbacks.Count != 0;
+        internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
         internal void OnMessage(ConnectionResponse obj)
         {
