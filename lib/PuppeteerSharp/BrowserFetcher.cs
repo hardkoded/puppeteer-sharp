@@ -25,6 +25,8 @@ namespace PuppeteerSharp
         /// </summary>
         public const string DefaultChromiumRevision = "1069273";
 
+        private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
+
         private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
         {
             [Product.Chrome] = "https://storage.googleapis.com",
@@ -127,11 +129,14 @@ namespace PuppeteerSharp
                             "Contents",
                             "MacOS",
                             "Chromium");
+
                     case Platform.Linux:
                         return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome");
+
                     case Platform.Win32:
                     case Platform.Win64:
                         return Path.Combine(folderPath, GetArchiveName(product, platform, revision), "chrome.exe");
+
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }
@@ -147,11 +152,14 @@ namespace PuppeteerSharp
                             "Contents",
                             "MacOS",
                             "firefox");
+
                     case Platform.Linux:
                         return Path.Combine(folderPath, "firefox", "firefox");
+
                     case Platform.Win32:
                     case Platform.Win64:
                         return Path.Combine(folderPath, "firefox", "firefox.exe");
+
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }
@@ -347,26 +355,29 @@ namespace PuppeteerSharp
 
         internal static string GetExecutablePath()
         {
+            var assembly = typeof(Puppeteer).Assembly;
+            var assemblyName = assembly.GetName().Name + ".dll";
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, "PuppeteerSharp.dll")))
+
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
-                string assemblyLocation;
-                var assembly = typeof(Puppeteer).Assembly;
-#pragma warning disable SYSLIB0012 // 'Assembly.CodeBase' is obsolete: 'Assembly.CodeBase and Assembly.EscapedCodeBase are only included for .NET Framework compatibility.
-                if (Uri.TryCreate(assembly.CodeBase, UriKind.Absolute, out var codeBase) && codeBase.IsFile)
-#pragma warning restore SYSLIB0012 // 'Assembly.CodeBase' is obsolete: 'Assembly.CodeBase and Assembly.EscapedCodeBase are only included for .NET Framework compatibility.
+                var assemblyLocation = assembly.Location;
+
+                if (string.IsNullOrEmpty(assemblyLocation))
                 {
-                    assemblyLocation = codeBase.LocalPath;
-                }
-                else
-                {
-                    assemblyLocation = assembly.Location;
+                    var singleFilePublishFilePathForBrowserExecutables = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), PublishSingleFileLocalApplicationDataFolderName);
+                    if (!Directory.Exists(singleFilePublishFilePathForBrowserExecutables))
+                    {
+                        Directory.CreateDirectory(singleFilePublishFilePathForBrowserExecutables);
+                    }
+
+                    return singleFilePublishFilePathForBrowserExecutables;
                 }
 
                 assemblyDirectory = new FileInfo(assemblyLocation).Directory;
             }
 
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, "PuppeteerSharp.dll")))
+            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
                 assemblyDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
             }
@@ -401,11 +412,14 @@ namespace PuppeteerSharp
                 {
                     case Platform.Linux:
                         return "chrome-linux";
+
                     case Platform.MacOS:
                         return "chrome-mac";
+
                     case Platform.Win32:
                     case Platform.Win64:
                         return int.TryParse(revision, out var revValue) && revValue > 591479 ? "chrome-win" : "chrome-win32";
+
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }
@@ -416,12 +430,16 @@ namespace PuppeteerSharp
                 {
                     case Platform.Linux:
                         return "linux";
+
                     case Platform.MacOS:
                         return "mac";
+
                     case Platform.Win32:
                         return "win32";
+
                     case Platform.Win64:
                         return "win64";
+
                     default:
                         throw new ArgumentException("Invalid platform", nameof(platform));
                 }

@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30404.54
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp", "PuppeteerSharp\PuppeteerSharp.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
@@ -22,9 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Xunit", "PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Xunit", "PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppeteerSharp.Tooling", "PuppeteerSharp.Tooling\PuppeteerSharp.Tooling.csproj", "{912C1F21-9306-4D6B-A487-47A8FC793E6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tooling", "PuppeteerSharp.Tooling\PuppeteerSharp.Tooling.csproj", "{912C1F21-9306-4D6B-A487-47A8FC793E6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tests.SingleFileDeployment", "PuppeteerSharp.Tests.SingleFileDeployment\PuppeteerSharp.Tests.SingleFileDeployment.csproj", "{CB0DB076-60FE-48A1-925A-7C1BC566D3CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +61,10 @@ Global
 		{912C1F21-9306-4D6B-A487-47A8FC793E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{912C1F21-9306-4D6B-A487-47A8FC793E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{912C1F21-9306-4D6B-A487-47A8FC793E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB0DB076-60FE-48A1-925A-7C1BC566D3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB0DB076-60FE-48A1-925A-7C1BC566D3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB0DB076-60FE-48A1-925A-7C1BC566D3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB0DB076-60FE-48A1-925A-7C1BC566D3CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
