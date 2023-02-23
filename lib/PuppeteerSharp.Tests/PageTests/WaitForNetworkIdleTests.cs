@@ -26,17 +26,16 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"
-                    (async () => {
-                        await Promise.all([
-                                fetch('/digits/1.png'),
-                                fetch('/digits/2.png'),
-                            ]);
-                        await new Promise((resolve) => setTimeout(resolve, 200));
-                        await fetch('/digits/3.png');
-                        await new Promise((resolve) => setTimeout(resolve, 200));
-                        await fetch('/digits/4.png');
-                    })();").ContinueWith(x => t2 = DateTime.Now)
+                Page.EvaluateFunctionAsync(@"async () => {
+                    await Promise.all([
+                            fetch('/digits/1.png'),
+                            fetch('/digits/2.png'),
+                        ]);
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+                    await fetch('/digits/3.png');
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+                    await fetch('/digits/4.png');
+                }").ContinueWith(x => t2 = DateTime.Now)
             );
 
             Assert.True(t1 > t2);
@@ -57,7 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect idleTime")]
-        [SkipBrowserFact(skipFirefox: true)] 
+        [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.Now;
@@ -68,14 +67,13 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 task,
-                Page.EvaluateFunctionAsync(@"() =>
-                (async () => {
+                Page.EvaluateFunctionAsync(@"async () => {
                     await Promise.all([
                     fetch('/digits/1.png'),
                     fetch('/digits/2.png'),
                     ]);
                     await new Promise((resolve) => setTimeout(resolve, 250));
-                })()").ContinueWith(x => t2 = DateTime.Now)
+                }").ContinueWith(x => t2 = DateTime.Now)
             );
 
             Assert.True(t2 > t1);
