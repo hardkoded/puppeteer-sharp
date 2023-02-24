@@ -986,7 +986,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null)
         {
-            if (!_fileChooserInterceptors.Any())
+            if (_fileChooserInterceptors.IsEmpty)
             {
                 await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
                 {
@@ -1472,7 +1472,7 @@ namespace PuppeteerSharp
 
         private async Task OnFileChooserAsync(PageFileChooserOpenedResponse e)
         {
-            if (_fileChooserInterceptors.Count == 0)
+            if (_fileChooserInterceptors.IsEmpty)
             {
                 try
                 {
@@ -1493,7 +1493,7 @@ namespace PuppeteerSharp
             var world = context.World;
             var element = await world.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
             var fileChooser = new FileChooser(element, e);
-            while (_fileChooserInterceptors.Count > 0)
+            while (!_fileChooserInterceptors.IsEmpty)
             {
                 var key = _fileChooserInterceptors.FirstOrDefault().Key;
 

@@ -190,7 +190,7 @@ namespace PuppeteerSharp
             return await GetSessionAsync(sessionId).ConfigureAwait(false);
         }
 
-        internal bool HasPendingCallbacks() => _callbacks.Count != 0;
+        internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
         internal void Close(string closeReason)
         {

@@ -48,7 +48,7 @@ namespace PuppeteerSharp
             _logger = _client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
         }
 
-        internal ICollection<WaitTask> WaitTasks { get; set; }
+        internal ConcurrentSet<WaitTask> WaitTasks { get; set; }
 
         internal Frame Frame { get; }
 
@@ -143,7 +143,7 @@ namespace PuppeteerSharp
         internal void Detach()
         {
             _detached = true;
-            while (WaitTasks.Count > 0)
+            while (!WaitTasks.IsEmpty)
             {
                 WaitTasks.First().Terminate(new Exception("waitForFunction failed: frame got detached."));
             }
