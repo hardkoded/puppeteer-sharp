@@ -900,6 +900,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
         {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
             var timeout = options?.Timeout ?? DefaultTimeout;
             var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -1095,7 +1100,11 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public ValueTask DisposeAsync() => new(CloseAsync());
+        public async ValueTask DisposeAsync()
+        {
+            await CloseAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         internal static async Task<Page> CreateAsync(
             CDPSession client,

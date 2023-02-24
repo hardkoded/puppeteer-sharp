@@ -193,6 +193,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
         {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var existingTarget = Targets().FirstOrDefault(predicate);
             if (existingTarget != null)
@@ -256,7 +261,11 @@ namespace PuppeteerSharp
         /// created by Puppeteer.
         /// </summary>
         /// <returns>ValueTask.</returns>
-        public ValueTask DisposeAsync() => new ValueTask(CloseAsync());
+        public async ValueTask DisposeAsync()
+        {
+            await CloseAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         internal static async Task<Browser> CreateAsync(
             Product? product,
