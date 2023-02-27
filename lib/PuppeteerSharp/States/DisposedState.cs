@@ -9,11 +9,11 @@ namespace PuppeteerSharp.States
         {
         }
 
-        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeSpan)
+        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
         {
             if (fromState == StateManager.Exited)
             {
-                return null;
+                return Task.CompletedTask;
             }
 
             Kill(p);
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.States
             p.ExitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
             p.TempUserDataDir?.Dispose();
 
-            return null;
+            return Task.CompletedTask;
         }
 
         public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
