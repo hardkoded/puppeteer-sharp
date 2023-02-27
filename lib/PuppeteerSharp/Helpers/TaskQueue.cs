@@ -71,7 +71,15 @@ namespace PuppeteerSharp.Helpers
 
         protected virtual async ValueTask DisposeAsyncCore()
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Ignore
+            }
+
             _semaphore.Dispose();
         }
     }

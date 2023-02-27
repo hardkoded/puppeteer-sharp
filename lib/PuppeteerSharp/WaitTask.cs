@@ -273,7 +273,14 @@ async function waitForPredicatePageFunction(
         {
             if (!_cts.IsCancellationRequested)
             {
-                _cts.Cancel();
+                try
+                {
+                    _cts.Cancel();
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Ignore
+                }
             }
 
             _world.WaitTasks.Remove(this);
