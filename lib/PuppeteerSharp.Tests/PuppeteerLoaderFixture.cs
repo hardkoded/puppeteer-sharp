@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerLoaderFixture : IDisposable
+    public sealed class PuppeteerLoaderFixture : IDisposable
     {
         public static SimpleServer Server { get; private set; }
         public static SimpleServer HttpsServer { get; private set; }

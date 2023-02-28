@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -12,16 +11,6 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputTests : PuppeteerPageBaseTest
     {
-        private const string Dimensions = @"function dimensions() {
-            const rect = document.querySelector('textarea').getBoundingClientRect();
-            return {
-                x: rect.left,
-                y: rect.top,
-                width: rect.width,
-                height: rect.height
-            };
-        }";
-
         public InputTests(ITestOutputHelper output) : base(output)
         {
         }

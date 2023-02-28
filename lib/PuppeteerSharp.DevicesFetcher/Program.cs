@@ -24,7 +24,7 @@ namespace PuppeteerSharp.DevicesFetcher
             }
 
             Console.WriteLine($"GET {url}");
-            var text = await HttpGET(url);
+            var text = await HttpGET(url).ConfigureAwait(false);
 
             const string DeviceArray = "Device[] = [";
             var startIndex = text.IndexOf(DeviceArray) + DeviceArray.Length;
@@ -156,6 +156,10 @@ namespace PuppeteerSharp.Mobile
             return output.ToString();
         }
 
-        static Task<string> HttpGET(string url) => new HttpClient().GetStringAsync(url);
+        static async Task<string> HttpGET(string url)
+        {
+            using var httpClient = new HttpClient();
+            return await httpClient.GetStringAsync(url).ConfigureAwait(false);
+        }
     }
 }

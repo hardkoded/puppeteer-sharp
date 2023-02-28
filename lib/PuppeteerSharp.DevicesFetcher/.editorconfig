@@ -1,0 +1,4 @@
+[*.cs]
+
+# CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'.
+dotnet_diagnostic.CA1304.severity = none
