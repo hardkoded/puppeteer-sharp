@@ -20,10 +20,9 @@ namespace PuppeteerSharp.Helpers
             GC.SuppressFinalize(this);
         }
 
-        [SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "Per MSDN instructions for implementing the IAsyncDisposable pattern.")]
         public async ValueTask DisposeAsync()
         {
-            await DisposeAsyncCore();
+            await DisposeAsyncCore().ConfigureAwait(false);
             Dispose(false);
             GC.SuppressFinalize(this);
         }

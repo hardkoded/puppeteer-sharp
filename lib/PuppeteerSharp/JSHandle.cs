@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -113,6 +114,7 @@ namespace PuppeteerSharp
 
             Disposed = true;
             await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc/>

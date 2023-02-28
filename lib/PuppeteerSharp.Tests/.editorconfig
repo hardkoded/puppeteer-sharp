@@ -1,0 +1,14 @@
+[*.cs]
+
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = none
+# CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'.
+dotnet_diagnostic.CA1304.severity = none
+# CA1305: String.Format with culture
+dotnet_diagnostic.CA1305.severity = none
+# CA1724: The type name Extensions conflicts in whole or in part with the namespace name 'Microsoft.Extensions'. Change either name to eliminate the conflict.
+dotnet_diagnostic.CA1724.severity = none
+# Use ConfigureAwait
+dotnet_diagnostic.CA2007.severity = none
+# CA2008: Pass TaskScheduler
+dotnet_diagnostic.CA2008.severity = none

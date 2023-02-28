@@ -148,6 +148,178 @@ csharp_space_between_square_brackets = false
 # Analyzers
 dotnet_code_quality.ca1802.api_surface = private, internal
 
+# StyleCop.Analyzers
+dotnet_diagnostic.SA1633.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1623.severity = none
+dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1128.severity = none
+dotnet_diagnostic.SA1309.severity = none
+dotnet_diagnostic.SX1309.severity = error
+
+# SA1624: Because the property only contains a visible get accessor, the documentation summary text should begin with 'Gets'.
+dotnet_diagnostic.SA1624.severity = error
+# SA1028: Code should not contain trailing whitespace
+dotnet_diagnostic.SA1028.severity = error
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = error
+# SA1516: Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = error
+# SA1629: Documentation text should end with a period
+dotnet_diagnostic.SA1629.severity = error
+# SA1514: Element documentation header should be preceded by blank line
+dotnet_diagnostic.SA1514.severity = error
+# SA1201: Elements must appear in the correct order
+dotnet_diagnostic.SA1201.severity = error
+# SA1202: 'public' members should come before 'internal' members
+dotnet_diagnostic.SA1202.severity = error
+# SA1210: Using directives should be ordered alphabetically by the namespaces.
+dotnet_diagnostic.SA1210.severity = error
+# SA1208: Order usings
+dotnet_diagnostic.SA1208.severity = error
+# SA1204: Static members should appear before non-static members
+dotnet_diagnostic.SA1204.severity = error
+# SA1004: Documentation line should begin with a space.
+dotnet_diagnostic.SA1004.severity = error
+# SA1513: Closing brace should be followed by blank line
+dotnet_diagnostic.SA1513.severity = error
+# SA1124: Don't use regions
+dotnet_diagnostic.SA1124.severity = error
+# SA1009: Closing parenthesis should not be preceded by a space.
+dotnet_diagnostic.SA1009.severity = error
+# SA1413: Use trailing comma in multi-line initializers
+dotnet_diagnostic.SA1413.severity = error
+# SA1602: Enumeration items should be documented
+dotnet_diagnostic.SA1602.severity = error
+# SA1005: Single line comment should begin with a space.
+dotnet_diagnostic.SA1005.severity = error
+# SA1203: Constant fields should appear before non-constant fields
+dotnet_diagnostic.SA1203.severity = error
+# SA1720: Name contains type
+dotnet_diagnostic.SA1720.severity = error
+# SA1300: Element 'iFrame' should begin with an uppercase letter
+dotnet_diagnostic.SA1300.severity = error
+# SA1500: Braces for multi-line statements should not share line
+dotnet_diagnostic.SA1500.severity = error
+# SA1214: Readonly fields should appear before non-readonly fields
+dotnet_diagnostic.SA1214.severity = error
+# SA1642: Constructor summary documentation should begin with standard text (SA1642) (PuppeteerSharp)
+dotnet_diagnostic.SA1642.severity = error
+# SA1013: Closing brace should be preceded by a space.
+dotnet_diagnostic.SA1013.severity = error
+# SA1515: Single-line comment should be preceded by blank line
+dotnet_diagnostic.SA1515.severity = error
+# SA1518: File is required to end with a single newline character
+dotnet_diagnostic.SA1518.severity = none
+# SA1012: Opening brace should be followed by a space.
+dotnet_diagnostic.SA1012.severity = error
+# SA1502: Element should not be on a single line
+dotnet_diagnostic.SA1512.severity = error
+# SA1648: inheritdoc should be used with inheriting class
+dotnet_diagnostic.SA1648.severity = error
+# SA1616: Element return value documentation should have text
+dotnet_diagnostic.SA1616.severity = error
+# SA1627: The documentation text within the \'exception\' tag should not be empty.
+dotnet_diagnostic.SA1627.severity = error
+# SA1643: Destructor summary documentation should begin with standard text
+dotnet_diagnostic.SA1643.severity = error
+# SA1614: Element parameter documentation should have text
+dotnet_diagnostic.SA1614.severity = error
+# SA1622: Generic type parameter documentation should have text.
+dotnet_diagnostic.SA1622.severity = error
+# SA1116: The parameters should begin on the line after the declaration, whenever the parameter span across multiple lines
+dotnet_diagnostic.SA1116.severity = error
+# SA1111: Closing parenthesis should be on line of last parameter
+dotnet_diagnostic.SA1111.severity = error
+# SA1505: An opening brace should not be followed by a blank line.
+dotnet_diagnostic.SA1505.severity = error
+# SA1612: The parameter documentation for 'filePaths' should be at position 2.
+dotnet_diagnostic.SA1612.severity = error
+# SA1620: The type parameter documentation for 'T4' should be at position 4.
+dotnet_diagnostic.SA1620.severity = error
+# SA1118: The parameter spans multiple lines
+dotnet_diagnostic.SA1118.severity = error
+
+# Microsoft.CodeQuality.Analyzers
+# Overloads to System.Uri
+dotnet_diagnostic.CA1054.severity = none
+# Change string to System.Uri
+dotnet_diagnostic.CA1056.severity = none
+# Avoid empty interfaces
+dotnet_diagnostic.CA1040.severity = none
+# Use ConfigureAwait
+dotnet_diagnostic.CA2007.severity = error
+# Do not initialize unnecessarily.
+dotnet_diagnostic.CA1805.severity = none
+# Properties should not return arrays.
+dotnet_diagnostic.CA1819.severity = suggestion
+# should override equality and inequality.
+dotnet_diagnostic.CA1815.severity = suggestion
+# Change '...' to be read-only by removing the property setter.
+dotnet_diagnostic.CA2227.severity = suggestion
+# Avoid using cref tags with a prefix
+dotnet_diagnostic.CA1200.severity = suggestion
+# Marshaling for P/Invoke
+dotnet_diagnostic.CA2101.severity = none
+# Unused parameter
+dotnet_diagnostic.CA1801.severity = suggestion
+# Method can be marked as static
+dotnet_diagnostic.CA1822.severity = none
+# avoid unused fields
+dotnet_diagnostic.CA1823.severity = error
+
+# Microsoft.NetCore.Analyzers
+# CA1031: Modify 'SendAsync' to catch a more specific allowed exception type, or rethrow the exception.
+dotnet_diagnostic.CA1031.severity = none
+# CA1032: Add the following constructor to SelectorException: public SelectorException().
+dotnet_diagnostic.CA1032.severity = error
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = error
+# CA1063: Provide an overridable implementation of Dispose(bool)
+dotnet_diagnostic.CA1063.severity = error
+# CA1064: Exceptions should be public
+dotnet_diagnostic.CA1064.severity = error
+# CA1001: A class owns a disposable
+dotnet_diagnostic.CA1001.severity = error
+# CA1304: The behavior of 'string.ToLower()' could vary based on the current user's locale settings. Replace this call in 'JSHandle.ToString()' with a call to 'string.ToLower(CultureInfo)'.
+dotnet_diagnostic.CA1304.severity = error
+# CA1305: String.Format with culture
+dotnet_diagnostic.CA1305.severity = error
+# CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members.
+dotnet_diagnostic.CA1721.severity = error
+# CA1724: The type name Extensions conflicts in whole or in part with the namespace name 'Microsoft.Extensions'. Change either name to eliminate the conflict.
+dotnet_diagnostic.CA1724.severity = error
+# CA1806: DownloadAsync calls Chmod but does not use the HRESULT or error code that the method returns. This could lead to unexpected behavior in error conditions or low-resource situations. Use the result in a conditional statement, assign the result to a variable, or pass it as an argument to another method.
+dotnet_diagnostic.CA1806.severity = error
+# CA1816: Change Connection.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it.
+dotnet_diagnostic.CA1816.severity = error
+# CA1836: Prefer IsEmpty over Count when available.
+dotnet_diagnostic.CA1836.severity = error
+# CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope.
+dotnet_diagnostic.CA2000.severity = error
+# CA2008: Pass TaskScheduler
+dotnet_diagnostic.CA2008.severity = error
+# CA2012: Use ValueTasks correctly
+dotnet_diagnostic.CA2012.severity = none
+# CA2200: Re-throwing caught exception changes stack information.
+dotnet_diagnostic.CA2200.severity = error
+# CA2213: 'WebSocketTransport' contains field '_readerCancellationSource' that is of IDisposable type 'CancellationTokenSource', but it is never disposed. Change the Dispose method on 'WebSocketTransport' to call Close or Dispose on this field.
+dotnet_diagnostic.CA2213.severity = error
+# CA2220: CA2220: Finalizers should call base class finalizer
+dotnet_diagnostic.CA2220.severity = error
+# CA2229: Add a constructor to SelectorException with the following signature: 'protected SelectorException(SerializationInfo info, StreamingContext context)'.
+dotnet_diagnostic.CA2229.severity = error
+# CA2237: Add [Serializable] to TargetClosedException as this type implements ISerializable
+dotnet_diagnostic.CA2237.severity = error
+
+# Microsoft.Analyzers.ManagedCodeAnalysis
+dotnet_diagnostic.CA1303.severity = none
+
+
+# SingleFile
+# IL3000: Avoid accessing Assembly file path when publishing as a single file
+dotnet_diagnostic.IL3000.severity = none
+
 # C++ Files
 
 # Default severity for analyzer diagnostics with category 'Usage'

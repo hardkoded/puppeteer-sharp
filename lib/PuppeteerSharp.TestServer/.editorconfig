@@ -1,0 +1,6 @@
+[*.cs]
+
+# CA1305: String.Format with culture
+dotnet_diagnostic.CA1305.severity = none
+# Use ConfigureAwait
+dotnet_diagnostic.CA2007.severity = none
