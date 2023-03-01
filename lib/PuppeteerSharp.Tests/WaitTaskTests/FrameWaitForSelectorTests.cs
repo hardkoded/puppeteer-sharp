@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -102,9 +103,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame = Page.FirstChildFrame();
-            var waitTask = frame.WaitForSelectorAsync(".box").ContinueWith(task => task?.Exception?.InnerException);
+            var waitTask = frame.WaitForSelectorAsync(".box");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
-            var waitException = await waitTask;
+            var waitException = await Assert.ThrowsAsync<Exception>(() => waitTask);
+
             Assert.NotNull(waitException);
             Assert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
         }
