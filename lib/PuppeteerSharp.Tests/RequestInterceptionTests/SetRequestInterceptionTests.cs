@@ -262,7 +262,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
             IRequest failedRequest = null;
             Page.RequestFailed += (_, e) => failedRequest = e.Request;
-            await Page.GoToAsync(TestConstants.EmptyPage).ContinueWith(_ => { });
+
+            var exception = await Assert.ThrowsAsync<NavigationException>(
+                () => Page.GoToAsync(TestConstants.EmptyPage));
+
+            Assert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
             Assert.NotNull(failedRequest);
             Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
