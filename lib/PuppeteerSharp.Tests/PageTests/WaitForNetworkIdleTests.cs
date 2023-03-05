@@ -22,7 +22,12 @@ namespace PuppeteerSharp.Tests.PageTests
             var t2 = DateTime.UtcNow;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForNetworkIdleAsync().ContinueWith(x => t1 = DateTime.UtcNow);
+            var task = Page.WaitForNetworkIdleAsync()
+                .ContinueWith(x =>
+                {
+                    if (x.IsFaulted) throw x.Exception;
+                    return t1 = DateTime.UtcNow;
+                });
 
             await Task.WhenAll(
                 task,
@@ -35,7 +40,11 @@ namespace PuppeteerSharp.Tests.PageTests
                     await fetch('/digits/3.png');
                     await new Promise((resolve) => setTimeout(resolve, 200));
                     await fetch('/digits/4.png');
-                }").ContinueWith(x => t2 = DateTime.UtcNow)
+                }").ContinueWith(x =>
+                {
+                    if (x.IsFaulted) throw x.Exception;
+                    t2 = DateTime.UtcNow;
+                })
             );
 
             Assert.True(t1 > t2);
@@ -63,7 +72,12 @@ namespace PuppeteerSharp.Tests.PageTests
             var t2 = DateTime.UtcNow;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 }).ContinueWith(x => t1 = DateTime.UtcNow);
+            var task = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 10 })
+                .ContinueWith(x =>
+                {
+                    if (x.IsFaulted) throw x.Exception;
+                    return t1 = DateTime.UtcNow;
+                });
 
             await Task.WhenAll(
                 task,
@@ -73,7 +87,11 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/2.png'),
                     ]);
                     await new Promise((resolve) => setTimeout(resolve, 250));
-                }").ContinueWith(x => t2 = DateTime.UtcNow)
+                }").ContinueWith(x =>
+                {
+                    if (x.IsFaulted) throw x.Exception;
+                    return t2 = DateTime.UtcNow;
+                })
             );
 
             Assert.True(t2 > t1);
