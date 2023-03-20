@@ -185,7 +185,11 @@ namespace PuppeteerSharp
             => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
 
         /// <inheritdoc/>
-        public void Disconnect() => Connection.Dispose();
+        public void Disconnect()
+        {
+            Connection.Dispose();
+            Detach();
+        }
 
         /// <inheritdoc/>
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
