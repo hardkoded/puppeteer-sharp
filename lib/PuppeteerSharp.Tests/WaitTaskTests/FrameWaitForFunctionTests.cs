@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnInterval()
         {
             var success = false;
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
             var polling = 100;
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
                 .ContinueWith(_ => success = true);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
-            Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
+            Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
         
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on interval async")]
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnIntervalAsync()
         {
             var success = false;
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
             var polling = 100;
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling })
                 .ContinueWith(_ => success = true);
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await watchdog;
-            Assert.True((DateTime.Now - startTime).TotalMilliseconds > polling / 2);
+            Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on mutation")]
