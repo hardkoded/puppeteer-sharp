@@ -268,6 +268,7 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             await CloseAsync().ConfigureAwait(false);
+            await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
 
