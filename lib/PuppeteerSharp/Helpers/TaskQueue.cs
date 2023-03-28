@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Helpers
 
             if (dispose)
             {
-                _ = Task.Run(() => DisposeAsync());
+                _ = Task.Run(() => DisposeAsyncCore());
             }
 
             _isDisposed = true;
