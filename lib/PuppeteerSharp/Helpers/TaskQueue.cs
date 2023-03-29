@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Helpers
 {
-    internal class TaskQueue : IDisposable, IAsyncDisposable
+    internal sealed class TaskQueue : IDisposable, IAsyncDisposable
     {
         [SuppressMessage("Usage", "CA2213: Disposable fields should be disposed", Justification = "The disposable field is being disposed asynchronously.")]
         [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "The CA2213 suppression is actually necessary.")]
@@ -16,15 +16,28 @@ namespace PuppeteerSharp.Helpers
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _ = Task.Run(() => DisposeAsync());
+
+            _isDisposed = true;
         }
 
         public async ValueTask DisposeAsync()
         {
-            await DisposeAsyncCore().ConfigureAwait(false);
-            Dispose(false);
-            GC.SuppressFinalize(this);
+            try
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Ignore
+            }
+
+            _semaphore.Dispose();
         }
 
         internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
@@ -51,35 +64,6 @@ namespace PuppeteerSharp.Helpers
             {
                 _semaphore.Release();
             }
-        }
-
-        protected virtual void Dispose(bool dispose)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            if (dispose)
-            {
-                _ = Task.Run(() => DisposeAsync());
-            }
-
-            _isDisposed = true;
-        }
-
-        protected virtual async ValueTask DisposeAsyncCore()
-        {
-            try
-            {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
-            }
-            catch (ObjectDisposedException)
-            {
-                // Ignore
-            }
-
-            _semaphore.Dispose();
         }
     }
 }
