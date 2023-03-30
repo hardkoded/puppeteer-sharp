@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>../CefSharp.Dom.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>CefSharp.Dom</AssemblyName>
@@ -29,12 +29,12 @@
   </PropertyGroup>
   <Import Project="../Common/SignAssembly.props" />
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
     <PackageReference Include="CefSharp.Common" Version="104.4.180" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
     <PackageReference Include="CefSharp.Common.NETCore" Version="104.4.180" />
   </ItemGroup>
 
