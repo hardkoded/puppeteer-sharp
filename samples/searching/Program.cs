@@ -19,7 +19,7 @@ namespace Example.Searching
             {
                 await page.GoToAsync("https://developers.google.com/web/");
                 // Type into search box.
-                await page.TypeAsync("#searchbox input", "Headless Chrome");
+                await page.TypeAsync(".devsite-search-field", "Headless Chrome");
 
                 // Wait for suggest overlay to appear and click "show all results".
                 var allResultsSelector = ".devsite-suggest-all-results";
