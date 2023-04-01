@@ -26,9 +26,9 @@ namespace Example.ReuseDownloadedChrome
 
             var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
             var browserFetcher = new BrowserFetcher(browserFetcherOptions);
-            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+            await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 
-            var executablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultRevision);
+            var executablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultChromiumRevision);
 
             if (string.IsNullOrEmpty(executablePath))
             {
