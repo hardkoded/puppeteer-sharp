@@ -22,7 +22,7 @@ namespace PuppeteerSharp
         internal ExecutionContext(
             CDPSession client,
             ContextPayload contextPayload,
-            DOMWorld world)
+            IsolatedWorld world)
         {
             Client = client;
             ContextId = contextPayload.Id;
@@ -39,7 +39,7 @@ namespace PuppeteerSharp
 
         internal CDPSession Client { get; }
 
-        internal DOMWorld World { get; }
+        internal IsolatedWorld World { get; }
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);

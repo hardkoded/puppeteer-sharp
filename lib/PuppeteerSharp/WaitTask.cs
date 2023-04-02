@@ -95,7 +95,7 @@ async function waitForPredicatePageFunction(
   }
 }";
 
-        private readonly DOMWorld _world;
+        private readonly IsolatedWorld _isolatedWorld;
         private readonly string _predicateBody;
         private readonly WaitForFunctionPollingOption _polling;
         private readonly int? _pollingInterval;
@@ -114,7 +114,7 @@ async function waitForPredicatePageFunction(
         private bool _isDisposing;
 
         internal WaitTask(
-            DOMWorld domWorld,
+            IsolatedWorld isolatedWorld,
             string predicateBody,
             bool isExpression,
             string title,
@@ -136,7 +136,7 @@ async function waitForPredicatePageFunction(
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _world = domWorld;
+            _isolatedWorld = isolatedWorld;
             _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
             _polling = polling;
             _pollingInterval = pollingInterval;
@@ -151,10 +151,10 @@ async function waitForPredicatePageFunction(
 
             foreach (var binding in _bindings)
             {
-                _world.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
+                _isolatedWorld.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
             }
 
-            _world.WaitTasks.Add(this);
+            _isolatedWorld.WaitTasks.Add(this);
 
             if (timeout > 0)
             {
@@ -181,8 +181,8 @@ async function waitForPredicatePageFunction(
             IJSHandle success = null;
             Exception exception = null;
 
-            var context = await _world.GetExecutionContextAsync().ConfigureAwait(false);
-            await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _world.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
+            var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
 
             try
             {
@@ -213,7 +213,7 @@ async function waitForPredicatePageFunction(
             }
 
             if (exception == null &&
-                await _world.EvaluateFunctionAsync<bool>("s => !s", success)
+                await _isolatedWorld.EvaluateFunctionAsync<bool>("s => !s", success)
                     .ContinueWith(
                         task => task.IsFaulted || task.Result,
                         TaskScheduler.Default)
@@ -283,7 +283,7 @@ async function waitForPredicatePageFunction(
                 }
             }
 
-            _world.WaitTasks.Remove(this);
+            _isolatedWorld.WaitTasks.Remove(this);
         }
     }
 }

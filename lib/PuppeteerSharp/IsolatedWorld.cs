@@ -17,7 +17,7 @@ using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
-    internal class DOMWorld
+    internal class IsolatedWorld
     {
         private readonly FrameManager _frameManager;
         private readonly CustomQueriesManager _customQueriesManager;
@@ -31,9 +31,9 @@ namespace PuppeteerSharp
         private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
 
-        public DOMWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
+        public IsolatedWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
         {
-            Logger = client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
+            Logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
             _client = client;
             _frameManager = frameManager;
             _customQueriesManager = ((Browser)frameManager.Page.Browser).CustomQueriesManager;
@@ -45,7 +45,7 @@ namespace PuppeteerSharp
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<DOMWorld>();
+            _logger = _client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
         }
 
         internal ConcurrentSet<WaitTask> WaitTasks { get; set; }
@@ -600,7 +600,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var message = $"DOMWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                var message = $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 Logger.LogError(ex, message);
                 _client.Close(message);
             }
