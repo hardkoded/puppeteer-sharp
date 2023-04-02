@@ -21,7 +21,7 @@ namespace Example.ComplexJSObjects
 
             Console.WriteLine("Downloading chromium");
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
 
             Console.WriteLine("Navigating to Hacker News");
 
@@ -31,7 +31,7 @@ namespace Example.ComplexJSObjects
                 await page.GoToAsync("https://news.ycombinator.com/");
                 Console.WriteLine("Get all urls from page");
                 var jsCode = @"() => {
-const selectors = Array.from(document.querySelectorAll('a[class=""storylink""]'));
+const selectors = Array.from(document.querySelectorAll('span[class=""titleline""] > a:first-child'));
 return selectors.map( t=> {return { title: t.innerHTML, url: t.href}});
 }";
                 var results = await page.EvaluateFunctionAsync<Data[]>(jsCode);

@@ -11,7 +11,7 @@ namespace Example.Searching
             var options = new LaunchOptions { Headless = true };
             Console.WriteLine("Downloading chromium");
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultRevision);
+            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
             Console.WriteLine("Navigating to developers.google.com");
 
             using (var browser = await Puppeteer.LaunchAsync(options))
@@ -19,7 +19,7 @@ namespace Example.Searching
             {
                 await page.GoToAsync("https://developers.google.com/web/");
                 // Type into search box.
-                await page.TypeAsync("#searchbox input", "Headless Chrome");
+                await page.TypeAsync(".devsite-search-field", "Headless Chrome");
 
                 // Wait for suggest overlay to appear and click "show all results".
                 var allResultsSelector = ".devsite-suggest-all-results";

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="puppeteersharp" Version="1.9.0" />
+    <PackageReference Include="puppeteersharp" Version="9.0.2" />
   </ItemGroup>
 
 </Project>
