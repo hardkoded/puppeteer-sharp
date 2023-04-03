@@ -67,9 +67,9 @@ namespace PuppeteerSharp
 
         internal string NavigationURL { get; private set; }
 
-        internal DOMWorld MainWorld { get; private set; }
+        internal IsolatedWorld MainWorld { get; private set; }
 
-        internal DOMWorld SecondaryWorld { get; private set; }
+        internal IsolatedWorld SecondaryWorld { get; private set; }
 
         internal CDPSession Client { get; private set; }
 
@@ -286,13 +286,13 @@ namespace PuppeteerSharp
         internal void UpdateClient(CDPSession client)
         {
             Client = client;
-            MainWorld = new DOMWorld(
+            MainWorld = new IsolatedWorld(
               Client,
               FrameManager,
               this,
               FrameManager.TimeoutSettings);
 
-            SecondaryWorld = new DOMWorld(
+            SecondaryWorld = new IsolatedWorld(
               Client,
               FrameManager,
               this,
