@@ -296,7 +296,8 @@ namespace PuppeteerSharp
               Client,
               FrameManager,
               this,
-              FrameManager.TimeoutSettings);
+              FrameManager.TimeoutSettings,
+              true);
         }
     }
 }

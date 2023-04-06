@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,20 +21,28 @@ namespace PuppeteerSharp
 {
     internal class IsolatedWorld
     {
+        private static string _injectedSource;
         private readonly FrameManager _frameManager;
         private readonly CustomQueriesManager _customQueriesManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
         private readonly ILogger _logger;
         private readonly List<string> _ctxBindings = new();
+        private readonly bool _injected;
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
         private TaskCompletionSource<IElementHandle> _documentCompletionSource;
         private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
 
-        public IsolatedWorld(CDPSession client, FrameManager frameManager, Frame frame, TimeoutSettings timeoutSettings)
+        public IsolatedWorld(
+            CDPSession client,
+            FrameManager frameManager,
+            Frame frame,
+            TimeoutSettings timeoutSettings,
+            bool injected = false)
         {
+            _injected = injected;
             Logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
             _client = client;
             _frameManager = frameManager;
@@ -573,6 +583,21 @@ namespace PuppeteerSharp
             _documentTask = null;
             if (context != null)
             {
+                if (_injected)
+                {
+                    _ = context.EvaluateExpressionAsync(GetInjectedSource()).ContinueWith(
+                        task =>
+                        {
+                            if (task.Exception != null)
+                            {
+                                Logger.LogError(task.Exception.ToString());
+                            }
+                        },
+                        CancellationToken.None,
+                        TaskContinuationOptions.OnlyOnFaulted,
+                        TaskScheduler.Default);
+                }
+
                 _ctxBindings.Clear();
                 _contextResolveTaskWrapper.TrySetResult(context);
                 foreach (var waitTask in WaitTasks)
@@ -585,6 +610,22 @@ namespace PuppeteerSharp
                 _documentCompletionSource = null;
                 _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             }
+        }
+
+        private static string GetInjectedSource()
+        {
+            if (string.IsNullOrEmpty(_injectedSource))
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "PuppeteerSharp.Injected.injected.js";
+
+                using var stream = assembly.GetManifestResourceStream(resourceName);
+                using var reader = new StreamReader(stream);
+                var fileContent = reader.ReadToEnd();
+                _injectedSource = fileContent;
+            }
+
+            return _injectedSource;
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
