@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,8 +6,6 @@ namespace PuppeteerSharp.Helpers
 {
     internal sealed class TaskQueue : IDisposable, IAsyncDisposable
     {
-        [SuppressMessage("Usage", "CA2213: Disposable fields should be disposed", Justification = "The disposable field is being disposed asynchronously.")]
-        [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "The CA2213 suppression is actually necessary.")]
         private readonly SemaphoreSlim _semaphore;
         private int _disposed;
 
