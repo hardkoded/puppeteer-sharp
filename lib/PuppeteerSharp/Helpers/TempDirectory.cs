@@ -9,9 +9,9 @@ namespace PuppeteerSharp.Helpers
     /// <summary>
     /// Represents a directory that is deleted on disposal.
     /// </summary>
-    internal class TempDirectory : IDisposable
+    internal sealed class TempDirectory : IDisposable
     {
-        private Task _deleteTask;
+        private int _disposed;
 
         public TempDirectory()
             : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Helpers
 
         ~TempDirectory()
         {
-            Dispose(false);
+            DisposeCore();
         }
 
         public string Path { get; }
@@ -39,23 +39,12 @@ namespace PuppeteerSharp.Helpers
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            Dispose(true);
+            DisposeCore();
         }
 
         public override string ToString() => Path;
 
-        public Task DeleteAsync(CancellationToken cancellationToken = default)
-            => _deleteTask ?? (_deleteTask = DeleteAsync(Path, CancellationToken.None));
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_deleteTask == null)
-            {
-                _ = DeleteAsync();
-            }
-        }
-
-        private static async Task DeleteAsync(string path, CancellationToken cancellationToken = default)
+        private static async Task DeleteAsync(string path)
         {
             const int minDelayInMsec = 200;
             const int maxDelayInMsec = 8000;
@@ -68,7 +57,6 @@ namespace PuppeteerSharp.Helpers
                     return;
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     Directory.Delete(path, true);
@@ -76,13 +64,23 @@ namespace PuppeteerSharp.Helpers
                 }
                 catch
                 {
-                    await Task.Delay(retryDelay, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(retryDelay).ConfigureAwait(false);
                     if (retryDelay < maxDelayInMsec)
                     {
                         retryDelay = Math.Min(2 * retryDelay, maxDelayInMsec);
                     }
                 }
             }
+        }
+
+        private void DisposeCore()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            {
+                return;
+            }
+
+            _ = DeleteAsync(Path);
         }
     }
 }
