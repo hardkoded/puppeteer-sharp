@@ -61,9 +61,10 @@ namespace PuppeteerSharp
             {
                 await Process.StartAsync().ConfigureAwait(false);
 
+                Connection connection = null;
                 try
                 {
-                    var connection = await Connection
+                    connection = await Connection
                         .Create(Process.EndPoint, options, _loggerFactory)
                         .ConfigureAwait(false);
 
@@ -84,6 +85,7 @@ namespace PuppeteerSharp
                 }
                 catch (Exception ex)
                 {
+                    connection?.Dispose();
                     throw new ProcessException("Failed to create connection", ex);
                 }
             }
@@ -113,13 +115,14 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
             }
 
+            Connection connection = null;
             try
             {
                 var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                     ? options.BrowserWSEndpoint
                     : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
 
-                var connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+                connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
 
@@ -144,6 +147,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                connection?.Dispose();
                 throw new ProcessException("Failed to create connection", ex);
             }
         }

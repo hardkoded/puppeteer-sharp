@@ -295,10 +295,18 @@ namespace PuppeteerSharp
                 targetFilter,
                 isPageTargetCallback);
 
-            initAction?.Invoke(browser);
+            try
+            {
+                initAction?.Invoke(browser);
 
-            await browser.AttachAsync().ConfigureAwait(false);
-            return browser;
+                await browser.AttachAsync().ConfigureAwait(false);
+                return browser;
+            }
+            catch
+            {
+                await browser.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
