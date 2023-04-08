@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Helpers
     /// Provides an async queue for responses for <see cref="CDPSession.SendAsync"/>, so that responses can be handled
     /// async without risk callers causing a deadlock.
     /// </summary>
-    internal class AsyncMessageQueue : IDisposable
+    internal sealed class AsyncMessageQueue : IDisposable
     {
         private readonly List<MessageTask> _pendingTasks;
         private readonly bool _enqueueAsyncMessages;

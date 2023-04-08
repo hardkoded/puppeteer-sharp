@@ -9,7 +9,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
-    internal class LifecycleWatcher : IDisposable
+    internal sealed class LifecycleWatcher : IDisposable
     {
         private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle =
             new()
