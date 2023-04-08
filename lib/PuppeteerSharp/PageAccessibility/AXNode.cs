@@ -256,12 +256,7 @@ namespace PuppeteerSharp.PageAccessibility
 
         private bool HasFocusableChild()
         {
-            if (!_cachedHasFocusableChild.HasValue)
-            {
-                _cachedHasFocusableChild = Children.Any(c => c.Focusable || c.HasFocusableChild());
-            }
-
-            return _cachedHasFocusableChild.Value;
+            return _cachedHasFocusableChild ??= Children.Any(c => c.Focusable || c.HasFocusableChild());
         }
 
         private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;
