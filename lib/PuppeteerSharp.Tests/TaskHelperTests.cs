@@ -72,5 +72,17 @@ namespace PuppeteerSharp.Tests
 
             await task.WithTimeout(() => Task.FromException(new TimeoutException()), TimeSpan.FromTicks(1), token);
         }
+
+        [Fact]
+        public async Task ShouldStopExecutionWhenTokenIsCanceled()
+        {
+            using var tokenSource = new CancellationTokenSource();
+            var tcs = new TaskCompletionSource<bool>();
+
+            var task = tcs.Task.WithTimeout(() => Task.FromException(new TimeoutException()), TimeSpan.FromHours(42), tokenSource.Token);
+            tokenSource.Cancel();
+
+            await task;
+        }
     }
 }
