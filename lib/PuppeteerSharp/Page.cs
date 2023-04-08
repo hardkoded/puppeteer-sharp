@@ -1027,7 +1027,7 @@ namespace PuppeteerSharp
             _screenshotBurstModeOn = false;
             if (_screenshotBurstModeOptions != null)
             {
-                ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
+                return ResetBackgroundColorAndViewportAsync(_screenshotBurstModeOptions);
             }
 
             return Task.CompletedTask;
