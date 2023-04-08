@@ -139,7 +139,7 @@ namespace PuppeteerSharp
         {
             if (TargetInfo.Type != TargetType.ServiceWorker && TargetInfo.Type != TargetType.SharedWorker)
             {
-                return null;
+                return Task.FromResult<Worker>(null);
             }
 
             if (_workerTask == null)
