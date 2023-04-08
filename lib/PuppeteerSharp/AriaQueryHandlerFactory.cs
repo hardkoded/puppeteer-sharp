@@ -43,7 +43,7 @@ namespace PuppeteerSharp
 
             Func<IElementHandle, string, WaitForSelectorOptions, Task<IElementHandle>> waitFor = async (IElementHandle root, string selector, WaitForSelectorOptions options) =>
             {
-                var frame = (root as ElementHandle).Frame;
+                var frame = ((ElementHandle)root).Frame;
                 var element = await frame.SecondaryWorld.AdoptHandleAsync(root).ConfigureAwait(false);
 
                 Func<string, Task<IElementHandle>> func = (string selector) => queryOne(element, selector);
@@ -63,7 +63,7 @@ namespace PuppeteerSharp
 
             Func<IElementHandle, string, Task<IElementHandle[]>> queryAll = async (IElementHandle element, string selector) =>
             {
-                var exeCtx = element.ExecutionContext as ExecutionContext;
+                var exeCtx = (ExecutionContext)element.ExecutionContext;
                 var world = exeCtx.World;
                 var ariaSelector = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(exeCtx.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
