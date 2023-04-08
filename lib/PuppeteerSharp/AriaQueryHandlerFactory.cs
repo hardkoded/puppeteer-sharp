@@ -26,10 +26,6 @@ namespace PuppeteerSharp
             {
                 var queryOptions = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(((ElementHandle)element).Client, element, queryOptions.Name, queryOptions.Role).ConfigureAwait(false);
-                if (res.FirstOrDefault().BackendDOMNodeId == null)
-                {
-                    return null;
-                }
 
                 return res.First().BackendDOMNodeId;
             };
