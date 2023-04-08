@@ -192,12 +192,10 @@ namespace PuppeteerSharp.Helpers
             }
 
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (var cancellationToken = new CancellationTokenSource(timeout))
+            using var cancellationToken = new CancellationTokenSource(timeout);
+            using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
             {
-                using (cancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-                {
-                    return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
-                }
+                return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
             }
         }
 
@@ -210,13 +208,12 @@ namespace PuppeteerSharp.Helpers
             }
 
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            using (var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+            using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            linkedCancellationToken.CancelAfter(timeout);
+
+            using (linkedCancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
             {
-                linkedCancellationToken.CancelAfter(timeout);
-                using (linkedCancellationToken.Token.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
-                {
-                    return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
-                }
+                return tcs.Task == await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
             }
         }
     }
