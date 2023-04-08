@@ -354,7 +354,7 @@ namespace PuppeteerSharp
             {
                 var args = new TargetChangedArgs { Target = e.Target };
                 TargetChanged?.Invoke(this, args);
-                ((BrowserContext)e.Target.BrowserContext).OnTargetChanged(this, args);
+                e.Target.BrowserContext.OnTargetChanged(this, args);
             }
         }
 
@@ -369,7 +369,7 @@ namespace PuppeteerSharp
                 {
                     var args = new TargetChangedArgs { Target = e.Target };
                     TargetDestroyed?.Invoke(this, args);
-                    ((BrowserContext)e.Target.BrowserContext).OnTargetDestroyed(this, args);
+                    e.Target.BrowserContext.OnTargetDestroyed(this, args);
                 }
             }
             catch (Exception ex)
