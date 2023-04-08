@@ -10,32 +10,29 @@ namespace PuppeteerSharp.Helpers
         [SuppressMessage("Usage", "CA2213: Disposable fields should be disposed", Justification = "The disposable field is being disposed asynchronously.")]
         [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "The CA2213 suppression is actually necessary.")]
         private readonly SemaphoreSlim _semaphore;
-        private bool _isDisposed;
+        private int _disposed;
 
         internal TaskQueue() => _semaphore = new SemaphoreSlim(1);
 
         public void Dispose()
         {
-            if (_isDisposed)
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
             {
                 return;
             }
 
-            _ = Task.Run(() => DisposeAsync());
-
-            _isDisposed = true;
+            _semaphore.Wait();
+            _semaphore.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
-            try
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
             {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
+                return;
             }
-            catch (ObjectDisposedException)
-            {
-                // Ignore
-            }
+
+            await _semaphore.WaitAsync().ConfigureAwait(false);
 
             _semaphore.Dispose();
         }
