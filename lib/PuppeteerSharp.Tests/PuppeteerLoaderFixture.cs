@@ -1,23 +1,18 @@
 using PuppeteerSharp.TestServer;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace PuppeteerSharp.Tests
 {
-    public sealed class PuppeteerLoaderFixture : IDisposable
+    public sealed class PuppeteerLoaderFixture : IAsyncLifetime
     {
         public static SimpleServer Server { get; private set; }
         public static SimpleServer HttpsServer { get; private set; }
 
-        public PuppeteerLoaderFixture()
-        {
-            SetupAsync().GetAwaiter().GetResult();
-        }
+        Task IAsyncLifetime.InitializeAsync() => SetupAsync();
 
-        public void Dispose()
-        {
-            Task.WaitAll(Server.StopAsync(), HttpsServer.StopAsync());
-        }
+        Task IAsyncLifetime.DisposeAsync() => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
 
         private async Task SetupAsync()
         {
