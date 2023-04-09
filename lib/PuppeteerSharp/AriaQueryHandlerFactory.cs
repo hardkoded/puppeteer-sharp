@@ -27,7 +27,7 @@ namespace PuppeteerSharp
                 var queryOptions = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(((ElementHandle)element).Client, element, queryOptions.Name, queryOptions.Role).ConfigureAwait(false);
 
-                return res.First().BackendDOMNodeId;
+                return res.FirstOrDefault()?.BackendDOMNodeId;
             };
 
             Func<IElementHandle, string, Task<IElementHandle>> queryOne = async (IElementHandle element, string selector) =>
