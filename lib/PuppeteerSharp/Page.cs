@@ -1114,14 +1114,23 @@ namespace PuppeteerSharp
             TaskQueue screenshotTaskQueue)
         {
             var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
-            await page.InitializeAsync().ConfigureAwait(false);
 
-            if (defaultViewPort != null)
+            try
             {
-                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
-            }
+                await page.InitializeAsync().ConfigureAwait(false);
 
-            return page;
+                if (defaultViewPort != null)
+                {
+                    await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+                }
+
+                return page;
+            }
+            catch
+            {
+                await page.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
         internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
