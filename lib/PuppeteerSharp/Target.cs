@@ -158,14 +158,12 @@ namespace PuppeteerSharp
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
         {
-            var previousUrl = TargetInfo.Url;
             TargetInfo = targetInfo;
 
             if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
             {
                 IsInitialized = true;
                 InitializedTaskWrapper.TrySetResult(true);
-                return;
             }
         }
 
@@ -182,8 +180,6 @@ namespace PuppeteerSharp
         private async Task<IPage> CreatePageAsync()
         {
             var session = Session ?? await _sessionFactory(true).ConfigureAwait(false);
-
-            var browser = (Browser)Browser;
 
             return await Page.CreateAsync(
                 session,

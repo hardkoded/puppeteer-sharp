@@ -628,12 +628,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var screenshotType = options.Type;
-
-            if (!screenshotType.HasValue)
-            {
-                screenshotType = ScreenshotType.Png;
-            }
+            var screenshotType = options.Type ?? ScreenshotType.Png;
 
             if (options.Quality.HasValue)
             {
@@ -663,7 +658,7 @@ namespace PuppeteerSharp
                 throw new ArgumentException("options.clip and options.fullPage are exclusive");
             }
 
-            return _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType.Value, options));
+            return _screenshotTaskQueue.Enqueue(() => PerformScreenshot(screenshotType, options));
         }
 
         /// <inheritdoc/>
