@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -43,8 +43,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 @"() => {
                     return (document.body.innerHTML = `<div><button>test</button></div>`);
                 }");
-            var element = Page.QuerySelectorAsync("div");
-            await Page.WaitForSelectorAsync("aria/test");
+            var element = await Page.QuerySelectorAsync("div");
+            await element.WaitForSelectorAsync("aria/test");
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should persist query handler bindings across reloads")]
