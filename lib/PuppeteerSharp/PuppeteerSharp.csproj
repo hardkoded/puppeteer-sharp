@@ -52,8 +52,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="System.Text.Encodings.Web" />
+    <None Remove="Injected\" />
+    <None Remove="Injected\injected.js" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Injected\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Injected\injected.js" />
   </ItemGroup>
 </Project>
