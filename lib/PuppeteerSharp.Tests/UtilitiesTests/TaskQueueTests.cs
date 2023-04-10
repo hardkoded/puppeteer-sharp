@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using Xunit;
 
-namespace PuppeteerSharp.Tests
+namespace PuppeteerSharp.Tests.UtilitiesTests
 {
     public class TaskQueueTests
     {
