@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.PageAccessibility;
 using static PuppeteerSharp.Messaging.AccessibilityGetFullAXTreeResponse;
 
 namespace PuppeteerSharp
@@ -22,36 +18,36 @@ namespace PuppeteerSharp
 
         internal static InternalQueryHandler Create()
         {
-            Func<IElementHandle, string, Task<object>> queryOneId = async (IElementHandle element, string selector) =>
+            async Task<object> QueryOneId(IElementHandle element, string selector)
             {
                 var queryOptions = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(((ElementHandle)element).Client, element, queryOptions.Name, queryOptions.Role).ConfigureAwait(false);
 
                 return res.FirstOrDefault()?.BackendDOMNodeId;
-            };
+            }
 
-            Func<IElementHandle, string, Task<IElementHandle>> queryOne = async (IElementHandle element, string selector) =>
+            async Task<IElementHandle> QueryOne(IElementHandle element, string selector)
             {
-                var id = await queryOneId(element, selector).ConfigureAwait(false);
+                var id = await QueryOneId(element, selector).ConfigureAwait(false);
                 if (id == null)
                 {
                     return null;
                 }
 
                 return await ((ElementHandle)element).Frame.SecondaryWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
-            };
+            }
 
-            Func<IElementHandle, string, WaitForSelectorOptions, Task<IElementHandle>> waitFor = async (IElementHandle root, string selector, WaitForSelectorOptions options) =>
+            async Task<IElementHandle> WaitFor(IElementHandle root, string selector, WaitForSelectorOptions options)
             {
                 var frame = ((ElementHandle)root).Frame;
-                var element = await frame.SecondaryWorld.AdoptHandleAsync(root).ConfigureAwait(false);
+                var element = (await frame.SecondaryWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
 
-                Func<string, Task<IElementHandle>> func = (string selector) => queryOne(element, selector);
+                Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
 
                 var binding = new PageBinding()
                 {
                     Name = "ariaQuerySelector",
-                    Function = (Delegate)func,
+                    Function = (Func<string, Task<IElementHandle>>)Func,
                 };
 
                 return await frame.SecondaryWorld.WaitForSelectorInPageAsync(
@@ -59,9 +55,9 @@ namespace PuppeteerSharp
                     selector,
                     options,
                     new[] { binding }).ConfigureAwait(false);
-            };
+            }
 
-            Func<IElementHandle, string, Task<IElementHandle[]>> queryAll = async (IElementHandle element, string selector) =>
+            async Task<IElementHandle[]> QueryAll(IElementHandle element, string selector)
             {
                 var exeCtx = (ExecutionContext)element.ExecutionContext;
                 var world = exeCtx.World;
@@ -69,22 +65,22 @@ namespace PuppeteerSharp
                 var res = await QueryAXTreeAsync(exeCtx.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
                 var elements = await Task.WhenAll(res.Select(axNode => world.AdoptBackendNodeAsync(axNode.BackendDOMNodeId))).ConfigureAwait(false);
                 return elements.ToArray();
-            };
+            }
 
-            Func<IElementHandle, string, Task<IJSHandle>> queryAllArray = async (IElementHandle element, string selector) =>
+            async Task<IJSHandle> QueryAllArray(IElementHandle element, string selector)
             {
-                var elementHandles = await queryAll(element, selector).ConfigureAwait(false);
+                var elementHandles = await QueryAll(element, selector).ConfigureAwait(false);
                 var exeCtx = element.ExecutionContext;
                 var jsHandle = await exeCtx.EvaluateFunctionHandleAsync("(...elements) => elements", elementHandles).ConfigureAwait(false);
                 return jsHandle;
-            };
+            }
 
             return new()
             {
-                QueryOne = queryOne,
-                WaitFor = waitFor,
-                QueryAll = queryAll,
-                QueryAllArray = queryAllArray,
+                QueryOne = QueryOne,
+                WaitFor = WaitFor,
+                QueryAll = QueryAll,
+                QueryAllArray = QueryAllArray,
             };
         }
 
@@ -104,7 +100,7 @@ namespace PuppeteerSharp
 
         private static AriaQueryOption ParseAriaSelector(string selector)
         {
-            string NormalizeValue(string value) => _normalizedRegex.Replace(value, " ").Trim();
+            static string NormalizeValue(string value) => _normalizedRegex.Replace(value, " ").Trim();
 
             var knownAriaAttributes = new[] { "name", "role" };
             AriaQueryOption queryOptions = new();

@@ -64,10 +64,7 @@ namespace PuppeteerSharp
         {
             _targetInterceptors.TryGetValue(session, out var interceptors);
 
-            if (interceptors != null)
-            {
-                interceptors.Remove(interceptor);
-            }
+            interceptors?.Remove(interceptor);
         }
 
         public async Task InitializeAsync()
@@ -158,15 +155,8 @@ namespace PuppeteerSharp
         private void OnAttachedToTarget(object sender, TargetAttachedToTargetResponse e)
         {
             var parent = sender as ICDPConnection;
-            var parentSession = parent as CDPSession;
             var targetInfo = e.TargetInfo;
-            var session = _connection.GetSession(e.SessionId);
-
-            if (session == null)
-            {
-                throw new PuppeteerException($"Session {e.SessionId} was not created.");
-            }
-
+            var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
             var existingTarget = _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             session.MessageReceived += OnMessageReceived;
 
@@ -177,7 +167,7 @@ namespace PuppeteerSharp
                 foreach (var interceptor in interceptors)
                 {
                     Target parentTarget = null;
-                    if (parentSession != null && !_availableTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
+                    if (parent is CDPSession parentSession && !_availableTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
                     {
                         throw new PuppeteerException("Parent session not found in attached targets");
                     }

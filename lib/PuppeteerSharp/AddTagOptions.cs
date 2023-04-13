@@ -16,14 +16,19 @@ namespace PuppeteerSharp
         public string Path { get; set; }
 
         /// <summary>
-        /// Raw JavaScript content to be injected into frame.
+        /// JavaScript to be injected into the frame.
         /// </summary>
         public string Content { get; set; }
 
         /// <summary>
-        /// Script type. Use <c>module</c> in order to load a Javascript ES6 module.
+        /// Script type. Use <c>module</c> in order to load a Javascript ES2015 module.
         /// </summary>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script"/>
-        public string Type { get; set; }
+        public string Type { get; set; } = "text/javascript";
+
+        /// <summary>
+        /// Id of the script.
+        /// </summary>
+        public object Id { get; set; }
     }
 }
