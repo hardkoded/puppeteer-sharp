@@ -117,7 +117,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
-
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should add id when provided")]
         [PuppeteerFact]
         public async Task ShouldAddIdWhenProvided()
