@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
@@ -21,10 +22,7 @@ namespace PuppeteerSharp
 
             LifecycleEvents = new List<string>();
 
-            if (parentFrame != null)
-            {
-                parentFrame.AddChildFrame(this);
-            }
+            parentFrame?.AddChildFrame(this);
 
             UpdateClient(client);
         }
@@ -192,14 +190,65 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return MainWorld.AddScriptTagAsync(options);
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
+                @"async (url, id, type, content) => {
+                  const script = document.createElement('script');
+                  script.type = type;
+                  script.text = content;
+                  if (url) {
+                    script.src = url;
+                  }
+                  if (id) {
+                    script.id = id;
+                  }
+                  let resolve;
+                  const promise = new Promise((res, rej) => {
+                    if (url) {
+                      script.addEventListener('load', res, {once: true});
+                    } else {
+                      resolve = res;
+                    }
+                    script.addEventListener(
+                      'error',
+                      event => {
+                        rej(event.message ?? 'Could not load script');
+                      },
+                      {once: true}
+                    );
+                  });
+                  document.head.appendChild(script);
+                  if (resolve) {
+                    resolve();
+                  }
+                  await promise;
+                  return script;
+                }",
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainWorld.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
         }
 
         /// <inheritdoc/>

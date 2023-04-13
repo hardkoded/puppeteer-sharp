@@ -76,9 +76,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.AddScriptTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            Assert.Equal("Loading script from /nonexistfile.js failed", exception.Message);
+            Assert.Contains("Could not load script", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a path")]
@@ -117,6 +117,19 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(35, await Page.EvaluateExpressionAsync<int>("__injected"));
         }
 
+
+        [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should add id when provided")]
+        [PuppeteerFact]
+        public async Task ShouldAddIdWhenProvided()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 1;", Id= "one" });
+            await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js", Id = "two" });
+
+            Assert.NotNull(await Page.QuerySelectorAsync("#one"));
+            Assert.NotNull(await Page.QuerySelectorAsync("#two"));
+        }
+
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw when added with content to the CSP page")]
         [PuppeteerFact(Skip = "@see https://github.com/GoogleChrome/puppeteer/issues/4840")]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
@@ -135,7 +148,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
                 () => Page.AddScriptTagAsync(new AddTagOptions
                 {
                     Url = TestConstants.CrossProcessUrl + "/injectedfile.js"

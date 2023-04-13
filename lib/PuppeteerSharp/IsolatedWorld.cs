@@ -134,9 +134,16 @@ namespace PuppeteerSharp
             return executionContext.CreateJSHandle(obj.Object) as IElementHandle;
         }
 
-        internal async Task<IElementHandle> AdoptHandleAsync(IElementHandle handle)
+        internal async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            var executionContext = await this.GetExecutionContextAsync().ConfigureAwait(false);
+            var result = await AdoptHandleAsync(handle).ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return result;
+        }
+
+        internal async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+        {
+            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
 
             if (executionContext == handle.ExecutionContext)
             {
@@ -262,69 +269,6 @@ namespace PuppeteerSharp
 
                 await watcherTask.ConfigureAwait(false);
             }
-        }
-
-        internal async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
-        {
-            const string addScriptUrl = @"async function addScriptUrl(url, type) {
-              const script = document.createElement('script');
-              script.src = url;
-              if(type)
-                script.type = type;
-              const promise = new Promise((res, rej) => {
-                script.onload = res;
-                script.onerror = rej;
-              });
-              document.head.appendChild(script);
-              await promise;
-              return script;
-            }";
-            const string addScriptContent = @"function addScriptContent(content, type = 'text/javascript') {
-              const script = document.createElement('script');
-              script.type = type;
-              script.text = content;
-              let error = null;
-              script.onerror = e => error = e;
-              document.head.appendChild(script);
-              if (error)
-                throw error;
-              return script;
-            }";
-
-            async Task<IElementHandle> AddScriptTagPrivate(string script, string urlOrContent, string type)
-            {
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (string.IsNullOrEmpty(type)
-                        ? await context.EvaluateFunctionHandleAsync(script, urlOrContent).ConfigureAwait(false)
-                        : await context.EvaluateFunctionHandleAsync(script, urlOrContent, type).ConfigureAwait(false)) as IElementHandle;
-            }
-
-            if (!string.IsNullOrEmpty(options.Url))
-            {
-                var url = options.Url;
-                try
-                {
-                    return await AddScriptTagPrivate(addScriptUrl, url, options.Type).ConfigureAwait(false);
-                }
-                catch (PuppeteerException)
-                {
-                    throw new PuppeteerException($"Loading script from {url} failed");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                return await AddScriptTagPrivate(addScriptContent, contents, options.Type).ConfigureAwait(false);
-            }
-
-            if (!string.IsNullOrEmpty(options.Content))
-            {
-                return await AddScriptTagPrivate(addScriptContent, options.Content, options.Type).ConfigureAwait(false);
-            }
-
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
 
         internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
