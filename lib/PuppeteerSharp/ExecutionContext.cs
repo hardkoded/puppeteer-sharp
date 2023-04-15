@@ -201,6 +201,11 @@ namespace PuppeteerSharp
                 arg = await tcs.Task.ConfigureAwait(false);
             }
 
+            if (arg is LazyArg lazyArg)
+            {
+                arg = await lazyArg(this).ConfigureAwait(false);
+            }
+
             switch (arg)
             {
                 case BigInteger big:

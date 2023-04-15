@@ -1,5 +1,6 @@
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
@@ -14,15 +15,31 @@ namespace PuppeteerSharp.Tests.InjectedTests
         {
         }
 
-        [PuppeteerTest("injected.spec.ts", "InjectedUtil tests", "should work")]
+        [PuppeteerTest("injected.spec.ts", "PuppeteerUtil tests", "should work")]
         [PuppeteerFact]
         public async Task ShouldWork()
         {
-            var result = await (Page.MainFrame as Frame)
-                .SecondaryWorld.EvaluateFunctionAsync<bool>(@"() => {
-                      return typeof InjectedUtil === 'object';
-                  }");
+            var world =  (Page.MainFrame as Frame).PuppeteerWorld;
+            var result = await world.EvaluateFunctionAsync<bool>(@"
+                      PuppeteerUtil => {
+                        return typeof PuppeteerUtil === 'object';
+                      }",
+                      await world.PuppeteerUtil);
             Assert.True(result);
+        }
+
+        [PuppeteerTest("injected.spec.ts", "createFunction tests", "should work")]
+        [PuppeteerFact]
+        public async Task CreateFunctionShouldWork()
+        {
+            var world = (Page.MainFrame as Frame).PuppeteerWorld;
+            var result = await (Page.MainFrame as Frame)
+                .PuppeteerWorld.EvaluateFunctionAsync<int>(@"({createFunction}, fnString) => {
+                    return createFunction(fnString)(4);
+                }",
+                await world.PuppeteerUtil,
+                "() => 4");
+            Assert.Equal(4, result);
         }
     }
 }

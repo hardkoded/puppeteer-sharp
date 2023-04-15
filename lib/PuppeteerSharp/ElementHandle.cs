@@ -81,12 +81,12 @@ namespace PuppeteerSharp
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var frame = (Frame)ExecutionContext.Frame;
-            var secondaryContext = await frame.SecondaryWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            var secondaryContext = await frame.PuppeteerWorld.GetExecutionContextAsync().ConfigureAwait(false);
             var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
             options ??= new WaitForSelectorOptions();
             options.Root = adoptedRoot;
 
-            var handle = await frame.SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            var handle = await frame.PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
             await adoptedRoot.DisposeAsync().ConfigureAwait(false);
             if (handle == null)
             {

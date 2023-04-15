@@ -67,7 +67,7 @@ namespace PuppeteerSharp
 
         internal IsolatedWorld MainWorld { get; private set; }
 
-        internal IsolatedWorld SecondaryWorld { get; private set; }
+        internal IsolatedWorld PuppeteerWorld { get; private set; }
 
         internal CDPSession Client { get; private set; }
 
@@ -110,7 +110,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var handle = await SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            var handle = await PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
             if (handle == null)
             {
                 return null;
@@ -125,7 +125,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
-            var handle = await SecondaryWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
+            var handle = await PuppeteerWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
             if (handle == null)
             {
                 return null;
@@ -163,7 +163,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<string[]> SelectAsync(string selector, params string[] values) => SecondaryWorld.SelectAsync(selector, values);
+        public Task<string[]> SelectAsync(string selector, params string[] values) => PuppeteerWorld.SelectAsync(selector, values);
 
         /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
@@ -199,7 +199,7 @@ namespace PuppeteerSharp
                 content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
             }
 
-            var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
+            var handle = await PuppeteerWorld.EvaluateFunctionHandleAsync(
                 @"async (puppeteerUtil, url, id, type, content) => {
                   const createDeferredPromise = puppeteerUtil.createDeferredPromise;
                   const promise = createDeferredPromise();
@@ -235,7 +235,7 @@ namespace PuppeteerSharp
                   await promise;
                   return element;
                 }",
-                SecondaryWorld.PuppeteerUtil,
+                PuppeteerWorld.PuppeteerUtil,
                 options.Url,
                 options.Id,
                 options.Type,
@@ -265,7 +265,7 @@ namespace PuppeteerSharp
                 content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
             }
 
-            var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
+            var handle = await PuppeteerWorld.EvaluateFunctionHandleAsync(
                 @"async (puppeteerUtil, url, id, type, content) => {
                   const createDeferredPromise = puppeteerUtil.createDeferredPromise;
                   const promise = createDeferredPromise();
@@ -300,7 +300,7 @@ namespace PuppeteerSharp
                   await promise;
                   return script;
                 }",
-                SecondaryWorld.PuppeteerUtil,
+                PuppeteerWorld.PuppeteerUtil,
                 options.Url,
                 options.Id,
                 options.Type,
@@ -310,28 +310,28 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<string> GetContentAsync() => SecondaryWorld.GetContentAsync();
+        public Task<string> GetContentAsync() => PuppeteerWorld.GetContentAsync();
 
         /// <inheritdoc/>
         public Task SetContentAsync(string html, NavigationOptions options = null)
-            => SecondaryWorld.SetContentAsync(html, options);
+            => PuppeteerWorld.SetContentAsync(html, options);
 
         /// <inheritdoc/>
-        public Task<string> GetTitleAsync() => SecondaryWorld.GetTitleAsync();
+        public Task<string> GetTitleAsync() => PuppeteerWorld.GetTitleAsync();
 
         /// <inheritdoc/>
         public Task ClickAsync(string selector, ClickOptions options = null)
-            => SecondaryWorld.ClickAsync(selector, options);
+            => PuppeteerWorld.ClickAsync(selector, options);
 
         /// <inheritdoc/>
-        public Task HoverAsync(string selector) => SecondaryWorld.HoverAsync(selector);
+        public Task HoverAsync(string selector) => PuppeteerWorld.HoverAsync(selector);
 
         /// <inheritdoc/>
-        public Task FocusAsync(string selector) => SecondaryWorld.FocusAsync(selector);
+        public Task FocusAsync(string selector) => PuppeteerWorld.FocusAsync(selector);
 
         /// <inheritdoc/>
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
-             => SecondaryWorld.TypeAsync(selector, text, options);
+             => PuppeteerWorld.TypeAsync(selector, text, options);
 
         internal void AddChildFrame(Frame frame)
         {
@@ -381,7 +381,7 @@ namespace PuppeteerSharp
         {
             Detached = true;
             MainWorld.Detach();
-            SecondaryWorld.Detach();
+            PuppeteerWorld.Detach();
             if (ParentFrame != null)
             {
                 ((Frame)ParentFrame).RemoveChildFrame(this);
@@ -399,7 +399,7 @@ namespace PuppeteerSharp
               this,
               FrameManager.TimeoutSettings);
 
-            SecondaryWorld = new IsolatedWorld(
+            PuppeteerWorld = new IsolatedWorld(
               Client,
               FrameManager,
               this,

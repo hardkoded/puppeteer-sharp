@@ -34,13 +34,13 @@ namespace PuppeteerSharp
                     return null;
                 }
 
-                return await ((ElementHandle)element).Frame.SecondaryWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
+                return await ((ElementHandle)element).Frame.PuppeteerWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
             }
 
             async Task<IElementHandle> WaitFor(IElementHandle root, string selector, WaitForSelectorOptions options)
             {
                 var frame = ((ElementHandle)root).Frame;
-                var element = (await frame.SecondaryWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
+                var element = (await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
 
                 Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
 
@@ -50,7 +50,7 @@ namespace PuppeteerSharp
                     Function = (Func<string, Task<IElementHandle>>)Func,
                 };
 
-                return await frame.SecondaryWorld.WaitForSelectorInPageAsync(
+                return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(
                     @"(_, selector) => globalThis.ariaQuerySelector(selector)",
                     selector,
                     options,

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -15,6 +14,13 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// A LazyArg is an evaluation argument that will be resolved when the CDP call is built.
+    /// </summary>
+    /// <param name="context">Execution context.</param>
+    /// <returns>Resolved argument.</returns>
+    public delegate Task<object> LazyArg(ExecutionContext context);
+
     internal class IsolatedWorld
     {
         private static string _injectedSource;
@@ -24,9 +30,8 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly ILogger _logger;
         private readonly List<string> _ctxBindings = new();
-        private readonly bool _injected;
         private bool _detached;
-        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
+        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private TaskCompletionSource<IElementHandle> _documentCompletionSource;
         private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
@@ -35,10 +40,8 @@ namespace PuppeteerSharp
             CDPSession client,
             FrameManager frameManager,
             Frame frame,
-            TimeoutSettings timeoutSettings,
-            bool injected = false)
+            TimeoutSettings timeoutSettings)
         {
-            _injected = injected;
             Logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
             _client = client;
             _frameManager = frameManager;
@@ -62,7 +65,9 @@ namespace PuppeteerSharp
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
 
-        internal TaskCompletionSource<object> PuppeteerUtil { get; set; }
+        internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal Task<IJSHandle> PuppeteerUtil => PuppeteerUtilTaskCompletionSource.Task;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
@@ -441,6 +446,7 @@ namespace PuppeteerSharp
         {
             _documentTask = null;
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            PuppeteerUtilTaskCompletionSource = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         internal void SetContext(ExecutionContext context)
@@ -450,21 +456,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (_injected)
-            {
-                _ = context.EvaluateExpressionAsync(GetInjectedSource()).ContinueWith(
-                    task =>
-                    {
-                        if (task.Exception != null)
-                        {
-                            Logger.LogError(task.Exception.ToString());
-                        }
-                    },
-                    CancellationToken.None,
-                    TaskContinuationOptions.OnlyOnFaulted,
-                    TaskScheduler.Default);
-            }
-
+            _ = InjectPuppeteerUtil(context);
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             foreach (var waitTask in WaitTasks)
@@ -487,6 +479,20 @@ namespace PuppeteerSharp
             }
 
             return _injectedSource;
+        }
+
+        private async Task InjectPuppeteerUtil(ExecutionContext context)
+        {
+            try
+            {
+                var injectedSource = GetInjectedSource();
+                var handle = await context.EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
+                PuppeteerUtilTaskCompletionSource.TrySetResult(handle);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
