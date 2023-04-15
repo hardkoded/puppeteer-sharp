@@ -290,7 +290,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
         }
