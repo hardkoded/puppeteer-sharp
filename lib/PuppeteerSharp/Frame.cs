@@ -203,10 +203,10 @@ namespace PuppeteerSharp
                 @"async (puppeteerUtil, url, id, type, content) => {
                   const createDeferredPromise = puppeteerUtil.createDeferredPromise;
                   const promise = createDeferredPromise();
-                  let element: HTMLStyleElement | HTMLLinkElement;
+                  let element;
                   if (!url) {
                     element = document.createElement('style');
-                    element.appendChild(document.createTextNode(content!));
+                    element.appendChild(document.createTextNode(content));
                   } else {
                     const link = document.createElement('link');
                     link.rel = 'stylesheet';
@@ -225,7 +225,7 @@ namespace PuppeteerSharp
                     event => {
                       promise.reject(
                         new Error(
-                          (event as ErrorEvent).message ?? 'Could not load style'
+                          event.message ?? 'Could not load style'
                         )
                       );
                     },
@@ -235,7 +235,7 @@ namespace PuppeteerSharp
                   await promise;
                   return element;
                 }",
-                PuppeteerWorld.PuppeteerUtil,
+                await PuppeteerWorld.PuppeteerUtil.ConfigureAwait(false),
                 options.Url,
                 options.Id,
                 options.Type,
@@ -300,7 +300,7 @@ namespace PuppeteerSharp
                   await promise;
                   return script;
                 }",
-                PuppeteerWorld.PuppeteerUtil,
+                await PuppeteerWorld.PuppeteerUtil.ConfigureAwait(false),
                 options.Url,
                 options.Id,
                 options.Type,

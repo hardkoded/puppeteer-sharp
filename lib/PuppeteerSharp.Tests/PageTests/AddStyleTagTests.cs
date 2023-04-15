@@ -40,9 +40,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            Assert.Equal("Loading style from /nonexistfile.js failed", exception.Message);
+            Assert.Contains("Could not load style", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with a path")]
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
                 () => Page.AddStyleTagAsync(new AddTagOptions
                 {
                     Url = TestConstants.CrossProcessUrl + "/injectedstyle.css"
