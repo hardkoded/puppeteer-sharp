@@ -39,7 +39,6 @@ namespace PuppeteerSharp.Tests.PageTests
                     return objects.length;
                 }", objectsHandle));
       
-
             // Check that instances.
             Assert.True(await Page.EvaluateFunctionAsync<bool>(@"objects => {
                 return objects[0] === self.customClass;
