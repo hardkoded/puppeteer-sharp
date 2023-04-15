@@ -67,7 +67,7 @@ namespace PuppeteerSharp
 
         internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal Task<IJSHandle> PuppeteerUtil => PuppeteerUtilTaskCompletionSource.Task;
+        internal Task<IJSHandle> GetPuppeteerUtilAsync() => PuppeteerUtilTaskCompletionSource.Task;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {

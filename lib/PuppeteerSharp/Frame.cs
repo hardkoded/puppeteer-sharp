@@ -235,7 +235,7 @@ namespace PuppeteerSharp
                   await promise;
                   return element;
                 }",
-                await PuppeteerWorld.PuppeteerUtil.ConfigureAwait(false),
+                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
                 options.Url,
                 options.Id,
                 options.Type,
@@ -300,7 +300,7 @@ namespace PuppeteerSharp
                   await promise;
                   return script;
                 }",
-                await PuppeteerWorld.PuppeteerUtil.ConfigureAwait(false),
+                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
                 options.Url,
                 options.Id,
                 options.Type,

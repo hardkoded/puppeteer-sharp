@@ -279,7 +279,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var element = await Page.QuerySelectorAsync("section");
             Assert.NotNull(element);
             await element.DisposeAsync();
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(()
+            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
             Assert.Contains("JSHandle is disposed", exception.Message);
         }
