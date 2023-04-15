@@ -140,7 +140,15 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to initialize session in frame manager");
+                // The target might have been closed before the initialization finished.
+                if (
+                  ex.Message.Contains("Target closed") ||
+                  ex.Message.Contains("Session closed"))
+                {
+                    return;
+                }
+
+                throw;
             }
         }
 
