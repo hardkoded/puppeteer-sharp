@@ -300,10 +300,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                if (context.World != null)
-                {
-                    context.World.SetContext(null);
-                }
+                context.World?.ClearContext();
 
                 _contextIdToContext.TryRemove(key, out var _);
             }
@@ -314,10 +311,7 @@ namespace PuppeteerSharp
             var key = $"{session.Id}:{contextId}";
             if (_contextIdToContext.TryRemove(key, out var context))
             {
-                if (context.World != null)
-                {
-                    context.World.SetContext(null);
-                }
+                context.World?.ClearContext();
             }
         }
 
@@ -348,10 +342,7 @@ namespace PuppeteerSharp
             }
 
             var context = new ExecutionContext(frame?.Client ?? Client, contextPayload, world);
-            if (world != null)
-            {
-                world.SetContext(context);
-            }
+            world?.SetContext(context);
 
             var key = $"{session.Id}:{contextPayload.Id}";
             _contextIdToContext[key] = context;

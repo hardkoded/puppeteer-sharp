@@ -46,8 +46,6 @@ namespace PuppeteerSharp
             Frame = frame;
             _timeoutSettings = timeoutSettings;
 
-            SetContext(null);
-
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
@@ -439,37 +437,39 @@ namespace PuppeteerSharp
             return _documentTask;
         }
 
-        internal void SetContext(ExecutionContext context)
+        internal void ClearContext()
         {
             _documentTask = null;
-            if (context != null)
-            {
-                if (_injected)
-                {
-                    _ = context.EvaluateExpressionAsync(GetInjectedSource()).ContinueWith(
-                        task =>
-                        {
-                            if (task.Exception != null)
-                            {
-                                Logger.LogError(task.Exception.ToString());
-                            }
-                        },
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnFaulted,
-                        TaskScheduler.Default);
-                }
+            _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
 
-                _ctxBindings.Clear();
-                _contextResolveTaskWrapper.TrySetResult(context);
-                foreach (var waitTask in WaitTasks)
-                {
-                    _ = waitTask.Rerun();
-                }
-            }
-            else
+        internal void SetContext(ExecutionContext context)
+        {
+            if (context is null)
             {
-                _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (_injected)
+            {
+                _ = context.EvaluateExpressionAsync(GetInjectedSource()).ContinueWith(
+                    task =>
+                    {
+                        if (task.Exception != null)
+                        {
+                            Logger.LogError(task.Exception.ToString());
+                        }
+                    },
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default);
+            }
+
+            _ctxBindings.Clear();
+            _contextResolveTaskWrapper.TrySetResult(context);
+            foreach (var waitTask in WaitTasks)
+            {
+                _ = waitTask.Rerun();
             }
         }
 
