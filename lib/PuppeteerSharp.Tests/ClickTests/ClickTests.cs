@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                 newPage.Mouse.ClickAsync(1, 2));
         }
 
-        [PuppeteerTest("click.spec.ts", "Page.click", "should click the button after navigation ")]
+        [PuppeteerTest("click.spec.ts", "Page.click", "should click the button after navigation")]
         [PuppeteerFact]
         public async Task ShouldClickTheButtonAfterNavigation()
         {

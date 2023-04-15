@@ -32,7 +32,6 @@ namespace PuppeteerSharp
         private readonly List<string> _ctxBindings = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private TaskCompletionSource<IElementHandle> _documentCompletionSource;
         private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
 
@@ -215,25 +214,25 @@ namespace PuppeteerSharp
 
         internal async Task<IElementHandle> QuerySelectorAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> XPathAsync(string expression)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
@@ -565,19 +564,6 @@ namespace PuppeteerSharp
         }
 
         private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
-
-        private async Task<IElementHandle> GetDocument()
-        {
-            if (_documentCompletionSource == null)
-            {
-                _documentCompletionSource = new TaskCompletionSource<IElementHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
-                _documentCompletionSource.TrySetResult(document as IElementHandle);
-            }
-
-            return await _documentCompletionSource.Task.ConfigureAwait(false);
-        }
 
         private string MakePredicateString(string predicate, string predicateQueryHandler)
         {
