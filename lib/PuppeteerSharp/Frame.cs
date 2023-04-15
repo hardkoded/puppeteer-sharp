@@ -179,14 +179,69 @@ namespace PuppeteerSharp
         public Task<IElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
 
         /// <inheritdoc/>
-        public Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
+        public async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return MainWorld.AddStyleTagAsync(options);
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                  const promise = createDeferredPromise();
+                  let element: HTMLStyleElement | HTMLLinkElement;
+                  if (!url) {
+                    element = document.createElement('style');
+                    element.appendChild(document.createTextNode(content!));
+                  } else {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = url;
+                    element = link;
+                  }
+                  element.addEventListener(
+                    'load',
+                    () => {
+                      promise.resolve();
+                    },
+                    {once: true}
+                  );
+                  element.addEventListener(
+                    'error',
+                    event => {
+                      promise.reject(
+                        new Error(
+                          (event as ErrorEvent).message ?? 'Could not load style'
+                        )
+                      );
+                    },
+                    {once: true}
+                  );
+                  document.head.appendChild(element);
+                  await promise;
+                  return element;
+                }",
+                SecondaryWorld.PuppeteerUtil,
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainWorld.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
         }
 
         /// <inheritdoc/>
@@ -211,38 +266,41 @@ namespace PuppeteerSharp
             }
 
             var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
-                @"async (url, id, type, content) => {
+                @"async (puppeteerUtil, url, id, type, content) => {
+                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                  const promise = createDeferredPromise();
                   const script = document.createElement('script');
                   script.type = type;
                   script.text = content;
                   if (url) {
                     script.src = url;
+                    script.addEventListener(
+                      'load',
+                      () => {
+                        return promise.resolve();
+                      },
+                      {once: true}
+                    );
+                    script.addEventListener(
+                      'error',
+                      event => {
+                        promise.reject(
+                          new Error(event.message ?? 'Could not load script')
+                        );
+                      },
+                      {once: true}
+                    );
+                  } else {
+                    promise.resolve();
                   }
                   if (id) {
                     script.id = id;
                   }
-                  let resolve;
-                  const promise = new Promise((res, rej) => {
-                    if (url) {
-                      script.addEventListener('load', res, {once: true});
-                    } else {
-                      resolve = res;
-                    }
-                    script.addEventListener(
-                      'error',
-                      event => {
-                        rej(event.message ?? 'Could not load script');
-                      },
-                      {once: true}
-                    );
-                  });
                   document.head.appendChild(script);
-                  if (resolve) {
-                    resolve();
-                  }
                   await promise;
                   return script;
                 }",
+                SecondaryWorld.PuppeteerUtil,
                 options.Url,
                 options.Id,
                 options.Type,
@@ -345,8 +403,7 @@ namespace PuppeteerSharp
               Client,
               FrameManager,
               this,
-              FrameManager.TimeoutSettings,
-              true);
+              FrameManager.TimeoutSettings);
         }
     }
 }
