@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp

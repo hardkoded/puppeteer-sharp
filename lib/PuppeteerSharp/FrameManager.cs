@@ -60,6 +60,8 @@ namespace PuppeteerSharp
 
         internal TimeoutSettings TimeoutSettings { get; }
 
+        public FrameTree FrameTree { get; internal set; }
+
         public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
             var referrer = string.IsNullOrEmpty(options.Referer)

@@ -11,33 +11,22 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class Frame : IFrame
     {
-        private readonly List<IFrame> _childFrames = new();
+        private readonly string _parentId;
 
-        internal Frame(FrameManager frameManager, Frame parentFrame, string frameId, CDPSession client)
+        internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
         {
             FrameManager = frameManager;
-            ParentFrame = parentFrame;
             Id = frameId;
             Client = client;
+            _parentId = parentFrameId;
 
             LifecycleEvents = new List<string>();
-
-            parentFrame?.AddChildFrame(this);
 
             UpdateClient(client);
         }
 
         /// <inheritdoc/>
-        public List<IFrame> ChildFrames
-        {
-            get
-            {
-                lock (_childFrames)
-                {
-                    return _childFrames.ToList();
-                }
-            }
-        }
+        public List<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
         /// <inheritdoc/>
         public string Name { get; private set; }
@@ -49,7 +38,7 @@ namespace PuppeteerSharp
         public bool Detached { get; set; }
 
         /// <inheritdoc/>
-        public IFrame ParentFrame { get; private set; }
+        public IFrame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
         /// <inheritdoc/>
         public bool IsOopFrame => Client != FrameManager.Client;
@@ -386,8 +375,6 @@ namespace PuppeteerSharp
             {
                 ((Frame)ParentFrame).RemoveChildFrame(this);
             }
-
-            ParentFrame = null;
         }
 
         internal void UpdateClient(CDPSession client)
