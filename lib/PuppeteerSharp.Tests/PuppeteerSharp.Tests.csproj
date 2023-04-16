@@ -30,7 +30,7 @@
 		<Folder Include="EmulationTests\" />
 		<Folder Include="FixturesTests\" />
 		<Folder Include="HeadfulTests\" />
-		<Folder Include="InjectedTests\" />
+		<Folder Include="PuppeteerUtilTests\" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
@@ -53,6 +53,6 @@
 		<None Remove="Emulation\" />
 		<None Remove="FixturesTests\" />
 		<None Remove="HeadfulTests\" />
-		<None Remove="InjectedTests\" />
+		<None Remove="PuppeteerUtilTests\" />
 	</ItemGroup>
 </Project>

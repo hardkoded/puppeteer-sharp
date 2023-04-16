@@ -19,14 +19,8 @@ namespace PuppeteerSharp
     /// </summary>
     public class Connection : IDisposable, ICDPConnection
     {
-        /// <summary>
-        /// Gets default web socket factory implementation.
-        /// </summary>
-        [Obsolete("Use " + nameof(WebSocketTransport) + "." + nameof(WebSocketTransport.DefaultWebSocketFactory) + " instead")]
-        public static readonly WebSocketFactory DefaultWebSocketFactory = WebSocketTransport.DefaultWebSocketFactory;
-
         private readonly ILogger _logger;
-        private readonly TaskQueue _callbackQueue = new TaskQueue();
+        private readonly TaskQueue _callbackQueue = new();
 
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
         private readonly ConcurrentDictionary<string, CDPSession> _sessions;

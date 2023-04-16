@@ -17,27 +17,32 @@ namespace PuppeteerSharp.Tests.PageTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWork()
         {
-            // Instantiate an object
-            await Page.EvaluateExpressionAsync("window.set = new Set(['hello', 'world'])");
-            var prototypeHandle = await Page.EvaluateExpressionHandleAsync("Set.prototype");
-            var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
-            var count = await Page.EvaluateFunctionAsync<int>("objects => objects.length", objectsHandle);
-            Assert.Equal(1, count);
-            var values = await Page.EvaluateFunctionAsync<string[]>("objects => Array.from(objects[0].values())", objectsHandle);
-            Assert.Equal(new[] { "hello", "world" }, values);
-        }
+            // Create a custom class
+            var classHandle = await Page.EvaluateFunctionHandleAsync(@"() => {
+                return class CustomClass { };
+            }");
 
-        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work for non-blank page")]
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task ShouldWorkForNonBlankPage()
-        {
-            // Instantiate an object
-            await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.EvaluateFunctionAsync("() => window.set = new Set(['hello', 'world'])");
-            var prototypeHandle = await Page.EvaluateFunctionHandleAsync("() => Set.prototype");
+            // Create an instance.
+            await Page.EvaluateFunctionAsync(@"CustomClass => {
+                self.customClass = new CustomClass();
+            }", classHandle);
+
+            // Validate only one has been added.
+            var prototypeHandle = await Page.EvaluateFunctionHandleAsync(@"CustomClass => {
+                return CustomClass.prototype;
+            }", classHandle);
+
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
-            var count = await Page.EvaluateFunctionAsync<int>("objects => objects.length", objectsHandle);
-            Assert.Equal(1, count);
+            Assert.Equal(
+                1,
+                await Page.EvaluateFunctionAsync(@"objects => {
+                    return objects.length;
+                }", objectsHandle));
+      
+            // Check that instances.
+            Assert.True(await Page.EvaluateFunctionAsync<bool>(@"objects => {
+                return objects[0] === self.customClass;
+            }", objectsHandle));
         }
 
         [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail for disposed handles")]

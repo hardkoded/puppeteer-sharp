@@ -140,7 +140,15 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to initialize session in frame manager");
+                // The target might have been closed before the initialization finished.
+                if (
+                  ex.Message.Contains("Target closed") ||
+                  ex.Message.Contains("Session closed"))
+                {
+                    return;
+                }
+
+                throw;
             }
         }
 
@@ -292,10 +300,7 @@ namespace PuppeteerSharp
                     continue;
                 }
 
-                if (context.World != null)
-                {
-                    context.World.SetContext(null);
-                }
+                context.World?.ClearContext();
 
                 _contextIdToContext.TryRemove(key, out var _);
             }
@@ -306,10 +311,7 @@ namespace PuppeteerSharp
             var key = $"{session.Id}:{contextId}";
             if (_contextIdToContext.TryRemove(key, out var context))
             {
-                if (context.World != null)
-                {
-                    context.World.SetContext(null);
-                }
+                context.World?.ClearContext();
             }
         }
 
@@ -330,20 +332,17 @@ namespace PuppeteerSharp
                 {
                     world = frame.MainWorld;
                 }
-                else if (contextPayload.Name == UtilityWorldName && !frame.SecondaryWorld.HasContext)
+                else if (contextPayload.Name == UtilityWorldName && !frame.PuppeteerWorld.HasContext)
                 {
                     // In case of multiple sessions to the same target, there's a race between
                     // connections so we might end up creating multiple isolated worlds.
                     // We can use either.
-                    world = frame.SecondaryWorld;
+                    world = frame.PuppeteerWorld;
                 }
             }
 
             var context = new ExecutionContext(frame?.Client ?? Client, contextPayload, world);
-            if (world != null)
-            {
-                world.SetContext(context);
-            }
+            world?.SetContext(context);
 
             var key = $"{session.Id}:{contextPayload.Id}";
             _contextIdToContext[key] = context;

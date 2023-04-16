@@ -3,22 +3,24 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
+    /// <summary>
+    /// A LazyArg is an evaluation argument that will be resolved when the CDP call is built.
+    /// </summary>
+    /// <param name="context">Execution context.</param>
+    /// <returns>Resolved argument.</returns>
+    public delegate Task<object> LazyArg(ExecutionContext context);
+
     internal class IsolatedWorld
     {
         private static string _injectedSource;
@@ -28,10 +30,8 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly ILogger _logger;
         private readonly List<string> _ctxBindings = new();
-        private readonly bool _injected;
         private bool _detached;
-        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper;
-        private TaskCompletionSource<IElementHandle> _documentCompletionSource;
+        private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
 
@@ -39,18 +39,14 @@ namespace PuppeteerSharp
             CDPSession client,
             FrameManager frameManager,
             Frame frame,
-            TimeoutSettings timeoutSettings,
-            bool injected = false)
+            TimeoutSettings timeoutSettings)
         {
-            _injected = injected;
             Logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
             _client = client;
             _frameManager = frameManager;
             _customQueriesManager = ((Browser)frameManager.Page.Browser).CustomQueriesManager;
             Frame = frame;
             _timeoutSettings = timeoutSettings;
-
-            SetContext(null);
 
             WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
@@ -67,6 +63,10 @@ namespace PuppeteerSharp
         internal ILogger Logger { get; }
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
+
+        internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal Task<IJSHandle> GetPuppeteerUtilAsync() => PuppeteerUtilTaskCompletionSource.Task;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
@@ -214,25 +214,25 @@ namespace PuppeteerSharp
 
         internal async Task<IElementHandle> QuerySelectorAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle[]> XPathAsync(string expression)
         {
-            var document = await GetDocument().ConfigureAwait(false);
+            var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
@@ -315,96 +315,24 @@ namespace PuppeteerSharp
             return elementHandle;
         }
 
-        internal async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
-        {
-            const string addStyleUrl = @"async function addStyleUrl(url) {
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = url;
-              const promise = new Promise((res, rej) => {
-                link.onload = res;
-                link.onerror = rej;
-              });
-              document.head.appendChild(link);
-              await promise;
-              return link;
-            }";
-            const string addStyleContent = @"async function addStyleContent(content) {
-              const style = document.createElement('style');
-              style.type = 'text/css';
-              style.appendChild(document.createTextNode(content));
-              const promise = new Promise((res, rej) => {
-                style.onload = res;
-                style.onerror = rej;
-              });
-              document.head.appendChild(style);
-              await promise;
-              return style;
-            }";
-
-            if (!string.IsNullOrEmpty(options.Url))
-            {
-                var url = options.Url;
-                try
-                {
-                    var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                    return (await context.EvaluateFunctionHandleAsync(addStyleUrl, url).ConfigureAwait(false)) as IElementHandle;
-                }
-                catch (PuppeteerException)
-                {
-                    throw new PuppeteerException($"Loading style from {url} failed");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                var contents = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                contents += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, contents).ConfigureAwait(false)) as IElementHandle;
-            }
-
-            if (!string.IsNullOrEmpty(options.Content))
-            {
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                return (await context.EvaluateFunctionHandleAsync(addStyleContent, options.Content).ConfigureAwait(false)) as IElementHandle;
-            }
-
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-        }
-
         internal async Task ClickAsync(string selector, ClickOptions options = null)
         {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false) ?? throw new SelectorException($"No node found for selector: {selector}", selector);
             await handle.ClickAsync(options).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
         internal async Task HoverAsync(string selector)
         {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
+                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
             await handle.HoverAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
         internal async Task FocusAsync(string selector)
         {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false) ?? throw new SelectorException($"No node found for selector: {selector}", selector);
             await handle.FocusAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -423,24 +351,16 @@ namespace PuppeteerSharp
 
         internal async Task TapAsync(string selector)
         {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
+                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
             await handle.TapAsync().ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
         internal async Task TypeAsync(string selector, string text, TypeOptions options = null)
         {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
-            if (handle == null)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
+                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
             await handle.TypeAsync(text, options).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -448,7 +368,7 @@ namespace PuppeteerSharp
         internal async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
             var (updatedSelector, queryHandler) = _customQueriesManager.GetQueryHandlerAndSelector(selector);
-            var root = options?.Root ?? await this.GetDocumentAsync().ConfigureAwait(false);
+            var root = options?.Root ?? await GetDocumentAsync().ConfigureAwait(false);
             return await queryHandler.WaitFor(root, updatedSelector, options).ConfigureAwait(false);
         }
 
@@ -507,9 +427,8 @@ namespace PuppeteerSharp
             {
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 var document = await context.EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
-                var element = document as ElementHandle;
 
-                if (element == null)
+                if (document is not ElementHandle element)
                 {
                     throw new PuppeteerException("Document is null");
                 }
@@ -522,37 +441,26 @@ namespace PuppeteerSharp
             return _documentTask;
         }
 
-        internal void SetContext(ExecutionContext context)
+        internal void ClearContext()
         {
             _documentTask = null;
-            if (context != null)
-            {
-                if (_injected)
-                {
-                    _ = context.EvaluateExpressionAsync(GetInjectedSource()).ContinueWith(
-                        task =>
-                        {
-                            if (task.Exception != null)
-                            {
-                                Logger.LogError(task.Exception.ToString());
-                            }
-                        },
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnFaulted,
-                        TaskScheduler.Default);
-                }
+            _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            PuppeteerUtilTaskCompletionSource = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
 
-                _ctxBindings.Clear();
-                _contextResolveTaskWrapper.TrySetResult(context);
-                foreach (var waitTask in WaitTasks)
-                {
-                    _ = waitTask.Rerun();
-                }
-            }
-            else
+        internal void SetContext(ExecutionContext context)
+        {
+            if (context is null)
             {
-                _documentCompletionSource = null;
-                _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            _ = InjectPuppeteerUtil(context);
+            _ctxBindings.Clear();
+            _contextResolveTaskWrapper.TrySetResult(context);
+            foreach (var waitTask in WaitTasks)
+            {
+                _ = waitTask.Rerun();
             }
         }
 
@@ -570,6 +478,20 @@ namespace PuppeteerSharp
             }
 
             return _injectedSource;
+        }
+
+        private async Task InjectPuppeteerUtil(ExecutionContext context)
+        {
+            try
+            {
+                var injectedSource = GetInjectedSource();
+                var handle = await context.EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
+                PuppeteerUtilTaskCompletionSource.TrySetResult(handle);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -642,19 +564,6 @@ namespace PuppeteerSharp
         }
 
         private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
-
-        private async Task<IElementHandle> GetDocument()
-        {
-            if (_documentCompletionSource == null)
-            {
-                _documentCompletionSource = new TaskCompletionSource<IElementHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                var document = await context.EvaluateExpressionHandleAsync("document").ConfigureAwait(false);
-                _documentCompletionSource.TrySetResult(document as IElementHandle);
-            }
-
-            return await _documentCompletionSource.Task.ConfigureAwait(false);
-        }
 
         private string MakePredicateString(string predicate, string predicateQueryHandler)
         {

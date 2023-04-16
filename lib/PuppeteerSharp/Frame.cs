@@ -67,7 +67,7 @@ namespace PuppeteerSharp
 
         internal IsolatedWorld MainWorld { get; private set; }
 
-        internal IsolatedWorld SecondaryWorld { get; private set; }
+        internal IsolatedWorld PuppeteerWorld { get; private set; }
 
         internal CDPSession Client { get; private set; }
 
@@ -110,7 +110,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var handle = await SecondaryWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
+            var handle = await PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
             if (handle == null)
             {
                 return null;
@@ -125,7 +125,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
-            var handle = await SecondaryWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
+            var handle = await PuppeteerWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
             if (handle == null)
             {
                 return null;
@@ -163,7 +163,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<string[]> SelectAsync(string selector, params string[] values) => SecondaryWorld.SelectAsync(selector, values);
+        public Task<string[]> SelectAsync(string selector, params string[] values) => PuppeteerWorld.SelectAsync(selector, values);
 
         /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
@@ -179,14 +179,69 @@ namespace PuppeteerSharp
         public Task<IElementHandle[]> XPathAsync(string expression) => MainWorld.XPathAsync(expression);
 
         /// <inheritdoc/>
-        public Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
+        public async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return MainWorld.AddStyleTagAsync(options);
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await PuppeteerWorld.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                  const promise = createDeferredPromise();
+                  let element;
+                  if (!url) {
+                    element = document.createElement('style');
+                    element.appendChild(document.createTextNode(content));
+                  } else {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = url;
+                    element = link;
+                  }
+                  element.addEventListener(
+                    'load',
+                    () => {
+                      promise.resolve();
+                    },
+                    {once: true}
+                  );
+                  element.addEventListener(
+                    'error',
+                    event => {
+                      promise.reject(
+                        new Error(
+                          event.message ?? 'Could not load style'
+                        )
+                      );
+                    },
+                    {once: true}
+                  );
+                  document.head.appendChild(element);
+                  await promise;
+                  return element;
+                }",
+                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainWorld.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
         }
 
         /// <inheritdoc/>
@@ -210,39 +265,42 @@ namespace PuppeteerSharp
                 content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
             }
 
-            var handle = await SecondaryWorld.EvaluateFunctionHandleAsync(
-                @"async (url, id, type, content) => {
+            var handle = await PuppeteerWorld.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                  const promise = createDeferredPromise();
                   const script = document.createElement('script');
                   script.type = type;
                   script.text = content;
                   if (url) {
                     script.src = url;
+                    script.addEventListener(
+                      'load',
+                      () => {
+                        return promise.resolve();
+                      },
+                      {once: true}
+                    );
+                    script.addEventListener(
+                      'error',
+                      event => {
+                        promise.reject(
+                          new Error(event.message ?? 'Could not load script')
+                        );
+                      },
+                      {once: true}
+                    );
+                  } else {
+                    promise.resolve();
                   }
                   if (id) {
                     script.id = id;
                   }
-                  let resolve;
-                  const promise = new Promise((res, rej) => {
-                    if (url) {
-                      script.addEventListener('load', res, {once: true});
-                    } else {
-                      resolve = res;
-                    }
-                    script.addEventListener(
-                      'error',
-                      event => {
-                        rej(event.message ?? 'Could not load script');
-                      },
-                      {once: true}
-                    );
-                  });
                   document.head.appendChild(script);
-                  if (resolve) {
-                    resolve();
-                  }
                   await promise;
                   return script;
                 }",
+                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
                 options.Url,
                 options.Id,
                 options.Type,
@@ -252,28 +310,28 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<string> GetContentAsync() => SecondaryWorld.GetContentAsync();
+        public Task<string> GetContentAsync() => PuppeteerWorld.GetContentAsync();
 
         /// <inheritdoc/>
         public Task SetContentAsync(string html, NavigationOptions options = null)
-            => SecondaryWorld.SetContentAsync(html, options);
+            => PuppeteerWorld.SetContentAsync(html, options);
 
         /// <inheritdoc/>
-        public Task<string> GetTitleAsync() => SecondaryWorld.GetTitleAsync();
+        public Task<string> GetTitleAsync() => PuppeteerWorld.GetTitleAsync();
 
         /// <inheritdoc/>
         public Task ClickAsync(string selector, ClickOptions options = null)
-            => SecondaryWorld.ClickAsync(selector, options);
+            => PuppeteerWorld.ClickAsync(selector, options);
 
         /// <inheritdoc/>
-        public Task HoverAsync(string selector) => SecondaryWorld.HoverAsync(selector);
+        public Task HoverAsync(string selector) => PuppeteerWorld.HoverAsync(selector);
 
         /// <inheritdoc/>
-        public Task FocusAsync(string selector) => SecondaryWorld.FocusAsync(selector);
+        public Task FocusAsync(string selector) => PuppeteerWorld.FocusAsync(selector);
 
         /// <inheritdoc/>
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
-             => SecondaryWorld.TypeAsync(selector, text, options);
+             => PuppeteerWorld.TypeAsync(selector, text, options);
 
         internal void AddChildFrame(Frame frame)
         {
@@ -323,7 +381,7 @@ namespace PuppeteerSharp
         {
             Detached = true;
             MainWorld.Detach();
-            SecondaryWorld.Detach();
+            PuppeteerWorld.Detach();
             if (ParentFrame != null)
             {
                 ((Frame)ParentFrame).RemoveChildFrame(this);
@@ -341,12 +399,11 @@ namespace PuppeteerSharp
               this,
               FrameManager.TimeoutSettings);
 
-            SecondaryWorld = new IsolatedWorld(
+            PuppeteerWorld = new IsolatedWorld(
               Client,
               FrameManager,
               this,
-              FrameManager.TimeoutSettings,
-              true);
+              FrameManager.TimeoutSettings);
         }
     }
 }

@@ -157,16 +157,16 @@ namespace PuppeteerSharp
                 ["userGesture"] = true,
             });
 
-        private Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
-            => ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
+        private async Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
+            => await ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
                 FunctionDeclaration = $"{script}\n{_evaluationScriptSuffix}\n",
                 ExecutionContextId = ContextId,
-                Arguments = args.Select(FormatArgument),
+                Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false),
                 ReturnByValue = returnByValue,
                 AwaitPromise = true,
                 UserGesture = true,
-            });
+            }).ConfigureAwait(false);
 
         private async Task<RemoteObject> ExecuteEvaluationAsync(string method, object args)
         {
@@ -194,8 +194,18 @@ namespace PuppeteerSharp
             }
         }
 
-        private object FormatArgument(object arg)
+        private async Task<object> FormatArgumentAsync(object arg)
         {
+            if (arg is TaskCompletionSource<object> tcs)
+            {
+                arg = await tcs.Task.ConfigureAwait(false);
+            }
+
+            if (arg is LazyArg lazyArg)
+            {
+                arg = await lazyArg(this).ConfigureAwait(false);
+            }
+
             switch (arg)
             {
                 case BigInteger big:
