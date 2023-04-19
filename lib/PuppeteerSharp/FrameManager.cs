@@ -18,9 +18,8 @@ namespace PuppeteerSharp
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, Frame> _frames;
-        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
         private readonly List<string> _isolatedWorlds = new();
+        private readonly List<string> _frameNavigatedReceived = new();
         private readonly TaskQueue _eventsQueue = new();
         private bool _ensureNewDocumentNavigation;
 
@@ -28,12 +27,10 @@ namespace PuppeteerSharp
         {
             Client = client;
             Page = page;
-            _frames = new ConcurrentDictionary<string, Frame>();
             _contextIdToContext = new ConcurrentDictionary<string, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
             TimeoutSettings = timeoutSettings;
-            _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
 
             Client.MessageReceived += Client_MessageReceived;
         }
@@ -54,11 +51,13 @@ namespace PuppeteerSharp
 
         internal NetworkManager NetworkManager { get; }
 
-        internal Frame MainFrame { get; set; }
+        internal Frame MainFrame => FrameTree.MainFrame;
 
         internal Page Page { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
+
+        internal FrameTree FrameTree { get; private set; } = new();
 
         public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
@@ -129,7 +128,7 @@ namespace PuppeteerSharp
                     getFrameTreeTask,
                     autoAttachTask).ConfigureAwait(false);
 
-                await HandleFrameTreeAsync(client, new FrameTree(getFrameTreeTask.Result.FrameTree)).ConfigureAwait(false);
+                await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
 
                 await Task.WhenAll(
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
@@ -173,21 +172,16 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _frames.TryGetValue(e.TargetInfo.TargetId, out var frame);
-            if (frame != null)
-            {
-                frame.UpdateClient(e.Target.Session);
-            }
+            var frame = GetFrame(e.TargetInfo.TargetId);
+            frame?.UpdateClient(e.Target.Session);
 
             e.Target.Session.MessageReceived += Client_MessageReceived;
             _ = InitializeAsync(e.Target.Session);
         }
 
-        internal Frame[] GetFrames() => _frames.Values.ToArray();
+        internal Frame GetFrame(string frameid) => FrameTree.GetById(frameid);
 
-        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
-
-        internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
+        internal Frame[] GetFrames() => FrameTree.Frames;
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
         {
@@ -266,15 +260,14 @@ namespace PuppeteerSharp
 
         private void OnFrameStartedLoading(BasicFrameResponse e)
         {
-            if (_frames.TryGetValue(e.FrameId, out var frame))
-            {
-                frame.OnLoadingStarted();
-            }
+            var frame = GetFrame(e.FrameId);
+            frame?.OnLoadingStarted();
         }
 
         private void OnFrameStoppedLoading(BasicFrameResponse e)
         {
-            if (_frames.TryGetValue(e.FrameId, out var frame))
+            var frame = GetFrame(e.FrameId);
+            if (frame != null)
             {
                 frame.OnLoadingStopped();
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
@@ -283,7 +276,8 @@ namespace PuppeteerSharp
 
         private void OnLifeCycleEvent(LifecycleEventResponse e)
         {
-            if (_frames.TryGetValue(e.FrameId, out var frame))
+            var frame = GetFrame(e.FrameId);
+            if (frame != null)
             {
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
@@ -318,7 +312,7 @@ namespace PuppeteerSharp
         private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload, CDPSession session)
         {
             var frameId = contextPayload.AuxData?.FrameId;
-            var frame = !string.IsNullOrEmpty(frameId) ? await GetFrameAsync(frameId).ConfigureAwait(false) : null;
+            var frame = !string.IsNullOrEmpty(frameId) ? await FrameTree.GetFrameAsync(frameId).ConfigureAwait(false) : null;
             IsolatedWorld world = null;
 
             if (frame != null)
@@ -350,7 +344,8 @@ namespace PuppeteerSharp
 
         private void OnFrameDetached(PageFrameDetachedResponse e)
         {
-            if (_frames.TryGetValue(e.FrameId, out var frame))
+            var frame = GetFrame(e.FrameId);
+            if (frame != null)
             {
                 if (e.Reason == FrameDetachedReason.Remove)
                 {
@@ -365,17 +360,21 @@ namespace PuppeteerSharp
 
         private async Task OnFrameNavigatedAsync(FramePayload framePayload)
         {
+            // This is in the event handler upstream.
+            // It's more consistent having this here.
+            _frameNavigatedReceived.Add(framePayload.Id);
+
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
-            var frame = isMainFrame ? MainFrame : await GetFrameAsync(framePayload.Id).ConfigureAwait(false);
+            var frame = isMainFrame ? MainFrame : await FrameTree.GetFrameAsync(framePayload.Id).ConfigureAwait(false);
 
             Contract.Assert(isMainFrame || frame != null, "We either navigate top level or have old version of the navigated frame");
 
             // Detach all child frames first.
             if (frame != null)
             {
-                while (frame.ChildFrames.Count > 0)
+                while (frame.ChildFrames.Any())
                 {
-                    RemoveFramesRecursively(frame.ChildFrames[0]);
+                    RemoveFramesRecursively(frame.ChildFrames.First() as Frame);
                 }
             }
 
@@ -384,22 +383,16 @@ namespace PuppeteerSharp
             {
                 if (frame != null)
                 {
-                    // Update frame id to retain frame identity on cross-process navigation.
-                    if (frame.Id != null)
-                    {
-                        _frames.TryRemove(frame.Id, out _);
-                    }
-
+                    FrameTree.RemoveFrame(frame);
                     frame.Id = framePayload.Id;
                 }
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, null, framePayload.Id, Client);
+                    frame = new Frame(this, framePayload.Id, null, Client);
                 }
 
-                _asyncFrames.AddItem(framePayload.Id, frame);
-                MainFrame = frame;
+                FrameTree.AddFrame(frame);
             }
 
             // Update frame payload.
@@ -410,7 +403,8 @@ namespace PuppeteerSharp
 
         private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
         {
-            if (_frames.TryGetValue(e.FrameId, out var frame))
+            var frame = GetFrame(e.FrameId);
+            if (frame != null)
             {
                 frame.NavigatedWithinDocument(e.Url);
 
@@ -420,15 +414,15 @@ namespace PuppeteerSharp
             }
         }
 
-        private void RemoveFramesRecursively(IFrame frame)
+        private void RemoveFramesRecursively(Frame frame)
         {
-            while (frame.ChildFrames.Count > 0)
+            while (frame.ChildFrames.Any())
             {
-                RemoveFramesRecursively(frame.ChildFrames[0]);
+                RemoveFramesRecursively(frame.ChildFrames.First() as Frame);
             }
 
-            ((Frame)frame).Detach();
-            _frames.TryRemove(frame.Id, out _);
+            frame.Detach();
+            FrameTree.RemoveFrame(frame);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
         }
 
@@ -437,37 +431,41 @@ namespace PuppeteerSharp
 
         private void OnFrameAttached(CDPSession session, string frameId, string parentFrameId)
         {
-            if (_frames.TryGetValue(frameId, out var existingFrame))
+            var frame = GetFrame(frameId);
+            if (frame != null)
             {
-                if (session != null && existingFrame.IsOopFrame)
+                if (session != null && frame.IsOopFrame)
                 {
-                    existingFrame.UpdateClient(session);
+                    frame.UpdateClient(session);
                 }
 
                 return;
             }
 
-            if (!_frames.ContainsKey(frameId) && _frames.ContainsKey(parentFrameId))
-            {
-                var parentFrame = _frames[parentFrameId];
-                var frame = new Frame(this, parentFrame, frameId, session);
-                _asyncFrames.AddItem(frame.Id, frame);
-                FrameAttached?.Invoke(this, new FrameEventArgs(frame));
-            }
+            frame = new Frame(this, frameId, parentFrameId, session);
+            FrameTree.AddFrame(frame);
+            FrameAttached?.Invoke(this, new FrameEventArgs(frame));
         }
 
-        private async Task HandleFrameTreeAsync(CDPSession session, FrameTree frameTree)
+        private async Task HandleFrameTreeAsync(CDPSession session, PageGetFrameTree frameTree)
         {
             if (!string.IsNullOrEmpty(frameTree.Frame.ParentId))
             {
                 OnFrameAttached(session, frameTree.Frame.Id, frameTree.Frame.ParentId);
             }
 
-            await OnFrameNavigatedAsync(frameTree.Frame).ConfigureAwait(false);
-
-            if (frameTree.Childs != null)
+            if (!_frameNavigatedReceived.Contains(frameTree.Frame.Id))
             {
-                foreach (var child in frameTree.Childs)
+                await OnFrameNavigatedAsync(frameTree.Frame).ConfigureAwait(false);
+            }
+            else
+            {
+                _frameNavigatedReceived.Remove(frameTree.Frame.Id);
+            }
+
+            if (frameTree.ChildFrames != null)
+            {
+                foreach (var child in frameTree.ChildFrames)
                 {
                     await HandleFrameTreeAsync(session, child).ConfigureAwait(false);
                 }

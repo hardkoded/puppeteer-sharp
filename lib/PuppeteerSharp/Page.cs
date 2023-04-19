@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -1501,7 +1500,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            var frame = await FrameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false);
+            var frame = await FrameManager.FrameTree.GetFrameAsync(e.FrameId).ConfigureAwait(false);
             var context = await frame.GetExecutionContextAsync().ConfigureAwait(false) as ExecutionContext;
             var world = context.World;
             var element = await world.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);

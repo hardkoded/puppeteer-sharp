@@ -451,7 +451,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            var frame = !string.IsNullOrEmpty(e.FrameId) ? await FrameManager.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
+            var frame = !string.IsNullOrEmpty(e.FrameId) ? await FrameManager.FrameTree.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
             request = new Request(
                 _client,
