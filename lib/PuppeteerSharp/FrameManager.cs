@@ -57,7 +57,7 @@ namespace PuppeteerSharp
 
         internal TimeoutSettings TimeoutSettings { get; }
 
-        internal FrameTree FrameTree { get; private set; }
+        internal FrameTree FrameTree { get; private set; } = new();
 
         public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
