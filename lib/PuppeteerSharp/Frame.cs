@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -11,14 +10,12 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class Frame : IFrame
     {
-        private readonly string _parentId;
-
         internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
         {
             FrameManager = frameManager;
             Id = frameId;
             Client = client;
-            _parentId = parentFrameId;
+            ParentId = parentFrameId;
 
             LifecycleEvents = new List<string>();
 
@@ -26,7 +23,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public List<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
+        public IEnumerable<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
         /// <inheritdoc/>
         public string Name { get; private set; }
@@ -45,6 +42,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public string Id { get; internal set; }
+
+        internal string ParentId { get; }
 
         internal FrameManager FrameManager { get; }
 
@@ -322,22 +321,6 @@ namespace PuppeteerSharp
         public Task TypeAsync(string selector, string text, TypeOptions options = null)
              => PuppeteerWorld.TypeAsync(selector, text, options);
 
-        internal void AddChildFrame(Frame frame)
-        {
-            lock (_childFrames)
-            {
-                _childFrames.Add(frame);
-            }
-        }
-
-        internal void RemoveChildFrame(Frame frame)
-        {
-            lock (_childFrames)
-            {
-                _childFrames.Remove(frame);
-            }
-        }
-
         internal void OnLoadingStarted() => HasStartedLoading = true;
 
         internal void OnLoadingStopped()
@@ -371,10 +354,6 @@ namespace PuppeteerSharp
             Detached = true;
             MainWorld.Detach();
             PuppeteerWorld.Detach();
-            if (ParentFrame != null)
-            {
-                ((Frame)ParentFrame).RemoveChildFrame(this);
-            }
         }
 
         internal void UpdateClient(CDPSession client)
