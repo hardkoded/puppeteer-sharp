@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             await frameTask.WithTimeout();
-            Assert.Equal(2, Page.MainFrame.ChildFrames.Count);
+            Assert.Equal(2, Page.MainFrame.ChildFrames.Count());
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should track navigations within OOP iframes")]
@@ -258,7 +258,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
-            var frame1 = oopIframe.ChildFrames[0];
+            var frame1 = oopIframe.ChildFrames.First();
             Assert.Contains("empty.html", frame1.Url);
             await FrameUtils.NavigateFrameAsync(
               oopIframe,
