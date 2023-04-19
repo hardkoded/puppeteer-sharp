@@ -70,9 +70,12 @@ namespace PuppeteerSharp
 
             _waitRequests.TryGetValue(frame.Id, out var requests);
 
-            foreach (var request in requests)
+            if (requests != null)
             {
-                request.TrySetResult(frame);
+                foreach (var request in requests)
+                {
+                    request.TrySetResult(frame);
+                }
             }
         }
 

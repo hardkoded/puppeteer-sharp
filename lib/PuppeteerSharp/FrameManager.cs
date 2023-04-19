@@ -389,7 +389,7 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, null, framePayload.Id, Client);
+                    frame = new Frame(this, framePayload.Id, null, Client);
                 }
 
                 FrameTree.AddFrame(frame);
