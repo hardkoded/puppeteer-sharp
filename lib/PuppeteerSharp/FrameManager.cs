@@ -51,7 +51,7 @@ namespace PuppeteerSharp
 
         internal NetworkManager NetworkManager { get; }
 
-        internal Frame MainFrame { get; set; }
+        internal Frame MainFrame => FrameTree.MainFrame;
 
         internal Page Page { get; }
 
@@ -392,7 +392,7 @@ namespace PuppeteerSharp
                     frame = new Frame(this, null, framePayload.Id, Client);
                 }
 
-                MainFrame = frame;
+                FrameTree.AddFrame(frame);
             }
 
             // Update frame payload.
