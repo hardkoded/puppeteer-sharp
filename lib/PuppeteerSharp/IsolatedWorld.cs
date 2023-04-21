@@ -265,41 +265,40 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, IElementHandle root, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
         {
             var waitForVisible = options?.Visible ?? false;
             var waitForHidden = options?.Hidden ?? false;
             var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
 
             var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var title = $"selector '{selector}'{(waitForHidden ? " to be hidden" : string.Empty)}";
 
-            var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
-                const node = predicateQueryHandler
-                  ? ((await predicateQueryHandler(root, selector)))
-                  : root.querySelector(selector);
-                return checkWaitForOptions(node, waitForVisible, waitForHidden);
+            var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
+              if (!PuppeteerUtil) {{
+                return;
+              }}
+              const node = (await PuppeteerUtil.createFunction(query)(
+                root || document,
+                selector
+              ));
+              return PuppeteerUtil.checkVisibility(node, visible);
             }}";
 
-            using var waitTask = new WaitTask(
-                this,
-                MakePredicateString(predicate, queryOne),
-                true,
-                title,
-                polling,
-                null,
-                timeout,
-                options?.Root,
-                bindings,
-                new object[]
+            var jsHandle = await WaitForFunctionAsync(
+                predicate,
+                new()
                 {
-                    selector,
-                    waitForVisible,
-                    waitForHidden,
+                    Bindings = bindings,
+                    Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
+                    Root = root,
+                    Timeout = timeout,
                 },
-                true);
+                await GetPuppeteerUtilAsync().ConfigureAwait(false),
+                queryOne,
+                selector,
+                root,
+                waitForVisible ? true : waitForHidden ? false : null).ConfigureAwait(false);
 
-            var jsHandle = await waitTask.Task.ConfigureAwait(false);
             if (jsHandle is not ElementHandle elementHandle)
             {
                 await jsHandle.DisposeAsync().ConfigureAwait(false);
@@ -375,12 +374,11 @@ namespace PuppeteerSharp
                  this,
                  script,
                  false,
-                 "function",
                  options.Polling,
                  options.PollingInterval,
                  options.Timeout ?? _timeoutSettings.Timeout,
-                 null,
-                 null,
+                 options.Root,
+                 options.Bindings,
                  args);
 
             return await waitTask
@@ -394,14 +392,12 @@ namespace PuppeteerSharp
                 this,
                 script,
                 true,
-                "function",
                 options.Polling,
                 options.PollingInterval,
                 options.Timeout ?? _timeoutSettings.Timeout,
                 null, // Root
                 null, // PageBinding
-                null, // args
-                false); // predicateAcceptsContextElement
+                null); // args
 
             return await waitTask
                 .Task
@@ -626,7 +622,6 @@ namespace PuppeteerSharp
                 this,
                 predicate,
                 false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : string.Empty)}",
                 polling,
                 null, // Polling interval
                 timeout,

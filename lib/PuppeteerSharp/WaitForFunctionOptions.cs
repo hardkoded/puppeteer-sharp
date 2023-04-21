@@ -23,5 +23,15 @@ namespace PuppeteerSharp
         /// An interval at which the <c>pageFunction</c> is executed. If no value is specified will use <see cref="Polling"/>.
         /// </summary>
         public int? PollingInterval { get; set; }
+
+        /// <summary>
+        /// Root element.
+        /// </summary>
+        internal IElementHandle Root { get; set; }
+
+        /// <summary>
+        /// Page bindings.
+        /// </summary>
+        internal PageBinding[] Bindings { get; set; }
     }
 }

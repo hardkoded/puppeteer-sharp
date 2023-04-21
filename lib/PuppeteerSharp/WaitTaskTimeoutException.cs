@@ -10,14 +10,14 @@ namespace PuppeteerSharp
     public class WaitTaskTimeoutException : PuppeteerException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         public WaitTaskTimeoutException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         public WaitTaskTimeoutException(string message) : base(message)
@@ -25,18 +25,27 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
+        /// </summary>
+        /// <param name="timeout">Timeout.</param>
+        public WaitTaskTimeoutException(int timeout) : base($"Waiting failed: {timeout}ms exceeded")
+        {
+            Timeout = timeout;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="timeout">Timeout.</param>
         /// <param name="elementType">Element type.</param>
-        public WaitTaskTimeoutException(int timeout, string elementType) : base($"waiting for {elementType} failed: timeout {timeout} ms exceeded")
+        public WaitTaskTimeoutException(int timeout, string elementType) : base($"waiting for {elementType} failed: timeout {timeout}ms exceeded")
         {
             Timeout = timeout;
             ElementType = elementType;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
@@ -45,7 +54,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerSharp.WaitTaskTimeoutException"/> class.
+        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
         /// </summary>
         /// <param name="info">Info.</param>
         /// <param name="context">Context.</param>

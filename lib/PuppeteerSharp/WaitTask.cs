@@ -9,32 +9,29 @@ namespace PuppeteerSharp
     {
         private readonly IsolatedWorld _isolatedWorld;
         private readonly string _fn;
-        private readonly WaitForFunctionPollingOption _polling;
+        private readonly WaitForFunctionPollingOption? _polling;
         private readonly int? _pollingInterval;
         private readonly object[] _args;
-        private readonly string _title;
         private readonly Task _timeoutTimer;
         private readonly IElementHandle _root;
-        private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
         private readonly TaskCompletionSource<IJSHandle> _result;
         private readonly PageBinding[] _bindings;
 
         private bool _isDisposed;
         private IJSHandle _poller;
+        private bool _terminated;
 
         internal WaitTask(
             IsolatedWorld isolatedWorld,
             string fn,
             bool isExpression,
-            string title,
             WaitForFunctionPollingOption polling,
             int? pollingInterval,
             int timeout,
             IElementHandle root,
             PageBinding[] bidings = null,
-            object[] args = null,
-            bool predicateAcceptsContextElement = false)
+            object[] args = null)
         {
             if (string.IsNullOrEmpty(fn))
             {
@@ -48,13 +45,11 @@ namespace PuppeteerSharp
 
             _isolatedWorld = isolatedWorld;
             _fn = isExpression ? $"() => {{return ({fn});}}" : fn;
-            _polling = polling;
             _pollingInterval = pollingInterval;
+            _polling = _pollingInterval.HasValue ? null : polling;
             _args = args ?? Array.Empty<object>();
-            _title = title;
             _root = root;
             _cts = new CancellationTokenSource();
-            _predicateAcceptsContextElement = predicateAcceptsContextElement;
             _result = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _bindings = bidings ?? Array.Empty<PageBinding>();
 
@@ -69,7 +64,7 @@ namespace PuppeteerSharp
             {
                 _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
                     .ContinueWith(
-                        _ => TerminateAsync(new WaitTaskTimeoutException(timeout, title)),
+                        _ => TerminateAsync(new WaitTaskTimeoutException(timeout)),
                         TaskScheduler.Default);
             }
 
@@ -97,50 +92,57 @@ namespace PuppeteerSharp
                 var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
                 await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
 
-                _poller = _polling switch
+                if (_pollingInterval.HasValue)
                 {
-                    WaitForFunctionPollingOption.Raf => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                        @"
-                        ({RAFPoller, createFunction}, fn, ...args) => {
-                            const fun = createFunction(fn);
-                            return new RAFPoller(() => {
+                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                            @"
+                            ({IntervalPoller, createFunction}, ms, fn, ...args) => {
+                                const fun = createFunction(fn);
+                                return new IntervalPoller(() => {
                                 return fun(...args);
-                            });
-                        }",
-                        new object[]
-                        {
-                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                            _fn,
-                        }.Concat(_args).ToArray()).ConfigureAwait(false),
-                    WaitForFunctionPollingOption.Mutation => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                        @"
-                        ({MutationPoller, createFunction}, root, fn, ...args) => {
-                            const fun = createFunction(fn);
-                            return new MutationPoller(() => {
-                            return fun(...args);
-                            }, root || document);
-                        }",
-                        new object[]
-                        {
-                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                            _root,
-                            _fn,
-                        }.Concat(_args).ToArray()).ConfigureAwait(false),
-                    _ => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                        @"
-                        ({IntervalPoller, createFunction}, ms, fn, ...args) => {
-                            const fun = createFunction(fn);
-                            return new IntervalPoller(() => {
-                            return fun(...args);
-                            }, ms);
-                        }",
-                        new object[]
-                        {
+                                }, ms);
+                            }",
+                            new object[]
+                            {
                             await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
                             _pollingInterval,
                             _fn,
-                        }.Concat(_args).ToArray()).ConfigureAwait(false),
-                };
+                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                }
+                else if (_polling == WaitForFunctionPollingOption.Raf)
+                {
+                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                            @"
+                            ({RAFPoller, createFunction}, fn, ...args) => {
+                                const fun = createFunction(fn);
+                                return new RAFPoller(() => {
+                                    return fun(...args);
+                                });
+                            }",
+                            new object[]
+                            {
+                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                            _fn,
+                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                }
+                else
+                {
+                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                            @"
+                            ({MutationPoller, createFunction}, root, fn, ...args) => {
+                                const fun = createFunction(fn);
+                                return new MutationPoller(() => {
+                                return fun(...args);
+                                }, root || document);
+                            }",
+                            new object[]
+                            {
+                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                            _root,
+                            _fn,
+                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                }
+
                 await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
@@ -159,6 +161,13 @@ namespace PuppeteerSharp
 
         internal async Task TerminateAsync(Exception exception = null)
         {
+            // The timeout timer might call this method on cleanup
+            if (_terminated)
+            {
+                return;
+            }
+
+            _terminated = true;
             _isolatedWorld.TaskManager.Delete(this);
             Cleanup(); // This matches the clearTimeout upstream
 

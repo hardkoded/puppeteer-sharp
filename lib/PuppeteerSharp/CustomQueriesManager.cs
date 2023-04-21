@@ -154,9 +154,9 @@ namespace PuppeteerSharp
                 internalHandler.WaitFor = async (IElementHandle root, string selector, WaitForSelectorOptions options) =>
                 {
                     var frame = (root as ElementHandle).Frame;
-                    var element = await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false);
+                    var element = await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false) as IElementHandle;
 
-                    return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(handler.QueryOne, selector, options).ConfigureAwait(false);
+                    return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(handler.QueryOne, element, selector, options).ConfigureAwait(false);
                 };
             }
 
