@@ -100,50 +100,50 @@ namespace PuppeteerSharp
                 _poller = _polling switch
                 {
                     WaitForFunctionPollingOption.Raf => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                                                @"
-                            ({RAFPoller, createFunction}, fn, ...args) => {
-                                const fun = createFunction(fn);
-                                return new RAFPoller(() => {
-                                    return fun(...args);
-                                });
-                            }",
-                                                new object[]
-                                                {
-                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                                _fn,
-                                                }.Concat(_args).ToArray()).ConfigureAwait(false),
+                        @"
+                        ({RAFPoller, createFunction}, fn, ...args) => {
+                            const fun = createFunction(fn);
+                            return new RAFPoller(() => {
+                                return fun(...args);
+                            });
+                        }",
+                        new object[]
+                        {
+                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                            _fn,
+                        }.Concat(_args).ToArray()).ConfigureAwait(false),
                     WaitForFunctionPollingOption.Mutation => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                            @"
-                            ({MutationPoller, createFunction}, root, fn, ...args) => {
-                              const fun = createFunction(fn);
-                              return new MutationPoller(() => {
-                                return fun(...args);
-                              }, root || document);
-                            }",
-                            new object[]
-                            {
-                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                                _root,
-                                _fn,
-                            }.Concat(_args).ToArray()).ConfigureAwait(false),
+                        @"
+                        ({MutationPoller, createFunction}, root, fn, ...args) => {
+                            const fun = createFunction(fn);
+                            return new MutationPoller(() => {
+                            return fun(...args);
+                            }, root || document);
+                        }",
+                        new object[]
+                        {
+                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                            _root,
+                            _fn,
+                        }.Concat(_args).ToArray()).ConfigureAwait(false),
                     _ => await _isolatedWorld.EvaluateFunctionHandleAsync(
-                            @"
-                            ({IntervalPoller, createFunction}, ms, fn, ...args) => {
-                              const fun = createFunction(fn);
-                              return new IntervalPoller(() => {
-                                return fun(...args);
-                              }, ms);
-                            }",
-                            new object[]
-                            {
-                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                                _pollingInterval,
-                                _fn,
-                            }.Concat(_args).ToArray()).ConfigureAwait(false),
+                        @"
+                        ({IntervalPoller, createFunction}, ms, fn, ...args) => {
+                            const fun = createFunction(fn);
+                            return new IntervalPoller(() => {
+                            return fun(...args);
+                            }, ms);
+                        }",
+                        new object[]
+                        {
+                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                            _pollingInterval,
+                            _fn,
+                        }.Concat(_args).ToArray()).ConfigureAwait(false),
                 };
-                await _poller.EvaluateFunctionAsync("poller => poller.start();").ConfigureAwait(false);
+                await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
 
-                var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result();").ConfigureAwait(false);
+                var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
                 _result.TrySetResult(success);
                 await TerminateAsync().ConfigureAwait(false);
             }
