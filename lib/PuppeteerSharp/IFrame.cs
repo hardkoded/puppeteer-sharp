@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the child frames of the this frame.
         /// </summary>
-        IEnumerable<IFrame> ChildFrames { get; }
+        IReadOnlyCollection<IFrame> ChildFrames { get; }
 
         /// <summary>
         /// Gets a value indicating if the frame is detached or not.

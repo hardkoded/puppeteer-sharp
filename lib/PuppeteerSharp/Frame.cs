@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
+        public IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
         /// <inheritdoc/>
         public string Name { get; private set; }

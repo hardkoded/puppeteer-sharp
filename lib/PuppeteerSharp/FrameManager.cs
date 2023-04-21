@@ -372,7 +372,7 @@ namespace PuppeteerSharp
             // Detach all child frames first.
             if (frame != null)
             {
-                while (frame.ChildFrames.Any())
+                while (frame.ChildFrames.Count > 0)
                 {
                     RemoveFramesRecursively(frame.ChildFrames.First() as Frame);
                 }
