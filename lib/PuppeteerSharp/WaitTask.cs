@@ -117,7 +117,7 @@ namespace PuppeteerSharp
                             ({MutationPoller, createFunction}, root, fn, ...args) => {
                               const fun = createFunction(fn);
                               return new MutationPoller(() => {
-                                return fun(...args) as Promise<T>;
+                                return fun(...args);
                               }, root || document);
                             }",
                             new object[]
@@ -131,7 +131,7 @@ namespace PuppeteerSharp
                             ({IntervalPoller, createFunction}, ms, fn, ...args) => {
                               const fun = createFunction(fn);
                               return new IntervalPoller(() => {
-                                return fun(...args) as Promise<T>;
+                                return fun(...args);
                               }, ms);
                             }",
                             new object[]
