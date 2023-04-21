@@ -7,115 +7,25 @@ namespace PuppeteerSharp
 {
     internal sealed class WaitTask : IDisposable
     {
-        private const string WaitForPredicatePageFunction = @"
-async function waitForPredicatePageFunction(
-  root,
-  predicateBody,
-  predicateAcceptsContextElement,
-  polling,
-  timeout,
-  ...args
-) {
-  root = root || document;
-  const predicate = new Function('...args', predicateBody);
-  let timedOut = false;
-  if (timeout) setTimeout(() => (timedOut = true), timeout);
-  if (polling === 'raf') return await pollRaf();
-  if (polling === 'mutation') return await pollMutation();
-  if (typeof polling === 'number') return await pollInterval(polling);
-
-  /**
-   * @returns {!Promise<*>}
-   */
-  async function pollMutation() {
-    const success = predicateAcceptsContextElement
-      ? await predicate(root, ...args)
-      : await predicate(...args);
-    if (success) return Promise.resolve(success);
-
-    let fulfill;
-    const result = new Promise((x) => (fulfill = x));
-    const observer = new MutationObserver(async () => {
-      if (timedOut) {
-        observer.disconnect();
-        fulfill();
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) {
-        observer.disconnect();
-        fulfill(success);
-      }
-    });
-    observer.observe(root, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-    });
-    return result;
-  }
-
-  async function pollRaf() {
-    let fulfill;
-    const result = new Promise((x) => (fulfill = x));
-    await onRaf();
-    return result;
-
-    async function onRaf() {
-      if (timedOut) {
-        fulfill();
-        return;
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) fulfill(success);
-      else requestAnimationFrame(onRaf);
-    }
-  }
-
-  async function pollInterval(pollInterval) {
-    let fulfill;
-    const result = new Promise((x) => (fulfill = x));
-    await onTimeout();
-    return result;
-
-    async function onTimeout() {
-      if (timedOut) {
-        fulfill();
-        return;
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) fulfill(success);
-      else setTimeout(onTimeout, pollInterval);
-    }
-  }
-}";
-
         private readonly IsolatedWorld _isolatedWorld;
-        private readonly string _predicateBody;
+        private readonly string _fn;
         private readonly WaitForFunctionPollingOption _polling;
         private readonly int? _pollingInterval;
-        private readonly int _timeout;
         private readonly object[] _args;
         private readonly string _title;
         private readonly Task _timeoutTimer;
         private readonly IElementHandle _root;
         private readonly bool _predicateAcceptsContextElement;
         private readonly CancellationTokenSource _cts;
-        private readonly TaskCompletionSource<IJSHandle> _taskCompletion;
+        private readonly TaskCompletionSource<IJSHandle> _result;
         private readonly PageBinding[] _bindings;
 
-        private int _runCount;
-        private bool _terminated;
         private bool _isDisposed;
+        private IJSHandle _poller;
 
         internal WaitTask(
             IsolatedWorld isolatedWorld,
-            string predicateBody,
+            string fn,
             bool isExpression,
             string title,
             WaitForFunctionPollingOption polling,
@@ -126,9 +36,9 @@ async function waitForPredicatePageFunction(
             object[] args = null,
             bool predicateAcceptsContextElement = false)
         {
-            if (string.IsNullOrEmpty(predicateBody))
+            if (string.IsNullOrEmpty(fn))
             {
-                throw new ArgumentNullException(nameof(predicateBody));
+                throw new ArgumentNullException(nameof(fn));
             }
 
             if (pollingInterval <= 0)
@@ -137,16 +47,15 @@ async function waitForPredicatePageFunction(
             }
 
             _isolatedWorld = isolatedWorld;
-            _predicateBody = isExpression ? $"return ({predicateBody})" : $"return ({predicateBody})(...args)";
+            _fn = isExpression ? $"() => {{return ({fn});}}" : fn;
             _polling = polling;
             _pollingInterval = pollingInterval;
-            _timeout = timeout;
             _args = args ?? Array.Empty<object>();
             _title = title;
             _root = root;
             _cts = new CancellationTokenSource();
             _predicateAcceptsContextElement = predicateAcceptsContextElement;
-            _taskCompletion = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _result = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _bindings = bidings ?? Array.Empty<PageBinding>();
 
             foreach (var binding in _bindings)
@@ -154,20 +63,20 @@ async function waitForPredicatePageFunction(
                 _isolatedWorld.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
             }
 
-            _isolatedWorld.WaitTasks.Add(this);
+            _isolatedWorld.TaskManager.Add(this);
 
             if (timeout > 0)
             {
                 _timeoutTimer = System.Threading.Tasks.Task.Delay(timeout, _cts.Token)
                     .ContinueWith(
-                        _ => Terminate(new WaitTaskTimeoutException(timeout, title)),
+                        _ => TerminateAsync(new WaitTaskTimeoutException(timeout, title)),
                         TaskScheduler.Default);
             }
 
             _ = Rerun();
         }
 
-        internal Task<IJSHandle> Task => _taskCompletion.Task;
+        internal Task<IJSHandle> Task => _result.Task;
 
         public void Dispose()
         {
@@ -183,84 +92,113 @@ async function waitForPredicatePageFunction(
 
         internal async Task Rerun()
         {
-            var runCount = Interlocked.Increment(ref _runCount);
-            IJSHandle success = null;
-            Exception exception = null;
-
-            var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
-
             try
             {
-                success = await context.EvaluateFunctionHandleAsync(
-                    WaitForPredicatePageFunction,
-                    new object[]
-                    {
-                        _root,
-                        _predicateBody,
-                        _predicateAcceptsContextElement,
-                        _pollingInterval ?? (object)_polling,
-                        _timeout,
-                    }.Concat(_args).ToArray()).ConfigureAwait(false);
+                var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
+                await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
+
+                _poller = _polling switch
+                {
+                    WaitForFunctionPollingOption.Raf => await _isolatedWorld.EvaluateFunctionHandleAsync(
+                                                @"
+                            ({RAFPoller, createFunction}, fn, ...args) => {
+                                const fun = createFunction(fn);
+                                return new RAFPoller(() => {
+                                    return fun(...args);
+                                });
+                            }",
+                                                new object[]
+                                                {
+                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                _fn,
+                                                }.Concat(_args).ToArray()).ConfigureAwait(false),
+                    WaitForFunctionPollingOption.Mutation => await _isolatedWorld.EvaluateFunctionHandleAsync(
+                            @"
+                            ({MutationPoller, createFunction}, root, fn, ...args) => {
+                              const fun = createFunction(fn);
+                              return new MutationPoller(() => {
+                                return fun(...args) as Promise<T>;
+                              }, root || document);
+                            }",
+                            new object[]
+                            {
+                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                _root,
+                                _fn,
+                            }.Concat(_args).ToArray()).ConfigureAwait(false),
+                    _ => await _isolatedWorld.EvaluateFunctionHandleAsync(
+                            @"
+                            ({IntervalPoller, createFunction}, ms, fn, ...args) => {
+                              const fun = createFunction(fn);
+                              return new IntervalPoller(() => {
+                                return fun(...args) as Promise<T>;
+                              }, ms);
+                            }",
+                            new object[]
+                            {
+                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                _pollingInterval,
+                                _fn,
+                            }.Concat(_args).ToArray()).ConfigureAwait(false),
+                };
+                await _poller.EvaluateFunctionAsync("poller => poller.start();").ConfigureAwait(false);
+
+                var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result();").ConfigureAwait(false);
+                _result.TrySetResult(success);
+                await TerminateAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                exception = ex;
-            }
-
-            if (_terminated || runCount != _runCount)
-            {
-                if (success != null)
+                var exception = GetBadException(ex);
+                if (exception != null)
                 {
-                    await success.DisposeAsync().ConfigureAwait(false);
+                    await TerminateAsync(exception).ConfigureAwait(false);
                 }
-
-                return;
             }
+        }
 
-            if (exception == null &&
-                await _isolatedWorld.EvaluateFunctionAsync<bool>("s => !s", success)
-                    .ContinueWith(
-                        task => task.IsFaulted || task.Result,
-                        TaskScheduler.Default)
-                    .ConfigureAwait(false))
-            {
-                if (success != null)
-                {
-                    await success.DisposeAsync().ConfigureAwait(false);
-                }
-
-                return;
-            }
-
-            if (exception?.Message.Contains("Execution context was destroyed") == true)
-            {
-                _ = Rerun();
-                return;
-            }
-
-            if (exception?.Message.Contains("Cannot find context with specified id") == true)
-            {
-                return;
-            }
+        internal async Task TerminateAsync(Exception exception = null)
+        {
+            _isolatedWorld.TaskManager.Delete(this);
+            Cleanup(); // This matches the clearTimeout upstream
 
             if (exception != null)
             {
-                _taskCompletion.TrySetException(exception);
-            }
-            else
-            {
-                _taskCompletion.TrySetResult(success);
+                _result.TrySetException(exception);
             }
 
-            Cleanup();
+            if (_poller != null)
+            {
+                try
+                {
+                    await _poller.EvaluateFunctionAsync(@"async poller => {
+                        await poller.stop();
+                    }").ConfigureAwait(false);
+
+                    await _poller.DisposeAsync().ConfigureAwait(false);
+                    _poller = null;
+                }
+                catch (Exception)
+                {
+                    // swallow error.
+                }
+            }
         }
 
-        internal void Terminate(Exception exception)
+        private Exception GetBadException(Exception exception)
         {
-            _terminated = true;
-            _taskCompletion.TrySetException(exception);
-            Cleanup();
+            if (exception.Message.Contains("Execution context is not available in detached frame"))
+            {
+                return new PuppeteerException("Waiting failed: Frame detached");
+            }
+
+            if (exception.Message.Contains("Execution context was destroyed") ||
+                exception.Message.Contains("Cannot find context with specified id"))
+            {
+                return null;
+            }
+
+            return exception;
         }
 
         private void Cleanup()
@@ -277,7 +215,7 @@ async function waitForPredicatePageFunction(
                 }
             }
 
-            _isolatedWorld.WaitTasks.Remove(this);
+            _isolatedWorld.TaskManager.Delete(this);
         }
     }
 }

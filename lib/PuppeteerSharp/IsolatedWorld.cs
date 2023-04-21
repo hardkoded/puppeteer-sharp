@@ -2,12 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
@@ -48,13 +46,12 @@ namespace PuppeteerSharp
             Frame = frame;
             _timeoutSettings = timeoutSettings;
 
-            WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
         }
 
-        internal ConcurrentSet<WaitTask> WaitTasks { get; set; }
+        internal TaskManager TaskManager { get; set; } = new();
 
         internal Frame Frame { get; }
 
@@ -160,10 +157,7 @@ namespace PuppeteerSharp
         internal void Detach()
         {
             _detached = true;
-            while (!WaitTasks.IsEmpty)
-            {
-                WaitTasks.First().Terminate(new Exception("waitForFunction failed: frame got detached."));
-            }
+            TaskManager.TerminateAll(new Exception("waitForFunction failed: frame got detached."));
         }
 
         internal Task<ExecutionContext> GetExecutionContextAsync()
@@ -458,10 +452,7 @@ namespace PuppeteerSharp
             _ = InjectPuppeteerUtil(context);
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
-            foreach (var waitTask in WaitTasks)
-            {
-                _ = waitTask.Rerun();
-            }
+            TaskManager.RerunAll();
         }
 
         private static string GetInjectedSource()
