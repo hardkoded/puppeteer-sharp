@@ -89,8 +89,11 @@ namespace PuppeteerSharp
         {
             try
             {
-                var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
-                await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
+                if (_bindings.Length > 0)
+                {
+                    var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
+                    await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
+                }
 
                 if (_pollingInterval.HasValue)
                 {
@@ -176,33 +179,45 @@ namespace PuppeteerSharp
                 _result.TrySetException(exception);
             }
 
-            if (_poller != null)
+            if (_poller is { } poller)
             {
-                try
+                await using (poller.ConfigureAwait(false))
                 {
-                    await _poller.EvaluateFunctionAsync(@"async poller => {
-                        await poller.stop();
-                    }").ConfigureAwait(false);
+                    try
+                    {
+                        await poller.EvaluateFunctionAsync(@"async poller => {
+                            await poller.stop();
+                        }").ConfigureAwait(false);
 
-                    await _poller.DisposeAsync().ConfigureAwait(false);
-                    _poller = null;
-                }
-                catch (Exception)
-                {
-                    // swallow error.
+                        poller = null;
+                    }
+                    catch (Exception)
+                    {
+                        // swallow error.
+                    }
                 }
             }
         }
 
         private Exception GetBadException(Exception exception)
         {
+            // When frame is detached the task should have been terminated by the IsolatedWorld.
+            // This can fail if we were adding this task while the frame was detached,
+            // so we terminate here instead.
             if (exception.Message.Contains("Execution context is not available in detached frame"))
             {
-                return new PuppeteerException("Waiting failed: Frame detached");
+                return new PuppeteerException("Waiting failed: Frame detached", exception);
             }
 
-            if (exception.Message.Contains("Execution context was destroyed") ||
-                exception.Message.Contains("Cannot find context with specified id"))
+            // When the page is navigated, the promise is rejected.
+            // We will try again in the new execution context.
+            if (exception.Message.Contains("Execution context was destroyed"))
+            {
+                return null;
+            }
+
+            // We could have tried to evaluate in a context which was already destroyed.
+            if (exception.Message.Contains("Cannot find context with specified id"))
             {
                 return null;
             }
@@ -223,8 +238,6 @@ namespace PuppeteerSharp
                     // Ignore
                 }
             }
-
-            _isolatedWorld.TaskManager.Delete(this);
         }
     }
 }
