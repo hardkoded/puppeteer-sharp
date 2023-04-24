@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,8 +71,6 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
-
-        internal IDictionary<string, Target> TargetsMap { get; }
 
         public ConcurrentDictionary<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
 
