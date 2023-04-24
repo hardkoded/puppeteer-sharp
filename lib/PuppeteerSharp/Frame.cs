@@ -51,8 +51,6 @@ namespace PuppeteerSharp
 
         internal List<string> LifecycleEvents { get; }
 
-        internal string NavigationURL { get; private set; }
-
         internal IsolatedWorld MainWorld { get; private set; }
 
         internal IsolatedWorld PuppeteerWorld { get; private set; }
@@ -343,7 +341,6 @@ namespace PuppeteerSharp
         internal void Navigated(FramePayload framePayload)
         {
             Name = framePayload.Name ?? string.Empty;
-            NavigationURL = framePayload.Url + framePayload.UrlFragment;
             Url = framePayload.Url + framePayload.UrlFragment;
         }
 
