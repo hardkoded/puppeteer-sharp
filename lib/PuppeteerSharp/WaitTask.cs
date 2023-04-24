@@ -222,6 +222,15 @@ namespace PuppeteerSharp
                 return null;
             }
 
+            // We don't have this check upstream.
+            // We have a situation in our async code where a new navigation could be executed
+            // before the WaitForFunction completes its initialization
+            // See FrameWaitForSelectorTests.ShouldSurviveCrossProssNavigation
+            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
+            {
+                return null;
+            }
+
             return exception;
         }
 

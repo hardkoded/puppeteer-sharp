@@ -327,7 +327,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new PuppeteerException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
             }
         }
 

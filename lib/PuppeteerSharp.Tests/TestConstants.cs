@@ -43,7 +43,9 @@ namespace PuppeteerSharp.Tests
         public static LaunchOptions DefaultBrowserOptions() => new()
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
-            Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
+            Headless = Convert.ToBoolean(
+                Environment.GetEnvironmentVariable("HEADLESS") ??
+                (System.Diagnostics.Debugger.IsAttached ? "false" : "true")),
             Product = IsChrome ? Product.Chrome : Product.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
