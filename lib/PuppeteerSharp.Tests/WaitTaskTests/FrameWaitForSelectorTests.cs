@@ -166,7 +166,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
         {
             var divHidden = false;
-            await Page.SetContentAsync("<div style='display: block;'></div>");
+            await Page.SetContentAsync("<div style='display: block;'>text</div>");
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
@@ -180,7 +180,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task HiddenShouldWaitForRemoval()
         {
-            await Page.SetContentAsync("<div></div>");
+            await Page.SetContentAsync("<div>text</div>");
             var divRemoved = false;
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divRemoved = true);
@@ -213,11 +213,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldHaveAnErrorMessageSpecificallyForAwaitingAnElementToBeHidden()
         {
-            await Page.SetContentAsync("<div></div>");
+            await Page.SetContentAsync("<div>text</div>");
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
 
-            Assert.Contains("waiting for selector 'div' to be hidden failed: timeout", exception.Message);
+            Assert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should respond to node attribute mutation")]

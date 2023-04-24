@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
-            System.Console.WriteLine((DateTime.UtcNow - startTime).TotalMilliseconds);
+
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
         

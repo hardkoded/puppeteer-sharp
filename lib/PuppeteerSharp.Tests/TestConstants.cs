@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests
             "    http://localhost:<PORT>/frames/frame.html (aframe)"
         };
 
-        public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
+        public static LaunchOptions DefaultBrowserOptions() => new()
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests
 #endif
         };
 
-        public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions
+        public static LaunchOptions BrowserWithExtensionOptions() => new()
         {
             Headless = false,
             Args = new[]

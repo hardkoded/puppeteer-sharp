@@ -124,8 +124,8 @@ namespace PuppeteerSharp
                             }",
                             new object[]
                             {
-                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                            _fn,
+                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                _fn,
                             }.Concat(_args).ToArray()).ConfigureAwait(false);
                 }
                 else
@@ -135,14 +135,14 @@ namespace PuppeteerSharp
                             ({MutationPoller, createFunction}, root, fn, ...args) => {
                                 const fun = createFunction(fn);
                                 return new MutationPoller(() => {
-                                return fun(...args);
+                                    return fun(...args);
                                 }, root || document);
                             }",
                             new object[]
                             {
-                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                            _root,
-                            _fn,
+                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                _root,
+                                _fn,
                             }.Concat(_args).ToArray()).ConfigureAwait(false);
                 }
 

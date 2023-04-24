@@ -267,45 +267,68 @@ namespace PuppeteerSharp
 
         internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, IElementHandle root, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
         {
-            var waitForVisible = options?.Visible ?? false;
-            var waitForHidden = options?.Hidden ?? false;
-            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-
-            var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-
-            var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
-              if (!PuppeteerUtil) {{
-                return;
-              }}
-              const node = (await PuppeteerUtil.createFunction(query)(
-                root || document,
-                selector
-              ));
-              return PuppeteerUtil.checkVisibility(node, visible);
-            }}";
-
-            var jsHandle = await WaitForFunctionAsync(
-                predicate,
-                new()
-                {
-                    Bindings = bindings,
-                    Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
-                    Root = root,
-                    Timeout = timeout,
-                },
-                await GetPuppeteerUtilAsync().ConfigureAwait(false),
-                queryOne,
-                selector,
-                root,
-                waitForVisible ? true : waitForHidden ? false : null).ConfigureAwait(false);
-
-            if (jsHandle is not ElementHandle elementHandle)
+            try
             {
-                await jsHandle.DisposeAsync().ConfigureAwait(false);
-                return null;
-            }
+                var waitForVisible = options?.Visible ?? false;
+                var waitForHidden = options?.Hidden ?? false;
+                var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
 
-            return elementHandle;
+                var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
+                if(visible === undefined) {{
+                    console.log(PuppeteerUtil, query, selector, root, visible);
+                }}
+                  if (!PuppeteerUtil) {{
+                    return;
+                  }}
+                  const node = (await PuppeteerUtil.createFunction(query)(
+                    root || document,
+                    selector
+                  ));
+                if(visible === undefined) {{
+                    console.log(visible, node, PuppeteerUtil.checkVisibility(node, visible));
+                }}
+                  return PuppeteerUtil.checkVisibility(node, visible);
+                }}";
+
+                var args = new List<object>
+                {
+                    await GetPuppeteerUtilAsync().ConfigureAwait(false),
+                    queryOne,
+                    selector,
+                    root,
+                };
+
+                // Puppeteer's injected code checks for visible to be undefined
+                // As we don't support passing undefined values we need to ignore sending this value
+                // if visible is false
+                if (waitForVisible || waitForHidden)
+                {
+                    args.Add(waitForVisible);
+                }
+
+                var jsHandle = await WaitForFunctionAsync(
+                    predicate,
+                    new()
+                    {
+                        Bindings = bindings,
+                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
+                        Root = root,
+                        Timeout = timeout,
+                    },
+                    args.ToArray()).ConfigureAwait(false);
+
+                if (jsHandle is not ElementHandle elementHandle)
+                {
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    return null;
+                }
+
+                return elementHandle;
+            }
+            catch (Exception ex)
+            {
+                throw new PuppeteerException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+            }
         }
 
         internal async Task ClickAsync(string selector, ClickOptions options = null)
