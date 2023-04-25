@@ -618,8 +618,7 @@ namespace PuppeteerSharp
             options ??= new WaitForSelectorOptions();
             var timeout = options.Timeout ?? _timeoutSettings.Timeout;
 
-            const string predicate = @"
-              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
+            const string predicate = @"function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
                 const node = isXPath
                   ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
                   : document.querySelector(selectorOrXPath);
