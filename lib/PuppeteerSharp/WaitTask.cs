@@ -133,7 +133,7 @@ namespace PuppeteerSharp
                     _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
                             @"
                             ({MutationPoller, createFunction}, root, fn, ...args) => {
-                                const fun = createFunction(fn);
+                                const fun = createFunction(fn.trim());
                                 return new MutationPoller(() => {
                                     return fun(...args);
                                 }, root || document);
