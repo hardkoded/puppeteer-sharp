@@ -100,10 +100,12 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldRespectTimeout()
         {
-            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
-                    => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
+            const int timeout = 10;
 
-            Assert.Contains("waiting for XPath '//div' failed: timeout", exception.Message);
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                    => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = timeout }));
+
+            Assert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);
         }
     }
 }
