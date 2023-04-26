@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         public async Task ShouldNotAllowYouToSelectAnElementWithSingleSlashXpath()
         {
             await Page.SetContentAsync("<div>some text</div>");
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(() =>
                 Page.WaitForSelectorAsync("/html/body/div"));
             Assert.NotNull(exception);
         }

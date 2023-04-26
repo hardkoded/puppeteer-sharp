@@ -40,10 +40,12 @@ namespace PuppeteerSharp.Tests
             "    http://localhost:<PORT>/frames/frame.html (aframe)"
         };
 
-        public static LaunchOptions DefaultBrowserOptions() => new LaunchOptions
+        public static LaunchOptions DefaultBrowserOptions() => new()
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
-            Headless = Convert.ToBoolean(Environment.GetEnvironmentVariable("HEADLESS") ?? "true"),
+            Headless = Convert.ToBoolean(
+                Environment.GetEnvironmentVariable("HEADLESS") ??
+                (System.Diagnostics.Debugger.IsAttached ? "false" : "true")),
             Product = IsChrome ? Product.Chrome : Product.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
@@ -55,7 +57,7 @@ namespace PuppeteerSharp.Tests
 #endif
         };
 
-        public static LaunchOptions BrowserWithExtensionOptions() => new LaunchOptions
+        public static LaunchOptions BrowserWithExtensionOptions() => new()
         {
             Headless = false,
             Args = new[]

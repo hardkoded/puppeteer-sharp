@@ -52,6 +52,7 @@ namespace PuppeteerSharp
 
                 return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(
                     @"(_, selector) => globalThis.ariaQuerySelector(selector)",
+                    element,
                     selector,
                     options,
                     new[] { binding }).ConfigureAwait(false);

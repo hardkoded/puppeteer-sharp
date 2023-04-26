@@ -2,12 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
@@ -48,13 +46,12 @@ namespace PuppeteerSharp
             Frame = frame;
             _timeoutSettings = timeoutSettings;
 
-            WaitTasks = new ConcurrentSet<WaitTask>();
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
         }
 
-        internal ConcurrentSet<WaitTask> WaitTasks { get; set; }
+        internal TaskManager TaskManager { get; set; } = new();
 
         internal Frame Frame { get; }
 
@@ -160,10 +157,7 @@ namespace PuppeteerSharp
         internal void Detach()
         {
             _detached = true;
-            while (!WaitTasks.IsEmpty)
-            {
-                WaitTasks.First().Terminate(new Exception("waitForFunction failed: frame got detached."));
-            }
+            TaskManager.TerminateAll(new Exception("waitForFunction failed: frame got detached."));
         }
 
         internal Task<ExecutionContext> GetExecutionContextAsync()
@@ -271,48 +265,70 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, IElementHandle root, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
         {
-            var waitForVisible = options?.Visible ?? false;
-            var waitForHidden = options?.Hidden ?? false;
-            var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-
-            var polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
-            var title = $"selector '{selector}'{(waitForHidden ? " to be hidden" : string.Empty)}";
-
-            var predicate = @$"async function predicate(root, selector, waitForVisible, waitForHidden) {{
-                const node = predicateQueryHandler
-                  ? ((await predicateQueryHandler(root, selector)))
-                  : root.querySelector(selector);
-                return checkWaitForOptions(node, waitForVisible, waitForHidden);
-            }}";
-
-            using var waitTask = new WaitTask(
-                this,
-                MakePredicateString(predicate, queryOne),
-                true,
-                title,
-                polling,
-                null,
-                timeout,
-                options?.Root,
-                bindings,
-                new object[]
-                {
-                    selector,
-                    waitForVisible,
-                    waitForHidden,
-                },
-                true);
-
-            var jsHandle = await waitTask.Task.ConfigureAwait(false);
-            if (jsHandle is not ElementHandle elementHandle)
+            try
             {
-                await jsHandle.DisposeAsync().ConfigureAwait(false);
-                return null;
-            }
+                var waitForVisible = options?.Visible ?? false;
+                var waitForHidden = options?.Hidden ?? false;
+                var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
 
-            return elementHandle;
+                var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
+                if(visible === undefined) {{
+                    console.log(PuppeteerUtil, query, selector, root, visible);
+                }}
+                  if (!PuppeteerUtil) {{
+                    return;
+                  }}
+                  const node = (await PuppeteerUtil.createFunction(query)(
+                    root || document,
+                    selector
+                  ));
+                if(visible === undefined) {{
+                    console.log(visible, node, PuppeteerUtil.checkVisibility(node, visible));
+                }}
+                  return PuppeteerUtil.checkVisibility(node, visible);
+                }}";
+
+                var args = new List<object>
+                {
+                    await GetPuppeteerUtilAsync().ConfigureAwait(false),
+                    queryOne,
+                    selector,
+                    root,
+                };
+
+                // Puppeteer's injected code checks for visible to be undefined
+                // As we don't support passing undefined values we need to ignore sending this value
+                // if visible is false
+                if (waitForVisible || waitForHidden)
+                {
+                    args.Add(waitForVisible);
+                }
+
+                var jsHandle = await WaitForFunctionAsync(
+                    predicate,
+                    new()
+                    {
+                        Bindings = bindings,
+                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
+                        Root = root,
+                        Timeout = timeout,
+                    },
+                    args.ToArray()).ConfigureAwait(false);
+
+                if (jsHandle is not ElementHandle elementHandle)
+                {
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    return null;
+                }
+
+                return elementHandle;
+            }
+            catch (Exception ex)
+            {
+                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+            }
         }
 
         internal async Task ClickAsync(string selector, ClickOptions options = null)
@@ -381,12 +397,11 @@ namespace PuppeteerSharp
                  this,
                  script,
                  false,
-                 "function",
                  options.Polling,
                  options.PollingInterval,
                  options.Timeout ?? _timeoutSettings.Timeout,
-                 null,
-                 null,
+                 options.Root,
+                 options.Bindings,
                  args);
 
             return await waitTask
@@ -400,14 +415,12 @@ namespace PuppeteerSharp
                 this,
                 script,
                 true,
-                "function",
                 options.Polling,
                 options.PollingInterval,
                 options.Timeout ?? _timeoutSettings.Timeout,
                 null, // Root
                 null, // PageBinding
-                null, // args
-                false); // predicateAcceptsContextElement
+                null); // args
 
             return await waitTask
                 .Task
@@ -458,10 +471,7 @@ namespace PuppeteerSharp
             _ = InjectPuppeteerUtil(context);
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
-            foreach (var waitTask in WaitTasks)
-            {
-                _ = waitTask.Rerun();
-            }
+            TaskManager.RerunAll();
         }
 
         private static string GetInjectedSource()
@@ -608,8 +618,7 @@ namespace PuppeteerSharp
             options ??= new WaitForSelectorOptions();
             var timeout = options.Timeout ?? _timeoutSettings.Timeout;
 
-            const string predicate = @"
-              function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
+            const string predicate = @"function predicate(selectorOrXPath, isXPath, waitForVisible, waitForHidden) {
                 const node = isXPath
                   ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
                   : document.querySelector(selectorOrXPath);
@@ -635,7 +644,6 @@ namespace PuppeteerSharp
                 this,
                 predicate,
                 false,
-                $"{(isXPath ? "XPath" : "selector")} '{selectorOrXPath}'{(options.Hidden ? " to be hidden" : string.Empty)}",
                 polling,
                 null, // Polling interval
                 timeout,
