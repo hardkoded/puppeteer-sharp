@@ -126,11 +126,8 @@ namespace PuppeteerSharp
             if (viewport != null && (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height))
             {
                 var newRawViewport = JObject.FromObject(viewport);
-                newRawViewport.Merge(new ViewPortOptions
-                {
-                    Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
-                    Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height)),
-                });
+                newRawViewport["Width"] = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width));
+                newRawViewport["Height"] = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height));
                 await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
                 needsViewportReset = true;
             }
