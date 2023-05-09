@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace PuppeteerSharp
 {
@@ -17,6 +17,6 @@ namespace PuppeteerSharp
         /// Gets the message data.
         /// </summary>
         /// <value>The message data.</value>
-        public JToken MessageData { get; internal set; }
+        public JsonElement MessageData { get; internal set; }
     }
 }

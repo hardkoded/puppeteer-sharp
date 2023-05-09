@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -90,7 +90,7 @@ namespace PuppeteerSharp
         /// </param>
         /// <returns>The task.</returns>
         /// <exception cref="PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
-        Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true);
+        Task<JsonObject> SendAsync(string method, object args = null, bool waitForCallback = true);
 
         /// <summary>
         /// Protocol methods can be called with this method.

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
 
@@ -127,7 +128,7 @@ namespace PuppeteerSharp.Input
             {
                 if (e.MessageID == "Input.dragIntercepted")
                 {
-                    result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
+                    result.TrySetResult(e.MessageData.GetProperty("data").Deserialize<DragData>());
                     _client.MessageReceived -= DragIntercepted;
                 }
             }

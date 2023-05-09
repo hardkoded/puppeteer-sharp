@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
@@ -111,7 +111,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="IPage.EvaluateExpressionAsync{T}(string)"/>
-        Task<JToken> EvaluateExpressionAsync(string script);
+        Task<JsonElement> EvaluateExpressionAsync(string script);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -152,7 +152,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="IPage.EvaluateFunctionAsync{T}(string, object[])"/>
-        Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
+        Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.

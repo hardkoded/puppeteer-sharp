@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
@@ -125,13 +126,16 @@ namespace PuppeteerSharp
             var viewport = Page.Viewport;
             if (viewport != null && (boundingBox.Width > viewport.Width || boundingBox.Height > viewport.Height))
             {
-                var newRawViewport = JObject.FromObject(viewport);
+                // Pending
+                /*
+                var newRawViewport = JsonSerializer.Deserialize<ViewPortOptions>(viewport);
+
                 newRawViewport.Merge(new ViewPortOptions
                 {
                     Width = (int)Math.Max(viewport.Width, Math.Ceiling(boundingBox.Width)),
                     Height = (int)Math.Max(viewport.Height, Math.Ceiling(boundingBox.Height)),
-                });
-                await Page.SetViewportAsync(newRawViewport.ToObject<ViewPortOptions>(true)).ConfigureAwait(false);
+                });*/
+                await Page.SetViewportAsync(viewport).ConfigureAwait(false);
                 needsViewportReset = true;
             }
 

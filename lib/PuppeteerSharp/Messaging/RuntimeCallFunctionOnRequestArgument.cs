@@ -1,10 +1,10 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Messaging
 {
     internal class RuntimeCallFunctionOnRequestArgument
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public object Value { get; set; }
     }
 }

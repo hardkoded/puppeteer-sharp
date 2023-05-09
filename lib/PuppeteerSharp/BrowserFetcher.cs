@@ -8,9 +8,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
 using static PuppeteerSharp.BrowserFetcherOptions;
@@ -465,7 +465,7 @@ namespace PuppeteerSharp
             {
                 using var client = new HttpClient();
                 var response = await client.GetStringAsync("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
-                var version = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
+                var version = JsonSerializer.Deserialize<Dictionary<string, string>>(response);
                 DefaultFirefoxRevision = version["FIREFOX_NIGHTLY"];
             }
 

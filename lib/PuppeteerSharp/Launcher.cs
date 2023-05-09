@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -147,7 +147,7 @@ namespace PuppeteerSharp
                         data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<WSEndpointResponse>(data).WebSocketDebuggerUrl;
+                    return JsonSerializer.Deserialize<WSEndpointResponse>(data).WebSocketDebuggerUrl;
                 }
 
                 throw new PuppeteerException($"Invalid URL {browserURL}");

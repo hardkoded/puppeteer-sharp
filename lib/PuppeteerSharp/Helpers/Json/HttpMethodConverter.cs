@@ -1,9 +1,9 @@
 using System;
 using System.Net.Http;
-using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Helpers.Json
 {
+    /*
     internal class HttpMethodConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType) => objectType == typeof(string);
@@ -17,4 +17,5 @@ namespace PuppeteerSharp.Helpers.Json
             serializer.Serialize(writer, httpMethod.Method);
         }
     }
+    */
 }

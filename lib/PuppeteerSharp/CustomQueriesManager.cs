@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {

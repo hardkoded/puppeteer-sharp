@@ -1,4 +1,5 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace PuppeteerSharp.Messaging
 {
@@ -8,11 +9,11 @@ namespace PuppeteerSharp.Messaging
 
         public ConnectionError Error { get; set; }
 
-        public JObject Result { get; set; }
+        public JsonObject Result { get; set; }
 
         public string Method { get; set; }
 
-        public JToken Params { get; set; }
+        public JsonElement Params { get; set; }
 
         public string SessionId { get; set; }
     }

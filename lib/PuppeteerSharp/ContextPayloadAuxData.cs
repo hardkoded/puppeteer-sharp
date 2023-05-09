@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace PuppeteerSharp
 {
     internal class ContextPayloadAuxData

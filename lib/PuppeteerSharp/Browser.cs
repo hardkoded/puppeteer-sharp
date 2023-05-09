@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -359,15 +360,15 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Target.targetCreated":
-                        await CreateTargetAsync(e.MessageData.ToObject<TargetCreatedResponse>(true)).ConfigureAwait(false);
+                        await CreateTargetAsync(e.MessageData.Deserialize<TargetCreatedResponse>()).ConfigureAwait(false);
                         return;
 
                     case "Target.targetDestroyed":
-                        await DestroyTargetAsync(e.MessageData.ToObject<TargetDestroyedResponse>(true)).ConfigureAwait(false);
+                        await DestroyTargetAsync(e.MessageData.Deserialize<TargetDestroyedResponse>()).ConfigureAwait(false);
                         return;
 
                     case "Target.targetInfoChanged":
-                        ChangeTargetInfo(e.MessageData.ToObject<TargetCreatedResponse>(true));
+                        ChangeTargetInfo(e.MessageData.Deserialize<TargetCreatedResponse>());
                         return;
                 }
             }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
+        Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.

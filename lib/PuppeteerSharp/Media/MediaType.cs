@@ -1,13 +1,11 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace PuppeteerSharp.Media
 {
     /// <summary>
     /// Media type.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter), true)]
+    // [JsonConverter(typeof(StringEnumConverter), true)]
     public enum MediaType
     {
         /// <summary>

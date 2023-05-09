@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -124,10 +124,10 @@ namespace PuppeteerSharp
         public async Task<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync().ConfigureAwait(false));
+        public async Task<JsonObject> JsonAsync() => JsonSerializer.Deserialize<JsonObject>(await TextAsync().ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>(true);
+        public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).Deserialize<T>();
 
         private string ParseStatusTextFromExtrInfo(ResponseReceivedExtraInfoResponse extraInfo)
         {

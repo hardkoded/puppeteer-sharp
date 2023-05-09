@@ -1,9 +1,8 @@
 using System;
 using System.Numerics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
@@ -26,7 +25,7 @@ namespace PuppeteerSharp.Helpers
                     return "undefined";
                 }
 
-                if (remoteObject.Value == null)
+                if (remoteObject.Value.ValueKind == JsonValueKind.Undefined)
                 {
                     return "null";
                 }
@@ -34,12 +33,12 @@ namespace PuppeteerSharp.Helpers
 
             var value = remoteObject.Value;
 
-            if (value == null)
+            if (value.ValueKind == JsonValueKind.Undefined)
             {
                 return default(T);
             }
 
-            return typeof(T) == typeof(JToken) ? value : ValueFromType<T>(value, remoteObject.Type, stringify);
+            return typeof(T) == typeof(JsonElement) ? value : ValueFromType<T>(value, remoteObject.Type, stringify);
         }
 
         internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
@@ -64,24 +63,24 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        private static object ValueFromType<T>(JToken value, RemoteObjectType objectType, bool stringify = false)
+        private static object ValueFromType<T>(JsonElement value, RemoteObjectType objectType, bool stringify = false)
         {
             if (stringify)
             {
                 switch (objectType)
                 {
                     case RemoteObjectType.Object:
-                        return value.ToObject<T>(true);
+                        return value.Deserialize<T>();
                     case RemoteObjectType.Undefined:
                         return "undefined";
                     case RemoteObjectType.Number:
-                        return value.Value<T>();
+                        return value.Deserialize<T>();
                     case RemoteObjectType.Boolean:
-                        return value.Value<bool>();
+                        return value.Deserialize<bool>();
                     case RemoteObjectType.Bigint:
-                        return value.Value<double>();
+                        return value.Deserialize<double>();
                     default: // string, symbol, function
-                        return value.ToObject<T>();
+                        return value.Deserialize<T>();
                 }
             }
             else
@@ -89,17 +88,17 @@ namespace PuppeteerSharp.Helpers
                 switch (objectType)
                 {
                     case RemoteObjectType.Object:
-                        return value.ToObject<T>(true);
+                        return value.Deserialize<T>();
                     case RemoteObjectType.Undefined:
                         return null;
                     case RemoteObjectType.Number:
-                        return value.Value<T>();
+                        return value.Deserialize<T>();
                     case RemoteObjectType.Boolean:
-                        return value.Value<bool>();
+                        return value.Deserialize<bool>();
                     case RemoteObjectType.Bigint:
-                        return value.Value<double>();
+                        return value.Deserialize<double>();
                     default: // string, symbol, function
-                        return value.ToObject<T>();
+                        return value.Deserialize<T>();
                 }
             }
         }

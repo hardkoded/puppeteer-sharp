@@ -17,7 +17,7 @@
 		</PackageReference>
 		<PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0-preview.2.21154.6" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
 	</ItemGroup>
 	<Import Project="../Common/SignAssembly.props" />
 	<ItemGroup>

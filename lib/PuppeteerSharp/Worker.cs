@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -101,7 +100,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args)
             => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -137,13 +136,13 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.executionContextCreated":
-                        OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
+                        OnExecutionContextCreated(e.MessageData.Deserialize<RuntimeExecutionContextCreatedResponse>());
                         break;
                     case "Runtime.consoleAPICalled":
                         await OnConsoleAPICalled(e).ConfigureAwait(false);
                         break;
                     case "Runtime.exceptionThrown":
-                        OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
+                        OnExceptionThrown(e.MessageData.Deserialize<RuntimeExceptionThrownResponse>());
                         break;
                 }
             }
@@ -159,7 +158,7 @@ namespace PuppeteerSharp
 
         private async Task OnConsoleAPICalled(MessageEventArgs e)
         {
-            var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
+            var consoleData = e.MessageData.Deserialize<PageConsoleResponse>();
             await _consoleAPICalled(
                 consoleData.Type,
                 consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray(),

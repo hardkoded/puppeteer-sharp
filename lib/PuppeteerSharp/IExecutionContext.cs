@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JToken> EvaluateExpressionAsync(string script);
+        Task<JsonElement> EvaluateExpressionAsync(string script);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -63,7 +63,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
+        Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.

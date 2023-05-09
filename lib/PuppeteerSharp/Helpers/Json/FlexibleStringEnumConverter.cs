@@ -1,9 +1,8 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace PuppeteerSharp.Helpers.Json
 {
+    /*
     internal class FlexibleStringEnumConverter : StringEnumConverter
     {
         private readonly Enum _fallbackValue;
@@ -21,5 +20,5 @@ namespace PuppeteerSharp.Helpers.Json
                 return _fallbackValue;
             }
         }
-    }
+    }*/
 }

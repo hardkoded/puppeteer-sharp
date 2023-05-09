@@ -1,12 +1,9 @@
-using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
-
 namespace PuppeteerSharp.Messaging
 {
     /// <summary>
     /// Remote object subtype.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
+    // [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
     public enum RemoteObjectSubtype
     {
         /// <summary>
