@@ -1,13 +1,11 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Target type.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
+    // [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
     public enum TargetType
     {
         /// <summary>

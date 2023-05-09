@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -144,28 +145,28 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPausedAsync(e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
+                        await OnRequestPausedAsync(e.MessageData.Deserialize<FetchRequestPausedResponse>()).ConfigureAwait(false);
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequiredAsync(e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
+                        await OnAuthRequiredAsync(e.MessageData.Deserialize<FetchAuthRequiredResponse>()).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
+                        await OnRequestWillBeSentAsync(e.MessageData.Deserialize<RequestWillBeSentPayload>()).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
-                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
+                        OnRequestServedFromCache(e.MessageData.Deserialize<RequestServedFromCacheResponse>());
                         break;
                     case "Network.responseReceived":
-                        OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>(true));
+                        OnResponseReceived(e.MessageData.Deserialize<ResponseReceivedResponse>());
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
+                        OnLoadingFinished(e.MessageData.Deserialize<LoadingFinishedEventResponse>());
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>(true));
+                        OnLoadingFailed(e.MessageData.Deserialize<LoadingFailedEventResponse>());
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        await OnResponseReceivedExtraInfoAsync(e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
+                        await OnResponseReceivedExtraInfoAsync(e.MessageData.Deserialize<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
                         break;
                 }
             }

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -209,41 +210,41 @@ namespace PuppeteerSharp
                     switch (e.MessageID)
                     {
                         case "Page.frameAttached":
-                            OnFrameAttached(sender as CDPSession, e.MessageData.ToObject<PageFrameAttachedResponse>());
+                            OnFrameAttached(sender as CDPSession, e.MessageData.Deserialize<PageFrameAttachedResponse>());
                             break;
 
                         case "Page.frameNavigated":
-                            await OnFrameNavigatedAsync(e.MessageData.ToObject<PageFrameNavigatedResponse>(true).Frame).ConfigureAwait(false);
+                            await OnFrameNavigatedAsync(e.MessageData.Deserialize<PageFrameNavigatedResponse>().Frame).ConfigureAwait(false);
                             break;
 
                         case "Page.navigatedWithinDocument":
-                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
+                            OnFrameNavigatedWithinDocument(e.MessageData.Deserialize<NavigatedWithinDocumentResponse>());
                             break;
 
                         case "Page.frameDetached":
-                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>(true));
+                            OnFrameDetached(e.MessageData.Deserialize<PageFrameDetachedResponse>());
                             break;
 
                         case "Page.frameStartedLoading":
-                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStartedLoading(e.MessageData.Deserialize<BasicFrameResponse>());
                             break;
 
                         case "Page.frameStoppedLoading":
-                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStoppedLoading(e.MessageData.Deserialize<BasicFrameResponse>());
                             break;
 
                         case "Runtime.executionContextCreated":
-                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context, sender as CDPSession).ConfigureAwait(false);
+                            await OnExecutionContextCreatedAsync(e.MessageData.Deserialize<RuntimeExecutionContextCreatedResponse>().Context, sender as CDPSession).ConfigureAwait(false);
                             break;
 
                         case "Runtime.executionContextDestroyed":
-                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>(true).ExecutionContextId, sender as CDPSession);
+                            OnExecutionContextDestroyed(e.MessageData.Deserialize<RuntimeExecutionContextDestroyedResponse>().ExecutionContextId, sender as CDPSession);
                             break;
                         case "Runtime.executionContextsCleared":
                             OnExecutionContextsCleared(sender as CDPSession);
                             break;
                         case "Page.lifecycleEvent":
-                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
+                            OnLifeCycleEvent(e.MessageData.Deserialize<LifecycleEventResponse>());
                             break;
                         default:
                             break;

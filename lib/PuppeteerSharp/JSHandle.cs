@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    [JsonConverter(typeof(JSHandleMethodConverter))]
+    // [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
         internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
@@ -140,11 +138,11 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        public Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args)
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
+            return ExecutionContext.EvaluateFunctionAsync<JsonElement>(script, list.ToArray());
         }
 
         /// <inheritdoc/>

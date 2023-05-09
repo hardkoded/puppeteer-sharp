@@ -1,9 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-
 namespace PuppeteerSharp.Helpers.Json
 {
+    /*
+
     /// <summary>
     /// A set of extension methods for JToken.
     /// </summary>
@@ -40,4 +38,5 @@ namespace PuppeteerSharp.Helpers.Json
         public static T ToObject<T>(this JToken token, JsonSerializerSettings jsonSerializerSettings)
             => token.ToObject<T>(JsonSerializer.Create(jsonSerializerSettings));
     }
+    */
 }

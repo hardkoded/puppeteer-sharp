@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -22,13 +22,13 @@ namespace PuppeteerSharp.PageAccessibility
             Payload = payload;
             Children = new List<AXNode>();
 
-            _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
-            _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
+            _name = payload.Name != null ? payload.Name.Value.Deserialize<string>() : string.Empty;
+            _role = payload.Role != null ? payload.Role.Value.Deserialize<string>() : "Unknown";
 
-            _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
+            _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.Deserialize<string>() == "richtext";
             _editable |= _richlyEditable;
-            _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
-            Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.Deserialize<bool>() == true;
+            Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.Deserialize<bool>() == true;
         }
 
         public List<AXNode> Children { get; }
@@ -186,7 +186,7 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal SerializedAXNode Serialize()
         {
-            var properties = new Dictionary<string, JToken>();
+            var properties = new Dictionary<string, JsonElement>();
 
             if (Payload.Properties != null)
             {
@@ -214,33 +214,33 @@ namespace PuppeteerSharp.PageAccessibility
             var node = new SerializedAXNode
             {
                 Role = _role,
-                Name = properties.GetValueOrDefault("name")?.ToObject<string>(),
-                Value = properties.GetValueOrDefault("value")?.ToObject<string>(),
-                Description = properties.GetValueOrDefault("description")?.ToObject<string>(),
-                KeyShortcuts = properties.GetValueOrDefault("keyshortcuts")?.ToObject<string>(),
-                RoleDescription = properties.GetValueOrDefault("roledescription")?.ToObject<string>(),
-                ValueText = properties.GetValueOrDefault("valuetext")?.ToObject<string>(),
-                Disabled = properties.GetValueOrDefault("disabled")?.ToObject<bool>() ?? false,
-                Expanded = properties.GetValueOrDefault("expanded")?.ToObject<bool>() ?? false,
+                Name = properties.GetValueOrDefault("name").Deserialize<string>(),
+                Value = properties.GetValueOrDefault("value").Deserialize<string>(),
+                Description = properties.GetValueOrDefault("description").Deserialize<string>(),
+                KeyShortcuts = properties.GetValueOrDefault("keyshortcuts").Deserialize<string>(),
+                RoleDescription = properties.GetValueOrDefault("roledescription").Deserialize<string>(),
+                ValueText = properties.GetValueOrDefault("valuetext").Deserialize<string>(),
+                Disabled = properties.GetValueOrDefault("disabled").Deserialize<bool?>() ?? false,
+                Expanded = properties.GetValueOrDefault("expanded").Deserialize<bool?>() ?? false,
 
                 // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
                 // not whether focus is specifically on the root node.
-                Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
-                Modal = properties.GetValueOrDefault("modal")?.ToObject<bool>() ?? false,
-                Multiline = properties.GetValueOrDefault("multiline")?.ToObject<bool>() ?? false,
-                Multiselectable = properties.GetValueOrDefault("multiselectable")?.ToObject<bool>() ?? false,
-                Readonly = properties.GetValueOrDefault("readonly")?.ToObject<bool>() ?? false,
-                Required = properties.GetValueOrDefault("required")?.ToObject<bool>() ?? false,
-                Selected = properties.GetValueOrDefault("selected")?.ToObject<bool>() ?? false,
-                Checked = GetCheckedState(properties.GetValueOrDefault("checked")?.ToObject<string>()),
-                Pressed = GetCheckedState(properties.GetValueOrDefault("pressed")?.ToObject<string>()),
-                Level = properties.GetValueOrDefault("level")?.ToObject<int>() ?? 0,
-                ValueMax = properties.GetValueOrDefault("valuemax")?.ToObject<int>() ?? 0,
-                ValueMin = properties.GetValueOrDefault("valuemin")?.ToObject<int>() ?? 0,
-                AutoComplete = GetIfNotFalse(properties.GetValueOrDefault("autocomplete")?.ToObject<string>()),
-                HasPopup = GetIfNotFalse(properties.GetValueOrDefault("haspopup")?.ToObject<string>()),
-                Invalid = GetIfNotFalse(properties.GetValueOrDefault("invalid")?.ToObject<string>()),
-                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation")?.ToObject<string>()),
+                Focused = properties.GetValueOrDefault("focused").Deserialize<bool>() == true && _role != "RootWebArea",
+                Modal = properties.GetValueOrDefault("modal").Deserialize<bool?>() ?? false,
+                Multiline = properties.GetValueOrDefault("multiline").Deserialize<bool?>() ?? false,
+                Multiselectable = properties.GetValueOrDefault("multiselectable").Deserialize<bool?>() ?? false,
+                Readonly = properties.GetValueOrDefault("readonly").Deserialize<bool?>() ?? false,
+                Required = properties.GetValueOrDefault("required").Deserialize<bool?>() ?? false,
+                Selected = properties.GetValueOrDefault("selected").Deserialize<bool?>() ?? false,
+                Checked = GetCheckedState(properties.GetValueOrDefault("checked").Deserialize<string>()),
+                Pressed = GetCheckedState(properties.GetValueOrDefault("pressed").Deserialize<string>()),
+                Level = properties.GetValueOrDefault("level").Deserialize<int?>() ?? 0,
+                ValueMax = properties.GetValueOrDefault("valuemax").Deserialize<int?>() ?? 0,
+                ValueMin = properties.GetValueOrDefault("valuemin").Deserialize<int?>() ?? 0,
+                AutoComplete = GetIfNotFalse(properties.GetValueOrDefault("autocomplete").Deserialize<string>()),
+                HasPopup = GetIfNotFalse(properties.GetValueOrDefault("haspopup").Deserialize<string>()),
+                Invalid = GetIfNotFalse(properties.GetValueOrDefault("invalid").Deserialize<string>()),
+                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation").Deserialize<string>()),
             };
 
             return node;

@@ -6,11 +6,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
@@ -710,16 +709,16 @@ namespace PuppeteerSharp
             => FrameManager.MainFrame.TypeAsync(selector, text, options);
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateExpressionAsync(string script)
-            => FrameManager.MainFrame.EvaluateExpressionAsync<JToken>(script);
+        public Task<JsonElement> EvaluateExpressionAsync(string script)
+            => FrameManager.MainFrame.EvaluateExpressionAsync<JsonElement>(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => FrameManager.MainFrame.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => FrameManager.MainFrame.EvaluateFunctionAsync<JToken>(script, args);
+        public Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args)
+            => FrameManager.MainFrame.EvaluateFunctionAsync<JsonElement>(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -1449,28 +1448,28 @@ namespace PuppeteerSharp
                         Load?.Invoke(this, EventArgs.Empty);
                         break;
                     case "Runtime.consoleAPICalled":
-                        await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
+                        await OnConsoleAPIAsync(e.MessageData.Deserialize<PageConsoleResponse>()).ConfigureAwait(false);
                         break;
                     case "Page.javascriptDialogOpening":
-                        OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
+                        OnDialog(e.MessageData.Deserialize<PageJavascriptDialogOpeningResponse>());
                         break;
                     case "Runtime.exceptionThrown":
-                        HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
+                        HandleException(e.MessageData.Deserialize<RuntimeExceptionThrownResponse>().ExceptionDetails);
                         break;
                     case "Inspector.targetCrashed":
                         OnTargetCrashed();
                         break;
                     case "Performance.metrics":
-                        EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
+                        EmitMetrics(e.MessageData.Deserialize<PerformanceMetricsResponse>());
                         break;
                     case "Log.entryAdded":
-                        await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
+                        await OnLogEntryAddedAsync(e.MessageData.Deserialize<LogEntryAddedResponse>()).ConfigureAwait(false);
                         break;
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalled(e.MessageData.Deserialize<BindingCalledResponse>()).ConfigureAwait(false);
                         break;
                     case "Page.fileChooserOpened":
-                        await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
+                        await OnFileChooserAsync(e.MessageData.Deserialize<PageFileChooserOpenedResponse>()).ConfigureAwait(false);
                         break;
                 }
             }
@@ -1681,7 +1680,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
+            var tokens = values.Select(i => i.RemoteObject.ObjectId != null || i.RemoteObject.Value.ValueKind == JsonValueKind.Object
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 

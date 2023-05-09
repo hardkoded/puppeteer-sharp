@@ -54,7 +54,7 @@ namespace PuppeteerSharp
             var binding = pageBindings[e.BindingPayload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = e.BindingPayload.Args.Select((token, i) => token.Deserialize(methodParams[i])).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)

@@ -3,10 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 
@@ -188,7 +187,7 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        internal async Task<JToken> EvaluateExpressionAsync(string script)
+        internal async Task<JsonElement> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
@@ -200,7 +199,7 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
-        internal async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        internal async Task<JsonElement> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
@@ -511,7 +510,7 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalled(e.MessageData.Deserialize<BindingCalledResponse>()).ConfigureAwait(false);
                         break;
                 }
             }

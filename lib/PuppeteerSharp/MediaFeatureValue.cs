@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -10,7 +8,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
         /// </summary>
-        [JsonProperty(PropertyName = "name")]
+        // [JsonProperty(PropertyName = "name")]
         public MediaFeature MediaFeature { get; set; }
 
         /// <summary>

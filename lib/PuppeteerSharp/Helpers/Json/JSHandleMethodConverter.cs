@@ -1,8 +1,8 @@
 using System;
-using Newtonsoft.Json;
 
 namespace PuppeteerSharp.Helpers.Json
 {
+    /*
     /// <summary>
     /// JSHandleMethodConverter will throw an exception if a JSHandle object is trying to be serialized.
     /// </summary>
@@ -16,4 +16,5 @@ namespace PuppeteerSharp.Helpers.Json
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             => throw new EvaluationFailedException("Unable to make function call. Are you passing a nested JSHandle?");
     }
+    */
 }

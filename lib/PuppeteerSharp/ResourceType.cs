@@ -1,6 +1,4 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -8,7 +6,7 @@ namespace PuppeteerSharp
     /// Resource type.
     /// </summary>
     /// <seealso cref="Request.ResourceType"/>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Unknown)]
+    // [JsonConverter(typeof(FlexibleStringEnumConverter), Unknown)]
     public enum ResourceType
     {
         /// <summary>

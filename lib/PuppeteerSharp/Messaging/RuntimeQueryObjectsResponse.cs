@@ -1,5 +1,3 @@
-using Newtonsoft.Json.Linq;
-
 namespace PuppeteerSharp.Messaging
 {
     internal class RuntimeQueryObjectsResponse

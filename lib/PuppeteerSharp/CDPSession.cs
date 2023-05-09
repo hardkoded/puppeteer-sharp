@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -53,11 +53,11 @@ namespace PuppeteerSharp
         public async Task<T> SendAsync<T>(string method, object args = null)
         {
             var content = await SendAsync(method, args).ConfigureAwait(false);
-            return content.ToObject<T>(true);
+            return content.Deserialize<T>();
         }
 
         /// <inheritdoc/>
-        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        public async Task<JsonObject> SendAsync(string method, object args = null, bool waitForCallback = true)
         {
             if (Connection == null)
             {
@@ -73,7 +73,7 @@ namespace PuppeteerSharp
             {
                 callback = new MessageTask
                 {
-                    TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
+                    TaskWrapper = new TaskCompletionSource<JsonObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method,
                 };
                 _callbacks[id] = callback;

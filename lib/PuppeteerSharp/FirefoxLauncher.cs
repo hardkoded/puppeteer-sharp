@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
+using System.Text.Json;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -342,7 +342,7 @@ namespace PuppeteerSharp
 
             File.WriteAllText(
                 Path.Combine(tempUserDataDirectory.Path, "user.js"),
-                string.Join("\n", defaultPreferences.Select(i => $"user_pref({JsonConvert.SerializeObject(i.Key)}, {JsonConvert.SerializeObject(i.Value)});").ToArray()));
+                string.Join("\n", defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray()));
 
             File.WriteAllText(Path.Combine(tempUserDataDirectory.Path, "prefs.js"), string.Empty);
         }

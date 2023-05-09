@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -96,7 +98,7 @@ namespace PuppeteerSharp
                     Role = role,
                 }).ConfigureAwait(false);
 
-            return nodes.Nodes.Where((node) => node?.Role?.Value?.ToObject<string>() != "StaticText");
+            return nodes.Nodes.Where((node) => node?.Role?.Value.Deserialize<string>() != "StaticText");
         }
 
         private static AriaQueryOption ParseAriaSelector(string selector)

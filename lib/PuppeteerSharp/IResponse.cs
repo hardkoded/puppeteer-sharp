@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -91,11 +91,11 @@ namespace PuppeteerSharp
         Task<string> TextAsync();
 
         /// <summary>
-        /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body.
+        /// Returns a Task which resolves to a <see cref="JsonObject"/> representation of response body.
         /// </summary>
         /// <seealso cref="JsonAsync{T}"/>
-        /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body.</returns>
-        Task<JObject> JsonAsync();
+        /// <returns>A Task which resolves to a <see cref="JsonObject"/> representation of response body.</returns>
+        Task<JsonObject> JsonAsync();
 
         /// <summary>
         /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body.

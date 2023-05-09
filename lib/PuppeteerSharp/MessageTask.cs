@@ -1,6 +1,6 @@
-using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -10,7 +10,7 @@ namespace PuppeteerSharp
         {
         }
 
-        internal TaskCompletionSource<JObject> TaskWrapper { get; set; }
+        internal TaskCompletionSource<JsonObject> TaskWrapper { get; set; }
 
         internal string Method { get; set; }
     }
