@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -45,7 +43,7 @@ namespace PuppeteerSharp
             {
                 return arg == null
                     ? "undefined"
-                    : JsonConvert.SerializeObject(arg, JsonHelper.DefaultJsonSerializerSettings);
+                    : JsonSerializer.Serialize(arg, JsonHelper.DefaultJsonSerializerSettings);
             }
         }
 
