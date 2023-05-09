@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Helpers.Json
 {
     internal static class JsonHelper
     {
-        public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
