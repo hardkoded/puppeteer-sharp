@@ -1,14 +1,14 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Helpers.Json
 {
     internal static class JsonHelper
     {
-        public static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         };
     }
 }
