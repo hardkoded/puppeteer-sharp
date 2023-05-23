@@ -62,6 +62,34 @@ namespace PuppeteerSharp
         Task<bool> CanDownloadAsync(string revision);
 
         /// <summary>
+        /// BringYourOwnBrowser
+        /// </summary>
+        /// <param name="filePath">File.</param>
+        /// <returns>Revision.</returns>
+        Task<RevisionInfo> BringYourOwnBrowser(string filePath);
+
+        /// <summary>
+        /// BringYourOwnBrowser
+        /// </summary>
+        /// <param name="revision">Revision.</param>
+        /// <param name="filePath">File.</param>
+        /// <returns>Revision.</returns>
+        Task<RevisionInfo> BringYourOwnBrowser(string revision, string filePath);
+
+        /// <summary>
+        /// Returns the download URL for the revision.
+        /// </summary>
+        /// <param name="revision">Revision.</param>
+        /// <returns>Download URL for the revision.</returns>
+        Task<string> GetDownloadUrl(string revision);
+
+        /// <summary>
+        /// Returns the download URL for the revision.
+        /// </summary>
+        /// <returns>Download URL for the revision.</returns>
+        Task<string> GetDownloadUrl();
+
+        /// <summary>
         /// Downloads the revision.
         /// </summary>
         /// <returns>Task which resolves to the completed download.</returns>
