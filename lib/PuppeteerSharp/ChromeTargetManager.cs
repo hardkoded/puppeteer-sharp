@@ -23,6 +23,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
         private readonly List<string> _targetsIdsForInit = new();
+        private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
         public ChromeTargetManager(
@@ -52,13 +53,20 @@ namespace PuppeteerSharp
             }).ContinueWith(
                 t =>
                 {
-                    if (t.IsFaulted)
+                    try
                     {
-                        _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
+                        if (t.IsFaulted)
+                        {
+                            _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
+                        }
+                        else
+                        {
+                            StoreExistingTargetsForInit();
+                        }
                     }
-                    else
+                    finally
                     {
-                        StoreExistingTargetsForInit();
+                        _targetDiscoveryCompletionSource.SetResult(true);
                     }
                 },
                 TaskScheduler.Default);
@@ -127,6 +135,8 @@ namespace PuppeteerSharp
 
         private async void OnMessageReceived(object sender, MessageEventArgs e)
         {
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+
             try
             {
                 switch (e.MessageID)
