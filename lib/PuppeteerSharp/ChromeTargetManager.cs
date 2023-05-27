@@ -135,13 +135,12 @@ namespace PuppeteerSharp
 
         private async void OnMessageReceived(object sender, MessageEventArgs e)
         {
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
-
             try
             {
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
+                        await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
                         await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
                         return;
                     case "Target.detachedFromTarget":
