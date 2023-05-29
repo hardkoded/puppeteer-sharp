@@ -18,7 +18,7 @@ namespace PuppeteerSharp
 
         internal static InternalQueryHandler Create()
         {
-            async Task<object> QueryOneId(IElementHandle element, string selector)
+            async Task<object> QueryOneId(IElementHandle element, string selector, IJSHandle puppeteerUtil)
             {
                 var queryOptions = ParseAriaSelector(selector);
                 var res = await QueryAXTreeAsync(((ElementHandle)element).Client, element, queryOptions.Name, queryOptions.Role).ConfigureAwait(false);
@@ -26,9 +26,9 @@ namespace PuppeteerSharp
                 return res.FirstOrDefault()?.BackendDOMNodeId;
             }
 
-            async Task<IElementHandle> QueryOne(IElementHandle element, string selector)
+            async Task<IElementHandle> QueryOne(IElementHandle element, string selector, IJSHandle puppeteerUtil)
             {
-                var id = await QueryOneId(element, selector).ConfigureAwait(false);
+                var id = await QueryOneId(element, selector, puppeteerUtil).ConfigureAwait(false);
                 if (id == null)
                 {
                     return null;
@@ -41,8 +41,9 @@ namespace PuppeteerSharp
             {
                 var frame = ((ElementHandle)root).Frame;
                 var element = (await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
+                var puppeteerUtil = await frame.PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false);
 
-                Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
+                Task<IElementHandle> Func(string selector) => QueryOne(element, selector, puppeteerUtil);
 
                 var binding = new PageBinding()
                 {
@@ -58,7 +59,7 @@ namespace PuppeteerSharp
                     new[] { binding }).ConfigureAwait(false);
             }
 
-            async Task<IElementHandle[]> QueryAll(IElementHandle element, string selector)
+            async Task<IElementHandle[]> QueryAll(IElementHandle element, string selector, IJSHandle puppeteerUtil)
             {
                 var exeCtx = (ExecutionContext)element.ExecutionContext;
                 var world = exeCtx.World;
@@ -68,9 +69,9 @@ namespace PuppeteerSharp
                 return elements.ToArray();
             }
 
-            async Task<IJSHandle> QueryAllArray(IElementHandle element, string selector)
+            async Task<IJSHandle> QueryAllArray(IElementHandle element, string selector, IJSHandle puppeteerUtil)
             {
-                var elementHandles = await QueryAll(element, selector).ConfigureAwait(false);
+                var elementHandles = await QueryAll(element, selector, puppeteerUtil).ConfigureAwait(false);
                 var exeCtx = element.ExecutionContext;
                 var jsHandle = await exeCtx.EvaluateFunctionHandleAsync("(...elements) => elements", elementHandles).ConfigureAwait(false);
                 return jsHandle;

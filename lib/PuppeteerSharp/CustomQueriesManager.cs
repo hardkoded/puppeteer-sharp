@@ -10,7 +10,7 @@ namespace PuppeteerSharp
     internal class CustomQueriesManager
     {
         private readonly Dictionary<string, InternalQueryHandler> _queryHandlers = new();
-        private readonly InternalQueryHandler _pierceHandler = MakeQueryHandler(new CustomQueryHandler
+        private readonly InternalQueryHandler _pierceHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
             QueryOne = @"(element, selector) => {
                 let found = null;
@@ -64,7 +64,7 @@ namespace PuppeteerSharp
         private readonly Dictionary<string, InternalQueryHandler> _builtInHandlers;
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
-        private readonly InternalQueryHandler _defaultHandler = MakeQueryHandler(new CustomQueryHandler
+        private readonly InternalQueryHandler _defaultHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
@@ -95,12 +95,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"Custom query handler names may only contain [a-zA-Z]");
             }
 
-            var internalHandler = MakeQueryHandler(queryHandler);
+            var internalHandler = CreatePuppeteerQueryHandler(queryHandler);
 
             _queryHandlers.Add(name, internalHandler);
         }
 
-        internal (string UpdatedSelector, InternalQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
             var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
             if (!customQueryHandlerMatch.Success)
@@ -133,15 +133,15 @@ namespace PuppeteerSharp
             }
         }
 
-        private static InternalQueryHandler MakeQueryHandler(CustomQueryHandler handler)
+        private static InternalQueryHandler CreatePuppeteerQueryHandler(CustomQueryHandler handler)
         {
             var internalHandler = new InternalQueryHandler();
 
             if (!string.IsNullOrEmpty(handler.QueryOne))
             {
-                internalHandler.QueryOne = async (IElementHandle element, string selector) =>
+                internalHandler.QueryOne = async (IElementHandle element, string selector, IJSHandle puppeteerUtil) =>
                 {
-                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector).ConfigureAwait(false);
+                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryOne, selector, puppeteerUtil).ConfigureAwait(false);
                     if (jsHandle is ElementHandle elementHandle)
                     {
                         return elementHandle;
@@ -162,9 +162,9 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(handler.QueryAll))
             {
-                internalHandler.QueryAll = async (IElementHandle element, string selector) =>
+                internalHandler.QueryAll = async (IElementHandle element, string selector, IJSHandle puppeteerUtil) =>
                 {
-                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryAll, selector).ConfigureAwait(false);
+                    var jsHandle = await element.EvaluateFunctionHandleAsync(handler.QueryAll, selector, puppeteerUtil).ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
                     var result = new List<ElementHandle>();
 
@@ -179,11 +179,12 @@ namespace PuppeteerSharp
                     return result.ToArray();
                 };
 
-                internalHandler.QueryAllArray = async (IElementHandle element, string selector) =>
+                internalHandler.QueryAllArray = async (IElementHandle element, string selector, IJSHandle puppeteerUtil) =>
                 {
                     var resultHandle = await element.EvaluateFunctionHandleAsync(
                       handler.QueryAll,
-                      selector).ConfigureAwait(false);
+                      selector,
+                      puppeteerUtil).ConfigureAwait(false);
                     return await resultHandle.EvaluateFunctionHandleAsync("(res) => Array.from(res)").ConfigureAwait(false);
                 };
             }
