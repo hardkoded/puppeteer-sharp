@@ -23,8 +23,10 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
         private readonly List<string> _targetsIdsForInit = new();
-        private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
+
+        // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
+        private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
 
         public ChromeTargetManager(
             Connection connection,
@@ -133,15 +135,16 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void OnMessageReceived(object sender, MessageEventArgs e)
+        private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
-                        await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+#pragma warning disable CS4014
+                        OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+#pragma warning restore CS4014
                         return;
                     case "Target.detachedFromTarget":
                         OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
@@ -247,6 +250,8 @@ namespace PuppeteerSharp
                 }
             };
 
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
                 return;
@@ -273,6 +278,7 @@ namespace PuppeteerSharp
                 _ignoredTargets.Add(targetInfo.TargetId);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
+                return;
             }
 
             var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
