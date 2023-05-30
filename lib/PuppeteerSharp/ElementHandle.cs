@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -267,10 +268,27 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
+        public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.QueryAllArray(this, updatedSelector);
+            var handles = await queryHandler.QueryAll(this, updatedSelector).ConfigureAwait(false);
+
+            var elements = await EvaluateFunctionHandleAsync(
+                @"(_, ...elements) => {
+                    return elements;
+                }",
+                handles).ConfigureAwait(false) as JSHandle;
+
+            elements.DisposeAction = async () =>
+            {
+                // We can't use Task.WhenAll with ValueTask :(
+                foreach (var handle in handles)
+                {
+                    await handle.DisposeAsync().ConfigureAwait(false);
+                }
+            };
+
+            return elements;
         }
 
         /// <inheritdoc/>

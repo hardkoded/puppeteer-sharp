@@ -36,6 +36,8 @@ namespace PuppeteerSharp
 
         internal CDPSession Client { get; }
 
+        internal Func<Task> DisposeAction { get; set; }
+
         /// <summary>
         /// Logger.
         /// </summary>
@@ -113,6 +115,12 @@ namespace PuppeteerSharp
             }
 
             Disposed = true;
+
+            if (DisposeAction != null)
+            {
+                await DisposeAction().ConfigureAwait(false);
+            }
+
             await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }

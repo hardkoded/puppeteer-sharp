@@ -282,7 +282,8 @@ namespace PuppeteerSharp
                   }}
                   const node = (await PuppeteerUtil.createFunction(query)(
                     root || document,
-                    selector
+                    selector,
+                    PuppeteerUtil,
                   ));
                 if(visible === undefined) {{
                     console.log(visible, node, PuppeteerUtil.checkVisibility(node, visible));
