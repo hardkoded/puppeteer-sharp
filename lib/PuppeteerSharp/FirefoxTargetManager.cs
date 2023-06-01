@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS0067 // Temporal, do not merge with this
+#pragma warning disable CS0067 // Temporal, do not merge with this
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -31,9 +31,9 @@ namespace PuppeteerSharp
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
+            _logger = _connection.LoggerFactory.CreateLogger<FirefoxTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
-            _logger = _connection.LoggerFactory.CreateLogger<FirefoxTargetManager>();
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;

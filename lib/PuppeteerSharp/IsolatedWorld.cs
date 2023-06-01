@@ -39,7 +39,7 @@ namespace PuppeteerSharp
             Frame frame,
             TimeoutSettings timeoutSettings)
         {
-            Logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
+            _logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
             _client = client;
             _frameManager = frameManager;
             _customQueriesManager = ((Browser)frameManager.Page.Browser).CustomQueriesManager;
@@ -48,7 +48,6 @@ namespace PuppeteerSharp
 
             _detached = false;
             _client.MessageReceived += Client_MessageReceived;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
         }
 
         internal TaskManager TaskManager { get; set; } = new();
@@ -56,8 +55,6 @@ namespace PuppeteerSharp
         internal Frame Frame { get; }
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
-
-        internal ILogger Logger { get; }
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
 
@@ -500,7 +497,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -518,7 +515,7 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 var message = $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                Logger.LogError(ex, message);
+                _logger.LogError(ex, message);
                 _client.Close(message);
             }
         }
