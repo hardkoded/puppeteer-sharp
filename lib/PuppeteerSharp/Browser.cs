@@ -46,6 +46,7 @@ namespace PuppeteerSharp
             Connection = connection;
             _closeCallback = closeCallback;
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
+            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             _isPageTargetFunc =
                 isPageTargetFunc ??
                 new Func<TargetInfo, bool>((TargetInfo target) =>
@@ -75,8 +76,6 @@ namespace PuppeteerSharp
                     CreateTarget,
                     _targetFilterCallback);
             }
-
-            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         }
 
         /// <inheritdoc/>

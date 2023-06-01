@@ -36,8 +36,8 @@ namespace PuppeteerSharp
             FrameManager = frameManager;
             _client = client;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            _client.MessageReceived += Client_MessageReceived;
             _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
+            _client.MessageReceived += Client_MessageReceived;
         }
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
