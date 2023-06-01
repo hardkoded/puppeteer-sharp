@@ -1,6 +1,6 @@
 ﻿namespace PuppeteerSharp
 {
-    // This calls represents both InternalQueryHandler and CustomQueryHandler upstream.
+    // This class represents both InternalQueryHandler and CustomQueryHandler upstream.
 
     /// <summary>
     /// Contains two functions `queryOne` and `queryAll` to be used as custom query handlers
