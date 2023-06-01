@@ -7,6 +7,7 @@ namespace PuppeteerSharp.Helpers
     internal sealed class TaskQueue : IDisposable, IAsyncDisposable
     {
         private readonly SemaphoreSlim _semaphore;
+        private readonly AsyncLocal<bool> _held = new AsyncLocal<bool>();
         private int _disposed;
 
         internal TaskQueue() => _semaphore = new SemaphoreSlim(1);
@@ -18,7 +19,11 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            _semaphore.Wait();
+            if (!_held.Value)
+            {
+                _semaphore.Wait();
+            }
+
             _semaphore.Dispose();
         }
 
@@ -29,7 +34,10 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            if (!_held.Value)
+            {
+                await _semaphore.WaitAsync().ConfigureAwait(false);
+            }
 
             _semaphore.Dispose();
         }
@@ -39,11 +47,16 @@ namespace PuppeteerSharp.Helpers
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
+                _held.Value = true;
                 return await taskGenerator().ConfigureAwait(false);
             }
             finally
             {
-                _semaphore.Release();
+                _held.Value = false;
+                if (_disposed == 0)
+                {
+                    _semaphore.Release();
+                }
             }
         }
 
@@ -52,11 +65,16 @@ namespace PuppeteerSharp.Helpers
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
+                _held.Value = true;
                 await taskGenerator().ConfigureAwait(false);
             }
             finally
             {
-                _semaphore.Release();
+                _held.Value = false;
+                if (_disposed == 0)
+                {
+                    _semaphore.Release();
+                }
             }
         }
     }

@@ -39,7 +39,20 @@ namespace PuppeteerSharp
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
+        }
 
+        public event EventHandler<TargetChangedArgs> TargetAvailable;
+
+        public event EventHandler<TargetChangedArgs> TargetGone;
+
+        public event EventHandler<TargetChangedArgs> TargetChanged;
+
+        public event EventHandler<TargetChangedArgs> TargetDiscovered;
+
+        public ConcurrentDictionary<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
+
+        public async Task InitializeAsync()
+        {
             _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true,
@@ -72,20 +85,7 @@ namespace PuppeteerSharp
                     }
                 },
                 TaskScheduler.Default);
-        }
 
-        public event EventHandler<TargetChangedArgs> TargetAvailable;
-
-        public event EventHandler<TargetChangedArgs> TargetGone;
-
-        public event EventHandler<TargetChangedArgs> TargetChanged;
-
-        public event EventHandler<TargetChangedArgs> TargetDiscovered;
-
-        public ConcurrentDictionary<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
-
-        public async Task InitializeAsync()
-        {
             await _connection.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest()
             {
                 WaitForDebuggerOnStart = true,
