@@ -52,11 +52,8 @@ namespace PuppeteerSharp.Helpers
             }
             finally
             {
+                TryRelease(_semaphore);
                 _held.Value = false;
-                if (_disposed == 0)
-                {
-                    _semaphore.Release();
-                }
             }
         }
 
@@ -70,11 +67,21 @@ namespace PuppeteerSharp.Helpers
             }
             finally
             {
+                TryRelease(_semaphore);
                 _held.Value = false;
-                if (_disposed == 0)
-                {
-                    _semaphore.Release();
-                }
+            }
+        }
+
+        private void TryRelease(SemaphoreSlim semaphore)
+        {
+            try
+            {
+                semaphore.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // If semaphore has already been disposed, then Release() will fail
+                // but we can safely ignore it
             }
         }
     }
