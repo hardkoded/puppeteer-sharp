@@ -209,6 +209,35 @@ namespace PuppeteerSharp
                     await jsHandle.DisposeAsync().ConfigureAwait(false);
                     return null;
                 };
+
+                internalHandler.WaitFor = async (IFrame frame, IElementHandle element, string selector, WaitForSelectorOptions options) =>
+                {
+                    var frameImpl = frame as Frame;
+
+                    if (element != null)
+                    {
+                        frameImpl = ((ElementHandle)element).Frame;
+                        element = (await frameImpl.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false)) as IElementHandle;
+                    }
+
+                    var result = await frameImpl.PuppeteerWorld.WaitForSelectorInPageAsync(
+                        handler.QueryOne,
+                        element,
+                        selector,
+                        options).ConfigureAwait(false);
+
+                    if (element != null)
+                    {
+                        await element.DisposeAsync().ConfigureAwait(false);
+                    }
+
+                    if (result == null)
+                    {
+                        return null;
+                    }
+
+                    return await frameImpl.MainWorld.TransferHandleAsync(result).ConfigureAwait(false) as IElementHandle;
+                };
             }
 
             if (!string.IsNullOrEmpty(handler.QueryAll))

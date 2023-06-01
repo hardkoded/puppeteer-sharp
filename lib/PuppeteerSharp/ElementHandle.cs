@@ -81,23 +81,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var frame = (Frame)ExecutionContext.Frame;
-            var secondaryContext = await frame.PuppeteerWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
-            options ??= new WaitForSelectorOptions();
-            options.Root = adoptedRoot;
-
-            var handle = await frame.PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
-            await adoptedRoot.DisposeAsync().ConfigureAwait(false);
-            if (handle == null)
-            {
-                return null;
-            }
-
-            var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            var customQueriesManager = ((Browser)Frame.FrameManager.Page.Browser).CustomQueriesManager;
+            var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitFor(null, this, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

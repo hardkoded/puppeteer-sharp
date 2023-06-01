@@ -37,10 +37,15 @@ namespace PuppeteerSharp
                 return await ((ElementHandle)element).Frame.PuppeteerWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
             }
 
-            async Task<IElementHandle> WaitFor(IElementHandle root, string selector, WaitForSelectorOptions options)
+            async Task<IElementHandle> WaitFor(IFrame frame, IElementHandle element, string selector, WaitForSelectorOptions options)
             {
-                var frame = ((ElementHandle)root).Frame;
-                var element = (await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
+                var frameImpl = frame as Frame;
+
+                if (element != null)
+                {
+                    frameImpl = ((ElementHandle)element).Frame;
+                    element = (await frameImpl.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false)) as IElementHandle;
+                }
 
                 Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
 
@@ -50,7 +55,7 @@ namespace PuppeteerSharp
                     Function = (Func<string, Task<IElementHandle>>)Func,
                 };
 
-                return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(
+                return await frameImpl.PuppeteerWorld.WaitForSelectorInPageAsync(
                     @"(_, selector) => globalThis.ariaQuerySelector(selector)",
                     element,
                     selector,

@@ -96,16 +96,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var handle = await PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
-            if (handle == null)
-            {
-                return null;
-            }
-
-            var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            var customQueriesManager = ((Browser)FrameManager.Page.Browser).CustomQueriesManager;
+            var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitFor(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
