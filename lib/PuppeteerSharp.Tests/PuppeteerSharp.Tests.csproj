@@ -31,6 +31,8 @@
 		<Folder Include="FixturesTests\" />
 		<Folder Include="HeadfulTests\" />
 		<Folder Include="PuppeteerUtilTests\" />
+		<Folder Include="QueryHandlerTests\" />
+		<Folder Include="QueryHandlerTests\TextSelectorTests\" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
@@ -54,5 +56,7 @@
 		<None Remove="FixturesTests\" />
 		<None Remove="HeadfulTests\" />
 		<None Remove="PuppeteerUtilTests\" />
+		<None Remove="QueryHandlerTests\" />
+		<None Remove="QueryHandlerTests\TextSelectorTests\" />
 	</ItemGroup>
 </Project>

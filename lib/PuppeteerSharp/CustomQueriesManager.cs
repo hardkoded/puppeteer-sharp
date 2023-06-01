@@ -70,12 +70,66 @@ namespace PuppeteerSharp
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
 
+        private readonly PuppeteerQueryHandler _textQueryHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
+        {
+            QueryOne = @"(element, selector, {createTextContent}) => {
+                const search = (root)=> {
+                  for (const node of root.childNodes) {
+                    if (node instanceof Element) {
+                      let matchedNode;
+                      if (node.shadowRoot) {
+                        matchedNode = search(node.shadowRoot);
+                      } else {
+                        matchedNode = search(node);
+                      }
+                      if (matchedNode) {
+                        return matchedNode;
+                      }
+                    }
+                  }
+                  const textContent = createTextContent(root);
+                  if (textContent.full.includes(selector)) {
+                    return root;
+                  }
+                  return null;
+                };
+                return search(element);
+              }",
+            QueryAll = @"(element, selector, {createTextContent}) => {
+                const search = (root) => {
+                  let results = [];
+                  for (const node of root.childNodes) {
+                    if (node instanceof Element) {
+                      let matchedNodes;
+                      if (node.shadowRoot) {
+                        matchedNodes = search(node.shadowRoot);
+                      } else {
+                        matchedNodes = search(node);
+                      }
+                      results = results.concat(matchedNodes);
+                    }
+                  }
+                  if (results.length > 0) {
+                    return results;
+                  }
+
+                  const textContent = createTextContent(root);
+                  if (textContent.full.includes(selector)) {
+                    return [root];
+                  }
+                  return [];
+                };
+                return search(element);
+              }",
+        });
+
         public CustomQueriesManager()
         {
             _builtInHandlers = new()
             {
                 ["aria"] = _ariaHandler,
                 ["pierce"] = _pierceHandler,
+                ["text"] = _textQueryHandler,
             };
             _queryHandlers = _builtInHandlers.ToDictionary(
                 entry => entry.Key,
