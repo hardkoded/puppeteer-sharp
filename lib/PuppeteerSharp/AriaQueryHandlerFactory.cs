@@ -47,7 +47,19 @@ namespace PuppeteerSharp
                     element = (await frameImpl.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false)) as IElementHandle;
                 }
 
-                Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
+                async Task<IElementHandle> Func(string selector)
+                {
+                    var id = await QueryOneId(
+                        element ?? (await frameImpl.PuppeteerWorld.GetDocumentAsync().ConfigureAwait(false)),
+                        selector).ConfigureAwait(false);
+
+                    if (id == null)
+                    {
+                        return null;
+                    }
+
+                    return await frameImpl.PuppeteerWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
+                }
 
                 var binding = new PageBinding()
                 {
