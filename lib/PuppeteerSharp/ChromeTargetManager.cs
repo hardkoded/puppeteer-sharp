@@ -93,7 +93,9 @@ namespace PuppeteerSharp
                 AutoAttach = true,
             }).ConfigureAwait(false);
 
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
             FinishInitializationIfReady();
+
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
