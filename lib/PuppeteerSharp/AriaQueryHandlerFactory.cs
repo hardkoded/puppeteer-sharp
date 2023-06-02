@@ -67,12 +67,24 @@ namespace PuppeteerSharp
                     Function = (Func<string, Task<IElementHandle>>)Func,
                 };
 
-                return await frameImpl.PuppeteerWorld.WaitForSelectorInPageAsync(
+                var result = await frameImpl.PuppeteerWorld.WaitForSelectorInPageAsync(
                     @"(_, selector) => globalThis.ariaQuerySelector(selector)",
                     element,
                     selector,
                     options,
                     new[] { binding }).ConfigureAwait(false);
+
+                if (element != null)
+                {
+                    await element.DisposeAsync().ConfigureAwait(false);
+                }
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return await frameImpl.MainWorld.TransferHandleAsync(result).ConfigureAwait(false) as IElementHandle;
             }
 
             async Task<IElementHandle[]> QueryAll(IElementHandle element, string selector)
