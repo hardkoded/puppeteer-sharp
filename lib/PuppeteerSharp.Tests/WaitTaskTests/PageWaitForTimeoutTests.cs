@@ -21,8 +21,9 @@ namespace PuppeteerSharp.Tests.WaitForTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var startTime = DateTime.UtcNow;
             await Page.WaitForTimeoutAsync(1000);
-            Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > 700);
-            Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds < 1300);
+            var endTime = DateTime.UtcNow;
+            Assert.True((endTime - startTime).TotalMilliseconds > 700);
+            Assert.True((endTime - startTime).TotalMilliseconds < 1300);
         }
     }
 }
