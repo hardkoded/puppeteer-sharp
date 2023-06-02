@@ -62,8 +62,6 @@ namespace PuppeteerSharp
                 contextId => contextId,
                 contextId => new BrowserContext(Connection, this, contextId)));
 
-            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
-
             if (product == Product.Firefox)
             {
                 TargetManager = new FirefoxTargetManager(
@@ -204,12 +202,6 @@ namespace PuppeteerSharp
             }
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var existingTarget = Targets().FirstOrDefault(predicate);
-            if (existingTarget != null)
-            {
-                return existingTarget;
-            }
-
             var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void TargetHandler(object sender, TargetChangedArgs e)
@@ -225,7 +217,7 @@ namespace PuppeteerSharp
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
 
-                existingTarget = Targets().FirstOrDefault(predicate);
+                var existingTarget = Targets().FirstOrDefault(predicate);
                 if (existingTarget != null)
                 {
                     return existingTarget;
