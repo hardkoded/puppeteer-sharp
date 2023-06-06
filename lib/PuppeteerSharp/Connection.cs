@@ -37,12 +37,13 @@ namespace PuppeteerSharp
 
             _logger = LoggerFactory.CreateLogger<Connection>();
 
-            Transport.MessageReceived += Transport_MessageReceived;
-            Transport.Closed += Transport_Closed;
             _callbacks = new ConcurrentDictionary<int, MessageTask>();
             _sessions = new ConcurrentDictionary<string, CDPSession>();
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
+
+            Transport.MessageReceived += Transport_MessageReceived;
+            Transport.Closed += Transport_Closed;
         }
 
         /// <summary>
