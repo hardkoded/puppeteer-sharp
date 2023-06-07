@@ -1700,12 +1700,10 @@ namespace PuppeteerSharp
 
         private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
         {
-            if (_pageBindings.ContainsKey(name))
+            if (!_pageBindings.TryAdd(name, puppeteerFunction))
             {
                 throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
-
-            _pageBindings.TryAdd(name, puppeteerFunction);
 
             const string addPageBinding = @"function addPageBinding(type, bindingName) {
               const binding = window[bindingName];
