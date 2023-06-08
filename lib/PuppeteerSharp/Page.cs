@@ -47,10 +47,10 @@ namespace PuppeteerSharp
 
         private static readonly Dictionary<string, decimal> _unitToPixels = new()
         {
-            { "px", 1 },
-            { "in", 96 },
-            { "cm", 37.8m },
-            { "mm", 3.78m },
+            ["px"] = 1,
+            ["in"] = 96,
+            ["cm"] = 37.8m,
+            ["mm"] = 3.78m,
         };
 
         private readonly TaskQueue _screenshotTaskQueue;

@@ -57,9 +57,9 @@ namespace PuppeteerSharp
                 });
 
             _defaultContext = new BrowserContext(Connection, this, null);
-            _contexts = new ConcurrentDictionary<string, BrowserContext>(contextIds.ToDictionary(
-                contextId => contextId,
-                contextId => new BrowserContext(Connection, this, contextId)));
+            _contexts = new ConcurrentDictionary<string, BrowserContext>(
+                contextIds.Select(contextId =>
+                    new KeyValuePair<string, BrowserContext>(contextId, new(Connection, this, contextId))));
 
             if (product == Product.Firefox)
             {
