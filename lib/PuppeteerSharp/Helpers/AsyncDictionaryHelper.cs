@@ -8,14 +8,13 @@ namespace PuppeteerSharp.Helpers
     internal class AsyncDictionaryHelper<TKey, TValue>
     {
         private readonly string _timeoutMessage;
-        private readonly MultiMap<TKey, TaskCompletionSource<TValue>> _pendingRequests;
+        private readonly MultiMap<TKey, TaskCompletionSource<TValue>> _pendingRequests = new();
         private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
 
         public AsyncDictionaryHelper(ConcurrentDictionary<TKey, TValue> dictionary, string timeoutMessage)
         {
             _dictionary = dictionary;
             _timeoutMessage = timeoutMessage;
-            _pendingRequests = new MultiMap<TKey, TaskCompletionSource<TValue>>();
         }
 
         internal async Task<TValue> GetItemAsync(TKey key)

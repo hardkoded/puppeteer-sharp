@@ -12,15 +12,13 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public class CDPSession : ICDPSession
     {
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
 
         internal CDPSession(Connection connection, TargetType targetType, string sessionId)
         {
             Connection = connection;
             TargetType = targetType;
             Id = sessionId;
-
-            _callbacks = new ConcurrentDictionary<int, MessageTask>();
         }
 
         /// <inheritdoc/>

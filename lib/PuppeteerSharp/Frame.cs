@@ -17,8 +17,6 @@ namespace PuppeteerSharp
             Client = client;
             ParentId = parentFrameId;
 
-            LifecycleEvents = new List<string>();
-
             UpdateClient(client);
         }
 
@@ -49,7 +47,7 @@ namespace PuppeteerSharp
 
         internal string LoaderId { get; set; }
 
-        internal List<string> LifecycleEvents { get; }
+        internal List<string> LifecycleEvents { get; } = new();
 
         internal IsolatedWorld MainWorld { get; private set; }
 

@@ -41,7 +41,6 @@ namespace PuppeteerSharp
         {
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
-            ScreenshotTaskQueue = new TaskQueue();
             Launcher = launcher;
             Connection = connection;
             _closeCallback = closeCallback;
@@ -131,7 +130,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
-        internal TaskQueue ScreenshotTaskQueue { get; set; }
+        internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
         internal Connection Connection { get; }
 

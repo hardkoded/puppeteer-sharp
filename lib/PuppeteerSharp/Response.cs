@@ -48,8 +48,6 @@ namespace PuppeteerSharp
                 IP = responseMessage.RemoteIPAddress,
                 Port = responseMessage.RemotePort,
             };
-
-            BodyLoadedTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         /// <inheritdoc/>
@@ -88,7 +86,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public IFrame Frame => Request.Frame;
 
-        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; }
+        internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         /// <summary>
         /// Returns a Task which resolves to a buffer with response body.

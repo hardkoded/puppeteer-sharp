@@ -55,12 +55,12 @@ namespace PuppeteerSharp
 
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        private readonly ConcurrentDictionary<string, Delegate> _pageBindings;
-        private readonly ConcurrentDictionary<string, Worker> _workers;
+        private readonly ConcurrentDictionary<string, Delegate> _pageBindings = new();
+        private readonly ConcurrentDictionary<string, Worker> _workers = new();
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TimeoutSettings _timeoutSettings;
-        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors;
+        private readonly TimeoutSettings _timeoutSettings = new();
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
@@ -80,11 +80,7 @@ namespace PuppeteerSharp
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
-            _fileChooserInterceptors = new ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>>();
-            _timeoutSettings = new TimeoutSettings();
             _emulationManager = new EmulationManager(client);
-            _pageBindings = new ConcurrentDictionary<string, Delegate>();
-            _workers = new ConcurrentDictionary<string, Worker>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             FrameManager = new FrameManager(client, this, ignoreHTTPSErrors, _timeoutSettings);
             Accessibility = new Accessibility(client);
