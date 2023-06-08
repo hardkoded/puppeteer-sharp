@@ -114,12 +114,10 @@ namespace PuppeteerSharp
 
         private void OnTargetCreated(TargetCreatedResponse e)
         {
-            if (_discoveredTargetsByTargetId.ContainsKey(e.TargetInfo.TargetId))
+            if (!_discoveredTargetsByTargetId.TryAdd(e.TargetInfo.TargetId, e.TargetInfo))
             {
                 return;
             }
-
-            _discoveredTargetsByTargetId[e.TargetInfo.TargetId] = e.TargetInfo;
 
             if (e.TargetInfo.Type == TargetType.Browser && e.TargetInfo.Attached)
             {

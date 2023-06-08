@@ -28,18 +28,7 @@ namespace PuppeteerSharp
         }
 
         internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
-        {
-            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
-            {
-                _responseReceivedExtraInfoMap.AddOrUpdate(
-                    networkRequestId,
-                    new List<ResponseReceivedExtraInfoResponse>(),
-                    (_, __) => new List<ResponseReceivedExtraInfoResponse>());
-            }
-
-            _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var result);
-            return result;
-        }
+            => _responseReceivedExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
 
         internal void QueueRedirectInfo(string fetchRequestId, RedirectInfo redirectInfo)
             => QueuedRedirectInfo(fetchRequestId).Add(redirectInfo);
@@ -59,12 +48,7 @@ namespace PuppeteerSharp
 
         internal ResponseReceivedExtraInfoResponse ShiftResponseExtraInfo(string networkRequestId)
         {
-            if (!_responseReceivedExtraInfoMap.ContainsKey(networkRequestId))
-            {
-                _responseReceivedExtraInfoMap.TryAdd(networkRequestId, new List<ResponseReceivedExtraInfoResponse>());
-            }
-
-            _responseReceivedExtraInfoMap.TryGetValue(networkRequestId, out var list);
+            var list = _responseReceivedExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
             var result = list.FirstOrDefault();
 
             if (result != null)
@@ -125,14 +109,6 @@ namespace PuppeteerSharp
             => _queuedEventGroupMap.TryRemove(networkRequestId, out _);
 
         private List<RedirectInfo> QueuedRedirectInfo(string fetchRequestId)
-        {
-            if (!_queuedRedirectInfoMap.ContainsKey(fetchRequestId))
-            {
-                _queuedRedirectInfoMap.TryAdd(fetchRequestId, new List<RedirectInfo>());
-            }
-
-            _queuedRedirectInfoMap.TryGetValue(fetchRequestId, out var result);
-            return result;
-        }
+            => _queuedRedirectInfoMap.GetOrAdd(fetchRequestId, static _ => new());
     }
 }
