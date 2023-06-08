@@ -45,9 +45,8 @@ namespace PuppeteerSharp
             Url = url;
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;
-            _client.MessageReceived += OnMessageReceived;
-
             _executionContextCallback = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _client.MessageReceived += OnMessageReceived;
 
             _ = _client.SendAsync("Runtime.enable").ContinueWith(
                 task =>
