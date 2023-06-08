@@ -100,7 +100,7 @@ namespace PuppeteerSharp
 
         internal Task<bool> InitializedTask => InitializedTaskWrapper.Task;
 
-        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Task CloseTask => CloseTaskWrapper.Task;
 

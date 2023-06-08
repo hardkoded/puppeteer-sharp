@@ -6,7 +6,7 @@ namespace PuppeteerSharp
 {
     internal class TaskManager
     {
-        private ConcurrentSet<WaitTask> WaitTasks { get; } = new ConcurrentSet<WaitTask>();
+        private ConcurrentSet<WaitTask> WaitTasks { get; } = new();
 
         internal void Add(WaitTask waitTask) => WaitTasks.Add(waitTask);
 
