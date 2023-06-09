@@ -27,11 +27,11 @@ namespace PuppeteerSharp
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
-        private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper;
-        private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper;
-        private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper;
-        private readonly TaskCompletionSource<bool> _terminationTaskWrapper;
-        private readonly CancellationTokenSource _terminationCancellationToken;
+        private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _terminationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly CancellationTokenSource _terminationCancellationToken = new();
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
@@ -55,12 +55,6 @@ namespace PuppeteerSharp
             _initialLoaderId = frame.LoaderId;
             _timeout = timeout;
             _hasSameDocumentNavigation = false;
-
-            _sameDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _newDocumentNavigationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _lifecycleTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _terminationTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _terminationCancellationToken = new CancellationTokenSource();
 
             frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;

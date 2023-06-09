@@ -14,8 +14,8 @@ namespace PuppeteerSharp
         private readonly object[] _args;
         private readonly Task _timeoutTimer;
         private readonly IElementHandle _root;
-        private readonly CancellationTokenSource _cts;
-        private readonly TaskCompletionSource<IJSHandle> _result;
+        private readonly CancellationTokenSource _cts = new();
+        private readonly TaskCompletionSource<IJSHandle> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly PageBinding[] _bindings;
 
         private bool _isDisposed;
@@ -49,8 +49,6 @@ namespace PuppeteerSharp
             _polling = _pollingInterval.HasValue ? null : polling;
             _args = args ?? Array.Empty<object>();
             _root = root;
-            _cts = new CancellationTokenSource();
-            _result = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
             _bindings = bidings ?? Array.Empty<PageBinding>();
 
             foreach (var binding in _bindings)

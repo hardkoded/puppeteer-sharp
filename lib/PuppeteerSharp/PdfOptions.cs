@@ -79,7 +79,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Paper margins, defaults to none.
         /// </summary>
-        public MarginOptions MarginOptions { get; set; } = new MarginOptions();
+        public MarginOptions MarginOptions { get; set; } = new();
 
         /// <summary>
         /// Give any CSS <c>@page</c> size declared in the page priority over what is declared in <c>width</c> and <c>height</c> or <c>format</c> options.

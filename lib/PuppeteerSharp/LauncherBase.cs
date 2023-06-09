@@ -74,9 +74,9 @@ namespace PuppeteerSharp
         /// </summary>
         public bool HasExited => _stateManager.CurrentState.IsExited;
 
-        internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal TaskCompletionSource<string> StartCompletionSource { get; } = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<string> StartCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal LaunchOptions Options { get; }
 

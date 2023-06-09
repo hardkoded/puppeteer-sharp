@@ -12,8 +12,8 @@ namespace PuppeteerSharp.PageCoverage
     internal class CSSCoverage
     {
         private readonly CDPSession _client;
-        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets;
-        private readonly DeferredTaskQueue _callbackQueue;
+        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets = new();
+        private readonly DeferredTaskQueue _callbackQueue = new();
         private readonly ILogger _logger;
 
         private bool _enabled;
@@ -23,10 +23,7 @@ namespace PuppeteerSharp.PageCoverage
         {
             _client = client;
             _enabled = false;
-            _stylesheets = new ConcurrentDictionary<string, (string Url, string Source)>();
             _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
-            _callbackQueue = new DeferredTaskQueue();
-
             _resetOnNavigation = false;
         }
 

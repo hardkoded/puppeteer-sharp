@@ -10,7 +10,7 @@ namespace PuppeteerSharp
 {
     internal class FrameTree
     {
-        private readonly ConcurrentDictionary<string, Frame> _frames;
+        private readonly ConcurrentDictionary<string, Frame> _frames = new();
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
         private readonly ConcurrentDictionary<string, List<TaskCompletionSource<Frame>>> _waitRequests = new();
@@ -18,7 +18,6 @@ namespace PuppeteerSharp
 
         public FrameTree()
         {
-            _frames = new();
             _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
         }
 

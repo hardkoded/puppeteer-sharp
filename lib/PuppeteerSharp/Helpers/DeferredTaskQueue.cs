@@ -10,12 +10,7 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     internal class DeferredTaskQueue
     {
-        private readonly List<Task> _pendingTasks;
-
-        public DeferredTaskQueue()
-        {
-            _pendingTasks = new List<Task>();
-        }
+        private readonly List<Task> _pendingTasks = new();
 
         public async Task Enqueue(Func<Task> taskGenerator)
         {

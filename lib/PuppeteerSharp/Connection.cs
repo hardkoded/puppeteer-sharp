@@ -22,8 +22,8 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new();
 
-        private readonly ConcurrentDictionary<int, MessageTask> _callbacks;
-        private readonly ConcurrentDictionary<string, CDPSession> _sessions;
+        private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
+        private readonly ConcurrentDictionary<string, CDPSession> _sessions = new();
         private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
         private readonly List<string> _manuallyAttached = new();
         private int _lastId;
@@ -37,8 +37,6 @@ namespace PuppeteerSharp
 
             _logger = LoggerFactory.CreateLogger<Connection>();
 
-            _callbacks = new ConcurrentDictionary<int, MessageTask>();
-            _sessions = new ConcurrentDictionary<string, CDPSession>();
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
             _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
 

@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     internal sealed class AsyncMessageQueue : IDisposable
     {
-        private readonly List<MessageTask> _pendingTasks;
+        private readonly List<MessageTask> _pendingTasks = new();
         private readonly bool _enqueueAsyncMessages;
         private readonly ILogger _logger;
         private bool _disposed;
@@ -23,7 +23,6 @@ namespace PuppeteerSharp.Helpers
         {
             _enqueueAsyncMessages = enqueueAsyncMessages;
             _logger = logger ?? NullLogger.Instance;
-            _pendingTasks = new List<MessageTask>();
         }
 
         public void Enqueue(MessageTask callback, ConnectionResponse obj)

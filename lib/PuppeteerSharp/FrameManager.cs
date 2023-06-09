@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         private const string RefererHeaderName = "referer";
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
-        private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext;
+        private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
         private readonly ILogger _logger;
         private readonly List<string> _isolatedWorlds = new();
         private readonly List<string> _frameNavigatedReceived = new();
@@ -27,7 +27,6 @@ namespace PuppeteerSharp
         {
             Client = client;
             Page = page;
-            _contextIdToContext = new ConcurrentDictionary<string, ExecutionContext>();
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
             TimeoutSettings = timeoutSettings;

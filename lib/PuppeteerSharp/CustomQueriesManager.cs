@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -131,9 +132,7 @@ namespace PuppeteerSharp
                 ["pierce"] = _pierceHandler,
                 ["text"] = _textQueryHandler,
             };
-            _queryHandlers = _builtInHandlers.ToDictionary(
-                entry => entry.Key,
-                entry => entry.Value);
+            _queryHandlers = _builtInHandlers.Clone();
         }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
