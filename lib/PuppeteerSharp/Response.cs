@@ -36,7 +36,7 @@ namespace PuppeteerSharp
             var headers = extraInfo != null ? extraInfo.Headers : responseMessage.Headers;
             if (headers != null)
             {
-                foreach (var keyValue in responseMessage.Headers)
+                foreach (var keyValue in headers)
                 {
                     Headers[keyValue.Key] = keyValue.Value;
                 }
