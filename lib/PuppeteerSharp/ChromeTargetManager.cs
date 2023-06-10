@@ -137,29 +137,12 @@ namespace PuppeteerSharp
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
-            Action<Exception> handleException = (Exception ex) =>
-            {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                _connection.Close(message);
-            };
-
             try
             {
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
-                            }
-                            catch (Exception ex)
-                            {
-                                handleException(ex);
-                            }
-                        });
+                        _ = OnAttachedToTargetHandlingExceptions(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
                         return;
 
                     case "Target.detachedFromTarget":
@@ -181,7 +164,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                handleException(ex);
+                HandleExceptionOnMessageReceived(e.MessageID, ex);
             }
         }
 
@@ -352,6 +335,25 @@ namespace PuppeteerSharp
             {
                 _logger.LogError("Failed to call setautoAttach and runIfWaitingForDebugger", ex);
             }
+        }
+
+        private async Task OnAttachedToTargetHandlingExceptions(object sender, string messageId, TargetAttachedToTargetResponse e)
+        {
+            try
+            {
+                await OnAttachedToTarget(sender, e).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptionOnMessageReceived(messageId, ex);
+            }
+        }
+
+        private void HandleExceptionOnMessageReceived(string messageId, Exception ex)
+        {
+            var message = $"Browser failed to process {messageId}. {ex.Message}. {ex.StackTrace}";
+            _logger.LogError(ex, message);
+            _connection.Close(message);
         }
 
         private void FinishInitializationIfReady(string targetId = null)
