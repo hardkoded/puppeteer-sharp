@@ -137,18 +137,35 @@ namespace PuppeteerSharp
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
+            Action<Exception> handleException = (Exception ex) =>
+            {
+                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+                _logger.LogError(ex, message);
+                _connection.Close(message);
+            };
+
             try
             {
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-#pragma warning disable CS4014
-                        OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
-#pragma warning restore CS4014
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                handleException(ex);
+                            }
+                        });
                         return;
+
                     case "Target.detachedFromTarget":
                         OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
                         return;
+
                     case "Target.targetCreated":
                         OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>(true));
                         return;
@@ -164,9 +181,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                _connection.Close(message);
+                handleException(ex);
             }
         }
 
