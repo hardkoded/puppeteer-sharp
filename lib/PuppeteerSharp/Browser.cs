@@ -73,7 +73,8 @@ namespace PuppeteerSharp
                 TargetManager = new ChromeTargetManager(
                     connection,
                     CreateTarget,
-                    _targetFilterCallback);
+                    _targetFilterCallback,
+                    launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
             }
         }
 

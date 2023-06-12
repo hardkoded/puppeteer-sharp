@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -26,12 +27,14 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
+        private readonly int _targetDiscoveryTimeout;
         private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
 
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
-            Func<TargetInfo, bool> targetFilterFunc)
+            Func<TargetInfo, bool> targetFilterFunc,
+            int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
@@ -39,6 +42,7 @@ namespace PuppeteerSharp
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
+            _targetDiscoveryTimeout = targetDiscoveryTimeout;
 
             _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
@@ -137,6 +141,18 @@ namespace PuppeteerSharp
             }
         }
 
+        private async Task EnsureTargetsIdsForInit()
+        {
+            if (_targetDiscoveryTimeout > 0)
+            {
+                await _targetDiscoveryCompletionSource.Task.WithTimeout(_targetDiscoveryTimeout).ConfigureAwait(false);
+            }
+            else
+            {
+                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            }
+        }
+
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
@@ -197,7 +213,7 @@ namespace PuppeteerSharp
         private async void OnTargetDestroyed(TargetDestroyedResponse e)
         {
             _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            await EnsureTargetsIdsForInit().ConfigureAwait(false);
             FinishInitializationIfReady(e.TargetId);
 
             if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
@@ -258,7 +274,7 @@ namespace PuppeteerSharp
             if (targetInfo.Type == TargetType.ServiceWorker &&
                 _connection.IsAutoAttached(targetInfo.TargetId))
             {
-                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+                await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
@@ -275,7 +291,7 @@ namespace PuppeteerSharp
             if (_targetFilterFunc?.Invoke(targetInfo) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
-                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+                await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
                 return;
@@ -313,7 +329,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            await EnsureTargetsIdsForInit().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
             if (!existingTarget)
