@@ -34,9 +34,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var startTime = DateTime.UtcNow;
             var polling = 100;
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            // Wait for function will release the execution faster than in node.
-            // We add some CDP action to wait for the task to start the polling
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await EnsureWaitForFunctionStartedPolling();
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
 
@@ -50,9 +48,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var startTime = DateTime.UtcNow;
             var polling = 1000;
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            // Wait for function will release the execution faster than in node.
-            // We add some CDP action to wait for the task to start the polling
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await EnsureWaitForFunctionStartedPolling();
             await Page.EvaluateFunctionAsync("async () => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
@@ -66,6 +62,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
+            await EnsureWaitForFunctionStartedPolling();
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -80,6 +77,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
+            await EnsureWaitForFunctionStartedPolling();
             await Page.EvaluateFunctionAsync("async () => window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -215,6 +213,15 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html");
             await Page.EvaluateFunctionAsync("() => window.__done = true");
             await watchdog;
+        }
+
+
+
+        private async Task EnsureWaitForFunctionStartedPolling()
+        {
+            // Wait for function will release the execution faster than in node.
+            // We add some CDP action to wait for the task to start the polling
+            await Page.EvaluateExpressionAsync("null");
         }
     }
 }
