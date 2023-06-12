@@ -207,7 +207,6 @@ namespace PuppeteerSharp
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
         /// - <see cref="WaitForRequestAsync(string, WaitForOptions)"/>
         /// - <see cref="WaitForResponseAsync(string, WaitForOptions)"/>
-        /// - <see cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// - <see cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>.
         /// </summary>
@@ -1371,7 +1370,6 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves when element specified by selector string is added to DOM.
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
-        /// <seealso cref="WaitForXPathAsync(string, WaitForSelectorOptions)"/>
         /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
@@ -1409,7 +1407,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-        /// <seealso cref="IFrame.WaitForXPathAsync(string, WaitForSelectorOptions)"/>
+        [Obsolete("Use " + nameof(WaitForSelectorAsync) + " instead")]
         Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null);
 
         /// <summary>
@@ -1420,7 +1418,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.XPathAsync(expression)</c>.
         /// </remarks>
-        /// <seealso cref="IFrame.XPathAsync(string)"/>
+        [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
         Task<IElementHandle[]> XPathAsync(string expression);
     }
 }

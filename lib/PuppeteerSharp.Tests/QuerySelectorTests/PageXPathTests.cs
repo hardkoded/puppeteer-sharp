@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should query existing element")]
+        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should query existing element")]
         [PuppeteerFact]
         public async Task ShouldQueryExistingElement()
         {
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Single(elements);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should return empty array for non-existing element")]
+        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return empty array for non-existing element")]
         [PuppeteerFact]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Empty(elements);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Path.$x", "should return multiple elements")]
+        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return multiple elements")]
         [PuppeteerFact]
         public async Task ShouldReturnMultipleElements()
         {
