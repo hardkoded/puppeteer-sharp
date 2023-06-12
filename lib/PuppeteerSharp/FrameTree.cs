@@ -44,8 +44,7 @@ namespace PuppeteerSharp
             }
 
             var deferred = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _waitRequests.TryAdd(frameId, new List<TaskCompletionSource<Frame>>());
-            _waitRequests.TryGetValue(frameId, out var callbacks);
+            var callbacks = _waitRequests.GetOrAdd(frameId, static _ => new());
             callbacks.Add(deferred);
 
             return deferred.Task;
@@ -58,8 +57,7 @@ namespace PuppeteerSharp
             {
                 _parentIds.TryAdd(frame.Id, frame.ParentId);
 
-                _childIds.TryAdd(frame.ParentId, new List<string>());
-                _childIds.TryGetValue(frame.ParentId, out var childIds);
+                var childIds = _childIds.GetOrAdd(frame.ParentId, static _ => new());
                 childIds.Add(frame.Id);
             }
             else

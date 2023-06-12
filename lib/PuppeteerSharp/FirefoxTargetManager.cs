@@ -46,18 +46,8 @@ namespace PuppeteerSharp
 
         public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
         {
-            lock (_targetInterceptors)
-            {
-                _targetInterceptors.TryGetValue(session, out var interceptors);
-
-                if (interceptors == null)
-                {
-                    interceptors = new List<TargetInterceptor>();
-                    _targetInterceptors.TryAdd(session, interceptors);
-                }
-
-                interceptors.Add(interceptor);
-            }
+            var interceptors = _targetInterceptors.GetOrAdd(session, static _ => new());
+            interceptors.Add(interceptor);
         }
 
         public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
