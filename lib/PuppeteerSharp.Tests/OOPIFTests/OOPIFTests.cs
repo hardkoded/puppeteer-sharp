@@ -334,11 +334,12 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.Equal(2, Page.Frames.Length);
 
             var browserURL = $"http://127.0.0.1:{_port}";
-            using var browser1 = await Puppeteer.ConnectAsync(new (){ BrowserURL = browserURL });
+            var browser1 = await Puppeteer.ConnectAsync(new (){ BrowserURL = browserURL }, TestConstants.LoggerFactory);
             var target = await browser1.WaitForTargetAsync((target) =>
               target.Url.EndsWith("dynamic-oopif.html")
             ).WithTimeout();
             await target.PageAsync();
+            browser1.Disconnect();
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support lazy OOP frames")]
