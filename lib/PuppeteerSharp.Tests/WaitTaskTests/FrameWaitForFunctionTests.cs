@@ -215,8 +215,6 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-
-
         private async Task EnsureWaitForFunctionStartedPolling()
         {
             // Wait for function will release the execution faster than in node.
