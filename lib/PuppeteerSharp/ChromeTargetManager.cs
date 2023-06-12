@@ -93,7 +93,9 @@ namespace PuppeteerSharp
                 AutoAttach = true,
             }).ConfigureAwait(false);
 
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
             FinishInitializationIfReady();
+
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
@@ -142,7 +144,7 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        _ = OnAttachedToTargetHandlingExceptions(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                        _ = OnAttachedToTargetHandlingExceptionsAsync(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true));
                         return;
 
                     case "Target.detachedFromTarget":
@@ -192,9 +194,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnTargetDestroyed(TargetDestroyedResponse e)
+        private async void OnTargetDestroyed(TargetDestroyedResponse e)
         {
             _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
             FinishInitializationIfReady(e.TargetId);
 
             if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
@@ -248,8 +251,6 @@ namespace PuppeteerSharp
                 }
             };
 
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
-
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
                 return;
@@ -258,6 +259,7 @@ namespace PuppeteerSharp
             if (targetInfo.Type == TargetType.ServiceWorker &&
                 _connection.IsAutoAttached(targetInfo.TargetId))
             {
+                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
@@ -274,6 +276,7 @@ namespace PuppeteerSharp
             if (_targetFilterFunc?.Invoke(targetInfo) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
+                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
                 return;
@@ -311,6 +314,7 @@ namespace PuppeteerSharp
                 }
             }
 
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
             if (!existingTarget)
@@ -337,7 +341,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnAttachedToTargetHandlingExceptions(object sender, string messageId, TargetAttachedToTargetResponse e)
+        private async Task OnAttachedToTargetHandlingExceptionsAsync(object sender, string messageId, TargetAttachedToTargetResponse e)
         {
             try
             {

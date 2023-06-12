@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldSupportTargetFilter()
         {
-            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
             {
                 var page1 = await originalBrowser.NewPageAsync();
                 await page1.GoToAsync(TestConstants.EmptyPage);
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var browser = await Puppeteer.ConnectAsync(new ConnectOptions {
                     BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                     TargetFilter = (TargetInfo targetInfo) => !targetInfo.Url.Contains("should-be-ignored"),
-                });
+                }, TestConstants.LoggerFactory);
 
                 var pages = await browser.PagesAsync();
 
