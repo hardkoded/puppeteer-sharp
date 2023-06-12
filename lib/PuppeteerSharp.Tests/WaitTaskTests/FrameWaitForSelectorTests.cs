@@ -126,18 +126,90 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(boxFound);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for visible")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (display)")]
         [PuppeteerFact]
-        public async Task ShouldWaitForVisible()
+        public async Task ShouldWaitForVisibleDisplay()
         {
             var divFound = false;
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
                 .ContinueWith(_ => divFound = true);
-            await Page.SetContentAsync("<div style='display: none; visibility: hidden;'>1</div>");
+            await Page.SetContentAsync("<div style='display: none;'>text</div>");
+            await Task.Delay(100);
             Assert.False(divFound);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
+            Assert.True(await waitForSelector);
+            Assert.True(divFound);
+        }
+
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (visibility)")]
+        [PuppeteerFact]
+        public async Task ShouldWaitForVisibleVisibility()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div style='visibility: hidden;'>text</div>");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('visibility', 'collapse')");
+            await Task.Delay(100);
             Assert.False(divFound);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
+            Assert.True(await waitForSelector);
+            Assert.True(divFound);
+        }
+
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (bounding box)")]
+        [PuppeteerFact]
+        public async Task ShouldWaitForVisibleBoundingBox()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div style='width: 0;'>text</div>");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync(@"() => {
+                const div = document.querySelector('div');
+                div.style.setProperty('height', '0');
+                div.style.removeProperty('width');
+            }");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync(@"() => {
+                const div = document.querySelector('div');
+                div.style.setProperty('position', 'absolute');
+                div.style.setProperty('right', '100vw');
+                div.style.removeProperty('height');
+            }");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync(@"() => {
+                const div = document.querySelector('div');
+                div.style.setProperty('position', 'absolute');
+                div.style.setProperty('left', '100vw');
+                div.style.removeProperty('right');
+            }");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync(@"() => {
+                const div = document.querySelector('div');
+                div.style.setProperty('position', 'absolute');
+                div.style.setProperty('top', '100vw');
+                div.style.removeProperty('left');
+            }");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync(@"() => {
+                const div = document.querySelector('div');
+                div.style.setProperty('position', 'absolute');
+                div.style.setProperty('bottom', '100vw');
+                div.style.removeProperty('top');
+            }");
+            await Task.Delay(100);
+            Assert.False(divFound);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('bottom', '99vw')");
+            await Task.Delay(100);
             Assert.True(await waitForSelector);
             Assert.True(divFound);
         }
@@ -158,15 +230,15 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divVisible);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "hidden should wait for visibility: hidden")]
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "hidden should wait for display: none")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
         [Theory]
         [InlineData("visibility", "hidden")]
         [InlineData("display", "none")]
         public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
         {
             var divHidden = false;
-            await Page.SetContentAsync("<div style='display: block;'></div>");
+            await Page.SetContentAsync("<div style='display: block;'>text</div>");
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
@@ -176,11 +248,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divHidden);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "hidden should wait for removal")]
+        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
         [PuppeteerFact]
         public async Task HiddenShouldWaitForRemoval()
         {
-            await Page.SetContentAsync("<div></div>");
+            await Page.SetContentAsync("<div>text</div>");
             var divRemoved = false;
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divRemoved = true);
@@ -213,7 +285,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldHaveAnErrorMessageSpecificallyForAwaitingAnElementToBeHidden()
         {
-            await Page.SetContentAsync("<div></div>");
+            await Page.SetContentAsync("<div>text</div>");
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
 

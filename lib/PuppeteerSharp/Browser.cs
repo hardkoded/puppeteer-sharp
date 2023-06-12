@@ -41,7 +41,6 @@ namespace PuppeteerSharp
         {
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
-            ScreenshotTaskQueue = new TaskQueue();
             Launcher = launcher;
             Connection = connection;
             _closeCallback = closeCallback;
@@ -58,9 +57,9 @@ namespace PuppeteerSharp
                 });
 
             _defaultContext = new BrowserContext(Connection, this, null);
-            _contexts = new ConcurrentDictionary<string, BrowserContext>(contextIds.ToDictionary(
-                contextId => contextId,
-                contextId => new BrowserContext(Connection, this, contextId)));
+            _contexts = new ConcurrentDictionary<string, BrowserContext>(
+                contextIds.Select(contextId =>
+                    new KeyValuePair<string, BrowserContext>(contextId, new(Connection, this, contextId))));
 
             if (product == Product.Firefox)
             {
@@ -131,7 +130,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
-        internal TaskQueue ScreenshotTaskQueue { get; set; }
+        internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
         internal Connection Connection { get; }
 

@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP headers.
         /// </summary>
         /// <value>HTTP headers.</value>
-        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> Headers { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the URL.

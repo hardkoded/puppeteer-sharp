@@ -211,13 +211,12 @@ namespace PuppeteerSharp
             _discoveredTargetsByTargetId[e.TargetInfo.TargetId] = e.TargetInfo;
 
             if (_ignoredTargets.Contains(e.TargetInfo.TargetId) ||
-                !_attachedTargetsByTargetId.ContainsKey(e.TargetInfo.TargetId) ||
+                !_attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target) ||
                 !e.TargetInfo.Attached)
             {
                 return;
             }
 
-            _attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target);
             TargetChanged?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = e.TargetInfo });
         }
 

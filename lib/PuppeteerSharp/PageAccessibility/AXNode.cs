@@ -20,7 +20,6 @@ namespace PuppeteerSharp.PageAccessibility
         public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
             Payload = payload;
-            Children = new List<AXNode>();
 
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
@@ -31,7 +30,7 @@ namespace PuppeteerSharp.PageAccessibility
             Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
         }
 
-        public List<AXNode> Children { get; }
+        public List<AXNode> Children { get; } = new();
 
         public bool Focusable { get; set; }
 

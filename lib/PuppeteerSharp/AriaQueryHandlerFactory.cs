@@ -16,7 +16,7 @@ namespace PuppeteerSharp
 
         private static readonly Regex _normalizedRegex = new(" +", RegexOptions.Compiled);
 
-        internal static InternalQueryHandler Create()
+        internal static PuppeteerQueryHandler Create()
         {
             async Task<object> QueryOneId(IElementHandle element, string selector)
             {
@@ -37,12 +37,29 @@ namespace PuppeteerSharp
                 return await ((ElementHandle)element).Frame.PuppeteerWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
             }
 
-            async Task<IElementHandle> WaitFor(IElementHandle root, string selector, WaitForSelectorOptions options)
+            async Task<IElementHandle> WaitFor(IFrame frame, IElementHandle element, string selector, WaitForSelectorOptions options)
             {
-                var frame = ((ElementHandle)root).Frame;
-                var element = (await frame.PuppeteerWorld.AdoptHandleAsync(root).ConfigureAwait(false)) as IElementHandle;
+                var frameImpl = frame as Frame;
 
-                Task<IElementHandle> Func(string selector) => QueryOne(element, selector);
+                if (element != null)
+                {
+                    frameImpl = ((ElementHandle)element).Frame;
+                    element = (await frameImpl.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false)) as IElementHandle;
+                }
+
+                async Task<IElementHandle> Func(string selector)
+                {
+                    var id = await QueryOneId(
+                        element ?? (await frameImpl.PuppeteerWorld.GetDocumentAsync().ConfigureAwait(false)),
+                        selector).ConfigureAwait(false);
+
+                    if (id == null)
+                    {
+                        return null;
+                    }
+
+                    return await frameImpl.PuppeteerWorld.AdoptBackendNodeAsync(id).ConfigureAwait(false);
+                }
 
                 var binding = new PageBinding()
                 {
@@ -50,12 +67,24 @@ namespace PuppeteerSharp
                     Function = (Func<string, Task<IElementHandle>>)Func,
                 };
 
-                return await frame.PuppeteerWorld.WaitForSelectorInPageAsync(
+                var result = await frameImpl.PuppeteerWorld.WaitForSelectorInPageAsync(
                     @"(_, selector) => globalThis.ariaQuerySelector(selector)",
                     element,
                     selector,
                     options,
                     new[] { binding }).ConfigureAwait(false);
+
+                if (element != null)
+                {
+                    await element.DisposeAsync().ConfigureAwait(false);
+                }
+
+                if (result == null)
+                {
+                    return null;
+                }
+
+                return await frameImpl.MainWorld.TransferHandleAsync(result).ConfigureAwait(false) as IElementHandle;
             }
 
             async Task<IElementHandle[]> QueryAll(IElementHandle element, string selector)
@@ -68,20 +97,11 @@ namespace PuppeteerSharp
                 return elements.ToArray();
             }
 
-            async Task<IJSHandle> QueryAllArray(IElementHandle element, string selector)
-            {
-                var elementHandles = await QueryAll(element, selector).ConfigureAwait(false);
-                var exeCtx = element.ExecutionContext;
-                var jsHandle = await exeCtx.EvaluateFunctionHandleAsync("(...elements) => elements", elementHandles).ConfigureAwait(false);
-                return jsHandle;
-            }
-
             return new()
             {
                 QueryOne = QueryOne,
                 WaitFor = WaitFor,
                 QueryAll = QueryAll,
-                QueryAllArray = QueryAllArray,
             };
         }
 

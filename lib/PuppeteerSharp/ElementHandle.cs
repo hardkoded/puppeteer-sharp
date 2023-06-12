@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -80,23 +81,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
-            var frame = (Frame)ExecutionContext.Frame;
-            var secondaryContext = await frame.PuppeteerWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var adoptedRoot = await secondaryContext.AdoptElementHandleAsync(this).ConfigureAwait(false);
-            options ??= new WaitForSelectorOptions();
-            options.Root = adoptedRoot;
-
-            var handle = await frame.PuppeteerWorld.WaitForSelectorAsync(selector, options).ConfigureAwait(false);
-            await adoptedRoot.DisposeAsync().ConfigureAwait(false);
-            if (handle == null)
-            {
-                return null;
-            }
-
-            var mainExecutionContext = await frame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            var customQueriesManager = ((Browser)Frame.FrameManager.Page.Browser).CustomQueriesManager;
+            var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitFor(null, this, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -267,10 +254,27 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
+        public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.QueryAllArray(this, updatedSelector);
+            var handles = await queryHandler.QueryAll(this, updatedSelector).ConfigureAwait(false);
+
+            var elements = await EvaluateFunctionHandleAsync(
+                @"(_, ...elements) => {
+                    return elements;
+                }",
+                handles).ConfigureAwait(false) as JSHandle;
+
+            elements.DisposeAction = async () =>
+            {
+                // We can't use Task.WhenAll with ValueTask :(
+                foreach (var handle in handles)
+                {
+                    await handle.DisposeAsync().ConfigureAwait(false);
+                }
+            };
+
+            return elements;
         }
 
         /// <inheritdoc/>

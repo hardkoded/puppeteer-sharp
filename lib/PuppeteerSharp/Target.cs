@@ -69,7 +69,6 @@ namespace PuppeteerSharp
                 },
                 TaskScheduler.Default);
 
-            CloseTaskWrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             IsInitialized = !_isPageTargetFunc(TargetInfo) || !string.IsNullOrEmpty(TargetInfo.Url);
 
             if (IsInitialized)
@@ -101,11 +100,11 @@ namespace PuppeteerSharp
 
         internal Task<bool> InitializedTask => InitializedTaskWrapper.Task;
 
-        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Task CloseTask => CloseTaskWrapper.Task;
 
-        internal TaskCompletionSource<bool> CloseTaskWrapper { get; }
+        internal TaskCompletionSource<bool> CloseTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Task<IPage> PageTask { get; set; }
 

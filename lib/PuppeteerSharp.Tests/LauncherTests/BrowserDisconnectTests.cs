@@ -52,8 +52,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var page = await remote.NewPageAsync();
                 var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
                 remote.Disconnect();
-                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => watchdog);
-                Assert.Equal("Connection disposed", exception.CloseReason);
+                var exception = await Assert.ThrowsAnyAsync<WaitTaskTimeoutException>(() => watchdog);
+                Assert.Equal("Connection disposed", (exception.InnerException as TargetClosedException).CloseReason);
             }
         }
     }

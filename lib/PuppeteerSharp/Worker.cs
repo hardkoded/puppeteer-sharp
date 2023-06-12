@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
-        private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback;
+        private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private ExecutionContext _executionContext;
         private Func<ExecutionContext, RemoteObject, IJSHandle> _jsHandleFactory;
 
@@ -46,8 +46,6 @@ namespace PuppeteerSharp
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;
             _client.MessageReceived += OnMessageReceived;
-
-            _executionContextCallback = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _ = _client.SendAsync("Runtime.enable").ContinueWith(
                 task =>

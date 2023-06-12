@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace PuppeteerSharp.Tests.QuerySelectorTests
+namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class PierceHandlerTests : PuppeteerPageBaseTest
+    public class PierceSelectorTests : PuppeteerPageBaseTest
     {
-        public PierceHandlerTests(ITestOutputHelper output) : base(output)
+        public PierceSelectorTests(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -43,7 +41,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             return base.DisposeAsync();
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "pierceHandler", "should find first element in shadow")]
+        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
         [PuppeteerFact]
         public async Task ShouldFindFirstElementInShadow()
         {
@@ -54,7 +52,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Equal("Hello", text);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "pierceHandler", "should find all elements in shadow")]
+        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
         [PuppeteerFact]
         public async Task ShouldFindAllElementsInShadow()
         {
@@ -68,7 +66,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Equal("Hello World", string.Join(" ", text));
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "pierceHandler", "should find first child element")]
+        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
         [PuppeteerFact]
         public async Task ShouldFindFirstChildElement()
         {
@@ -80,7 +78,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Equal("Hello", text);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "pierceHandler", "should find all child elements")]
+        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
         [PuppeteerFact]
         public async Task ShouldFindAllChildElements()
         {
