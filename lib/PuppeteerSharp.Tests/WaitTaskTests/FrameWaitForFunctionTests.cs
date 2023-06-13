@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest, IDisposable
     {
-        private ConnectionTransportInterceptor _connectionTransportInterceptor;
+        private PollerInterceptor _pollerInterceptor;
 
         public FrameWaitForFunctionTests(ITestOutputHelper output) : base(output)
         {
@@ -25,14 +25,14 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             // due to differences between node.js's task scheduler and .net's.
             DefaultOptions.TransportFactory = async (url, options, cancellationToken) =>
             {
-                _connectionTransportInterceptor = new ConnectionTransportInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
-                return _connectionTransportInterceptor;
+                _pollerInterceptor = new PollerInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
+                return _pollerInterceptor;
             };
         }
 
         public void Dispose()
         {
-            _connectionTransportInterceptor.Dispose();
+            _pollerInterceptor.Dispose();
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should work when resolved right before execution context disposal")]
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 100;
-            var startedPolling = WaitForStartPollingAsync();
+            var startedPolling =  _pollerInterceptor.WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
             await startedPolling;
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 1000;
-            var startedPolling = WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
             await startedPolling;
             await Page.EvaluateFunctionAsync("async () => setTimeout(window.__FOO = 'hit', 50)");
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutation()
         {
             var success = false;
-            var startedPolling = WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutationAsync()
         {
             var success = false;
-            var startedPolling = WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
@@ -238,23 +238,6 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html");
             await Page.EvaluateFunctionAsync("() => window.__done = true");
             await watchdog;
-        }
-
-        private Task<bool> WaitForStartPollingAsync()
-        {
-            TaskCompletionSource<bool> startedPolling = new TaskCompletionSource<bool>();
-
-            // Wait for function will release the execution faster than in node.
-            // We intercept the poller.start() call to prevent tests from continuing before the polling has started.
-            _connectionTransportInterceptor.MessageSent += (_, message) =>
-            {
-                if (message.Contains("poller => poller.start()"))
-                {
-                    startedPolling.SetResult(true);
-                }
-            };
-
-            return startedPolling.Task;
         }
     }
 }
