@@ -81,6 +81,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
             var customQueriesManager = ((Browser)Frame.FrameManager.Page.Browser).CustomQueriesManager;
             var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitFor(null, this, updatedSelector, options).ConfigureAwait(false);
@@ -242,6 +247,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle> QuerySelectorAsync(string selector)
         {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryOne(this, updatedSelector);
         }
@@ -249,6 +259,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryAll(this, updatedSelector);
         }
@@ -256,6 +271,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
         {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
             var handles = await queryHandler.QueryAll(this, updatedSelector).ConfigureAwait(false);
 

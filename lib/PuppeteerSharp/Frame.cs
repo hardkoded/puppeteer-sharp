@@ -94,24 +94,30 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
         {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
             var customQueriesManager = ((Browser)FrameManager.Page.Browser).CustomQueriesManager;
             var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitFor(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
+        public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
-            var handle = await PuppeteerWorld.WaitForXPathAsync(xpath, options).ConfigureAwait(false);
-            if (handle == null)
+            if (string.IsNullOrEmpty(xpath))
             {
-                return null;
+                throw new ArgumentNullException(nameof(xpath));
             }
 
-            var mainExecutionContext = await MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
-            var result = await mainExecutionContext.AdoptElementHandleAsync(handle).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            if (xpath.StartsWith("//", StringComparison.OrdinalIgnoreCase))
+            {
+                xpath = $".{xpath}";
+            }
+
+            return WaitForSelectorAsync($"xpath/{xpath}", options);
         }
 
         /// <inheritdoc/>

@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // WaitForXPathAsync is obsolete but we test the funcionatlity anyway
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -109,3 +110,4 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
     }
 }
+#pragma warning restore CS0618

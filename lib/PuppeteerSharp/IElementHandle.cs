@@ -274,6 +274,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/>.</param>
         /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
+        [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
         Task<IElementHandle[]> XPathAsync(string expression);
     }
 }

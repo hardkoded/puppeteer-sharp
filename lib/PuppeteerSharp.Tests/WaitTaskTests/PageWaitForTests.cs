@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // WaitForXPathAsync is obsolete but we test the funcionatlity anyway
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
@@ -85,3 +86,4 @@ namespace PuppeteerSharp.Tests.WaitForTests
             => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
     }
 }
+#pragma warning restore CS0618

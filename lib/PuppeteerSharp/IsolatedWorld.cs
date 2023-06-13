@@ -371,9 +371,6 @@ namespace PuppeteerSharp
             await handle.DisposeAsync().ConfigureAwait(false);
         }
 
-        internal Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => WaitForSelectorOrXPathAsync(xpath, true, options);
-
         internal async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
             using var waitTask = new WaitTask(
@@ -558,7 +555,7 @@ namespace PuppeteerSharp
 
         private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
 
-        private async Task<IElementHandle> WaitForSelectorOrXPathAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
+        private async Task<IElementHandle> WaitForSelectorAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
         {
             options ??= new WaitForSelectorOptions();
             var waitForVisible = options?.Visible ?? false;

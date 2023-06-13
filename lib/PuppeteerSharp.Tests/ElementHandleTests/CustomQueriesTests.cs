@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             return base.DisposeAsync();
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should reguster and unregister")]
+        [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should register and unregister")]
         [PuppeteerFact]
         public async Task ShouldRegisterAndUnregister()
         {
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
             catch (Exception ex)
             {
-                Assert.Equal($"Query set to use \"getById\", but no query handler of that name was found", ex.Message);
+                Assert.DoesNotContain($"Custom query handler name not set - throw expected", ex.Message);
             }
 
             var handlerNamesAfterUnregistering = ((Browser)Browser).GetCustomQueryHandlerNames();

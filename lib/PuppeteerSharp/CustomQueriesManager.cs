@@ -10,6 +10,8 @@ namespace PuppeteerSharp
 {
     internal class CustomQueriesManager
     {
+        private static readonly string[] CustomQuerySeparators = new[] { "=", "/" };
+        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers;
         private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
         private readonly PuppeteerQueryHandler _pierceHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
@@ -62,9 +64,7 @@ namespace PuppeteerSharp
         });
 
         private readonly PuppeteerQueryHandler _ariaHandler = AriaQueryHandlerFactory.Create();
-        private readonly Dictionary<string, PuppeteerQueryHandler> _builtInHandlers;
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
-        private readonly Regex _customQueryHandlerParserRegex = new("(?<query>^[a-zA-Z]+)\\/(?<selector>.*)", RegexOptions.Compiled);
         private readonly PuppeteerQueryHandler _defaultHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
             QueryOne = "(element, selector) => element.querySelector(selector)",
@@ -124,19 +124,54 @@ namespace PuppeteerSharp
               }",
         });
 
+        private readonly PuppeteerQueryHandler _xpathHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
+        {
+            QueryOne = @"(element, selector) => {
+              const doc = element.ownerDocument || document;
+              const result = doc.evaluate(
+                selector,
+                element,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE
+              );
+              return result.singleNodeValue;
+            }",
+            QueryAll = @"(element, selector) => {
+              const doc = element.ownerDocument || document;
+              const iterator = doc.evaluate(
+                selector,
+                element,
+                null,
+                XPathResult.ORDERED_NODE_ITERATOR_TYPE
+              );
+              const array = [];
+              let item;
+              while ((item = iterator.iterateNext())) {
+                array.push(item);
+              }
+              return array;
+            },
+          })",
+        });
+
         public CustomQueriesManager()
         {
-            _builtInHandlers = new()
+            _internalQueryHandlers = new()
             {
                 ["aria"] = _ariaHandler,
                 ["pierce"] = _pierceHandler,
                 ["text"] = _textQueryHandler,
+                ["xpath"] = _xpathHandler,
             };
-            _queryHandlers = _builtInHandlers.Clone();
         }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
+            if (_internalQueryHandlers.ContainsKey(name))
+            {
+                throw new PuppeteerException($"A query handler named \"{name}\" already exists");
+            }
+
             if (_queryHandlers.ContainsKey(name))
             {
                 throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
@@ -155,21 +190,23 @@ namespace PuppeteerSharp
 
         internal (string UpdatedSelector, PuppeteerQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
-            var customQueryHandlerMatch = _customQueryHandlerParserRegex.Match(selector);
-            if (!customQueryHandlerMatch.Success)
+            var handlers = _internalQueryHandlers.Concat(_queryHandlers);
+
+            foreach (var kv in handlers)
             {
-                return (selector, _defaultHandler);
+              foreach (var separator in CustomQuerySeparators)
+              {
+                var prefix = $"{kv.Key}{separator}";
+
+                if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                  selector = selector.Substring(prefix.Length);
+                  return (selector, kv.Value);
+                }
+              }
             }
 
-            var name = customQueryHandlerMatch.Groups["query"].Value;
-            var updatedSelector = customQueryHandlerMatch.Groups["selector"].Value;
-
-            if (!_queryHandlers.TryGetValue(name, out var queryHandler))
-            {
-                throw new PuppeteerException($"Query set to use \"{name}\", but no query handler of that name was found");
-            }
-
-            return (updatedSelector, queryHandler);
+            return (selector, _defaultHandler);
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
@@ -267,7 +304,6 @@ namespace PuppeteerSharp
             return internalHandler;
         }
 
-        private IEnumerable<string> CustomQueryHandlerNames()
-            => _queryHandlers.Keys.ToArray().Where(k => !_builtInHandlers.ContainsKey(k));
+        private IEnumerable<string> CustomQueryHandlerNames() => _queryHandlers.Keys.ToArray();
     }
 }
