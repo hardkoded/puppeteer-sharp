@@ -16,6 +16,13 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public FrameWaitForFunctionTests(ITestOutputHelper output) : base(output)
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
+
+            // Set up a custom TransportFactory to intercept sent messages
+            // Some of the tests require making assertions after a WaitForFunction has
+            // started, but before it has resolved. We detect that reliably by
+            // listening to the message that is sent to start polling.
+            // This might not be an issue in upstream puppeteer.js, or may be highly unlikely,
+            // due to differences between node.js's task scheduler and .net's.
             DefaultOptions.TransportFactory = async (url, options, cancellationToken) =>
             {
                 _connectionTransportInterceptor = new ConnectionTransportInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
@@ -47,9 +54,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 100;
-            var startedPolling = ListenForStartPolling();
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            await startedPolling.Task;
+            await startedPolling;
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
 
@@ -62,9 +69,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 1000;
-            var startedPolling = ListenForStartPolling();
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            await startedPolling.Task;
+            await startedPolling;
             await Page.EvaluateFunctionAsync("async () => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
@@ -75,11 +82,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutation()
         {
             var success = false;
-            var startedPolling = ListenForStartPolling();
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
-            await startedPolling.Task;
+            await startedPolling;
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -91,11 +98,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutationAsync()
         {
             var success = false;
-            var startedPolling = ListenForStartPolling();
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
-            await startedPolling.Task;
+            await startedPolling;
             await Page.EvaluateFunctionAsync("async () => window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -233,7 +240,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        private TaskCompletionSource<bool> ListenForStartPolling()
+        private Task<bool> WaitForStartPollingAsync()
         {
             TaskCompletionSource<bool> startedPolling = new TaskCompletionSource<bool>();
 
@@ -247,7 +254,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 }
             };
 
-            return startedPolling;
+            return startedPolling.Task;
         }
 
         private sealed class ConnectionTransportInterceptor : IConnectionTransport
