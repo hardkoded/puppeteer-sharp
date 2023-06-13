@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -21,7 +19,6 @@ namespace PuppeteerSharp
 
     internal class IsolatedWorld
     {
-        private static string _injectedSource;
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
@@ -260,7 +257,6 @@ namespace PuppeteerSharp
         {
             try
             {
-                var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
                 var waitForVisible = options?.Visible ?? false;
                 var waitForHidden = options?.Hidden ?? false;
                 var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
@@ -279,7 +275,7 @@ namespace PuppeteerSharp
 
                 var args = new List<object>
                 {
-                    await executionContext.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                     queryOne,
                     selector,
                     root,
@@ -447,22 +443,6 @@ namespace PuppeteerSharp
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
-        }
-
-        private static string GetInjectedSource()
-        {
-            if (string.IsNullOrEmpty(_injectedSource))
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "PuppeteerSharp.Injected.injected.js";
-
-                using var stream = assembly.GetManifestResourceStream(resourceName);
-                using var reader = new StreamReader(stream);
-                var fileContent = reader.ReadToEnd();
-                _injectedSource = fileContent;
-            }
-
-            return _injectedSource;
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
