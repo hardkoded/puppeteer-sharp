@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Transport;
 using PuppeteerSharp.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -8,10 +9,30 @@ using Xunit.Abstractions;
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameWaitForFunctionTests : PuppeteerPageBaseTest
+    public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest, IDisposable
     {
+        private ConnectionTransportInterceptor _connectionTransportInterceptor;
+
         public FrameWaitForFunctionTests(ITestOutputHelper output) : base(output)
         {
+            DefaultOptions = TestConstants.DefaultBrowserOptions();
+
+            // Set up a custom TransportFactory to intercept sent messages
+            // Some of the tests require making assertions after a WaitForFunction has
+            // started, but before it has resolved. We detect that reliably by
+            // listening to the message that is sent to start polling.
+            // This might not be an issue in upstream puppeteer.js, or may be highly unlikely,
+            // due to differences between node.js's task scheduler and .net's.
+            DefaultOptions.TransportFactory = async (url, options, cancellationToken) =>
+            {
+                _connectionTransportInterceptor = new ConnectionTransportInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
+                return _connectionTransportInterceptor;
+            };
+        }
+
+        public void Dispose()
+        {
+            _connectionTransportInterceptor.Dispose();
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should work when resolved right before execution context disposal")]
@@ -33,26 +54,24 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 100;
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            // Wait for function will release the execution faster than in node.
-            // We add some CDP action to wait for the task to start the polling
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await startedPolling;
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
 
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
-        
+
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on interval async")]
         [PuppeteerFact]
         public async Task ShouldPollOnIntervalAsync()
         {
             var startTime = DateTime.UtcNow;
             var polling = 1000;
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
-            // Wait for function will release the execution faster than in node.
-            // We add some CDP action to wait for the task to start the polling
-            await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
+            await startedPolling;
             await Page.EvaluateFunctionAsync("async () => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
@@ -63,9 +82,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutation()
         {
             var success = false;
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
+            await startedPolling;
             await Page.EvaluateExpressionAsync("window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -77,9 +98,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldPollOnMutationAsync()
         {
             var success = false;
+            var startedPolling = WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
                 new WaitForFunctionOptions { Polling = WaitForFunctionPollingOption.Mutation })
                 .ContinueWith(_ => success = true);
+            await startedPolling;
             await Page.EvaluateFunctionAsync("async () => window.__FOO = 'hit'");
             Assert.False(success);
             await Page.EvaluateExpressionAsync("document.body.appendChild(document.createElement('div'))");
@@ -215,6 +238,23 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html");
             await Page.EvaluateFunctionAsync("() => window.__done = true");
             await watchdog;
+        }
+
+        private Task<bool> WaitForStartPollingAsync()
+        {
+            TaskCompletionSource<bool> startedPolling = new TaskCompletionSource<bool>();
+
+            // Wait for function will release the execution faster than in node.
+            // We intercept the poller.start() call to prevent tests from continuing before the polling has started.
+            _connectionTransportInterceptor.MessageSent += (_, message) =>
+            {
+                if (message.Contains("poller => poller.start()"))
+                {
+                    startedPolling.SetResult(true);
+                }
+            };
+
+            return startedPolling.Task;
         }
     }
 }

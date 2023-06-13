@@ -144,6 +144,7 @@ namespace PuppeteerSharp
                             }.Concat(_args).ToArray()).ConfigureAwait(false);
                 }
 
+                // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
                 await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
