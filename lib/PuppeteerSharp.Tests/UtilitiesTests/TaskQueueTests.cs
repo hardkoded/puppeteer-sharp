@@ -49,6 +49,39 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             await taskQueue.DisposeAsync().ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task CanDisposeWhileSemaphoreIsHeld()
+        {
+            var taskQueue = new TaskQueue();
+
+            await taskQueue.Enqueue(() =>
+            {
+                taskQueue.Dispose();
+                return Task.CompletedTask;
+            });
+
+            var semaphore = GetSemaphore(taskQueue);
+            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+
+            taskQueue.Dispose();
+        }
+
+        [Fact]
+        public async Task CanDisposeWhileSemaphoreIsHeldAsync()
+        {
+            var taskQueue = new TaskQueue();
+
+            await taskQueue.Enqueue(async () =>
+            {
+                await taskQueue.DisposeAsync();
+            });
+
+            var semaphore = GetSemaphore(taskQueue);
+            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+
+            await taskQueue.DisposeAsync();
+        }
+
         private static SemaphoreSlim GetSemaphore(TaskQueue queue) =>
             (SemaphoreSlim)typeof(TaskQueue).GetField("_semaphore", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(queue);
     }

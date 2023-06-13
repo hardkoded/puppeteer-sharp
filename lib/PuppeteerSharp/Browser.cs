@@ -73,7 +73,8 @@ namespace PuppeteerSharp
                 TargetManager = new ChromeTargetManager(
                     connection,
                     CreateTarget,
-                    _targetFilterCallback);
+                    _targetFilterCallback,
+                    launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
             }
         }
 
@@ -201,12 +202,6 @@ namespace PuppeteerSharp
             }
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var existingTarget = Targets().FirstOrDefault(predicate);
-            if (existingTarget != null)
-            {
-                return existingTarget;
-            }
-
             var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void TargetHandler(object sender, TargetChangedArgs e)
@@ -219,16 +214,14 @@ namespace PuppeteerSharp
 
             try
             {
-                foreach (var target in Targets())
-                {
-                    if (predicate(target))
-                    {
-                        return target;
-                    }
-                }
-
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
+
+                var existingTarget = Targets().FirstOrDefault(predicate);
+                if (existingTarget != null)
+                {
+                    return existingTarget;
+                }
 
                 return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
             }

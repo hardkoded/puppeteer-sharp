@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -25,10 +26,15 @@ namespace PuppeteerSharp
         private readonly List<string> _targetsIdsForInit = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
+        // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
+        private readonly int _targetDiscoveryTimeout;
+        private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
+
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
-            Func<TargetInfo, bool> targetFilterFunc)
+            Func<TargetInfo, bool> targetFilterFunc,
+            int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
@@ -36,6 +42,7 @@ namespace PuppeteerSharp
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
+            _targetDiscoveryTimeout = targetDiscoveryTimeout;
 
             _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
@@ -52,13 +59,20 @@ namespace PuppeteerSharp
             }).ContinueWith(
                 t =>
                 {
-                    if (t.IsFaulted)
+                    try
                     {
-                        _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
+                        if (t.IsFaulted)
+                        {
+                            _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
+                        }
+                        else
+                        {
+                            StoreExistingTargetsForInit();
+                        }
                     }
-                    else
+                    finally
                     {
-                        StoreExistingTargetsForInit();
+                        _targetDiscoveryCompletionSource.SetResult(true);
                     }
                 },
                 TaskScheduler.Default);
@@ -83,7 +97,9 @@ namespace PuppeteerSharp
                 AutoAttach = true,
             }).ConfigureAwait(false);
 
+            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
             FinishInitializationIfReady();
+
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
@@ -115,18 +131,32 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void OnMessageReceived(object sender, MessageEventArgs e)
+        private async Task EnsureTargetsIdsForInit()
+        {
+            if (_targetDiscoveryTimeout > 0)
+            {
+                await _targetDiscoveryCompletionSource.Task.WithTimeout(_targetDiscoveryTimeout).ConfigureAwait(false);
+            }
+            else
+            {
+                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            }
+        }
+
+        private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        await OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true)).ConfigureAwait(false);
+                        _ = OnAttachedToTargetHandlingExceptionsAsync(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true));
                         return;
+
                     case "Target.detachedFromTarget":
                         OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
                         return;
+
                     case "Target.targetCreated":
                         OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>(true));
                         return;
@@ -142,9 +172,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                var message = $"Browser failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                _connection.Close(message);
+                HandleExceptionOnMessageReceived(e.MessageID, ex);
             }
         }
 
@@ -172,9 +200,10 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnTargetDestroyed(TargetDestroyedResponse e)
+        private async void OnTargetDestroyed(TargetDestroyedResponse e)
         {
             _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
+            await EnsureTargetsIdsForInit().ConfigureAwait(false);
             FinishInitializationIfReady(e.TargetId);
 
             if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
@@ -235,6 +264,7 @@ namespace PuppeteerSharp
             if (targetInfo.Type == TargetType.ServiceWorker &&
                 _connection.IsAutoAttached(targetInfo.TargetId))
             {
+                await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
@@ -251,8 +281,10 @@ namespace PuppeteerSharp
             if (_targetFilterFunc?.Invoke(targetInfo) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
+                await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await silentDetach().ConfigureAwait(false);
+                return;
             }
 
             var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
@@ -287,6 +319,7 @@ namespace PuppeteerSharp
                 }
             }
 
+            await EnsureTargetsIdsForInit().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
             if (!existingTarget)
@@ -311,6 +344,25 @@ namespace PuppeteerSharp
             {
                 _logger.LogError("Failed to call setautoAttach and runIfWaitingForDebugger", ex);
             }
+        }
+
+        private async Task OnAttachedToTargetHandlingExceptionsAsync(object sender, string messageId, TargetAttachedToTargetResponse e)
+        {
+            try
+            {
+                await OnAttachedToTarget(sender, e).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                HandleExceptionOnMessageReceived(messageId, ex);
+            }
+        }
+
+        private void HandleExceptionOnMessageReceived(string messageId, Exception ex)
+        {
+            var message = $"Browser failed to process {messageId}. {ex.Message}. {ex.StackTrace}";
+            _logger.LogError(ex, message);
+            _connection.Close(message);
         }
 
         private void FinishInitializationIfReady(string targetId = null)

@@ -667,25 +667,29 @@ namespace PuppeteerSharp
         public Task<string> GetTitleAsync() => MainFrame.GetTitleAsync();
 
         /// <inheritdoc/>
-        public Task CloseAsync(PageCloseOptions options = null)
+        public async Task CloseAsync(PageCloseOptions options = null)
         {
-            if (!(Client?.Connection?.IsClosed ?? true))
+            if (Client?.Connection?.IsClosed ?? true)
             {
-                var runBeforeUnload = options?.RunBeforeUnload ?? false;
-
-                if (runBeforeUnload)
-                {
-                    return Client.SendAsync("Page.close");
-                }
-
-                return Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
-                {
-                    TargetId = Target.TargetId,
-                }).ContinueWith(task => ((Target)Target).CloseTask, TaskScheduler.Default);
+                _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
+                return;
             }
 
-            _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
-            return Task.CompletedTask;
+            var runBeforeUnload = options?.RunBeforeUnload ?? false;
+
+            if (runBeforeUnload)
+            {
+                await Client.SendAsync("Page.close").ConfigureAwait(false);
+            }
+            else
+            {
+                await Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
+                {
+                    TargetId = Target.TargetId,
+                }).ConfigureAwait(false);
+
+                await ((Target)Target).CloseTask.ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>
