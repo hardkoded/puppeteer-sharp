@@ -56,10 +56,6 @@ namespace PuppeteerSharp
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
 
-        internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal Task<IJSHandle> GetPuppeteerUtilAsync() => PuppeteerUtilTaskCompletionSource.Task;
-
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
             // Previous operation added the binding so we are done.
@@ -264,6 +260,7 @@ namespace PuppeteerSharp
         {
             try
             {
+                var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
                 var waitForVisible = options?.Visible ?? false;
                 var waitForHidden = options?.Hidden ?? false;
                 var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
@@ -282,7 +279,7 @@ namespace PuppeteerSharp
 
                 var args = new List<object>
                 {
-                    await GetPuppeteerUtilAsync().ConfigureAwait(false),
+                    await executionContext.GetPuppeteerUtilAsync().ConfigureAwait(false),
                     queryOne,
                     selector,
                     root,
@@ -438,7 +435,6 @@ namespace PuppeteerSharp
         {
             _documentTask = null;
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
-            PuppeteerUtilTaskCompletionSource = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         internal void SetContext(ExecutionContext context)
@@ -448,7 +444,6 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            _ = InjectPuppeteerUtil(context);
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
@@ -468,20 +463,6 @@ namespace PuppeteerSharp
             }
 
             return _injectedSource;
-        }
-
-        private async Task InjectPuppeteerUtil(ExecutionContext context)
-        {
-            try
-            {
-                var injectedSource = GetInjectedSource();
-                var handle = await context.EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
-                PuppeteerUtilTaskCompletionSource.TrySetResult(handle);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)

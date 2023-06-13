@@ -41,6 +41,8 @@ namespace PuppeteerSharp
 
         internal IsolatedWorld World { get; }
 
+        internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
 
@@ -88,6 +90,8 @@ namespace PuppeteerSharp
 
             return CreateJSHandle(response.Objects);
         }
+
+        internal Task<IJSHandle> GetPuppeteerUtilAsync() => PuppeteerUtilTaskCompletionSource.Task;
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null

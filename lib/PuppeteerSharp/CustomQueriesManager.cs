@@ -235,7 +235,7 @@ namespace PuppeteerSharp
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryOne,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     if (jsHandle is ElementHandle elementHandle)
                     {
@@ -284,7 +284,7 @@ namespace PuppeteerSharp
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryAll,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
                     var result = new List<ElementHandle>();
