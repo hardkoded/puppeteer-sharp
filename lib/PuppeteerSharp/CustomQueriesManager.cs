@@ -8,7 +8,14 @@ namespace PuppeteerSharp
     internal class CustomQueriesManager
     {
         private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
-        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers;
+        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers = new()
+        {
+            ["aria"] = AriaQueryHandlerFactory.Create(),
+            ["pierce"] = CreatePierceHandler(),
+            ["text"] = CreateTextQueryHandler(),
+            ["xpath"] = CreateXpathHandler(),
+        };
+
         private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
 
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
@@ -17,17 +24,6 @@ namespace PuppeteerSharp
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
-
-        public CustomQueriesManager()
-        {
-            _internalQueryHandlers = new()
-            {
-                ["aria"] = AriaQueryHandlerFactory.Create(),
-                ["pierce"] = CreatePierceHandler(),
-                ["text"] = CreateTextQueryHandler(),
-                ["xpath"] = CreateXpathHandler(),
-            };
-        }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
