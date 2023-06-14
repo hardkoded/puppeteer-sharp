@@ -10,7 +10,7 @@ namespace PuppeteerSharp
 {
     internal class CustomQueriesManager
     {
-        private static readonly string[] CustomQuerySeparators = new[] { "=", "/" };
+        private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
         private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers;
         private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
         private readonly PuppeteerQueryHandler _pierceHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
@@ -194,7 +194,7 @@ namespace PuppeteerSharp
 
             foreach (var kv in handlers)
             {
-              foreach (var separator in CustomQuerySeparators)
+              foreach (var separator in _customQuerySeparators)
               {
                 var prefix = $"{kv.Key}{separator}";
 
@@ -231,7 +231,6 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryOne = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryOne,
                         selector,
@@ -280,7 +279,6 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryAll = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryAll,
                         selector,
