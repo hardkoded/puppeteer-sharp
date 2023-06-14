@@ -100,9 +100,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerFact]
         public async Task ShouldSetThePageCloseState()
         {
-            Assert.False(Page.IsClosed);
-            await Page.CloseAsync();
-            Assert.True(Page.IsClosed);
+            var page = await Context.NewPageAsync();
+            Assert.False(page.IsClosed);
+            await page.CloseAsync();
+            Assert.True(page.IsClosed);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should terminate network waiters")]

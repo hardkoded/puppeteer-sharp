@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -21,7 +19,6 @@ namespace PuppeteerSharp
 
     internal class IsolatedWorld
     {
-        private static string _injectedSource;
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
@@ -55,10 +52,6 @@ namespace PuppeteerSharp
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
-
-        internal TaskCompletionSource<IJSHandle> PuppeteerUtilTaskCompletionSource { get; private set; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal Task<IJSHandle> GetPuppeteerUtilAsync() => PuppeteerUtilTaskCompletionSource.Task;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
@@ -282,7 +275,7 @@ namespace PuppeteerSharp
 
                 var args = new List<object>
                 {
-                    await GetPuppeteerUtilAsync().ConfigureAwait(false),
+                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                     queryOne,
                     selector,
                     root,
@@ -438,7 +431,6 @@ namespace PuppeteerSharp
         {
             _documentTask = null;
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
-            PuppeteerUtilTaskCompletionSource = new TaskCompletionSource<IJSHandle>(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         internal void SetContext(ExecutionContext context)
@@ -448,40 +440,9 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            _ = InjectPuppeteerUtil(context);
             _ctxBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
-        }
-
-        private static string GetInjectedSource()
-        {
-            if (string.IsNullOrEmpty(_injectedSource))
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "PuppeteerSharp.Injected.injected.js";
-
-                using var stream = assembly.GetManifestResourceStream(resourceName);
-                using var reader = new StreamReader(stream);
-                var fileContent = reader.ReadToEnd();
-                _injectedSource = fileContent;
-            }
-
-            return _injectedSource;
-        }
-
-        private async Task InjectPuppeteerUtil(ExecutionContext context)
-        {
-            try
-            {
-                var injectedSource = GetInjectedSource();
-                var handle = await context.EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
-                PuppeteerUtilTaskCompletionSource.TrySetResult(handle);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.ToString());
-            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)

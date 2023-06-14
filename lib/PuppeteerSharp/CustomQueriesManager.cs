@@ -1,169 +1,29 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
     internal class CustomQueriesManager
     {
-        private static readonly string[] CustomQuerySeparators = new[] { "=", "/" };
-        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers;
-        private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
-        private readonly PuppeteerQueryHandler _pierceHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
+        private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
+        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers = new()
         {
-            QueryOne = @"(element, selector) => {
-                let found = null;
-                const search = (root) => {
-                  const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-                  do {
-                    const currentNode = iter.currentNode;
-                    if (currentNode.shadowRoot) {
-                      search(currentNode.shadowRoot);
-                    }
-                    if (currentNode instanceof ShadowRoot) {
-                      continue;
-                    }
-                    if (currentNode !== root && !found && currentNode.matches(selector)) {
-                      found = currentNode;
-                    }
-                  } while (!found && iter.nextNode());
-                };
-                if (element instanceof Document) {
-                  element = element.documentElement;
-                }
-                search(element);
-                return found;
-              }",
-            QueryAll = @"(element, selector) => {
-                const result = [];
-                const collect = (root) => {
-                  const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-                  do {
-                    const currentNode = iter.currentNode;
-                    if (currentNode.shadowRoot) {
-                      collect(currentNode.shadowRoot);
-                    }
-                    if (currentNode instanceof ShadowRoot) {
-                      continue;
-                    }
-                    if (currentNode !== root && currentNode.matches(selector)) {
-                      result.push(currentNode);
-                    }
-                  } while (iter.nextNode());
-                };
-                if (element instanceof Document) {
-                  element = element.documentElement;
-                }
-                collect(element);
-                return result;
-              }",
-        });
+            ["aria"] = AriaQueryHandlerFactory.Create(),
+            ["pierce"] = CreatePierceHandler(),
+            ["text"] = CreateTextQueryHandler(),
+            ["xpath"] = CreateXpathHandler(),
+        };
 
-        private readonly PuppeteerQueryHandler _ariaHandler = AriaQueryHandlerFactory.Create();
+        private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
+
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly PuppeteerQueryHandler _defaultHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
-
-        private readonly PuppeteerQueryHandler _textQueryHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
-        {
-            QueryOne = @"(element, selector, {createTextContent}) => {
-                const search = (root)=> {
-                  for (const node of root.childNodes) {
-                    if (node instanceof Element) {
-                      let matchedNode;
-                      if (node.shadowRoot) {
-                        matchedNode = search(node.shadowRoot);
-                      } else {
-                        matchedNode = search(node);
-                      }
-                      if (matchedNode) {
-                        return matchedNode;
-                      }
-                    }
-                  }
-                  const textContent = createTextContent(root);
-                  if (textContent.full.includes(selector)) {
-                    return root;
-                  }
-                  return null;
-                };
-                return search(element);
-              }",
-            QueryAll = @"(element, selector, {createTextContent}) => {
-                const search = (root) => {
-                  let results = [];
-                  for (const node of root.childNodes) {
-                    if (node instanceof Element) {
-                      let matchedNodes;
-                      if (node.shadowRoot) {
-                        matchedNodes = search(node.shadowRoot);
-                      } else {
-                        matchedNodes = search(node);
-                      }
-                      results = results.concat(matchedNodes);
-                    }
-                  }
-                  if (results.length > 0) {
-                    return results;
-                  }
-
-                  const textContent = createTextContent(root);
-                  if (textContent.full.includes(selector)) {
-                    return [root];
-                  }
-                  return [];
-                };
-                return search(element);
-              }",
-        });
-
-        private readonly PuppeteerQueryHandler _xpathHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
-        {
-            QueryOne = @"(element, selector) => {
-              const doc = element.ownerDocument || document;
-              const result = doc.evaluate(
-                selector,
-                element,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE
-              );
-              return result.singleNodeValue;
-            }",
-            QueryAll = @"(element, selector) => {
-              const doc = element.ownerDocument || document;
-              const iterator = doc.evaluate(
-                selector,
-                element,
-                null,
-                XPathResult.ORDERED_NODE_ITERATOR_TYPE
-              );
-              const array = [];
-              let item;
-              while ((item = iterator.iterateNext())) {
-                array.push(item);
-              }
-              return array;
-            },
-          })",
-        });
-
-        public CustomQueriesManager()
-        {
-            _internalQueryHandlers = new()
-            {
-                ["aria"] = _ariaHandler,
-                ["pierce"] = _pierceHandler,
-                ["text"] = _textQueryHandler,
-                ["xpath"] = _xpathHandler,
-            };
-        }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
@@ -194,16 +54,16 @@ namespace PuppeteerSharp
 
             foreach (var kv in handlers)
             {
-              foreach (var separator in CustomQuerySeparators)
-              {
-                var prefix = $"{kv.Key}{separator}";
-
-                if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                foreach (var separator in _customQuerySeparators)
                 {
-                  selector = selector.Substring(prefix.Length);
-                  return (selector, kv.Value);
+                    var prefix = $"{kv.Key}{separator}";
+
+                    if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        selector = selector.Substring(prefix.Length);
+                        return (selector, kv.Value);
+                    }
                 }
-              }
             }
 
             return (selector, _defaultHandler);
@@ -223,6 +83,142 @@ namespace PuppeteerSharp
             }
         }
 
+        private static PuppeteerQueryHandler CreatePierceHandler() =>
+            CreatePuppeteerQueryHandler(new CustomQueryHandler
+            {
+                QueryOne = @"(element, selector) => {
+                    let found = null;
+                    const search = (root) => {
+                      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+                      do {
+                        const currentNode = iter.currentNode;
+                        if (currentNode.shadowRoot) {
+                          search(currentNode.shadowRoot);
+                        }
+                        if (currentNode instanceof ShadowRoot) {
+                          continue;
+                        }
+                        if (currentNode !== root && !found && currentNode.matches(selector)) {
+                          found = currentNode;
+                        }
+                      } while (!found && iter.nextNode());
+                    };
+                    if (element instanceof Document) {
+                      element = element.documentElement;
+                    }
+                    search(element);
+                    return found;
+                  }",
+                QueryAll = @"(element, selector) => {
+                    const result = [];
+                    const collect = (root) => {
+                      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+                      do {
+                        const currentNode = iter.currentNode;
+                        if (currentNode.shadowRoot) {
+                          collect(currentNode.shadowRoot);
+                        }
+                        if (currentNode instanceof ShadowRoot) {
+                          continue;
+                        }
+                        if (currentNode !== root && currentNode.matches(selector)) {
+                          result.push(currentNode);
+                        }
+                      } while (iter.nextNode());
+                    };
+                    if (element instanceof Document) {
+                      element = element.documentElement;
+                    }
+                    collect(element);
+                    return result;
+                  }",
+            });
+
+        private static PuppeteerQueryHandler CreateTextQueryHandler() =>
+            CreatePuppeteerQueryHandler(new CustomQueryHandler
+            {
+                QueryOne = @"(element, selector, {createTextContent}) => {
+                    const search = (root)=> {
+                      for (const node of root.childNodes) {
+                        if (node instanceof Element) {
+                          let matchedNode;
+                          if (node.shadowRoot) {
+                            matchedNode = search(node.shadowRoot);
+                          } else {
+                            matchedNode = search(node);
+                          }
+                          if (matchedNode) {
+                            return matchedNode;
+                          }
+                        }
+                      }
+                      const textContent = createTextContent(root);
+                      if (textContent.full.includes(selector)) {
+                        return root;
+                      }
+                      return null;
+                    };
+                    return search(element);
+                  }",
+                QueryAll = @"(element, selector, {createTextContent}) => {
+                    const search = (root) => {
+                      let results = [];
+                      for (const node of root.childNodes) {
+                        if (node instanceof Element) {
+                          let matchedNodes;
+                          if (node.shadowRoot) {
+                            matchedNodes = search(node.shadowRoot);
+                          } else {
+                            matchedNodes = search(node);
+                          }
+                          results = results.concat(matchedNodes);
+                        }
+                      }
+                      if (results.length > 0) {
+                        return results;
+                      }
+
+                      const textContent = createTextContent(root);
+                      if (textContent.full.includes(selector)) {
+                        return [root];
+                      }
+                      return [];
+                    };
+                    return search(element);
+                  }",
+            });
+
+        private static PuppeteerQueryHandler CreateXpathHandler() =>
+            CreatePuppeteerQueryHandler(new CustomQueryHandler
+            {
+                QueryOne = @"(element, selector) => {
+                  const doc = element.ownerDocument || document;
+                  const result = doc.evaluate(
+                    selector,
+                    element,
+                    null,
+                    XPathResult.FIRST_ORDERED_NODE_TYPE
+                  );
+                  return result.singleNodeValue;
+                }",
+                QueryAll = @"(element, selector) => {
+                  const doc = element.ownerDocument || document;
+                  const iterator = doc.evaluate(
+                    selector,
+                    element,
+                    null,
+                    XPathResult.ORDERED_NODE_ITERATOR_TYPE
+                  );
+                  const array = [];
+                  let item;
+                  while ((item = iterator.iterateNext())) {
+                    array.push(item);
+                  }
+                  return array;
+                },
+              })",
+            });
+
         private static PuppeteerQueryHandler CreatePuppeteerQueryHandler(CustomQueryHandler handler)
         {
             var internalHandler = new PuppeteerQueryHandler();
@@ -231,11 +227,10 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryOne = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryOne,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     if (jsHandle is ElementHandle elementHandle)
                     {
@@ -280,11 +275,10 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryAll = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryAll,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
                     var result = new List<ElementHandle>();

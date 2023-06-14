@@ -55,10 +55,10 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldThrowForCircularObjects()
         {
             var windowHandle = await Page.EvaluateExpressionHandleAsync("window");
-            var exception = await Assert.ThrowsAsync<MessageException>(()
+            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
                 => windowHandle.JsonValueAsync());
 
-            Assert.Contains(TestConstants.IsChrome ? "Object reference chain is too long" : "Object is not serializable", exception.Message);
+            Assert.Contains("Could not serialize referenced object", exception.Message);
         }
     }
 }
