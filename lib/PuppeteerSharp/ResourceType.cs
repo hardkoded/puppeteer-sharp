@@ -17,6 +17,11 @@ namespace PuppeteerSharp
         Unknown = -1,
 
         /// <summary>
+        /// Beacon.
+        /// </summary>
+        Beacon,
+
+        /// <summary>
         /// Document.
         /// </summary>
         Document,
@@ -31,6 +36,12 @@ namespace PuppeteerSharp
         /// Image.
         /// </summary>
         Image,
+
+        /// <summary>
+        /// Imageset.
+        /// </summary>
+        [EnumMember(Value = "imageset")]
+        ImageSet,
 
         /// <summary>
         /// Media.

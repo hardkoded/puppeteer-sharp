@@ -35,7 +35,6 @@ namespace PuppeteerSharp
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
-        private bool _newDocumentNavigation;
 
         public LifecycleWatcher(
             FrameManager frameManager,
@@ -99,7 +98,6 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _newDocumentNavigation = true;
             CheckLifecycleComplete();
         }
 
@@ -143,7 +141,7 @@ namespace PuppeteerSharp
                 _sameDocumentNavigationTaskWrapper.TrySetResult(true);
             }
 
-            if (_swapped || _newDocumentNavigation)
+            if (_swapped || _frame.LoaderId != _initialLoaderId)
             {
                 _newDocumentNavigationTaskWrapper.TrySetResult(true);
             }
