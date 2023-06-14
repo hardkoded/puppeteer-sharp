@@ -105,9 +105,9 @@ namespace PuppeteerSharp
                             }",
                             new object[]
                             {
-                            await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
-                            _pollingInterval,
-                            _fn,
+                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                                _pollingInterval,
+                                _fn,
                             }.Concat(_args).ToArray()).ConfigureAwait(false);
                 }
                 else if (_polling == WaitForFunctionPollingOption.Raf)
@@ -122,7 +122,7 @@ namespace PuppeteerSharp
                             }",
                             new object[]
                             {
-                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                                 _fn,
                             }.Concat(_args).ToArray()).ConfigureAwait(false);
                 }
@@ -138,7 +138,7 @@ namespace PuppeteerSharp
                             }",
                             new object[]
                             {
-                                await _isolatedWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                                 _root,
                                 _fn,
                             }.Concat(_args).ToArray()).ConfigureAwait(false);

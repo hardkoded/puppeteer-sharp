@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                       PuppeteerUtil => {
                         return typeof PuppeteerUtil === 'object';
                       }",
-                      await world.GetPuppeteerUtilAsync());
+                      new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)));
             Assert.True(result);
         }
 
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                 .PuppeteerWorld.EvaluateFunctionAsync<int>(@"({createFunction}, fnString) => {
                     return createFunction(fnString)(4);
                 }",
-                await world.GetPuppeteerUtilAsync(),
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 "() => 4");
             Assert.Equal(4, result);
         }
