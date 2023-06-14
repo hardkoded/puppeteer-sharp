@@ -193,7 +193,7 @@ namespace PuppeteerSharp
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
-            if (!string.IsNullOrEmpty(response.ErrorText))
+            if (!string.IsNullOrEmpty(response.ErrorText) && response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
             {
                 throw new NavigationException(response.ErrorText, url);
             }

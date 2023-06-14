@@ -294,6 +294,36 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Equal(HttpStatusCode.NotFound, response.Status);
         }
 
+        [PuppeteerTest("navigation.spec.ts", "Page.goto", "should not throw an error for a 404 response with an empty body")]
+        [PuppeteerFact]
+        public async Task ShouldNotThrowAnErrorForA404ResponseWithAnEmptyBody()
+        {
+            Server.SetRoute("/404-error", context =>
+            {
+                context.Response.StatusCode = 404;
+                return Task.CompletedTask;
+            });
+
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/404-error");
+            Assert.False(response.Ok);
+            Assert.Equal(HttpStatusCode.NotFound, response.Status);
+        }
+
+        [PuppeteerTest("navigation.spec.ts", "Page.goto", "should not throw an error for a 500 response with an empty body")]
+        [PuppeteerFact]
+        public async Task ShouldNotThrowAnErrorForA500ResponseWithAnEmptyBody()
+        {
+            Server.SetRoute("/500-error", context =>
+            {
+                context.Response.StatusCode = 500;
+                return Task.CompletedTask;
+            });
+
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/500-error");
+            Assert.False(response.Ok);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.Status);
+        }
+
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should return last response in redirect chain")]
         [PuppeteerFact]
         public async Task ShouldReturnLastResponseInRedirectChain()
