@@ -60,13 +60,8 @@ namespace PuppeteerSharp
 
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        var prefix = $"{kv.Key}{separator}";
-
-                        if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                        {
-                            selector = selector.Substring(prefix.Length);
-                            return (selector, kv.Value);
-                        }
+                        selector = selector.Substring(prefix.Length);
+                        return (selector, kv.Value);
                     }
                 }
             }
