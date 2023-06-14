@@ -62,6 +62,10 @@ namespace PuppeteerSharp
             await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true,
+                Filter = new[]
+                {
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
+                },
             }).ConfigureAwait(false);
 
             _targetsIdsForInit = new List<string>(_discoveredTargetsByTargetId.Keys);
@@ -125,7 +129,13 @@ namespace PuppeteerSharp
 
             var target = _targetFactoryFunc(e.TargetInfo, null);
             _availableTargetsByTargetId[e.TargetInfo.TargetId] = target;
-            TargetAvailable?.Invoke(this, new TargetChangedArgs { TargetInfo = e.TargetInfo });
+            TargetAvailable?.Invoke(
+                this,
+                new TargetChangedArgs
+                {
+                    Target = target,
+                    TargetInfo = e.TargetInfo,
+                });
             FinishInitializationIfReady(target.TargetId);
         }
 

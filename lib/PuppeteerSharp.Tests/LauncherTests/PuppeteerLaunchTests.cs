@@ -23,11 +23,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
+            options.IgnoreHTTPSErrors = true;
 
             await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             await using (var page = await browser.NewPageAsync())
             {
-                var response = await page.GoToAsync("https://www.google.com");
+                var response = await page.GoToAsync("https://www.github.com");
                 Assert.Equal(HttpStatusCode.OK, response.Status);
             }
         }

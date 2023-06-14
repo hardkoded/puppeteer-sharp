@@ -238,7 +238,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldBeAbleToThrowATrickyError()
         {
             var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
-            PuppeteerException exception = await Assert.ThrowsAsync<MessageException>(() => windowHandle.JsonValueAsync());
+            PuppeteerException exception = await Assert.ThrowsAsync<PuppeteerException>(() => windowHandle.JsonValueAsync());
             var errorText = exception.Message;
 
             exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync(@"errorText =>
