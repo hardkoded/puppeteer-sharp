@@ -4,11 +4,11 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests
 {
-    public sealed class ConnectionTransportInterceptor : IConnectionTransport
+    public sealed class PollerInterceptor : IConnectionTransport
     {
         private readonly IConnectionTransport _connectionTransport;
 
-        public ConnectionTransportInterceptor(IConnectionTransport connectionTransport)
+        public PollerInterceptor(IConnectionTransport connectionTransport)
         {
             _connectionTransport = connectionTransport;
         }
@@ -39,5 +39,22 @@ namespace PuppeteerSharp.Tests
         public void Dispose() => _connectionTransport.Dispose();
 
         public void StopReading() => _connectionTransport.StopReading();
+
+        public Task<bool> WaitForStartPollingAsync()
+        {
+            var startedPolling = new TaskCompletionSource<bool>();
+
+            // Wait for function will release the execution faster than in node.
+            // We intercept the poller.start() call to prevent tests from continuing before the polling has started.
+            MessageSent += (_, message) =>
+            {
+                if (message.Contains("poller => poller.start()"))
+                {
+                    startedPolling.SetResult(true);
+                }
+            };
+
+            return startedPolling.Task;
+        }
     }
 }

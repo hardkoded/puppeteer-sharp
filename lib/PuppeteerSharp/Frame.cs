@@ -218,7 +218,7 @@ namespace PuppeteerSharp
                   await promise;
                   return element;
                 }",
-                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 options.Url,
                 options.Id,
                 options.Type,
@@ -283,7 +283,7 @@ namespace PuppeteerSharp
                   await promise;
                   return script;
                 }",
-                await PuppeteerWorld.GetPuppeteerUtilAsync().ConfigureAwait(false),
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 options.Url,
                 options.Id,
                 options.Type,

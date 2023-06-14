@@ -7,16 +7,36 @@ using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Xunit;
 using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     [Collection(TestConstants.TestFixtureCollectionName)]
-    public class FrameWaitForXPathTests : PuppeteerPageBaseTest
+    public sealed class FrameWaitForXPathTests : PuppeteerPageBaseTest, IDisposable
     {
-        const string addElement = "tag => document.body.appendChild(document.createElement(tag))";
+        const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+        private PollerInterceptor _pollerInterceptor;
 
         public FrameWaitForXPathTests(ITestOutputHelper output) : base(output)
         {
+            DefaultOptions = TestConstants.DefaultBrowserOptions();
+
+            // Set up a custom TransportFactory to intercept sent messages
+            // Some of the tests require making assertions after a WaitForFunction has
+            // started, but before it has resolved. We detect that reliably by
+            // listening to the message that is sent to start polling.
+            // This might not be an issue in upstream puppeteer.js, or may be highly unlikely,
+            // due to differences between node.js's task scheduler and .net's.
+            DefaultOptions.TransportFactory = async (url, options, cancellationToken) =>
+            {
+                _pollerInterceptor = new PollerInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
+                return _pollerInterceptor;
+            };
+        }
+
+        public void Dispose()
+        {
+            _pollerInterceptor.Dispose();
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should support some fancy xpath")]
@@ -37,8 +57,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var frame1 = Page.Frames.First(f => f.Name == "frame1");
             var frame2 = Page.Frames.First(f => f.Name == "frame2");
             var waitForXPathPromise = frame2.WaitForXPathAsync("//div");
-            await frame1.EvaluateFunctionAsync(addElement, "div");
-            await frame2.EvaluateFunctionAsync(addElement, "div");
+            await frame1.EvaluateFunctionAsync(AddElement, "div");
+            await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForXPathPromise;
             Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
         }
@@ -60,10 +80,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
             await Page.SetContentAsync("<div style='display: block;'></div>");
             var waitForXPath = Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
-            await Page.WaitForXPathAsync("//div"); // do a round trip
+            await startedPolling;
             Assert.False(divHidden);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.True(await waitForXPath.WithTimeout());

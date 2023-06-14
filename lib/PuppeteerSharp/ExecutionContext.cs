@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -16,8 +18,10 @@ namespace PuppeteerSharp
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
+        private static string _injectedSource;
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private IJSHandle _puppeteerUtil;
 
         internal ExecutionContext(
             CDPSession client,
@@ -89,6 +93,17 @@ namespace PuppeteerSharp
             return CreateJSHandle(response.Objects);
         }
 
+        internal async Task<IJSHandle> GetPuppeteerUtilAsync()
+        {
+            if (_puppeteerUtil == null)
+            {
+                var injectedSource = GetInjectedSource();
+                _puppeteerUtil = await EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
+            }
+
+            return _puppeteerUtil;
+        }
+
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
                 ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
@@ -118,6 +133,22 @@ namespace PuppeteerSharp
             }).ConfigureAwait(false);
 
             return CreateJSHandle(obj.Object) as ElementHandle;
+        }
+
+        private static string GetInjectedSource()
+        {
+            if (string.IsNullOrEmpty(_injectedSource))
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "PuppeteerSharp.Injected.injected.js";
+
+                using var stream = assembly.GetManifestResourceStream(resourceName);
+                using var reader = new StreamReader(stream);
+                var fileContent = reader.ReadToEnd();
+                _injectedSource = fileContent;
+            }
+
+            return _injectedSource;
         }
 
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)

@@ -60,8 +60,13 @@ namespace PuppeteerSharp
 
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        selector = selector.Substring(prefix.Length);
-                        return (selector, kv.Value);
+                        var prefix = $"{kv.Key}{separator}";
+
+                        if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                        {
+                            selector = selector.Substring(prefix.Length);
+                            return (selector, kv.Value);
+                        }
                     }
                 }
             }
@@ -227,11 +232,10 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryOne = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryOne,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     if (jsHandle is ElementHandle elementHandle)
                     {
@@ -276,11 +280,10 @@ namespace PuppeteerSharp
             {
                 internalHandler.QueryAll = async (IElementHandle element, string selector) =>
                 {
-                    var handle = element as JSHandle;
                     var jsHandle = await element.EvaluateFunctionHandleAsync(
                         handler.QueryAll,
                         selector,
-                        await handle.ExecutionContext.World.GetPuppeteerUtilAsync().ConfigureAwait(false))
+                        new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                         .ConfigureAwait(false);
                     var properties = await jsHandle.GetPropertiesAsync().ConfigureAwait(false);
                     var result = new List<ElementHandle>();
