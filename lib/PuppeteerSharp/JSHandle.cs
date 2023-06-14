@@ -91,19 +91,14 @@ namespace PuppeteerSharp
         {
             var objectId = RemoteObject.ObjectId;
 
-            if (objectId != null)
+            if (objectId == null)
             {
-                var response = await Client.SendAsync<RuntimeCallFunctionOnResponse>("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
-                {
-                    FunctionDeclaration = "function() { return this; }",
-                    ObjectId = objectId,
-                    ReturnByValue = true,
-                    AwaitPromise = true,
-                }).ConfigureAwait(false);
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(response.Result);
+                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
             }
 
-            return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
+            var value = await EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
+
+            return value == null ? throw new PuppeteerException("Could not serialize referenced object") : value;
         }
 
         /// <inheritdoc/>
