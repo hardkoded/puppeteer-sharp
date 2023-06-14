@@ -169,14 +169,14 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.SetContentAsync("<div style='width: 0;'>text</div>");
             await Task.Delay(100);
             Assert.False(divFound);
-            await Page.EvaluateExpressionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('height', '0');
                 div.style.removeProperty('width');
             }");
             await Task.Delay(100);
             Assert.False(divFound);
-            await Page.EvaluateExpressionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('position', 'absolute');
                 div.style.setProperty('right', '100vw');
@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             }");
             await Task.Delay(100);
             Assert.False(divFound);
-            await Page.EvaluateExpressionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('position', 'absolute');
                 div.style.setProperty('left', '100vw');
@@ -192,7 +192,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             }");
             await Task.Delay(100);
             Assert.False(divFound);
-            await Page.EvaluateExpressionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('position', 'absolute');
                 div.style.setProperty('top', '100vw');
@@ -200,7 +200,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             }");
             await Task.Delay(100);
             Assert.False(divFound);
-            await Page.EvaluateExpressionAsync(@"() => {
+            await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('position', 'absolute');
                 div.style.setProperty('bottom', '100vw');
