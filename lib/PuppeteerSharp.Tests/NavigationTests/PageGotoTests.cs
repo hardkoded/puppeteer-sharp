@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -341,7 +341,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [SkipBrowserFact(skipFirefox: true)]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
-            var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();
+            var responses = new ConcurrentSet<TaskCompletionSource<Func<HttpResponse, Task>>>();
             var fetches = new Dictionary<string, TaskCompletionSource<bool>>();
             foreach (var url in new[] {
                 "/fetch-request-a.js",
@@ -397,7 +397,10 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 fetches["/fetch-request-b.js"].Task,
                 fetches["/fetch-request-c.js"].Task).WithTimeout();
 
-            foreach (var actionResponse in responses)
+            var initialResponses = responses.ToArray();
+            responses.Clear();
+
+            foreach (var actionResponse in initialResponses)
             {
                 actionResponse.SetResult(response =>
                 {
@@ -405,8 +408,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
                     return response.WriteAsync("File not found");
                 });
             }
-
-            responses.Clear();
 
             await secondFetchResourceRequested.WithTimeout();
 
