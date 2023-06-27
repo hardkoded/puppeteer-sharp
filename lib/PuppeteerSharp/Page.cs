@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -690,7 +689,7 @@ namespace PuppeteerSharp
                     TargetId = Target.TargetId,
                 }).ConfigureAwait(false);
 
-                await ((Target)Target).CloseTask.ConfigureAwait(false);
+                await _closeCompletedTcs.Task.ConfigureAwait(false);
             }
         }
 
