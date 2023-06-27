@@ -20,16 +20,16 @@ namespace PuppeteerSharp
                     // We replace the CDP binding with a Puppeteer binding.
                     Object.assign(globalThis, {
                     [name](...args) {
-                        // This is the Puppeteer binding.
-                        const callPuppeteer = globalThis[name];
-                        callPuppeteer.args ??= new Map();
-                        callPuppeteer.callbacks ??= new Map();
+                      // This is the Puppeteer binding.
+                      const callPuppeteer = globalThis[name];
+                      callPuppeteer.args ??= new Map();
+                      callPuppeteer.callbacks ??= new Map();
 
-                        const seq = (callPuppeteer.lastSeq ?? 0) + 1;
-                        callPuppeteer.lastSeq = seq;
-                        callPuppeteer.args.set(seq, args);
+                      const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+                      callPuppeteer.lastSeq = seq;
+                      callPuppeteer.args.set(seq, args);
 
-                        callCDP(
+                      callCDP(
                         JSON.stringify({
                             type,
                             name,
@@ -39,22 +39,22 @@ namespace PuppeteerSharp
                             return value instanceof Node;
                             }),
                         })
-                        );
+                      );
 
-                        return new Promise((resolve, reject) => {
-                            callPuppeteer.callbacks.set(seq, {
-                                resolve(value) {
-                                    callPuppeteer.args.delete(seq);
-                                    resolve(value);
-                                },
-                                reject(value) {
-                                    callPuppeteer.args.delete(seq);
-                                    reject(value);
-                                },
-                            });
+                      return new Promise((resolve, reject) => {
+                        callPuppeteer.callbacks.set(seq, {
+                          resolve(value) {
+                            callPuppeteer.args.delete(seq);
+                            resolve(value);
+                          },
+                          reject(value) {
+                            callPuppeteer.args.delete(seq);
+                            reject(value);
+                          },
                         });
+                      });
                     },
-                    });
+                  });
                 }",
                 type,
                 name);
