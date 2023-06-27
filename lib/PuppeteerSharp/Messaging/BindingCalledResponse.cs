@@ -35,6 +35,8 @@ namespace PuppeteerSharp.Messaging
             public int Seq { get; set; }
 
             public JObject JsonObject { get; set; }
+
+            public bool IsTrivial { get; set; }
         }
     }
 }

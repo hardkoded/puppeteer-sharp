@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -14,25 +13,48 @@ namespace PuppeteerSharp
     {
         internal static string PageBindingInitString(string type, string name)
             => EvaluationString(
-                @"function addPageBinding(type, bindingName) {
-                    const win = window;
-                    const binding = win[bindingName];
+                @"function addPageBinding(type, name) {
+                    // This is the CDP binding.
+                    const callCDP = globalThis[name];
 
-                    win[bindingName] = (...args) => {
-                        const me = window[bindingName];
-                        let callbacks = me.callbacks;
-                        if (!callbacks) {
-                            callbacks = new Map();
-                            me.callbacks = callbacks;
-                        }
-                        const seq = (me.lastSeq || 0) + 1;
-                        me.lastSeq = seq;
-                        const promise = new Promise((resolve, reject) => {
-                            return callbacks.set(seq, {resolve, reject});
+                    // We replace the CDP binding with a Puppeteer binding.
+                    Object.assign(globalThis, {
+                    [name](...args) {
+                        // This is the Puppeteer binding.
+                        const callPuppeteer = globalThis[name];
+                        callPuppeteer.args ??= new Map();
+                        callPuppeteer.callbacks ??= new Map();
+
+                        const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+                        callPuppeteer.lastSeq = seq;
+                        callPuppeteer.args.set(seq, args);
+
+                        callCDP(
+                        JSON.stringify({
+                            type,
+                            name,
+                            seq,
+                            args,
+                            isTrivial: !args.some(value => {
+                            return value instanceof Node;
+                            }),
+                        })
+                        );
+
+                        return new Promise((resolve, reject) => {
+                            callPuppeteer.callbacks.set(seq, {
+                                resolve(value) {
+                                    callPuppeteer.args.delete(seq);
+                                    resolve(value);
+                                },
+                                reject(value) {
+                                    callPuppeteer.args.delete(seq);
+                                    reject(value);
+                                },
+                            });
                         });
-                        binding(JSON.stringify({type, name: bindingName, seq, args}));
-                        return promise;
-                    };
+                    },
+                    });
                 }",
                 type,
                 name);
@@ -41,7 +63,7 @@ namespace PuppeteerSharp
         {
             return $"({fun})({string.Join(",", args.Select(SerializeArgument))})";
 
-            string SerializeArgument(object arg)
+            static string SerializeArgument(object arg)
             {
                 return arg == null
                     ? "undefined"
@@ -49,14 +71,23 @@ namespace PuppeteerSharp
             }
         }
 
-        internal static async Task<object> ExecuteBindingAsync(BindingCalledResponse e, ConcurrentDictionary<string, Delegate> pageBindings)
+        internal static async Task ExecuteBindingAsync(ExecutionContext context, BindingCalledResponse e, ConcurrentDictionary<string, Binding> pageBindings)
+        {
+            var binding = pageBindings[e.BindingPayload.Name];
+            var methodParams = binding.Function.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).Cast<object>().ToArray();
+
+            await binding.RunAsync(context, e.BindingPayload.Seq, args, e.BindingPayload.IsTrivial).ConfigureAwait(false);
+        }
+
+        internal static async Task<object> ExecuteBindingAsync(Delegate binding, object[] rawArgs)
         {
             const string taskResultPropertyName = "Result";
             object result;
-            var binding = pageBindings[e.BindingPayload.Name];
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = e.BindingPayload.Args.Select((token, i) => token.ToObject(methodParams[i])).ToArray();
+            var args = rawArgs.Select((arg, i) => arg is JToken token ? token.ToObject(methodParams[i]) : arg).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)

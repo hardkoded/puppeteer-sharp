@@ -55,7 +55,7 @@ namespace PuppeteerSharp
 
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
-        private readonly ConcurrentDictionary<string, Delegate> _pageBindings = new();
+        private readonly ConcurrentDictionary<string, Binding> _bindings = new();
         private readonly ConcurrentDictionary<string, Worker> _workers = new();
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -1522,50 +1522,14 @@ namespace PuppeteerSharp
 
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
-            string expression;
-            try
+            if (e.BindingPayload.Type != "exposedFun" || !_bindings.ContainsKey(e.BindingPayload.Name))
             {
-                if (e.BindingPayload.Type != "exposedFun" || !_pageBindings.ContainsKey(e.BindingPayload.Name))
-                {
-                    return;
-                }
-
-                var result = await BindingUtils.ExecuteBindingAsync(e, _pageBindings).ConfigureAwait(false);
-
-                expression = BindingUtils.EvaluationString(
-                    @"function deliverResult(name, seq, result) {
-                        window[name]['callbacks'].get(seq).resolve(result);
-                        window[name]['callbacks'].delete(seq);
-                    }",
-                    e.BindingPayload.Name,
-                    e.BindingPayload.Seq,
-                    result);
-            }
-            catch (Exception ex)
-            {
-                if (ex is TargetInvocationException)
-                {
-                    ex = ex.InnerException;
-                }
-
-                expression = BindingUtils.EvaluationString(
-                    @"function deliverError(name, seq, message, stack) {
-                        const error = new Error(message);
-                        error.stack = stack;
-                        window[name]['callbacks'].get(seq).reject(error);
-                        window[name]['callbacks'].delete(seq);
-                    }",
-                    e.BindingPayload.Name,
-                    e.BindingPayload.Seq,
-                    ex.Message,
-                    ex.StackTrace);
+                return;
             }
 
-            Client.Send("Runtime.evaluate", new
-            {
-                expression,
-                contextId = e.ExecutionContextId,
-            });
+            var context = FrameManager.GetExecutionContextById(e.ExecutionContextId, Client);
+
+            await BindingUtils.ExecuteBindingAsync(context, e, _bindings).ConfigureAwait(false);
         }
 
         private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
@@ -1704,28 +1668,12 @@ namespace PuppeteerSharp
 
         private async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
         {
-            if (!_pageBindings.TryAdd(name, puppeteerFunction))
+            if (!_bindings.TryAdd(name, new Binding(name, puppeteerFunction)))
             {
                 throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
 
-            const string addPageBinding = @"function addPageBinding(type, bindingName) {
-              const binding = window[bindingName];
-              window[bindingName] = (...args) => {
-                const me = window[bindingName];
-                let callbacks = me['callbacks'];
-                if (!callbacks) {
-                  callbacks = new Map();
-                  me['callbacks'] = callbacks;
-                }
-                const seq = (me['lastSeq'] || 0) + 1;
-                me['lastSeq'] = seq;
-                const promise = new Promise((resolve, reject) => callbacks.set(seq, {resolve, reject}));
-                binding(JSON.stringify({type, name: bindingName, seq, args}));
-                return promise;
-              };
-            }";
-            var expression = BindingUtils.EvaluationString(addPageBinding, "exposedFun", name);
+            var expression = BindingUtils.PageBindingInitString("exposedFun", name);
             await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
             await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {

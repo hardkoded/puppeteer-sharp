@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
+using static System.Collections.Specialized.BitVector32;
 
 namespace PuppeteerSharp
 {
@@ -181,6 +182,12 @@ namespace PuppeteerSharp
         internal Frame GetFrame(string frameid) => FrameTree.GetById(frameid);
 
         internal Frame[] GetFrames() => FrameTree.Frames;
+
+        internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
+        {
+            _contextIdToContext.TryGetValue($"{session.Id}:{contextId}", out var context);
+            return context;
+        }
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
         {
