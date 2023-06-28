@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -88,7 +89,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                await context.EvaluateFunctionAsync(
+                var expression = BindingUtils.EvaluationString(
                     @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
@@ -96,7 +97,14 @@ namespace PuppeteerSharp
                     }",
                     Name,
                     id,
-                    result).ConfigureAwait(false);
+                    result);
+
+                // Why do we use Runtime.evaluate? see https://github.com/hardkoded/puppeteer-sharp/pull/690
+                context.Client.Send("Runtime.evaluate", new
+                {
+                    expression,
+                    contextId = context.ContextId,
+                });
 
                 foreach (var arg in args)
                 {
@@ -116,7 +124,7 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    await context.EvaluateFunctionAsync(
+                    var expression = BindingUtils.EvaluationString(
                         @"(name, seq, message, stack) => {
                             const error = new Error(message);
                             error.stack = stack;
@@ -127,7 +135,14 @@ namespace PuppeteerSharp
                         Name,
                         id,
                         ex.Message,
-                        ex.StackTrace).ConfigureAwait(false);
+                        ex.StackTrace);
+
+                    // Why do we use Runtime.evaluate? see https://github.com/hardkoded/puppeteer-sharp/pull/690
+                    context.Client.Send("Runtime.evaluate", new
+                    {
+                        expression,
+                        contextId = context.ContextId,
+                    });
                 }
                 catch (Exception errorReportingException)
                 {
