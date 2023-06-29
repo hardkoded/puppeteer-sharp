@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -88,7 +89,8 @@ namespace PuppeteerSharp
                     }
                 }
 
-                await context.EvaluateFunctionAsync(
+                // We don't need to wait for the response
+                _ = context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
@@ -96,7 +98,16 @@ namespace PuppeteerSharp
                     }",
                     Name,
                     id,
-                    result).ConfigureAwait(false);
+                    result)
+                    .ContinueWith(
+                        task =>
+                        {
+                            var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
+                            logger.LogError(task.Exception.ToString());
+                        },
+                        CancellationToken.None,
+                        TaskContinuationOptions.OnlyOnFaulted,
+                        TaskScheduler.Default);
 
                 foreach (var arg in args)
                 {
@@ -114,26 +125,28 @@ namespace PuppeteerSharp
                     ex = ex.InnerException;
                 }
 
-                try
-                {
-                    await context.EvaluateFunctionAsync(
-                        @"(name, seq, message, stack) => {
-                            const error = new Error(message);
-                            error.stack = stack;
-                            const callbacks = globalThis[name].callbacks;
-                            callbacks.get(seq).reject(error);
-                            callbacks.delete(seq);
-                        }",
-                        Name,
-                        id,
-                        ex.Message,
-                        ex.StackTrace).ConfigureAwait(false);
-                }
-                catch (Exception errorReportingException)
-                {
-                    var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
-                    logger.LogError(errorReportingException.ToString());
-                }
+                // We don't need to wait for the response
+                _ = context.EvaluateFunctionAsync(
+                    @"(name, seq, message, stack) => {
+                        const error = new Error(message);
+                        error.stack = stack;
+                        const callbacks = globalThis[name].callbacks;
+                        callbacks.get(seq).reject(error);
+                        callbacks.delete(seq);
+                    }",
+                    Name,
+                    id,
+                    ex.Message,
+                    ex.StackTrace)
+                .ContinueWith(
+                    task =>
+                    {
+                        var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
+                        logger.LogError(task.Exception.ToString());
+                    },
+                    CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted,
+                    TaskScheduler.Default);
             }
             finally
             {
