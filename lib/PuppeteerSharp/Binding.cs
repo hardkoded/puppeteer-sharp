@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -89,7 +88,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                var expression = BindingUtils.EvaluationString(
+                await context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
@@ -97,14 +96,7 @@ namespace PuppeteerSharp
                     }",
                     Name,
                     id,
-                    result);
-
-                // Why do we use Runtime.evaluate? see https://github.com/hardkoded/puppeteer-sharp/pull/690
-                context.Client.Send("Runtime.evaluate", new
-                {
-                    expression,
-                    contextId = context.ContextId,
-                });
+                    result).ConfigureAwait(false);
 
                 foreach (var arg in args)
                 {
@@ -124,7 +116,7 @@ namespace PuppeteerSharp
 
                 try
                 {
-                    var expression = BindingUtils.EvaluationString(
+                    await context.EvaluateFunctionAsync(
                         @"(name, seq, message, stack) => {
                             const error = new Error(message);
                             error.stack = stack;
@@ -135,14 +127,7 @@ namespace PuppeteerSharp
                         Name,
                         id,
                         ex.Message,
-                        ex.StackTrace);
-
-                    // Why do we use Runtime.evaluate? see https://github.com/hardkoded/puppeteer-sharp/pull/690
-                    context.Client.Send("Runtime.evaluate", new
-                    {
-                        expression,
-                        contextId = context.ContextId,
-                    });
+                        ex.StackTrace).ConfigureAwait(false);
                 }
                 catch (Exception errorReportingException)
                 {
