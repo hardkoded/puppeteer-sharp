@@ -111,6 +111,7 @@ namespace PuppeteerSharp
             }
 
             var id = GetMessageID();
+            var message = GetMessage(id, method, args);
 
             MessageTask callback = null;
             if (waitForCallback)
@@ -119,11 +120,12 @@ namespace PuppeteerSharp
                 {
                     TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
                     Method = method,
+                    Message = message,
                 };
                 _callbacks[id] = callback;
             }
 
-            await RawSendASync(id, method, args).ConfigureAwait(false);
+            await RawSendAsync(message).ConfigureAwait(false);
             return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
         }
 
@@ -152,15 +154,16 @@ namespace PuppeteerSharp
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
-        internal Task RawSendASync(int id, string method, object args, string sessionId = null)
+        internal Task RawSendAsync(string message)
         {
-            var message = JsonConvert.SerializeObject(
-                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
-                JsonHelper.DefaultJsonSerializerSettings);
             _logger.LogTrace("Send ► {Message}", message);
-
             return Transport.SendAsync(message);
         }
+
+        internal string GetMessage(int id, string method, object args, string sessionId = null)
+            => JsonConvert.SerializeObject(
+                new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
+                JsonHelper.DefaultJsonSerializerSettings);
 
         internal bool IsAutoAttached(string targetId)
             => !_manuallyAttached.Contains(targetId);

@@ -10,6 +10,8 @@ namespace PuppeteerSharp
         {
         }
 
+        internal string Message { get; set; }
+
         internal TaskCompletionSource<JObject> TaskWrapper { get; set; }
 
         internal string Method { get; set; }
