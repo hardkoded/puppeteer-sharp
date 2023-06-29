@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -66,6 +67,8 @@ namespace PuppeteerSharp
             }
 
             var id = Connection.GetMessageID();
+            var message = Connection.GetMessage(id, method, args, Id);
+
             MessageTask callback = null;
             if (waitForCallback)
             {
@@ -79,7 +82,7 @@ namespace PuppeteerSharp
 
             try
             {
-                await Connection.RawSendASync(id, method, args, Id).ConfigureAwait(false);
+                await Connection.RawSendAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -154,5 +157,7 @@ namespace PuppeteerSharp
 
         internal void OnSessionAttached(CDPSession session)
             => SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
+
+        internal ICollection<MessageTask> GetPendingMessages() => _callbacks.Values;
     }
 }

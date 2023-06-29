@@ -5,5 +5,7 @@ namespace PuppeteerSharp.Messaging
         public string Name { get; set; }
 
         public string ExecutionContextName { get; set; }
+
+        public int? ExecutionContextId { get; set; }
     }
 }

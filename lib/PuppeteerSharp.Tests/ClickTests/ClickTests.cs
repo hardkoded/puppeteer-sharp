@@ -153,6 +153,10 @@ namespace PuppeteerSharp.Tests.ClickTests
                 await Page.EvaluateFunctionAsync("() => window.scrollTo(0, 0)");
                 await Page.ClickAsync($"#btn{i}");
             }
+
+            // It seems that the console event is coming a little bit late
+            await Task.Delay(500);
+
             Assert.Equal(new List<string>
             {
                 "button #0 clicked",

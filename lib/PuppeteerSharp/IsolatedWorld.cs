@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
@@ -17,16 +20,16 @@ namespace PuppeteerSharp
     /// <returns>Resolved argument.</returns>
     public delegate Task<object> LazyArg(ExecutionContext context);
 
-    internal class IsolatedWorld
+    internal class IsolatedWorld : IDisposable, IAsyncDisposable
     {
         private readonly FrameManager _frameManager;
         private readonly TimeoutSettings _timeoutSettings;
         private readonly CDPSession _client;
         private readonly ILogger _logger;
-        private readonly List<string> _ctxBindings = new();
+        private readonly List<string> _contextBindings = new();
+        private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private Task _settingUpBinding;
         private Task<ElementHandle> _documentTask;
 
         public IsolatedWorld(
@@ -51,25 +54,21 @@ namespace PuppeteerSharp
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
-        internal ConcurrentDictionary<string, Delegate> BoundFunctions { get; } = new();
+        internal ConcurrentDictionary<string, Binding> Bindings { get; } = new();
+
+        public void Dispose() => _bindingQueue.Dispose();
+
+        public ValueTask DisposeAsync() => _bindingQueue.DisposeAsync();
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
             // Previous operation added the binding so we are done.
-            if (_ctxBindings.Contains(GetBindingIdentifier(name, context.ContextId)))
+            if (_contextBindings.Contains(name))
             {
                 return;
             }
 
-            // Wait for other operation to finish
-            if (_settingUpBinding != null)
-            {
-                await _settingUpBinding.ConfigureAwait(false);
-                await AddBindingToContextAsync(context, name).ConfigureAwait(false);
-                return;
-            }
-
-            async Task BindAsync(string name)
+            await _bindingQueue.Enqueue(async () =>
             {
                 var expression = BindingUtils.PageBindingInitString("internal", name);
                 try
@@ -80,9 +79,12 @@ namespace PuppeteerSharp
                         new RuntimeAddBindingRequest
                         {
                             Name = name,
-                            ExecutionContextName = context.ContextName,
+                            ExecutionContextName = !string.IsNullOrEmpty(context.ContextName) ? context.ContextName : null,
+                            ExecutionContextId = string.IsNullOrEmpty(context.ContextName) ? context.ContextId : null,
                         }).ConfigureAwait(false);
+
                     await context.EvaluateExpressionAsync(expression).ConfigureAwait(false);
+                    _contextBindings.Add(name);
                 }
                 catch (Exception ex)
                 {
@@ -98,13 +100,7 @@ namespace PuppeteerSharp
                         return;
                     }
                 }
-
-                _ctxBindings.Add(GetBindingIdentifier(name, context.ContextId));
-            }
-
-            _settingUpBinding = BindAsync(name);
-            await _settingUpBinding.ConfigureAwait(false);
-            _settingUpBinding = null;
+            }).ConfigureAwait(false);
         }
 
         internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
@@ -440,7 +436,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            _ctxBindings.Clear();
+            _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
         }
@@ -467,41 +463,30 @@ namespace PuppeteerSharp
         private async Task OnBindingCalled(BindingCalledResponse e)
         {
             var payload = e.BindingPayload;
-            if (!HasContext)
+
+            if (payload.Type != "internal")
             {
                 return;
             }
 
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-
-            if (e.BindingPayload.Type != "internal" ||
-                !_ctxBindings.Contains(GetBindingIdentifier(payload.Name, context.ContextId)))
-            {
-                return;
-            }
-
-            if (context.ContextId != e.ExecutionContextId)
+            if (!_contextBindings.Contains(payload.Name))
             {
                 return;
             }
 
             try
             {
-                if (!BoundFunctions.TryGetValue(payload.Name, out var fn))
+                var context = await GetExecutionContextAsync().ConfigureAwait(false);
+
+                if (e.ExecutionContextId != context.ContextId)
                 {
-                    throw new PuppeteerException($"Bound function {payload.Name} is not found");
+                    return;
                 }
 
-                var result = await BindingUtils.ExecuteBindingAsync(e, BoundFunctions).ConfigureAwait(false);
-
-                await context.EvaluateFunctionAsync(
-                    @"(name, seq, result) => {
-                      globalThis[name].callbacks.get(seq).resolve(result);
-                      globalThis[name].callbacks.delete(seq);
-                    }",
-                    payload.Name,
-                    payload.Seq,
-                    result).ConfigureAwait(false);
+                if (Bindings.TryGetValue(payload.Name, out var binding))
+                {
+                    await binding.RunAsync(context, payload.Seq, payload.Args.Cast<object>().ToArray(), payload.IsTrivial).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -513,8 +498,6 @@ namespace PuppeteerSharp
                 _logger.LogError(ex.ToString());
             }
         }
-
-        private string GetBindingIdentifier(string name, int contextId) => $"{name}_{contextId}";
 
         private async Task<IElementHandle> WaitForSelectorAsync(string selectorOrXPath, bool isXPath, WaitForSelectorOptions options = null)
         {

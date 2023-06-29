@@ -53,7 +53,8 @@ namespace PuppeteerSharp
 
             foreach (var binding in _bindings)
             {
-                _isolatedWorld.BoundFunctions.AddOrUpdate(binding.Name, binding.Function, (_, __) => binding.Function);
+                var bindingObj = new Binding(binding.Name, binding.Function);
+                _isolatedWorld.Bindings.AddOrUpdate(binding.Name, bindingObj, (_, __) => bindingObj);
             }
 
             _isolatedWorld.TaskManager.Add(this);
