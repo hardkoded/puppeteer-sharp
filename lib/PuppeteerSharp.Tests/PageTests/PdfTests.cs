@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
@@ -75,7 +76,10 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.PdfAsync(outputFile);
             
             var stream = await Page.PdfStreamAsync();
-            Assert.Equal(new FileInfo(outputFile).Length, stream.Length);
+
+            // Firefox in Linux might generate and of by one result here.
+            // If the difference is less than 2 bytes is good
+            Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
         [PuppeteerFact]
