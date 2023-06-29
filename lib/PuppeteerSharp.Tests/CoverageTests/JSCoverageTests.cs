@@ -72,9 +72,11 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 ReportAnonymousScripts = true
             });
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
+            // Prevent flaky tests.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.NotNull(coverage.FirstOrDefault(entry => entry.Url.StartsWith("debugger://", StringComparison.Ordinal)));
-            Assert.Equal(2, coverage.Count());
+            Assert.Equal(2, coverage.Length);
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should ignore pptr internal scripts if reportAnonymousScripts is true")]
