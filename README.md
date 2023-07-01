@@ -87,7 +87,7 @@ await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded 
 await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
 await page.PdfAsync(outputFile);
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L29-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L30-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Inject HTML

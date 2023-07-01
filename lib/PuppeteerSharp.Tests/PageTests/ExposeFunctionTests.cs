@@ -140,15 +140,17 @@ namespace PuppeteerSharp.Tests.PageTests
 
             // For CI/CD debugging purposes
             var session = (CDPSession)Page.Client;
+            var message = "Expected an empty callback list. Found: \n";
+
             if (session.HasPendingCallbacks())
             {
                 foreach(var pendingMessage in session.GetPendingMessages())
                 {
-                    Console.WriteLine($"Pending message: {pendingMessage.Message}");
+                    message += $" - {pendingMessage.Message}\n";
                 }
             }
 
-            Assert.False(((CDPSession)Page.Client).HasPendingCallbacks());
+            Assert.False(((CDPSession)Page.Client).HasPendingCallbacks(), message);
         }
     }
 }
