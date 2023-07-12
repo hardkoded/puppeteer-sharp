@@ -61,7 +61,8 @@ namespace PuppeteerSharp
             => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args) => EvaluateFunctionAsync<JToken>(script, args);
+        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateFunctionAsync<JToken>(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
