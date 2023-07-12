@@ -215,8 +215,7 @@ namespace PuppeteerSharp
                     array.push(item);
                   }
                   return array;
-                },
-              })",
+                }",
             });
 
         private static PuppeteerQueryHandler CreatePuppeteerQueryHandler(CustomQueryHandler handler)

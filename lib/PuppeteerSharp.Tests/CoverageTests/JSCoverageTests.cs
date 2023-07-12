@@ -100,6 +100,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/multiple.html");
+            // Prevent flaky tests.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Equal(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
