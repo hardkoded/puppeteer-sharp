@@ -89,8 +89,7 @@ namespace PuppeteerSharp
                     }
                 }
 
-                // We don't need to wait for the response
-                _ = context.EvaluateFunctionAsync(
+                await context.EvaluateFunctionAsync(
                     @"(name, seq, result) => {
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).resolve(result);
@@ -98,16 +97,7 @@ namespace PuppeteerSharp
                     }",
                     Name,
                     id,
-                    result)
-                    .ContinueWith(
-                        task =>
-                        {
-                            var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
-                            logger.LogError(task.Exception.ToString());
-                        },
-                        CancellationToken.None,
-                        TaskContinuationOptions.OnlyOnFaulted,
-                        TaskScheduler.Default);
+                    result).ConfigureAwait(false);
 
                 foreach (var arg in args)
                 {
@@ -125,28 +115,26 @@ namespace PuppeteerSharp
                     ex = ex.InnerException;
                 }
 
-                // We don't need to wait for the response
-                _ = context.EvaluateFunctionAsync(
-                    @"(name, seq, message, stack) => {
+                try
+                {
+                    await context.EvaluateFunctionAsync(
+                        @"(name, seq, message, stack) => {
                         const error = new Error(message);
                         error.stack = stack;
                         const callbacks = globalThis[name].callbacks;
                         callbacks.get(seq).reject(error);
                         callbacks.delete(seq);
                     }",
-                    Name,
-                    id,
-                    ex.Message,
-                    ex.StackTrace)
-                .ContinueWith(
-                    task =>
-                    {
-                        var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
-                        logger.LogError(task.Exception.ToString());
-                    },
-                    CancellationToken.None,
-                    TaskContinuationOptions.OnlyOnFaulted,
-                    TaskScheduler.Default);
+                        Name,
+                        id,
+                        ex.Message,
+                        ex.StackTrace).ConfigureAwait(false);
+                }
+                catch (Exception cleanupException)
+                {
+                    var logger = context.Client.Connection.LoggerFactory.CreateLogger<Binding>();
+                    logger.LogError(cleanupException.ToString());
+                }
             }
             finally
             {

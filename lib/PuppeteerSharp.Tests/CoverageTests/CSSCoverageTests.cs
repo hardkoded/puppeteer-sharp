@@ -45,6 +45,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/sourceurl.html");
+            // Prevent flaky tests.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             Assert.Equal("nicename.css", coverage[0].Url);
