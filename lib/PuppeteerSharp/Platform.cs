@@ -13,9 +13,14 @@ namespace PuppeteerSharp
         Unknown,
 
         /// <summary>
-        /// MacOS.
+        /// MacOS intel.
         /// </summary>
         MacOS,
+
+        /// <summary>
+        /// MacOS arm64.
+        /// </summary>
+        MacOSArm64,
 
         /// <summary>
         /// Linux.
