@@ -27,7 +27,7 @@ namespace PuppeteerSharp
 
         private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
 
-        private static readonly Dictionary<Product, string> _hosts = new Dictionary<Product, string>
+        private static readonly Dictionary<Product, string> _hosts = new()
         {
             [Product.Chrome] = "https://storage.googleapis.com",
             [Product.Firefox] = "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central",
@@ -37,15 +37,17 @@ namespace PuppeteerSharp
         {
             [(Product.Chrome, Platform.Linux)] = "{0}/chromium-browser-snapshots/Linux_x64/{1}/{2}.zip",
             [(Product.Chrome, Platform.MacOS)] = "{0}/chromium-browser-snapshots/Mac/{1}/{2}.zip",
+            [(Product.Chrome, Platform.MacOSArm64)] = "{0}/chromium-browser-snapshots/Mac_Arm/{1}/{2}.zip",
             [(Product.Chrome, Platform.Win32)] = "{0}/chromium-browser-snapshots/Win/{1}/{2}.zip",
             [(Product.Chrome, Platform.Win64)] = "{0}/chromium-browser-snapshots/Win_x64/{1}/{2}.zip",
             [(Product.Firefox, Platform.Linux)] = "{0}/firefox-{1}.en-US.{2}-x86_64.tar.bz2",
+            [(Product.Firefox, Platform.MacOSArm64)] = "{0}/firefox-{1}.en-US.{2}.dmg",
             [(Product.Firefox, Platform.MacOS)] = "{0}/firefox-{1}.en-US.{2}.dmg",
             [(Product.Firefox, Platform.Win32)] = "{0}/firefox-{1}.en-US.{2}.zip",
             [(Product.Firefox, Platform.Win64)] = "{0}/firefox-{1}.en-US.{2}.zip",
         };
 
-        private readonly WebClient _webClient = new WebClient();
+        private readonly WebClient _webClient = new();
         private readonly CustomFileDownloadAction _customFileDownload;
         private bool _isDisposed;
 
@@ -94,7 +96,7 @@ namespace PuppeteerSharp
         public string DownloadHost { get; }
 
         /// <inheritdoc/>
-        public Platform Platform { get; }
+        public Platform Platform { get; set; }
 
         /// <inheritdoc/>
         public Product Product { get; }
@@ -122,6 +124,7 @@ namespace PuppeteerSharp
                 switch (platform)
                 {
                     case Platform.MacOS:
+                    case Platform.MacOSArm64:
                         return Path.Combine(
                             folderPath,
                             GetArchiveName(product, platform, revision),
@@ -146,6 +149,7 @@ namespace PuppeteerSharp
                 switch (platform)
                 {
                     case Platform.MacOS:
+                    case Platform.MacOSArm64:
                         return Path.Combine(
                             folderPath,
                             "Firefox Nightly.app",
@@ -337,7 +341,7 @@ namespace PuppeteerSharp
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return Platform.MacOS;
+                return RuntimeInformation.OSArchitecture == Architecture.Arm64 ? Platform.MacOSArm64 : Platform.MacOS;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -414,6 +418,7 @@ namespace PuppeteerSharp
                         return "chrome-linux";
 
                     case Platform.MacOS:
+                    case Platform.MacOSArm64:
                         return "chrome-mac";
 
                     case Platform.Win32:
@@ -432,6 +437,7 @@ namespace PuppeteerSharp
                         return "linux";
 
                     case Platform.MacOS:
+                    case Platform.MacOSArm64:
                         return "mac";
 
                     case Platform.Win32:
