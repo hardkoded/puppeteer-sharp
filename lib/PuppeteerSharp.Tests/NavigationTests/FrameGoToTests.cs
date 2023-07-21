@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,7 +40,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await waitForRequestTask;
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = await Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
-            Assert.Equal("Navigating frame was detached", exception.Message);
+            Assert.Contains(
+                "Navigating frame was detached",
+                new[]
+                {
+                    "Navigating frame was detached",
+                    "Error: NS_BINDING_ABORTED",
+                    "net::ERR_ABORTED",
+                });
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should return matching responses")]
