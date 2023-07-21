@@ -48,6 +48,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/sourceurl.html");
+            // Prevent flaky tests.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             Assert.Equal("nicename.js", coverage[0].Url);
