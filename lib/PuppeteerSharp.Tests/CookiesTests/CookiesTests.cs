@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(16, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("1234", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(12, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("John Doe", cookie.Value);
             Assert.Equal("localhost", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(16, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.False(cookie.Secure);
@@ -157,7 +157,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("tweets", cookie.Value);
             Assert.Equal("baz.com", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(11, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.True(cookie.Secure);
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.Equal("woofs", cookie.Value);
             Assert.Equal("foo.com", cookie.Domain);
             Assert.Equal("/", cookie.Path);
-            Assert.Equal(cookie.Expires, -1);
+            Assert.Equal(-1, cookie.Expires);
             Assert.Equal(10, cookie.Size);
             Assert.False(cookie.HttpOnly);
             Assert.True(cookie.Secure);
