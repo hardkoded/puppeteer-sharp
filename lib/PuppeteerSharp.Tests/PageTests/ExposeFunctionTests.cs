@@ -138,6 +138,9 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             await Page.EvaluateFunctionAsync<int>("async () => await compute(9, 4)");
 
+            // Giving a tiny wait to let the connection clear the callback list.
+            await Task.Delay(300);
+
             // For CI/CD debugging purposes
             var session = (CDPSession)Page.Client;
             var message = "Expected an empty callback list. Found: \n";

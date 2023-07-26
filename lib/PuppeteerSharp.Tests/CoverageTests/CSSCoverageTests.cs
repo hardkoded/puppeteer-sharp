@@ -92,8 +92,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             {
                 new CoverageEntryRange
                 {
-                    Start = 17,
-                    End = 38
+                    Start = 8,
+                    End = 40
                 }
             }, coverage[0].Ranges);
         }
@@ -111,8 +111,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
                     ""End"": 297
                   },
                   {
-                    ""Start"": 327,
-                    ""End"": 433
+                    ""Start"": 306,
+                    ""End"": 435
                   }
                 ],
                 ""Text"": ""\n @charset \""utf - 8\"";\n@namespace svg url(http://www.w3.org/2000/svg);\n@font-face {\n  font-family: \""Example Font\"";\n src: url(\""./Dosis-Regular.ttf\"");\n}\n\n#fluffy {\n  border: 1px solid black;\n  z-index: 1;\n  /* -webkit-disabled-property: rgb(1, 2, 3) */\n  -lol-cats: \""dogs\"" /* non-existing property */\n}\n\n@media (min-width: 1px) {\n  span {\n    -webkit-border-radius: 10px;\n    font-family: \""Example Font\"";\n    animation: 1s identifier;\n  }\n}\n""

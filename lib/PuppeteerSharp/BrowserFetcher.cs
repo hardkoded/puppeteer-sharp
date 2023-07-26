@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Default chromium revision.
         /// </summary>
-        public const string DefaultChromiumRevision = "1069273";
+        public const string DefaultChromiumRevision = "1108766";
 
         private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
 
