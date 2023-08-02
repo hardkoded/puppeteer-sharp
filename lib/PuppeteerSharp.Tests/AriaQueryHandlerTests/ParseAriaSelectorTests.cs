@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests

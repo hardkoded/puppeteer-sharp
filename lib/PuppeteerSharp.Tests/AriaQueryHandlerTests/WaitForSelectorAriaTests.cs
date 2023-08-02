@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Hosting.Server;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 using SixLabors.ImageSharp;
-using Xunit;
-using Xunit.Abstractions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests

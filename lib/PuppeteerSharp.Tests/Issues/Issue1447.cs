@@ -1,8 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {

@@ -2,8 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {

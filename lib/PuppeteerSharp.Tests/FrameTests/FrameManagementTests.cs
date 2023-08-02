@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 using System.Linq;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 

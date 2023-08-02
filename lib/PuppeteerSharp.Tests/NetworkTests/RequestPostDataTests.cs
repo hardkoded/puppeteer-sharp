@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
 

@@ -1,5 +1,4 @@
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
 
 namespace PuppeteerSharp.Tests
 {

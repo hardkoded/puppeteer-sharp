@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
 
 namespace PuppeteerSharp.Tests.SingleFileDeployment
 {

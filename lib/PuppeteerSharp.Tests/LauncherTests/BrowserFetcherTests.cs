@@ -3,8 +3,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Mono.Unix;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
 using PuppeteerSharp.Xunit;

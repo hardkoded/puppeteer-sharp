@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Json;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
