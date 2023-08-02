@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetContentTests : PuppeteerPageBaseTest
     {
         const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";

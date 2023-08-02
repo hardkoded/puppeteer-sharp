@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class TargetTests : PuppeteerPageBaseTest
     {
         public TargetTests(): base()

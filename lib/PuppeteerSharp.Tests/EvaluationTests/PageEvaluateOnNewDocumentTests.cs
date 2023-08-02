@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
         public PageEvaluateOnNewDocumentTests(): base()

@@ -7,7 +7,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWorkerTests : PuppeteerPageBaseTest
     {
         public PageWorkerTests(): base()

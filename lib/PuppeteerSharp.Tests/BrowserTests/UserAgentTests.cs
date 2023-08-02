@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class UserAgentTests : PuppeteerBrowserBaseTest
     {
         public UserAgentTests(): base()

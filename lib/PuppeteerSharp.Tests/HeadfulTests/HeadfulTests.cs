@@ -11,7 +11,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.HeadfulTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class HeadfulTests : PuppeteerBaseTest
     {
         private readonly LaunchOptions _forcedOopifOptions;

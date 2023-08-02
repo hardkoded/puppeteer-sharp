@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InjectedTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class InjectedTests : PuppeteerPageBaseTest
     {
         public InjectedTests(): base()

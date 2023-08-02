@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.WaitForTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameWaitForTimeoutTests : PuppeteerPageBaseTest
     {
         public FrameWaitForTimeoutTests(): base()

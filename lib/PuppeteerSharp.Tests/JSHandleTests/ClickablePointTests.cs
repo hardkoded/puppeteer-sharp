@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ClickablePointTests : PuppeteerPageBaseTest
     {
         public ClickablePointTests(): base()

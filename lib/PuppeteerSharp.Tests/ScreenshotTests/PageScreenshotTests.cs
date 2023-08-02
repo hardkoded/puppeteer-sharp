@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ScreenshotTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
         public PageScreenshotTests(): base()

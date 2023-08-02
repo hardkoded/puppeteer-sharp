@@ -11,7 +11,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
         public QueryAllArrayTests(): base()

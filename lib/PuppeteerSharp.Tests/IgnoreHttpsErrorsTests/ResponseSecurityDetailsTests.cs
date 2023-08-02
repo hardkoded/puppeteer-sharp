@@ -12,7 +12,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
     {
         public ResponseSecurityDetailsTests(): base()

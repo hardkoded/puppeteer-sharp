@@ -11,7 +11,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
         public PuppeteerConnectTests(): base()

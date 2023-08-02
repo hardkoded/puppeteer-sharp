@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FixturesTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FixturesTests : PuppeteerBaseTest
     {
         public FixturesTests(): base() { }

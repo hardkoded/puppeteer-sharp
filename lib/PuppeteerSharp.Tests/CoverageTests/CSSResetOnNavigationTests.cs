@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class CSSResetOnNavigationTests : PuppeteerPageBaseTest
     {
         public CSSResetOnNavigationTests(): base()

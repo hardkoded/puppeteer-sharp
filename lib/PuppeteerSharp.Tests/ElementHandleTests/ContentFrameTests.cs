@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ContentFrameTests : PuppeteerPageBaseTest
     {
         private readonly LaunchOptions _headfulOptions;

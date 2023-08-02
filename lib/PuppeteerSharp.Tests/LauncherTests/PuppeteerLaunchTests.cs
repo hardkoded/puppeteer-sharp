@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
         public PuppeteerLaunchTests(): base() { }

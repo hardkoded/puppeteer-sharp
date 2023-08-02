@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.MouseTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class MouseTests : PuppeteerPageBaseTest
     {
         private const string Dimensions = @"function dimensions() {

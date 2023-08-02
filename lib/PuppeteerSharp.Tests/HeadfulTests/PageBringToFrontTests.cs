@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.HeadfulTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageBringToFrontTests : PuppeteerBaseTest
     {
         public PageBringToFrontTests(): base()

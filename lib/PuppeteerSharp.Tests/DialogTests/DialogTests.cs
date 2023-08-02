@@ -9,7 +9,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.DialogTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class DialogTests : PuppeteerPageBaseTest
     {
         public DialogTests(): base()

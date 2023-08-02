@@ -12,7 +12,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageGotoTests : PuppeteerPageBaseTest
     {
         public PageGotoTests(): base()

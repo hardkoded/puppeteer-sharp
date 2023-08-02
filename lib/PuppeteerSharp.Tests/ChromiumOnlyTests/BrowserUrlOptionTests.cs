@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserUrlOptionTests : PuppeteerPageBaseTest
     {
         public BrowserUrlOptionTests(): base()

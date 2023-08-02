@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateHandleTests : PuppeteerPageBaseTest
     {
         public EvaluateHandleTests(): base()

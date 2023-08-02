@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateTimezoneTests : PuppeteerPageBaseTest
     {
         public EmulateTimezoneTests(): base()

@@ -8,7 +8,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameManagementTests : PuppeteerPageBaseTest
     {
         public FrameManagementTests(): base()

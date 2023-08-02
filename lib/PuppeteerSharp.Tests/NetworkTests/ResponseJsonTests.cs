@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseJsonTests : PuppeteerPageBaseTest
     {
         public ResponseJsonTests(): base()

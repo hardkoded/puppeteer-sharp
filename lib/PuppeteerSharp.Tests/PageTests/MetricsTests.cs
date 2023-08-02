@@ -9,7 +9,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class MetricsTests : PuppeteerPageBaseTest
     {
         public MetricsTests(): base()

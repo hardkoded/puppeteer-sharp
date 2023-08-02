@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWaitForFileChooserTests : PuppeteerPageBaseTest
     {
         public PageWaitForFileChooserTests(): base()

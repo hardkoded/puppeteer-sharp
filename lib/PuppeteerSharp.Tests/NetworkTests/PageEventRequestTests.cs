@@ -9,7 +9,6 @@ using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventRequestTests : PuppeteerPageBaseTest
     {
         public PageEventRequestTests(): base()

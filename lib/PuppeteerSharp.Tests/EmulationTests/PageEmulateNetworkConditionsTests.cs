@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEmulateNetworkConditionsTests : PuppeteerPageBaseTest
     {
         public PageEmulateNetworkConditionsTests(): base()

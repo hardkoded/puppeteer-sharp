@@ -11,7 +11,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
         public EvaluateTests(): base()

@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserWaitForTargetTests : PuppeteerPageBaseTest
     {
         public BrowserWaitForTargetTests(): base()

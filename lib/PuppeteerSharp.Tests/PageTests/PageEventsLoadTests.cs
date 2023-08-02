@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsLoadTests : PuppeteerPageBaseTest
     {
         public PageEventsLoadTests(): base()

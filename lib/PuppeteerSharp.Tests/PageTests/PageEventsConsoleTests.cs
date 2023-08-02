@@ -8,7 +8,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
         public PageEventsConsoleTests(): base()

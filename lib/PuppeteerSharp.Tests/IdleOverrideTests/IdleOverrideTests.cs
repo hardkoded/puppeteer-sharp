@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.IdleOverrideTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class IdleOverrideTests : PuppeteerPageBaseTest
     {
         public IdleOverrideTests(): base()

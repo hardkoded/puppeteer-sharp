@@ -6,7 +6,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class IsIntersectingViewportTests : PuppeteerPageBaseTest
     {
         public IsIntersectingViewportTests(): base()

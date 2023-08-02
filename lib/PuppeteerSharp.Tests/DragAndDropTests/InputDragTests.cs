@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.DragAndDropTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputDragTests : PuppeteerPageBaseTest
     {
         public InputDragTests(): base()

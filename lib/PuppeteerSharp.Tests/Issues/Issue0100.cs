@@ -5,7 +5,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0100 : PuppeteerBrowserContextBaseTest
     {
         public Issue0100(): base()

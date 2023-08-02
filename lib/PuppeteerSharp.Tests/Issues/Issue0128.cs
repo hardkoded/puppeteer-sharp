@@ -6,7 +6,6 @@ using Xunit;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0128
     {
         [SkipBrowserFact(skipFirefox: true)]

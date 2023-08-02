@@ -8,7 +8,6 @@ using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForRequestTests : PuppeteerPageBaseTest
     {
         public WaitForRequestTests(): base()

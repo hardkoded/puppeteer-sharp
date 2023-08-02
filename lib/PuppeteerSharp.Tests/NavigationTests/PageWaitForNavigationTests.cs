@@ -8,7 +8,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWaitForNavigationTests : PuppeteerPageBaseTest
     {
         public PageWaitForNavigationTests(): base()

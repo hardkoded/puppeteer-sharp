@@ -12,7 +12,6 @@ using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserFetcherTests : PuppeteerBaseTest
     {
         private readonly string _downloadsFolder;

@@ -10,7 +10,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
         public ParseAriaSelectorTests(): base()

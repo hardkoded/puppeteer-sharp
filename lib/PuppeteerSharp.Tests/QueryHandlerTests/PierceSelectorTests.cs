@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PierceSelectorTests : PuppeteerPageBaseTest
     {
         public PierceSelectorTests(): base()

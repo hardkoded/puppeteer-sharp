@@ -14,7 +14,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
         public SetRequestInterceptionTests(): base()

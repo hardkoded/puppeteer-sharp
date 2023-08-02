@@ -9,7 +9,6 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class OOPIFTests : PuppeteerPageBaseTest
     {
         static int _port = 21221;

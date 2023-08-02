@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameWaitForSelectorTests : PuppeteerPageBaseTest
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";

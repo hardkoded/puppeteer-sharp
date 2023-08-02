@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest, IDisposable
     {
         private PollerInterceptor _pollerInterceptor;

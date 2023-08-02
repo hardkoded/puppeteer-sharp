@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
         public BrowserTargetEventsTests(): base()

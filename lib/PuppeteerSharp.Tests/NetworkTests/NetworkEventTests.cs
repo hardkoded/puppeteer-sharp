@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class NetworkEventTests : PuppeteerPageBaseTest
     {
         public NetworkEventTests(): base()

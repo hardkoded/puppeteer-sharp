@@ -6,7 +6,6 @@ using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageQuerySelectorTests : PuppeteerPageBaseTest
     {
         public PageQuerySelectorTests(): base()

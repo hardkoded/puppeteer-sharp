@@ -11,7 +11,6 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public sealed class FrameWaitForXPathTests : PuppeteerPageBaseTest, IDisposable
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";

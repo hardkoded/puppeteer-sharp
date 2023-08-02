@@ -9,7 +9,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.KeyboardTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class KeyboardTests : PuppeteerPageBaseTest
     {
         public KeyboardTests(): base()

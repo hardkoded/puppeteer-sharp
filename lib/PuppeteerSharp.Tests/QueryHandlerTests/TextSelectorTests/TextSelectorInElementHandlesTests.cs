@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class TextSelectorInElementHandlesTests : PuppeteerPageBaseTest
     {
         public TextSelectorInElementHandlesTests(): base()

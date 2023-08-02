@@ -9,7 +9,6 @@ using PuppeteerSharp.Xunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
         public RequestPostDataTests(): base()

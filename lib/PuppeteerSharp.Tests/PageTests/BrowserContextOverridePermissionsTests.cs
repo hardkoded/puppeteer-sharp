@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserContextOverridePermissionsTests : PuppeteerPageBaseTest
     {
         public BrowserContextOverridePermissionsTests(): base()
