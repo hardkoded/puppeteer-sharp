@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "Page.workers")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<Worker>();
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should have JSHandles for console logs")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<Worker>();
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();

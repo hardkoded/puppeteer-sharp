@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         //TODO: This is working in puppeteer. I don't know why is hanging here.
         [PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work with HistoryAPI")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithHistoryAPI()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

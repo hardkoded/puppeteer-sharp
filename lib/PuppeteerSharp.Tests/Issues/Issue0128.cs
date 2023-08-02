@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0128
     {
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task LauncherShouldFailGracefully()
         {
             await Assert.ThrowsAsync<ProcessException>(async () =>

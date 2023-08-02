@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
         }
 
         [PuppeteerTest("defaultbrowsercontext.spec.ts", "Browser target events", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var events = new List<string>();

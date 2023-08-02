@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEvaluateXPathsCorrectly()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

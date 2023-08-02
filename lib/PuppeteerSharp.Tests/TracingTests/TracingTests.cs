@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should output a trace")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should support a buffer without a path")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

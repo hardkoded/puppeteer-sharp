@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should report when a new page is created and closed")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportWhenANewPageIsCreatedAndClosed()
         {
             var otherPageTask = Context.WaitForTargetAsync(t => t.Url == TestConstants.CrossProcessUrl + "/empty.html")
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should report when a service worker is created and destroyed")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportWhenAServiceWorkerIsCreatedAndDestroyed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should create a worker from a service worker")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCreateAWorkerFromAServiceWorker()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
@@ -133,7 +133,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should create a worker from a shared worker")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCreateAWorkerFromASharedWorker()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should report when a target url changes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportWhenATargetUrlChanges()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -172,7 +172,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should not report uninitialized pages")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotReportUninitializedPages()
         {
             var targetChanged = false;
@@ -202,7 +202,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should not crash while redirecting if original request was missed")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotCrashWhileRedirectingIfOriginalRequestWasMissed()
         {
             var serverResponseEnd = new TaskCompletionSource<bool>();
@@ -226,7 +226,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should have an opener")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveAnOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

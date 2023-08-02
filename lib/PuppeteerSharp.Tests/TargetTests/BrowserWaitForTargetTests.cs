@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should wait for a target")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWaitForATarget()
         {
             var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should timeout waiting for a non-existent target")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public Task ShouldTimeoutWaitingForANonExistentTarget()
             => Assert.ThrowsAnyAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,

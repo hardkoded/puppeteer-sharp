@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "Page.bringToFront", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(

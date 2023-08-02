@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Should Work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             // Checking for the TLS socket is it is in upstreams proves to be flacky in .net framework.
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should be |null| for non-secure requests")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeNullForNonSecureRequests()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Network redirects should report SecurityDetails")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
             var responses = new List<IResponse>();

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync(@"
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "should report uninteresting nodes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportUninterestingNodes()
         {
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "roledescription")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task RoleDescription()
         {
             await Page.SetContentAsync("<div tabIndex=-1 aria-roledescription='foo'>Hi</div>");
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "orientation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task Orientation()
         {
             await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
@@ -172,7 +172,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "autocomplete")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task AutoComplete()
         {
             await Page.SetContentAsync("<input type='number' aria-autocomplete='list' />");
@@ -181,7 +181,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "multiselectable")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task MultiSelectable()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>");
@@ -190,7 +190,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "keyshortcuts")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task KeyShortcuts()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
@@ -199,7 +199,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "should not report text nodes inside controls")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotReportTextNodesInsideControls()
         {
             await Page.SetContentAsync(@"
@@ -231,7 +231,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "rich text editable fields should have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task RichTextEditableFieldsShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -262,7 +262,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "rich text editable fields with role should have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task RichTextEditableFieldsWithRoleShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -289,7 +289,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "plaintext contenteditable", "plain text field with role should not have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PlainTextFieldWithRoleShouldNotHaveChildren()
         {
             await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
@@ -305,7 +305,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "plaintext contenteditable", "plain text field with tabindex and without role should not have content")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PlainTextFieldWithoutRoleShouldNotHaveContent()
         {
             await Page.SetContentAsync(
@@ -316,7 +316,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "non editable textbox with role and tabIndex and label should not have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task NonEditableTextboxWithRoleAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -335,7 +335,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "checkbox with and tabIndex and label should not have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CheckboxWithAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -354,7 +354,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "checkbox without label should not have children")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CheckboxWithoutLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
