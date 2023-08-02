@@ -57,7 +57,7 @@ await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L63-L71' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L62-L70' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also change the view port before generating the screenshot
@@ -71,7 +71,7 @@ await Page.SetViewportAsync(new ViewPortOptions
     Height = 500
 });
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L21-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L20-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Generate PDF files
@@ -87,7 +87,7 @@ await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded 
 await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
 await page.PdfAsync(outputFile);
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L30-L40' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L29-L39' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Inject HTML
@@ -99,7 +99,7 @@ await using var page = await browser.NewPageAsync();
 await page.SetContentAsync("<div>My Receipt</div>");
 var result = await page.GetContentAsync();
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L21-L27' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L20-L26' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Evaluate Javascript
@@ -112,7 +112,7 @@ var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
 var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);
 ```
-<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L19-L24' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L18-L23' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Wait For Selector
