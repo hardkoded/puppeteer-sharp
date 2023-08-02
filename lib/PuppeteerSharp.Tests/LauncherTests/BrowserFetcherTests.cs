@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract firefox linux binary")]
-        [SkipWindowsFact]
+        [Skip(SkipAttribute.Targets.OSX | SkipAttribute.Targets.Linux)]
         public async Task ShouldDownloadAndExtractFirefoxLinuxBinary()
         {
             using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions

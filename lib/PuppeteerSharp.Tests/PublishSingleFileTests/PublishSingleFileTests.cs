@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
 {
     public class PublishSingleFileTests
     {
-        [SkipNonWindowsFact]
+        [Skip(SkipAttribute.Targets.OSX | SkipAttribute.Targets.Linux)]
         public void ShouldWork()
         {
             var tempPath = Path.GetTempPath();
