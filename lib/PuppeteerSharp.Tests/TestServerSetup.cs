@@ -1,20 +1,18 @@
-using PuppeteerSharp.TestServer;
 using System;
 using System.Threading.Tasks;
-using Xunit;
+using NUnit.Framework;
+using PuppeteerSharp.TestServer;
 
 namespace PuppeteerSharp.Tests
 {
-    public sealed class PuppeteerLoaderFixture : IAsyncLifetime
+    [SetUpFixture]
+    public class TestServerSetup
     {
         public static SimpleServer Server { get; private set; }
         public static SimpleServer HttpsServer { get; private set; }
 
-        Task IAsyncLifetime.InitializeAsync() => SetupAsync();
-
-        Task IAsyncLifetime.DisposeAsync() => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
-
-        private async Task SetupAsync()
+        [OneTimeSetUp]
+        public async Task InitAllAsync()
         {
             using var browserFetcher = new BrowserFetcher(TestConstants.IsChrome ? Product.Chrome : Product.Firefox);
             var downloaderTask = browserFetcher.DownloadAsync();
@@ -27,5 +25,10 @@ namespace PuppeteerSharp.Tests
 
             await Task.WhenAll(downloaderTask, serverStart, httpsServerStart);
         }
+
+        [OneTimeTearDown]
+        public Task ShutDownAsync()
+            => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
     }
 }
+
