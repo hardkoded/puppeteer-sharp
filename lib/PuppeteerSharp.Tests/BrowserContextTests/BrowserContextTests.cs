@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should have default context")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldHaveDefaultContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should create new incognito context")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldCreateNewIncognitoContext()
         {
             Assert.Single(Browser.BrowserContexts());
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should close all belonging targets once closing context")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
             Assert.Single((await Browser.PagesAsync()));
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should isolate localStorage and cookies")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Create two incognito contexts.
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non-existent target")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();

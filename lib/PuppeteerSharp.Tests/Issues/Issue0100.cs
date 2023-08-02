@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task PdfDarkskyShouldWork()
         {
             await using (var page = await Context.NewPageAsync())

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.DOMContentLoaded", "should fire when expected")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireWhenExpected()
         {
             var _ = Page.GoToAsync(TestConstants.AboutBlank);

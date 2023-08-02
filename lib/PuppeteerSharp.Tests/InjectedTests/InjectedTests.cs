@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         }
 
         [PuppeteerTest("injected.spec.ts", "PuppeteerUtil tests", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var world =  (Page.MainFrame as Frame).PuppeteerWorld;
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         }
 
         [PuppeteerTest("injected.spec.ts", "createFunction tests", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task CreateFunctionShouldWork()
         {
             var world = (Page.MainFrame as Frame).PuppeteerWorld;

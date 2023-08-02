@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.contentFrame", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Equal(Page.FirstChildFrame(), frame);
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkHeadful()
         {
             await using var Browser = await Puppeteer.LaunchAsync(_headfulOptions);

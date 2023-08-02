@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();

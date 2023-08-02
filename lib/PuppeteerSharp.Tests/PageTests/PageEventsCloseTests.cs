@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithPageClose()
         {
             var newPage = await Context.NewPageAsync();

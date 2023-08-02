@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "Browser.targets should return all of the targets")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void BrowserTargetsShouldReturnAllOfTheTargets()
         {
             // The pages will be the testing page and the original newtab page
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "Browser.pages should return all of the pages")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task BrowserPagesShouldReturnAllOfThePages()
         {
             // The pages will be the testing page and the original newtab page
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should contain browser target")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldContainBrowserTarget()
         {
             var targets = Browser.Targets();
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should be able to use the default page in the browser")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldBeAbleToUseTheDefaultPageInTheBrowser()
         {
             // The pages will be the testing page and the original newtab page

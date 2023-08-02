@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should click the document")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldClickTheDocument()
         {
             await Page.EvaluateFunctionAsync(@"() => {

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.browserContext", "should return the correct browser context instance")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.Same(Context, Page.BrowserContext);
     }
 }

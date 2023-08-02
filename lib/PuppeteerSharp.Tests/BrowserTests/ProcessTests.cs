@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         public ProcessTests(): base() { }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldReturnProcessInstance()
         {
             var process = Browser.Process;
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should not return child_process for remote browser")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotReturnChildProcessForRemoteBrowser()
         {
             var browserWSEndpoint = Browser.WebSocketEndpoint;

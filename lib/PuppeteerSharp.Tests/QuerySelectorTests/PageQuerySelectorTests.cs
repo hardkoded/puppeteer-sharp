@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$", "should query existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$", "should return null for non-existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             var element = await Page.QuerySelectorAsync("non-existing-element");

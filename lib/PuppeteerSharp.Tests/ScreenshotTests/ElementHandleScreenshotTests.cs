@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             #region SetViewportAsync
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should take into account padding and border")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTakeIntoAccountPaddingAndBorder()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should scroll element into view")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldScrollElementIntoView()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work with a rotated element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithARotatedElement()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -152,7 +152,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should not hang with zero width/height element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotHangWithZeroWidthHeightElement()
         {
             await Page.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work for an element with fractional dimensions")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForAnElementWithFractionalDimensions()
         {
             await Page.SetContentAsync("<div style=\"width:48.51px;height:19.8px;border:1px solid black;\"></div>");

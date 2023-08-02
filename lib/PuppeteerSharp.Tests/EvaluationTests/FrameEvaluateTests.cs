@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have different execution contexts")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have correct execution contexts")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldHaveCorrectExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should execute after cross-site navigation")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

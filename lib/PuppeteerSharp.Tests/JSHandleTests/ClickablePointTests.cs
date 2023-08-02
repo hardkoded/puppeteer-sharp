@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.clickablePoint", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '0';
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.clickablePoint", "should work for iframes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForIFrames()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '10px';

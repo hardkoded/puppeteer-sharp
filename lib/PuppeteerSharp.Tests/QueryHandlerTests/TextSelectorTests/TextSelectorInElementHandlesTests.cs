@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in ElementHandles", "should query existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"><span>a</span></div>");
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return null for non-existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"></div>");

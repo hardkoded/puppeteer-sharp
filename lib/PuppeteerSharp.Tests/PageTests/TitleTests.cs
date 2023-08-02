@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.title", "should return the page title")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnThePageTitle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/title.html");

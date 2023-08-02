@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.disconnect", "should reject navigation when browser closes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRejectNavigationWhenBrowserCloses()
         {
             Server.SetRoute("/one-style.css", _ => Task.Delay(10000));
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.disconnect", "should reject waitForSelector when browser closes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRejectWaitForSelectorWhenBrowserCloses()
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));

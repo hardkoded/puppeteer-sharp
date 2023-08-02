@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact(Timeout = -1)]
+        [PuppeteerTest(Timeout = -1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.png");
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should clip rect")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldClipRect()
         {
             await using (var page = await Context.NewPageAsync())
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldClipScale()
         {
             await using (var page = await Context.NewPageAsync())
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRunInParallel()
         {
             await using (var page = await Context.NewPageAsync())
@@ -302,7 +302,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             await using (var page = await Context.NewPageAsync())
@@ -340,7 +340,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldInferScreenshotTypeFromName()
         {
             Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));

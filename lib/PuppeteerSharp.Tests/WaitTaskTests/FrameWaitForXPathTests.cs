@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should support some fancy xpath")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldSupportSomeFancyXpath()
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should run in specified frame")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRunInSpecifiedFrame()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "hidden should wait for display: none")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should return the element handle")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnTheElementHandle()
         {
             var waitForXPath = Page.WaitForXPathAsync("//*[@class=\"zombo\"]");
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select a text node")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowYouToSelectATextNode()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select an element with single slash")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowYouToSelectAnElementWithSingleSlash()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should respect timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
             const int timeout = 10;

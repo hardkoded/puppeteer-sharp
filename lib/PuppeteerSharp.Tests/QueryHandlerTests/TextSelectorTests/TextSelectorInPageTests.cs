@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should query existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return empty array for non-existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             Assert.Null(await Page.QuerySelectorAsync("text/test"));
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return first element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnFirstElement()
         {
             await Page.SetContentAsync("<div id=\"1\">a</div><div>a</div>");
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return multiple elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div>a</div><div>a</div>");
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should pierce shadow DOM")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldPierceShadowDom()
         {
             await Page.EvaluateFunctionAsync(@"() => {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should query deeply nested text")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryDeeplyNestedText()
         {
             await Page.SetContentAsync("<div><div>a</div><div>b</div></div>");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should query inputs")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryInputs()
         {
             await Page.SetContentAsync("<input value=\"a\">");
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should not query radio")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotQueryRadio()
         {
             await Page.SetContentAsync("<radio value=\"a\">");
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should query text spanning multiple elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryTextSpanningMultipleElements()
         {
             await Page.SetContentAsync("<div><span>a</span> <span>b</span><div>");

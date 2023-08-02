@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<IRequest>();
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<IRequest>();

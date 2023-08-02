@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should register and unregister")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRegisterAndUnregister()
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div>");
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should throw with invalid query names")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldThrowWithInvalidQueryNames()
         {
             var ex = Assert.Throws<PuppeteerException>(()=> Browser.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work for multiple elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForMultipleElements()
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval correctly")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldEvalCorrectly()
         {
             await Page.SetContentAsync("<div id='not-foo'></div><div class='foo'></div><div class='foo baz'>Foo2</div>");
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitForSelector")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWaitCorrectlyWithWaitForSelector()
         {
             Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitForSelector on an element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWaitCorrectlyWithWaitForSelectorOnAnElement()
         {
             Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work when both queryOne and queryAll are registered")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWhenBothQueryOneAndQueryAllAreRegistered()
         {
             await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"foo\"><div id=\"nested-foo\" class=\"foo\"/></div><div class=\"foo baz\">Foo2</div>");
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval when both queryOne and queryAll are registered")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldEvalWhenBothQueryOneAndQueryAllAreRegistered()
         {
             await Page.SetContentAsync("<div id=\"not-foo\"></div><div class=\"foo\">text</div><div class=\"foo baz\">content</div>");

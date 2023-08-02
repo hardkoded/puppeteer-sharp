@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should support url fragment")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnUrlFragmentAsPartOfUrl()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame-url-fragment.html");
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should persist mainFrame on cross-process navigation")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldPersistMainFrameOnCrossProcessNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should not send attach/detach events for main frame")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotSendAttachDetachEventsForMainFrame()
         {
             var hasEvents = false;
@@ -127,7 +127,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame from-inside shadow DOM")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReportFrameFromInsideShadowDOM()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReportFrameName()
         {
             await FrameUtils.AttachFrameAsync(Page, "theFrameId", TestConstants.EmptyPage);
@@ -161,7 +161,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.parent()")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReportFrameParent()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -172,7 +172,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report different frame instance when frame re-attaches")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReportDifferentFrameInstanceWhenFrameReAttaches()
         {
             var frame1 = await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

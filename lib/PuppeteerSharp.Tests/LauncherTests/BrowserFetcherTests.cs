@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract chrome linux binary")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
             using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions

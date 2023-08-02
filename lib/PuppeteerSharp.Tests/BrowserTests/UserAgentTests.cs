@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         }
 
         [PuppeteerTest("browser.spec.ts", "Browser.userAgent", "should include WebKit")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();

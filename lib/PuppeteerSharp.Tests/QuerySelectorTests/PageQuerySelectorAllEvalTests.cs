@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept extra arguments")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAcceptExtraArguments()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept ElementHandles as arguments")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
             await Page.SetContentAsync("<section>2</section><section>2</section><section>1</section><div>3</div>");
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should handle many elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldHandleManyElements()
         {
             await Page.EvaluateExpressionAsync(@"
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Equal(500500, sum);
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");

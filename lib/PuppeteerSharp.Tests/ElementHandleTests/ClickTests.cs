@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for Shadow DOM v1")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForShadowDomV1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for TextNodes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForTextNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for detached nodes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowForDetachedNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for hidden nodes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowForHiddenNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for recursively hidden nodes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowForRecursivelyHiddenNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for <br> elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowForBrElements()
         {
             await Page.SetContentAsync("hello<br>goodbye");

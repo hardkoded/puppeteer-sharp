@@ -11,12 +11,12 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
             => Assert.NotNull(await Page.EvaluateFunctionHandleAsync("() => window"));
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should accept object handle as an argument")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAcceptObjectHandleAsAnArgument()
         {
             var navigatorHandle = await Page.EvaluateFunctionHandleAsync("() => navigator");
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should accept object handle to primitive types")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAcceptObjectHandleToPrimitiveTypes()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 5");
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should warn on nested object handles")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWarnOnNestedObjectHandles()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => document.body");
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should accept object handle to unserializable value")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAcceptObjectHandleToUnserializableValue()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => Infinity");
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should use the same JS wrappers")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldUseTheSameJSWrappers()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {

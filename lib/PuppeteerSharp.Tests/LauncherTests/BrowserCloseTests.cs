@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.close", "should terminate network waiters")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))

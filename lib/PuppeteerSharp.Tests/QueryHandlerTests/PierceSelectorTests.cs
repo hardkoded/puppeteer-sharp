@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindFirstElementInShadow()
         {
             var div = await Page.QuerySelectorAsync("pierce/.foo");
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindAllElementsInShadow()
         {
             var divs = await Page.QuerySelectorAllAsync("pierce/.foo");
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindFirstChildElement()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindAllChildElements()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");

@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.Issues
     {
         public Issue1447(): base() { }
 
-        [PuppeteerFact(Skip = "It's an example")]
+        [PuppeteerTest(Skip = "It's an example")]
         public async Task Example()
         {
             var opts = new LaunchOptions

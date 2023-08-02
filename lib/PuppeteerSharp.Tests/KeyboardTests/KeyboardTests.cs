@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type into a textarea")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTypeIntoTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should move with the arrow keys")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldMoveWithTheArrowKeys()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send a character with ElementHandle.press")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should report multiple modifiers")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReportMultipleModifiers()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send proper codes while typing")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -154,7 +154,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send proper codes while typing with shift")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -170,7 +170,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should not type canceled events")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotTypeCanceledEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -246,7 +246,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should throw on unknown keys")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowOnUnknownKeys()
         {
             await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));

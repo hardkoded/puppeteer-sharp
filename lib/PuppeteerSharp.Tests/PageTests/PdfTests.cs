@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerFact(Timeout = -1)]
+        [PuppeteerTest(Timeout = -1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
             // We test this differently compared to puppeteer.
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions

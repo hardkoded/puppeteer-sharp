@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for selector")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWaitForSelector()
         {
             var found = false;
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for an xpath")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWaitForAnXpath()
         {
             var found = false;
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should not allow you to select an element with single slash xpath")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotAllowYouToSelectAnElementWithSingleSlashXpath()
         {
             await Page.SetContentAsync("<div>some text</div>");
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTimeout()
         {
             var startTime = DateTime.UtcNow;
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should work with multiline body")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithMultilineBody()
         {
             var result = await Page.WaitForExpressionAsync(@"
@@ -71,14 +71,14 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public Task ShouldWaitForPredicate()
             => Task.WhenAll(
                 Page.WaitForFunctionAsync("() => window.innerWidth < 100"),
                 Page.SetViewportAsync(new ViewPortOptions { Width = 10, Height = 10 }));
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for predicate with arguments")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWaitForPredicateWithArguments()
             => await Page.WaitForFunctionAsync("(arg1, arg2) => arg1 !== arg2", new WaitForFunctionOptions(), 1, 2);
     }

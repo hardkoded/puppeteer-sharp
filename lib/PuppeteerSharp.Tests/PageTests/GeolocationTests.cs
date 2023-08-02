@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should throw when invalid longitude")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldThrowWhenInvalidLongitude()
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>

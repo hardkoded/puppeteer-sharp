@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for navigation requests")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForIframes()
         {
             var requests = new List<IRequest>();
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForFetches()
         {
             var requests = new List<IRequest>();
