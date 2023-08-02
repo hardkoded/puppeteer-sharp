@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class TextSelectorInElementHandlesTests : PuppeteerPageBaseTest
     {
-        public TextSelectorInElementHandlesTests(ITestOutputHelper output) : base(output)
+        public TextSelectorInElementHandlesTests(): base()
         {
         }
 

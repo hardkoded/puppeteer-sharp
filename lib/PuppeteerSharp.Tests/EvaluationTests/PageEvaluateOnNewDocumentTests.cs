@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
-        public PageEvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
+        public PageEvaluateOnNewDocumentTests(): base()
         {
         }
 

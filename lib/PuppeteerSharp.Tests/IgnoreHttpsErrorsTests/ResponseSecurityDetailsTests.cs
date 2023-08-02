@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
     {
-        public ResponseSecurityDetailsTests(ITestOutputHelper output) : base(output)
+        public ResponseSecurityDetailsTests(): base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.IgnoreHTTPSErrors = true;

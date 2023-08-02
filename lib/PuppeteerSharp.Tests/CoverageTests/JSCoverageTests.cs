@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class JSCoverageTests : PuppeteerPageBaseTest
     {
-        public JSCoverageTests(ITestOutputHelper output) : base(output)
+        public JSCoverageTests(): base()
         {
         }
 

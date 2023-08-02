@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
-        public QueryAllArrayTests(ITestOutputHelper output) : base(output)
+        public QueryAllArrayTests(): base()
         {
         }
 

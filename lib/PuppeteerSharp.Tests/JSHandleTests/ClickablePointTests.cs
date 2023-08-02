@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ClickablePointTests : PuppeteerPageBaseTest
     {
-        public ClickablePointTests(ITestOutputHelper output) : base(output)
+        public ClickablePointTests(): base()
         {
         }
 

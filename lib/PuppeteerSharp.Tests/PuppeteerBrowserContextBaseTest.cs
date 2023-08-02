@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Tests
 {
     public class PuppeteerBrowserContextBaseTest : PuppeteerBrowserBaseTest
     {
-        public PuppeteerBrowserContextBaseTest(ITestOutputHelper output) : base(output)
+        public PuppeteerBrowserContextBaseTest(): base()
         {
         }
 

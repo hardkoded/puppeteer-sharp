@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserDisconnectTests : PuppeteerBrowserBaseTest
     {
-        public BrowserDisconnectTests(ITestOutputHelper output) : base(output)
+        public BrowserDisconnectTests(): base()
         {
         }
 

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestHeadersTests : PuppeteerPageBaseTest
     {
-        public RequestHeadersTests(ITestOutputHelper output) : base(output)
+        public RequestHeadersTests(): base()
         {
         }
 

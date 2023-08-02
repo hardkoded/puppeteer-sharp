@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        public SetUserAgentTests(ITestOutputHelper output) : base(output)
+        public SetUserAgentTests(): base()
         {
         }
 

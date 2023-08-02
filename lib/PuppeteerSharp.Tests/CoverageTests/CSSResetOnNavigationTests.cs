@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class CSSResetOnNavigationTests : PuppeteerPageBaseTest
     {
-        public CSSResetOnNavigationTests(ITestOutputHelper output) : base(output)
+        public CSSResetOnNavigationTests(): base()
         {
         }
 

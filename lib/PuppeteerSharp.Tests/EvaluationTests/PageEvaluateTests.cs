@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EvaluateTests : PuppeteerPageBaseTest
     {
-        public EvaluateTests(ITestOutputHelper output) : base(output)
+        public EvaluateTests(): base()
         {
         }
 

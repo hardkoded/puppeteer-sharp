@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class GetPropertiesTests : PuppeteerPageBaseTest
     {
-        public GetPropertiesTests(ITestOutputHelper output) : base(output)
+        public GetPropertiesTests(): base()
         {
         }
 

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEmulateCPUThrottlingTests : PuppeteerPageBaseTest
     {
-        public PageEmulateCPUThrottlingTests(ITestOutputHelper output) : base(output)
+        public PageEmulateCPUThrottlingTests(): base()
         {
         }
 

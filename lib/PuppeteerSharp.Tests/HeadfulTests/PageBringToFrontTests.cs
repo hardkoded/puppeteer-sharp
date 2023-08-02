@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageBringToFrontTests : PuppeteerBaseTest
     {
-        public PageBringToFrontTests(ITestOutputHelper output) : base(output)
+        public PageBringToFrontTests(): base()
         {
         }
 

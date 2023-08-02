@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.Issues
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue2251 : PuppeteerPageBaseTest
     {
-        public Issue2251(ITestOutputHelper output) : base(output)
+        public Issue2251(): base()
         {
         }
 

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class AddScriptTagTests : PuppeteerPageBaseTest
     {
-        public AddScriptTagTests(ITestOutputHelper output) : base(output)
+        public AddScriptTagTests(): base()
         {
         }
 

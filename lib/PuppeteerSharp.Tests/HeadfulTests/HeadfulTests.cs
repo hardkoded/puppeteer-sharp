@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     {
         private readonly LaunchOptions _forcedOopifOptions;
         
-        public HeadfulTests(ITestOutputHelper output) : base(output)
+        public HeadfulTests(): base()
         {
             _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
             _forcedOopifOptions.Headless =  false;

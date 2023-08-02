@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
 
-        public SetContentTests(ITestOutputHelper output) : base(output)
+        public SetContentTests(): base()
         {
         }
 

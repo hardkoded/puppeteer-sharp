@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetBypassCSPTests : PuppeteerPageBaseTest
     {
-        public SetBypassCSPTests(ITestOutputHelper output) : base(output)
+        public SetBypassCSPTests(): base()
         {
         }
 

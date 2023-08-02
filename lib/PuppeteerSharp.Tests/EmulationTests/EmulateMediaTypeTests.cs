@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateMediaTypeTests : PuppeteerPageBaseTest
     {
-        public EmulateMediaTypeTests(ITestOutputHelper output) : base(output)
+        public EmulateMediaTypeTests(): base()
         {
         }
 

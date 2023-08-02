@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.FrameTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        public FrameEvaluateTests(ITestOutputHelper output) : base(output)
+        public FrameEvaluateTests(): base()
         {
         }
 

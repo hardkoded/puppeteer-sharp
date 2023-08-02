@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
     {
         private readonly string _downloadsFolder;
 
-        public BrowserFetcherTests(ITestOutputHelper output) : base(output)
+        public BrowserFetcherTests(): base()
         {
             _downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".test-chromium");
             EnsureDownloadsFolderIsDeleted();

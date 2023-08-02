@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageViewPortTests : PuppeteerPageBaseTest
     {
-        public PageViewPortTests(ITestOutputHelper output) : base(output)
+        public PageViewPortTests(): base()
         {
         }
 

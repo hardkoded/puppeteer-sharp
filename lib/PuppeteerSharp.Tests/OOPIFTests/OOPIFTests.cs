@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
     {
         static int _port = 21221;
 
-        public OOPIFTests(ITestOutputHelper output) : base(output)
+        public OOPIFTests(): base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args = new[]

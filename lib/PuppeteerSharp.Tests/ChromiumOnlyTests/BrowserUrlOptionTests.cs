@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserUrlOptionTests : PuppeteerPageBaseTest
     {
-        public BrowserUrlOptionTests(ITestOutputHelper output) : base(output)
+        public BrowserUrlOptionTests(): base()
         {
         }
 

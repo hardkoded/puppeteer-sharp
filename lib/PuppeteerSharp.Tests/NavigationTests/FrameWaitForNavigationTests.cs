@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public FrameWaitForNavigationTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForNavigationTests(): base()
         {
         }
 

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     {
         private readonly LaunchOptions _headfulOptions;
 
-        public ContentFrameTests(ITestOutputHelper output) : base(output)
+        public ContentFrameTests(): base()
         {
             _headfulOptions = TestConstants.DefaultBrowserOptions();
             _headfulOptions.Headless =  false;

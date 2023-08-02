@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.TracingTests
     {
         private readonly string _file;
 
-        public TracingTests(ITestOutputHelper output) : base(output)
+        public TracingTests(): base()
         {
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }

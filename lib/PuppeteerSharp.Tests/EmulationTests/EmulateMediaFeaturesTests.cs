@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateMediaFeaturesAsyncTests : PuppeteerPageBaseTest
     {
-        public EmulateMediaFeaturesAsyncTests(ITestOutputHelper output) : base(output)
+        public EmulateMediaFeaturesAsyncTests(): base()
         {
         }
 

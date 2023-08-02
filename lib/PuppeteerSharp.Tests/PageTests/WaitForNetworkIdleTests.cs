@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForNetworkIdleTests : PuppeteerPageBaseTest
     {
-        public WaitForNetworkIdleTests(ITestOutputHelper output) : base(output)
+        public WaitForNetworkIdleTests(): base()
         {
         }
 

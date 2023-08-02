@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestIsNavigationRequestTests : PuppeteerPageBaseTest
     {
-        public RequestIsNavigationRequestTests(ITestOutputHelper output) : base(output)
+        public RequestIsNavigationRequestTests(): base()
         {
         }
 

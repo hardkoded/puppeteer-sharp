@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class HoverTests : PuppeteerPageBaseTest
     {
-        public HoverTests(ITestOutputHelper output) : base(output)
+        public HoverTests(): base()
         {
         }
 

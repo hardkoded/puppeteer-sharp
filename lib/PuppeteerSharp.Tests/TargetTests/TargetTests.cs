@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.TargetTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class TargetTests : PuppeteerPageBaseTest
     {
-        public TargetTests(ITestOutputHelper output) : base(output)
+        public TargetTests(): base()
         {
         }
 

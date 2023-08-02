@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class CloseTests : PuppeteerPageBaseTest
     {
-        public CloseTests(ITestOutputHelper output) : base(output) { }
+        public CloseTests(): base() { }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
         [SkipBrowserFact(skipFirefox: true)]

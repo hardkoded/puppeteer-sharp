@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ProcessTests : PuppeteerBrowserBaseTest
     {
-        public ProcessTests(ITestOutputHelper output) : base(output) { }
+        public ProcessTests(): base() { }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
         [PuppeteerFact]

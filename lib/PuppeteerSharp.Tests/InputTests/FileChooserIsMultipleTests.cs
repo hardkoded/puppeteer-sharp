@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class FileChooserIsMultipleTests : PuppeteerPageBaseTest
     {
-        public FileChooserIsMultipleTests(ITestOutputHelper output) : base(output)
+        public FileChooserIsMultipleTests(): base()
         {
         }
 

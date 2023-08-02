@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PierceSelectorTests : PuppeteerPageBaseTest
     {
-        public PierceSelectorTests(ITestOutputHelper output) : base(output)
+        public PierceSelectorTests(): base()
         {
         }
 

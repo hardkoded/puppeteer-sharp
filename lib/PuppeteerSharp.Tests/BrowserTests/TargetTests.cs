@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class TargetTests : PuppeteerBrowserBaseTest
     {
-        public TargetTests(ITestOutputHelper output) : base(output)
+        public TargetTests(): base()
         {
         }
 

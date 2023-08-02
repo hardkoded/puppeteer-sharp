@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public PageSetExtraHttpHeadersTests(ITestOutputHelper output) : base(output)
+        public PageSetExtraHttpHeadersTests(): base()
         {
         }
 

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsCloseTests : PuppeteerPageBaseTest
     {
-        public PageEventsCloseTests(ITestOutputHelper output) : base(output)
+        public PageEventsCloseTests(): base()
         {
         }
 

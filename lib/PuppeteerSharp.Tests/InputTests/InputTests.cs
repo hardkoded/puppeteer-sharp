@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputTests : PuppeteerPageBaseTest
     {
-        public InputTests(ITestOutputHelper output) : base(output)
+        public InputTests(): base()
         {
         }
 

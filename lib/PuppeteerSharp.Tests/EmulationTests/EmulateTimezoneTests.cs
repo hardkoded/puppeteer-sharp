@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateTimezoneTests : PuppeteerPageBaseTest
     {
-        public EmulateTimezoneTests(ITestOutputHelper output) : base(output)
+        public EmulateTimezoneTests(): base()
         {
         }
 

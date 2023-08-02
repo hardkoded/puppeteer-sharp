@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             };
         }";
 
-        public MouseTests(ITestOutputHelper output) : base(output)
+        public MouseTests(): base()
         {
         }
 

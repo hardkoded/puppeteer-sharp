@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RootOptionTests : PuppeteerPageBaseTest
     {
-        public RootOptionTests(ITestOutputHelper output) : base(output)
+        public RootOptionTests(): base()
         {
         }
 

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.DialogTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class DialogTests : PuppeteerPageBaseTest
     {
-        public DialogTests(ITestOutputHelper output) : base(output)
+        public DialogTests(): base()
         {
         }
 

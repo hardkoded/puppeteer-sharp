@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseJsonTests : PuppeteerPageBaseTest
     {
-        public ResponseJsonTests(ITestOutputHelper output) : base(output)
+        public ResponseJsonTests(): base()
         {
         }
 

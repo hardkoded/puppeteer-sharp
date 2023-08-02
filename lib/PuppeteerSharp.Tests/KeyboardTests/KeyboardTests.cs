@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class KeyboardTests : PuppeteerPageBaseTest
     {
-        public KeyboardTests(ITestOutputHelper output) : base(output)
+        public KeyboardTests(): base()
         {
         }
 

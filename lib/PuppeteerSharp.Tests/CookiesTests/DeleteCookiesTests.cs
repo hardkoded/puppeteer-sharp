@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class DeleteCookiesTests : PuppeteerPageBaseTest
     {
-        public DeleteCookiesTests(ITestOutputHelper output) : base(output)
+        public DeleteCookiesTests(): base()
         {
         }
 

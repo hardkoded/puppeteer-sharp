@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetCacheEnabledTests : PuppeteerPageBaseTest
     {
-        public SetCacheEnabledTests(ITestOutputHelper output) : base(output)
+        public SetCacheEnabledTests(): base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class OfflineModeTests : PuppeteerPageBaseTest
     {
-        public OfflineModeTests(ITestOutputHelper output) : base(output)
+        public OfflineModeTests(): base()
         {
         }
 

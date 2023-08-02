@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class FixturesTests : PuppeteerBaseTest
     {
-        public FixturesTests(ITestOutputHelper output) : base(output) { }
+        public FixturesTests(): base() { }
 
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
         [SkipBrowserFact(skipFirefox: true)]

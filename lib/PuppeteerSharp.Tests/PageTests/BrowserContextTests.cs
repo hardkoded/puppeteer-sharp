@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserContextTests : PuppeteerPageBaseTest
     {
-        public BrowserContextTests(ITestOutputHelper output) : base(output)
+        public BrowserContextTests(): base()
         {
         }
 

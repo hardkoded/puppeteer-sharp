@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
-        public ParseAriaSelectorTests(ITestOutputHelper output) : base(output)
+        public ParseAriaSelectorTests(): base()
         {
         }
 

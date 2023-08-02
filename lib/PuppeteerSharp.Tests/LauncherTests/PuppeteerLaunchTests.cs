@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        public PuppeteerLaunchTests(ITestOutputHelper output) : base(output) { }
+        public PuppeteerLaunchTests(): base() { }
 
         [PuppeteerFact]
         public async Task ShouldWorkInRealLife()

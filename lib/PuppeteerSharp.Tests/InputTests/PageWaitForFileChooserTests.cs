@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InputTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWaitForFileChooserTests : PuppeteerPageBaseTest
     {
-        public PageWaitForFileChooserTests(ITestOutputHelper output) : base(output)
+        public PageWaitForFileChooserTests(): base()
         {
         }
 

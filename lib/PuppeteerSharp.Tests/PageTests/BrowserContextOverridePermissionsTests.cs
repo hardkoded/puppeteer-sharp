@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserContextOverridePermissionsTests : PuppeteerPageBaseTest
     {
-        public BrowserContextOverridePermissionsTests(ITestOutputHelper output) : base(output)
+        public BrowserContextOverridePermissionsTests(): base()
         {
         }
 

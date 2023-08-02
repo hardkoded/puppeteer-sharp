@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class IsConnectedTests : PuppeteerBrowserBaseTest
     {
-        public IsConnectedTests(ITestOutputHelper output) : base(output)
+        public IsConnectedTests(): base()
         {
         }
 

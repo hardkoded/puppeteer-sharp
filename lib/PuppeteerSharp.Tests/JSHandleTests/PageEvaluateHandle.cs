@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEvaluateHandle : PuppeteerPageBaseTest
     {
-        public PageEvaluateHandle(ITestOutputHelper output) : base(output)
+        public PageEvaluateHandle(): base()
         {
         }
 

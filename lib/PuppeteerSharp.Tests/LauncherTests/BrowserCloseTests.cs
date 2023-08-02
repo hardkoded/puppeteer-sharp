@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
-        public BrowserCloseTests(ITestOutputHelper output) : base(output)
+        public BrowserCloseTests(): base()
         {
         }
 

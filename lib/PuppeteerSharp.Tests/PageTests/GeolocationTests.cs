@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class GeolocationTests : PuppeteerPageBaseTest
     {
-        public GeolocationTests(ITestOutputHelper output) : base(output)
+        public GeolocationTests(): base()
         {
         }
 

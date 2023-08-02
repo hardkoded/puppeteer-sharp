@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageGotoTests : PuppeteerPageBaseTest
     {
-        public PageGotoTests(ITestOutputHelper output) : base(output)
+        public PageGotoTests(): base()
         {
         }
 

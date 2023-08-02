@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class AccesibilityTests : PuppeteerPageBaseTest
     {
-        public AccesibilityTests(ITestOutputHelper output) : base(output)
+        public AccesibilityTests(): base()
         {
         }
 

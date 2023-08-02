@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests
         protected IBrowser Browser { get; set; }
         protected LaunchOptions DefaultOptions { get; set; }
 
-        public PuppeteerBrowserBaseTest(ITestOutputHelper output) : base(output)
+        public PuppeteerBrowserBaseTest(): base()
         {
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);

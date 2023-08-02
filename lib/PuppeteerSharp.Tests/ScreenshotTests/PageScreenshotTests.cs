@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
-        public PageScreenshotTests(ITestOutputHelper output) : base(output)
+        public PageScreenshotTests(): base()
         {
         }
 

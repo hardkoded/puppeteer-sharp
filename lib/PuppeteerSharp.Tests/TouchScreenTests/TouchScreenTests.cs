@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
     {
         private readonly DeviceDescriptor _iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
 
-        public TouchScreenTests(ITestOutputHelper output) : base(output)
+        public TouchScreenTests(): base()
         {
         }
 

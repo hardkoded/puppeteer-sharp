@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class InputDragTests : PuppeteerPageBaseTest
     {
-        public InputDragTests(ITestOutputHelper output) : base(output)
+        public InputDragTests(): base()
         {
         }
 

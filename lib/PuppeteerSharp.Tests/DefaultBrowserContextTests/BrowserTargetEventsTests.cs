@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
-        public BrowserTargetEventsTests(ITestOutputHelper output) : base(output)
+        public BrowserTargetEventsTests(): base()
         {
         }
 

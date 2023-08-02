@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class InjectedTests : PuppeteerPageBaseTest
     {
-        public InjectedTests(ITestOutputHelper output) : base(output)
+        public InjectedTests(): base()
         {
         }
 

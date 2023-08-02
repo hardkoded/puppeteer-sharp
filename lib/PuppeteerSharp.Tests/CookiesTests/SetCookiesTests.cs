@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetCookiesTests : PuppeteerPageBaseTest
     {
-        public SetCookiesTests(ITestOutputHelper output) : base(output)
+        public SetCookiesTests(): base()
         {
         }
 

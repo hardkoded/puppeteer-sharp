@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SelectTests : PuppeteerPageBaseTest
     {
-        public SelectTests(ITestOutputHelper output) : base(output)
+        public SelectTests(): base()
         {
         }
 

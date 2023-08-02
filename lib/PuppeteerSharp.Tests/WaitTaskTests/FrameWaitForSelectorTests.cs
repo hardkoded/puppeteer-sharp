@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
 
-        public FrameWaitForSelectorTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForSelectorTests(): base()
         {
         }
 

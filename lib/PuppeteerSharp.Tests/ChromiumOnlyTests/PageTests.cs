@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageTests : PuppeteerPageBaseTest
     {
-        public PageTests(ITestOutputHelper output) : base(output)
+        public PageTests(): base()
         {
         }
 

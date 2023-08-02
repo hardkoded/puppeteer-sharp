@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWorkerTests : PuppeteerPageBaseTest
     {
-        public PageWorkerTests(ITestOutputHelper output) : base(output)
+        public PageWorkerTests(): base()
         {
         }
 

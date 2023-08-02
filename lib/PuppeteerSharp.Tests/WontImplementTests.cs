@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        public WontImplementTests(ITestOutputHelper output) : base(output)
+        public WontImplementTests(): base()
         {
         }
 

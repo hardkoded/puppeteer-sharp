@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public PageEventsConsoleTests(ITestOutputHelper output) : base(output)
+        public PageEventsConsoleTests(): base()
         {
         }
 

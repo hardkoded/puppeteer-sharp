@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ElementHandleScreenshotTests : PuppeteerPageBaseTest
     {
-        public ElementHandleScreenshotTests(ITestOutputHelper output) : base(output)
+        public ElementHandleScreenshotTests(): base()
         {
         }
 

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.FrameTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ExecutionContextTests : PuppeteerPageBaseTest
     {
-        public ExecutionContextTests(ITestOutputHelper output) : base(output)
+        public ExecutionContextTests(): base()
         {
         }
 

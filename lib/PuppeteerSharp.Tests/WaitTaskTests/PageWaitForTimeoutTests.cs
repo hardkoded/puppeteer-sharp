@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageWaitForTimeoutTests : PuppeteerPageBaseTest
     {
-        public PageWaitForTimeoutTests(ITestOutputHelper output) : base(output)
+        public PageWaitForTimeoutTests(): base()
         {
         }
 

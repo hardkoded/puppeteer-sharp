@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageReloadTests : PuppeteerPageBaseTest
     {
-        public PageReloadTests(ITestOutputHelper output) : base(output)
+        public PageReloadTests(): base()
         {
         }
 

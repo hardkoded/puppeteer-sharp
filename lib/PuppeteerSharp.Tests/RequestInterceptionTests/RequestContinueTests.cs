@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestContinueTests : PuppeteerPageBaseTest
     {
-        public RequestContinueTests(ITestOutputHelper output) : base(output)
+        public RequestContinueTests(): base()
         {
         }
 

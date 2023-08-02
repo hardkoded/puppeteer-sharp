@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseTextTests : PuppeteerPageBaseTest
     {
-        public ResponseTextTests(ITestOutputHelper output) : base(output)
+        public ResponseTextTests(): base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class BoundingBoxTests : PuppeteerPageBaseTest
     {
-        public BoundingBoxTests(ITestOutputHelper output) : base(output)
+        public BoundingBoxTests(): base()
         {
         }
 

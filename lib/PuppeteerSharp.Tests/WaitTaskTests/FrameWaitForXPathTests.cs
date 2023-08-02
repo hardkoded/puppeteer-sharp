@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
         private PollerInterceptor _pollerInterceptor;
 
-        public FrameWaitForXPathTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForXPathTests(): base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
 

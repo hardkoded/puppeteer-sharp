@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PdfTests : PuppeteerPageBaseTest
     {
-        public PdfTests(ITestOutputHelper output) : base(output)
+        public PdfTests(): base()
         {
         }
 

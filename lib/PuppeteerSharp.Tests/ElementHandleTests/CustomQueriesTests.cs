@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class CustomQueriesTests : PuppeteerPageBaseTest
     {
-        public CustomQueriesTests(ITestOutputHelper output) : base(output)
+        public CustomQueriesTests(): base()
         {
         }
 

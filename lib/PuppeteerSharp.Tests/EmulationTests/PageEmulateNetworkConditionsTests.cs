@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEmulateNetworkConditionsTests : PuppeteerPageBaseTest
     {
-        public PageEmulateNetworkConditionsTests(ITestOutputHelper output) : base(output)
+        public PageEmulateNetworkConditionsTests(): base()
         {
         }
 

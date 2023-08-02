@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class IsIntersectingViewportTests : PuppeteerPageBaseTest
     {
-        public IsIntersectingViewportTests(ITestOutputHelper output) : base(output)
+        public IsIntersectingViewportTests(): base()
         {
         }
 

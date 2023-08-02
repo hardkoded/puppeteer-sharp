@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseFromCacheTests : PuppeteerPageBaseTest
     {
-        public ResponseFromCacheTests(ITestOutputHelper output) : base(output)
+        public ResponseFromCacheTests(): base()
         {
         }
 

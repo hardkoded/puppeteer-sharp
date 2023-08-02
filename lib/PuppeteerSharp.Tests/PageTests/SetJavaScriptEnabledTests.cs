@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class SetJavaScriptEnabledTests : PuppeteerPageBaseTest
     {
-        public SetJavaScriptEnabledTests(ITestOutputHelper output) : base(output)
+        public SetJavaScriptEnabledTests(): base()
         {
         }
 

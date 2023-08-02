@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
-        public CreateCDPSessionTests(ITestOutputHelper output) : base(output)
+        public CreateCDPSessionTests(): base()
         {
         }
 

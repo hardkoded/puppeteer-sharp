@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseFromServiceWorkerTests : PuppeteerPageBaseTest
     {
-        public ResponseFromServiceWorkerTests(ITestOutputHelper output) : base(output)
+        public ResponseFromServiceWorkerTests(): base()
         {
         }
 

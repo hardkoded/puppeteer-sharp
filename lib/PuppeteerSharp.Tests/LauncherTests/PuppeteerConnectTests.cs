@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
-        public PuppeteerConnectTests(ITestOutputHelper output) : base(output)
+        public PuppeteerConnectTests(): base()
         {
         }
 

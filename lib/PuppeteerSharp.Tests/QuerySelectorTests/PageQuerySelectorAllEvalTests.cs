@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageQuerySelectorAllEvalTests : PuppeteerPageBaseTest
     {
-        public PageQuerySelectorAllEvalTests(ITestOutputHelper output) : base(output)
+        public PageQuerySelectorAllEvalTests(): base()
         {
         }
 

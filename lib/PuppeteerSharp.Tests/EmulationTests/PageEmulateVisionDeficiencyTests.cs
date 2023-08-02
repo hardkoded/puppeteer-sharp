@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEmulateVisionDeficiencyTests : PuppeteerPageBaseTest
     {
-        public PageEmulateVisionDeficiencyTests(ITestOutputHelper output) : base(output)
+        public PageEmulateVisionDeficiencyTests(): base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class ElementHandleQuerySelectorTests : PuppeteerPageBaseTest
     {
-        public ElementHandleQuerySelectorTests(ITestOutputHelper output) : base(output)
+        public ElementHandleQuerySelectorTests(): base()
         {
         }
 
