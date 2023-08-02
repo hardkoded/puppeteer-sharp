@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
@@ -8,7 +9,7 @@ namespace PuppeteerSharp.Tests.Issues
     {
         public Issue1447(): base() { }
 
-        [PuppeteerTest(Skip = "It's an example")]
+        [Ignore("It's an example")]
         public async Task Example()
         {
             var opts = new LaunchOptions

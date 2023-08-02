@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on a span with an inline element inside")]
-        [PuppeteerTest(Skip = "See https://github.com/GoogleChrome/puppeteer/issues/4281")]
+        [Ignore("See https://github.com/GoogleChrome/puppeteer/issues/4281")]
         public async Task ShouldClickOnASpanWithAnInlineElementInside()
         {
             await Page.SetContentAsync($@"
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         /// This test is called ShouldNotThrowUnhandledPromiseRejectionWhenPageCloses in puppeteer.
         /// </summary>
         [PuppeteerTest("click.spec.ts", "Page.click", "should not throw UnhandledPromiseRejection when page closes")]
-        [PuppeteerTest(Skip = "We don't need this test")]
+        [Ignore("We don't need this test")]
         public async Task ShouldGracefullyFailWhenPageCloses()
         {
             var newPage = await Browser.NewPageAsync();
@@ -326,7 +326,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with fixed position inside an iframe")]
-        [PuppeteerTest(Skip = "see https://github.com/GoogleChrome/puppeteer/issues/4110")]
+        [Ignore("see https://github.com/GoogleChrome/puppeteer/issues/4110")]
         public async Task ShouldClickTheButtonWithFixedPositionInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

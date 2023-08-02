@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Helpers;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
@@ -39,7 +40,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should track navigations within OOP iframes")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldTrackNavigationsWithinOopIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -62,7 +63,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes becoming normal iframes again")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportOopIframesBecomingNormalIframesAgain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
@@ -86,7 +87,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP frames")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportFramesWithinOopframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -107,7 +108,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes getting detached")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportOopIframesGettingDetached()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -129,7 +130,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support wait for navigation for transitions from local to OOPIF")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
@@ -153,7 +154,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should keep track of a frames OOP state")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldKeepTrackOfAFramesOopState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -219,7 +220,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should report oopif frames")]
-        [PuppeteerTest(Skip = "See why this is so brittle")]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldReportOopifFrames()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
