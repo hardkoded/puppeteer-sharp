@@ -1,4 +1,5 @@
 
+using System.Threading;
 using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.Attributes
@@ -12,6 +13,13 @@ namespace PuppeteerSharp.Tests.Attributes
         /// Creates a new <seealso cref="PuppeteerTimeout"/>
         /// </summary>
         public PuppeteerTimeout() : base(System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultTestTimeout)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <seealso cref="PuppeteerTimeout"/>
+        /// </summary>
+        public PuppeteerTimeout(int timeout) : base(timeout)
         {
         }
     }

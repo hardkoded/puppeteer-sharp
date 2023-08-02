@@ -34,7 +34,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
 		<ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
-		<ProjectReference Include="..\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="Assets\**">
