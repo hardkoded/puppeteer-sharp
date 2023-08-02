@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

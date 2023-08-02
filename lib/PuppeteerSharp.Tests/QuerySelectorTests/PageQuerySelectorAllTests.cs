@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests

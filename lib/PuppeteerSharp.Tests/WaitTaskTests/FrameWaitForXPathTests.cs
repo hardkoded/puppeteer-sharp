@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
 

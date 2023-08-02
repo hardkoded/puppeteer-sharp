@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {

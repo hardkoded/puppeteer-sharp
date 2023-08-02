@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Tests.OOPIFTests

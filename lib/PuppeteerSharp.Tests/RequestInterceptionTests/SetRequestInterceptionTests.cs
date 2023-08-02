@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {

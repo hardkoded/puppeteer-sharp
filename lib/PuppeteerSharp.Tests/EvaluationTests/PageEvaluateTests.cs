@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers.Json;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {

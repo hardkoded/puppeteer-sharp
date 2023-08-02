@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {

@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests.JSHandleTests

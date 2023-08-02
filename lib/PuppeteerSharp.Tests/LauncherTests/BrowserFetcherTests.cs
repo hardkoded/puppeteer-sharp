@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Mono.Unix;
 using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.LauncherTests

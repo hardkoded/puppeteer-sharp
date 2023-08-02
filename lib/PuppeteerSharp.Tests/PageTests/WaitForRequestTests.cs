@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests

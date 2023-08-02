@@ -1,7 +1,7 @@
 #pragma warning disable CS0618 // XPathAsync is obsolete but we test the funcionatlity anyway
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {

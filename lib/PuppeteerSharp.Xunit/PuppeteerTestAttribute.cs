@@ -1,6 +1,6 @@
 using System;
 
-namespace PuppeteerSharp.Xunit
+namespace PuppeteerSharp.Nunit
 {
     /// <summary>
     /// Enables decorating test facts with information about the corresponding test in the upstream repository.

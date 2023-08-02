@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using PuppeteerSharp.Transport;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {

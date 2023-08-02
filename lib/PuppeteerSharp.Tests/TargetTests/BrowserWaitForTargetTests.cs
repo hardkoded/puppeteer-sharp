@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
