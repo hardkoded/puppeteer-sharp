@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 element));
 
             var handlerNamesAfterRegistering = ((Browser)Browser).GetCustomQueryHandlerNames();
-            StringAssert.Contains("getById", handlerNamesAfterRegistering);
+            Assert.Contains("getById", handlerNamesAfterRegistering.ToArray());
 
             // Unregister.
             Browser.UnregisterCustomQueryHandler("getById");
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
 
             var handlerNamesAfterUnregistering = ((Browser)Browser).GetCustomQueryHandlerNames();
-            StringAssert.DoesNotContain("getById", handlerNamesAfterUnregistering);
+            Assert.False(handlerNamesAfterUnregistering.Contains("getById"));
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should throw with invalid query names")]
