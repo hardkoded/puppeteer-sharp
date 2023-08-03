@@ -16,7 +16,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             taskQueue.Dispose();
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
         }
 
         [Test]
@@ -36,7 +39,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             await taskQueue.DisposeAsync().ConfigureAwait(false);
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
         }
 
         [Test]
@@ -61,7 +67,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             });
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
 
             taskQueue.Dispose();
         }
@@ -77,7 +86,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             });
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
 
             await taskQueue.DisposeAsync();
         }
