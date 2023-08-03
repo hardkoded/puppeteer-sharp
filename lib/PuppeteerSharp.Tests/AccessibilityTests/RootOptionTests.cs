@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             await Page.SetContentAsync("<button>My Button</button>");
 
             var button = await Page.QuerySelectorAsync("button");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "button",
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             await Page.SetContentAsync("<input title='My Input' value='My Value'>");
 
             var input = await Page.QuerySelectorAsync("input");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "textbox",
@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     }
             };
 
-            Assert.Equal(nodeToCheck, snapshot);
+            Assert.AreEqual(nodeToCheck, snapshot);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "root option", "should return null when the element is no longer in DOM")]
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             {
                 Root = div
             }));
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "generic",

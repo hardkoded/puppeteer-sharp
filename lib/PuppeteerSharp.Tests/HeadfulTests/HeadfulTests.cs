@@ -50,8 +50,8 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
                 await using (var page = await backgroundPageTarget.PageAsync())
                 {
-                    Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-                    Assert.Equal(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
+                    Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
+                    Assert.AreEqual(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
-                Assert.Equal(new[] { "about:blank" }, pages);
+                Assert.AreEqual(new[] { "about:blank" }, pages);
             }
         }
 
@@ -94,7 +94,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+                    Assert.AreEqual("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
                 var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
                 Array.Sort(urls);
-                Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
+                Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
             }
         }
 

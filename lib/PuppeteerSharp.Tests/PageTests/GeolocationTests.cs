@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
                     resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
                 }))");
-            Assert.Equal(new GeolocationOption
+            Assert.AreEqual(new GeolocationOption
             {
                 Latitude = 10,
                 Longitude = 10

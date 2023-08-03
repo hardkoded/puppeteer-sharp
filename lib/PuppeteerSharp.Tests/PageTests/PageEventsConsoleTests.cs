@@ -30,13 +30,13 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
-            Assert.Equal("hello 5 JSHandle@object", message.Text);
-            Assert.Equal(ConsoleType.Log, message.Type);
+            Assert.AreEqual("hello 5 JSHandle@object", message.Text);
+            Assert.AreEqual(ConsoleType.Log, message.Type);
 
-            Assert.Equal("hello", await message.Args[0].JsonValueAsync());
-            Assert.Equal(5, await message.Args[1].JsonValueAsync<float>());
-            Assert.Equal(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
-            Assert.Equal("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
+            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync());
+            Assert.AreEqual(5, await message.Args[1].JsonValueAsync<float>());
+            Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
+            Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work for different console API calls")]
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
               console.log(Promise.resolve('should not wait until resolved!'));
             }");
 
-            Assert.Equal(new[]
+            Assert.AreEqual(new[]
             {
                 ConsoleType.TimeEnd,
                 ConsoleType.Trace,
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             Assert.Contains("calling console.time", messages[0].Text);
 
-            Assert.Equal(new[]
+            Assert.AreEqual(new[]
             {
                 "calling console.trace",
                 "calling console.dir",
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.EvaluateExpressionAsync("console.error(window)")
             );
 
-            Assert.Equal("JSHandle@object", await consoleTcs.Task);
+            Assert.AreEqual("JSHandle@object", await consoleTcs.Task);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should trigger correct Log")]
@@ -122,11 +122,11 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             if (TestConstants.IsChrome)
             {
-                Assert.Equal(ConsoleType.Error, message.Type);
+                Assert.AreEqual(ConsoleType.Error, message.Type);
             }
             else
             {
-                Assert.Equal(ConsoleType.Warning, message.Type);
+                Assert.AreEqual(ConsoleType.Warning, message.Type);
             }
         }
 
@@ -144,8 +144,8 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             var args = await consoleTask.Task;
             Assert.Contains("ERR_NAME", args.Message.Text);
-            Assert.Equal(ConsoleType.Error, args.Message.Type);
-            Assert.Equal(new ConsoleMessageLocation
+            Assert.AreEqual(ConsoleType.Error, args.Message.Type);
+            Assert.AreEqual(new ConsoleMessageLocation
             {
                 URL = "http://wat/",
             }, args.Message.Location);
@@ -164,9 +164,9 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
 
             var args = await consoleTask.Task;
-            Assert.Equal("yellow", args.Message.Text);
-            Assert.Equal(ConsoleType.Log, args.Message.Type);
-            Assert.Equal(new ConsoleMessageLocation
+            Assert.AreEqual("yellow", args.Message.Text);
+            Assert.AreEqual(ConsoleType.Log, args.Message.Type);
+            Assert.AreEqual(new ConsoleMessageLocation
             {
                 URL = TestConstants.ServerUrl + "/consolelog.html",
                 LineNumber = 7,
@@ -214,7 +214,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.EvaluateExpressionAsync("console.debug(null);")
             );
 
-            Assert.Equal("JSHandle:null", await consoleTcs.Task);
+            Assert.AreEqual("JSHandle:null", await consoleTcs.Task);
         }
     }
 }

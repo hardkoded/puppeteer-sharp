@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Single(requests);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.AreEqual(Page.MainFrame, requests[0].Frame);
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
@@ -47,8 +47,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(2, requests.Count);
-            Assert.Equal(Page.FirstChildFrame(), requests[1].Frame);
+            Assert.AreEqual(2, requests.Count);
+            Assert.AreEqual(Page.FirstChildFrame(), requests[1].Frame);
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
@@ -66,8 +66,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateExpressionAsync("fetch('/empty.html')");
-            Assert.Equal(2, requests.Count);
-            Assert.Equal(Page.MainFrame, requests[0].Frame);
+            Assert.AreEqual(2, requests.Count);
+            Assert.AreEqual(Page.MainFrame, requests[0].Frame);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             var response = await Page.GoBackAsync();
             Assert.True(response.Ok);
-            Assert.Equal(TestConstants.EmptyPage, response.Url);
+            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
 
             response = await Page.GoForwardAsync();
             Assert.True(response.Ok);
@@ -39,14 +39,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
             ");
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/second.html", Page.Url);
 
             await Page.GoBackAsync();
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/first.html", Page.Url);
             await Page.GoBackAsync();
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
             await Page.GoForwardAsync();
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/first.html", Page.Url);
         }
     }
 }

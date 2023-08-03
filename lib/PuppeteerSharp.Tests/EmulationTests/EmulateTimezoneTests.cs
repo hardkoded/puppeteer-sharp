@@ -17,22 +17,22 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
             await Page.EvaluateExpressionAsync("globalThis.date = new Date(1479579154987);");
             await Page.EmulateTimezoneAsync("America/Jamaica");
-            Assert.Equal(
+            Assert.AreEqual(
                 "Sat Nov 19 2016 13:12:34 GMT-0500 (Eastern Standard Time)",
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
 
             await Page.EmulateTimezoneAsync("Pacific/Honolulu");
-            Assert.Equal(
+            Assert.AreEqual(
                 "Sat Nov 19 2016 08:12:34 GMT-1000 (Hawaii-Aleutian Standard Time)",
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
 
             await Page.EmulateTimezoneAsync("America/Buenos_Aires");
-            Assert.Equal(
+            Assert.AreEqual(
                 "Sat Nov 19 2016 15:12:34 GMT-0300 (Argentina Standard Time)",
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
 
             await Page.EmulateTimezoneAsync("Europe/Berlin");
-            Assert.Equal(
+            Assert.AreEqual(
                 "Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)",
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
         }

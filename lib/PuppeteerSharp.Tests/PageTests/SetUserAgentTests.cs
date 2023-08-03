@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 userAgentTask,
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
-            Assert.Equal("foobar", userAgentTask.Result);
+            Assert.AreEqual("foobar", userAgentTask.Result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work for subframes")]
@@ -84,11 +84,11 @@ namespace PuppeteerSharp.Tests.PageTests
                 ]);
             }");
 
-            Assert.Equal("Mock1", uaData["architecture"]);
-            Assert.Equal("Mockbook", uaData["model"]);
-            Assert.Equal("MockOS", uaData["platform"]);
-            Assert.Equal("3.1", uaData["platformVersion"]);
-            Assert.Equal("MockBrowser", await requestTask);
+            Assert.AreEqual("Mock1", uaData["architecture"]);
+            Assert.AreEqual("Mockbook", uaData["model"]);
+            Assert.AreEqual("MockOS", uaData["platform"]);
+            Assert.AreEqual("3.1", uaData["platformVersion"]);
+            Assert.AreEqual("MockBrowser", await requestTask);
         }
     }
 }

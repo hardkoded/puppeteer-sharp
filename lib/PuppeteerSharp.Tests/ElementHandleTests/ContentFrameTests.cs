@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var elementHandle = await Page.QuerySelectorAsync("#frame1");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.Equal(Page.FirstChildFrame(), frame);
+            Assert.AreEqual(Page.FirstChildFrame(), frame);
         }
 
         [PuppeteerTimeout]
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
             var elementHandle = await Page.QuerySelectorAsync("iframe");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.Equal(Page.FirstChildFrame(), frame);
+            Assert.AreEqual(Page.FirstChildFrame(), frame);
         }
     }
 }

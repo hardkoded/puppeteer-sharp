@@ -23,16 +23,16 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             await using (var page = await browserWithExtension.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.AreEqual("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
 
                 var newPage = await browserWithExtension.NewPageAsync();
                 await newPage.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal("hidden", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
-                Assert.Equal("visible", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.AreEqual("hidden", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.AreEqual("visible", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
 
                 await page.BringToFrontAsync();
-                Assert.Equal("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
-                Assert.Equal("hidden", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.AreEqual("visible", await page.EvaluateExpressionAsync<string>("document.visibilityState"));
+                Assert.AreEqual("hidden", await newPage.EvaluateExpressionAsync<string>("document.visibilityState"));
 
                 await newPage.CloseAsync();
             }

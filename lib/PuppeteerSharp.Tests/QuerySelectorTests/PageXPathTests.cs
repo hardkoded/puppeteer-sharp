@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<div></div><div></div>");
             var elements = await Page.XPathAsync("/html/body/div");
-            Assert.Equal(2, elements.Length);
+            Assert.AreEqual(2, elements.Length);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                 }",
                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 "() => 4");
-            Assert.Equal(4, result);
+            Assert.AreEqual(4, result);
         }
     }
 }

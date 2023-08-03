@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task BasicIntFunctionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<int>(script);
-            Assert.Equal(expected, result);
+            Assert.AreEqual(expected, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer BigInt")]
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldTransferBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<BigInteger>("a => a", new BigInteger(42));
-            Assert.Equal(new BigInteger(42), result);
+            Assert.AreEqual(new BigInteger(42), result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer NaN")]
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task BasicTransferTest(object transferObject)
         {
             var result = await Page.EvaluateFunctionAsync<object>("a => a", transferObject);
-            Assert.Equal(transferObject, result);
+            Assert.AreEqual(transferObject, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer arrays")]
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldTransferArrays()
         {
             var result = await Page.EvaluateFunctionAsync<int[]>("a => a", new int[] { 1, 2, 3 });
-            Assert.Equal(new int[] { 1, 2, 3 }, result);
+            Assert.AreEqual(new int[] { 1, 2, 3 }, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer arrays as arrays, not objects")]
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldModifyGlobalEnvironment()
         {
             await Page.EvaluateFunctionAsync("() => window.globalVar = 123");
-            Assert.Equal(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
+            Assert.AreEqual(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should evaluate in the page context")]
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldEvaluateInThePageContext()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/global-var.html");
-            Assert.Equal(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
+            Assert.AreEqual(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return undefined for objects with symbols")]
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work with unicode chars")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithUnicodeChars()
-            => Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
+            => Assert.AreEqual(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw when evaluation triggers reload")]
         [Skip(SkipAttribute.Targets.Firefox)]
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.PageTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(42, await frameEvaluation);
+            Assert.AreEqual(42, await frameEvaluation);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work from-inside an exposed function")]
@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var result = await Page.EvaluateFunctionAsync<int>(@"async function() {
                 return await callController(9, 3);
             }");
-            Assert.Equal(27, result);
+            Assert.AreEqual(27, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should reject promise with exception")]
@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 foo = "bar!"
             };
             var result = await Page.EvaluateFunctionAsync("a => a", obj);
-            Assert.Equal("bar!", result.foo.ToString());
+            Assert.AreEqual("bar!", result.foo.ToString());
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return BigInt")]
@@ -181,7 +181,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<object>("() => BigInt(42)");
-            Assert.Equal(new BigInteger(42), result);
+            Assert.AreEqual(new BigInteger(42), result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return NaN")]
@@ -195,7 +195,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task BasicEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<object>(script);
-            Assert.Equal(expected, result);
+            Assert.AreEqual(expected, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept \"undefined\" as one of multiple parameters")]
@@ -252,7 +252,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task BasicIntExressionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateExpressionAsync<int>(script);
-            Assert.Equal(expected, result);
+            Assert.AreEqual(expected, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept element handle as an argument")]
@@ -262,7 +262,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<section>42</section>");
             var element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("e => e.textContent", element);
-            Assert.Equal("42", text);
+            Assert.AreEqual("42", text);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw if underlying element was disposed")]
@@ -325,7 +325,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 window.location = '/empty.html';
                 return [42];
             }");
-            Assert.Equal(new[] { 42 }, result);
+            Assert.AreEqual(new[] { 42 }, result);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer 100Mb of data from page to node.js")]
@@ -333,7 +333,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldTransfer100MbOfDataFromPage()
         {
             var a = await Page.EvaluateFunctionAsync<string>("() => Array(100 * 1024 * 1024 + 1).join('a')");
-            Assert.Equal(100 * 1024 * 1024, a.Length);
+            Assert.AreEqual(100 * 1024 * 1024, a.Length);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw error with detailed information on exception inside promise ")]
@@ -352,18 +352,18 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
-            Assert.Equal("bar", result.Foo);
+            Assert.AreEqual("bar", result.Foo);
 
             result = (await Page.EvaluateFunctionAsync<JToken>("() => { return { Foo: 'bar' }}"))
                 .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
-            Assert.Equal("bar", result.Foo);
+            Assert.AreEqual("bar", result.Foo);
 
             result = await Page.EvaluateExpressionAsync<ComplexObjectTestClass>("var obj = { foo: 'bar' }; obj;");
-            Assert.Equal("bar", result.Foo);
+            Assert.AreEqual("bar", result.Foo);
 
             result = (await Page.EvaluateExpressionAsync<JToken>("var obj = { Foo: 'bar' }; obj;"))
                 .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
-            Assert.Equal("bar", result.Foo);
+            Assert.AreEqual("bar", result.Foo);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should properly serialize null fields")]
@@ -382,7 +382,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<section>42</section>");
             var element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
-            Assert.Equal("42", text);
+            Assert.AreEqual("42", text);
         }
 
         [PuppeteerTimeout]
@@ -394,17 +394,17 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
             Assert.NotNull(objectPopulated);
-            Assert.Equal(1, objectPopulated["a"]);
+            Assert.AreEqual(1, objectPopulated["a"]);
 
             var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
             Assert.IsType<JArray>(arrayPopulated);
-            Assert.Equal(1, ((JArray)arrayPopulated)[0]);
+            Assert.AreEqual(1, ((JArray)arrayPopulated)[0]);
 
-            Assert.Equal("1", await Page.EvaluateExpressionAsync("'1'"));
-            Assert.Equal(1, await Page.EvaluateExpressionAsync("1"));
-            Assert.Equal(11111111, await Page.EvaluateExpressionAsync("11111111"));
-            Assert.Equal(11111111111111, await Page.EvaluateExpressionAsync("11111111111111"));
-            Assert.Equal(1.1, await Page.EvaluateExpressionAsync("1.1"));
+            Assert.AreEqual("1", await Page.EvaluateExpressionAsync("'1'"));
+            Assert.AreEqual(1, await Page.EvaluateExpressionAsync("1"));
+            Assert.AreEqual(11111111, await Page.EvaluateExpressionAsync("11111111"));
+            Assert.AreEqual(11111111111111, await Page.EvaluateExpressionAsync("11111111111111"));
+            Assert.AreEqual(1.1, await Page.EvaluateExpressionAsync("1.1"));
         }
 
         public class ComplexObjectTestClass

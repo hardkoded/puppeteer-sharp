@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync("https://www.github.com");
-                Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.AreEqual(HttpStatusCode.OK, response.Status);
             }
         }
 
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             });
 
             Assert.Contains("Failed to launch", exception.Message);
-            Assert.Equal(options.ExecutablePath, exception.FileName);
+            Assert.AreEqual(options.ExecutablePath, exception.FileName);
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "userDataDir option")]
@@ -140,7 +140,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
+                    Assert.AreEqual("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
                 }
             }
         }
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+                    Assert.AreEqual("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }
@@ -227,7 +227,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.AreEqual(HttpStatusCode.OK, response.Status);
 
                 if (useDisposeAsync)
                 {
@@ -253,7 +253,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.Equal(HttpStatusCode.OK, response.Status);
+                Assert.AreEqual(HttpStatusCode.OK, response.Status);
             }
 
             Assert.True(await launcher.Process.WaitForExitAsync(TimeSpan.FromSeconds(10)));
@@ -270,7 +270,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 {
                     return launcher.LaunchAsync(TestConstants.DefaultBrowserOptions());
                 });
-                Assert.Equal("Unable to create or connect to another process", exception.Message);
+                Assert.AreEqual("Unable to create or connect to another process", exception.Message);
             }
         }
 
@@ -283,7 +283,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             await using (var page = await browser.NewPageAsync())
             {
-                Assert.Equal(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+                Assert.AreEqual(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
             }
         }
 
@@ -310,7 +310,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).Select(page => page.Url);
-                Assert.Equal(new[] { TestConstants.AboutBlank }, pages);
+                Assert.AreEqual(new[] { TestConstants.AboutBlank }, pages);
             }
         }
 
@@ -328,7 +328,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 {
                     await pages[0].WaitForNavigationAsync();
                 }
-                Assert.Equal(TestConstants.EmptyPage, pages[0].Url);
+                Assert.AreEqual(TestConstants.EmptyPage, pages[0].Url);
             }
         }
 
@@ -346,8 +346,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var browser = await Puppeteer.LaunchAsync(options))
             await using (var page = await browser.NewPageAsync())
             {
-                Assert.Equal(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
-                Assert.Equal(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
+                Assert.AreEqual(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
+                Assert.AreEqual(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
             }
         }
 

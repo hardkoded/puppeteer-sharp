@@ -154,7 +154,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should return the success value as a JSHandle")]
         [PuppeteerTimeout]
         public async Task ShouldReturnTheSuccessValueAsAJSHandle()
-            => Assert.Equal(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
+            => Assert.AreEqual(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should return the window as a success value")]
         [PuppeteerTimeout]

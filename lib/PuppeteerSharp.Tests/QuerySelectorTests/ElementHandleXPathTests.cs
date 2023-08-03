@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var second = await html.XPathAsync("./body/div[contains(@class, 'second')]");
             var inner = await second[0].XPathAsync("./div[contains(@class, 'inner')]");
             var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner[0]);
-            Assert.Equal("A", content);
+            Assert.AreEqual("A", content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should return null for non-existing element")]

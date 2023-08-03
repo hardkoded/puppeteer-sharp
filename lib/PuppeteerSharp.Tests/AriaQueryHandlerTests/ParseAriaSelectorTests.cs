@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
                     return button.id;
                 }");
-                Assert.Equal("btn", id);
+                Assert.AreEqual("btn", id);
             }
 
             var button= await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             button = await Page.QuerySelectorAsync("aria/ignored[name=\"Submit  button and some  spaces\"][role=\"button\"]");
             await ExpectFound(button);
             var ex = await Assert.ThrowsAnyAsync<PuppeteerException>(() => Page.QuerySelectorAsync("aria/smth[smth=\"true\"]"));
-            Assert.Equal("Unknown aria attribute \"smth\" in selector", ex.Message);
+            Assert.AreEqual("Unknown aria attribute \"smth\" in selector", ex.Message);
         }
     }
 }

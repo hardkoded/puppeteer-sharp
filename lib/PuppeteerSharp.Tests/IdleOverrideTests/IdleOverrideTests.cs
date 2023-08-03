@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
         private async Task VerifyStateAsync(string expectedState)
         {
             var actualState = await GetIdleStateAsync();
-            Assert.Equal(expectedState, actualState);
+            Assert.AreEqual(expectedState, actualState);
         }
 
         [PuppeteerTest("idle_override.spec.ts", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]

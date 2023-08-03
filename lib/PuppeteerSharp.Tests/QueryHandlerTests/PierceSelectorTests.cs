@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             var text = await div.EvaluateFunctionAsync<string>(@"(element) => {
                 return element.textContent;
             }");
-            Assert.Equal("Hello", text);
+            Assert.AreEqual("Hello", text);
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                         return element.textContent;
                     }");
                 }));
-            Assert.Equal("Hello World", string.Join(" ", text));
+            Assert.AreEqual("Hello World", string.Join(" ", text));
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             var text = await childElement.EvaluateFunctionAsync<string>(@"(element) => {
                 return element.textContent;
             }");
-            Assert.Equal("Hello", text);
+            Assert.AreEqual("Hello", text);
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                         return element.textContent;
                     }");
                 }));
-            Assert.Equal("Hello World", string.Join(" ", text));
+            Assert.AreEqual("Hello World", string.Join(" ", text));
         }
     }
 }

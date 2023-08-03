@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var exception = await exceptionTask;
             Assert.Contains("Protocol error", exception.Message);
-            Assert.Equal("Target.detachedFromTarget", exception.CloseReason);
+            Assert.AreEqual("Target.detachedFromTarget", exception.CloseReason);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
@@ -54,16 +54,16 @@ namespace PuppeteerSharp.Tests.PageTests
             var dialogTask = new TaskCompletionSource<bool>();
             Page.Dialog += async (_, e) =>
             {
-                Assert.Equal(DialogType.BeforeUnload, e.Dialog.DialogType);
-                Assert.Equal(string.Empty, e.Dialog.DefaultValue);
+                Assert.AreEqual(DialogType.BeforeUnload, e.Dialog.DialogType);
+                Assert.AreEqual(string.Empty, e.Dialog.DefaultValue);
 
                 if (TestConstants.IsChrome)
                 {
-                    Assert.Equal(string.Empty, e.Dialog.Message);
+                    Assert.AreEqual(string.Empty, e.Dialog.Message);
                 }
                 else
                 {
-                    Assert.Equal("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", e.Dialog.Message);
+                    Assert.AreEqual("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", e.Dialog.Message);
                 }
 
                 await e.Dialog.Accept();

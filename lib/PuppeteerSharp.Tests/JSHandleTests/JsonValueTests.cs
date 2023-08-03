@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
             var json = await aHandle.JsonValueAsync();
-            Assert.Equal(JObject.Parse("{ foo: 'bar' }"), json);
+            Assert.AreEqual(JObject.Parse("{ foo: 'bar' }"), json);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
             var json = await aHandle.JsonValueAsync<string[]>();
-            Assert.Equal(new[] {"a","b" }, json);
+            Assert.AreEqual(new[] {"a","b" }, json);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
             var json = await aHandle.JsonValueAsync<string>();
-            Assert.Equal("foo", json);
+            Assert.AreEqual("foo", json);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should not work with dates")]
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
             var json = await dateHandle.JsonValueAsync();
-            Assert.Equal(JObject.Parse("{}"), json);
+            Assert.AreEqual(JObject.Parse("{}"), json);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should throw for circular objects")]

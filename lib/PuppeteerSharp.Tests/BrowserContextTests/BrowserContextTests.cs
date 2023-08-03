@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Single(Browser.BrowserContexts());
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.True(context.IsIncognito);
-            Assert.Equal(2, Browser.BrowserContexts().Length);
+            Assert.AreEqual(2, Browser.BrowserContexts().Length);
             Assert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
             Assert.Single(Browser.BrowserContexts());
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             await context.NewPageAsync();
-            Assert.Equal(2, (await Browser.PagesAsync()).Length);
+            Assert.AreEqual(2, (await Browser.PagesAsync()).Length);
             Assert.Single((await context.PagesAsync()));
             await context.CloseAsync();
             Assert.Single((await Browser.PagesAsync()));
@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
-            Assert.Equal(new[] {
+            Assert.AreEqual(new[] {
                 $"CREATED: {TestConstants.AboutBlank}",
                 $"CHANGED: {TestConstants.EmptyPage}",
                 $"DESTROYED: {TestConstants.EmptyPage}"
@@ -122,15 +122,15 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.Single(context1.Targets());
-            Assert.Equal(page1.Target, context1.Targets()[0]);
+            Assert.AreEqual(page1.Target, context1.Targets()[0]);
             Assert.Single(context2.Targets());
-            Assert.Equal(page2.Target, context2.Targets()[0]);
+            Assert.AreEqual(page2.Target, context2.Targets()[0]);
 
             // Make sure pages don't share localstorage or cookies.
-            Assert.Equal("page1", await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
-            Assert.Equal("name=page1", await page1.EvaluateExpressionAsync<string>("document.cookie"));
-            Assert.Equal("page2", await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
-            Assert.Equal("name=page2", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.AreEqual("page1", await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
+            Assert.AreEqual("name=page1", await page1.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.AreEqual("page2", await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
+            Assert.AreEqual("name=page2", await page2.EvaluateExpressionAsync<string>("document.cookie"));
 
             // Cleanup contexts.
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
@@ -143,14 +143,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             Assert.Single(Browser.BrowserContexts());
             var context = await Browser.CreateIncognitoBrowserContextAsync();
-            Assert.Equal(2, Browser.BrowserContexts().Length);
+            Assert.AreEqual(2, Browser.BrowserContexts().Length);
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             });
             var contexts = remoteBrowser.BrowserContexts();
-            Assert.Equal(2, contexts.Length);
+            Assert.AreEqual(2, contexts.Length);
             remoteBrowser.Disconnect();
             await context.CloseAsync();
         }
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.Null(Browser.BrowserContexts()[0].Id);
 
             var context = await Browser.CreateIncognitoBrowserContextAsync();
-            Assert.Equal(2, Browser.BrowserContexts().Length);
+            Assert.AreEqual(2, Browser.BrowserContexts().Length);
             Assert.NotNull(Browser.BrowserContexts()[1].Id);
             await context.CloseAsync();
         }
@@ -178,7 +178,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await page.GoToAsync(TestConstants.EmptyPage);
             var promiseTarget = await targetPromise;
             var targetPage = await promiseTarget.PageAsync();
-            Assert.Equal(targetPage, page);
+            Assert.AreEqual(targetPage, page);
             await context.CloseAsync();
         }
 

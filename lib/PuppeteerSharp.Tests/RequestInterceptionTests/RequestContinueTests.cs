@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 requestTask,
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
-            Assert.Equal("bar", requestTask.Result);
+            Assert.AreEqual("bar", requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should redirect in a way non-observable to page")]
@@ -65,8 +65,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             string consoleMessage = null;
             Page.Console += (_, e) => consoleMessage = e.Message.Text;
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
-            Assert.Equal("yellow", consoleMessage);
+            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
+            Assert.AreEqual("yellow", consoleMessage);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend method")]
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
 
-            Assert.Equal("POST", requestTask.Result);
+            Assert.AreEqual("POST", requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend post data")]
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
             );
 
-            Assert.Equal("doggo", await requestTask.Result);
+            Assert.AreEqual("doggo", await requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend both post data and method on navigation")]
@@ -141,8 +141,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
             var serverRequest = await serverRequestTask;
-            Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
-            Assert.Equal("doggo", serverRequest.Result.Body);
+            Assert.AreEqual(HttpMethod.Post.Method, serverRequest.Result.Method);
+            Assert.AreEqual("doggo", serverRequest.Result.Body);
         }
     }
 }

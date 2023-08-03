@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var serialized = JsonConvert.SerializeObject(pdfOptions);
             var newPdfOptions = JsonConvert.DeserializeObject<PdfOptions>(serialized);
-            Assert.Equal(pdfOptions, newPdfOptions);
+            Assert.AreEqual(pdfOptions, newPdfOptions);
         }
     }
 }

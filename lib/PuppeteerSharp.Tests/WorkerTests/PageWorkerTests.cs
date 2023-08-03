@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = Page.Workers[0];
             Assert.Contains("worker.js", worker.Url);
 
-            Assert.Equal("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
+            Assert.AreEqual("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await workerDestroyedTcs.Task.WithTimeout();
@@ -60,8 +60,8 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
 
             var log = await consoleTcs.Task;
-            Assert.Equal("1", log.Text);
-            Assert.Equal(new ConsoleMessageLocation
+            Assert.AreEqual("1", log.Text);
+            Assert.AreEqual(new ConsoleMessageLocation
             {
                 URL = "",
                 LineNumber = 0,
@@ -80,10 +80,10 @@ namespace PuppeteerSharp.Tests.WorkerTests
             };
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
             var log = await consoleTcs.Task;
-            Assert.Equal("1 2 3 JSHandle@object", log.Text);
-            Assert.Equal(4, log.Args.Count);
+            Assert.AreEqual("1 2 3 JSHandle@object", log.Text);
+            Assert.AreEqual(4, log.Args.Count);
             var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<object>();
-            Assert.Equal("null", json);
+            Assert.AreEqual("null", json);
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
             var worker = await workerCreatedTcs.Task;
-            Assert.Equal(2, await worker.EvaluateExpressionAsync<int>("1+1"));
+            Assert.AreEqual(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]

@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(2, requests.Count);
+            Assert.AreEqual(2, requests.Count);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateExpressionAsync("fetch('/empty.html')");
-            Assert.Equal(2, requests.Count);
+            Assert.AreEqual(2, requests.Count);
         }
     }
 }

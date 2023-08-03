@@ -19,9 +19,9 @@ namespace PuppeteerSharp.Tests.DialogTests
         {
             Page.Dialog += async (_, e) =>
             {
-                Assert.Equal(DialogType.Alert, e.Dialog.DialogType);
-                Assert.Equal(string.Empty, e.Dialog.DefaultValue);
-                Assert.Equal("yo", e.Dialog.Message);
+                Assert.AreEqual(DialogType.Alert, e.Dialog.DialogType);
+                Assert.AreEqual(string.Empty, e.Dialog.DefaultValue);
+                Assert.AreEqual("yo", e.Dialog.Message);
 
                 await e.Dialog.Accept();
             };
@@ -35,15 +35,15 @@ namespace PuppeteerSharp.Tests.DialogTests
         {
             Page.Dialog += async (_, e) =>
             {
-                Assert.Equal(DialogType.Prompt, e.Dialog.DialogType);
-                Assert.Equal("yes.", e.Dialog.DefaultValue);
-                Assert.Equal("question?", e.Dialog.Message);
+                Assert.AreEqual(DialogType.Prompt, e.Dialog.DialogType);
+                Assert.AreEqual("yes.", e.Dialog.DefaultValue);
+                Assert.AreEqual("question?", e.Dialog.Message);
 
                 await e.Dialog.Accept("answer!");
             };
 
             var result = await Page.EvaluateExpressionAsync<string>("prompt('question?', 'yes.')");
-            Assert.Equal("answer!", result);
+            Assert.AreEqual("answer!", result);
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should dismiss the prompt")]

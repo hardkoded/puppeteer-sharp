@@ -13,6 +13,6 @@ namespace PuppeteerSharp.Tests.BrowserTests
         [PuppeteerTest("browser.spec.ts", "Browser.target", "should return browser target")]
         [PuppeteerTimeout]
         public void ShouldReturnBrowserTarget()
-            => Assert.Equal(TargetType.Browser, Browser.Target.Type);
+            => Assert.AreEqual(TargetType.Browser, Browser.Target.Type);
     }
 }

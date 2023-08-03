@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.SetOfflineModeAsync(false);
             var response = await Page.ReloadAsync();
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should emulate navigator.onLine")]

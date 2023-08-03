@@ -20,8 +20,8 @@ namespace PuppeteerSharp.Tests.InputTests
             var filePath = TestConstants.FileToUpload;
             var input = await Page.QuerySelectorAsync("input");
             await input.UploadFileAsync(filePath);
-            Assert.Equal("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
-            Assert.Equal("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
+            Assert.AreEqual("file-to-upload.txt", await Page.EvaluateFunctionAsync<string>("e => e.files[0].name", input));
+            Assert.AreEqual("contents of the file", await Page.EvaluateFunctionAsync<string>(@"e => {
                 const reader = new FileReader();
                 const promise = new Promise(fulfill => reader.onload = fulfill);
                 reader.readAsText(e.files[0]);

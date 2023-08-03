@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             await frameTask.WithTimeout();
-            Assert.Equal(2, Page.MainFrame.ChildFrames.Count);
+            Assert.AreEqual(2, Page.MainFrame.ChildFrames.Count);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should track navigations within OOP iframes")]
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             await nav.WithTimeout();
             Assert.False(frame.IsOopFrame);
-            Assert.Equal(2, Page.Frames.Length);
+            Assert.AreEqual(2, Page.Frames.Length);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP frames")]
@@ -167,7 +167,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frame = await frameTask.WithTimeout();
             Assert.Contains("/empty.html", frame.Url);
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, frame.Url);
+            Assert.AreEqual(TestConstants.EmptyPage, frame.Url);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support evaluating in oop iframes")]
@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frame = await frameTask.WithTimeout();
             await frame.EvaluateFunctionAsync("() => _test = 'Test 123!'");
             var result = await frame.EvaluateFunctionAsync<string>("() => window._test");
-            Assert.Equal("Test 123!", result);
+            Assert.AreEqual("Test 123!", result);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should provide access to elements")]
@@ -226,9 +226,9 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
             var frame = await frameTask.WithTimeout();
-            Assert.Equal(2, Oopifs.Count());
-            Assert.Equal(2, Page.Frames.Count(frame => frame.IsOopFrame));
-            Assert.Equal(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
+            Assert.AreEqual(2, Oopifs.Count());
+            Assert.AreEqual(2, Page.Frames.Count(frame => frame.IsOopFrame));
+            Assert.AreEqual(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should load oopif iframes with subresources and request interception")]
@@ -329,7 +329,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
             Assert.Single(Oopifs);
-            Assert.Equal(2, Page.Frames.Length);
+            Assert.AreEqual(2, Page.Frames.Length);
 
             var browserURL = $"http://127.0.0.1:{_port}";
             var browser1 = await Puppeteer.ConnectAsync(new (){ BrowserURL = browserURL }, TestConstants.LoggerFactory);

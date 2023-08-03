@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "ignoreHTTPSErrors", "should work with mixed content")]
@@ -48,11 +48,11 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             {
                 WaitUntil = new[] { WaitUntilNavigation.Load }
             });
-            Assert.Equal(2, Page.Frames.Length);
+            Assert.AreEqual(2, Page.Frames.Length);
             // Make sure blocked iframe has functional execution context
             // @see https://github.com/GoogleChrome/puppeteer/issues/2709
-            Assert.Equal(3, await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"));
-            Assert.Equal(5, await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"));
+            Assert.AreEqual(3, await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"));
+            Assert.AreEqual(5, await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"));
         }
     }
 }

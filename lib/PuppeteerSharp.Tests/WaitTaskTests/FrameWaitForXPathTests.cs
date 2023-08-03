@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
             var waitForXPath = Page.WaitForXPathAsync("//p[normalize-space(.)=\"hello world\"]");
-            Assert.Equal("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.AreEqual("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should run in specified frame")]
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForXPathPromise;
-            Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(frame2, eHandle.ExecutionContext.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should throw when frame is detached")]
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var waitForXPath = Page.WaitForXPathAsync("//*[@class=\"zombo\"]");
             await Page.SetContentAsync("<div class='zombo'>anything</div>");
-            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select a text node")]
@@ -104,7 +104,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<div>some text</div>");
             var text = await Page.WaitForXPathAsync("//div/text()");
-            Assert.Equal(3 /* Node.TEXT_NODE */, await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>());
+            Assert.AreEqual(3 /* Node.TEXT_NODE */, await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>());
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should allow you to select an element with single slash")]
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<div>some text</div>");
             var waitForXPath = Page.WaitForXPathAsync("/html/body/div");
-            Assert.Equal("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.AreEqual("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should respect timeout")]

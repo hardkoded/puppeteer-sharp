@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }", classHandle);
 
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
-            Assert.Equal(
+            Assert.AreEqual(
                 1,
                 await Page.EvaluateFunctionAsync(@"objects => {
                     return objects.length;
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await prototypeHandle.DisposeAsync();
             var exception = await Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
-            Assert.Equal("Prototype JSHandle is disposed!", exception.Message);
+            Assert.AreEqual("Prototype JSHandle is disposed!", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail primitive values as prototypes")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("42");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
-            Assert.Equal("Prototype JSHandle must not be referencing primitive value", exception.Message);
+            Assert.AreEqual("Prototype JSHandle must not be referencing primitive value", exception.Message);
         }
     }
 }

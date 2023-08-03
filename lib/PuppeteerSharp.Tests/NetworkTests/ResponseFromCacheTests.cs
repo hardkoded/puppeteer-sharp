@@ -30,10 +30,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.AreEqual(2, responses.Count);
+            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
             Assert.False(responses["one-style.html"].FromCache);
-            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
             Assert.True(responses["one-style.css"].FromCache);
         }
     }

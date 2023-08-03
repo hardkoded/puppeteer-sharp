@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(13)");
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.Equal(new BoundingBox(100, 50, 50, 50), box);
+            Assert.AreEqual(new BoundingBox(100, 50, 50, 50), box);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should handle nested frames")]
@@ -43,11 +43,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Equal(new BoundingBox(28, 182, 264, 18), box);
+                Assert.AreEqual(new BoundingBox(28, 182, 264, 18), box);
             }
             else
             {
-                Assert.Equal(new BoundingBox(28, 182, 254, 18), box);
+                Assert.AreEqual(new BoundingBox(28, 182, 254, 18), box);
             }
         }
 
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elementHandle = await Page.QuerySelectorAsync("div");
             await Page.EvaluateFunctionAsync("element => element.style.height = '200px'", elementHandle);
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.Equal(new BoundingBox(8, 8, 100, 200), box);
+            Assert.AreEqual(new BoundingBox(8, 8, 100, 200), box);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work with SVG nodes")]
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 const rect = e.getBoundingClientRect();
                 return { x: rect.x, y: rect.y, width: rect.width, height: rect.height};
             }", element);
-            Assert.Equal(webBoundingBox, pptrBoundingBox);
+            Assert.AreEqual(webBoundingBox, pptrBoundingBox);
         }
     }
 }

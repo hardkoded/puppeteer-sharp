@@ -34,18 +34,18 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Assert.NotNull(e.Request.Headers);
                 Assert.NotNull(e.Request.Headers["user-agent"]);
                 Assert.NotNull(e.Request.Headers["accept"]);
-                Assert.Equal(HttpMethod.Get, e.Request.Method);
+                Assert.AreEqual(HttpMethod.Get, e.Request.Method);
                 Assert.Null(e.Request.PostData);
                 Assert.True(e.Request.IsNavigationRequest);
-                Assert.Equal(ResourceType.Document, e.Request.ResourceType);
-                Assert.Equal(Page.MainFrame, e.Request.Frame);
-                Assert.Equal(TestConstants.AboutBlank, e.Request.Frame.Url);
+                Assert.AreEqual(ResourceType.Document, e.Request.ResourceType);
+                Assert.AreEqual(Page.MainFrame, e.Request.Frame);
+                Assert.AreEqual(TestConstants.AboutBlank, e.Request.Frame.Url);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(response.Ok);
 
-            Assert.Equal(TestConstants.Port, response.RemoteAddress.Port);
+            Assert.AreEqual(TestConstants.Port, response.RemoteAddress.Port);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when POST is redirected with 302")]
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
             var response = await Page.ReloadAsync();
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should stop intercepting")]
@@ -180,7 +180,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                Assert.Equal("bar", e.Request.Headers["foo"]);
+                Assert.AreEqual("bar", e.Request.Headers["foo"]);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -203,7 +203,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 request.send(null);
                 return request.status;
             }");
-            Assert.Equal(200, status);
+            Assert.AreEqual(200, status);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with custom referer headers")]
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                Assert.Equal(TestConstants.EmptyPage, e.Request.Headers["referer"]);
+                Assert.AreEqual(TestConstants.EmptyPage, e.Request.Headers["referer"]);
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -245,7 +245,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             Assert.True(response.Ok);
             Assert.Null(response.Request.Failure);
-            Assert.Equal(1, failedRequests);
+            Assert.AreEqual(1, failedRequests);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable with custom error codes")]
@@ -265,7 +265,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             Assert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
             Assert.NotNull(failedRequest);
-            Assert.Equal("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
+            Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should send referer")]
@@ -283,7 +283,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 requestTask,
                 Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
             );
-            Assert.Equal("http://google.com/", requestTask.Result);
+            Assert.AreEqual("http://google.com/", requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should fail navigation when aborting main resource")]
@@ -322,14 +322,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Server.SetRedirect("/non-existing-page-3.html", "/non-existing-page-4.html");
             Server.SetRedirect("/non-existing-page-4.html", "/empty.html");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/non-existing-page.html");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.Contains("empty.html", response.Url);
-            Assert.Equal(5, requests.Count);
-            Assert.Equal(ResourceType.Document, requests[2].ResourceType);
+            Assert.AreEqual(5, requests.Count);
+            Assert.AreEqual(ResourceType.Document, requests[2].ResourceType);
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;
-            Assert.Equal(4, redirectChain.Length);
+            Assert.AreEqual(4, redirectChain.Length);
             Assert.Contains("/non-existing-page.html", redirectChain[0].Url);
             Assert.Contains("/non-existing-page-3.html", redirectChain[2].Url);
 
@@ -337,7 +337,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             {
                 var request = redirectChain[i];
                 Assert.True(request.IsNavigationRequest);
-                Assert.Equal(request, request.RedirectChain.ElementAt(i));
+                Assert.AreEqual(request, request.RedirectChain.ElementAt(i));
             }
         }
 
@@ -366,15 +366,15 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             });
 
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.Contains("one-style.html", response.Url);
-            Assert.Equal(5, requests.Count);
-            Assert.Equal(ResourceType.Document, requests[0].ResourceType);
-            Assert.Equal(ResourceType.StyleSheet, requests[1].ResourceType);
+            Assert.AreEqual(5, requests.Count);
+            Assert.AreEqual(ResourceType.Document, requests[0].ResourceType);
+            Assert.AreEqual(ResourceType.StyleSheet, requests[1].ResourceType);
 
             // Check redirect chain
             var redirectChain = requests[1].RedirectChain;
-            Assert.Equal(3, redirectChain.Length);
+            Assert.AreEqual(3, redirectChain.Length);
             Assert.Contains("one-style.css", redirectChain[0].Url);
             Assert.Contains("three-style.css", redirectChain[2].Url);
         }
@@ -454,7 +454,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
             ])");
-            Assert.Equal(new[] { "11", "FAILED", "22" }, results);
+            Assert.AreEqual(new[] { "11", "FAILED", "22" }, results);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to dataURL and fire dataURL requests")]
@@ -470,9 +470,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
             var dataURL = "data:text/html,<div>yo</div>";
             var response = await Page.GoToAsync(dataURL);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.Single(requests);
-            Assert.Equal(dataURL, requests[0].Url);
+            Assert.AreEqual(dataURL, requests[0].Url);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to fetch dataURL and fire dataURL requests")]
@@ -490,9 +490,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var dataURL = "data:text/html,<div>yo</div>";
             var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
 
-            Assert.Equal("<div>yo</div>", text);
+            Assert.AreEqual("<div>yo</div>", text);
             Assert.Single(requests);
-            Assert.Equal(dataURL, requests[0].Url);
+            Assert.AreEqual(dataURL, requests[0].Url);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to URL with hash and fire requests without hash")]
@@ -507,10 +507,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal(TestConstants.EmptyPage, response.Url);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
             Assert.Single(requests);
-            Assert.Equal(TestConstants.EmptyPage, requests[0].Url);
+            Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server")]
@@ -522,7 +522,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
-            Assert.Equal(HttpStatusCode.NotFound, response.Status);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with badly encoded server")]
@@ -533,7 +533,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Server.SetRoute("/malformed?rnd=%911", _ => Task.CompletedTask);
             Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server - 2")]
@@ -550,9 +550,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 await e.Request.ContinueAsync();
             };
             var response = await Page.GoToAsync($"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal(2, requests.Count);
-            Assert.Equal(HttpStatusCode.NotFound, requests[1].Response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(2, requests.Count);
+            Assert.AreEqual(HttpStatusCode.NotFound, requests[1].Response.Status);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not throw \"Invalid Interception Id\" if the request was cancelled")]
@@ -611,7 +611,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "one-style.html")).AbsoluteUri;
             await Page.GoToAsync(uri);
-            Assert.Equal(2, urls.Count);
+            Assert.AreEqual(2, urls.Count);
             Assert.Contains("one-style.html", urls);
             Assert.Contains("one-style.css", urls);
         }

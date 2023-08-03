@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<div>hello</div>");
             var result = await Page.GetContentAsync();
 
-            Assert.Equal(ExpectedOutput, result);
+            Assert.AreEqual(ExpectedOutput, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with doctype")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync($"{doctype}<div>hello</div>");
             var result = await Page.GetContentAsync();
 
-            Assert.Equal($"{doctype}{ExpectedOutput}", result);
+            Assert.AreEqual($"{doctype}{ExpectedOutput}", result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with HTML 4 doctype")]
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync($"{doctype}<div>hello</div>");
             var result = await Page.GetContentAsync();
 
-            Assert.Equal($"{doctype}{ExpectedOutput}", result);
+            Assert.AreEqual($"{doctype}{ExpectedOutput}", result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should respect timeout")]
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithTrickyContent()
         {
             await Page.SetContentAsync("<div>hello world</div>\x7F");
-            Assert.Equal("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+            Assert.AreEqual("hello world", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with accents")]
@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithAccents()
         {
             await Page.SetContentAsync("<div>aberración</div>");
-            Assert.Equal("aberración", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+            Assert.AreEqual("aberración", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with emojis")]
@@ -139,7 +139,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithEmojis()
         {
             await Page.SetContentAsync("<div>🐥</div>");
-            Assert.Equal("🐥", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+            Assert.AreEqual("🐥", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should work with newline")]
@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithNewline()
         {
             await Page.SetContentAsync("<div>\n</div>");
-            Assert.Equal("\n", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
+            Assert.AreEqual("\n", await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"));
         }
     }
 }

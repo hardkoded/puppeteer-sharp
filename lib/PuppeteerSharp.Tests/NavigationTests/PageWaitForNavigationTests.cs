@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
             );
             var response = await waitForNavigationResult;
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.Contains("grid.html", response.Url);
         }
 
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.EmptyPage + "#foobar", Page.Url);
+            Assert.AreEqual(TestConstants.EmptyPage + "#foobar", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.pushState()")]
@@ -94,7 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/wow.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/wow.html", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.replaceState()")]
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.ClickAsync("a")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/replaced.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/replaced.html", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
@@ -132,21 +132,21 @@ namespace PuppeteerSharp.Tests.PageTests
                 history.pushState({}, '', '/second.html');
               </script>
             ");
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/second.html", Page.Url);
             var navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
                 Page.ClickAsync("a#back")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/first.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/first.html", Page.Url);
             navigationTask = Page.WaitForNavigationAsync();
             await Task.WhenAll(
                 navigationTask,
                 Page.ClickAsync("a#forward")
             );
             Assert.Null(await navigationTask);
-            Assert.Equal(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/second.html", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work when subframe issues window.stop()")]

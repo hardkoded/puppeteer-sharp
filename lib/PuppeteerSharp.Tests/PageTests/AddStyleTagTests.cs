@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<ArgumentException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions()));
-            Assert.Equal("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
+            Assert.AreEqual("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with a url")]
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Url = "/injectedstyle.css" });
             Assert.NotNull(styleHandle);
-            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
+            Assert.AreEqual("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "Assets/injectedstyle.css" });
             Assert.NotNull(styleHandle);
-            Assert.Equal("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
+            Assert.AreEqual("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Content = "body { background-color: green; }" });
             Assert.NotNull(styleHandle);
-            Assert.Equal("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync<string>(
+            Assert.AreEqual("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync<string>(
                 "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
         }
 

@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
             var idAttribute = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id");
-            Assert.Equal("testAttribute", idAttribute);
+            Assert.AreEqual("testAttribute", idAttribute);
         }
 
         [PuppeteerTimeout]
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
             var section = await Page.QuerySelectorAsync("section");
             var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id");
-            Assert.Equal("testAttribute", idAttribute);
+            Assert.AreEqual("testAttribute", idAttribute);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept arguments")]
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section>hello</section>");
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
-            Assert.Equal("hello world!", text);
+            Assert.AreEqual("hello world!", text);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept ElementHandles as arguments")]
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section>hello</section><div> world</div>");
             var divHandle = await Page.QuerySelectorAsync("div");
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
-            Assert.Equal("hello world", text);
+            Assert.AreEqual("hello world", text);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should throw error if no element is found")]

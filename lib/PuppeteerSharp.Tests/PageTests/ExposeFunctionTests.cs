@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
-            Assert.Equal(36, result);
+            Assert.AreEqual(36, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should throw exception in page context")]
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     return { message: e.message, stack: e.stack};
                 }
             }");
-            Assert.Equal("WOOF WOOF", result.SelectToken("message").ToObject<string>());
+            Assert.AreEqual("WOOF WOOF", result.SelectToken("message").ToObject<string>());
             Assert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             await Page.GoToAsync(TestConstants.EmptyPage);
             var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
-            Assert.Equal(36, result);
+            Assert.AreEqual(36, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should await returned promise")]
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
             var result = await Page.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
-            Assert.Equal(15, result);
+            Assert.AreEqual(15, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work on frames")]
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             var frame = Page.FirstChildFrame();
             var result = await frame.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
-            Assert.Equal(15, result);
+            Assert.AreEqual(15, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work on frames before navigation")]
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var frame = Page.FirstChildFrame();
             var result = await frame.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
-            Assert.Equal(15, result);
+            Assert.AreEqual(15, result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with complex objects")]
@@ -101,7 +101,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.ExposeFunctionAsync("complexObject", (dynamic a, dynamic b) => Task.FromResult(new { X = a.x + b.x }));
 
             var result = await Page.EvaluateFunctionAsync<JToken>("async () => complexObject({x: 5}, {x: 2})");
-            Assert.Equal(7, result.SelectToken("x").ToObject<int>());
+            Assert.AreEqual(7, result.SelectToken("x").ToObject<int>());
         }
 
         [Skip(SkipAttribute.Targets.Firefox)]

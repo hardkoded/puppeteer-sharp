@@ -22,12 +22,12 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 
             var browser1 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL });
             var page1 = await browser1.NewPageAsync();
-            Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.AreEqual(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
             browser1.Disconnect();
 
             var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL + "/" });
             var page2 = await browser2.NewPageAsync();
-            Assert.Equal(56, await page2.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.AreEqual(56, await page2.EvaluateExpressionAsync<int>("7 * 8"));
             browser2.Disconnect();
             await originalBrowser.CloseAsync();
         }

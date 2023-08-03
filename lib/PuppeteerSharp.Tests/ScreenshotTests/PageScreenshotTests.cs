@@ -343,10 +343,10 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [PuppeteerTimeout]
         public void ShouldInferScreenshotTypeFromName()
         {
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
-            Assert.Equal(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
+            Assert.AreEqual(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
 

@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass CSP header")]
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass after cross-process navigation")]
@@ -65,14 +65,14 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
 
             await Page.GoToAsync(TestConstants.CrossProcessUrl + "/csp.html");
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.Equal(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setBypassCSP", "should bypass CSP in iframes as well")]
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Equal(42, await frame.EvaluateFunctionAsync<int?>("() => window.__injected"));
+            Assert.AreEqual(42, await frame.EvaluateFunctionAsync<int?>("() => window.__injected"));
         }
     }
 }

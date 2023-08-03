@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
             remoteBrowser2.Disconnect();
             await remoteBrowser2Disconnected;
 
-            Assert.Equal(0, disconnectedOriginal);
-            Assert.Equal(0, disconnectedRemote1);
-            Assert.Equal(1, disconnectedRemote2);
+            Assert.AreEqual(0, disconnectedOriginal);
+            Assert.AreEqual(0, disconnectedRemote1);
+            Assert.AreEqual(1, disconnectedRemote2);
 
             var remoteBrowser1Disconnected = WaitForBrowserDisconnect(remoteBrowser1);
             var originalBrowserDisconnected = WaitForBrowserDisconnect(originalBrowser);
@@ -43,9 +43,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 originalBrowserDisconnected
             );
 
-            Assert.Equal(1, disconnectedOriginal);
-            Assert.Equal(1, disconnectedRemote1);
-            Assert.Equal(1, disconnectedRemote2);
+            Assert.AreEqual(1, disconnectedOriginal);
+            Assert.AreEqual(1, disconnectedRemote1);
+            Assert.AreEqual(1, disconnectedRemote2);
         }
     }
 }

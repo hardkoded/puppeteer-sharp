@@ -15,13 +15,13 @@ namespace PuppeteerSharp.Tests.EmulationTests
         [PuppeteerTimeout]
         public async Task ShouldGetTheProperViewPortSize()
         {
-            Assert.Equal(800, Page.Viewport.Width);
-            Assert.Equal(600, Page.Viewport.Height);
+            Assert.AreEqual(800, Page.Viewport.Width);
+            Assert.AreEqual(600, Page.Viewport.Height);
 
             await Page.SetViewportAsync(new ViewPortOptions { Width = 123, Height = 456 });
 
-            Assert.Equal(123, Page.Viewport.Width);
-            Assert.Equal(456, Page.Viewport.Height);
+            Assert.AreEqual(123, Page.Viewport.Width);
+            Assert.AreEqual(456, Page.Viewport.Height);
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support mobile emulation")]
@@ -29,12 +29,12 @@ namespace PuppeteerSharp.Tests.EmulationTests
         public async Task ShouldSupportMobileEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
-            Assert.Equal(800, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
+            Assert.AreEqual(800, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
 
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
-            Assert.Equal(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
+            Assert.AreEqual(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
             await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 300 });
-            Assert.Equal(400, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
+            Assert.AreEqual(400, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support touch emulation")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
 
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             Assert.True(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
-            Assert.Equal("Received touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
+            Assert.AreEqual("Received touch", await Page.EvaluateFunctionAsync<string>(dispatchTouch));
 
             await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.False(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"));
@@ -71,10 +71,10 @@ namespace PuppeteerSharp.Tests.EmulationTests
         public async Task ShouldBeDetectableByModernizr()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
-            Assert.Equal("NO", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
+            Assert.AreEqual("NO", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
-            Assert.Equal("YES", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
+            Assert.AreEqual("YES", await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should detect touch when applying viewport with touches")]
@@ -100,11 +100,11 @@ namespace PuppeteerSharp.Tests.EmulationTests
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
-            Assert.Equal("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
+            Assert.AreEqual("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
             await Page.SetViewportAsync(TestConstants.IPhone6Landscape.ViewPort);
-            Assert.Equal("landscape-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
+            Assert.AreEqual("landscape-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
             await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
-            Assert.Equal("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
+            Assert.AreEqual("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
         }
     }
 }

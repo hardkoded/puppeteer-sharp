@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var properties = await aHandle.GetPropertiesAsync();
             properties.TryGetValue("foo", out var foo);
             Assert.NotNull(foo);
-            Assert.Equal("bar", await foo.JsonValueAsync<string>());
+            Assert.AreEqual("bar", await foo.JsonValueAsync<string>());
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
@@ -42,8 +42,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
               return new B();
             }");
             var properties = await aHandle.GetPropertiesAsync();
-            Assert.Equal("1", await properties["a"].JsonValueAsync<string>());
-            Assert.Equal("2", await properties["b"].JsonValueAsync<string>());
+            Assert.AreEqual("1", await properties["a"].JsonValueAsync<string>());
+            Assert.AreEqual("2", await properties["b"].JsonValueAsync<string>());
         }
     }
 }

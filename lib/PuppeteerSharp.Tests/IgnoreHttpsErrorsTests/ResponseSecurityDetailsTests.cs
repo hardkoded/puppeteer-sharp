@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             // We don't need to test that here.
 
             var response = await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.NotNull(response.SecurityDetails);
             Assert.Contains("TLS", response.SecurityDetails.Protocol);
         }
@@ -59,9 +59,9 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 
             var response = responseTask.Result;
 
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.Found, responses[0].Status);
-            Assert.Equal(
+            Assert.AreEqual(2, responses.Count);
+            Assert.AreEqual(HttpStatusCode.Found, responses[0].Status);
+            Assert.AreEqual(
                 TestUtils.CurateProtocol(requestTask.Result.ToString()),
                 TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }

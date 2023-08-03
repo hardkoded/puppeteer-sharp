@@ -32,10 +32,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
+            Assert.AreEqual(2, responses.Count);
+            Assert.AreEqual(HttpStatusCode.OK, responses["sw.html"].Status);
             Assert.True(responses["sw.html"].FromServiceWorker);
-            Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["style.css"].Status);
             Assert.True(responses["style.css"].FromServiceWorker);
         }
     }

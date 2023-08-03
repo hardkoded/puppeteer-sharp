@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.InputTests
             fileChooser.Cancel();
 
             var ex = Assert.Throws<PuppeteerException>(() => fileChooser.Cancel());
-            Assert.Equal("Cannot accept FileChooser which is already handled!", ex.Message);
+            Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }
 }

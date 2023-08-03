@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click svg")]
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                 </svg>
             ");
             await Page.ClickAsync("circle");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
+            Assert.AreEqual(42, await Page.EvaluateFunctionAsync<int>("() => window.__CLICKED"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button if window.Node is removed")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             await Page.EvaluateExpressionAsync("delete window.Node");
             await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on a span with an inline element inside")]
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                 <span onclick='javascript:window.CLICKED=42'></span>
             ");
             await Page.ClickAsync("span");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+            Assert.AreEqual(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.ClickAsync("button");
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click with disabled javascript")]
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                 Page.ClickAsync("a"),
                 Page.WaitForNavigationAsync()
             );
-            Assert.Equal(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click when one of inline box children is outside of viewport")]
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             ");
 
             await Page.ClickAsync("span");
-            Assert.Equal(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
+            Assert.AreEqual(42, await Page.EvaluateFunctionAsync<int>("() => window.CLICKED"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should select the text by triple clicking")]
@@ -128,7 +128,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.ClickAsync("textarea");
             await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
             await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
-            Assert.Equal(text, await Page.EvaluateFunctionAsync<string>(@"() => {
+            Assert.AreEqual(text, await Page.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(
                     textarea.selectionStart,
@@ -155,7 +155,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             // It seems that the console event is coming a little bit late
             await Task.Delay(500);
 
-            Assert.Equal(new List<string>
+            Assert.AreEqual(new List<string>
             {
                 "button #0 clicked",
                 "button #1 clicked",
@@ -188,7 +188,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
             await Page.ClickAsync("input#agree");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
-            Assert.Equal(new[] {
+            Assert.AreEqual(new[] {
                 "mouseover",
                 "mouseenter",
                 "mousemove",
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.Null(await Page.EvaluateExpressionAsync("result.check"));
             await Page.ClickAsync("label[for=\"agree\"]");
             Assert.True(await Page.EvaluateExpressionAsync<bool>("result.check"));
-            Assert.Equal(new[] {
+            Assert.AreEqual(new[] {
                 "click",
                 "input",
                 "change"
@@ -226,8 +226,8 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var exception = await Assert.ThrowsAsync<SelectorException>(()
                 => Page.ClickAsync("button.does-not-exist"));
-            Assert.Equal("No node found for selector: button.does-not-exist", exception.Message);
-            Assert.Equal("button.does-not-exist", exception.Selector);
+            Assert.AreEqual("No node found for selector: button.does-not-exist", exception.Message);
+            Assert.AreEqual("button.does-not-exist", exception.Selector);
         }
 
         // https://github.com/GoogleChrome/puppeteer/issues/161
@@ -247,9 +247,9 @@ namespace PuppeteerSharp.Tests.ClickTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.ClickAsync("#button-5");
-            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-5\").textContent"));
+            Assert.AreEqual("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-5\").textContent"));
             await Page.ClickAsync("#button-80");
-            Assert.Equal("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
+            Assert.AreEqual("clicked", await Page.EvaluateExpressionAsync<string>("document.querySelector(\"#button-80\").textContent"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should double click the button")]
@@ -267,7 +267,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             var button = await Page.QuerySelectorAsync("button");
             await button.ClickAsync(new ClickOptions { ClickCount = 2 });
             Assert.True(await Page.EvaluateExpressionAsync<bool>("double"));
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a partially obscured button")]
@@ -282,7 +282,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                 button.style.left = '368px';
             }");
             await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click a rotated button")]
@@ -291,7 +291,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/rotatedButton.html");
             await Page.ClickAsync("button");
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should fire contextmenu event on right click")]
@@ -300,7 +300,7 @@ namespace PuppeteerSharp.Tests.ClickTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
-            Assert.Equal("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+            Assert.AreEqual("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
@@ -323,7 +323,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             var frame = Page.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
-            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
+            Assert.AreEqual("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with fixed position inside an iframe")]
@@ -341,7 +341,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             var frame = Page.FirstChildFrame();
             await frame.QuerySelectorAsync("button").EvaluateFunctionAsync("button => button.style.setProperty('position', 'fixed')");
             await frame.ClickAsync("button");
-            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
+            Assert.AreEqual("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with deviceScaleFactor set")]
@@ -349,13 +349,13 @@ namespace PuppeteerSharp.Tests.ClickTests
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });
-            Assert.Equal(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
+            Assert.AreEqual(5, await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"));
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
             var frame = Page.FirstChildFrame();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
-            Assert.Equal("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
+            Assert.AreEqual("Clicked", await frame.EvaluateExpressionAsync<string>("window.result"));
         }
     }
 }

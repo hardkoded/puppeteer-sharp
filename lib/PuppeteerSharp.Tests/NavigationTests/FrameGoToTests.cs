@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")));
             var childFrame = Page.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.Same(response.Frame, childFrame);
         }
 
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 matchingData[i].ServerResponseTcs.TrySetResult(serverResponseTexts[i]);
                 var response = await matchingData[i].NavigationTask;
                 Assert.Same(matchingData[i].FrameTask.Result, response.Frame);
-                Assert.Equal(serverResponseTexts[i], await response.TextAsync());
+                Assert.AreEqual(serverResponseTexts[i], await response.TextAsync());
             }
         }
 

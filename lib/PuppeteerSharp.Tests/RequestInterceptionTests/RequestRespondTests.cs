@@ -32,9 +32,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Created, response.Status);
-            Assert.Equal("bar", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.Created, response.Status);
+            Assert.AreEqual("bar", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.UpgradeRequired, response.Status);
-            Assert.Equal("Upgrade Required", response.StatusText);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.UpgradeRequired, response.Status);
+            Assert.AreEqual("Upgrade Required", response.StatusText);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should redirect")]
@@ -89,8 +89,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
 
             Assert.Single(response.Request.RedirectChain);
-            Assert.Equal(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
-            Assert.Equal(TestConstants.EmptyPage, response.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
+            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should allow mocking binary responses")]
@@ -138,9 +138,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal("True", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual("True", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         [Skip(SkipAttribute.Targets.Firefox)]
@@ -164,13 +164,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
 
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal("True\nFalse", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
-            Assert.Equal("specialId", cookies[0].Name);
-            Assert.Equal("123456", cookies[0].Value);
-            Assert.Equal("sessionId", cookies[1].Name);
-            Assert.Equal("abcdef", cookies[1].Value);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual("True\nFalse", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual("specialId", cookies[0].Name);
+            Assert.AreEqual("123456", cookies[0].Value);
+            Assert.AreEqual("sessionId", cookies[1].Name);
+            Assert.AreEqual("abcdef", cookies[1].Value);
         }
     }
 }

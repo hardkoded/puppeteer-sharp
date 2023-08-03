@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.EvaluateFunctionAsync(addElement, "button");
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
             var result = await Page.EvaluateExpressionAsync<int>("globalThis.ariaQuerySelector(2,8)");
-            Assert.Equal(10, result);
+            Assert.AreEqual(10, result);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work with removed MutationObserver")]
@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 handleTask,
                 Page.SetContentAsync("<h1>anything</h1>"));
             Assert.NotNull(handleTask.Result);
-            Assert.Equal("anything", await Page.EvaluateFunctionAsync("x => x.textContent", handleTask.Result));
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync("x => x.textContent", handleTask.Result));
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should resolve promise when node is added")]
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var tagName = await (
               await elementHandle.GetPropertyAsync("tagName")
             ).JsonValueAsync();
-            Assert.Equal("H1", tagName);
+            Assert.AreEqual("H1", tagName);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work when node is added through innerHTML")]

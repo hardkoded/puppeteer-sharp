@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.SetJavaScriptEnabledAsync(true);
             await Page.GoToAsync("data:text/html, <script>var something = 'forbidden'</script>");
-            Assert.Equal("forbidden", await Page.EvaluateExpressionAsync<string>("something"));
+            Assert.AreEqual("forbidden", await Page.EvaluateExpressionAsync<string>("something"));
         }
     }
 }

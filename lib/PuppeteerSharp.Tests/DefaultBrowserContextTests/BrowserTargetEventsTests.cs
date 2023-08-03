@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
-            Assert.Equal(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
+            Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
         }
     }
 }

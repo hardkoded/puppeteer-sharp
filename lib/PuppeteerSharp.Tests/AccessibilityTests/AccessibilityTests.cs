@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             };
             await Page.FocusAsync("[placeholder='Empty input']");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal(nodeToCheck, snapshot);
+            Assert.AreEqual(nodeToCheck, snapshot);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "should report uninteresting nodes")]
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "textbox",
@@ -169,7 +169,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
             await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("vertical", snapshot.Children[0].Orientation);
+            Assert.AreEqual("vertical", snapshot.Children[0].Orientation);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "autocomplete")]
@@ -178,7 +178,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
             await Page.SetContentAsync("<input type='number' aria-autocomplete='list' />");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("list", snapshot.Children[0].AutoComplete);
+            Assert.AreEqual("list", snapshot.Children[0].AutoComplete);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "multiselectable")]
@@ -196,7 +196,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("foo", snapshot.Children[0].KeyShortcuts);
+            Assert.AreEqual("foo", snapshot.Children[0].KeyShortcuts);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "should not report text nodes inside controls")]
@@ -208,7 +208,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 <div role='tab' aria-selected='true'><b>Tab1</b></div>
                 <div role='tab'>Tab2</div>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "RootWebArea",
@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             <div contenteditable='true'>
                 Edit this image: <img src='fakeimage.png' alt='my fake image'>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "generic",
@@ -270,7 +270,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             <div contenteditable='true' role='textbox'>
                 Edit this image: <img src='fakeimage.png' alt='my fake image'>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "textbox",
@@ -294,7 +294,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
         public async Task PlainTextFieldWithRoleShouldNotHaveChildren()
         {
             await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "textbox",
@@ -312,8 +312,8 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
             await Page.SetContentAsync(
                 "<div contenteditable='plaintext-only'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
             var snapshot = await Page.Accessibility.SnapshotAsync();
-            Assert.Equal("generic", snapshot.Children[0].Role);
-            Assert.Equal(string.Empty, snapshot.Children[0].Name);
+            Assert.AreEqual("generic", snapshot.Children[0].Role);
+            Assert.AreEqual(string.Empty, snapshot.Children[0].Name);
         }
 
         [PuppeteerTest("accessibility.spec.ts", "filtering children of leaf nodes", "non editable textbox with role and tabIndex and label should not have children")]
@@ -325,7 +325,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "textbox",
@@ -344,7 +344,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "checkbox",
@@ -363,7 +363,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 this is the inner content
                 <img alt='yo' src='fakeimg.png'>
             </div>");
-            Assert.Equal(
+            Assert.AreEqual(
                 new SerializedAXNode
                 {
                     Role = "checkbox",

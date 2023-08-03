@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
             var buf = File.ReadAllText(_file);
-            Assert.Equal(trace, buf);
+            Assert.AreEqual(trace, buf);
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]

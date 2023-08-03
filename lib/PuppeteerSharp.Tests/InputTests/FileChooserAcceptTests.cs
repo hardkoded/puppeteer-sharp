@@ -30,8 +30,8 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask.Result.AcceptAsync(TestConstants.FileToUpload),
                 metricsTcs.Task);
 
-            Assert.Equal(1, await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>("input => input.files.length"));
-            Assert.Equal(
+            Assert.AreEqual(1, await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>("input => input.files.length"));
+            Assert.AreEqual(
                 "file-to-upload.txt",
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"));
         }
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.SetContentAsync("<input type=file>");
             _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
 
-            Assert.Equal(
+            Assert.AreEqual(
                 "contents of the file",
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>(@"async picker =>
                 {
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await Page.SetContentAsync("<input type=file>");
             _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync(TestConstants.FileToUpload));
 
-            Assert.Equal(
+            Assert.AreEqual(
                 1,
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>(@"async picker =>
                 {
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.InputTests
 
             _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync());
 
-            Assert.Equal(
+            Assert.AreEqual(
                 0,
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<int>(@"async picker =>
                 {
@@ -128,7 +128,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var fileChooser = waitForTask.Result;
             await fileChooser.AcceptAsync();
             var ex = await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync());
-            Assert.Equal("Cannot accept FileChooser which is already handled!", ex.Message);
+            Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }
 }

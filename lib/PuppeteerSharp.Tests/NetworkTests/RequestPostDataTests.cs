@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += (_, e) => request = e.Request;
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             Assert.NotNull(request);
-            Assert.Equal("{\"foo\":\"bar\"}", request.PostData);
+            Assert.AreEqual("{\"foo\":\"bar\"}", request.PostData);
         }
 
         [PuppeteerTest("network.spec.ts", "Request.postData", "should be |undefined| when there is no post data")]

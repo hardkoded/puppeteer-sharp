@@ -27,13 +27,13 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.Equal(56, response);
+                Assert.AreEqual(56, response);
             }
 
             await using (var originalPage = await Browser.NewPageAsync())
             {
                 var response = await originalPage.EvaluateExpressionAsync<int>("7 * 6");
-                Assert.Equal(42, response);
+                Assert.AreEqual(42, response);
             }
         }
 
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var response = responseTask.Result;
                 Assert.True(response.Ok);
                 Assert.NotNull(response.SecurityDetails);
-                Assert.Equal(
+                Assert.AreEqual(
                     TestUtils.CurateProtocol(requestTask.Result.ToString()),
                     TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
             }
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 await page1.CloseAsync();
                 await browser.CloseAsync();
 
-                Assert.Equal(
+                Assert.AreEqual(
                     new string[]
                     {
                         "about:blank",
@@ -157,9 +157,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var restoredPage = pages.FirstOrDefault(x => x.Url == url);
                 Assert.NotNull(restoredPage);
                 var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.Equal(TestConstants.NestedFramesDumpResult, frameDump);
+                Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
                 var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.Equal(56, response);
+                Assert.AreEqual(56, response);
             }
         }
 
@@ -185,8 +185,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var page1 = tcs.Task.Result;
             var page2 = page2Task.Result;
 
-            Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
-            Assert.Equal(42, await page2.EvaluateExpressionAsync<int>("7 * 6"));
+            Assert.AreEqual(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.AreEqual(42, await page2.EvaluateExpressionAsync<int>("7 * 6"));
             await browserOne.CloseAsync();
         }
 

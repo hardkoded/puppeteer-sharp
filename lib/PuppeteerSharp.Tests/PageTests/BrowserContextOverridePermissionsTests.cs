@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldBePromptByDefault()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should deny permission when not listed")]
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[] { });
-            Assert.Equal("denied", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("denied", await GetPermissionAsync(Page, "geolocation"));
         }
 
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should grant permission when listed")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 OverridePermission.Geolocation
             });
-            Assert.Equal("granted", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("granted", await GetPermissionAsync(Page, "geolocation"));
         }
 
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should reset permissions")]
@@ -55,9 +55,9 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 OverridePermission.Geolocation
             });
-            Assert.Equal("granted", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("granted", await GetPermissionAsync(Page, "geolocation"));
             await Context.ClearPermissionOverridesAsync();
-            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
         [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should trigger permission onchange")]
@@ -74,18 +74,18 @@ namespace PuppeteerSharp.Tests.PageTests
                     };
                 });
             }");
-            Assert.Equal(new string[] { "prompt" }, await Page.EvaluateExpressionAsync<string[]>("window.events"));
+            Assert.AreEqual(new string[] { "prompt" }, await Page.EvaluateExpressionAsync<string[]>("window.events"));
             await Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[] { });
-            Assert.Equal(new string[] { "prompt", "denied" }, await Page.EvaluateExpressionAsync<string[]>("window.events"));
+            Assert.AreEqual(new string[] { "prompt", "denied" }, await Page.EvaluateExpressionAsync<string[]>("window.events"));
             await Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[]
             {
                 OverridePermission.Geolocation
             });
-            Assert.Equal(
+            Assert.AreEqual(
                 new string[] { "prompt", "denied", "granted" },
                 await Page.EvaluateExpressionAsync<string[]>("window.events"));
             await Context.ClearPermissionOverridesAsync();
-            Assert.Equal(
+            Assert.AreEqual(
                 new string[] { "prompt", "denied", "granted", "prompt" },
                 await Page.EvaluateExpressionAsync<string[]>("window.events"));
         }
@@ -98,17 +98,17 @@ namespace PuppeteerSharp.Tests.PageTests
             var otherContext = await Browser.CreateIncognitoBrowserContextAsync();
             var otherPage = await otherContext.NewPageAsync();
             await otherPage.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
-            Assert.Equal("prompt", await GetPermissionAsync(otherPage, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(otherPage, "geolocation"));
 
             await Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[] { });
             await otherContext.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[] { OverridePermission.Geolocation });
-            Assert.Equal("denied", await GetPermissionAsync(Page, "geolocation"));
-            Assert.Equal("granted", await GetPermissionAsync(otherPage, "geolocation"));
+            Assert.AreEqual("denied", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("granted", await GetPermissionAsync(otherPage, "geolocation"));
 
             await Context.ClearPermissionOverridesAsync();
-            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
-            Assert.Equal("granted", await GetPermissionAsync(otherPage, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("granted", await GetPermissionAsync(otherPage, "geolocation"));
 
             await otherContext.CloseAsync();
         }
@@ -120,9 +120,9 @@ namespace PuppeteerSharp.Tests.PageTests
             await Context.OverridePermissionsAsync(
                 TestConstants.EmptyPage,
                 Enum.GetValues(typeof(OverridePermission)).Cast<OverridePermission>().ToArray());
-            Assert.Equal("granted", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("granted", await GetPermissionAsync(Page, "geolocation"));
             await Context.ClearPermissionOverridesAsync();
-            Assert.Equal("prompt", await GetPermissionAsync(Page, "geolocation"));
+            Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
     }
 }

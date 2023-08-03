@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 waitForSelector,
                 Page.SetContentAsync("<div class='zombo'>anything</div>"));
 
-            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should resolve promise when node is added")]
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var eHandle = await watchdog;
             var property = await eHandle.GetPropertyAsync("tagName");
             var tagName = await property.JsonValueAsync<string>();
-            Assert.Equal("DIV", tagName);
+            Assert.AreEqual("DIV", tagName);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should work when node is added through innerHTML")]
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await watchdog;
-            Assert.Equal(Page.MainFrame, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(Page.MainFrame, eHandle.ExecutionContext.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should run in specified frame")]
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForSelectorPromise;
-            Assert.Equal(frame2, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(frame2, eHandle.ExecutionContext.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should throw when frame is detached")]
@@ -307,7 +307,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var waitForSelector = Page.WaitForSelectorAsync(".zombo");
             await Page.SetContentAsync("<div class='zombo'>anything</div>");
-            Assert.Equal("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should have correct stack trace for timeout")]

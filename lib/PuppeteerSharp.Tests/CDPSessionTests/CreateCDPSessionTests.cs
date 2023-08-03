@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
               client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest { Expression = "window.foo = 'bar'" })
             );
             var foo = await Page.EvaluateExpressionAsync<string>("window.foo");
-            Assert.Equal("bar", foo);
+            Assert.AreEqual("bar", foo);
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should send events")]
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.Equal("foo.js", eventTask.Result["url"].Value<string>());
+            Assert.AreEqual("foo.js", eventTask.Result["url"].Value<string>());
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should be able to detach session")]
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Expression = "1 + 2",
                 ReturnByValue = true
             });
-            Assert.Equal(3, evalResponse["result"]["value"].ToObject<int>());
+            Assert.AreEqual(3, evalResponse["result"]["value"].ToObject<int>());
             await client.DetachAsync();
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(()

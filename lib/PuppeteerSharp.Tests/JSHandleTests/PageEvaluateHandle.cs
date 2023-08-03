@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
                 globalThis.FOO = 123;
                 return window;
             }");
-            Assert.Equal(123, await Page.EvaluateFunctionAsync<int>(
+            Assert.AreEqual(123, await Page.EvaluateFunctionAsync<int>(
                 "(e) => e.FOO",
                 aHandle));
         }

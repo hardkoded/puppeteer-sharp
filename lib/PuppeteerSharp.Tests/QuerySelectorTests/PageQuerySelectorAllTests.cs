@@ -17,9 +17,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
             var elements = await Page.QuerySelectorAllAsync("div");
-            Assert.Equal(2, elements.Length);
+            Assert.AreEqual(2, elements.Length);
             var tasks = elements.Select(element => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
-            Assert.Equal(new[] { "A", "B" }, await Task.WhenAll(tasks));
+            Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$", "should return empty array if nothing is found")]

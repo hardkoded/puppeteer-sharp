@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.Equal(JObject.Parse("{foo: 'bar'}"), await response.JsonAsync());
+            Assert.AreEqual(JObject.Parse("{foo: 'bar'}"), await response.JsonAsync());
         }
     }
 }

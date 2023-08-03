@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             await Page.EmulateAsync(TestConstants.IPhone);
 
-            Assert.Equal(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
+            Assert.AreEqual(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
             Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
             await button.ClickAsync();
-            Assert.Equal("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
     }
 }

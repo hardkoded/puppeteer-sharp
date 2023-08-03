@@ -37,8 +37,8 @@ namespace PuppeteerSharp.Tests.Issues
             });
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
-            Assert.Equal(TestConstants.ServerUrl + "/grid.html", response.Url);
-            Assert.Equal("foo", await response.TextAsync());
+            Assert.AreEqual(TestConstants.ServerUrl + "/grid.html", response.Url);
+            Assert.AreEqual("foo", await response.TextAsync());
         }
     }
 }

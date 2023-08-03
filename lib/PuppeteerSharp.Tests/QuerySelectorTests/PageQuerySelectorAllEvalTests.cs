@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
             var divsCount = await Page.QuerySelectorAllHandleAsync("div").EvaluateFunctionAsync<int>("divs => divs.length");
-            Assert.Equal(3, divsCount);
+            Assert.AreEqual(3, divsCount);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept extra arguments")]
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var divsCount = await Page
                 .QuerySelectorAllHandleAsync("div")
                 .EvaluateFunctionAsync<int>("(divs, two, three) => divs.length + two + three", 2, 3);
-            Assert.Equal(8, divsCount);
+            Assert.AreEqual(8, divsCount);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept ElementHandles as arguments")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     (acc, section) => acc + Number(section.textContent),
                     0
                 ) + Number(div.textContent)", divHandle);
-            Assert.Equal(8, divsCount);
+            Assert.AreEqual(8, divsCount);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should handle many elements")]
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 .QuerySelectorAllHandleAsync("section")
                 .EvaluateFunctionAsync<int>(@"(sections, div) =>
                 sections.reduce((acc, section) => acc + Number(section.textContent), 0)");
-            Assert.Equal(500500, sum);
+            Assert.AreEqual(500500, sum);
         }
 
         [PuppeteerTimeout]
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
             var divs = await Page.QuerySelectorAllHandleAsync("div");
             var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length");
-            Assert.Equal(3, divsCount);
+            Assert.AreEqual(3, divsCount);
         }
     }
 }

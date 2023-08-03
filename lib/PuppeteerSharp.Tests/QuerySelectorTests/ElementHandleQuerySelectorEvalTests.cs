@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var tweet = await Page.QuerySelectorAsync(".tweet");
             var content = await tweet.QuerySelectorAsync(".like")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
-            Assert.Equal("100", content);
+            Assert.AreEqual("100", content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should retrieve content from subtree")]
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var elementHandle = await Page.QuerySelectorAsync("#myId");
             var content = await elementHandle.QuerySelectorAsync(".a")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
-            Assert.Equal("a-child-div", content);
+            Assert.AreEqual("a-child-div", content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should throw in case of missing selector")]
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var exception = await Assert.ThrowsAsync<SelectorException>(
                 () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
             );
-            Assert.Equal("Error: failed to find element matching selector", exception.Message);
+            Assert.AreEqual("Error: failed to find element matching selector", exception.Message);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;
 
-            Assert.Equal("test42", result.Title);
+            Assert.AreEqual("test42", result.Title);
             CheckMetrics(result.Metrics);
         }
 

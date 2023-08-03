@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             });
 
             var element = await Page.QuerySelectorAsync("getById/foo");
-            Assert.Equal("foo", await Page.EvaluateFunctionAsync<string>(
+            Assert.AreEqual("foo", await Page.EvaluateFunctionAsync<string>(
                 @"(el) => el.id",
                 element));
 
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             }));
 
-            Assert.Equal("Custom query handler names may only contain [a-zA-Z]", ex.Message);
+            Assert.AreEqual("Custom query handler names may only contain [a-zA-Z]", ex.Message);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work for multiple elements")]
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 elements
                     .Select(el => el.EvaluateFunctionAsync<string>("(element) => element.className")));
 
-            Assert.Equal(new[] { "foo", "foo baz" }, classNames.ToArray());
+            Assert.AreEqual(new[] { "foo", "foo baz" }, classNames.ToArray());
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval correctly")]
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elements = await Page.QuerySelectorAllHandleAsync("getByClass/foo")
                 .EvaluateFunctionAsync<int>("(divs) =>  divs.length");
             
-            Assert.Equal(2, elements);
+            Assert.AreEqual(2, elements);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitForSelector")]
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await element.EvaluateFunctionAsync("(el) => el.innerHTML = '<div class=\"bar\">bar1</div>'");
 
             element = await innerWaitFor;
-            Assert.Equal("bar1", await element.EvaluateFunctionAsync<string>("(el) => el.innerText"));
+            Assert.AreEqual("bar1", await element.EvaluateFunctionAsync<string>("(el) => el.innerText"));
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work when both queryOne and queryAll are registered")]
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var element = await Page.QuerySelectorAsync("getByClass/foo");
             Assert.NotNull(element);
             var elements = await Page.QuerySelectorAllAsync("getByClass/foo");
-            Assert.Equal(3, elements.Length);
+            Assert.AreEqual(3, elements.Length);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval when both queryOne and queryAll are registered")]
@@ -177,12 +177,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var txtContent = await Page.QuerySelectorAsync("getByClass/foo")
                 .EvaluateFunctionAsync<string>("(div) =>  div.textContent");
 
-            Assert.Equal("text", txtContent);
+            Assert.AreEqual("text", txtContent);
 
             var txtContents = await Page.QuerySelectorAllHandleAsync("getByClass/foo")
                 .EvaluateFunctionAsync<string>("(divs) =>  divs.map((d) => d.textContent).join('')");
 
-            Assert.Equal("textcontent", txtContents);
+            Assert.AreEqual("textcontent", txtContents);
         }
     }
 }

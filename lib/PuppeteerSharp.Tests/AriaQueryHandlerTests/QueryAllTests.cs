@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var divs = await Page.QuerySelectorAllAsync("aria/menu div");
             var ids = await Task.WhenAll(divs.Select(div => div.EvaluateFunctionAsync<string>("div => div.id")));
 
-            Assert.Equal("mnu1, mnu2", String.Join(", ", ids));
+            Assert.AreEqual("mnu1, mnu2", String.Join(", ", ids));
         }
     }
 }

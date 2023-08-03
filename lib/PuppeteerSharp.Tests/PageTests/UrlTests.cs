@@ -15,9 +15,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
-            Assert.Equal(TestConstants.AboutBlank, Page.Url);
+            Assert.AreEqual(TestConstants.AboutBlank, Page.Url);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
         }
     }
 }

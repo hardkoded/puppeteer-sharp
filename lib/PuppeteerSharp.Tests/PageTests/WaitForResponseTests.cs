@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with predicate")]
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with async predicate")]
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect timeout")]
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }, 50)")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
     }
 }

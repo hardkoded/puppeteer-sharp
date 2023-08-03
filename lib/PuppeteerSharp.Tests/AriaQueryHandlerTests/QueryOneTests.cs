@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.SetContentAsync("<div id='div'><button id='btn' role='button'>Submit</button></div>");
             var button = await Page.QuerySelectorAsync("aria/[role='button']");
             var id = await button.EvaluateFunctionAsync("(button) => button.id");
-            Assert.Equal("btn", id);
+            Assert.AreEqual("btn", id);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryOne", "should find button by name and role")]
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.SetContentAsync("<div id='div'><button id='btn' role='button'>Submit</button></div>");
             var button = await Page.QuerySelectorAsync("aria/Submit[role='button']");
             var id = await button.EvaluateFunctionAsync("(button) => button.id");
-            Assert.Equal("btn", id);
+            Assert.AreEqual("btn", id);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryOne", "should find first matching element")]
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
             var button = await Page.QuerySelectorAsync("aria/menu div");
             var id = await button.EvaluateFunctionAsync("(button) => button.id");
-            Assert.Equal("mnu1", id);
+            Assert.AreEqual("mnu1", id);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryOne", "should find by name")]
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
             var button = await Page.QuerySelectorAsync("aria/menu-label1");
             var id = await button.EvaluateFunctionAsync("(button) => button.id");
-            Assert.Equal("mnu1", id);
+            Assert.AreEqual("mnu1", id);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryOne", "should find by name")]
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
             var button = await Page.QuerySelectorAsync("aria/menu-label2");
             var id = await button.EvaluateFunctionAsync("(button) => button.id");
-            Assert.Equal("mnu2", id);
+            Assert.AreEqual("mnu2", id);
         }
     }
 }

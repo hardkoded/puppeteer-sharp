@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetAuth("/empty.html", "user", "pass");
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
 
             await Page.AuthenticateAsync(new Credentials
             {
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             response = await Page.ReloadAsync();
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should fail if wrong credentials")]
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should allow disable authentication")]
@@ -61,12 +61,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
 
             await Page.AuthenticateAsync(null);
 
             response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should not disable caching")]
@@ -88,9 +88,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
             Assert.False(responses["one-style.html"].FromCache);
-            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
             Assert.True(responses["one-style.css"].FromCache);
         }
     }

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 var button = await Page.QuerySelectorAsync("#btn" + i);
                 // All but last button are visible.
                 var visible = i < 10;
-                Assert.Equal(visible, await button.IsIntersectingViewportAsync());
+                Assert.AreEqual(visible, await button.IsIntersectingViewportAsync());
             }
         }
     }

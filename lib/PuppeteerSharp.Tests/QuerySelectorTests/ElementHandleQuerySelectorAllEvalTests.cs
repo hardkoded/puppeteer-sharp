@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var tweet = await Page.QuerySelectorAsync(".tweet");
             var content = await tweet.QuerySelectorAllHandleAsync(".like")
                 .EvaluateFunctionAsync<string[]>("nodes => nodes.map(n => n.innerText)");
-            Assert.Equal(new[] { "100", "10" }, content);
+            Assert.AreEqual(new[] { "100", "10" }, content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$eval", "should retrieve content from subtree")]
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var elementHandle = await Page.QuerySelectorAsync("#myId");
             var content = await elementHandle.QuerySelectorAllHandleAsync(".a")
                 .EvaluateFunctionAsync<string[]>("nodes => nodes.map(n => n.innerText)");
-            Assert.Equal(new[] { "a1-child-div", "a2-child-div" }, content);
+            Assert.AreEqual(new[] { "a1-child-div", "a2-child-div" }, content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$eval", "should not throw in case of missing selector")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var elementHandle = await Page.QuerySelectorAsync("#myId");
             var nodesLength = await elementHandle.QuerySelectorAllHandleAsync(".a")
                 .EvaluateFunctionAsync<int>("nodes => nodes.length");
-            Assert.Equal(0, nodesLength);
+            Assert.AreEqual(0, nodesLength);
         }
     }
 }

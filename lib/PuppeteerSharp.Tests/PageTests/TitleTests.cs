@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnThePageTitle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/title.html");
-            Assert.Equal("Woof-Woof", await Page.GetTitleAsync());
+            Assert.AreEqual("Woof-Woof", await Page.GetTitleAsync());
         }
     }
 }

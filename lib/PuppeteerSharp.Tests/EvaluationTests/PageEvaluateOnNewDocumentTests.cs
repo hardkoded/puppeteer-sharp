@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.injected"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.injected"));
 
             // Make sure CSP works.
             await Page.AddScriptTagAsync(new AddTagOptions
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
             await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
     }
 }
