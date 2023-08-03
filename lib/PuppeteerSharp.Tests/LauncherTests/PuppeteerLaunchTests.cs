@@ -217,8 +217,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
+        [TestCase(false)]
+        [TestCase(true)]
         public async Task ChromeShouldBeClosed(bool useDisposeAsync)
         {
             var options = TestConstants.DefaultBrowserOptions();

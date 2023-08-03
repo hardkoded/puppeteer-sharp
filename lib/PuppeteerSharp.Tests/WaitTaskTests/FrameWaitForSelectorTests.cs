@@ -230,8 +230,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
         [Theory]
-        [InlineData("visibility", "hidden")]
-        [InlineData("display", "none")]
+        [TestCase("visibility", "hidden")]
+        [TestCase("display", "none")]
         public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
         {
             var divHidden = false;

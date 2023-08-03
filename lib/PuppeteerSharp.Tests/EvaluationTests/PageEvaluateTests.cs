@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should await promise")]
         [Theory]
-        [InlineData("() => 7 * 3", 21)] //ShouldWork
-        [InlineData("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
+        [TestCase("() => 7 * 3", 21)] //ShouldWork
+        [TestCase("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
         public async Task BasicIntFunctionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<int>(script);
@@ -39,10 +39,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer Infinity")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer -Infinity")]
         [Theory]
-        [InlineData(double.NaN)] //ShouldTransferNaN
-        [InlineData(-0)] //ShouldTransferNegative0
-        [InlineData(double.PositiveInfinity)] //ShouldTransferInfinity
-        [InlineData(double.NegativeInfinity)] //ShouldTransferNegativeInfinty
+        [TestCase(double.NaN)] //ShouldTransferNaN
+        [TestCase(-0)] //ShouldTransferNegative0
+        [TestCase(double.PositiveInfinity)] //ShouldTransferInfinity
+        [TestCase(double.NegativeInfinity)] //ShouldTransferNegativeInfinty
         public async Task BasicTransferTest(object transferObject)
         {
             var result = await Page.EvaluateFunctionAsync<object>("a => a", transferObject);
@@ -190,10 +190,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return Infinity")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return -Infinity")]
         [Theory]
-        [InlineData("() => NaN", double.NaN)] //ShouldReturnNaN
-        [InlineData("() => -0", -0)] //ShouldReturnNegative0
-        [InlineData("() => Infinity", double.PositiveInfinity)] //ShouldReturnInfinity
-        [InlineData("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
+        [TestCase("() => NaN", double.NaN)] //ShouldReturnNaN
+        [TestCase("() => -0", -0)] //ShouldReturnNegative0
+        [TestCase("() => Infinity", double.PositiveInfinity)] //ShouldReturnInfinity
+        [TestCase("() => -Infinity", double.NegativeInfinity)] //ShouldReturnNegativeInfinty
         public async Task BasicEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<object>(script);
@@ -249,9 +249,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string with semi colons")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string with comments")]
         [Theory]
-        [InlineData("1 + 2;", 3)]
-        [InlineData("1 + 5;", 6)]
-        [InlineData("2 + 5\n// do some math!'", 7)]
+        [TestCase("1 + 2;", 3)]
+        [TestCase("1 + 5;", 6)]
+        [TestCase("2 + 5\n// do some math!'", 7)]
         public async Task BasicIntExressionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateExpressionAsync<int>(script);
