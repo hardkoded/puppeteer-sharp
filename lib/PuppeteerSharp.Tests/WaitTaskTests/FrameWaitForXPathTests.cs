@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should respect timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldRespectTimeout()
+        public void ShouldRespectTimeout()
         {
             const int timeout = 10;
 

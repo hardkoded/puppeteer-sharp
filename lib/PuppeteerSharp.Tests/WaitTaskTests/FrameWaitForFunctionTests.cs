@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should throw negative polling interval")]
         [PuppeteerTimeout]
-        public async Task ShouldThrowNegativePollingInterval()
+        public void ShouldThrowNegativePollingInterval()
         {
             var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
                 => Page.WaitForFunctionAsync("() => !!document.body", new WaitForFunctionOptions { PollingInterval = -10 }));

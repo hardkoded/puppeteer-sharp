@@ -270,7 +270,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should respect timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldRespectTimeout()
+        public void ShouldRespectTimeout()
         {
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
@@ -312,7 +312,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should have correct stack trace for timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldHaveCorrectStackTraceForTimeout()
+        public void ShouldHaveCorrectStackTraceForTimeout()
         {
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync(".zombo", new WaitForSelectorOptions { Timeout = 10 }));
