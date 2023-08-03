@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.Issues
             // Test case
             Assert.IsEmpty(await Page.QuerySelectorAllAsync("xpath///one-app-nav-bar-item-root/button[count(.//*[contains(@icon-name, 'close')]) > 0]"));
             // check that the Xpath really works
-            Assert.NotEmpty(await Page.QuerySelectorAllAsync("xpath///img"));
+            Assert.IsNotEmpty(await Page.QuerySelectorAllAsync("xpath///img"));
         }
     }
 }

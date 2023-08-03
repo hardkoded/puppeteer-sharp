@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();
-            Assert.NotEmpty(userAgent);
+            Assert.IsNotEmpty(userAgent);
 
             if (TestConstants.IsChrome)
             {

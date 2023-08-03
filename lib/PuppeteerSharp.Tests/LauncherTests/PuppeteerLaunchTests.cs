@@ -376,7 +376,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-                Assert.NotEmpty(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }));
+                Assert.IsNotEmpty(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }));
             }
         }
 

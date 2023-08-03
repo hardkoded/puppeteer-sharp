@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         public async Task ShouldReturnWhetherWeAreInHeadless()
         {
             var version= await Browser.GetVersionAsync();
-            Assert.NotEmpty(version);
+            Assert.IsNotEmpty(version);
         }
     }
 }
