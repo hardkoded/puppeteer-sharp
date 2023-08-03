@@ -28,7 +28,9 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.IsEmpty(await Page.GetCookiesAsync());
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
-            var cookie = Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
+            var cookies = await Page.GetCookiesAsync();
+            Assert.That(cookies, Has.Exactly(1).Items);
+            var cookie = cookies.First();
             Assert.AreEqual("username", cookie.Name);
             Assert.AreEqual("John Doe", cookie.Value);
             Assert.AreEqual("localhost", cookie.Domain);
