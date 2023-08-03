@@ -99,8 +99,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create two incognito contexts.
             var context1 = await Browser.CreateIncognitoBrowserContextAsync();
             var context2 = await Browser.CreateIncognitoBrowserContextAsync();
-            Assert.Empty(context1.Targets());
-            Assert.Empty(context2.Targets());
+            Assert.IsEmpty(context1.Targets());
+            Assert.IsEmpty(context2.Targets());
 
             // Create a page in first incognito context.
             var page1 = await context1.NewPageAsync();
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.Single(context1.Targets());
-            Assert.Empty(context2.Targets());
+            Assert.IsEmpty(context2.Targets());
 
             // Create a page in second incognito context.
             var page2 = await context2.NewPageAsync();

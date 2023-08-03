@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Contains("unused.css", entry.Url);
-            Assert.Empty(entry.Ranges);
+            Assert.IsEmpty(entry.Ranges);
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work with media queries")]
@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
             Assert.AreEqual("10px", margin);
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Empty(coverage);
+            Assert.IsEmpty(coverage);
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work with a recently loaded stylesheet")]

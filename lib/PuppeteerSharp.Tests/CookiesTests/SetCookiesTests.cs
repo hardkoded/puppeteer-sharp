@@ -237,7 +237,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best", Url = "https://www.example.com" });
             Assert.AreEqual(string.Empty, await Page.EvaluateExpressionAsync<string>("document.cookie"));
-            Assert.Empty(await Page.GetCookiesAsync());
+            Assert.IsEmpty(await Page.GetCookiesAsync());
             var cookie = Assert.Single(await Page.GetCookiesAsync("https://www.example.com"));
             Assert.AreEqual("example-cookie", cookie.Name);
             Assert.AreEqual("best", cookie.Value);

@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var elements = await html.QuerySelectorAllAsync("div");
-            Assert.Empty(elements);
+            Assert.IsEmpty(elements);
         }
     }
 }

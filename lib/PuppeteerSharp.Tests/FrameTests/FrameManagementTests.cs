@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             Assert.AreEqual(4, attachedFrames.Count);
-            Assert.Empty(detachedFrames);
+            Assert.IsEmpty(detachedFrames);
             Assert.AreEqual(5, navigatedFrames.Count);
 
             attachedFrames.Clear();
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             navigatedFrames.Clear();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(attachedFrames);
+            Assert.IsEmpty(attachedFrames);
             Assert.AreEqual(4, detachedFrames.Count);
             Assert.Single(navigatedFrames);
         }
@@ -204,7 +204,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
 
             Assert.AreEqual(4, attachedFrames.Count);
-            Assert.Empty(detachedFrames);
+            Assert.IsEmpty(detachedFrames);
             Assert.AreEqual(5, navigatedFrames.Count);
 
             attachedFrames.Clear();
@@ -212,7 +212,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             navigatedFrames.Clear();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(attachedFrames);
+            Assert.IsEmpty(attachedFrames);
             Assert.AreEqual(4, detachedFrames.Count);
             Assert.Single(navigatedFrames);
         }

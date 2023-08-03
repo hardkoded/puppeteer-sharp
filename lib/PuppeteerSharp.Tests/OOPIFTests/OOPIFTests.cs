@@ -272,7 +272,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(oopIframe, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
-            Assert.Empty(oopIframe.ChildFrames);
+            Assert.IsEmpty(oopIframe.ChildFrames);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs")]

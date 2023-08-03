@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
             await Page.GoToAsync(TestConstants.EmptyPage);
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Empty(coverage);
+            Assert.IsEmpty(coverage);
         }
     }
 }

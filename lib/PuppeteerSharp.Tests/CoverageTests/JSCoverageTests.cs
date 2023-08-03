@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.EvaluateExpressionAsync("console.log('foo')");
             await Page.EvaluateFunctionAsync("() => console.log('bar')");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Empty(coverage);
+            Assert.IsEmpty(coverage);
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report multiple scripts")]
@@ -135,7 +135,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.Single(coverage);
             var entry = coverage[0];
             Assert.Contains("unused.html", entry.Url);
-            Assert.Empty(entry.Ranges);
+            Assert.IsEmpty(entry.Ranges);
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should work with conditionals")]

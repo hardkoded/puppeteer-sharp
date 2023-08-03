@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             var result = await Page.SelectAsync("select", "42", "abc");
-            Assert.Empty(result);
+            Assert.IsEmpty(result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.select", "should return an array of matched values")]
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnEmptyArrayOnNoValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            Assert.Empty(await Page.SelectAsync("select"));
+            Assert.IsEmpty(await Page.SelectAsync("select"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.select", "should deselect all options when passed no values for a multiple select")]

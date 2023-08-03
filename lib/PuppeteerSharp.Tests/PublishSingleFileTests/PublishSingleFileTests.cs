@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
             var errorResult = GetStreamOutput(process.StandardError);
             Assert.True(process.WaitForExit(20000));
 
-            Assert.Empty(errorResult);
+            Assert.IsEmpty(errorResult);
 
             Assert.True(File.Exists(expectedBinaryPath), outputResult);
 

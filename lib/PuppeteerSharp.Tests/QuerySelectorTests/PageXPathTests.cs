@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.XPathAsync("/html/body/non-existing-element");
-            Assert.Empty(elements);
+            Assert.IsEmpty(elements);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return multiple elements")]

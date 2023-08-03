@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var cached= new List<string>();
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            Assert.Empty(cached);
+            Assert.IsEmpty(cached);
             await Page.ReloadAsync();
             Assert.AreEqual(new[] { "one-style.css" }, cached);
         }

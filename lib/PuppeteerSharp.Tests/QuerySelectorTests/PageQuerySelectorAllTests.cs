@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var elements = await Page.QuerySelectorAllAsync("div");
-            Assert.Empty(elements);
+            Assert.IsEmpty(elements);
         }
     }
 }

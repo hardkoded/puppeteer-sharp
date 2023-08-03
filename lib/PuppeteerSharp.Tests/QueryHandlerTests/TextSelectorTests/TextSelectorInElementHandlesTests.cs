@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
             await Page.SetContentAsync("<div class=\"a\"></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
             Assert.Null(await elementHandle.QuerySelectorAsync("text/a"));
-            Assert.Empty(await elementHandle.QuerySelectorAllAsync("text/a"));
+            Assert.IsEmpty(await elementHandle.QuerySelectorAllAsync("text/a"));
         }
     }
 }

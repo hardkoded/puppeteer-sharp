@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var second = await html.XPathAsync("/div[contains(@class, 'third')]");
-            Assert.Empty(second);
+            Assert.IsEmpty(second);
         }
     }
 }

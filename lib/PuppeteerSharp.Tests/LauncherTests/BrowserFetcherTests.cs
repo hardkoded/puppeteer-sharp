@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 }
                 Assert.AreEqual(new[] { "123456" }, browserFetcher.LocalRevisions());
                 browserFetcher.Remove("123456");
-                Assert.Empty(browserFetcher.LocalRevisions());
+                Assert.IsEmpty(browserFetcher.LocalRevisions());
 
                 //Download should return data from a downloaded version
                 //This section is not in the Puppeteer test.
@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 }
                 Assert.AreEqual(new[] { expectedVersion }, browserFetcher.LocalRevisions());
                 browserFetcher.Remove(expectedVersion);
-                Assert.Empty(browserFetcher.LocalRevisions());
+                Assert.IsEmpty(browserFetcher.LocalRevisions());
 
                 //Download should return data from a downloaded version
                 //This section is not in the Puppeteer test.

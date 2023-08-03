@@ -630,7 +630,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
             await Page.ReloadAsync();
-            Assert.Empty(cached);
+            Assert.IsEmpty(cached);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should cache if cache enabled")]

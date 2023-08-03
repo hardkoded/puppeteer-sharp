@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await workerDestroyedTcs.Task.WithTimeout();
-            Assert.Empty(Page.Workers);
+            Assert.IsEmpty(Page.Workers);
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]

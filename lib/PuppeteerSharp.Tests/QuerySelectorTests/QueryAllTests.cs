@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var elements = await html.QuerySelectorAllAsync("allArray/div");
-            Assert.Empty(elements);
+            Assert.IsEmpty(elements);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should work")]

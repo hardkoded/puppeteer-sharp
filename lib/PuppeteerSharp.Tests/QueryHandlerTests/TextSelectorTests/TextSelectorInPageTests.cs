@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             Assert.Null(await Page.QuerySelectorAsync("text/test"));
-            Assert.Empty(await Page.QuerySelectorAllAsync("text/test"));
+            Assert.IsEmpty(await Page.QuerySelectorAllAsync("text/test"));
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return first element")]

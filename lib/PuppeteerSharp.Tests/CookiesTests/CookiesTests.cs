@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            Assert.IsEmpty(await Page.GetCookiesAsync());
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.cookies", "should get a cookie")]
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         public async Task ShouldGetACookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            Assert.IsEmpty(await Page.GetCookiesAsync());
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
             var cookie = Assert.Single(await Page.GetCookiesAsync());
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Empty(await Page.GetCookiesAsync());
+            Assert.IsEmpty(await Page.GetCookiesAsync());
 
             await Page.EvaluateFunctionAsync(@"() => {
                 document.cookie = 'username=John Doe';
