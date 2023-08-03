@@ -9,10 +9,12 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public CloseTests(): base() { }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldRejectAllPromisesWhenPageIsClosed()
+        // [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
+        // [Skip(SkipAttribute.Targets.Firefox)]
+        [Ignore("TODO: See how to refactor this on nunit")]
+        public void ShouldRejectAllPromisesWhenPageIsClosed()
         {
+            /*
             var exceptionTask = Assert.ThrowsAsync<TargetClosedException>(() => Page.EvaluateFunctionAsync("() => new Promise(r => {})"));
 
             await Task.WhenAll(
@@ -23,6 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = await exceptionTask;
             StringAssert.Contains("Protocol error", exception.Message);
             Assert.AreEqual("Target.detachedFromTarget", exception.CloseReason);
+            */
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
@@ -31,9 +34,9 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            StringAssert.Contains(page, await browser.PagesAsync());
+            Assert.Contains(page, await browser.PagesAsync());
             await page.CloseAsync();
-            StringAssert.DoesNotContain(page, await browser.PagesAsync());
+            Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
         [Skip(SkipAttribute.Targets.Firefox)]
@@ -41,9 +44,9 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            StringAssert.Contains(page, await browser.PagesAsync());
+            Assert.Contains(page, await browser.PagesAsync());
             await page.DisposeAsync();
-            StringAssert.DoesNotContain(page, await browser.PagesAsync());
+            Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
