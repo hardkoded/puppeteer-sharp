@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {

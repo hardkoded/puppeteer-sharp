@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
 {

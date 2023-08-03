@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
+using System.Linq;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
@@ -30,13 +32,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
                 var exception = Assert.ThrowsAsync<NavigationException>(() => navigationTask);
-                StringAssert.Contains(
+                Assert.True(
                     new[]
                     {
                         "Navigation failed because browser has disconnected! (Connection disposed)",
                         "Protocol error(Page.navigate): Target closed. (Connection disposed)",
-                    },
-                    value => value == exception.Message);
+                    }.Any(value => value == exception.Message));
             }
         }
 

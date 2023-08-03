@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when server returns 204")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldFailWhenServerReturns204()
+        public void ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
             {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
@@ -37,17 +38,13 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await waitForRequestTask;
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
-            StringAssert.Contains(
+            Assert.True(
                 new[]
-                {
-                    exception.Message
-                },
-                message => new[]
                 {
                     "Navigating frame was detached",
                     "Error: NS_BINDING_ABORTED",
                     "net::ERR_ABORTED"
-                }.Any(error => message.Contains(error)));
+                }.Any(error => exception.Message.Contains(error)));
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should return matching responses")]

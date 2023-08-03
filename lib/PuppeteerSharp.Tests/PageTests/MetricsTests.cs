@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             foreach (var name in metrics.Keys)
             {
-                StringAssert.Contains(name, metricsToCheck);
+                Assert.Contains(name, metricsToCheck);
                 Assert.True(metrics[name] >= 0);
                 metricsToCheck.Remove(name);
             }

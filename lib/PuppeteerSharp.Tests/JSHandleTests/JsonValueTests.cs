@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {

@@ -6,6 +6,7 @@ using PuppeteerSharp.Transport;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
