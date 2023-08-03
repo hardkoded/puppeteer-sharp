@@ -11,6 +11,7 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using SixLabors.ImageSharp;
 using static System.Net.Mime.MediaTypeNames;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {

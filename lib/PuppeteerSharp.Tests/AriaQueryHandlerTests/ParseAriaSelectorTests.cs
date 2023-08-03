@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using static System.Net.Mime.MediaTypeNames;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {

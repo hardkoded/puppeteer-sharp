@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AccesibilityTests
 {

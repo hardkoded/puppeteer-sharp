@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using PuppeteerSharp.PageCoverage;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.CoverageTests
 {
