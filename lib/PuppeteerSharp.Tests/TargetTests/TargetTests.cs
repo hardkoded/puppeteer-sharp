@@ -236,7 +236,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var createdTarget = await targetCreatedCompletion.Task;
 
             Assert.AreEqual(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
-            Assert.Same(Page.Target, createdTarget.Opener);
+            Assert.AreSame(Page.Target, createdTarget.Opener);
             Assert.Null(Page.Target.Opener);
         }
     }

@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.False(targetTask.IsCompleted);
             await page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(targetTask.IsCompleted);
-            Assert.Same(await targetTask.Result.PageAsync(), page);
+            Assert.AreSame(await targetTask.Result.PageAsync(), page);
             
             await page.CloseAsync();
         }

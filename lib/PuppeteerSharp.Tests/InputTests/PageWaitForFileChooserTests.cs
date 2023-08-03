@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 fileChooserTask1,
                 fileChooserTask2,
                 Page.QuerySelectorAsync("input").EvaluateFunctionAsync("input => input.click()"));
-            Assert.Same(fileChooserTask1.Result, fileChooserTask2.Result);
+            Assert.AreSame(fileChooserTask1.Result, fileChooserTask2.Result);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var childFrame = Page.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Same(response.Frame, childFrame);
+            Assert.AreSame(response.Frame, childFrame);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should reject when frame detaches")]
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             {
                 matchingData[i].ServerResponseTcs.TrySetResult(serverResponseTexts[i]);
                 var response = await matchingData[i].NavigationTask;
-                Assert.Same(matchingData[i].FrameTask.Result, response.Frame);
+                Assert.AreSame(matchingData[i].FrameTask.Result, response.Frame);
                 Assert.AreEqual(serverResponseTexts[i], await response.TextAsync());
             }
         }

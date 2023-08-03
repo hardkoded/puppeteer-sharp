@@ -26,8 +26,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 workerCreatedTcs.Task,
                 Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
-            Assert.Contains("worker.js", worker.Url);
-
+            Assert.That(worker.Url.Contains("worker.js"));
             Assert.AreEqual("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -47,7 +46,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerDestroyedTcs = new TaskCompletionSource<Worker>();
             Page.WorkerDestroyed += (_, e) => workerDestroyedTcs.TrySetResult(e.Worker);
             await Page.EvaluateFunctionAsync("workerObj => workerObj.terminate()", workerObj);
-            Assert.Same(worker, await workerDestroyedTcs.Task);
+            Assert.AreSame(worker, await workerDestroyedTcs.Task);
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]

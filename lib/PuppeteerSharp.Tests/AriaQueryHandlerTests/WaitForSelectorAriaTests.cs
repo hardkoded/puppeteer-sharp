@@ -135,7 +135,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await otherFrame.EvaluateFunctionAsync(addElement, "button");
             await Page.EvaluateFunctionAsync(addElement, "button");
             var elementHandle = await watchdog;
-            Assert.Same(elementHandle.ExecutionContext.Frame, Page.MainFrame);
+            Assert.AreSame(elementHandle.ExecutionContext.Frame, Page.MainFrame);
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should run in specified frame")]
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await frame1.EvaluateFunctionAsync(addElement, "button");
             await frame2.EvaluateFunctionAsync(addElement, "button");
             var elementHandle = await waitForSelectorTask;
-            Assert.Same(elementHandle.ExecutionContext.Frame, frame2);
+            Assert.AreSame(elementHandle.ExecutionContext.Frame, frame2);
         }
     }
 }
