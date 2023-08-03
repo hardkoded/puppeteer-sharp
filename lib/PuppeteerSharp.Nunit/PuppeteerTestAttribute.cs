@@ -1,5 +1,5 @@
 using System;
-using Nunit.Framework;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Nunit
 {

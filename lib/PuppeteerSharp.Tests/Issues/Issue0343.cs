@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using System.Linq;
-using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.Issues
 {
@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Fact(Skip = "It seems something's changed in chromium and this is no longer valid")]
+        [Ignore("It seems something's changed in chromium and this is no longer valid")]
         public async Task ShouldSupportLongExpiresValueInCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
