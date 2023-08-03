@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should have default context")]
         [PuppeteerTimeout]
-        public async Task ShouldHaveDefaultContext()
+        public void ShouldHaveDefaultContext()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var defaultContext = Browser.BrowserContexts()[0];
