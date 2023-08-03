@@ -9,13 +9,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
     public class TaskHelperTests
     {
         [Test]
-        public async Task ShouldExecuteActionOnTimeout()
+        public void ShouldExecuteActionOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
-
-            Func<Task> act = () => tcs.Task.WithTimeout(() => throw new TimeoutException(), TimeSpan.FromTicks(1));
-
-            Assert.ThrowsAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(() => tcs.Task.WithTimeout(() => throw new TimeoutException(), TimeSpan.FromTicks(1)));
         }
 
         [Test]
@@ -27,13 +24,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        public async Task ShouldThrowOnTimeout()
+        public void ShouldThrowOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
-
-            Func<Task> act = () => tcs.Task.WithTimeout(TimeSpan.FromTicks(1));
-
-            Assert.ThrowsAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(() => tcs.Task.WithTimeout(TimeSpan.FromTicks(1)));
         }
 
         [Test]
@@ -54,14 +48,11 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        public async Task ShouldExecuteActionOnTimeoutWhenNotCanceled()
+        public void ShouldExecuteActionOnTimeoutWhenNotCanceled()
         {
             var tcs = new TaskCompletionSource<bool>();
             var token = new CancellationToken(false);
-
-            Func<Task> act = () => tcs.Task.WithTimeout(() => Task.FromException(new TimeoutException()), TimeSpan.FromTicks(1), token);
-
-            Assert.ThrowsAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(() => tcs.Task.WithTimeout(() => Task.FromException(new TimeoutException()), TimeSpan.FromTicks(1), token));
         }
 
         [Test]
