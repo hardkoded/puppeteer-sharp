@@ -6,6 +6,7 @@ using PuppeteerSharp.Helpers.Json;
 using System.Numerics;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -17,7 +18,6 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should await promise")]
-        [Theory]
         [TestCase("() => 7 * 3", 21)] //ShouldWork
         [TestCase("() => Promise.resolve(8 * 7)", 56)] //ShouldAwaitPromise
         public async Task BasicIntFunctionEvaluationTest(string script, object expected)
@@ -38,7 +38,6 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer -0")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer Infinity")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should transfer -Infinity")]
-        [Theory]
         [TestCase(double.NaN)] //ShouldTransferNaN
         [TestCase(-0)] //ShouldTransferNegative0
         [TestCase(double.PositiveInfinity)] //ShouldTransferInfinity
@@ -189,7 +188,6 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return -0")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return Infinity")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return -Infinity")]
-        [Theory]
         [TestCase("() => NaN", double.NaN)] //ShouldReturnNaN
         [TestCase("() => -0", -0)] //ShouldReturnNegative0
         [TestCase("() => Infinity", double.PositiveInfinity)] //ShouldReturnInfinity
@@ -248,7 +246,6 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string with semi colons")]
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string with comments")]
-        [Theory]
         [TestCase("1 + 2;", 3)]
         [TestCase("1 + 5;", 6)]
         [TestCase("2 + 5\n// do some math!'", 7)]

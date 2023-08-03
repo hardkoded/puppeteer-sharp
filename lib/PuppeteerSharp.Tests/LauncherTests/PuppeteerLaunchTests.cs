@@ -216,7 +216,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Theory]
         [TestCase(false)]
         [TestCase(true)]
         public async Task ChromeShouldBeClosed(bool useDisposeAsync)

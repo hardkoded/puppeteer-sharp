@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
@@ -229,7 +230,6 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
-        [Theory]
         [TestCase("visibility", "hidden")]
         [TestCase("display", "none")]
         public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
