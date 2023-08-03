@@ -26,11 +26,11 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
 
                 var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
                 StringAssert.Contains("Target closed", exception.Message);
-                Assert.DoesNotContain("Timeout", exception.Message);
+                StringAssert.DoesNotContain("Timeout", exception.Message);
 
                 exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
                 StringAssert.Contains("Target closed", exception.Message);
-                Assert.DoesNotContain("Timeout", exception.Message);
+                StringAssert.DoesNotContain("Timeout", exception.Message);
             }
         }
     }

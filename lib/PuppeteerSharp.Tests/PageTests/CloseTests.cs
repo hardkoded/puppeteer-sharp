@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var page = await browser.NewPageAsync();
             StringAssert.Contains(page, await browser.PagesAsync());
             await page.CloseAsync();
-            Assert.DoesNotContain(page, await browser.PagesAsync());
+            StringAssert.DoesNotContain(page, await browser.PagesAsync());
         }
 
         [Skip(SkipAttribute.Targets.Firefox)]
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var page = await browser.NewPageAsync();
             StringAssert.Contains(page, await browser.PagesAsync());
             await page.DisposeAsync();
-            Assert.DoesNotContain(page, await browser.PagesAsync());
+            StringAssert.DoesNotContain(page, await browser.PagesAsync());
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
@@ -115,11 +115,11 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
             StringAssert.Contains("Target closed", exception.Message);
-            Assert.DoesNotContain("Timeout", exception.Message);
+            StringAssert.DoesNotContain("Timeout", exception.Message);
 
             exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
             StringAssert.Contains("Target closed", exception.Message);
-            Assert.DoesNotContain("Timeout", exception.Message);
+            StringAssert.DoesNotContain("Timeout", exception.Message);
         }
 
         [PuppeteerTimeout(10000)]

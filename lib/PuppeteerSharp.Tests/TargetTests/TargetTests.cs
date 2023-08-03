@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.TargetTests
 
             allPages = await Task.WhenAll(Context.Targets().Select(target => target.PageAsync()));
             StringAssert.Contains(Page, allPages);
-            Assert.DoesNotContain(otherPage, allPages);
+            StringAssert.DoesNotContain(otherPage, allPages);
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should report when a service worker is created and destroyed")]

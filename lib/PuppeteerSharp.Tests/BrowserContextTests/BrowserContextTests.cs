@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.True(context.IsIncognito);
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
-            StringAssert.Contains(context, Browser.BrowserContexts());
+            Assert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }

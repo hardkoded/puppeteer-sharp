@@ -178,7 +178,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public void ShouldReturnTheDefaultArguments()
         {
             StringAssert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
-            Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
+            StringAssert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
             }));
@@ -201,7 +201,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 }
                 else
                 {
-                    Assert.DoesNotContain("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                    StringAssert.DoesNotContain("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
                 }
                 StringAssert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
@@ -297,9 +297,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var browser = await Puppeteer.LaunchAsync(options))
             {
                 var spawnargs = browser.Process.StartInfo.Arguments;
-                Assert.DoesNotContain(defaultArgs[0], spawnargs);
+                StringAssert.DoesNotContain(defaultArgs[0], spawnargs);
                 StringAssert.Contains(defaultArgs[1], spawnargs);
-                Assert.DoesNotContain(defaultArgs[2], spawnargs);
+                StringAssert.DoesNotContain(defaultArgs[2], spawnargs);
             }
         }
 

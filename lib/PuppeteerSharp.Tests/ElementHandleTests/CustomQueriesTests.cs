@@ -46,11 +46,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
             catch (Exception ex)
             {
-                Assert.DoesNotContain($"Custom query handler name not set - throw expected", ex.Message);
+                StringAssert.DoesNotContain($"Custom query handler name not set - throw expected", ex.Message);
             }
 
             var handlerNamesAfterUnregistering = ((Browser)Browser).GetCustomQueryHandlerNames();
-            Assert.DoesNotContain("getById", handlerNamesAfterUnregistering);
+            StringAssert.DoesNotContain("getById", handlerNamesAfterUnregistering);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should throw with invalid query names")]
