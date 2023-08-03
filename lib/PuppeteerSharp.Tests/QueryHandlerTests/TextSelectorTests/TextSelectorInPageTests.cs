@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<section>test</section>");
             Assert.NotNull(await Page.QuerySelectorAsync("text/test"));
-            Assert.Single(await Page.QuerySelectorAllAsync("text/test"));
+            Assert.That(await Page.QuerySelectorAllAsync("text/test"), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return empty array for non-existing element")]

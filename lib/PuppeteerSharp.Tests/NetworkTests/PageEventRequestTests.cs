@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]

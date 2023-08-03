@@ -471,7 +471,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var dataURL = "data:text/html,<div>yo</div>";
             var response = await Page.GoToAsync(dataURL);
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(dataURL, requests[0].Url);
         }
 
@@ -491,7 +491,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
 
             Assert.AreEqual("<div>yo</div>", text);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(dataURL, requests[0].Url);
         }
 
@@ -509,7 +509,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.AreEqual(TestConstants.EmptyPage, response.Url);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
         }
 
@@ -647,7 +647,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
             await Page.ReloadAsync();
-            Assert.Single(cached);
+            Assert.That(cached, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should load fonts if cache enabled")]

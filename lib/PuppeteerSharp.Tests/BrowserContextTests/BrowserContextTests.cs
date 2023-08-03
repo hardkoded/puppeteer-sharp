@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [PuppeteerTimeout]
         public async Task ShouldHaveDefaultContext()
         {
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var defaultContext = Browser.BrowserContexts()[0];
             Assert.False(defaultContext.IsIncognito);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
@@ -29,27 +29,27 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [PuppeteerTimeout]
         public async Task ShouldCreateNewIncognitoContext()
         {
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.True(context.IsIncognito);
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
             StringAssert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should close all belonging targets once closing context")]
         [PuppeteerTimeout]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
-            Assert.Single((await Browser.PagesAsync()));
+            Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
 
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             await context.NewPageAsync();
             Assert.AreEqual(2, (await Browser.PagesAsync()).Length);
-            Assert.Single((await context.PagesAsync()));
+            Assert.That((await context.PagesAsync()), Has.Exactly(1).Items);
             await context.CloseAsync();
-            Assert.Single((await Browser.PagesAsync()));
+            Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "window.open should use parent tab context")]
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 document.cookie = 'name=page1';
             }");
 
-            Assert.Single(context1.Targets());
+            Assert.That(context1.Targets(), Has.Exactly(1).Items);
             Assert.IsEmpty(context2.Targets());
 
             // Create a page in second incognito context.
@@ -121,9 +121,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 document.cookie = 'name=page2';
             }");
 
-            Assert.Single(context1.Targets());
+            Assert.That(context1.Targets(), Has.Exactly(1).Items);
             Assert.AreEqual(page1.Target, context1.Targets()[0]);
-            Assert.Single(context2.Targets());
+            Assert.That(context2.Targets(), Has.Exactly(1).Items);
             Assert.AreEqual(page2.Target, context2.Targets()[0]);
 
             // Make sure pages don't share localstorage or cookies.
@@ -134,14 +134,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             // Cleanup contexts.
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should work across sessions")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkAcrossSessions()
         {
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
 
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldProvideAContextId()
         {
-            Assert.Single(Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             Assert.Null(Browser.BrowserContexts()[0].Id);
 
             var context = await Browser.CreateIncognitoBrowserContextAsync();

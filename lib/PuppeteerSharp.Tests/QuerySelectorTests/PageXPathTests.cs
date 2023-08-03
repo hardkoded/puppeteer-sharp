@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section>test</section>");
             var elements = await Page.XPathAsync("/html/body/section");
             Assert.NotNull(elements[0]);
-            Assert.Single(elements);
+            Assert.That(elements, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return empty array for non-existing element")]

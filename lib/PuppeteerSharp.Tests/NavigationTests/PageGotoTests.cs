@@ -440,7 +440,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var dataUrl = "data:text/html,<div>yo</div>";
             var response = await Page.GoToAsync(dataUrl);
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(dataUrl, requests[0].Url);
         }
 
@@ -459,7 +459,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.AreEqual(TestConstants.EmptyPage, response.Url);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
         }
 

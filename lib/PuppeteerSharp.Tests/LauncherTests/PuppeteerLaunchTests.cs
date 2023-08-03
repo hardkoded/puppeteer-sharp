@@ -323,7 +323,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
                 var pages = await browser.PagesAsync();
-                Assert.Single(pages);
+                Assert.That(pages, Has.Exactly(1).Items);
                 if (pages[0].Url != TestConstants.EmptyPage)
                 {
                     await pages[0].WaitForNavigationAsync();

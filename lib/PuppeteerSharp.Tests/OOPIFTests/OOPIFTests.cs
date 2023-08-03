@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
-            Assert.Single(Page.Frames);
+            Assert.That(Page.Frames, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support wait for navigation for transitions from local to OOPIF")]
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
             await detachedTcs.Task.WithTimeout();
-            Assert.Single(Page.Frames);
+            Assert.That(Page.Frames, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should keep track of a frames OOP state")]
@@ -241,7 +241,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
-            Assert.Single(Oopifs);
+            Assert.That(Oopifs, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP iframes")]
@@ -328,7 +328,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
-            Assert.Single(Oopifs);
+            Assert.That(Oopifs, Has.Exactly(1).Items);
             Assert.AreEqual(2, Page.Frames.Length);
 
             var browserURL = $"http://127.0.0.1:{_port}";
@@ -346,7 +346,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
             await Page.SetViewportAsync(new ViewPortOptions() { Width = 1000, Height = 1000 });
-            Assert.Single(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading));
+            Assert.That(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading), Has.Exactly(1).Items);
         }
 
         private IEnumerable<ITarget> Oopifs => Context.Targets().Where(target => ((Target)target).TargetInfo.Type == TargetType.IFrame);

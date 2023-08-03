@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var allPages = (await Context.PagesAsync()).ToArray();
-            Assert.Single(allPages);
+            Assert.That(allPages, Has.Exactly(1).Items);
             StringAssert.Contains(Page, allPages);
         }
 

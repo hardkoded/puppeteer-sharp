@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.SetRedirect("/foo.html", "/empty.html");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
             var redirectChain = response.Request.RedirectChain;
-            Assert.Single(redirectChain);
+            Assert.That(redirectChain, Has.Exactly(1).Items);
             var redirected = redirectChain[0].Response;
             Assert.AreEqual(HttpStatusCode.Redirect, redirected.Status);
 

@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(Page.MainFrame, requests[0].Frame);
         }
 

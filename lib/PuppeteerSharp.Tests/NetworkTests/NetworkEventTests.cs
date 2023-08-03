@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var requests = new List<IRequest>();
             Page.Request += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
             Assert.AreEqual(ResourceType.Document, requests[0].ResourceType);
             Assert.AreEqual(HttpMethod.Get, requests[0].Method);
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responses = new List<IResponse>();
             Page.Response += (_, e) => responses.Add(e.Response);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(responses);
+            Assert.That(responses, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, responses[0].Url);
             Assert.AreEqual(HttpStatusCode.OK, responses[0].Status);
             Assert.False(responses[0].FromCache);
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.RequestFailed += (_, e) => failedRequests.Add(e.Request);
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
-            Assert.Single(failedRequests);
+            Assert.That(failedRequests, Has.Exactly(1).Items);
             StringAssert.Contains("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
             Assert.AreEqual(ResourceType.StyleSheet, failedRequests[0].ResourceType);
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var requests = new List<IRequest>();
             Page.RequestFinished += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
             Assert.NotNull(requests[0].Response);
             Assert.AreEqual(HttpMethod.Get, requests[0].Method);
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;
-            Assert.Single(redirectChain);
+            Assert.That(redirectChain, Has.Exactly(1).Items);
             StringAssert.Contains("/foo.html", redirectChain[0].Url);
             Assert.AreEqual(TestConstants.Port, redirectChain[0].Response.RemoteAddress.Port);
         }

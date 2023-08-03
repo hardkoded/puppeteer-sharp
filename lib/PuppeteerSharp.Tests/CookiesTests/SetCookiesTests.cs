@@ -50,8 +50,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
             var cookies1 = await Page.GetCookiesAsync();
             var cookies2 = await anotherPage.GetCookiesAsync();
 
-            Assert.Single(cookies1);
-            Assert.Single(cookies2);
+            Assert.That(cookies1, Has.Exactly(1).Items);
+            Assert.That(cookies2, Has.Exactly(1).Items);
             Assert.AreEqual("page1cookie", cookies1[0].Name);
             Assert.AreEqual("page1value", cookies1[0].Value);
             Assert.AreEqual("page2cookie", cookies2[0].Name);
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Value = "123456"
             });
 
-            var cookie = Assert.Single(await Page.GetCookiesAsync());
+            var cookie = Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
             Assert.AreEqual("password", cookie.Name);
             Assert.AreEqual("123456", cookie.Value);
             Assert.AreEqual("localhost", cookie.Domain);
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Value = "GRID",
                 Path = "/grid.html"
             });
-            var cookie = Assert.Single(await Page.GetCookiesAsync());
+            var cookie = Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
             Assert.AreEqual("gridcookie", cookie.Name);
             Assert.AreEqual("GRID", cookie.Value);
             Assert.AreEqual("localhost", cookie.Domain);
@@ -209,7 +209,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Name = "foo",
                 Value = "bar"
             });
-            var cookie = Assert.Single(await Page.GetCookiesAsync(SecureUrl));
+            var cookie = Assert.That(await Page.GetCookiesAsync(SecureUrl), Has.Exactly(1).Items);
             Assert.True(cookie.Secure);
         }
 
@@ -226,7 +226,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Name = "foo",
                 Value = "bar"
             });
-            var cookie = Assert.Single(await Page.GetCookiesAsync(SecureUrl));
+            var cookie = Assert.That(await Page.GetCookiesAsync(SecureUrl), Has.Exactly(1).Items);
             Assert.False(cookie.Secure);
         }
 
@@ -238,7 +238,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best", Url = "https://www.example.com" });
             Assert.AreEqual(string.Empty, await Page.EvaluateExpressionAsync<string>("document.cookie"));
             Assert.IsEmpty(await Page.GetCookiesAsync());
-            var cookie = Assert.Single(await Page.GetCookiesAsync("https://www.example.com"));
+            var cookie = Assert.That(await Page.GetCookiesAsync("https://www.example.com"), Has.Exactly(1).Items);
             Assert.AreEqual("example-cookie", cookie.Name);
             Assert.AreEqual("best", cookie.Value);
             Assert.AreEqual("www.example.com", cookie.Domain);
@@ -268,7 +268,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.SetCookieAsync(new CookieParam { Name = "127-cookie", Value = "worst", Url = TestConstants.CrossProcessHttpPrefix });
             Assert.AreEqual("localhost-cookie=best", await Page.EvaluateExpressionAsync<string>("document.cookie"));
             Assert.AreEqual(string.Empty, await Page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"));
-            var cookie = Assert.Single(await Page.GetCookiesAsync());
+            var cookie = Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
             Assert.AreEqual("localhost-cookie", cookie.Name);
             Assert.AreEqual("best", cookie.Value);
             Assert.AreEqual("localhost", cookie.Domain);
@@ -279,7 +279,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.False(cookie.Secure);
             Assert.True(cookie.Session);
 
-            cookie = Assert.Single(await Page.GetCookiesAsync(TestConstants.CrossProcessHttpPrefix));
+            cookie = Assert.That(await Page.GetCookiesAsync(TestConstants.CrossProcessHttpPrefix), Has.Exactly(1).Items);
             Assert.AreEqual("127-cookie", cookie.Name);
             Assert.AreEqual("worst", cookie.Value);
             Assert.AreEqual("127.0.0.1", cookie.Domain);

@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             var draggable = await Page.QuerySelectorAsync("#drag");
             var data = await draggable.DragAsync(1, 1);
 
-            Assert.Single(data.Items);
+            Assert.That(data.Items, Has.Exactly(1).Items);
             Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
         }
 

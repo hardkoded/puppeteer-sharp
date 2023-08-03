@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
 
-            Assert.Single(response.Request.RedirectChain);
+            Assert.That(response.Request.RedirectChain, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
             Assert.AreEqual(TestConstants.EmptyPage, response.Url);
         }

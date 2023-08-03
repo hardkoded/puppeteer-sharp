@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldNavigateSubFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")));
-            Assert.Single(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")));
+            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")), Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")), Has.Exactly(1).Items);
             var childFrame = Page.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
             Assert.AreEqual(HttpStatusCode.OK, response.Status);

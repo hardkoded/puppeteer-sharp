@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             StringAssert.Contains("/csscoverage/simple.html", coverage[0].Url);
             Assert.AreEqual(new CoverageEntryRange[]
             {
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             Assert.AreEqual("nicename.css", coverage[0].Url);
         }
 
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/unused.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
             StringAssert.Contains("unused.css", entry.Url);
             Assert.IsEmpty(entry.Ranges);
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/media.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
             StringAssert.Contains("/csscoverage/media.html", entry.Url);
             Assert.AreEqual(new CoverageEntryRange[]
@@ -155,7 +155,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 await new Promise(x => link.onload = x);
             }", TestConstants.ServerUrl + "/csscoverage/stylesheet1.css");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
         }
     }
 }

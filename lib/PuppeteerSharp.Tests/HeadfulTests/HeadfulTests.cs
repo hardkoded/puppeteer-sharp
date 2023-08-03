@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 await page.WaitForSelectorAsync("iframe");
 
                 // Ensure we found the iframe session.
-                Assert.Single(otherSessions);
+                Assert.That(otherSessions, Has.Exactly(1).Items);
 
                 // Resume the iframe and trigger another request.
                 var iframeSession = otherSessions[0];

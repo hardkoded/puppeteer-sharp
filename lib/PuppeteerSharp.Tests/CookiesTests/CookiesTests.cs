@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.IsEmpty(await Page.GetCookiesAsync());
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
-            var cookie = Assert.Single(await Page.GetCookiesAsync());
+            var cookie = Assert.That(await Page.GetCookiesAsync(), Has.Exactly(1).Items);
             Assert.AreEqual("username", cookie.Name);
             Assert.AreEqual("John Doe", cookie.Value);
             Assert.AreEqual("localhost", cookie.Domain);
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
-            Assert.Single(cookies);
+            Assert.That(cookies, Has.Exactly(1).Items);
             Assert.True(cookies[0].HttpOnly);
         }
 
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
-            Assert.Single(cookies);
+            Assert.That(cookies, Has.Exactly(1).Items);
             Assert.AreEqual(SameSite.Strict, cookies[0].SameSite);
         }
 
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             });
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
-            Assert.Single(cookies);
+            Assert.That(cookies, Has.Exactly(1).Items);
             Assert.AreEqual(SameSite.Lax, cookies[0].SameSite);
         }
 

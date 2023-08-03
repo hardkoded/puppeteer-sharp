@@ -101,7 +101,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnAnArrayOfOneElementWhenMultipleIsNotSet()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            Assert.Single(await Page.SelectAsync("select", "42", "blue", "black", "magenta"));
+            Assert.That(await Page.SelectAsync("select", "42", "blue", "black", "magenta"), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.select", "should return [] on no values")]

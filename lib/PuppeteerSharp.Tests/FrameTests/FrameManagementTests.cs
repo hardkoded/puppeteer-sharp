@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", "./Assets/frame.html");
 
-            Assert.Single(attachedFrames);
+            Assert.That(attachedFrames, Has.Exactly(1).Items);
             StringAssert.Contains("/Assets/frame.html", attachedFrames[0].Url);
 
             // validate framenavigated events
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
-            Assert.Single(navigatedFrames);
+            Assert.That(navigatedFrames, Has.Exactly(1).Items);
             Assert.AreEqual(TestConstants.EmptyPage, navigatedFrames[0].Url);
 
             // validate framedetached events
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
 
             await FrameUtils.DetachFrameAsync(Page, "frame1");
-            Assert.Single(navigatedFrames);
+            Assert.That(navigatedFrames, Has.Exactly(1).Items);
             Assert.True(navigatedFrames[0].Detached);
         }
 
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.IsEmpty(attachedFrames);
             Assert.AreEqual(4, detachedFrames.Count);
-            Assert.Single(navigatedFrames);
+            Assert.That(navigatedFrames, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame from-inside shadow DOM")]
@@ -139,7 +139,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 await new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
             Assert.AreEqual(2, Page.Frames.Length);
-            Assert.Single(Page.Frames, frame => frame.Url == TestConstants.EmptyPage);
+            Assert.That(Page.Frames, frame => frame.Url == TestConstants.EmptyPage, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
@@ -155,9 +155,9 @@ namespace PuppeteerSharp.Tests.FrameTests
                 return new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
 
-            Assert.Single(Page.Frames, frame => frame.Name == string.Empty);
-            Assert.Single(Page.Frames, frame => frame.Name == "theFrameId");
-            Assert.Single(Page.Frames, frame => frame.Name == "theFrameName");
+            Assert.That(Page.Frames, frame => frame.Name == string.Empty, Has.Exactly(1).Items);
+            Assert.That(Page.Frames, frame => frame.Name == "theFrameId", Has.Exactly(1).Items);
+            Assert.That(Page.Frames, frame => frame.Name == "theFrameName", Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.parent()")]
@@ -167,7 +167,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
-            Assert.Single(Page.Frames, frame => frame.ParentFrame == null);
+            Assert.That(Page.Frames, frame => frame.ParentFrame == null, Has.Exactly(1).Items);
             Assert.AreEqual(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
 
@@ -214,7 +214,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.IsEmpty(attachedFrames);
             Assert.AreEqual(4, detachedFrames.Count);
-            Assert.Single(navigatedFrames);
+            Assert.That(navigatedFrames, Has.Exactly(1).Items);
         }
     }
 }

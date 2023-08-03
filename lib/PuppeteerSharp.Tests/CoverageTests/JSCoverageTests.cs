@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             StringAssert.Contains("/jscoverage/simple.html", coverage[0].Url);
             Assert.AreEqual(new CoverageEntryRange[]
             {
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             Assert.AreEqual("nicename.js", coverage[0].Url);
         }
 
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/eval.html");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "shouldn't ignore eval() scripts if reportAnonymousScripts is true")]
@@ -116,9 +116,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/ranges.html");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
-            Assert.Single(entry.Ranges);
+            Assert.That(entry.Ranges, Has.Exactly(1).Items);
             var range = entry.Ranges[0];
             Assert.AreEqual("console.log('used!');", entry.Text.Substring(range.Start, range.End - range.Start));
         }
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.Single(coverage);
+            Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
             StringAssert.Contains("unused.html", entry.Url);
             Assert.IsEmpty(entry.Ranges);

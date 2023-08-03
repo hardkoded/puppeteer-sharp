@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(events);
+            Assert.That(events, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should enable and disable domains independently")]
