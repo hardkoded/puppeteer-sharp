@@ -140,7 +140,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 await new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
             Assert.AreEqual(2, Page.Frames.Length);
-            Assert.That(Page.Frames, frame => frame.Url == TestConstants.EmptyPage, Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(frame => frame.Url == TestConstants.EmptyPage), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.name()")]
@@ -156,9 +156,9 @@ namespace PuppeteerSharp.Tests.FrameTests
                 return new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
 
-            Assert.That(Page.Frames, frame => frame.Name == string.Empty, Has.Exactly(1).Items);
-            Assert.That(Page.Frames, frame => frame.Name == "theFrameId", Has.Exactly(1).Items);
-            Assert.That(Page.Frames, frame => frame.Name == "theFrameName", Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(frame => frame.Name == string.Empty), Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(frame => frame.Name == "theFrameId"), Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(frame => frame.Name == "theFrameName"), Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should report frame.parent()")]
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
-            Assert.That(Page.Frames, frame => frame.ParentFrame == null, Has.Exactly(1).Items);
+            Assert.That(Page.Frames.Where(frame => frame.ParentFrame == null), Has.Exactly(1).Items);
             Assert.AreEqual(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
         }
 
@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
             var frame2 = await frame2tsc.Task;
             Assert.False(frame2.Detached);
-            Assert.NotSame(frame1, frame2);
+            Assert.AreNotSame(frame1, frame2);
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should support framesets")]
