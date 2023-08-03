@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 handleTask,
                 Page.SetContentAsync("<h1>anything</h1>"));
             Assert.NotNull(handleTask.Result);
-            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync("x => x.textContent", handleTask.Result));
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", handleTask.Result));
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should resolve promise when node is added")]
