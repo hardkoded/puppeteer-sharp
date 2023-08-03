@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 });
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
-                var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
+                var exception = Assert.ThrowsAsync<NavigationException>(() => navigationTask);
                 StringAssert.Contains(
                     new[]
                     {

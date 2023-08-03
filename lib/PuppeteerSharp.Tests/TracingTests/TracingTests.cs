@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 Path = _file
             });
             var newPage = await Browser.NewPageAsync();
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await Page.Tracing.StartAsync(new TracingOptions
                 {

@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(async () => await Page.SelectAsync("body", ""));
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () => await Page.SelectAsync("body", ""));
             StringAssert.Contains("Element is not a <select> element.", exception.Message);
         }
 

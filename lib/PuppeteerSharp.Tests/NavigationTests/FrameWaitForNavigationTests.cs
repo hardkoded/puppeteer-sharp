@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 frame.EvaluateFunctionAsync($"() => window.location = '{TestConstants.EmptyPage}'"));
 
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
             Assert.AreEqual("Navigating frame was detached", exception.Message);
         }
     }

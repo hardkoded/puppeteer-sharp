@@ -24,11 +24,11 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
 
                 await browser.CloseAsync();
 
-                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
+                var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
                 StringAssert.Contains("Target closed", exception.Message);
                 Assert.DoesNotContain("Timeout", exception.Message);
 
-                exception = await Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
+                exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
                 StringAssert.Contains("Target closed", exception.Message);
                 Assert.DoesNotContain("Timeout", exception.Message);
             }

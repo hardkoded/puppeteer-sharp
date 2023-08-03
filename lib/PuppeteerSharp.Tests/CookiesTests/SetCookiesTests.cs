@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
 
-            var exception = await Assert.ThrowsAsync<MessageException>(async () => await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
+            var exception = Assert.ThrowsAsync<MessageException>(async () => await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
             Assert.AreEqual("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified", exception.Message);
         }
 

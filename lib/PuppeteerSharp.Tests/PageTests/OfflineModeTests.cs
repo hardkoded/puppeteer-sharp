@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
-            await Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
 
             await Page.SetOfflineModeAsync(false);
             var response = await Page.ReloadAsync();

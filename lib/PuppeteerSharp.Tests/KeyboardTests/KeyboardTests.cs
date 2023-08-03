@@ -249,11 +249,11 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         [PuppeteerTimeout]
         public async Task ShouldThrowOnUnknownKeys()
         {
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
+            Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
 
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("ё"));
+            Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("ё"));
 
-            await Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
+            Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji")]

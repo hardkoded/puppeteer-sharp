@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirected = redirectChain[0].Response;
             Assert.AreEqual(HttpStatusCode.Redirect, redirected.Status);
 
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
+            var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
             StringAssert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 

@@ -147,7 +147,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             var elementHandle = await Page.QuerySelectorAsync("h1");
             await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
             Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
@@ -157,7 +157,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         {
             await Page.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotDataAsync);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotDataAsync);
             Assert.AreEqual("Node has 0 height.", exception.Message);
         }
 

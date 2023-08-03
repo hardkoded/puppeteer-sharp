@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerTimeout]
         public async Task ShouldThrowNegativePollingInterval()
         {
-            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
+            var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
                 => Page.WaitForFunctionAsync("() => !!document.body", new WaitForFunctionOptions { PollingInterval = -10 }));
 
             StringAssert.Contains("Cannot poll with non-positive interval", exception.Message);
@@ -179,7 +179,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
-            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                 => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
 
             StringAssert.Contains("Waiting failed: 10ms exceeded", exception.Message);
@@ -190,7 +190,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldRespectDefaultTimeout()
         {
             Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                 => Page.WaitForExpressionAsync("false"));
 
             StringAssert.Contains("Waiting failed: 1ms exceeded", exception.Message);

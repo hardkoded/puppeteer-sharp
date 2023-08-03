@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             var client = await Page.Target.CreateCDPSessionAsync();
             async Task TheSourceOfTheProblems() => await client.SendAsync("ThisCommand.DoesNotExist");
 
-            var exception = await Assert.ThrowsAsync<MessageException>(async () =>
+            var exception = Assert.ThrowsAsync<MessageException>(async () =>
             {
                 await TheSourceOfTheProblems();
             });

@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("HTMLBodyElement.prototype");
             await prototypeHandle.DisposeAsync();
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
             Assert.AreEqual("Prototype JSHandle is disposed!", exception.Message);
         }
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldFailPrimitiveValuesAsPrototypes()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("42");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
             Assert.AreEqual("Prototype JSHandle must not be referencing primitive value", exception.Message);
         }

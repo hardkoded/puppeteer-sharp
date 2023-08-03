@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
+            Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync(
                 "./assets/file-to-upload.txt",
                 "./assets/pptr.png"));
         }
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
+            Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
         }
 
         [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
@@ -127,7 +127,7 @@ namespace PuppeteerSharp.Tests.InputTests
 
             var fileChooser = waitForTask.Result;
             await fileChooser.AcceptAsync();
-            var ex = await Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync());
+            var ex = Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync());
             Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }

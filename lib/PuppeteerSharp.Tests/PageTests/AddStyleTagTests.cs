@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
-            var exception = await Assert.ThrowsAsync<ArgumentException>(()
+            var exception = Assert.ThrowsAsync<ArgumentException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions()));
             Assert.AreEqual("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
         }
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                 () => Page.AddStyleTagAsync(new AddTagOptions
                 {
                     Content = "body { background-color: green; }"

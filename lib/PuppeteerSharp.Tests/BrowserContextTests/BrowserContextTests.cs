@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var defaultContext = Browser.BrowserContexts()[0];
             Assert.False(defaultContext.IsIncognito);
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
             Assert.AreSame(defaultContext, Browser.DefaultContext);
             StringAssert.Contains("cannot be closed", exception.Message);
         }
@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
-            await Assert.ThrowsAsync<TimeoutException>(()
+            Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions { Timeout = 1 }));
             await context.CloseAsync();
         }

@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";
             await Page.SetContentAsync(htmlContent);
             var elementHandle = await Page.QuerySelectorAsync("#myId");
-            var exception = await Assert.ThrowsAsync<SelectorException>(
+            var exception = Assert.ThrowsAsync<SelectorException>(
                 () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
             );
             Assert.AreEqual("Error: failed to find element matching selector", exception.Message);

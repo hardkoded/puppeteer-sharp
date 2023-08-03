@@ -260,7 +260,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             IRequest failedRequest = null;
             Page.RequestFailed += (_, e) => failedRequest = e.Request;
 
-            var exception = await Assert.ThrowsAsync<NavigationException>(
+            var exception = Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
             Assert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
@@ -292,7 +292,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) => await e.Request.AbortAsync();
-            var exception = await Assert.ThrowsAsync<NavigationException>(
+            var exception = Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
             if (TestConstants.IsChrome)

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.Issues
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task LauncherShouldFailGracefully()
         {
-            await Assert.ThrowsAsync<ProcessException>(async () =>
+            Assert.ThrowsAsync<ProcessException>(async () =>
             {
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = new[] { "--remote-debugging-port=-2" };

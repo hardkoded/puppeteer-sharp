@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
                 await browser.CloseAsync();
-                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
+                var exception = Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
                 StringAssert.Contains("Protocol error", exception.Message);
             }
         }
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            var exception = await Assert.ThrowsAsync<FileNotFoundException>(() =>
+            var exception = Assert.ThrowsAsync<FileNotFoundException>(() =>
             {
                 return Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             });
@@ -266,7 +266,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var launcher = new Launcher(TestConstants.LoggerFactory);
             await using (await launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()))
             {
-                var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                var exception = Assert.ThrowsAsync<InvalidOperationException>(() =>
                 {
                     return launcher.LaunchAsync(TestConstants.DefaultBrowserOptions());
                 });

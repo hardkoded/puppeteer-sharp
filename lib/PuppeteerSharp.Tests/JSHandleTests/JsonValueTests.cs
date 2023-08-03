@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldThrowForCircularObjects()
         {
             var windowHandle = await Page.EvaluateExpressionHandleAsync("window");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => windowHandle.JsonValueAsync());
 
             StringAssert.Contains("Could not serialize referenced object", exception.Message);

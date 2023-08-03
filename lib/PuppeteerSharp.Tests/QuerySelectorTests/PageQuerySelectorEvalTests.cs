@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerTimeout]
         public async Task ShouldThrowErrorIfNoElementIsFound()
         {
-            var exception = await Assert.ThrowsAsync<SelectorException>(()
+            var exception = Assert.ThrowsAsync<SelectorException>(()
                 => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
             StringAssert.Contains("failed to find element matching selector", exception.Message);
         }

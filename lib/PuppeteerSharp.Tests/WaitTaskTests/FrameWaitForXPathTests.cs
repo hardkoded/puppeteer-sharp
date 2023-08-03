@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             const int timeout = 10;
 
-            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                     => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = timeout }));
 
             StringAssert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);

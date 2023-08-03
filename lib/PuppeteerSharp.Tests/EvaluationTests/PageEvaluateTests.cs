@@ -94,7 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
                 return Page.EvaluateFunctionAsync(@"() => {
                     location.reload();
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldRejectPromiseWithExeption()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
                 return Page.EvaluateFunctionAsync("() => not_existing_object.property");
             });
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldSupportThrownStringsAsErrorMessages()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                 () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
             StringAssert.Contains("qwerty", exception.Message);
         }
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldSupportThrownNumbersAsErrorMessages()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                             () => Page.EvaluateExpressionAsync("throw 100500"));
             StringAssert.Contains("100500", exception.Message);
         }
@@ -233,10 +233,10 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldBeAbleToThrowATrickyError()
         {
             var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
-            PuppeteerException exception = await Assert.ThrowsAsync<PuppeteerException>(() => windowHandle.JsonValueAsync());
+            PuppeteerException exception = Assert.ThrowsAsync<PuppeteerException>(() => windowHandle.JsonValueAsync());
             var errorText = exception.Message;
 
-            exception = await Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync(@"errorText =>
+            exception = Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync(@"errorText =>
             {
                 throw new Error(errorText);
             }", errorText));
@@ -308,7 +308,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.WaitForNavigationAsync(),
                 executionContext.EvaluateFunctionAsync("() => window.location.reload()")
             );
-            var ex = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var ex = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
                 return executionContext.EvaluateFunctionAsync("() => null");
             });
@@ -340,7 +340,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldThrowErrorWithDetailedInformationOnExceptionInsidePromise()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
                 Page.EvaluateFunctionAsync(
                     @"() => new Promise(() => {
                         throw new Error('Error in promise');
