@@ -49,10 +49,10 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var mainFrame = Page.MainFrame;
-            Assert.Contains("localhost", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
+            StringAssert.Contains("localhost", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
 
             await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/empty.html");
-            Assert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
+            StringAssert.Contains("127", await mainFrame.EvaluateExpressionAsync<string>("window.location.href"));
         }
     }
 }

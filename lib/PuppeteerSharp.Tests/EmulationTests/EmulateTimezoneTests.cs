@@ -43,11 +43,11 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
                 () => Page.EmulateTimezoneAsync("Foo/Bar"));
-            Assert.Contains("Invalid timezone ID: Foo/Bar", exception.Message);
+            StringAssert.Contains("Invalid timezone ID: Foo/Bar", exception.Message);
 
             exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
                 () => Page.EmulateTimezoneAsync("Baz/Qux"));
-            Assert.Contains("Invalid timezone ID: Baz/Qux", exception.Message);
+            StringAssert.Contains("Invalid timezone ID: Baz/Qux", exception.Message);
         }
     }
 }

@@ -20,11 +20,11 @@ namespace PuppeteerSharp.Tests.BrowserTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("WebKit", userAgent);
+                StringAssert.Contains("WebKit", userAgent);
             }
             else
             {
-                Assert.Contains("Gecko", userAgent);
+                StringAssert.Contains("Gecko", userAgent);
             }
         }
     }

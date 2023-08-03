@@ -185,7 +185,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 });
                 await browser.CloseAsync();
 
-                Assert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", networkEvents);
+                StringAssert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", networkEvents);
             }
         }
 

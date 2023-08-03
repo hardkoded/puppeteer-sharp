@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.False(defaultContext.IsIncognito);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
             Assert.AreSame(defaultContext, Browser.DefaultContext);
-            Assert.Contains("cannot be closed", exception.Message);
+            StringAssert.Contains("cannot be closed", exception.Message);
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should create new incognito context")]
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.True(context.IsIncognito);
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
-            Assert.Contains(context, Browser.BrowserContexts());
+            StringAssert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
             Assert.Single(Browser.BrowserContexts());
         }

@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitException = await Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitTask);
 
             Assert.NotNull(waitException);
-            Assert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
+            StringAssert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should survive cross-process navigation")]
@@ -275,7 +275,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
 
-            Assert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
+            StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should have an error message specifically for awaiting an element to be hidden")]
@@ -286,7 +286,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
 
-            Assert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
+            StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should respond to node attribute mutation")]
@@ -316,7 +316,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync(".zombo", new WaitForSelectorOptions { Timeout = 10 }));
-            Assert.Contains("WaitForSelectorTests", exception.StackTrace);
+            StringAssert.Contains("WaitForSelectorTests", exception.StackTrace);
         }
     }
 }

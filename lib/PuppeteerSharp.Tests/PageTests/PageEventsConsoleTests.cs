@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 .Select(_ => _.Type)
                 .ToArray());
 
-            Assert.Contains("calling console.time", messages[0].Text);
+            StringAssert.Contains("calling console.time", messages[0].Text);
 
             Assert.AreEqual(new[]
             {
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
-            Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
+            StringAssert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
 
             if (TestConstants.IsChrome)
             {
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.SetContentAsync("<script>fetch('http://wat');</script>"));
 
             var args = await consoleTask.Task;
-            Assert.Contains("ERR_NAME", args.Message.Text);
+            StringAssert.Contains("ERR_NAME", args.Message.Text);
             Assert.AreEqual(ConsoleType.Error, args.Message.Type);
             Assert.AreEqual(new ConsoleMessageLocation
             {

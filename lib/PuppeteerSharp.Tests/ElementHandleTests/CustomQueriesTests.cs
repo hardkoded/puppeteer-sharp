@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 element));
 
             var handlerNamesAfterRegistering = ((Browser)Browser).GetCustomQueryHandlerNames();
-            Assert.Contains("getById", handlerNamesAfterRegistering);
+            StringAssert.Contains("getById", handlerNamesAfterRegistering);
 
             // Unregister.
             Browser.UnregisterCustomQueryHandler("getById");

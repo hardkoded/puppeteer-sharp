@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            Assert.Contains("Could not load style", exception.Message);
+            StringAssert.Contains("Could not load style", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with a path")]
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             });
             var styleHandle = await Page.QuerySelectorAsync("style");
             var styleContent = await Page.EvaluateFunctionAsync<string>("style => style.innerHTML", styleHandle);
-            Assert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
+            StringAssert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addStyleTag", "should work with content")]

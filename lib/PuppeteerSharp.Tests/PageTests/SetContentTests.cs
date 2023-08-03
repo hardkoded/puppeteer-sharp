@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Timeout = 1
                 }));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should respect default navigation timeout")]
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
                 await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>"));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setContent", "should await resources to load")]

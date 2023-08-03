@@ -148,7 +148,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
                 => Page.WaitForFunctionAsync("() => !!document.body", new WaitForFunctionOptions { PollingInterval = -10 }));
 
-            Assert.Contains("Cannot poll with non-positive interval", exception.Message);
+            StringAssert.Contains("Cannot poll with non-positive interval", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should return the success value as a JSHandle")]
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                 => Page.WaitForExpressionAsync("false", new WaitForFunctionOptions { Timeout = 10 }));
 
-            Assert.Contains("Waiting failed: 10ms exceeded", exception.Message);
+            StringAssert.Contains("Waiting failed: 10ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should respect default timeout")]
@@ -193,7 +193,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                 => Page.WaitForExpressionAsync("false"));
 
-            Assert.Contains("Waiting failed: 1ms exceeded", exception.Message);
+            StringAssert.Contains("Waiting failed: 1ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should disable timeout when its set to 0")]

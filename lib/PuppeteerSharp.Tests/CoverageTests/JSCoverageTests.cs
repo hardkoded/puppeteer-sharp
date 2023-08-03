@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
-            Assert.Contains("/jscoverage/simple.html", coverage[0].Url);
+            StringAssert.Contains("/jscoverage/simple.html", coverage[0].Url);
             Assert.AreEqual(new CoverageEntryRange[]
             {
                 new CoverageEntryRange
@@ -105,8 +105,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.AreEqual(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
-            Assert.Contains("/jscoverage/script1.js", orderedList.ElementAt(0).Url);
-            Assert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
+            StringAssert.Contains("/jscoverage/script1.js", orderedList.ElementAt(0).Url);
+            StringAssert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report right ranges")]
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
-            Assert.Contains("unused.html", entry.Url);
+            StringAssert.Contains("unused.html", entry.Url);
             Assert.IsEmpty(entry.Ranges);
         }
 

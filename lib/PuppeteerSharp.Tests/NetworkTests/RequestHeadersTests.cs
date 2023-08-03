@@ -18,11 +18,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
+                StringAssert.Contains("Chrome", response.Request.Headers["User-Agent"]);
             }
             else
             {
-                Assert.Contains("Firefox", response.Request.Headers["User-Agent"]);
+                StringAssert.Contains("Firefox", response.Request.Headers["User-Agent"]);
             }
         }
     }

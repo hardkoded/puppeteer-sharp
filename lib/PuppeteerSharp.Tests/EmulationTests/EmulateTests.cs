@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.EmulateAsync(TestConstants.IPhone);
 
             Assert.AreEqual(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
-            Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulate", "should support clicking")]

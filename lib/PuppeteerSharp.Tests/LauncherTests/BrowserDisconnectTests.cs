@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
                 var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
-                Assert.Contains(
+                StringAssert.Contains(
                     new[]
                     {
                         "Navigation failed because browser has disconnected! (Connection disposed)",

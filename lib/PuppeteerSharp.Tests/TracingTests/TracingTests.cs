@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             using (var reader = new JsonTextReader(file))
             {
                 var traceJson = JToken.ReadFrom(reader);
-                Assert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceJson["metadata"]["trace-config"].ToString());
+                StringAssert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceJson["metadata"]["trace-config"].ToString());
             }
         }
 
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             });
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
-            Assert.Contains("screenshot", trace);
+            StringAssert.Contains("screenshot", trace);
         }
     }
 }

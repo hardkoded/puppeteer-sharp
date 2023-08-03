@@ -19,9 +19,9 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var targets = Browser.Targets();
-            Assert.Contains(targets, target => target.Type == TargetType.Page
+            StringAssert.Contains(targets, target => target.Type == TargetType.Page
                 && target.Url == TestConstants.AboutBlank);
-            Assert.Contains(targets, target => target.Type == TargetType.Browser);
+            StringAssert.Contains(targets, target => target.Type == TargetType.Browser);
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "Browser.pages should return all of the pages")]
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             // The pages will be the testing page and the original newtab page
             var allPages = (await Context.PagesAsync()).ToArray();
             Assert.Single(allPages);
-            Assert.Contains(Page, allPages);
+            StringAssert.Contains(Page, allPages);
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should contain browser target")]
@@ -68,14 +68,14 @@ namespace PuppeteerSharp.Tests.TargetTests
                 );
 
             var otherPage = await otherPageTask.Result;
-            Assert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
+            StringAssert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
 
             Assert.AreEqual("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
             Assert.NotNull(await otherPage.QuerySelectorAsync("body"));
 
             var allPages = await Context.PagesAsync();
-            Assert.Contains(Page, allPages);
-            Assert.Contains(otherPage, allPages);
+            StringAssert.Contains(Page, allPages);
+            StringAssert.Contains(otherPage, allPages);
 
             var closePageTaskCompletion = new TaskCompletionSource<IPage>();
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.AreEqual(otherPage, await closePageTaskCompletion.Task);
 
             allPages = await Task.WhenAll(Context.Targets().Select(target => target.PageAsync()));
-            Assert.Contains(Page, allPages);
+            StringAssert.Contains(Page, allPages);
             Assert.DoesNotContain(otherPage, allPages);
         }
 

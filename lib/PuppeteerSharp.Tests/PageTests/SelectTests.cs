@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
               Page.SelectAsync("select", "blue"),
               Page.WaitForNavigationAsync()
             );
-            Assert.Contains("empty.html", Page.Url);
+            StringAssert.Contains("empty.html", Page.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.select", "should select multiple options")]
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(async () => await Page.SelectAsync("body", ""));
-            Assert.Contains("Element is not a <select> element.", exception.Message);
+            StringAssert.Contains("Element is not a <select> element.", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.select", "should return [] on no matched values")]

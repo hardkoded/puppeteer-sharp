@@ -89,11 +89,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("net::ERR_ABORTED", exception.Message);
+                StringAssert.Contains("net::ERR_ABORTED", exception.Message);
             }
             else
             {
-                Assert.Contains("NS_BINDING_ABORTED", exception.Message);
+                StringAssert.Contains("NS_BINDING_ABORTED", exception.Message);
             }
         }
 
@@ -146,11 +146,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("Cannot navigate to invalid URL", exception.Message);
+                StringAssert.Contains("Cannot navigate to invalid URL", exception.Message);
             }
             else
             {
-                Assert.Contains("Invalid url", exception.Message);
+                StringAssert.Contains("Invalid url", exception.Message);
             }
         }
 
@@ -166,11 +166,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
+                StringAssert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
             }
             else
             {
-                Assert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
+                StringAssert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
             }
         }
 
@@ -182,11 +182,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
+                StringAssert.Contains("net::ERR_CERT_AUTHORITY_INVALID", exception.Message);
             }
             else
             {
-                Assert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
+                StringAssert.Contains("SSL_ERROR_UNKNOWN", exception.Message);
             }
         }
 
@@ -198,11 +198,11 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("net::ERR_CONNECTION_REFUSED", exception.Message);
+                StringAssert.Contains("net::ERR_CONNECTION_REFUSED", exception.Message);
             }
             else
             {
-                Assert.Contains("NS_ERROR_CONNECTION_REFUSED", exception.Message);
+                StringAssert.Contains("NS_ERROR_CONNECTION_REFUSED", exception.Message);
             }
         }
 
@@ -214,7 +214,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             var exception = await Assert.ThrowsAnyAsync<Exception>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding default maximum navigation timeout")]
@@ -225,7 +225,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding default maximum timeout")]
@@ -236,7 +236,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should prioritize default navigation timeout over default timeout")]
@@ -248,7 +248,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
             var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should disable timeout when its set to 0")]
@@ -469,7 +469,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/self-request.html");
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Contains("self-request.html", response.Url);
+            StringAssert.Contains("self-request.html", response.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating and show the url at the error message")]
@@ -478,8 +478,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             var url = TestConstants.HttpsPrefix + "/redirect/1.html";
             var exception = await Assert.ThrowsAnyAsync<NavigationException>(async () => await Page.GoToAsync(url));
-            Assert.Contains(url, exception.Message);
-            Assert.Contains(url, exception.Url);
+            StringAssert.Contains(url, exception.Message);
+            StringAssert.Contains(url, exception.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should send referer")]

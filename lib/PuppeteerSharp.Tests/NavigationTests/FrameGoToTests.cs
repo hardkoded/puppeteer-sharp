@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await waitForRequestTask;
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = await Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
-            Assert.Contains(
+            StringAssert.Contains(
                 new[]
                 {
                     exception.Message

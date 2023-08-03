@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var text = await Page.EvaluateFunctionAsync<string>(
                 "(e) => e.userAgent",
                 navigatorHandle);
-            Assert.Contains("Mozilla", text);
+            StringAssert.Contains("Mozilla", text);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should accept object handle to primitive types")]
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => document.body");
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
                 Page.EvaluateFunctionHandleAsync("(opts) => opts.elem.querySelector('p')", new { aHandle }));
-            Assert.Contains("Are you passing a nested JSHandle?", exception.Message);
+            StringAssert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "Page.evaluateHandle", "should accept object handle to unserializable value")]

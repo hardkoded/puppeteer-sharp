@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
-            Assert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
+            StringAssert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
             await Page.SetUserAgentAsync("foobar");
 
             var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [PuppeteerTimeout]
         public async Task ShouldWorkForSubframes()
         {
-            Assert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            StringAssert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
             await Page.SetUserAgentAsync("foobar");
             var waitForRequestTask = Server.WaitForRequest<string>("/empty.html", (request) => request.Headers["user-agent"]);
 
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             Assert.DoesNotContain("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
             await Page.SetUserAgentAsync(TestConstants.IPhone.UserAgent);
-            Assert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work with additional userAgentMetdata")]

@@ -26,9 +26,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
             );
             var response = await waitForNavigationResult;
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Contains("grid.html", response.Url);
+            StringAssert.Contains("grid.html", response.Url);
             Assert.AreSame(frame, response.Frame);
-            Assert.Contains("/frames/one-frame.html", Page.Url);
+            StringAssert.Contains("/frames/one-frame.html", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should fail when frame detaches")]

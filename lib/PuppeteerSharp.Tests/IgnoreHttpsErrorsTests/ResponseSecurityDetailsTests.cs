@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             var response = await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
             Assert.NotNull(response.SecurityDetails);
-            Assert.Contains("TLS", response.SecurityDetails.Protocol);
+            StringAssert.Contains("TLS", response.SecurityDetails.Protocol);
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should be |null| for non-secure requests")]

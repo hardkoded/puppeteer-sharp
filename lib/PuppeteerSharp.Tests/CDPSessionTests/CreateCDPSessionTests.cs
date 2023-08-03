@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                     Expression = "3 + 1",
                     ReturnByValue = true
                 }));
-            Assert.Contains("Session closed.", exception.Message);
+            StringAssert.Contains("Session closed.", exception.Message);
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should throw nice errors")]
@@ -103,8 +103,8 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             {
                 await TheSourceOfTheProblems();
             });
-            Assert.Contains("TheSourceOfTheProblems", exception.StackTrace);
-            Assert.Contains("ThisCommand.DoesNotExist", exception.Message);
+            StringAssert.Contains("TheSourceOfTheProblems", exception.StackTrace);
+            StringAssert.Contains("ThisCommand.DoesNotExist", exception.Message);
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should expose the underlying connection")]

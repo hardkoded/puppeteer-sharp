@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             }");
             Assert.AreEqual("WOOF WOOF", result.SelectToken("message").ToObject<string>());
-            Assert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
+            StringAssert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]

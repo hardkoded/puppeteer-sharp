@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerTimeout]
         public void ShouldHaveRegisteredHandler()
         {
-            Assert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames());
+            StringAssert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames());
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should query existing elements")]

@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitPromise = frame.WaitForXPathAsync("//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = await Assert.ThrowsAnyAsync<Exception>(() => waitPromise);
-            Assert.Contains("waitForFunction failed: frame got detached.", exception.Message);
+            StringAssert.Contains("waitForFunction failed: frame got detached.", exception.Message);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "hidden should wait for display: none")]
@@ -125,7 +125,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                     => Page.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = timeout }));
 
-            Assert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);
+            StringAssert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);
         }
     }
 }

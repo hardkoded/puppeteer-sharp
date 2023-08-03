@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
             Assert.Single(failedRequests);
-            Assert.Contains("one-style.css", failedRequests[0].Url);
+            StringAssert.Contains("one-style.css", failedRequests[0].Url);
             Assert.Null(failedRequests[0].Response);
             Assert.AreEqual(ResourceType.StyleSheet, failedRequests[0].ResourceType);
 
@@ -151,7 +151,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;
             Assert.Single(redirectChain);
-            Assert.Contains("/foo.html", redirectChain[0].Url);
+            StringAssert.Contains("/foo.html", redirectChain[0].Url);
             Assert.AreEqual(TestConstants.Port, redirectChain[0].Response.RemoteAddress.Port);
         }
     }

@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             var exception = await Assert.ThrowsAsync<SelectorException>(()
                 => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
-            Assert.Contains("failed to find element matching selector", exception.Message);
+            StringAssert.Contains("failed to find element matching selector", exception.Message);
         }
     }
 }

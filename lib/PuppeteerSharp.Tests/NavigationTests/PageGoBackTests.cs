@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             response = await Page.GoForwardAsync();
             Assert.True(response.Ok);
-            Assert.Contains("grid", response.Url);
+            StringAssert.Contains("grid", response.Url);
 
             response = await Page.GoForwardAsync();
             Assert.Null(response);

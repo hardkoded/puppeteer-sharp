@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 WaitEvent(Page.Client, "Runtime.exceptionThrown")
             );
 
-            Assert.Contains("Fancy", error);
+            StringAssert.Contains("Fancy", error);
         }
     }
 }

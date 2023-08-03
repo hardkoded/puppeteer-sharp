@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Longitude = 200,
                     Latitude = 100
                 }));
-            Assert.Contains("Invalid longitude '200'", exception.Message);
+            StringAssert.Contains("Invalid longitude '200'", exception.Message);
         }
     }
 }

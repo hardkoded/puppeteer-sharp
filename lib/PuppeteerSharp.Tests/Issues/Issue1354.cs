@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.Issues
 
                 // Deep inside an existing mostly sync app...
                 var content = page.GetContentAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                Assert.Contains("REPLACE", content);
+                StringAssert.Contains("REPLACE", content);
             }
         }
     }

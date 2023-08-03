@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 }");
             });
 
-            Assert.Contains("Protocol error", exception.Message);
+            StringAssert.Contains("Protocol error", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should work right after framenavigated")]
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 return Page.EvaluateFunctionAsync("() => not_existing_object.property");
             });
 
-            Assert.Contains("not_existing_object", exception.Message);
+            StringAssert.Contains("not_existing_object", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should support thrown strings as error messages")]
@@ -152,7 +152,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
                 () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
-            Assert.Contains("qwerty", exception.Message);
+            StringAssert.Contains("qwerty", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should support thrown numbers as error messages")]
@@ -161,7 +161,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = await Assert.ThrowsAsync<EvaluationFailedException>(
                             () => Page.EvaluateExpressionAsync("throw 100500"));
-            Assert.Contains("100500", exception.Message);
+            StringAssert.Contains("100500", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should return complex objects")]
@@ -240,7 +240,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 throw new Error(errorText);
             }", errorText));
-            Assert.Contains(errorText, exception.Message);
+            StringAssert.Contains(errorText, exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should accept a string")]
@@ -275,7 +275,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await element.DisposeAsync();
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
-            Assert.Contains("JSHandle is disposed", exception.Message);
+            StringAssert.Contains("JSHandle is disposed", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw if elementHandles are from other frames")]
@@ -286,7 +286,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
-            Assert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
+            StringAssert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should simulate a user gesture")]
@@ -312,7 +312,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 return executionContext.EvaluateFunctionAsync("() => null");
             });
-            Assert.Contains("navigation", ex.Message);
+            StringAssert.Contains("navigation", ex.Message);
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should not throw an error when evaluation does a navigation")]
@@ -345,7 +345,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     @"() => new Promise(() => {
                         throw new Error('Error in promise');
                     })"));
-            Assert.Contains("Error in promise", exception.Message);
+            StringAssert.Contains("Error in promise", exception.Message);
         }
 
         [PuppeteerTimeout]

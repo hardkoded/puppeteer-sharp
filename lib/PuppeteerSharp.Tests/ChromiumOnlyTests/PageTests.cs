@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
 
-            Assert.Contains("feature/5718547946799104", interventionHeader);
+            StringAssert.Contains("feature/5718547946799104", interventionHeader);
         }
     }
 }

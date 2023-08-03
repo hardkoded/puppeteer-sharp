@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Timeout = 1
                 }));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect default timeout")]
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
                 await Page.WaitForResponseAsync(_ => false));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with no timeout")]

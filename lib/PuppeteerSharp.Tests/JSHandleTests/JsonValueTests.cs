@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var exception = await Assert.ThrowsAsync<PuppeteerException>(()
                 => windowHandle.JsonValueAsync());
 
-            Assert.Contains("Could not serialize referenced object", exception.Message);
+            StringAssert.Contains("Could not serialize referenced object", exception.Message);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 workerCreatedTcs.Task,
                 Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
-            Assert.That(worker.Url.Contains("worker.js"));
+            StringAssert.Contains("worker.js", worker.Url);
             Assert.AreEqual("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
             var errorLog = await errorTcs.Task;
-            Assert.Contains("this is my error", errorLog);
+            StringAssert.Contains("this is my error", errorLog);
         }
     }
 }

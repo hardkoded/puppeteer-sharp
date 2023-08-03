@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
                 await browser.CloseAsync();
                 var exception = await Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
-                Assert.Contains("Protocol error", exception.Message);
+                StringAssert.Contains("Protocol error", exception.Message);
             }
         }
 
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 return Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             });
 
-            Assert.Contains("Failed to launch", exception.Message);
+            StringAssert.Contains("Failed to launch", exception.Message);
             Assert.AreEqual(options.ExecutablePath, exception.FileName);
         }
 
@@ -177,7 +177,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [PuppeteerTimeout]
         public void ShouldReturnTheDefaultArguments()
         {
-            Assert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+            StringAssert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
             Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
@@ -185,30 +185,30 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
-                Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+                StringAssert.Contains("--no-first-run", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                StringAssert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo"
                 }));
             }
             else
             {
-                Assert.Contains("--no-remote", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                StringAssert.Contains("--no-remote", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    Assert.Contains("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                    StringAssert.Contains("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
                 }
                 else
                 {
                     Assert.DoesNotContain("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
                 }
-                Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
+                StringAssert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
                     Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
                 }));
-                Assert.Contains("\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+                StringAssert.Contains("\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
                     Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
@@ -298,7 +298,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 var spawnargs = browser.Process.StartInfo.Arguments;
                 Assert.DoesNotContain(defaultArgs[0], spawnargs);
-                Assert.Contains(defaultArgs[1], spawnargs);
+                StringAssert.Contains(defaultArgs[1], spawnargs);
                 Assert.DoesNotContain(defaultArgs[2], spawnargs);
             }
         }

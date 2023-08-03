@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
-            Assert.Contains("/csscoverage/simple.html", coverage[0].Url);
+            StringAssert.Contains("/csscoverage/simple.html", coverage[0].Url);
             Assert.AreEqual(new CoverageEntryRange[]
             {
                 new CoverageEntryRange
@@ -59,8 +59,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.AreEqual(2, coverage.Length);
             var orderedList = coverage.OrderBy(c => c.Url);
-            Assert.Contains("/csscoverage/stylesheet1.css", orderedList.ElementAt(0).Url);
-            Assert.Contains("/csscoverage/stylesheet2.css", orderedList.ElementAt(1).Url);
+            StringAssert.Contains("/csscoverage/stylesheet1.css", orderedList.ElementAt(0).Url);
+            StringAssert.Contains("/csscoverage/stylesheet2.css", orderedList.ElementAt(1).Url);
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should report stylesheets that have no coverage")]
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
-            Assert.Contains("unused.css", entry.Url);
+            StringAssert.Contains("unused.css", entry.Url);
             Assert.IsEmpty(entry.Ranges);
         }
 
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.Single(coverage);
             var entry = coverage[0];
-            Assert.Contains("/csscoverage/media.html", entry.Url);
+            StringAssert.Contains("/csscoverage/media.html", entry.Url);
             Assert.AreEqual(new CoverageEntryRange[]
             {
                 new CoverageEntryRange

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
 
             var exception = await exceptionTask;
-            Assert.Contains("Protocol error", exception.Message);
+            StringAssert.Contains("Protocol error", exception.Message);
             Assert.AreEqual("Target.detachedFromTarget", exception.CloseReason);
         }
 
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            Assert.Contains(page, await browser.PagesAsync());
+            StringAssert.Contains(page, await browser.PagesAsync());
             await page.CloseAsync();
             Assert.DoesNotContain(page, await browser.PagesAsync());
         }
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            Assert.Contains(page, await browser.PagesAsync());
+            StringAssert.Contains(page, await browser.PagesAsync());
             await page.DisposeAsync();
             Assert.DoesNotContain(page, await browser.PagesAsync());
         }
@@ -114,11 +114,11 @@ namespace PuppeteerSharp.Tests.PageTests
             await newPage.CloseAsync();
 
             var exception = await Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
-            Assert.Contains("Target closed", exception.Message);
+            StringAssert.Contains("Target closed", exception.Message);
             Assert.DoesNotContain("Timeout", exception.Message);
 
             exception = await Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
-            Assert.Contains("Target closed", exception.Message);
+            StringAssert.Contains("Target closed", exception.Message);
             Assert.DoesNotContain("Timeout", exception.Message);
         }
 

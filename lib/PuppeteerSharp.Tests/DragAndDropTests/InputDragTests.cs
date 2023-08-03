@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
             var draggable = await Page.QuerySelectorAsync("#drag");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(() => draggable.DragAsync(1, 1));
-            Assert.Contains("Drag Interception is not enabled!", exception.Message);
+            StringAssert.Contains("Drag Interception is not enabled!", exception.Message);
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragIntercepted event when dragged")]
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             await draggable.DragAsync(1, 1);
             await Page.SetDragInterceptionAsync(false);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(() => draggable.DragAsync(1, 1));
-            Assert.Contains("Drag Interception is not enabled!", exception.Message);
+            StringAssert.Contains("Drag Interception is not enabled!", exception.Message);
         }
     }
 }

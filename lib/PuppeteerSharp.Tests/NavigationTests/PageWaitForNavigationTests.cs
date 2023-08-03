@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
             var response = await waitForNavigationResult;
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.Contains("grid.html", response.Url);
+            StringAssert.Contains("grid.html", response.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with both domcontentloaded and load")]

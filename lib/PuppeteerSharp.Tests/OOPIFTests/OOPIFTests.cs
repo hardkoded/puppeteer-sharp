@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout();
-            Assert.Contains("/empty.html", frame.Url);
+            StringAssert.Contains("/empty.html", frame.Url);
             var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
               Page,
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/assets/frame.html"
             );
             await nav.WithTimeout();
-            Assert.Contains("/assets/frame.html", frame.Url);
+            StringAssert.Contains("/assets/frame.html", frame.Url);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes becoming normal iframes again")]
@@ -103,8 +103,8 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frame1 = await frame1Task;
             var frame2 = await frame2Task;
 
-            Assert.Contains("one-frame", await frame1.EvaluateExpressionAsync<string>("document.location.href"));
-            Assert.Contains("frame.html", await frame2.EvaluateExpressionAsync<string>("document.location.href"));
+            StringAssert.Contains("one-frame", await frame1.EvaluateExpressionAsync<string>("document.location.href"));
+            StringAssert.Contains("frame.html", await frame2.EvaluateExpressionAsync<string>("document.location.href"));
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support OOP iframes getting detached")]
@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
             var frame = await frameTask.WithTimeout();
-            Assert.Contains("/empty.html", frame.Url);
+            StringAssert.Contains("/empty.html", frame.Url);
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             Assert.AreEqual(TestConstants.EmptyPage, frame.Url);
         }
@@ -257,17 +257,17 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
             var frame1 = oopIframe.ChildFrames.First();
-            Assert.Contains("empty.html", frame1.Url);
+            StringAssert.Contains("empty.html", frame1.Url);
             await FrameUtils.NavigateFrameAsync(
               oopIframe,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/oopif.html"
             ).WithTimeout();
-            Assert.Contains("oopif.html", frame1.Url);
+            StringAssert.Contains("oopif.html", frame1.Url);
             await frame1.GoToAsync(
                 TestConstants.CrossProcessHttpPrefix + "/oopif.html#navigate-within-document",
                 new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } }).WithTimeout();
-            Assert.Contains("/oopif.html#navigate-within-document", frame1.Url);
+            StringAssert.Contains("/oopif.html#navigate-within-document", frame1.Url);
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(oopIframe, "frame1").WithTimeout();

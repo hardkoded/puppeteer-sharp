@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
                 => Page.AddScriptTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            Assert.Contains("Could not load script", exception.Message);
+            StringAssert.Contains("Could not load script", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with a path")]
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
             var result = await Page.EvaluateExpressionAsync<string>("__injectedError.stack");
-            Assert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
+            StringAssert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should work with content")]
