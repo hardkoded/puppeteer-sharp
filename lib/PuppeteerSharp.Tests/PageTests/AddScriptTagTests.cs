@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("page.spec.ts", "Page.addScriptTag", "should throw an error if no options are provided")]
         [PuppeteerTimeout]
-        public async Task ShouldThrowAnErrorIfNoOptionsAreProvided()
+        public void ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(()
                 => Page.AddScriptTagAsync(new AddTagOptions()));

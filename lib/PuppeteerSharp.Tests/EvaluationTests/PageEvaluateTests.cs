@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw when evaluation triggers reload")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowWhenEvaluationTriggersReload()
+        public void ShouldThrowWhenEvaluationTriggersReload()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should reject promise with exception")]
         [PuppeteerTimeout]
-        public async Task ShouldRejectPromiseWithExeption()
+        public void ShouldRejectPromiseWithExeption()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
@@ -148,7 +148,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should support thrown strings as error messages")]
         [PuppeteerTimeout]
-        public async Task ShouldSupportThrownStringsAsErrorMessages()
+        public void ShouldSupportThrownStringsAsErrorMessages()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                 () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
@@ -157,7 +157,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should support thrown numbers as error messages")]
         [PuppeteerTimeout]
-        public async Task ShouldSupportThrownNumbersAsErrorMessages()
+        public void ShouldSupportThrownNumbersAsErrorMessages()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                             () => Page.EvaluateExpressionAsync("throw 100500"));
@@ -338,7 +338,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw error with detailed information on exception inside promise ")]
         [PuppeteerTimeout]
-        public async Task ShouldThrowErrorWithDetailedInformationOnExceptionInsidePromise()
+        public void ShouldThrowErrorWithDetailedInformationOnExceptionInsidePromise()
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
                 Page.EvaluateFunctionAsync(
@@ -397,7 +397,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(1, objectPopulated["a"]);
 
             var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
-            Assert.IsType<JArray>(arrayPopulated);
+            Assert.IsInstanceOf<JArray>(arrayPopulated);
             Assert.AreEqual(1, ((JArray)arrayPopulated)[0]);
 
             Assert.AreEqual("1", await Page.EvaluateExpressionAsync("'1'"));
