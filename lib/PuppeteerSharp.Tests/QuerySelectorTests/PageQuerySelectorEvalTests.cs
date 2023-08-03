@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -49,7 +50,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 
         [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should throw error if no element is found")]
         [PuppeteerTimeout]
-        public async Task ShouldThrowErrorIfNoElementIsFound()
+        public void ShouldThrowErrorIfNoElementIsFound()
         {
             var exception = Assert.ThrowsAsync<SelectorException>(()
                 => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));

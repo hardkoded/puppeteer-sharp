@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -31,7 +32,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [PuppeteerTimeout]
         public void ShouldHaveRegisteredHandler()
         {
-            StringAssert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames());
+            Assert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames().ToArray());
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should query existing elements")]

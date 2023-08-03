@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad url")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldFailWhenNavigatingToBadUrl()
+        public void ShouldFailWhenNavigatingToBadUrl()
         {
             var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync("asdfasdf"));
 
@@ -157,7 +157,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad SSL")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldFailWhenNavigatingToBadSSL()
+        public void ShouldFailWhenNavigatingToBadSSL()
         {
             Page.Request += (_, e) => Assert.NotNull(e.Request);
             Page.RequestFinished += (_, e) => Assert.NotNull(e.Request);
@@ -193,7 +193,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when main resources failed to load")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenMainResourcesFailedToLoad()
+        public void ShouldFailWhenMainResourcesFailedToLoad()
         {
             var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
 
@@ -209,7 +209,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding maximum navigation timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenExceedingMaximumNavigationTimeout()
+        public void ShouldFailWhenExceedingMaximumNavigationTimeout()
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
@@ -220,7 +220,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding default maximum navigation timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
+        public void ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
@@ -231,7 +231,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when exceeding default maximum timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenExceedingDefaultMaximumTimeout()
+        public void ShouldFailWhenExceedingDefaultMaximumTimeout()
         {
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
@@ -242,7 +242,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should prioritize default navigation timeout over default timeout")]
         [PuppeteerTimeout]
-        public async Task ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
+        public void ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
         {
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
@@ -475,7 +475,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating and show the url at the error message")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
+        public void ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
         {
             var url = TestConstants.HttpsPrefix + "/redirect/1.html";
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(url));

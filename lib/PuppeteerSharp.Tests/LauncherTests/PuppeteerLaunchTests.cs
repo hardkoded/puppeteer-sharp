@@ -178,10 +178,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public void ShouldReturnTheDefaultArguments()
         {
             Assert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
-            Assert.DoesNotContain("--headless", Puppeteer.GetDefaultArgs(new LaunchOptions
+            Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
-            }));
+            }), Does.Not.Contain("--headless"));
 
             if (TestConstants.IsChrome)
             {

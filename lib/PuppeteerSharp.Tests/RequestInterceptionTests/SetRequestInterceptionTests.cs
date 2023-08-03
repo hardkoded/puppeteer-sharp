@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
@@ -263,7 +264,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var exception = Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
-            Assert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
+            StringAssert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
             Assert.NotNull(failedRequest);
             Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
@@ -612,8 +613,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "one-style.html")).AbsoluteUri;
             await Page.GoToAsync(uri);
             Assert.AreEqual(2, urls.Count);
-            StringAssert.Contains("one-style.html", urls);
-            StringAssert.Contains("one-style.css", urls);
+            Assert.Contains("one-style.html", urls);
+            Assert.Contains("one-style.css", urls);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not cache if cache disabled")]

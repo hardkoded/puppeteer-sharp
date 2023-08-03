@@ -4,6 +4,7 @@ using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
@@ -29,8 +30,8 @@ namespace PuppeteerSharp.Tests.TargetTests
 
         [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should timeout waiting for a non-existent target")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public Task ShouldTimeoutWaitingForANonExistentTarget()
-            => Assert.ThrowsAnyAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
+        public void ShouldTimeoutWaitingForANonExistentTarget()
+            => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
                 new() { Timeout = 1}));
     }
