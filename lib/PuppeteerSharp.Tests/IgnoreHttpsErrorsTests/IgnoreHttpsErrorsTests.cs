@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {

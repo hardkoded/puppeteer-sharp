@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.KeyboardTests
 {
@@ -247,7 +248,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should throw on unknown keys")]
         [PuppeteerTimeout]
-        public async Task ShouldThrowOnUnknownKeys()
+        public void ShouldThrowOnUnknownKeys()
         {
             Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
 

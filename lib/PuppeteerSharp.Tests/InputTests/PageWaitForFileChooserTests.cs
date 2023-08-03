@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -46,9 +47,9 @@ namespace PuppeteerSharp.Tests.InputTests
 
         [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should respect timeout")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public Task ShouldRespectTimeout()
+        public void ShouldRespectTimeout()
         {
-            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));
@@ -56,18 +57,18 @@ namespace PuppeteerSharp.Tests.InputTests
 
         [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should respect default timeout when there is no custom timeout")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public Task ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
+        public void ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
         {
             Page.DefaultTimeout = 1;
-            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
         }
 
         [PuppeteerTest("input.spec.ts", "Page.waitForFileChooser", "should prioritize exact timeout over default timeout")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public Task ShouldPrioritizeExactTimeoutOverDefaultTimeout()
+        public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            return Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
             {
                 Timeout = 1
             }));

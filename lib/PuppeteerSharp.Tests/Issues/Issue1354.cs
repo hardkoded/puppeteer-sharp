@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues

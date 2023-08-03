@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.InputTests
 {

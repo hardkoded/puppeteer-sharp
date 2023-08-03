@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
@@ -176,7 +177,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad SSL after redirects")]
         [PuppeteerTimeout]
-        public async Task ShouldFailWhenNavigatingToBadSSLAfterRedirects()
+        public void ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
             var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
 

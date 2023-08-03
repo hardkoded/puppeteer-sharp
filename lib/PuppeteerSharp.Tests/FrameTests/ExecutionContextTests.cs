@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             var context2 = await Page.FirstChildFrame().GetExecutionContextAsync();
             Assert.NotNull(context1);
             Assert.NotNull(context2);
-            Assert.NotEqual(context1, context2);
+            Assert.AreNotEqual(context1, context2);
             Assert.AreEqual(Page.MainFrame, context1.Frame);
             Assert.AreEqual(Page.FirstChildFrame(), context2.Frame);
 

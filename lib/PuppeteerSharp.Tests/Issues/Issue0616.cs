@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
 using System.IO;
 using System.Net.Http;

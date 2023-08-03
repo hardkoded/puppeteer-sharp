@@ -7,6 +7,7 @@ using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
