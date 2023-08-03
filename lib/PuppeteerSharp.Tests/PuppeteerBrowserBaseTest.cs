@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Tests
 
         protected LaunchOptions DefaultOptions { get; set; }
 
-
         [SetUp]
         public virtual async Task InitializeAsync()
             => Browser = await Puppeteer.LaunchAsync(

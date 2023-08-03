@@ -31,4 +31,3 @@ namespace PuppeteerSharp.Tests
             => Task.WhenAll(Server.StopAsync(), HttpsServer.StopAsync());
     }
 }
-
