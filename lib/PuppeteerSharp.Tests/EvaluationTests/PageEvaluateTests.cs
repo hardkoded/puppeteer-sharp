@@ -273,7 +273,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var element = await Page.QuerySelectorAsync("section");
             Assert.NotNull(element);
             await element.DisposeAsync();
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
             StringAssert.Contains("JSHandle is disposed", exception.Message);
         }
@@ -284,7 +284,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             StringAssert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
         }

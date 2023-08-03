@@ -41,11 +41,11 @@ namespace PuppeteerSharp.Tests.EmulationTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowForInvalidTimezoneId()
         {
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+            var exception = Assert.ThrowsAsync<PuppeteerException>(
                 () => Page.EmulateTimezoneAsync("Foo/Bar"));
             StringAssert.Contains("Invalid timezone ID: Foo/Bar", exception.Message);
 
-            exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+            exception = Assert.ThrowsAsync<PuppeteerException>(
                 () => Page.EmulateTimezoneAsync("Baz/Qux"));
             StringAssert.Contains("Invalid timezone ID: Baz/Qux", exception.Message);
         }

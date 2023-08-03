@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
 
             Func<Task> act = () => tcs.Task.WithTimeout(() => throw new TimeoutException(), TimeSpan.FromTicks(1));
 
-            await Assert.ThrowsAnyAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(act);
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
 
             Func<Task> act = () => tcs.Task.WithTimeout(TimeSpan.FromTicks(1));
 
-            await Assert.ThrowsAnyAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(act);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
 
             Func<Task> act = () => tcs.Task.WithTimeout(() => Task.FromException(new TimeoutException()), TimeSpan.FromTicks(1), token);
 
-            await Assert.ThrowsAnyAsync<TimeoutException>(act);
+            Assert.ThrowsAsync<TimeoutException>(act);
         }
 
         [Test]

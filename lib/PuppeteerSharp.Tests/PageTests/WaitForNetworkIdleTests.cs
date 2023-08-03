@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldRespectTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 }));
 
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);

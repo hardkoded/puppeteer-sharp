@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var frame = Page.FirstChildFrame();
             var waitPromise = frame.WaitForXPathAsync("//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
-            var exception = await Assert.ThrowsAnyAsync<Exception>(() => waitPromise);
+            var exception = Assert.ThrowsAsync<Exception>(() => waitPromise);
             StringAssert.Contains("waitForFunction failed: frame got detached.", exception.Message);
         }
 

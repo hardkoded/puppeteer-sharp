@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var frame = Page.FirstChildFrame();
             await FrameUtils.DetachFrameAsync(Page, "frame1");
-            var exception = await Assert.ThrowsAnyAsync<PuppeteerException>(
+            var exception = Assert.ThrowsAsync<PuppeteerException>(
                 () => frame.EvaluateExpressionAsync("5 * 8"));
             StringAssert.Contains("Execution Context is not available in detached frame", exception.Message);
         }

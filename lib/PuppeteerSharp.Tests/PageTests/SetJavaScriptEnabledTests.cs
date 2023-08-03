@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetJavaScriptEnabledAsync(false);
             await Page.GoToAsync("data:text/html, <script>var something = 'forbidden'</script>");
 
-            var exception = await Assert.ThrowsAnyAsync<Exception>(async () => await Page.EvaluateExpressionAsync("something"));
+            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.EvaluateExpressionAsync("something"));
             StringAssert.Contains("something is not defined", exception.Message);
 
             await Page.SetJavaScriptEnabledAsync(true);

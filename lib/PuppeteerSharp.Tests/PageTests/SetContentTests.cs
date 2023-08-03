@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Server.SetRoute(imgPath, _ => Task.Delay(-1));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>", new NavigationOptions
                 {
                     Timeout = 1
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>"));
 
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
