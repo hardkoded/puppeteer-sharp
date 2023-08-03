@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
