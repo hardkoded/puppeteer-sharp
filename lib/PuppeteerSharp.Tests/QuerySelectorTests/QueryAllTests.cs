@@ -13,19 +13,20 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        public override async Task InitializeAsync()
-        {
-            await base.InitializeAsync();
 
+        [SetUp]
+        public void RegisterCustomQueryHandler()
+        {
             Browser.RegisterCustomQueryHandler("allArray", new CustomQueryHandler
             {
                 QueryAll = "(element, selector) => Array.from(element.querySelectorAll(selector))"
             });
         }
-        public override Task DisposeAsync()
+
+        [TearDown]
+        public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();
-            return base.DisposeAsync();
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "should have registered handler")]

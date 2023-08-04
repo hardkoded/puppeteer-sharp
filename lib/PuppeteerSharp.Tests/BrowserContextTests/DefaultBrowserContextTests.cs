@@ -12,10 +12,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
         }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task CreateNewPageAsync()
         {
-            await base.InitializeAsync();
-
             Context = Browser.DefaultContext;
             Page = await Context.NewPageAsync();
         }

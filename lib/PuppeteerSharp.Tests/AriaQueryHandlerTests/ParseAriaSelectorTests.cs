@@ -15,17 +15,12 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         {
         }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task SetDefaultContentAsync()
         {
-            await base.InitializeAsync();
-
             await Page.SetContentAsync(@"
                 <button id=""btn"" role=""button""> Submit  button   and some spaces  </button>
             ");
-        }
-        public override Task DisposeAsync()
-        {
-            return base.DisposeAsync();
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "parseAriaSelector", "should find button")]

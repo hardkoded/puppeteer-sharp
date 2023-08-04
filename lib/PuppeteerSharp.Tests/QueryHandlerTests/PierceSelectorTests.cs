@@ -13,10 +13,9 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         {
         }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task SetDefaultContentAsync()
         {
-            await base.InitializeAsync();
-
             await Page.SetContentAsync(@"
                 <script>
                 const div = document.createElement('div');
@@ -33,10 +32,11 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                 </script>
                 ");
         }
-        public override Task DisposeAsync()
+
+        [TearDown]
+        public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();
-            return base.DisposeAsync();
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
