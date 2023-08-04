@@ -5,6 +5,7 @@ using PuppeteerSharp.Input;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using System.Runtime.InteropServices;
 
 namespace PuppeteerSharp.Tests.MouseTests
 {
@@ -111,7 +112,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.EvaluateExpressionAsync("delete window.Node");
             await Page.HoverAsync("#button-6");
-            Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync("document.querySelector('button:hover').id"));
+            Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should set modifier keys on click")]
@@ -159,8 +160,18 @@ namespace PuppeteerSharp.Tests.MouseTests
 
             await Page.Mouse.WheelAsync(0, -100);
             var boundingBoxAfter = await elem.BoundingBoxAsync();
-            Assert.AreEqual(230, boundingBoxAfter.Width);
-            Assert.AreEqual(230, boundingBoxAfter.Height);
+
+            // We don't have this OS check upstream
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Assert.AreEqual(345, boundingBoxAfter.Width);
+                Assert.AreEqual(345, boundingBoxAfter.Height);
+            }
+            else
+            {
+                Assert.AreEqual(230, boundingBoxAfter.Width);
+                Assert.AreEqual(230, boundingBoxAfter.Height);
+            }
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should tween mouse movement")]
