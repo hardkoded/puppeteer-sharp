@@ -9,11 +9,6 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class QueryAllTests : PuppeteerPageBaseTest
     {
-        public QueryAllTests(): base()
-        {
-        }
-
-
         [SetUp]
         public void RegisterCustomQueryHandler()
         {
