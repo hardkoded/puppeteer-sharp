@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 context.Response.StatusCode = 204;
                 return Task.CompletedTask;
             });
-            var exception = Assert.ThrowsAsync<PuppeteerException>(
+            var exception = Assert.ThrowsAsync<NavigationException>(
                 () => Page.GoToAsync(TestConstants.EmptyPage));
 
             if (TestConstants.IsChrome)
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldFailWhenNavigatingToBadUrl()
         {
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync("asdfasdf"));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync("asdfasdf"));
 
             if (TestConstants.IsChrome)
             {
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Page.RequestFinished += (_, e) => Assert.NotNull(e.Request);
             Page.RequestFailed += (_, e) => Assert.NotNull(e.Request);
 
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html"));
 
             if (TestConstants.IsChrome)
             {
@@ -179,7 +179,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerTimeout]
         public void ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.HttpsPrefix + "/redirect/2.html"));
 
             if (TestConstants.IsChrome)
             {
@@ -195,7 +195,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [PuppeteerTimeout]
         public void ShouldFailWhenMainResourcesFailedToLoad()
         {
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync("http://localhost:44123/non-existing-url"));
 
             if (TestConstants.IsChrome)
             {
@@ -213,7 +213,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
-            var exception = Assert.ThrowsAsync<Exception>(async ()
+            var exception = Assert.ThrowsAsync<NavigationException>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
@@ -225,7 +225,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
 
             Page.DefaultNavigationTimeout = 1;
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -236,7 +236,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             // Hang for request to the empty.html
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 1;
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
@@ -248,7 +248,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
-            var exception = Assert.ThrowsAsync<Exception>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
+            var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
