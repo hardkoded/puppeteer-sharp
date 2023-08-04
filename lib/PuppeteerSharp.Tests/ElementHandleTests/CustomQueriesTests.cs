@@ -13,10 +13,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        public override Task DisposeAsync()
+        [TearDown]
+        public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();
-            return base.DisposeAsync();
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should register and unregister")]

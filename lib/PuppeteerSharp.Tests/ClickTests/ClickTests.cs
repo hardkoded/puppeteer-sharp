@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             await Page.EvaluateExpressionAsync("delete window.Node");
             await Page.ClickAsync("button");
-            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync("result"));
+            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on a span with an inline element inside")]
