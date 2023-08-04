@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Tests
         [SetUp]
         public async Task CreateContextAsync()
         {
-            await base.InitializeAsync();
             Context = await Browser.CreateIncognitoBrowserContextAsync();
         }
     }
