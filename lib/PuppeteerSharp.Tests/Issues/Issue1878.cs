@@ -1,18 +1,15 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue1878 : PuppeteerBrowserContextBaseTest
     {
-        public Issue1878(ITestOutputHelper output) : base(output)
+        public Issue1878(): base()
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task MultiplePagesShouldNotShareSameScreenshotTaskQueue()
         {
             // 1st page

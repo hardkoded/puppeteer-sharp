@@ -2,22 +2,20 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventRequestTests : PuppeteerPageBaseTest
     {
-        public PageEventRequestTests(ITestOutputHelper output) : base(output)
+        public PageEventRequestTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for navigation requests")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -30,11 +28,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Single(requests);
+            Assert.That(requests, Has.Exactly(1).Items);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForIframes()
         {
             var requests = new List<IRequest>();
@@ -49,11 +47,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            Assert.Equal(2, requests.Count);
+            Assert.AreEqual(2, requests.Count);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFireForFetches()
         {
             var requests = new List<IRequest>();
@@ -67,7 +65,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateExpressionAsync("fetch('/empty.html')");
-            Assert.Equal(2, requests.Count);
+            Assert.AreEqual(2, requests.Count);
         }
     }
 }

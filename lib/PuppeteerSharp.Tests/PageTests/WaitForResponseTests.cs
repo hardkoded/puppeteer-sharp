@@ -2,21 +2,19 @@
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForResponseTests : PuppeteerPageBaseTest
     {
-        public WaitForResponseTests(ITestOutputHelper output) : base(output)
+        public WaitForResponseTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,11 +28,11 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with predicate")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -48,11 +46,11 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with async predicate")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithAsyncPredicate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -70,37 +68,37 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForResponseAsync(_ => false, new WaitForOptions
                 {
                     Timeout = 1
                 }));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should respect default timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRespectDefaultTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Page.DefaultTimeout = 1;
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForResponseAsync(_ => false));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForResponse", "should work with no timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -117,7 +115,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }, 50)")
             );
-            Assert.Equal(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
     }
 }

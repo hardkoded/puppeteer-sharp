@@ -1,12 +1,13 @@
 using System;
+using NUnit.Framework;
 
-namespace PuppeteerSharp.Xunit
+namespace PuppeteerSharp.Nunit
 {
     /// <summary>
     /// Enables decorating test facts with information about the corresponding test in the upstream repository.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class PuppeteerTestAttribute : Attribute
+    public class PuppeteerTestAttribute : TestAttribute
     {
         /// <summary>
         /// Creates a new instance of the attribute.

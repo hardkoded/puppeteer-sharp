@@ -3,28 +3,26 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Mono.Unix;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Helpers.Linux;
 using System.Collections.Generic;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserFetcherTests : PuppeteerBaseTest
     {
         private readonly string _downloadsFolder;
 
-        public BrowserFetcherTests(ITestOutputHelper output) : base(output)
+        public BrowserFetcherTests(): base()
         {
             _downloadsFolder = Path.Combine(Directory.GetCurrentDirectory(), ".test-chromium");
             EnsureDownloadsFolderIsDeleted();
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract chrome linux binary")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldDownloadAndExtractLinuxBinary()
         {
             using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
@@ -37,7 +35,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             Server.SetRedirect(revisionInfo.Url.Substring(TestConstants.ServerUrl.Length), "/chromium-linux.zip");
             Assert.False(revisionInfo.Local);
-            Assert.Equal(Platform.Linux, revisionInfo.Platform);
+            Assert.AreEqual(Platform.Linux, revisionInfo.Platform);
             Assert.False(await browserFetcher.CanDownloadAsync("100000"));
             Assert.True(await browserFetcher.CanDownloadAsync("123456"));
 
@@ -45,19 +43,19 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 revisionInfo = await browserFetcher.DownloadAsync("123456");
                 Assert.True(revisionInfo.Local);
-                Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
+                Assert.AreEqual("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
 #if NETCOREAPP //This will not be run on net4x anyway.
                     Mono.Unix.FileAccessPermissions permissions = ConvertPermissions(LinuxSysCall.ExecutableFilePermissions);
 
-                    Assert.Equal(permissions, UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & permissions);
+                    Assert.AreEqual(permissions, UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & permissions);
 #endif
                 }
-                Assert.Equal(new[] { "123456" }, browserFetcher.LocalRevisions());
+                Assert.AreEqual(new[] { "123456" }, browserFetcher.LocalRevisions());
                 browserFetcher.Remove("123456");
-                Assert.Empty(browserFetcher.LocalRevisions());
+                Assert.IsEmpty(browserFetcher.LocalRevisions());
 
                 //Download should return data from a downloaded version
                 //This section is not in the Puppeteer test.
@@ -65,7 +63,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Server.Reset();
                 revisionInfo = await browserFetcher.DownloadAsync("123456");
                 Assert.True(revisionInfo.Local);
-                Assert.Equal("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
+                Assert.AreEqual("LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
             }
             finally
             {
@@ -74,7 +72,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "BrowserFetcher", "should download and extract firefox linux binary")]
-        [SkipWindowsFact]
+        [Skip(SkipAttribute.Targets.OSX | SkipAttribute.Targets.Linux)]
         public async Task ShouldDownloadAndExtractFirefoxLinuxBinary()
         {
             using var browserFetcher = Puppeteer.CreateBrowserFetcher(new BrowserFetcherOptions
@@ -91,7 +89,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 revisionInfo.Url.Substring(TestConstants.ServerUrl.Length),
                 "/firefox.zip");
             Assert.False(revisionInfo.Local);
-            Assert.Equal(Platform.Linux, revisionInfo.Platform);
+            Assert.AreEqual(Platform.Linux, revisionInfo.Platform);
             Assert.False(await browserFetcher.CanDownloadAsync("100000"));
             Assert.True(await browserFetcher.CanDownloadAsync(expectedVersion));
 
@@ -99,19 +97,19 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 revisionInfo = await browserFetcher.DownloadAsync(expectedVersion);
                 Assert.True(revisionInfo.Local);
-                Assert.Equal("FIREFOX LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
+                Assert.AreEqual("FIREFOX LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
 #if NETCOREAPP //This will not be run on net4x anyway.
                     Mono.Unix.FileAccessPermissions permissions = ConvertPermissions(LinuxSysCall.ExecutableFilePermissions);
 
-                    Assert.Equal(permissions, UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & permissions);
+                    Assert.AreEqual(permissions, UnixFileSystemInfo.GetFileSystemEntry(revisionInfo.ExecutablePath).FileAccessPermissions & permissions);
 #endif
                 }
-                Assert.Equal(new[] { expectedVersion }, browserFetcher.LocalRevisions());
+                Assert.AreEqual(new[] { expectedVersion }, browserFetcher.LocalRevisions());
                 browserFetcher.Remove(expectedVersion);
-                Assert.Empty(browserFetcher.LocalRevisions());
+                Assert.IsEmpty(browserFetcher.LocalRevisions());
 
                 //Download should return data from a downloaded version
                 //This section is not in the Puppeteer test.
@@ -119,7 +117,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Server.Reset();
                 revisionInfo = await browserFetcher.DownloadAsync(expectedVersion);
                 Assert.True(revisionInfo.Local);
-                Assert.Equal("FIREFOX LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
+                Assert.AreEqual("FIREFOX LINUX BINARY\n", File.ReadAllText(revisionInfo.ExecutablePath));
             }
             finally
             {

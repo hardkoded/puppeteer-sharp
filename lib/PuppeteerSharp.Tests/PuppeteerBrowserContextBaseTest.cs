@@ -1,18 +1,15 @@
 using System.Threading.Tasks;
-using Xunit.Abstractions;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
     public class PuppeteerBrowserContextBaseTest : PuppeteerBrowserBaseTest
     {
-        public PuppeteerBrowserContextBaseTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
         protected IBrowserContext Context { get; set; }
-        public override async Task InitializeAsync()
+
+        [SetUp]
+        public async Task CreateContextAsync()
         {
-            await base.InitializeAsync();
             Context = await Browser.CreateIncognitoBrowserContextAsync();
         }
     }

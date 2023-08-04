@@ -2,21 +2,19 @@ using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.InjectedTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class InjectedTests : PuppeteerPageBaseTest
     {
-        public InjectedTests(ITestOutputHelper output) : base(output)
+        public InjectedTests(): base()
         {
         }
 
         [PuppeteerTest("injected.spec.ts", "PuppeteerUtil tests", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var world =  (Page.MainFrame as Frame).PuppeteerWorld;
@@ -29,7 +27,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         }
 
         [PuppeteerTest("injected.spec.ts", "createFunction tests", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task CreateFunctionShouldWork()
         {
             var world = (Page.MainFrame as Frame).PuppeteerWorld;
@@ -39,7 +37,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                 }",
                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 "() => 4");
-            Assert.Equal(4, result);
+            Assert.AreEqual(4, result);
         }
     }
 }

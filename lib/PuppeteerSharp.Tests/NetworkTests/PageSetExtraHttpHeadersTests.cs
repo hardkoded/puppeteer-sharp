@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public PageSetExtraHttpHeadersTests(ITestOutputHelper output) : base(output)
+        public PageSetExtraHttpHeadersTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -26,7 +24,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
             await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
 
-            Assert.Equal("Bar", headerTask.Result);
+            Assert.AreEqual("Bar", headerTask.Result);
         }
     }
 }

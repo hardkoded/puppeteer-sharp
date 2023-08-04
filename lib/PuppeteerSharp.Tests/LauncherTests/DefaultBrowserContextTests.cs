@@ -4,21 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
-        public BrowserTargetEventsTests(ITestOutputHelper output) : base(output)
+        public BrowserTargetEventsTests(): base()
         {
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser target events", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var events = new List<string>();
@@ -28,7 +26,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
-            Assert.Equal(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
+            Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
         }
     }
 }

@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseHeadersTests : PuppeteerPageBaseTest
     {
-        public ResponseHeadersTests(ITestOutputHelper output) : base(output)
+        public ResponseHeadersTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.headers", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             Server.SetRoute("/empty.html", (context) =>
@@ -24,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Contains("bar", response.Headers["foo"]);
+            StringAssert.Contains("bar", response.Headers["foo"]);
         }
     }
 }

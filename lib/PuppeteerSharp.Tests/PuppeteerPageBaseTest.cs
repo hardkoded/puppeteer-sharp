@@ -1,28 +1,21 @@
 using System.Threading.Tasks;
-using Xunit.Abstractions;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
     public class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
     {
-        public PuppeteerPageBaseTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
         protected IPage Page { get; set; }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task CreatePageAsync()
         {
-            await base.InitializeAsync();
             Page = await Context.NewPageAsync();
             Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
-        public override async Task DisposeAsync()
-        {
-            await Page.CloseAsync();
-            await base.DisposeAsync();
-        }
+        [TearDown]
+        public Task ClosePageAsync() => Page.CloseAsync();
 
         protected Task WaitForError()
         {

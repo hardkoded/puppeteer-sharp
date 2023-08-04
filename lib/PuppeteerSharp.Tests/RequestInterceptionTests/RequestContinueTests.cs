@@ -7,23 +7,21 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestContinueTests : PuppeteerPageBaseTest
     {
-        public RequestContinueTests(ITestOutputHelper output) : base(output)
+        public RequestContinueTests(): base()
         {
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -32,7 +30,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend HTTP headers")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -50,11 +48,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 requestTask,
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
-            Assert.Equal("bar", requestTask.Result);
+            Assert.AreEqual("bar", requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should redirect in a way non-observable to page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -68,12 +66,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             string consoleMessage = null;
             Page.Console += (_, e) => consoleMessage = e.Message.Text;
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
-            Assert.Equal("yellow", consoleMessage);
+            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
+            Assert.AreEqual("yellow", consoleMessage);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend method")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAmendMethodData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -90,11 +88,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
 
-            Assert.Equal("POST", requestTask.Result);
+            Assert.AreEqual("POST", requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend post data")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -119,11 +117,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
             );
 
-            Assert.Equal("doggo", await requestTask.Result);
+            Assert.AreEqual("doggo", await requestTask.Result);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.continue", "should amend both post data and method on navigation")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -144,8 +142,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
             var serverRequest = await serverRequestTask;
-            Assert.Equal(HttpMethod.Post.Method, serverRequest.Result.Method);
-            Assert.Equal("doggo", serverRequest.Result.Body);
+            Assert.AreEqual(HttpMethod.Post.Method, serverRequest.Result.Method);
+            Assert.AreEqual("doggo", serverRequest.Result.Body);
         }
     }
 }

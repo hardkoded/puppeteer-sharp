@@ -2,22 +2,20 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsErrorTests : PuppeteerPageBaseTest
     {
-        public PageEventsErrorTests(ITestOutputHelper output) : base(output)
+        public PageEventsErrorTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Error", "should throw when page crashes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;
@@ -25,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var gotoTask = Page.GoToAsync("chrome://crash");
 
             await WaitForError();
-            Assert.Equal("Page crashed!", error);
+            Assert.AreEqual("Page crashed!", error);
         }
     }
 }

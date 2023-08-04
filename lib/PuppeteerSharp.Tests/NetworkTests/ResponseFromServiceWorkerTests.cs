@@ -3,21 +3,19 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseFromServiceWorkerTests : PuppeteerPageBaseTest
     {
-        public ResponseFromServiceWorkerTests(ITestOutputHelper output) : base(output)
+        public ResponseFromServiceWorkerTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -25,7 +23,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, IResponse>();
@@ -35,10 +33,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
+            Assert.AreEqual(2, responses.Count);
+            Assert.AreEqual(HttpStatusCode.OK, responses["sw.html"].Status);
             Assert.True(responses["sw.html"].FromServiceWorker);
-            Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["style.css"].Status);
             Assert.True(responses["style.css"].FromServiceWorker);
         }
     }

@@ -4,5 +4,8 @@
     <TargetFrameworks Condition="'$(OS)' == 'Windows_NT' ">net48;net6.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' ">net6.0</TargetFrameworks>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="NUnit" Version="3.13.3" />
+	</ItemGroup>
 	<Import Project="../Common/SignAssembly.props" />
 </Project>

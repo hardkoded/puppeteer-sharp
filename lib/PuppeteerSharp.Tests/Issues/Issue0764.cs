@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0764 : PuppeteerPageBaseTest
     {
-        public Issue0764(ITestOutputHelper output) : base(output)
+        public Issue0764(): base()
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task BufferAsyncShouldWorkWithBinaries()
         {
             var tcs = new TaskCompletionSource<byte[]>();

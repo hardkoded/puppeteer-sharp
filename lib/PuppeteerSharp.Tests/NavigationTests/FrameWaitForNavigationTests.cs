@@ -2,21 +2,19 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public FrameWaitForNavigationTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForNavigationTests(): base()
         {
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -28,14 +26,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 frame.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
             );
             var response = await waitForNavigationResult;
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Contains("grid.html", response.Url);
-            Assert.Same(frame, response.Frame);
-            Assert.Contains("/frames/one-frame.html", Page.Url);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            StringAssert.Contains("grid.html", response.Url);
+            Assert.AreSame(frame, response.Frame);
+            StringAssert.Contains("/frames/one-frame.html", Page.Url);
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should fail when frame detaches")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFailWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -47,8 +45,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 frame.EvaluateFunctionAsync($"() => window.location = '{TestConstants.EmptyPage}'"));
 
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
-            Assert.Equal("Navigating frame was detached", exception.Message);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
+            Assert.AreEqual("Navigating frame was detached", exception.Message);
         }
     }
 }

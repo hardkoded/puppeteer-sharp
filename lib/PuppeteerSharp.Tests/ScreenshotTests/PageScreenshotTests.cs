@@ -4,20 +4,18 @@ using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ScreenshotTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
-        public PageScreenshotTests(ITestOutputHelper output) : base(output)
+        public PageScreenshotTests(): base()
         {
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
@@ -51,7 +49,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact(Timeout = -1)]
+        [PuppeteerTimeout(-1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.png");
@@ -73,7 +71,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await using (var page = await Context.NewPageAsync())
@@ -90,7 +88,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should clip rect")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldClipRect()
         {
             await using (var page = await Context.NewPageAsync())
@@ -115,7 +113,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldClipScale()
         {
             await using (var page = await Context.NewPageAsync())
@@ -141,7 +139,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClipElementsToTheViewport()
         {
             await using (var page = await Context.NewPageAsync())
@@ -163,7 +161,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRunInParallel()
         {
             await using (var page = await Context.NewPageAsync())
@@ -196,7 +194,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should take fullPage screenshots")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTakeFullPageScreenshots()
         {
             await using (var page = await Context.NewPageAsync())
@@ -216,7 +214,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel in multiple pages")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunInParallelInMultiplePages()
         {
             var n = 2;
@@ -267,7 +265,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should allow transparency")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowTransparency()
         {
             await using (var page = await Context.NewPageAsync())
@@ -288,7 +286,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should render white background on jpeg file")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRenderWhiteBackgroundOnJpegFile()
         {
             await using (var page = await Context.NewPageAsync())
@@ -305,7 +303,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             await using (var page = await Context.NewPageAsync())
@@ -326,7 +324,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should return base64")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnBase64()
         {
             await using (var page = await Context.NewPageAsync())
@@ -343,17 +341,17 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldInferScreenshotTypeFromName()
         {
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
-            Assert.Equal(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
-            Assert.Equal(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
+            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
+            Assert.AreEqual(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithQuality()
         {
             await using (var page = await Context.NewPageAsync())

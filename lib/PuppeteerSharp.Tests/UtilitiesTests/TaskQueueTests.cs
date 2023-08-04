@@ -2,24 +2,27 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Helpers;
-using Xunit;
 
 namespace PuppeteerSharp.Tests.UtilitiesTests
 {
     public class TaskQueueTests
     {
-        [Fact]
+        [Test]
         public void ShouldDisposeSemaphoreWhenDisposing()
         {
             var taskQueue = new TaskQueue();
             taskQueue.Dispose();
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
         }
 
-        [Fact]
+        [Test]
         public void ShouldNotThrowWhenDisposingMultipleTimes()
         {
             var taskQueue = new TaskQueue();
@@ -29,17 +32,20 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             taskQueue.Dispose();
         }
 
-        [Fact]
+        [Test]
         public async Task ShouldDisposeSemaphoreWhenDisposingAsync()
         {
             var taskQueue = new TaskQueue();
             await taskQueue.DisposeAsync().ConfigureAwait(false);
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
         }
 
-        [Fact]
+        [Test]
         public async Task ShouldNotThrowWhenDisposingMultipleTimesAsync()
         {
             var taskQueue = new TaskQueue();
@@ -49,7 +55,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             await taskQueue.DisposeAsync().ConfigureAwait(false);
         }
 
-        [Fact]
+        [Test]
         public async Task CanDisposeWhileSemaphoreIsHeld()
         {
             var taskQueue = new TaskQueue();
@@ -61,12 +67,15 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             });
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
 
             taskQueue.Dispose();
         }
 
-        [Fact]
+        [Test]
         public async Task CanDisposeWhileSemaphoreIsHeldAsync()
         {
             var taskQueue = new TaskQueue();
@@ -77,7 +86,10 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             });
 
             var semaphore = GetSemaphore(taskQueue);
-            Assert.Throws<ObjectDisposedException>(() => semaphore.AvailableWaitHandle);
+            Assert.Throws<ObjectDisposedException>(() =>
+            {
+                _ = semaphore.AvailableWaitHandle;
+            });
 
             await taskQueue.DisposeAsync();
         }

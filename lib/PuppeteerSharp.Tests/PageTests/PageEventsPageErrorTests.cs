@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsPageErrorTests : PuppeteerPageBaseTest
     {
-        public PageEventsPageErrorTests(ITestOutputHelper output) : base(output)
+        public PageEventsPageErrorTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.PageError", "should fire")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFire()
         {
             string error = null;
@@ -31,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 WaitEvent(Page.Client, "Runtime.exceptionThrown")
             );
 
-            Assert.Contains("Fancy", error);
+            StringAssert.Contains("Fancy", error);
         }
     }
 }

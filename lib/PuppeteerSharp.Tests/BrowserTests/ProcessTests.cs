@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ProcessTests : PuppeteerBrowserBaseTest
     {
-        public ProcessTests(ITestOutputHelper output) : base(output) { }
+        public ProcessTests(): base() { }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void ShouldReturnProcessInstance()
         {
             var process = Browser.Process;
@@ -20,7 +18,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should not return child_process for remote browser")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldNotReturnChildProcessForRemoteBrowser()
         {
             var browserWSEndpoint = Browser.WebSocketEndpoint;

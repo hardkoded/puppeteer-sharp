@@ -4,20 +4,18 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PdfTests : PuppeteerPageBaseTest
     {
-        public PdfTests(ITestOutputHelper output) : base(output)
+        public PdfTests(): base()
         {
         }
 
-        [PuppeteerFact(Timeout = -1)]
+        [PuppeteerTimeout(-1)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
@@ -43,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -62,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
             // We test this differently compared to puppeteer.
@@ -82,7 +80,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions
@@ -101,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var serialized = JsonConvert.SerializeObject(pdfOptions);
             var newPdfOptions = JsonConvert.DeserializeObject<PdfOptions>(serialized);
-            Assert.Equal(pdfOptions, newPdfOptions);
+            Assert.AreEqual(pdfOptions, newPdfOptions);
         }
     }
 }

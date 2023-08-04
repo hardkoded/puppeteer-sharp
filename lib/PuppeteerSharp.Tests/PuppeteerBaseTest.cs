@@ -1,8 +1,8 @@
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using PuppeteerSharp.TestServer;
 using System.IO;
 using System.Threading.Tasks;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests
 {
@@ -10,10 +10,12 @@ namespace PuppeteerSharp.Tests
     {
         protected string BaseDirectory { get; set; }
 
-        protected SimpleServer Server => PuppeteerLoaderFixture.Server;
-        protected SimpleServer HttpsServer => PuppeteerLoaderFixture.HttpsServer;
+        protected SimpleServer Server => TestServerSetup.Server;
 
-        public PuppeteerBaseTest(ITestOutputHelper output)
+        protected SimpleServer HttpsServer => TestServerSetup.HttpsServer;
+
+        [SetUp]
+        public void SetUp()
         {
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
@@ -23,11 +25,6 @@ namespace PuppeteerSharp.Tests
                 dirInfo.Create();
             }
 
-            Initialize();
-        }
-
-        protected void Initialize()
-        {
             Server.Reset();
             HttpsServer.Reset();
         }

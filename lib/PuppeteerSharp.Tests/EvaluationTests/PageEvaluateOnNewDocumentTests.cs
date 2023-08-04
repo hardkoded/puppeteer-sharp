@@ -4,32 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
-        public PageEvaluateOnNewDocumentTests(ITestOutputHelper output) : base(output)
+        public PageEvaluateOnNewDocumentTests(): base()
         {
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should evaluate before anything else on the page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
             await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
 
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithCSP()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
@@ -37,7 +35,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 window.injected = 123;
             }");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.injected"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.injected"));
 
             // Make sure CSP works.
             await Page.AddScriptTagAsync(new AddTagOptions
@@ -47,12 +45,12 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.Null(await Page.EvaluateExpressionAsync("window.e"));
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithExpressions()
         {
             await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
-            Assert.Equal(123, await Page.EvaluateExpressionAsync<int>("window.result"));
+            Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
     }
 }

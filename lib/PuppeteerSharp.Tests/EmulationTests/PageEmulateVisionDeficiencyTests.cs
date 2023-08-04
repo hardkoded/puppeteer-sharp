@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEmulateVisionDeficiencyTests : PuppeteerPageBaseTest
     {
-        public PageEmulateVisionDeficiencyTests(ITestOutputHelper output) : base(output)
+        public PageEmulateVisionDeficiencyTests(): base()
         {
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });

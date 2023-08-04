@@ -1,21 +1,19 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageTests : PuppeteerPageBaseTest
     {
-        public PageTests(ITestOutputHelper output) : base(output)
+        public PageTests(): base()
         {
         }
 
         [PuppeteerTest("chromiumonly.spec.ts", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithInterventionHeaders()
         {
             Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
@@ -37,7 +35,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/intervention");
 
-            Assert.Contains("feature/5718547946799104", interventionHeader);
+            StringAssert.Contains("feature/5718547946799104", interventionHeader);
         }
     }
 }

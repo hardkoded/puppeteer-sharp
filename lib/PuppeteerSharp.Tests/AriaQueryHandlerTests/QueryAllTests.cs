@@ -4,22 +4,16 @@ using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
 using static System.Net.Mime.MediaTypeNames;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class QueryAllTests : PuppeteerPageBaseTest
     {
-        public QueryAllTests(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAll", "should find menu by name")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFindMenuByName()
         {
             await Page.SetContentAsync(@"
@@ -29,7 +23,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var divs = await Page.QuerySelectorAllAsync("aria/menu div");
             var ids = await Task.WhenAll(divs.Select(div => div.EvaluateFunctionAsync<string>("div => div.id")));
 
-            Assert.Equal("mnu1, mnu2", String.Join(", ", ids));
+            Assert.AreEqual("mnu1, mnu2", String.Join(", ", ids));
         }
     }
 }

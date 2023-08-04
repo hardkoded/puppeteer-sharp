@@ -1,20 +1,17 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsCloseTests : PuppeteerPageBaseTest
     {
-        public PageEventsCloseTests(ITestOutputHelper output) : base(output)
+        public PageEventsCloseTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with window.close")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<IPage>();
@@ -30,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithPageClose()
         {
             var newPage = await Context.NewPageAsync();

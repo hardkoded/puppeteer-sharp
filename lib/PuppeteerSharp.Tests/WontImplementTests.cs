@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        public WontImplementTests(ITestOutputHelper output) : base(output)
+        public WontImplementTests(): base()
         {
         }
 
@@ -52,7 +49,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with function shorthands")]
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitFor")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public void TheseTesstWontBeImplemented()
         {
         }

@@ -5,18 +5,16 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.HeadfulTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class HeadfulTests : PuppeteerBaseTest
     {
         private readonly LaunchOptions _forcedOopifOptions;
         
-        public HeadfulTests(ITestOutputHelper output) : base(output)
+        public HeadfulTests(): base()
         {
             _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
             _forcedOopifOptions.Headless =  false;
@@ -28,7 +26,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "background_page target type should be available")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task BackgroundPageTargetTypeShouldBeAvailable()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -42,7 +40,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "target.page() should return a background_page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -52,14 +50,14 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
                 await using (var page = await backgroundPageTarget.PageAsync())
                 {
-                    Assert.Equal(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-                    Assert.Equal(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
+                    Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
+                    Assert.AreEqual(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
                 }
             }
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should have default url when launching browser")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             await using (var browser = await Puppeteer.LaunchAsync(
@@ -67,12 +65,12 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 TestConstants.LoggerFactory))
             {
                 var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
-                Assert.Equal(new[] { "about:blank" }, pages);
+                Assert.AreEqual(new[] { "about:blank" }, pages);
             }
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "headless should be able to read cookies written by headful")]
-        [PuppeteerFact(Skip = "Puppeteer ignores this in windows we do not have a platform filter yet")]
+        [Ignore("Puppeteer ignores this in windows we do not have a platform filter yet")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using (var userDataDir = new TempDirectory())
@@ -96,13 +94,13 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 {
                     var page2 = await browser2.NewPageAsync();
                     await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.Equal("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+                    Assert.AreEqual("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
                 }
             }
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should report google.com frame")]
-        [PuppeteerFact(Skip = "TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
+        [Ignore("TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {
             // https://google.com is isolated by default in Chromium embedder.
@@ -124,12 +122,12 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
                 var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
                 Array.Sort(urls);
-                Assert.Equal(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
+                Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
             }
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should expose events within OOPIFs")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task OOPIFShouldExposeEventsWithinOOPIFs()
         {
             await using (var browser = await Puppeteer.LaunchAsync(_forcedOopifOptions))
@@ -177,7 +175,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                 await page.WaitForSelectorAsync("iframe");
 
                 // Ensure we found the iframe session.
-                Assert.Single(otherSessions);
+                Assert.That(otherSessions, Has.Exactly(1).Items);
 
                 // Resume the iframe and trigger another request.
                 var iframeSession = otherSessions[0];
@@ -192,7 +190,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should close browser with beforeunload page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCloseBrowserWithBeforeunloadPage()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -207,7 +205,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should open devtools when \"devtools: true\" option is given")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();

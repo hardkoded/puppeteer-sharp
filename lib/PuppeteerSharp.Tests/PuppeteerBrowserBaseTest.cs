@@ -1,31 +1,22 @@
 using System.IO;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IAsyncLifetime
+    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest
     {
         protected IBrowser Browser { get; set; }
+
         protected LaunchOptions DefaultOptions { get; set; }
 
-        public PuppeteerBrowserBaseTest(ITestOutputHelper output) : base(output)
-        {
-            BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
-            var dirInfo = new DirectoryInfo(BaseDirectory);
-
-            if (!dirInfo.Exists)
-            {
-                dirInfo.Create();
-            }
-        }
-
+        [SetUp]
         public virtual async Task InitializeAsync()
             => Browser = await Puppeteer.LaunchAsync(
                 DefaultOptions ?? TestConstants.DefaultBrowserOptions(),
                 TestConstants.LoggerFactory);
 
+        [TearDown]
         public virtual async Task DisposeAsync() => await Browser.CloseAsync();
     }
 }

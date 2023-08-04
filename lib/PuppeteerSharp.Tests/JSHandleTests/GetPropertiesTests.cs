@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class GetPropertiesTests : PuppeteerPageBaseTest
     {
-        public GetPropertiesTests(ITestOutputHelper output) : base(output)
+        public GetPropertiesTests(): base()
         {
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
@@ -23,11 +21,11 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var properties = await aHandle.GetPropertiesAsync();
             properties.TryGetValue("foo", out var foo);
             Assert.NotNull(foo);
-            Assert.Equal("bar", await foo.JsonValueAsync<string>());
+            Assert.AreEqual("bar", await foo.JsonValueAsync<string>());
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnEvenNonOwnProperties()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {
@@ -45,8 +43,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
               return new B();
             }");
             var properties = await aHandle.GetPropertiesAsync();
-            Assert.Equal("1", await properties["a"].JsonValueAsync<string>());
-            Assert.Equal("2", await properties["b"].JsonValueAsync<string>());
+            Assert.AreEqual("1", await properties["a"].JsonValueAsync<string>());
+            Assert.AreEqual("2", await properties["b"].JsonValueAsync<string>());
         }
     }
 }

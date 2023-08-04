@@ -2,36 +2,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseBufferTests : PuppeteerPageBaseTest
     {
-        public ResponseBufferTests(ITestOutputHelper output) : base(output)
+        public ResponseBufferTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.buffer", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
-            Assert.Equal(imageBuffer, await response.BufferAsync());
+            Assert.AreEqual(imageBuffer, await response.BufferAsync());
         }
 
         [PuppeteerTest("network.spec.ts", "Response.buffer", "should work with compression")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithCompression()
         {
             Server.EnableGzip("/pptr.png");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
-            Assert.Equal(imageBuffer, await response.BufferAsync());
+            Assert.AreEqual(imageBuffer, await response.BufferAsync());
         }
     }
 }

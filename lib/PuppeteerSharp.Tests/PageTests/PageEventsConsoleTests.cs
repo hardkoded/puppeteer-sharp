@@ -1,22 +1,20 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests.Events
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public PageEventsConsoleTests(ITestOutputHelper output) : base(output)
+        public PageEventsConsoleTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             ConsoleMessage message = null;
@@ -33,17 +31,17 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             var obj = new Dictionary<string, object> { { "foo", "bar" } };
 
-            Assert.Equal("hello 5 JSHandle@object", message.Text);
-            Assert.Equal(ConsoleType.Log, message.Type);
+            Assert.AreEqual("hello 5 JSHandle@object", message.Text);
+            Assert.AreEqual(ConsoleType.Log, message.Type);
 
-            Assert.Equal("hello", await message.Args[0].JsonValueAsync());
-            Assert.Equal(5, await message.Args[1].JsonValueAsync<float>());
-            Assert.Equal(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
-            Assert.Equal("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
+            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync());
+            Assert.AreEqual(5, await message.Args[1].JsonValueAsync<float>());
+            Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
+            Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work for different console API calls")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkForDifferentConsoleApiCalls()
         {
             var messages = new List<ConsoleMessage>();
@@ -61,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
               console.log(Promise.resolve('should not wait until resolved!'));
             }");
 
-            Assert.Equal(new[]
+            Assert.AreEqual(new[]
             {
                 ConsoleType.TimeEnd,
                 ConsoleType.Trace,
@@ -73,9 +71,9 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 .Select(_ => _.Type)
                 .ToArray());
 
-            Assert.Contains("calling console.time", messages[0].Text);
+            StringAssert.Contains("calling console.time", messages[0].Text);
 
-            Assert.Equal(new[]
+            Assert.AreEqual(new[]
             {
                 "calling console.trace",
                 "calling console.dir",
@@ -89,7 +87,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not fail for window object")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotFailForWindowObject()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -107,11 +105,11 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.EvaluateExpressionAsync("console.error(window)")
             );
 
-            Assert.Equal("JSHandle@object", await consoleTcs.Task);
+            Assert.AreEqual("JSHandle@object", await consoleTcs.Task);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should trigger correct Log")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -121,20 +119,20 @@ namespace PuppeteerSharp.Tests.PageTests.Events
 
             await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
-            Assert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
+            StringAssert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
 
             if (TestConstants.IsChrome)
             {
-                Assert.Equal(ConsoleType.Error, message.Type);
+                Assert.AreEqual(ConsoleType.Error, message.Type);
             }
             else
             {
-                Assert.Equal(ConsoleType.Warning, message.Type);
+                Assert.AreEqual(ConsoleType.Warning, message.Type);
             }
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location when fetch fails")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -146,16 +144,16 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.SetContentAsync("<script>fetch('http://wat');</script>"));
 
             var args = await consoleTask.Task;
-            Assert.Contains("ERR_NAME", args.Message.Text);
-            Assert.Equal(ConsoleType.Error, args.Message.Type);
-            Assert.Equal(new ConsoleMessageLocation
+            StringAssert.Contains("ERR_NAME", args.Message.Text);
+            Assert.AreEqual(ConsoleType.Error, args.Message.Type);
+            Assert.AreEqual(new ConsoleMessageLocation
             {
                 URL = "http://wat/",
             }, args.Message.Location);
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location and stack trace for console API calls")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -167,9 +165,9 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
 
             var args = await consoleTask.Task;
-            Assert.Equal("yellow", args.Message.Text);
-            Assert.Equal(ConsoleType.Log, args.Message.Type);
-            Assert.Equal(new ConsoleMessageLocation
+            Assert.AreEqual("yellow", args.Message.Text);
+            Assert.AreEqual(ConsoleType.Log, args.Message.Type);
+            Assert.AreEqual(new ConsoleMessageLocation
             {
                 URL = TestConstants.ServerUrl + "/consolelog.html",
                 LineNumber = 7,
@@ -178,7 +176,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not throw when there are console messages in detached iframes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -199,7 +197,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             await popupTarget.PageAsync();
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotFailForNullArgument()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -217,7 +215,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 Page.EvaluateExpressionAsync("console.debug(null);")
             );
 
-            Assert.Equal("JSHandle:null", await consoleTcs.Task);
+            Assert.AreEqual("JSHandle:null", await consoleTcs.Task);
         }
     }
 }

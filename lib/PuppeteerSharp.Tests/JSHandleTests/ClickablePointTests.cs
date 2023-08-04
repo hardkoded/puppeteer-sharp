@@ -4,21 +4,19 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ClickablePointTests : PuppeteerPageBaseTest
     {
-        public ClickablePointTests(ITestOutputHelper output) : base(output)
+        public ClickablePointTests(): base()
         {
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.clickablePoint", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '0';
@@ -33,18 +31,18 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var clickablePoint = await divHandle.ClickablePointAsync();
 
             // margin + middle point offset
-            Assert.Equal(45 + 60, clickablePoint.X);
-            Assert.Equal(45 + 30, clickablePoint.Y);
+            Assert.AreEqual(45 + 60, clickablePoint.X);
+            Assert.AreEqual(45 + 30, clickablePoint.Y);
 
             clickablePoint = await divHandle.ClickablePointAsync(new Offset { X = 10, Y = 15 });
 
             // margin + offset
-            Assert.Equal(30 + 10, clickablePoint.X);
-            Assert.Equal(30 + 15, clickablePoint.Y);
+            Assert.AreEqual(30 + 10, clickablePoint.X);
+            Assert.AreEqual(30 + 15, clickablePoint.Y);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.clickablePoint", "should work for iframes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkForIFrames()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '10px';
@@ -61,14 +59,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var clickablePoint = await divHandle.ClickablePointAsync();
 
             // iframe pos + margin + middle point offset
-            Assert.Equal(20 + 45 + 60, clickablePoint.X);
-            Assert.Equal(20 + 45 + 30, clickablePoint.Y);
+            Assert.AreEqual(20 + 45 + 60, clickablePoint.X);
+            Assert.AreEqual(20 + 45 + 30, clickablePoint.Y);
 
             clickablePoint = await divHandle.ClickablePointAsync(new Offset { X = 10, Y = 15 });
 
             // iframe pos + margin + offset
-            Assert.Equal(20 + 30 + 10, clickablePoint.X);
-            Assert.Equal(20 + 30 + 15, clickablePoint.Y);
+            Assert.AreEqual(20 + 30 + 10, clickablePoint.X);
+            Assert.AreEqual(20 + 30 + 15, clickablePoint.Y);
         }
     }
 }

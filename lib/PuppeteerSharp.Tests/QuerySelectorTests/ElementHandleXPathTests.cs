@@ -1,21 +1,19 @@
 #pragma warning disable CS0618 // XPathAsync is obsolete but we test the funcionatlity anyway
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ElementHandleXPathTests : PuppeteerPageBaseTest
     {
-        public ElementHandleXPathTests(ITestOutputHelper output) : base(output)
+        public ElementHandleXPathTests(): base()
         {
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should query existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
@@ -24,17 +22,17 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var second = await html.XPathAsync("./body/div[contains(@class, 'second')]");
             var inner = await second[0].XPathAsync("./div[contains(@class, 'inner')]");
             var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner[0]);
-            Assert.Equal("A", content);
+            Assert.AreEqual("A", content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should return null for non-existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var second = await html.XPathAsync("/div[contains(@class, 'third')]");
-            Assert.Empty(second);
+            Assert.IsEmpty(second);
         }
     }
 }

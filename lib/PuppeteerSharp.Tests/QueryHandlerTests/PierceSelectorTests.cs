@@ -2,23 +2,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PierceSelectorTests : PuppeteerPageBaseTest
     {
-        public PierceSelectorTests(ITestOutputHelper output) : base(output)
+        public PierceSelectorTests(): base()
         {
         }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task SetDefaultContentAsync()
         {
-            await base.InitializeAsync();
-
             await Page.SetContentAsync(@"
                 <script>
                 const div = document.createElement('div');
@@ -35,25 +32,26 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                 </script>
                 ");
         }
-        public override Task DisposeAsync()
+
+        [TearDown]
+        public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();
-            return base.DisposeAsync();
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindFirstElementInShadow()
         {
             var div = await Page.QuerySelectorAsync("pierce/.foo");
             var text = await div.EvaluateFunctionAsync<string>(@"(element) => {
                 return element.textContent;
             }");
-            Assert.Equal("Hello", text);
+            Assert.AreEqual("Hello", text);
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindAllElementsInShadow()
         {
             var divs = await Page.QuerySelectorAllAsync("pierce/.foo");
@@ -63,11 +61,11 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                         return element.textContent;
                     }");
                 }));
-            Assert.Equal("Hello World", string.Join(" ", text));
+            Assert.AreEqual("Hello World", string.Join(" ", text));
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindFirstChildElement()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
@@ -75,11 +73,11 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             var text = await childElement.EvaluateFunctionAsync<string>(@"(element) => {
                 return element.textContent;
             }");
-            Assert.Equal("Hello", text);
+            Assert.AreEqual("Hello", text);
         }
 
         [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFindAllChildElements()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
@@ -90,7 +88,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                         return element.textContent;
                     }");
                 }));
-            Assert.Equal("Hello World", string.Join(" ", text));
+            Assert.AreEqual("Hello World", string.Join(" ", text));
         }
     }
 }

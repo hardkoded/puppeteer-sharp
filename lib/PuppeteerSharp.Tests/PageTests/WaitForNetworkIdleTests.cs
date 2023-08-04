@@ -1,21 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class WaitForNetworkIdleTests : PuppeteerPageBaseTest
     {
-        public WaitForNetworkIdleTests(ITestOutputHelper output) : base(output)
+        public WaitForNetworkIdleTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var t1 = DateTime.UtcNow;
@@ -52,20 +50,20 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var exception = await Assert.ThrowsAnyAsync<TimeoutException>(async () =>
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 }));
 
-            Assert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect idleTime")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.UtcNow;
@@ -98,7 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should work with no timeout")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

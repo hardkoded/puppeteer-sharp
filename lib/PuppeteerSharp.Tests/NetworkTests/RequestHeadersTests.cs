@@ -1,31 +1,29 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestHeadersTests : PuppeteerPageBaseTest
     {
-        public RequestHeadersTests(ITestOutputHelper output) : base(output)
+        public RequestHeadersTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Headers", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("Chrome", response.Request.Headers["User-Agent"]);
+                StringAssert.Contains("Chrome", response.Request.Headers["User-Agent"]);
             }
             else
             {
-                Assert.Contains("Firefox", response.Request.Headers["User-Agent"]);
+                StringAssert.Contains("Firefox", response.Request.Headers["User-Agent"]);
             }
         }
     }

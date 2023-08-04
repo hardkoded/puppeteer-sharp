@@ -2,21 +2,19 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class GeolocationTests : PuppeteerPageBaseTest
     {
-        public GeolocationTests(ITestOutputHelper output) : base(output)
+        public GeolocationTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
@@ -30,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
                     resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
                 }))");
-            Assert.Equal(new GeolocationOption
+            Assert.AreEqual(new GeolocationOption
             {
                 Latitude = 10,
                 Longitude = 10
@@ -38,16 +36,16 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should throw when invalid longitude")]
-        [PuppeteerFact]
-        public async Task ShouldThrowWhenInvalidLongitude()
+        [PuppeteerTimeout]
+        public void ShouldThrowWhenInvalidLongitude()
         {
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+            var exception = Assert.ThrowsAsync<ArgumentException>(() =>
                 Page.SetGeolocationAsync(new GeolocationOption
                 {
                     Longitude = 200,
                     Latitude = 100
                 }));
-            Assert.Contains("Invalid longitude '200'", exception.Message);
+            StringAssert.Contains("Invalid longitude '200'", exception.Message);
         }
     }
 }

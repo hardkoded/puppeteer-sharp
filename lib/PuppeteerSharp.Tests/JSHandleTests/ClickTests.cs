@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ClickTests : PuppeteerPageBaseTest
     {
-        public ClickTests(ITestOutputHelper output) : base(output)
+        public ClickTests(): base()
         {
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.click", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var clicks = new List<BoxModelPoint>();
@@ -42,12 +40,12 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             await TestUtils.ShortWaitForCollectionToHaveAtLeastNElementsAsync(clicks, 2);
 
             // margin + middle point offset
-            Assert.Equal(45 + 60, clicks[0].X);
-            Assert.Equal(45 + 30, clicks[0].Y);
+            Assert.AreEqual(45 + 60, clicks[0].X);
+            Assert.AreEqual(45 + 30, clicks[0].Y);
 
             // margin + offset
-            Assert.Equal(30 + 10, clicks[1].X);
-            Assert.Equal(30 + 15, clicks[1].Y);
+            Assert.AreEqual(30 + 10, clicks[1].X);
+            Assert.AreEqual(30 + 15, clicks[1].Y);
         }
     }
 }

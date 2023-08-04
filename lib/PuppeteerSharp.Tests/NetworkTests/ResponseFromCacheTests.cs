@@ -3,21 +3,19 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseFromCacheTests : PuppeteerPageBaseTest
     {
-        public ResponseFromCacheTests(ITestOutputHelper output) : base(output)
+        public ResponseFromCacheTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromCache", "should return |false| for non-cached content")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -25,7 +23,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromCache", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var responses = new Dictionary<string, IResponse>();
@@ -33,10 +31,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.Equal(2, responses.Count);
-            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.AreEqual(2, responses.Count);
+            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
             Assert.False(responses["one-style.html"].FromCache);
-            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
             Assert.True(responses["one-style.css"].FromCache);
         }
     }

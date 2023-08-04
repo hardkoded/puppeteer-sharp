@@ -2,29 +2,27 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.DialogTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class DialogTests : PuppeteerPageBaseTest
     {
-        public DialogTests(ITestOutputHelper output) : base(output)
+        public DialogTests(): base()
         {
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should fire")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldFire()
         {
             Page.Dialog += async (_, e) =>
             {
-                Assert.Equal(DialogType.Alert, e.Dialog.DialogType);
-                Assert.Equal(string.Empty, e.Dialog.DefaultValue);
-                Assert.Equal("yo", e.Dialog.Message);
+                Assert.AreEqual(DialogType.Alert, e.Dialog.DialogType);
+                Assert.AreEqual(string.Empty, e.Dialog.DefaultValue);
+                Assert.AreEqual("yo", e.Dialog.Message);
 
                 await e.Dialog.Accept();
             };
@@ -33,24 +31,24 @@ namespace PuppeteerSharp.Tests.DialogTests
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>
             {
-                Assert.Equal(DialogType.Prompt, e.Dialog.DialogType);
-                Assert.Equal("yes.", e.Dialog.DefaultValue);
-                Assert.Equal("question?", e.Dialog.Message);
+                Assert.AreEqual(DialogType.Prompt, e.Dialog.DialogType);
+                Assert.AreEqual("yes.", e.Dialog.DefaultValue);
+                Assert.AreEqual("question?", e.Dialog.Message);
 
                 await e.Dialog.Accept("answer!");
             };
 
             var result = await Page.EvaluateExpressionAsync<string>("prompt('question?', 'yes.')");
-            Assert.Equal("answer!", result);
+            Assert.AreEqual("answer!", result);
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should dismiss the prompt")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (_, e) =>

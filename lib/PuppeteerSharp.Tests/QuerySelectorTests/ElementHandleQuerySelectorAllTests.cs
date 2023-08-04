@@ -1,39 +1,37 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ElementHandleQuerySelectorAllTests : PuppeteerPageBaseTest
     {
-        public ElementHandleQuerySelectorAllTests(ITestOutputHelper output) : base(output)
+        public ElementHandleQuerySelectorAllTests(): base()
         {
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$", "should query existing elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElements()
         {
             await Page.SetContentAsync("<html><body><div>A</div><br/><div>B</div></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var elements = await html.QuerySelectorAllAsync("div");
-            Assert.Equal(2, elements.Length);
+            Assert.AreEqual(2, elements.Length);
             var tasks = elements.Select(element => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
-            Assert.Equal(new[] { "A", "B" }, await Task.WhenAll(tasks));
+            Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$", "should return empty array for non-existing elements")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnEmptyArrayForNonExistingElements()
         {
             await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");
             var html = await Page.QuerySelectorAsync("html");
             var elements = await html.QuerySelectorAllAsync("div");
-            Assert.Empty(elements);
+            Assert.IsEmpty(elements);
         }
     }
 }

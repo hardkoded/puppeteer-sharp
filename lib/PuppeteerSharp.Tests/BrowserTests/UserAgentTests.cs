@@ -1,32 +1,30 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class UserAgentTests : PuppeteerBrowserBaseTest
     {
-        public UserAgentTests(ITestOutputHelper output) : base(output)
+        public UserAgentTests(): base()
         {
         }
 
         [PuppeteerTest("browser.spec.ts", "Browser.userAgent", "should include WebKit")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();
-            Assert.NotEmpty(userAgent);
+            Assert.IsNotEmpty(userAgent);
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("WebKit", userAgent);
+                StringAssert.Contains("WebKit", userAgent);
             }
             else
             {
-                Assert.Contains("Gecko", userAgent);
+                StringAssert.Contains("Gecko", userAgent);
             }
         }
     }

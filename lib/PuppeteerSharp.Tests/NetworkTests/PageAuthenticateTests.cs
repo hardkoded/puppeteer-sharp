@@ -3,27 +3,25 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class PageAuthenticateTests : PuppeteerPageBaseTest
     {
-        public PageAuthenticateTests(ITestOutputHelper output) : base(output)
+        public PageAuthenticateTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
 
             await Page.AuthenticateAsync(new Credentials
             {
@@ -32,11 +30,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             response = await Page.ReloadAsync();
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should fail if wrong credentials")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
@@ -48,11 +46,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should allow disable authentication")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
@@ -64,16 +62,16 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
 
             await Page.AuthenticateAsync(null);
 
             response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
-            Assert.Equal(HttpStatusCode.Unauthorized, response.Status);
+            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should not disable caching")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");
@@ -91,9 +89,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.Equal(HttpStatusCode.NotModified, responses["one-style.html"].Status);
+            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
             Assert.False(responses["one-style.html"].FromCache);
-            Assert.Equal(HttpStatusCode.OK, responses["one-style.css"].Status);
+            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
             Assert.True(responses["one-style.css"].FromCache);
         }
     }

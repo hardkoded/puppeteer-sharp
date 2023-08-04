@@ -1,21 +1,19 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class EmulateMediaTypeTests : PuppeteerPageBaseTest
     {
-        public EmulateMediaTypeTests(ITestOutputHelper output) : base(output)
+        public EmulateMediaTypeTests(): base()
         {
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaType", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));

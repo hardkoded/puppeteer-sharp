@@ -1,18 +1,17 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0128
     {
-        [SkipBrowserFact(skipFirefox: true)]
-        public async Task LauncherShouldFailGracefully()
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public void LauncherShouldFailGracefully()
         {
-            await Assert.ThrowsAsync<ProcessException>(async () =>
+            Assert.ThrowsAsync<ProcessException>(async () =>
             {
                 var options = TestConstants.DefaultBrowserOptions();
                 options.Args = new[] { "--remote-debugging-port=-2" };

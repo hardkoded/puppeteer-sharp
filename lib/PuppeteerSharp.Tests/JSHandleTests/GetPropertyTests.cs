@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class GetPropertyTests : PuppeteerPageBaseTest
     {
-        public GetPropertyTests(ITestOutputHelper output) : base(output)
+        public GetPropertyTests(): base()
         {
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperty", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
@@ -23,7 +21,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
               three: 3
             })");
             var twoHandle = await aHandle.GetPropertyAsync("two");
-            Assert.Equal(2, await twoHandle.JsonValueAsync<int>());
+            Assert.AreEqual(2, await twoHandle.JsonValueAsync<int>());
         }
     }
 }

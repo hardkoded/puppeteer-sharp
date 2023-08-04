@@ -3,35 +3,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
 using static System.Net.Mime.MediaTypeNames;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
-        public ParseAriaSelectorTests(ITestOutputHelper output) : base(output)
+        public ParseAriaSelectorTests(): base()
         {
         }
 
-        public override async Task InitializeAsync()
+        [SetUp]
+        public async Task SetDefaultContentAsync()
         {
-            await base.InitializeAsync();
-
             await Page.SetContentAsync(@"
                 <button id=""btn"" role=""button""> Submit  button   and some spaces  </button>
             ");
         }
-        public override Task DisposeAsync()
-        {
-            return base.DisposeAsync();
-        }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "parseAriaSelector", "should find button")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFindButton()
         {
             async Task ExpectFound(IElementHandle button)
@@ -40,7 +33,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
                     return button.id;
                 }");
-                Assert.Equal("btn", id);
+                Assert.AreEqual("btn", id);
             }
 
             var button= await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
@@ -63,8 +56,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/ignored[name=\"Submit  button and some  spaces\"][role=\"button\"]");
             await ExpectFound(button);
-            var ex = await Assert.ThrowsAnyAsync<PuppeteerException>(() => Page.QuerySelectorAsync("aria/smth[smth=\"true\"]"));
-            Assert.Equal("Unknown aria attribute \"smth\" in selector", ex.Message);
+            var ex = Assert.ThrowsAsync<PuppeteerException>(() => Page.QuerySelectorAsync("aria/smth[smth=\"true\"]"));
+            Assert.AreEqual("Unknown aria attribute \"smth\" in selector", ex.Message);
         }
     }
 }

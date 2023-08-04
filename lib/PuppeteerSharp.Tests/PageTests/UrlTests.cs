@@ -1,26 +1,24 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class UrlTests : PuppeteerPageBaseTest
     {
-        public UrlTests(ITestOutputHelper output) : base(output)
+        public UrlTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.url", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
-            Assert.Equal(TestConstants.AboutBlank, Page.Url);
+            Assert.AreEqual(TestConstants.AboutBlank, Page.Url);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(TestConstants.EmptyPage, Page.Url);
+            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
         }
     }
 }

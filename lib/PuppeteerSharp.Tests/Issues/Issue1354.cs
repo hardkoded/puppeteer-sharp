@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue1354 : PuppeteerPageBaseTest
     {
-        public Issue1354(ITestOutputHelper output) : base(output)
+        public Issue1354(): base()
         {
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -29,7 +27,7 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -47,7 +45,7 @@ namespace PuppeteerSharp.Tests.Issues
 
                 // Deep inside an existing mostly sync app...
                 var content = page.GetContentAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                Assert.Contains("REPLACE", content);
+                StringAssert.Contains("REPLACE", content);
             }
         }
     }

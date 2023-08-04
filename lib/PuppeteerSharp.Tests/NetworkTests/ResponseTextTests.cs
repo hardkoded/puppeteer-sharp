@@ -4,54 +4,52 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseTextTests : PuppeteerPageBaseTest
     {
-        public ResponseTextTests(ITestOutputHelper output) : base(output)
+        public ResponseTextTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
+            Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.Equal("gzip", response.Headers["Content-Encoding"]);
-            Assert.Equal("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
+            Assert.AreEqual("gzip", response.Headers["Content-Encoding"]);
+            Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/foo.html");
             var redirectChain = response.Request.RedirectChain;
-            Assert.Single(redirectChain);
+            Assert.That(redirectChain, Has.Exactly(1).Items);
             var redirected = redirectChain[0].Response;
-            Assert.Equal(HttpStatusCode.Redirect, redirected.Status);
+            Assert.AreEqual(HttpStatusCode.Redirect, redirected.Status);
 
-            var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
-            Assert.Contains("Response body is unavailable for redirect responses", exception.Message);
+            var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
+            StringAssert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -91,7 +89,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             Assert.NotNull(serverResponse);
             Assert.NotNull(pageResponse);
-            Assert.Equal(HttpStatusCode.OK, pageResponse.Status);
+            Assert.AreEqual(HttpStatusCode.OK, pageResponse.Status);
             Assert.False(requestFinished);
 
             var responseText = pageResponse.TextAsync();
@@ -100,7 +98,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Finish response.
             await serverResponse.WriteAsync("ld!");
             serverResponseCompletion.SetResult(true);
-            Assert.Equal("hello world!", await responseText);
+            Assert.AreEqual("hello world!", await responseText);
         }
     }
 }

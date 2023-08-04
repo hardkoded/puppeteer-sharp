@@ -1,26 +1,24 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestIsNavigationRequestTests : PuppeteerPageBaseTest
     {
-        public RequestIsNavigationRequestTests(ITestOutputHelper output) : base(output)
+        public RequestIsNavigationRequestTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -35,7 +33,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work with request interception")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithRequestInterception()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -56,7 +54,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work when navigating to image")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWorkWhenNavigatingToImage()
         {
             var requests = new List<IRequest>();

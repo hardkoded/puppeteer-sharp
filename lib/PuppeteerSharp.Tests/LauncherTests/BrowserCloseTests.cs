@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.BrowserTests.Events
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
-        public BrowserCloseTests(ITestOutputHelper output) : base(output)
+        public BrowserCloseTests(): base()
         {
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.close", "should terminate network waiters")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
@@ -26,13 +24,13 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
 
                 await browser.CloseAsync();
 
-                var exception = await Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
-                Assert.Contains("Target closed", exception.Message);
-                Assert.DoesNotContain("Timeout", exception.Message);
+                var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
+                StringAssert.Contains("Target closed", exception.Message);
+                StringAssert.DoesNotContain("Timeout", exception.Message);
 
-                exception = await Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
-                Assert.Contains("Target closed", exception.Message);
-                Assert.DoesNotContain("Timeout", exception.Message);
+                exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
+                StringAssert.Contains("Target closed", exception.Message);
+                StringAssert.DoesNotContain("Timeout", exception.Message);
             }
         }
     }

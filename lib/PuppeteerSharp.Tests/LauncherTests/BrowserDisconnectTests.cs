@@ -1,20 +1,19 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
+using System.Linq;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserDisconnectTests : PuppeteerBrowserBaseTest
     {
-        public BrowserDisconnectTests(ITestOutputHelper output) : base(output)
+        public BrowserDisconnectTests(): base()
         {
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.disconnect", "should reject navigation when browser closes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRejectNavigationWhenBrowserCloses()
         {
             Server.SetRoute("/one-style.css", _ => Task.Delay(10000));
@@ -32,19 +31,18 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 });
                 await Server.WaitForRequest("/one-style.css");
                 remote.Disconnect();
-                var exception = await Assert.ThrowsAsync<NavigationException>(() => navigationTask);
-                Assert.Contains(
+                var exception = Assert.ThrowsAsync<NavigationException>(() => navigationTask);
+                Assert.True(
                     new[]
                     {
                         "Navigation failed because browser has disconnected! (Connection disposed)",
                         "Protocol error(Page.navigate): Target closed. (Connection disposed)",
-                    },
-                    value => value == exception.Message);
+                    }.Any(value => value == exception.Message));
             }
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.disconnect", "should reject waitForSelector when browser closes")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldRejectWaitForSelectorWhenBrowserCloses()
         {
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));
@@ -58,8 +56,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var page = await remote.NewPageAsync();
                 var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
                 remote.Disconnect();
-                var exception = await Assert.ThrowsAnyAsync<WaitTaskTimeoutException>(() => watchdog);
-                Assert.Equal("Connection disposed", (exception.InnerException as TargetClosedException).CloseReason);
+                var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => watchdog);
+                Assert.AreEqual("Connection disposed", (exception.InnerException as TargetClosedException).CloseReason);
             }
         }
     }

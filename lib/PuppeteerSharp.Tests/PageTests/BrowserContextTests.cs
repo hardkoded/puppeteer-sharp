@@ -1,19 +1,17 @@
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserContextTests : PuppeteerPageBaseTest
     {
-        public BrowserContextTests(ITestOutputHelper output) : base(output)
+        public BrowserContextTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.browserContext", "should return the correct browser context instance")]
-        [PuppeteerFact]
-        public void ShouldReturnTheCorrectBrowserInstance() => Assert.Same(Context, Page.BrowserContext);
+        [PuppeteerTimeout]
+        public void ShouldReturnTheCorrectBrowserInstance() => Assert.AreSame(Context, Page.BrowserContext);
     }
 }

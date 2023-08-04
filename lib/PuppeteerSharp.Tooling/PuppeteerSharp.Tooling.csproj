@@ -25,7 +25,7 @@
 		<Folder Include="Options\" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\PuppeteerSharp.Xunit\PuppeteerSharp.Xunit.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Microsoft.Bcl.AsyncInterfaces" />

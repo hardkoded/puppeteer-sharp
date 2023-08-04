@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserUrlOptionTests : PuppeteerPageBaseTest
     {
-        public BrowserUrlOptionTests(ITestOutputHelper output) : base(output)
+        public BrowserUrlOptionTests(): base()
         {
         }
 
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeAbleToConnectUsingBrowserURLWithAndWithoutTrailingSlash()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -24,18 +22,18 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 
             var browser1 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL });
             var page1 = await browser1.NewPageAsync();
-            Assert.Equal(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.AreEqual(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
             browser1.Disconnect();
 
             var browser2 = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserURL = browserURL + "/" });
             var page2 = await browser2.NewPageAsync();
-            Assert.Equal(56, await page2.EvaluateExpressionAsync<int>("7 * 8"));
+            Assert.AreEqual(56, await page2.EvaluateExpressionAsync<int>("7 * 8"));
             browser2.Disconnect();
             await originalBrowser.CloseAsync();
         }
 
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenUsingBothBrowserWSEndpointAndBrowserURL()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -43,7 +41,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:21222";
 
-            await Assert.ThrowsAsync<PuppeteerException>(() => Puppeteer.ConnectAsync(new ConnectOptions
+            Assert.ThrowsAsync<PuppeteerException>(() => Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserURL = browserURL,
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
@@ -53,7 +51,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
         }
 
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenTryingToConnectToNonExistingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -61,7 +59,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:2122";
 
-            await Assert.ThrowsAsync<ProcessException>(() => Puppeteer.ConnectAsync(new ConnectOptions
+            Assert.ThrowsAsync<ProcessException>(() => Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserURL = browserURL
             }));

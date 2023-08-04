@@ -2,16 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.IdleOverrideTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class IdleOverrideTests : PuppeteerPageBaseTest
     {
-        public IdleOverrideTests(ITestOutputHelper output) : base(output)
+        public IdleOverrideTests(): base()
         {
         }
 
@@ -28,11 +26,11 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
         private async Task VerifyStateAsync(string expectedState)
         {
             var actualState = await GetIdleStateAsync();
-            Assert.Equal(expectedState, actualState);
+            Assert.AreEqual(expectedState, actualState);
         }
 
         [PuppeteerTest("idle_override.spec.ts", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ChangingIdleStateEmulationCausesChangeOfTheIdleDetectorState()
         {
             await Context.OverridePermissionsAsync(

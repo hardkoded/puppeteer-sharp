@@ -1,14 +1,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
 
 namespace PuppeteerSharp.Tests.SingleFileDeployment
 {
     public class PublishSingleFileTests
     {
-        [SkipNonWindowsFact]
+        [Skip(SkipAttribute.Targets.OSX | SkipAttribute.Targets.Linux)]
         public void ShouldWork()
         {
             var tempPath = Path.GetTempPath();
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
             var errorResult = GetStreamOutput(process.StandardError);
             Assert.True(process.WaitForExit(20000));
 
-            Assert.Empty(errorResult);
+            Assert.IsEmpty(errorResult);
 
             Assert.True(File.Exists(expectedBinaryPath), outputResult);
 

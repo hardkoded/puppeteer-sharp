@@ -1,21 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.WaitForTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class FrameWaitForTimeoutTests : PuppeteerPageBaseTest
     {
-        public FrameWaitForTimeoutTests(ITestOutputHelper output) : base(output)
+        public FrameWaitForTimeoutTests(): base()
         {
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForTimeout", "waits for the given timeout before resolving")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task WaitsForTheGivenTimeoutBeforeResolving()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

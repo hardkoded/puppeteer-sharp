@@ -3,21 +3,19 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestRespondTests : PuppeteerPageBaseTest
     {
-        public RequestRespondTests(ITestOutputHelper output) : base(output)
+        public RequestRespondTests(): base()
         {
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -35,9 +33,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.Created, response.Status);
-            Assert.Equal("bar", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.Created, response.Status);
+            Assert.AreEqual("bar", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
         /// </summary>
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should work with status code 422")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkReturnStatusPhrases()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -60,13 +58,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.UpgradeRequired, response.Status);
-            Assert.Equal("Upgrade Required", response.StatusText);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.UpgradeRequired, response.Status);
+            Assert.AreEqual("Upgrade Required", response.StatusText);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should redirect")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRedirect()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -91,13 +89,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
 
-            Assert.Single(response.Request.RedirectChain);
-            Assert.Equal(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
-            Assert.Equal(TestConstants.EmptyPage, response.Url);
+            Assert.That(response.Request.RedirectChain, Has.Exactly(1).Items);
+            Assert.AreEqual(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
+            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should allow mocking binary responses")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -123,7 +121,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should stringify intercepted request response headers")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -141,12 +139,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal("True", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual("True", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
         }
 
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -167,13 +165,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
 
-            Assert.Equal(HttpStatusCode.OK, response.Status);
-            Assert.Equal("True\nFalse", response.Headers["foo"]);
-            Assert.Equal("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
-            Assert.Equal("specialId", cookies[0].Name);
-            Assert.Equal("123456", cookies[0].Value);
-            Assert.Equal("sessionId", cookies[1].Name);
-            Assert.Equal("abcdef", cookies[1].Value);
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.AreEqual("True\nFalse", response.Headers["foo"]);
+            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.AreEqual("specialId", cookies[0].Name);
+            Assert.AreEqual("123456", cookies[0].Value);
+            Assert.AreEqual("sessionId", cookies[1].Name);
+            Assert.AreEqual("abcdef", cookies[1].Value);
         }
     }
 }

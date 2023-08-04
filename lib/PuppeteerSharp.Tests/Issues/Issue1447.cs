@@ -1,17 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue1447 : PuppeteerPageBaseTest
     {
-        public Issue1447(ITestOutputHelper output) : base(output) { }
+        public Issue1447(): base() { }
 
-        [PuppeteerFact(Skip = "It's an example")]
+        [Ignore("It's an example")]
         public async Task Example()
         {
             var opts = new LaunchOptions

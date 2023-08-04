@@ -1,21 +1,19 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BoxModelTests : PuppeteerPageBaseTest
     {
-        public BoxModelTests(ITestOutputHelper output) : base(output)
+        public BoxModelTests(): base()
         {
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should work")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/resetcss.html");
@@ -51,24 +49,24 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             // Step 3: query div's boxModel and assert box values.
             var box = await divHandle.BoxModelAsync();
-            Assert.Equal(6, box.Width);
-            Assert.Equal(7, box.Height);
-            Assert.Equal(new BoxModelPoint
+            Assert.AreEqual(6, box.Width);
+            Assert.AreEqual(7, box.Height);
+            Assert.AreEqual(new BoxModelPoint
             {
                 X = 1 + 4, // frame.left + div.left
                 Y = 2 + 5
             }, box.Margin[0]);
-            Assert.Equal(new BoxModelPoint
+            Assert.AreEqual(new BoxModelPoint
             {
                 X = 1 + 4 + 3, // frame.left + div.left + div.margin-left
                 Y = 2 + 5
             }, box.Border[0]);
-            Assert.Equal(new BoxModelPoint
+            Assert.AreEqual(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1, // frame.left + div.left + div.marginLeft + div.borderLeft
                 Y = 2 + 5
             }, box.Padding[0]);
-            Assert.Equal(new BoxModelPoint
+            Assert.AreEqual(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + dif.paddingLeft
                 Y = 2 + 5
@@ -76,7 +74,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should return null for invisible elements")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");

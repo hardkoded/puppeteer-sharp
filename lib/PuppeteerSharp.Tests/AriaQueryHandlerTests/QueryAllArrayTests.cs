@@ -4,22 +4,20 @@ using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
 using static System.Net.Mime.MediaTypeNames;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
-        public QueryAllArrayTests(ITestOutputHelper output) : base(output)
+        public QueryAllArrayTests(): base()
         {
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAllArray", "$$eval should handle many elements")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task EvalShouldHandleManyElements()
         {
             await Page.SetContentAsync("");
@@ -34,7 +32,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 .QuerySelectorAllHandleAsync("aria/[role=\"button\"]")
                 .EvaluateFunctionAsync<int>(@"buttons => buttons.reduce((acc, button) => acc + Number(button.textContent), 0)");
 
-            Assert.Equal(50005000, sum);
+            Assert.AreEqual(50005000, sum);
         }
     }
 }

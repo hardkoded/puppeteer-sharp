@@ -9,7 +9,6 @@ namespace PuppeteerSharp.Tests
 {
     public static class TestConstants
     {
-        public const string TestFixtureCollectionName = "PuppeteerLoaderFixture collection";
         public const int DebuggerAttachedTestTimeout = 300_000;
         public const int DefaultTestTimeout = 60_000;
         public const int DefaultPuppeteerTimeout = 10_000;

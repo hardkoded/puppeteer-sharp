@@ -1,20 +1,18 @@
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class BrowserEventsDisconnectedTests : PuppeteerBrowserBaseTest
     {
-        public BrowserEventsDisconnectedTests(ITestOutputHelper output) : base(output)
+        public BrowserEventsDisconnectedTests(): base()
         {
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.Events.disconnected", "should be emitted when: browser gets closed, disconnected or underlying websocket gets closed")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()
         {
             var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
@@ -33,9 +31,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
             remoteBrowser2.Disconnect();
             await remoteBrowser2Disconnected;
 
-            Assert.Equal(0, disconnectedOriginal);
-            Assert.Equal(0, disconnectedRemote1);
-            Assert.Equal(1, disconnectedRemote2);
+            Assert.AreEqual(0, disconnectedOriginal);
+            Assert.AreEqual(0, disconnectedRemote1);
+            Assert.AreEqual(1, disconnectedRemote2);
 
             var remoteBrowser1Disconnected = WaitForBrowserDisconnect(remoteBrowser1);
             var originalBrowserDisconnected = WaitForBrowserDisconnect(originalBrowser);
@@ -46,9 +44,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 originalBrowserDisconnected
             );
 
-            Assert.Equal(1, disconnectedOriginal);
-            Assert.Equal(1, disconnectedRemote1);
-            Assert.Equal(1, disconnectedRemote2);
+            Assert.AreEqual(1, disconnectedOriginal);
+            Assert.AreEqual(1, disconnectedRemote1);
+            Assert.AreEqual(1, disconnectedRemote2);
         }
     }
 }

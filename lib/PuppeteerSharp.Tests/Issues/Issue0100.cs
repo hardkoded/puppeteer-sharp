@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace PuppeteerSharp.Tests.Issues
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class Issue0100 : PuppeteerBrowserContextBaseTest
     {
-        public Issue0100(ITestOutputHelper output) : base(output)
+        public Issue0100(): base()
         {
         }
 
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task PdfDarkskyShouldWork()
         {
             await using (var page = await Context.NewPageAsync())

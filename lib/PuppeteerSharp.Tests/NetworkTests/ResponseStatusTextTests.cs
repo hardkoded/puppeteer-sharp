@@ -1,21 +1,19 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ResponseStatusTextTests : PuppeteerPageBaseTest
     {
-        public ResponseStatusTextTests(ITestOutputHelper output) : base(output)
+        public ResponseStatusTextTests(): base()
         {
         }
 
         [PuppeteerTest("network.spec.ts", "Response.statusText", "should work")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldWork()
         {
             Server.SetRoute("/cool", (context) =>
@@ -29,7 +27,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return Task.CompletedTask;
             });
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
-            Assert.Equal("cool!", response.StatusText);
+            Assert.AreEqual("cool!", response.StatusText);
         }
     }
 }

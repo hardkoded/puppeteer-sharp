@@ -2,22 +2,20 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class MetricsTests : PuppeteerPageBaseTest
     {
-        public MetricsTests(ITestOutputHelper output) : base(output)
+        public MetricsTests(): base()
         {
         }
 
         [PuppeteerTest("page.spec.ts", "Page.metrics", "should get metrics from a page")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldGetMetricsFromPage()
         {
             await Page.GoToAsync("about:blank");
@@ -26,7 +24,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.metrics", "metrics event fired on console.timeStamp")]
-        [SkipBrowserFact(skipFirefox: true)]
+        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();
@@ -35,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;
 
-            Assert.Equal("test42", result.Title);
+            Assert.AreEqual("test42", result.Title);
             CheckMetrics(result.Metrics);
         }
 

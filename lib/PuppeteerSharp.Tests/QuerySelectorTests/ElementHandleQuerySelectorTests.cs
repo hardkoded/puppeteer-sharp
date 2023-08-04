@@ -1,21 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Xunit;
-using Xunit;
-using Xunit.Abstractions;
+using PuppeteerSharp.Nunit;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
-    [Collection(TestConstants.TestFixtureCollectionName)]
     public class ElementHandleQuerySelectorTests : PuppeteerPageBaseTest
     {
-        public ElementHandleQuerySelectorTests(ITestOutputHelper output) : base(output)
+        public ElementHandleQuerySelectorTests(): base()
         {
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$", "should query existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
@@ -24,11 +22,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var second = await html.QuerySelectorAsync(".second");
             var inner = await second.QuerySelectorAsync(".inner");
             var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner);
-            Assert.Equal("A", content);
+            Assert.AreEqual("A", content);
         }
 
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$", "should return null for non-existing element")]
-        [PuppeteerFact]
+        [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
