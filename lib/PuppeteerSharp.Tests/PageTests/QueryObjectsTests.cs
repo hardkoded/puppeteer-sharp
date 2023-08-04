@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
             Assert.AreEqual(
                 1,
-                await Page.EvaluateFunctionAsync(@"objects => {
+                await Page.EvaluateFunctionAsync<int>(@"objects => {
                     return objects.length;
                 }", objectsHandle));
       

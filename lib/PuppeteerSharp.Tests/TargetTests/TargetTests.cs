@@ -130,7 +130,7 @@ namespace PuppeteerSharp.Tests.TargetTests
 
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             var worker = await target.WorkerAsync();
-            Assert.AreEqual("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
+            Assert.AreEqual("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should create a worker from a shared worker")]
@@ -144,7 +144,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             }");
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
             var worker = await target.WorkerAsync();
-            Assert.AreEqual("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync("() => self.toString()"));
+            Assert.AreEqual("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
         }
 
         [PuppeteerTest("target.spec.ts", "Target", "should report when a target url changes")]
