@@ -7,7 +7,7 @@ namespace PuppeteerSharp.BrowserData
 {
     internal class Firefox
     {
-        internal const string DefaultBuildId = "latest";
+        internal const string DefaultBuildId = "FIREFOX_NIGHTLY";
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
                 => $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";

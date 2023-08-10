@@ -37,7 +37,7 @@ namespace PuppeteerSharp
         {
             CacheDir = GetExecutablePath();
             Platform = GetCurrentPlatform();
-            Browser = SupportedBrowser.Chromium;
+            Browser = SupportedBrowser.Chrome;
             _customFileDownload = _webClient.DownloadFileTaskAsync;
         }
 
@@ -106,9 +106,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<InstalledBrowser> DownloadAsync()
         {
-            var buildId = Browser == SupportedBrowser.Chrome
-                ? Chrome.DefaultBuildId
-                : await Firefox.ResolveBuildIdAsync(Firefox.DefaultBuildId).ConfigureAwait(false);
+            var buildId = Browser == SupportedBrowser.Firefox
+                ? await Firefox.ResolveBuildIdAsync(Firefox.DefaultBuildId).ConfigureAwait(false)
+                : Chrome.DefaultBuildId;
 
             return await DownloadAsync(buildId).ConfigureAwait(false);
         }
