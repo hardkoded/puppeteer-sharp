@@ -206,12 +206,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
-                    Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
+                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
                 }));
                 Assert.Contains("\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
-                    Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
+                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
                 }));
             }
         }

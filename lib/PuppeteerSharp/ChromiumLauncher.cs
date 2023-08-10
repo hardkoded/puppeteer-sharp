@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -27,6 +28,9 @@ namespace PuppeteerSharp
 
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
+
+        /// <inheritdoc />
+        public override string DefaultBuildId => Chrome.DefaultBuildId;
 
         /// <summary>
         /// The default flags that Chromium will be launched with.

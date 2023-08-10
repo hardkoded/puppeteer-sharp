@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -33,6 +34,9 @@ namespace PuppeteerSharp
 
             Process.StartInfo.Arguments = string.Join(" ", firefoxArgs);
         }
+
+        /// <inheritdoc />
+        public override string DefaultBuildId => Firefox.DefaultBuildId;
 
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";

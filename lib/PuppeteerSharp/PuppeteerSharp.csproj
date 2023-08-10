@@ -12,10 +12,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>10.1.3</PackageVersion>
-    <ReleaseVersion>10.1.3</ReleaseVersion>
-    <AssemblyVersion>10.1.3.0</AssemblyVersion>
-    <FileVersion>10.1.3.0</FileVersion>
+    <PackageVersion>11.0.0</PackageVersion>
+    <ReleaseVersion>11.0.0</ReleaseVersion>
+    <AssemblyVersion>11.0.0</AssemblyVersion>
+    <FileVersion>11.0.0</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <DebugType>embedded</DebugType>
@@ -54,12 +54,14 @@
     <None Remove="System.Text.Encodings.Web" />
     <None Remove="Injected\" />
     <None Remove="Injected\injected.js" />
+    <None Remove="BrowserData\" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Injected\" />
+    <Folder Include="BrowserData\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
