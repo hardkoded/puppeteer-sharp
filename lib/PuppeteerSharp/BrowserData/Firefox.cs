@@ -16,12 +16,12 @@ namespace PuppeteerSharp.BrowserData
         {
             var version = await JsonUtils.GetAsync<Dictionary<string, string>>("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
 
-            if (!version.ContainsKey("channel"))
+            if (!version.ContainsKey(channel))
             {
                 throw new PuppeteerException($"Channel {channel} not found.");
             }
 
-            return version[DefaultBuildId];
+            return version[channel];
         }
 
         internal static string RelativeExecutablePath(Platform platform, string builId)
