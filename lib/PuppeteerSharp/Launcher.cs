@@ -52,7 +52,7 @@ namespace PuppeteerSharp
             _browser = options.Browser;
             var executable = options.ExecutablePath ?? GetExecutablePath(
                 options,
-                options.Browser == SupportedBrowser.Firefox ? Firefox.DefaultBuildId : Chrome.DefaultBuildId);
+                options.Browser == SupportedBrowser.Firefox ? await Firefox.ResolveBuildIdAsync(Firefox.DefaultBuildId).ConfigureAwait(false) : Chrome.DefaultBuildId);
 
             Process = options.Browser switch
             {
