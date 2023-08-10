@@ -21,4 +21,3 @@ namespace PuppeteerSharp.BrowserData
         }
     }
 }
-

@@ -28,4 +28,3 @@ namespace PuppeteerSharp.BrowserData
         Beta = 3,
     }
 }
-

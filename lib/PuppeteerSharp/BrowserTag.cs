@@ -33,4 +33,3 @@ namespace PuppeteerSharp
         Stable = 4,
     }
 }
-
