@@ -169,7 +169,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The browser to be used (Chrome, Chromium, Firefox).
         /// </summary>
-        public SupportedBrowser Browser { get; set; } = SupportedBrowser.Chromium;
+        public SupportedBrowser Browser { get; set; } = SupportedBrowser.Chrome;
 
         /// <summary>
         /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller. If <c>true</c> (default), the

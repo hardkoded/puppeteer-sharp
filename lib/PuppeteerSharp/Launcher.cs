@@ -50,7 +50,7 @@ namespace PuppeteerSharp
 
             EnsureSingleLaunchOrConnect();
             _browser = options.Browser;
-            var executable = GetExecutablePath(
+            var executable = options.ExecutablePath ?? GetExecutablePath(
                 options,
                 options.Browser == SupportedBrowser.Firefox ? Firefox.DefaultBuildId : Chrome.DefaultBuildId);
 

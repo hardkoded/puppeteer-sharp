@@ -45,9 +45,9 @@ namespace PuppeteerSharp.BrowserData
                 var dirInfo = new DirectoryInfo(GetBrowserRoot(browserEnum));
                 var dirs = dirInfo.GetDirectories();
 
-                return dirs.Select(file =>
+                return dirs.Select(dir =>
                 {
-                    var result = ParseFolderPath(dirInfo);
+                    var result = ParseFolderPath(dir);
 
                     if (result == null)
                     {
