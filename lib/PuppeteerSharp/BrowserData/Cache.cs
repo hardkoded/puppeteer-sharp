@@ -26,7 +26,7 @@ namespace PuppeteerSharp.BrowserData
         public string GetInstallationDir(SupportedBrowser browser, Platform platform, string buildId)
             => Path.Combine(GetBrowserRoot(browser), $"{platform}-{buildId}");
 
-        internal IEnumerable<InstalledBrowser> GetInstalledBrowsers()
+        public IEnumerable<InstalledBrowser> GetInstalledBrowsers()
         {
             var rootInfo = new DirectoryInfo(_rootDir);
 
@@ -36,7 +36,6 @@ namespace PuppeteerSharp.BrowserData
             }
 
             var browerNames = Enum.GetNames(typeof(SupportedBrowser)).Select(browser => browser.ToUpperInvariant());
-
             var browsers = rootInfo.GetDirectories().Where(browser => browerNames.Contains(browser.Name.ToUpperInvariant()));
 
             return browsers.SelectMany(browser =>
@@ -61,7 +60,7 @@ namespace PuppeteerSharp.BrowserData
             });
         }
 
-        internal void Uninstall(SupportedBrowser browser, Platform platform, string buildId)
+        public void Uninstall(SupportedBrowser browser, Platform platform, string buildId)
         {
             var dir = new DirectoryInfo(GetInstallationDir(browser, platform, buildId));
             if (dir.Exists)

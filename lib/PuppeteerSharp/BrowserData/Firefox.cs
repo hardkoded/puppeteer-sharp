@@ -38,10 +38,10 @@ namespace PuppeteerSharp.BrowserData
             return platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                                            "Firefox Nightly.app",
-                                            "Contents",
-                                            "MacOS",
-                                            "firefox"),
+                    "Firefox Nightly.app",
+                    "Contents",
+                    "MacOS",
+                    "firefox"),
                 Platform.Linux => Path.Combine("firefox", "firefox"),
                 Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),

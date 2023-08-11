@@ -21,11 +21,11 @@ namespace PuppeteerSharp.BrowserData
             return platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                                            "chrome-" + GetFolder(platform),
-                                            "Google Chrome for Testing.app",
-                                            "Contents",
-                                            "MacOS",
-                                            "Google Chrome for Testing"),
+                    "chrome-" + GetFolder(platform),
+                    "Google Chrome for Testing.app",
+                    "Contents",
+                    "MacOS",
+                    "Google Chrome for Testing"),
                 Platform.Linux => Path.Combine("chrome-linux64", "chrome"),
                 Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform), "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
