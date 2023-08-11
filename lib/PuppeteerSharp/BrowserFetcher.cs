@@ -155,6 +155,7 @@ namespace PuppeteerSharp
                 return new InstalledBrowser(cache, Browser, buildId, Platform);
             }
 
+            Console.WriteLine($"Download {Browser} for {Platform} from {url}");
             await _customFileDownload(url, archivePath).ConfigureAwait(false);
 
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
