@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 
@@ -28,9 +29,6 @@ namespace PuppeteerSharp
 
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
-
-        /// <inheritdoc />
-        public override string DefaultBuildId => Chrome.DefaultBuildId;
 
         /// <summary>
         /// The default flags that Chromium will be launched with.
@@ -65,6 +63,9 @@ namespace PuppeteerSharp
             "--password-store=basic",
             "--use-mock-keychain",
         };
+
+        /// <inheritdoc />
+        public override Task<string> GetDefaultBuildIdAsync() => Task.FromResult(Chrome.DefaultBuildId);
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";

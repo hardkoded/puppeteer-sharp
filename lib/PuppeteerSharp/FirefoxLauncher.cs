@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
@@ -36,7 +37,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public override string DefaultBuildId => Firefox.DefaultBuildId;
+        public override Task<string> GetDefaultBuildIdAsync() => Firefox.GetDefaultBuildIdAsync();
 
         /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";

@@ -7,8 +7,10 @@ namespace PuppeteerSharp.BrowserData
 {
     internal class Firefox
     {
-        internal const string DefaultBuildId = "FIREFOX_NIGHTLY";
+        private const string InternalDefaultBuildId = "FIREFOX_NIGHTLY";
         private static readonly Dictionary<string, string> _cachedBuildIds = new();
+
+        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(InternalDefaultBuildId);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
                 => $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";

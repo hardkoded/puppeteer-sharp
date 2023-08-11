@@ -74,11 +74,6 @@ namespace PuppeteerSharp
         /// </summary>
         public bool HasExited => _stateManager.CurrentState.IsExited;
 
-        /// <summary>
-        /// Default build.
-        /// </summary>
-        public abstract string DefaultBuildId { get; }
-
         internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal TaskCompletionSource<string> StartCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -91,6 +86,12 @@ namespace PuppeteerSharp
         /// Gets Base process current state.
         /// </summary>
         internal State CurrentState => _stateManager.CurrentState;
+
+        /// <summary>
+        /// Default build.
+        /// </summary>
+        /// <returns>A tasks that resolves when the build is obtained.</returns>
+        public abstract Task<string> GetDefaultBuildIdAsync();
 
         /// <inheritdoc />
         public void Dispose()

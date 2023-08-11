@@ -107,7 +107,7 @@ namespace PuppeteerSharp
         public async Task<InstalledBrowser> DownloadAsync()
         {
             var buildId = Browser == SupportedBrowser.Firefox
-                ? await Firefox.ResolveBuildIdAsync(Firefox.DefaultBuildId).ConfigureAwait(false)
+                ? await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false)
                 : Chrome.DefaultBuildId;
 
             return await DownloadAsync(buildId).ConfigureAwait(false);
