@@ -57,11 +57,11 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux => $"firefox-{buildId}.en-US.{platform}-x86_64.tar.bz2",
+                Platform.Linux => $"firefox-{buildId}.en-US.{platform.ToString().ToLowerInvariant()}-x86_64.tar.bz2",
                 Platform.MacOS or Platform.MacOSArm64 => $"firefox-{buildId}.en-US.mac.dmg",
 
                 // Windows archive name changed at r591479.
-                Platform.Win32 or Platform.Win64 => $"firefox-{buildId}.en-US.{platform}.zip",
+                Platform.Win32 or Platform.Win64 => $"firefox-{buildId}.en-US.{platform.ToString().ToLowerInvariant()}.zip",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
     }
