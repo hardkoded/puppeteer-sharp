@@ -172,6 +172,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             ]";
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/involved.html");
+            // Give the coverage some time.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.AreEqual(
                 TestUtils.CompressText(involved),
