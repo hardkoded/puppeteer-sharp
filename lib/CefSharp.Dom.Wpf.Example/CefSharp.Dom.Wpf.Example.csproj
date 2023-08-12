@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\CefSharp.Dom.csproj" />
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="104.4.180" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="115.3.130" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
   <ItemGroup>

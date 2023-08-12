@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30404.54
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CefSharp.Dom", "PuppeteerSharp\CefSharp.Dom.csproj", "{19B9B1ED-AF6C-4DAF-8B73-401570111F88}"
 EndProject
