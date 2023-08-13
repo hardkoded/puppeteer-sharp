@@ -51,17 +51,7 @@
     <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="System.Text.Encodings.Web" />
-    <None Remove="Injected\" />
-    <None Remove="Injected\injected.js" />
-    <None Remove="BrowserData\" />
-  </ItemGroup>
-  <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Injected\" />
-    <Folder Include="BrowserData\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />

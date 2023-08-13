@@ -30,6 +30,8 @@
 		<Folder Include="PuppeteerUtilTests\" />
 		<Folder Include="QueryHandlerTests\" />
 		<Folder Include="QueryHandlerTests\TextSelectorTests\" />
+		<Folder Include="Browsers\" />
+		<Folder Include="Browsers\Chrome\" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
@@ -55,5 +57,7 @@
 		<None Remove="PuppeteerUtilTests\" />
 		<None Remove="QueryHandlerTests\" />
 		<None Remove="QueryHandlerTests\TextSelectorTests\" />
+		<None Remove="Browsers\" />
+		<None Remove="Browsers\Chrome\" />
 	</ItemGroup>
 </Project>
