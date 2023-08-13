@@ -69,6 +69,9 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
+        public void Clear()
+            => new DirectoryInfo(_rootDir).Delete(true);
+
         private (string Platform, string BuildId)? ParseFolderPath(DirectoryInfo directory)
         {
             var name = directory.Name;

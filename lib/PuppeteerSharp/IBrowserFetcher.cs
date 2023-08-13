@@ -28,17 +28,17 @@ namespace PuppeteerSharp
         /// <summary>
         /// A download host to be used.
         /// </summary>
-        string BaseUrl { get; }
+        string BaseUrl { get; set; }
 
         /// <summary>
         /// Determines the path to download browsers to.
         /// </summary>
-        string CacheDir { get; }
+        string CacheDir { get; set; }
 
         /// <summary>
         /// Gets the platform.
         /// </summary>
-        Platform Platform { get; }
+        Platform Platform { get; set; }
 
         /// <summary>
         /// Gets the browser.

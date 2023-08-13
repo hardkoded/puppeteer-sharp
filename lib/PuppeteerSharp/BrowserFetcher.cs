@@ -64,10 +64,10 @@ namespace PuppeteerSharp
         public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <inheritdoc/>
-        public string CacheDir { get; }
+        public string CacheDir { get; set; }
 
         /// <inheritdoc/>
-        public string BaseUrl { get; }
+        public string BaseUrl { get; set;  }
 
         /// <inheritdoc/>
         public Platform Platform { get; set; }
