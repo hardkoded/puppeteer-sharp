@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             };
             await fetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
 
-            Assert.True(new DirectoryInfo(Path.Combine(
+            Assert.True(new FileInfo(Path.Combine(
                 _cacheDir,
                 "Chrome",
                 $"linux-{BrowserData.Chrome.DefaultBuildId}",
