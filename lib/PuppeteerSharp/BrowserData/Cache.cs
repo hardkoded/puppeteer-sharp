@@ -11,15 +11,9 @@ namespace PuppeteerSharp.BrowserData
     {
         private readonly string _rootDir;
 
-        public Cache()
-        {
-            _rootDir = BrowserFetcher.GetExecutablePath();
-        }
+        public Cache() => _rootDir = BrowserFetcher.GetExecutablePath();
 
-        public Cache(string rootDir)
-        {
-            _rootDir = rootDir;
-        }
+        public Cache(string rootDir) => _rootDir = rootDir;
 
         public string GetBrowserRoot(SupportedBrowser browser) => Path.Combine(_rootDir, browser.ToString());
 
@@ -69,8 +63,7 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
-        public void Clear()
-            => new DirectoryInfo(_rootDir).Delete(true);
+        public void Clear() => new DirectoryInfo(_rootDir).Delete(true);
 
         private (string Platform, string BuildId)? ParseFolderPath(DirectoryInfo directory)
         {

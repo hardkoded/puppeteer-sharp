@@ -13,7 +13,7 @@ namespace PuppeteerSharp.BrowserData
         internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(InternalDefaultBuildId);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
-                => $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
+            => $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
         internal static async Task<string> ResolveBuildIdAsync(string channel)
         {
@@ -34,8 +34,7 @@ namespace PuppeteerSharp.BrowserData
         }
 
         internal static string RelativeExecutablePath(Platform platform, string builId)
-        {
-            return platform switch
+            => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
                     "Firefox Nightly.app",
@@ -46,7 +45,6 @@ namespace PuppeteerSharp.BrowserData
                 Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
-        }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
             => new string[]

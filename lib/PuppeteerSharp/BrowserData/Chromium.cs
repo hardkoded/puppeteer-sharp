@@ -8,16 +8,13 @@ namespace PuppeteerSharp.BrowserData
     internal class Chromium
     {
         internal static Task<string> ResolveBuildIdAsync(Platform platform)
-        {
-            return JsonUtils.GetTextAsync($"https://storage.googleapis.com/chromium-browser-snapshots/${GetFolder(platform)}/LAST_CHANGE");
-        }
+            => JsonUtils.GetTextAsync($"https://storage.googleapis.com/chromium-browser-snapshots/${GetFolder(platform)}/LAST_CHANGE");
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             => $"{baseUrl ?? "https://storage.googleapis.com/chromium-browser-snapshots"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
         internal static string RelativeExecutablePath(Platform platform, string builId)
-        {
-            return platform switch
+            => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
                     "chrome-mac",
@@ -29,7 +26,6 @@ namespace PuppeteerSharp.BrowserData
                 Platform.Win32 or Platform.Win64 => Path.Combine("chrome-win", "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
-        }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
             => new string[]

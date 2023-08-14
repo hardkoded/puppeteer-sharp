@@ -9,16 +9,13 @@ namespace PuppeteerSharp.BrowserData
         internal static string DefaultBuildId => "115.0.5790.102";
 
         internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel)
-        {
-            return (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
-        }
+            => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             => $"{baseUrl ?? "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
         internal static string RelativeExecutablePath(Platform platform, string builId)
-        {
-            return platform switch
+            => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
                     "chrome-" + GetFolder(platform),
@@ -30,7 +27,6 @@ namespace PuppeteerSharp.BrowserData
                 Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform), "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
-        }
 
         internal static string ResolveSystemExecutablePath(Platform platform, ChromeReleaseChannel channel)
         {
@@ -91,8 +87,7 @@ namespace PuppeteerSharp.BrowserData
             };
 
         private static string GetFolder(Platform platform)
-        {
-            return platform switch
+            => platform switch
             {
                 Platform.Linux => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
@@ -101,6 +96,5 @@ namespace PuppeteerSharp.BrowserData
                 Platform.Win64 => "win64",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
-        }
     }
 }
