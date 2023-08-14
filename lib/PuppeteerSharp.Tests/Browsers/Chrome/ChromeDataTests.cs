@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(
-                "C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe",
+                "C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe",
                 BrowserData.Chrome.ResolveSystemExecutablePath(
                     Platform.Win32,
                     ChromeReleaseChannel.Dev));

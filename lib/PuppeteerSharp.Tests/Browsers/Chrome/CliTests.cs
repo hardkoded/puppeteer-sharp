@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             Assert.True(new FileInfo(Path.Combine(
                 _cacheDir,
                 "Chrome",
-                $"linux-{BrowserData.Chrome.DefaultBuildId}",
+                $"Linux-{BrowserData.Chrome.DefaultBuildId}",
                 "chrome-linux64",
                 "chrome")).Exists);
         }
