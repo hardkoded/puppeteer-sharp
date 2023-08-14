@@ -95,4 +95,3 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
     }
 }
-
