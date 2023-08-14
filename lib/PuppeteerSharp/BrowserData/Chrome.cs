@@ -4,9 +4,15 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
 {
-    internal class Chrome
+    /// <summary>
+    /// Chrome info.
+    /// </summary>
+    public static class Chrome
     {
-        internal static string DefaultBuildId => "115.0.5790.102";
+        /// <summary>
+        /// Default chrome build.
+        /// </summary>
+        public static string DefaultBuildId => "115.0.5790.102";
 
         internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel)
             => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;

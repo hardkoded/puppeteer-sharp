@@ -5,12 +5,19 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
 {
-    internal class Firefox
+    /// <summary>
+    /// Chrome info.
+    /// </summary>
+    public static class Firefox
     {
-        private const string InternalDefaultBuildId = "FIREFOX_NIGHTLY";
+        /// <summary>
+        /// Default firefoxbuild.
+        /// </summary>
+        public const string DefaultBuildId = "FIREFOX_NIGHTLY";
+
         private static readonly Dictionary<string, string> _cachedBuildIds = new();
 
-        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(InternalDefaultBuildId);
+        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(DefaultBuildId);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             => $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
