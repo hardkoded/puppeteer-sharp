@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "target.page() should return a background_page")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Ignore("Marked as Fail/Pass upstream")]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
             await using (var browserWithExtension = await Puppeteer.LaunchAsync(
