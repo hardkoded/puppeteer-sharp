@@ -17,6 +17,8 @@ namespace PuppeteerSharp.Helpers
             _timeoutMessage = timeoutMessage;
         }
 
+        internal ConcurrentDictionary<TKey, TValue> InnerDictionary => _dictionary;
+
         internal async Task<TValue> GetItemAsync(TKey key)
         {
             var tcs = new TaskCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously);

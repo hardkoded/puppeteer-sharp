@@ -19,7 +19,8 @@ namespace PuppeteerSharp
         private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<TargetInfo, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
-        private readonly ConcurrentDictionary<string, Target> _attachedTargetsByTargetId = new();
+        private readonly ConcurrentDictionary<string, Target> _availableTargetsByTargetIdDictionary = new();
+        private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId;
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
@@ -36,6 +37,7 @@ namespace PuppeteerSharp
             Func<TargetInfo, bool> targetFilterFunc,
             int targetDiscoveryTimeout = 0)
         {
+            _attachedTargetsByTargetId = new AsyncDictionaryHelper<string, Target>(_availableTargetsByTargetIdDictionary, "Target {0} not found");
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
@@ -86,7 +88,7 @@ namespace PuppeteerSharp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public ConcurrentDictionary<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
+        public AsyncDictionaryHelper<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
 
         public async Task InitializeAsync()
         {
@@ -112,11 +114,7 @@ namespace PuppeteerSharp
         public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
         {
             _targetInterceptors.TryGetValue(session, out var interceptors);
-
-            if (interceptors != null)
-            {
-                interceptors.Remove(interceptor);
-            }
+            interceptors?.Remove(interceptor);
         }
 
         private void StoreExistingTargetsForInit()
@@ -190,13 +188,13 @@ namespace PuppeteerSharp
 
             if (e.TargetInfo.Type == TargetType.Browser && e.TargetInfo.Attached)
             {
-                if (_attachedTargetsByTargetId.ContainsKey(e.TargetInfo.TargetId))
+                if (_availableTargetsByTargetIdDictionary.ContainsKey(e.TargetInfo.TargetId))
                 {
                     return;
                 }
 
                 var target = _targetFactoryFunc(e.TargetInfo, null);
-                _attachedTargetsByTargetId[e.TargetInfo.TargetId] = target;
+                _attachedTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             }
         }
 
@@ -206,7 +204,7 @@ namespace PuppeteerSharp
             await EnsureTargetsIdsForInit().ConfigureAwait(false);
             FinishInitializationIfReady(e.TargetId);
 
-            if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
+            if (targetInfo?.Type == TargetType.ServiceWorker && _availableTargetsByTargetIdDictionary.TryRemove(e.TargetId, out var target))
             {
                 TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
             }
@@ -217,7 +215,7 @@ namespace PuppeteerSharp
             _discoveredTargetsByTargetId[e.TargetInfo.TargetId] = e.TargetInfo;
 
             if (_ignoredTargets.Contains(e.TargetInfo.TargetId) ||
-                !_attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target) ||
+                !_availableTargetsByTargetIdDictionary.TryGetValue(e.TargetInfo.TargetId, out var target) ||
                 !e.TargetInfo.Attached)
             {
                 return;
@@ -229,16 +227,10 @@ namespace PuppeteerSharp
         private async Task OnAttachedToTarget(object sender, TargetAttachedToTargetResponse e)
         {
             var parent = sender as ICDPConnection;
-            var parentSession = parent as CDPSession;
             var targetInfo = e.TargetInfo;
-            var session = _connection.GetSession(e.SessionId);
+            var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
 
-            if (session == null)
-            {
-                throw new PuppeteerException($"Session {e.SessionId} was not created.");
-            }
-
-            Func<Task> silentDetach = async () =>
+            async Task SilentDetach()
             {
                 try
                 {
@@ -254,7 +246,7 @@ namespace PuppeteerSharp
                 {
                     _logger.LogError(ex, "silentDetach failed.");
                 }
-            };
+            }
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
@@ -266,14 +258,14 @@ namespace PuppeteerSharp
             {
                 await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
-                await silentDetach().ConfigureAwait(false);
-                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                await SilentDetach().ConfigureAwait(false);
+                if (_availableTargetsByTargetIdDictionary.ContainsKey(targetInfo.TargetId))
                 {
                     return;
                 }
 
                 var workerTarget = _targetFactoryFunc(targetInfo, null);
-                _attachedTargetsByTargetId.TryAdd(targetInfo.TargetId, workerTarget);
+                _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, workerTarget);
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = workerTarget });
                 return;
             }
@@ -283,11 +275,11 @@ namespace PuppeteerSharp
                 _ignoredTargets.Add(targetInfo.TargetId);
                 await EnsureTargetsIdsForInit().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
-                await silentDetach().ConfigureAwait(false);
+                await SilentDetach().ConfigureAwait(false);
                 return;
             }
 
-            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            var existingTarget = _availableTargetsByTargetIdDictionary.TryGetValue(targetInfo.TargetId, out var target);
             if (!existingTarget)
             {
                 target = _targetFactoryFunc(targetInfo, session);
@@ -301,7 +293,7 @@ namespace PuppeteerSharp
             }
             else
             {
-                _attachedTargetsByTargetId.TryAdd(targetInfo.TargetId, target);
+                _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, target);
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
@@ -310,7 +302,7 @@ namespace PuppeteerSharp
                 foreach (var interceptor in interceptors)
                 {
                     Target parentTarget = null;
-                    if (parentSession != null && !_attachedTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
+                    if (parent is CDPSession parentSession && !_attachedTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
                     {
                         throw new PuppeteerException("Parent session not found in attached targets");
                     }
@@ -385,7 +377,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
+            _availableTargetsByTargetIdDictionary.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
         }
     }
