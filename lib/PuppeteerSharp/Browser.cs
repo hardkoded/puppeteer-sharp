@@ -147,7 +147,8 @@ namespace PuppeteerSharp
         public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
 
         /// <inheritdoc/>
-        public ITarget[] Targets() => TargetManager.GetAvailableTargets().Values.ToArray();
+        public ITarget[] Targets()
+            => TargetManager.GetAvailableTargets().InnerDictionary.Values.ToArray();
 
         /// <inheritdoc/>
         public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync()
@@ -317,7 +318,7 @@ namespace PuppeteerSharp
 
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
-            var target = TargetManager.GetAvailableTargets()[targetId];
+            var target = await TargetManager.GetAvailableTargets().GetItemAsync(targetId).ConfigureAwait(false);
             await target.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
         }

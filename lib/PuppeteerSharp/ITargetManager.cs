@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Transport;
 
@@ -39,7 +40,7 @@ namespace PuppeteerSharp
         /// All the available targets.
         /// </summary>
         /// <returns>A dictionary with the available targets.</returns>
-        ConcurrentDictionary<string, Target> GetAvailableTargets();
+        AsyncDictionaryHelper<string, Target> GetAvailableTargets();
 
         /// <summary>
         /// Async tasks to be performed after calling the target manager constructor.
