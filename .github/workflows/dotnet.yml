@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         browser: [FIREFOX,CHROME]
     steps:
     - uses: actions/checkout@v3
@@ -30,16 +30,27 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install dependencies
+    - name: Restore
+      working-directory: lib
       run: |
-        dotnet restore lib/PuppeteerSharp.sln
+        dotnet restore PuppeteerSharp.sln
+        choco install docfx
+    - name: Install dependencies (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
         sudo openssl x509 -inform der -in lib/PuppeteerSharp.TestServer/testCert.cer -out /usr/local/share/ca-certificates/testCert.crt -outform pem
         sudo update-ca-certificates
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
+        Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Build
-      run: dotnet build lib/PuppeteerSharp.sln
-    - name: Test
+      working-directory: lib
+      run: dotnet build PuppeteerSharp.sln
+    - name: Test (Linux)
+      if: matrix.os == 'ubuntu-latest'
       env:
         PRODUCT: ${{ matrix.browser }}
       run: |
@@ -47,3 +58,14 @@ jobs:
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
           dotnet test -f net6.0 -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml"
+    - name: Test (Windows)
+      if: matrix.os == 'windows-latest'
+      env:
+        PRODUCT: ${{ matrix.browser }}
+      run: |
+        cd .\lib\PuppeteerSharp.Tests
+        dotnet test -f net6.0 -s test.runsettings
+    - name: Publish docs
+      if: matrix.os == 'windows-latest'
+      run: |
+        .\appveyor\GenerateDocs.ps1
