@@ -17,7 +17,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 # Google for testing is here!
 
-Puppeteer Sharp v11 introduced some breaking changed. 
+Puppeteer Sharp v11 introduced some breaking changes. 
 
 ![image](https://github.com/hardkoded/puppeteer-sharp/assets/2198466/fa8ef603-d402-4df3-bef6-08a088c29c71)
 
@@ -29,6 +29,8 @@ But it brings Google for testing!
 
 Now, PuppeteerSharp uses Google for testing instead of Chromium. And the new supported version is v115!  
 You can still you Chromium if you want to by using `SupportedBrowser.Chromium`.
+
+Feel free to [create an issue](https://github.com/hardkoded/puppeteer-sharp/issues/new) if these new changes doesn't work for you.
 
 ## Useful links
 
