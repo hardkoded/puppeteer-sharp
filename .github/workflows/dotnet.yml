@@ -31,11 +31,14 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Restore (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install docfx
     - name: Restore
       working-directory: lib
       run: |
         dotnet restore PuppeteerSharp.sln
-        choco install docfx
     - name: Install dependencies (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -46,7 +49,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-        Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath C:\projects\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
+        Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $GITHUB_WORKSPACE\puppeteer-sharp\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Build
       working-directory: lib
       run: dotnet build PuppeteerSharp.sln
