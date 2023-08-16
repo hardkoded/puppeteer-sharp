@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         private Task _closeTask;
 
         internal Browser(
-            Product? product,
+            SupportedBrowser browser,
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
@@ -61,7 +61,7 @@ namespace PuppeteerSharp
                 contextIds.Select(contextId =>
                     new KeyValuePair<string, BrowserContext>(contextId, new(Connection, this, contextId))));
 
-            if (product == Product.Firefox)
+            if (browser == SupportedBrowser.Firefox)
             {
                 TargetManager = new FirefoxTargetManager(
                         connection,
@@ -265,7 +265,7 @@ namespace PuppeteerSharp
         }
 
         internal static async Task<Browser> CreateAsync(
-            Product? product,
+            SupportedBrowser browserToCreate,
             Connection connection,
             string[] contextIds,
             bool ignoreHTTPSErrors,
@@ -277,7 +277,7 @@ namespace PuppeteerSharp
             Action<IBrowser> initAction = null)
         {
             var browser = new Browser(
-                product,
+                browserToCreate,
                 connection,
                 contextIds,
                 ignoreHTTPSErrors,

@@ -19,7 +19,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Product. Defaults to Chrome.
         /// </summary>
-        public Product Product { get; set; } = Product.Chrome;
+        public SupportedBrowser Browser { get; set; } = SupportedBrowser.Chrome;
 
         /// <summary>
         /// Platform. Defaults to current platform.

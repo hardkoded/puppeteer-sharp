@@ -1,9 +1,9 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Browser to use (Chrome or Firefox).
+    /// Supported Browser.
     /// </summary>
-    public enum Product
+    public enum SupportedBrowser
     {
         /// <summary>
         /// Chrome.
@@ -14,5 +14,10 @@ namespace PuppeteerSharp
         /// Firefox.
         /// </summary>
         Firefox,
+
+        /// <summary>
+        /// Chromium.
+        /// </summary>
+        Chromium,
     }
 }

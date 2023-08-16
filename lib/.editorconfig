@@ -285,6 +285,8 @@ dotnet_diagnostic.CA1001.severity = error
 dotnet_diagnostic.CA1304.severity = error
 # CA1305: String.Format with culture
 dotnet_diagnostic.CA1305.severity = error
+# CA1304: CA1308: Normalize strings to uppercase
+dotnet_diagnostic.CA1308.severity = none
 # CA1721: The property name 'DefaultArgs' is confusing given the existence of method 'GetDefaultArgs'. Rename or remove one of these members.
 dotnet_diagnostic.CA1721.severity = error
 # CA1724: The type name Extensions conflicts in whole or in part with the namespace name 'Microsoft.Extensions'. Change either name to eliminate the conflict.

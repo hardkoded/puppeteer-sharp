@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
@@ -12,6 +13,11 @@ namespace PuppeteerSharp
     {
         private string[] _ignoredDefaultArgs;
         private bool _devtools;
+
+        /// <summary>
+        /// Chrome Release Channel.
+        /// </summary>
+        public ChromeReleaseChannel? Channel { get; set; }
 
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
@@ -161,9 +167,9 @@ namespace PuppeteerSharp
         public bool EnqueueTransportMessages { get; set; } = true;
 
         /// <summary>
-        /// The browser to be used (Chrome, Firefox).
+        /// The browser to be used (Chrome, Chromium, Firefox).
         /// </summary>
-        public Product Product { get; set; } = Product.Chrome;
+        public SupportedBrowser Browser { get; set; } = SupportedBrowser.Chrome;
 
         /// <summary>
         /// Affects how responses to <see cref="CDPSession.SendAsync"/> are returned to the caller. If <c>true</c> (default), the

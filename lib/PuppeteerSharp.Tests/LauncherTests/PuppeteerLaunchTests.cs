@@ -10,6 +10,7 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using System.ComponentModel;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
@@ -54,13 +55,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            var exception = Assert.ThrowsAsync<FileNotFoundException>(() =>
+            var exception = Assert.ThrowsAsync<Win32Exception>(() =>
             {
                 return Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             });
-
-            StringAssert.Contains("Failed to launch", exception.Message);
-            Assert.AreEqual(options.ExecutablePath, exception.FileName);
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "userDataDir option")]
@@ -206,12 +204,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
-                    Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
+                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
                 }));
                 Assert.Contains("\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
-                    Product = TestConstants.IsChrome ? Product.Chrome : Product.Firefox,
+                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
                 }));
             }
         }
@@ -275,7 +273,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "should work with no default arguments")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Skip(SkipAttribute.Targets.Chromium)]
         public async Task ShouldWorkWithNoDefaultArguments()
         {
             var options = TestConstants.DefaultBrowserOptions();

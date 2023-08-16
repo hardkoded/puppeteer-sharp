@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using PuppeteerSharp.BrowserData;
 
 namespace PuppeteerSharp
 {
@@ -25,29 +26,24 @@ namespace PuppeteerSharp
         event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <summary>
-        /// Default Firefox revision.
+        /// A download host to be used.
         /// </summary>
-        string DefaultFirefoxRevision { get; }
+        string BaseUrl { get; set; }
 
         /// <summary>
-        /// A download host to be used. Defaults to https://storage.googleapis.com.
+        /// Determines the path to download browsers to.
         /// </summary>
-        string DownloadHost { get; }
-
-        /// <summary>
-        /// Gets the downloads folder.
-        /// </summary>
-        string DownloadsFolder { get; }
+        string CacheDir { get; set; }
 
         /// <summary>
         /// Gets the platform.
         /// </summary>
-        Platform Platform { get; }
+        Platform Platform { get; set; }
 
         /// <summary>
-        /// Gets the product.
+        /// Gets the browser.
         /// </summary>
-        Product Product { get; }
+        SupportedBrowser Browser { get; set; }
 
         /// <summary>
         /// Proxy used by the WebClient in <see cref="DownloadAsync()"/>, <see cref="DownloadAsync(string)"/> and <see cref="CanDownloadAsync"/>.
@@ -58,52 +54,39 @@ namespace PuppeteerSharp
         /// The method initiates a HEAD request to check if the revision is available.
         /// </summary>
         /// <returns>Whether the version is available or not.</returns>
-        /// <param name="revision">A revision to check availability.</param>
-        Task<bool> CanDownloadAsync(string revision);
+        /// <param name="buildId">A build to check availability.</param>
+        Task<bool> CanDownloadAsync(string buildId);
 
         /// <summary>
         /// Downloads the revision.
         /// </summary>
         /// <returns>Task which resolves to the completed download.</returns>
-        Task<RevisionInfo> DownloadAsync();
+        Task<InstalledBrowser> DownloadAsync();
+
+        /// <summary>
+        /// Downloads the revision.
+        /// </summary>
+        /// <param name="tag">Browser tag.</param>
+        /// <returns>Task which resolves to the completed download.</returns>
+        Task<InstalledBrowser> DownloadAsync(BrowserTag tag);
 
         /// <summary>
         /// Downloads the revision.
         /// </summary>
         /// <returns>Task which resolves to the completed download.</returns>
         /// <param name="revision">Revision.</param>
-        Task<RevisionInfo> DownloadAsync(string revision);
+        Task<InstalledBrowser> DownloadAsync(string revision);
 
         /// <summary>
-        /// Gets the executable path for a revision.
+        /// A list of all browsers available locally on disk.
         /// </summary>
-        /// <returns>The executable path.</returns>
-        /// <param name="revision">Revision.</param>
-        string GetExecutablePath(string revision);
+        /// <returns>The available browsers.</returns>
+        IEnumerable<InstalledBrowser> GetInstalledBrowsers();
 
         /// <summary>
-        /// Gets the revision info.
+        /// Removes a downloaded browser.
         /// </summary>
-        /// <returns>Revision info.</returns>
-        Task<RevisionInfo> GetRevisionInfoAsync();
-
-        /// <summary>
-        /// A list of all revisions available locally on disk.
-        /// </summary>
-        /// <returns>The available revisions.</returns>
-        IEnumerable<string> LocalRevisions();
-
-        /// <summary>
-        /// Removes a downloaded revision.
-        /// </summary>
-        /// <param name="revision">Revision to remove.</param>
-        void Remove(string revision);
-
-        /// <summary>
-        /// Gets the revision info.
-        /// </summary>
-        /// <returns>Revision info.</returns>
-        /// <param name="revision">A revision to get info for.</param>
-        RevisionInfo RevisionInfo(string revision);
+        /// <param name="buildId">Browser to remove.</param>
+        void Uninstall(string buildId);
     }
 }

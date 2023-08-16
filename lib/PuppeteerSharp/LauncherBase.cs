@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     /// Represents a Base process and any associated temporary user data directory that have created
     /// by Puppeteer and therefore must be cleaned up when no longer needed.
     /// </summary>
-    public class LauncherBase : IDisposable
+    public abstract class LauncherBase : IDisposable
     {
         private readonly StateManager _stateManager;
 
@@ -86,6 +86,12 @@ namespace PuppeteerSharp
         /// Gets Base process current state.
         /// </summary>
         internal State CurrentState => _stateManager.CurrentState;
+
+        /// <summary>
+        /// Default build.
+        /// </summary>
+        /// <returns>A tasks that resolves when the build is obtained.</returns>
+        public abstract Task<string> GetDefaultBuildIdAsync();
 
         /// <inheritdoc />
         public void Dispose()

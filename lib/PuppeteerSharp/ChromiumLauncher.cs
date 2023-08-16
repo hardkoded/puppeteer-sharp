@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -61,6 +63,9 @@ namespace PuppeteerSharp
             "--password-store=basic",
             "--use-mock-keychain",
         };
+
+        /// <inheritdoc />
+        public override Task<string> GetDefaultBuildIdAsync() => Task.FromResult(Chrome.DefaultBuildId);
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";

@@ -19,19 +19,6 @@
 	</ItemGroup>
 	<Import Project="../Common/SignAssembly.props" />
 	<ItemGroup>
-		<Folder Include="Issues\" />
-		<Folder Include="ClickTests\" />
-		<Folder Include="KeyboardTests\" />
-		<Folder Include="MouseTests\" />
-		<Folder Include="TouchScreenTests\" />
-		<Folder Include="EmulationTests\" />
-		<Folder Include="FixturesTests\" />
-		<Folder Include="HeadfulTests\" />
-		<Folder Include="PuppeteerUtilTests\" />
-		<Folder Include="QueryHandlerTests\" />
-		<Folder Include="QueryHandlerTests\TextSelectorTests\" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
 		<ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
 		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
@@ -49,11 +36,5 @@
 		<Content Include="xunit.runner.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<None Remove="Emulation\" />
-		<None Remove="FixturesTests\" />
-		<None Remove="HeadfulTests\" />
-		<None Remove="PuppeteerUtilTests\" />
-		<None Remove="QueryHandlerTests\" />
-		<None Remove="QueryHandlerTests\TextSelectorTests\" />
 	</ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests
             Headless = Convert.ToBoolean(
                 Environment.GetEnvironmentVariable("HEADLESS") ??
                 (System.Diagnostics.Debugger.IsAttached ? "false" : "true")),
-            Product = IsChrome ? Product.Chrome : Product.Firefox,
+            Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,

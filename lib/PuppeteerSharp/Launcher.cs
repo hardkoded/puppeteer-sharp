@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -16,7 +18,7 @@ namespace PuppeteerSharp
     {
         private readonly ILoggerFactory _loggerFactory;
         private bool _processLaunched;
-        private Product _product;
+        private SupportedBrowser _browser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Launcher"/> class.
@@ -47,13 +49,15 @@ namespace PuppeteerSharp
             }
 
             EnsureSingleLaunchOrConnect();
-            _product = options.Product;
-            var executable = await GetOrFetchBrowserExecutableAsync(options).ConfigureAwait(false);
+            _browser = options.Browser;
+            var executable = options.ExecutablePath ?? GetExecutablePath(
+                options,
+                options.Browser == SupportedBrowser.Firefox ? await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false) : Chrome.DefaultBuildId);
 
-            Process = options.Product switch
+            Process = options.Browser switch
             {
-                Product.Chrome => new ChromiumLauncher(executable, options),
-                Product.Firefox => new FirefoxLauncher(executable, options),
+                SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromiumLauncher(executable, options),
+                SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
                 _ => throw new ArgumentException("Invalid product"),
             };
 
@@ -70,7 +74,7 @@ namespace PuppeteerSharp
 
                     var browser = await Browser
                         .CreateAsync(
-                            options.Product,
+                            options.Browser,
                             connection,
                             Array.Empty<string>(),
                             options.IgnoreHTTPSErrors,
@@ -127,8 +131,8 @@ namespace PuppeteerSharp
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
 
                 var product = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
-                  ? Product.Firefox
-                  : Product.Chrome;
+                  ? SupportedBrowser.Firefox
+                  : SupportedBrowser.Chromium;
 
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await Browser
@@ -151,12 +155,6 @@ namespace PuppeteerSharp
                 throw new ProcessException("Failed to create connection", ex);
             }
         }
-
-        /// <summary>
-        /// Gets the executable path.
-        /// </summary>
-        /// <returns>The executable path.</returns>
-        public Task<string> GetExecutablePathAsync() => ResolveExecutablePathAsync();
 
         private async Task<string> GetWSEndpointAsync(string browserURL)
         {
@@ -191,24 +189,7 @@ namespace PuppeteerSharp
             _processLaunched = true;
         }
 
-        private async Task<string> GetOrFetchBrowserExecutableAsync(LaunchOptions options)
-        {
-            var browserExecutable = options.ExecutablePath;
-
-            if (string.IsNullOrEmpty(browserExecutable))
-            {
-                browserExecutable = await ResolveExecutablePathAsync().ConfigureAwait(false);
-            }
-
-            if (!File.Exists(browserExecutable))
-            {
-                throw new FileNotFoundException("Failed to launch browser! path to executable does not exist", browserExecutable);
-            }
-
-            return browserExecutable;
-        }
-
-        private async Task<string> ResolveExecutablePathAsync()
+        private string ResolveExecutablePath(string buildId)
         {
             var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
 
@@ -222,28 +203,28 @@ namespace PuppeteerSharp
                 return executablePath;
             }
 
-            var revision = Environment.GetEnvironmentVariable("PUPPETEER_CHROMIUM_REVISION");
-            using var browserFetcher = new BrowserFetcher(_product);
-            RevisionInfo revisionInfo;
-
-            if (!string.IsNullOrEmpty(revision))
-            {
-                revisionInfo = browserFetcher.RevisionInfo(revision);
-                if (!revisionInfo.Local)
-                {
-                    throw new FileNotFoundException("Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable", revisionInfo.ExecutablePath);
-                }
-
-                return revisionInfo.ExecutablePath;
-            }
-
-            revisionInfo = await browserFetcher.GetRevisionInfoAsync().ConfigureAwait(false);
-            if (!revisionInfo.Local)
-            {
-                throw new FileNotFoundException("Process revision is not downloaded. Run BrowserFetcher.DownloadAsync or download the process manually", revisionInfo.ExecutablePath);
-            }
-
-            return revisionInfo.ExecutablePath;
+            return new InstalledBrowser(
+                new Cache(),
+                _browser,
+                buildId,
+                BrowserFetcher.GetCurrentPlatform()).GetExecutablePath();
         }
+
+        private string GetExecutablePath(LaunchOptions options, string buildId)
+        {
+            if (options.Channel.HasValue)
+            {
+                return ComputeSystemExecutablePath(_browser, options.Channel.Value);
+            }
+
+            return ResolveExecutablePath(buildId);
+        }
+
+        private string ComputeSystemExecutablePath(SupportedBrowser browser, ChromeReleaseChannel channel)
+            => browser switch
+            {
+                SupportedBrowser.Chrome => Chrome.ResolveSystemExecutablePath(BrowserFetcher.GetCurrentPlatform(), channel),
+                _ => throw new PuppeteerException($"System browser detection is not suppoted for {browser} yet."),
+            };
     }
 }
