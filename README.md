@@ -30,7 +30,7 @@ But it brings Google for testing!
 Now, PuppeteerSharp uses Google for testing instead of Chromium. And the new supported version is v115!  
 You can still you Chromium if you want to by using `SupportedBrowser.Chromium`.
 
-Feel free to [create an issue](https://github.com/hardkoded/puppeteer-sharp/issues/new) if these new changes doesn't wodon'tyou.
+Feel free to [create an issue](https://github.com/hardkoded/puppeteer-sharp/issues/new) if these new changes don't work for you.
 
 ## Useful links
 
