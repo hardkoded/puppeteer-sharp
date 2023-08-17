@@ -9,10 +9,7 @@ jobs:
   build:
 
     name: Demo Project
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022]
+    runs-on: ubuntu-latest
     env:
       DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
 
@@ -22,11 +19,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Restore
-        if: matrix.os == 'windows-latest'
-        run: |
-          choco install docfx
-          dotnet restore PuppeteerSharp.sln
       - uses: nunit/docfx-action@v2.4.0
         name: Build Documentation
         with:
