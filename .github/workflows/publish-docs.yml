@@ -1,0 +1,37 @@
+name: Demo Project
+
+on:
+  pull_request:
+    branches: [ master ]
+  #tags:
+  #  - '*'
+jobs:
+  build:
+
+    name: Demo Project
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2022]
+    env:
+      DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Restore
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install docfx
+          dotnet restore PuppeteerSharp.sln
+      - uses: nunit/docfx-action@v2.4.0
+        name: Build Documentation
+        with:
+          args: docfx_project/docfx.json
+      - uses: actions/deploy-pages@v2
+        name: Publish Documentation on GitHub Pages
+        env:
+          path: docfx/_site
