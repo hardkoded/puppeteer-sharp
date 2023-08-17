@@ -49,7 +49,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: |
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
-        Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
+        Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Build
       working-directory: lib
       run: dotnet build PuppeteerSharp.sln
