@@ -1,4 +1,4 @@
-name: Demo Project
+name: Publish docs
 
 on:
   pull_request:
