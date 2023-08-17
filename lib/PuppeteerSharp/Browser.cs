@@ -148,7 +148,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public ITarget[] Targets()
-            => TargetManager.GetAvailableTargets().InnerDictionary.Values.ToArray();
+            => TargetManager.GetAvailableTargets().Values.ToArray();
 
         /// <inheritdoc/>
         public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync()
