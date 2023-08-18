@@ -31,16 +31,9 @@ jobs:
 
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'docs'
       - uses: actions/deploy-pages@v2
         name: Publish Documentation on GitHub Pages
-        env:
-          path: docs/
-      - name: Upload Site to artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'Website'
-          path: docs/
-          retention-days: 1
-          if-no-files-found: ignore
-        if: always()
-        continue-on-error: true
