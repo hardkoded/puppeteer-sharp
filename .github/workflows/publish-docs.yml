@@ -32,7 +32,7 @@ jobs:
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v2
         with:
           path: 'docs'
       - uses: actions/deploy-pages@v3
