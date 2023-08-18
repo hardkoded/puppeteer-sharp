@@ -19,14 +19,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - uses: nunit/docfx-action@v2.4.0
-        name: Build Documentation
-        with:
-          args: docfx_project/docfx.json
       - name: Build
         run: |
           dotnet tool install --global docfx
-          dotnet restore .lib/PuppeteerSharp.sln
+          dotnet restore ./lib/PuppeteerSharp.sln
           docfx metadata docfx_project/docfx.json
           docfx build docfx_project/docfx.json -o docs
       - uses: actions/deploy-pages@v2
