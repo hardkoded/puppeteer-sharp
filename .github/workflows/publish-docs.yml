@@ -36,4 +36,5 @@ jobs:
         with:
           path: 'docs'
       - uses: actions/deploy-pages@v2
+        id: deployment
         name: Publish Documentation on GitHub Pages
