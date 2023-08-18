@@ -5,6 +5,12 @@ on:
     branches: [ master ]
   #tags:
   #  - '*'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
 
