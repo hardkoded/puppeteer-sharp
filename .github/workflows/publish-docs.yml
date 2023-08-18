@@ -35,3 +35,12 @@ jobs:
         name: Publish Documentation on GitHub Pages
         env:
           path: docs/
+      - name: Upload Site to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'Website'
+          path: docs/
+          retention-days: 1
+          if-no-files-found: ignore
+        if: always()
+        continue-on-error: true
