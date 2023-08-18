@@ -23,6 +23,11 @@ jobs:
         name: Build Documentation
         with:
           args: docfx_project/docfx.json
+      - name: Build
+        run: |
+          dotnet tool install --global docfx --version 2.67.2
+          docfx metadata docfx_project/docfx.json
+          docfx build docfx_project/docfx.json -o docs
       - uses: actions/deploy-pages@v2
         name: Publish Documentation on GitHub Pages
         env:
