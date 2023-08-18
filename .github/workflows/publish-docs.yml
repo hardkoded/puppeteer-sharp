@@ -31,10 +31,12 @@ jobs:
 
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: 'docs'
-      - uses: actions/deploy-pages@v2
+      - name: Publish Documentation on GitHub Pages
+        uses: actions/deploy-pages@v2
         id: deployment
-        name: Publish Documentation on GitHub Pages
