@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class ChromiumStartingState : State
+    internal class ProcessStartingState : State
     {
-        public ChromiumStartingState(StateManager stateManager) : base(stateManager)
+        public ProcessStartingState(StateManager stateManager) : base(stateManager)
         {
         }
 
