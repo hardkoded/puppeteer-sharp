@@ -32,8 +32,8 @@ jobs:
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs'
-      - uses: actions/deploy-pages@v2
+      - uses: actions/deploy-pages@v3
         name: Publish Documentation on GitHub Pages
