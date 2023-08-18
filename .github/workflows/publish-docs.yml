@@ -34,4 +34,4 @@ jobs:
       - uses: actions/deploy-pages@v2
         name: Publish Documentation on GitHub Pages
         env:
-          path: docfx/_site
+          path: docs/
