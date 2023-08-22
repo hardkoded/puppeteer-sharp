@@ -49,6 +49,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with function shorthands")]
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitFor")]
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should return undefined in case of Buffer error")]
         [PuppeteerTimeout]
         public void TheseTesstWontBeImplemented()
         {
