@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         public bool OmitBackground { get; set; }
 
         /// <summary>
-        /// Specify screenshot type, can be either jpeg or png. Defaults to 'png'.
+        /// Specify screenshot type, can be either jpeg, png or webp. Defaults to 'png'.
         /// </summary>
         /// <value>The type.</value>
         public ScreenshotType? Type { get; set; }
@@ -69,6 +69,16 @@ namespace PuppeteerSharp
         /// ]]></example>
         [JsonIgnore]
         public bool BurstMode { get; set; } = false;
+
+        /// <summary>
+        /// Capture the screenshot beyond the viewport.
+        /// </summary>
+        public bool CaptureBeyondViewport { get; set; } = true;
+
+        /// <summary>
+        /// Capture the screenshot from the surface, rather than the view. Defaults to <c>true</c>.
+        /// </summary>
+        public bool FromSurface { get; set; } = true;
 
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {

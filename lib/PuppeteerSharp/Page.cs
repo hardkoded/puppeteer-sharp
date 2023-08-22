@@ -1268,58 +1268,54 @@ namespace PuppeteerSharp
             }
 
             var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
+            var captureBeyondViewport = options.CaptureBeyondViewport;
 
             if (!_screenshotBurstModeOn)
             {
-                if (options != null && options.FullPage)
+                if (options?.FullPage == true)
                 {
-                    var metrics = _screenshotBurstModeOn
-                        ? _burstModeMetrics :
-                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
-
-                    if (options.BurstMode)
-                    {
-                        _burstModeMetrics = metrics;
-                    }
-
-                    var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
-
-                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
-
                     // Overwrite clip for full page at all times.
-                    clip = new Clip
-                    {
-                        X = 0,
-                        Y = 0,
-                        Width = width,
-                        Height = height,
-                        Scale = 1,
-                    };
+                    clip = null;
 
-                    var isMobile = Viewport?.IsMobile ?? false;
-                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                    var isLandscape = Viewport?.IsLandscape ?? false;
-                    var screenOrientation = isLandscape
-                        ? new ScreenOrientation
+                    if (!captureBeyondViewport)
+                    {
+                        var metrics = _screenshotBurstModeOn
+                            ? _burstModeMetrics :
+                            await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+
+                        if (options.BurstMode)
                         {
-                            Angle = 90,
-                            Type = ScreenOrientationType.LandscapePrimary,
+                            _burstModeMetrics = metrics;
                         }
-                        : new ScreenOrientation
-                        {
-                            Angle = 0,
-                            Type = ScreenOrientationType.PortraitPrimary,
-                        };
 
-                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                    {
-                        Mobile = isMobile,
-                        Width = width,
-                        Height = height,
-                        DeviceScaleFactor = deviceScaleFactor,
-                        ScreenOrientation = screenOrientation,
-                    }).ConfigureAwait(false);
+                        var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
+
+                        var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                        var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+                        var isMobile = Viewport?.IsMobile ?? false;
+                        var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                        var isLandscape = Viewport?.IsLandscape ?? false;
+                        var screenOrientation = isLandscape
+                            ? new ScreenOrientation
+                            {
+                                Angle = 90,
+                                Type = ScreenOrientationType.LandscapePrimary,
+                            }
+                            : new ScreenOrientation
+                            {
+                                Angle = 0,
+                                Type = ScreenOrientationType.PortraitPrimary,
+                            };
+
+                        await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                        {
+                            Mobile = isMobile,
+                            Width = width,
+                            Height = height,
+                            DeviceScaleFactor = deviceScaleFactor,
+                            ScreenOrientation = screenOrientation,
+                        }).ConfigureAwait(false);
+                    }
                 }
 
                 if (options?.OmitBackground == true && type == ScreenshotType.Png)
@@ -1328,9 +1324,16 @@ namespace PuppeteerSharp
                 }
             }
 
+            if (options?.FullPage == false && clip == null)
+            {
+                captureBeyondViewport = false;
+            }
+
             var screenMessage = new PageCaptureScreenshotRequest
             {
                 Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
+                CaptureBeyondViewport = captureBeyondViewport,
+                FromSurface = options.FromSurface,
             };
 
             if (options.Quality.HasValue)
