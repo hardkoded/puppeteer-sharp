@@ -78,7 +78,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Capture the screenshot from the surface, rather than the view. Defaults to <c>true</c>.
         /// </summary>
-        public bool FromSurface { get; set; } = true;
+        public bool? FromSurface { get; set; }
 
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
