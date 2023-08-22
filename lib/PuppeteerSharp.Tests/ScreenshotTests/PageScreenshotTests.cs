@@ -342,7 +342,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 {
                     Type = ScreenshotType.Webp
                 });
-                Assert.Greater(0, screenshot.Length);
+                Assert.Greater(screenshot.Length, 0);
             }
         }
 
@@ -402,7 +402,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                     FromSurface = false,
                 });
 
-                Assert.Greater(0, screenshot.Length);
+                Assert.Greater(screenshot.Length, 0);
             }
         }
         
