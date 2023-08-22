@@ -7,31 +7,18 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		<PackageReference Include="System.CodeDom" Version="5.0.0" />
 		<PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Primitives" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="xunit.core" Version="2.4.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Extensions\" />
-		<Folder Include="Linux\" />
-		<Folder Include="Models\" />
-		<Folder Include="Options\" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="Microsoft.Bcl.AsyncInterfaces" />
-	  <None Remove="Newtonsoft.Json" />
-	  <None Remove="xunit.core" />
-	  <None Remove="Microsoft.AspNetCore.Http.Abstractions" />
-	  <None Remove="Mono.Posix.NETStandard" />
 	</ItemGroup>
 </Project>
