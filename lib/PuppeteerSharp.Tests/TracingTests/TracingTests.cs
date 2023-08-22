@@ -90,6 +90,25 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
+        [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with default categories")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldRunWithDefaultCategories()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Path = _file,
+            });
+
+            await Page.Tracing.StopAsync();
+
+            using (var file = File.OpenText(_file))
+            using (var reader = new JsonTextReader(file))
+            {
+                var traceJson = JToken.ReadFrom(reader);
+                StringAssert.Contains("toplevel", traceJson["traceEvents"].ToString());
+            }
+        }
+
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowIfTracingOnTwoPages()
