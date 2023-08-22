@@ -505,5 +505,28 @@ namespace PuppeteerSharp.Tests.NavigationTests
             // Make sure subresources do not inherit referer.
             Assert.AreEqual(TestConstants.ServerUrl + "/grid.html", referer2);
         }
+
+        [PuppeteerTest("navigation.spec.ts", "Page.goto", "should send referer policy")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldSendRefererPolicy()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) => await e.Request.ContinueAsync();
+            string referer1 = null;
+            string referer2 = null;
+
+            await Task.WhenAll(
+                Server.WaitForRequest("/grid.html", r => referer1 = r.Headers["Referer"]),
+                Server.WaitForRequest("/digits/1.png", r => referer2 = r.Headers["Referer"]),
+                Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
+                {
+                    ReferrerPolicy = "no-referer"
+                })
+            );
+
+            Assert.IsNull(referer1);
+            // Make sure subresources do not inherit referer.
+            Assert.AreEqual(TestConstants.ServerUrl + "/grid.html", referer2);
+        }
     }
 }
