@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
 
@@ -8,11 +9,10 @@ namespace PuppeteerSharp.Input
     {
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
-
-        private decimal _x = 0;
-        private decimal _y = 0;
-        private MouseButton _button = MouseButton.None;
-
+        private readonly MouseState _mouseState = new();
+        private List<MouseState> _transactions = new();
+        public MouseTest test1;
+        
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
         {
