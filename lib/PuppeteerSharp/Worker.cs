@@ -138,7 +138,7 @@ namespace PuppeteerSharp
                         OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
                         break;
                     case "Runtime.consoleAPICalled":
-                        await OnConsoleAPICalled(e).ConfigureAwait(false);
+                        await OnConsoleAPICalledAsync(e).ConfigureAwait(false);
                         break;
                     case "Runtime.exceptionThrown":
                         OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
@@ -155,7 +155,7 @@ namespace PuppeteerSharp
 
         private void OnExceptionThrown(RuntimeExceptionThrownResponse e) => _exceptionThrown(e.ExceptionDetails);
 
-        private async Task OnConsoleAPICalled(MessageEventArgs e)
+        private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
         {
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(

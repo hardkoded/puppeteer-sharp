@@ -329,9 +329,9 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <inheritdoc/>
-        #pragma warning disable CS0618 // Using obsolets
+#pragma warning disable CS0618 // Using obsolets
         public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-        #pragma warning restore CS0618
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
@@ -784,10 +784,10 @@ namespace PuppeteerSharp
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         /// <inheritdoc/>
-        #pragma warning disable CS0618 // WaitForXPathAsync is obsolete
+#pragma warning disable CS0618 // WaitForXPathAsync is obsolete
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
-        #pragma warning restore CS0618
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
@@ -1470,7 +1470,7 @@ namespace PuppeteerSharp
                         await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Page.fileChooserOpened":
                         await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
@@ -1519,7 +1519,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnBindingCalled(BindingCalledResponse e)
+        private async Task OnBindingCalledAsync(BindingCalledResponse e)
         {
             if (e.BindingPayload.Type != "exposedFun" || !_bindings.ContainsKey(e.BindingPayload.Name))
             {

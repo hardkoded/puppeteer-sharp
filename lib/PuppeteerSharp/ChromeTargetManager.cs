@@ -129,7 +129,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task EnsureTargetsIdsForInit()
+        private async Task EnsureTargetsIdsForInitAsync()
         {
             if (_targetDiscoveryTimeout > 0)
             {
@@ -203,7 +203,7 @@ namespace PuppeteerSharp
             try
             {
                 _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
-                await EnsureTargetsIdsForInit().ConfigureAwait(false);
+                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(e.TargetId);
 
                 if (targetInfo?.Type == TargetType.ServiceWorker && _availableTargetsByTargetIdDictionary.TryRemove(e.TargetId, out var target))
@@ -231,7 +231,7 @@ namespace PuppeteerSharp
             TargetChanged?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = e.TargetInfo });
         }
 
-        private async Task OnAttachedToTarget(object sender, TargetAttachedToTargetResponse e)
+        private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
             var parent = sender as ICDPConnection;
             var targetInfo = e.TargetInfo;
@@ -263,7 +263,7 @@ namespace PuppeteerSharp
             if (targetInfo.Type == TargetType.ServiceWorker &&
                 _connection.IsAutoAttached(targetInfo.TargetId))
             {
-                await EnsureTargetsIdsForInit().ConfigureAwait(false);
+                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await SilentDetach().ConfigureAwait(false);
                 if (_availableTargetsByTargetIdDictionary.ContainsKey(targetInfo.TargetId))
@@ -280,7 +280,7 @@ namespace PuppeteerSharp
             if (_targetFilterFunc?.Invoke(targetInfo) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
-                await EnsureTargetsIdsForInit().ConfigureAwait(false);
+                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await SilentDetach().ConfigureAwait(false);
                 return;
@@ -318,7 +318,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            await EnsureTargetsIdsForInit().ConfigureAwait(false);
+            await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
             if (!existingTarget)
@@ -349,7 +349,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                await OnAttachedToTarget(sender, e).ConfigureAwait(false);
+                await OnAttachedToTargetAsync(sender, e).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

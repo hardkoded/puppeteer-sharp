@@ -448,7 +448,7 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
                 }
             }
@@ -460,7 +460,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnBindingCalled(BindingCalledResponse e)
+        private async Task OnBindingCalledAsync(BindingCalledResponse e)
         {
             var payload = e.BindingPayload;
 
