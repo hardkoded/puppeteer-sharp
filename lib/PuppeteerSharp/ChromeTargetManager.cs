@@ -160,7 +160,7 @@ namespace PuppeteerSharp
                         return;
 
                     case "Target.targetDestroyed":
-                        OnTargetDestroyed(e.MessageData.ToObject<TargetDestroyedResponse>(true));
+                        _ = OnTargetDestroyedAsync(e.MessageID, e.MessageData.ToObject<TargetDestroyedResponse>(true));
                         return;
 
                     case "Target.targetInfoChanged":
@@ -198,15 +198,22 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void OnTargetDestroyed(TargetDestroyedResponse e)
+        private async Task OnTargetDestroyedAsync(string messageId, TargetDestroyedResponse e)
         {
-            _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
-            await EnsureTargetsIdsForInit().ConfigureAwait(false);
-            FinishInitializationIfReady(e.TargetId);
-
-            if (targetInfo?.Type == TargetType.ServiceWorker && _availableTargetsByTargetIdDictionary.TryRemove(e.TargetId, out var target))
+            try
             {
-                TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
+                await EnsureTargetsIdsForInit().ConfigureAwait(false);
+                FinishInitializationIfReady(e.TargetId);
+
+                if (targetInfo?.Type == TargetType.ServiceWorker && _availableTargetsByTargetIdDictionary.TryRemove(e.TargetId, out var target))
+                {
+                    TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleExceptionOnMessageReceived(messageId, ex);
             }
         }
 
