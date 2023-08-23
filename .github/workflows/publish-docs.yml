@@ -27,7 +27,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Build
         run: |
-          dotnet tool install --global docfx
+          dotnet tool install --global docfx --version 2.60.2 
 
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
@@ -40,3 +40,12 @@ jobs:
       - name: Publish Documentation on GitHub Pages
         uses: actions/deploy-pages@v2
         id: deployment
+      - name: Upload Site to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'Website'
+          path: docs/
+          retention-days: 1
+          if-no-files-found: ignore
+        if: always()
+        continue-on-error: true
