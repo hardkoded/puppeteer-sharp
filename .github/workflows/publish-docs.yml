@@ -1,10 +1,9 @@
 name: Publish docs
 
 on:
-  pull_request:
-    branches: [ master ]
-  #tags:
-  #  - '*'
+  push:
+    tags:
+      - '*'
 
 permissions:
   contents: read
