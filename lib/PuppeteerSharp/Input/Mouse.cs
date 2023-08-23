@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Messaging;
@@ -10,9 +11,8 @@ namespace PuppeteerSharp.Input
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
         private readonly MouseState _mouseState = new();
-        private List<MouseState> _transactions = new();
-        public MouseTest test1;
-        
+        private readonly List<MouseState> _transactions = new();
+
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
         {
@@ -193,6 +193,71 @@ namespace PuppeteerSharp.Input
 
             await DropAsync(endX, endY, data).ConfigureAwait(false);
             await UpAsync().ConfigureAwait(false);
+        }
+
+        private MouseTransaction CreateTrasaction()
+        {
+            var transaction = new MouseState();
+            _transactions.Add(transaction);
+
+            return new MouseTransaction()
+            {
+                Update = updates =>
+                {
+                    if (updates.Position.HasValue)
+                    {
+                        transaction.Position = updates.Position.Value;
+                    }
+
+                    if (updates.Button.HasValue)
+                    {
+                        transaction.Button = updates.Button.Value;
+                    }
+                },
+                Commit = () =>
+                {
+                    _mouseState.Position = transaction.Position ?? _mouseState.Position;
+                    _mouseState.Button = transaction.Button ?? _mouseState.Button;
+                    _transactions.Remove(transaction);
+                },
+                Rollback = () => _transactions.Remove(transaction),
+            };
+        }
+
+        private async Task WithTransactionAsync(Func<Action<MouseState>, Task> action)
+        {
+            var transaction = CreateTrasaction();
+            try
+            {
+                await action(transaction.Update).ConfigureAwait(false);
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new PuppeteerException("Failed to perform mouse action", ex);
+            }
+        }
+
+        private Task ResetAsync()
+        {
+            var actions = new List<Func<Task>>();
+
+            foreach (var flagAndButton of [
+            [MouseButtonFlag.Left, MouseButton.Left],
+            [MouseButtonFlag.Middle, MouseButton.Middle],
+            [MouseButtonFlag.Right, MouseButton.Right],
+            [MouseButtonFlag.Forward, MouseButton.Forward],
+            [MouseButtonFlag.Back, MouseButton.Back],
+            ] as const) {
+            if (this.#state.buttons & flag) {
+                actions.push(this.up({button: button}));
+            }
+            }
+            if (this.#state.position.x !== 0 || this.#state.position.y !== 0) {
+            actions.push(this.move(0, 0));
+            }
+            await Promise.all(actions);
         }
     }
 }
