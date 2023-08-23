@@ -8,7 +8,7 @@ namespace PuppeteerSharp.BrowserData
     internal class Chromium
     {
         internal static Task<string> ResolveBuildIdAsync(Platform platform)
-            => JsonUtils.GetTextAsync($"https://storage.googleapis.com/chromium-browser-snapshots/${GetFolder(platform)}/LAST_CHANGE");
+            => JsonUtils.GetTextAsync($"https://storage.googleapis.com/chromium-browser-snapshots/{GetFolder(platform)}/LAST_CHANGE");
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             => $"{baseUrl ?? "https://storage.googleapis.com/chromium-browser-snapshots"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
