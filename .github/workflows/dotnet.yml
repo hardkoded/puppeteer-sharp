@@ -69,7 +69,3 @@ jobs:
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet test -f net6.0 -s test.runsettings
-    - name: Publish docs
-      if: matrix.os == 'windows-latest'
-      run: |
-        .\appveyor\GenerateDocs.ps1
