@@ -113,6 +113,33 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should use scale for clip")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldUseScaleForClip()
+        {
+            await using (var page = await Context.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    Clip = new Clip
+                    {
+                        X = 50,
+                        Y = 100,
+                        Width = 150,
+                        Height = 100,
+                        Scale = 2,
+                    }
+                });
+                Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale2.png", screenshot));
+            }
+        }
+
         [PuppeteerTimeout]
         public async Task ShouldClipScale()
         {
@@ -139,6 +166,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should get screenshot bigger than the viewport")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClipElementsToTheViewport()
         {
@@ -302,6 +330,22 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with webp")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldWorkWithWebp()
+        {
+            await using (var page = await Context.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
+                await page.GoToAsync(TestConstants.EmptyPage);
+                var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    Type = ScreenshotType.Webp
+                });
+                Assert.Greater(screenshot.Length, 0);
+            }
+        }
+
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
@@ -341,6 +385,27 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
+        [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work in \"fromSurface: false\" mode")]
+        [Skip(SkipAttribute.Targets.Firefox, SkipAttribute.Targets.Windows)]
+        public async Task ShouldWorkInFromSurfacedFalseMode()
+        {
+            await using (var page = await Context.NewPageAsync())
+            {
+                await page.SetViewportAsync(new ViewPortOptions
+                {
+                    Width = 500,
+                    Height = 500
+                });
+                await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                var screenshot = await page.ScreenshotBase64Async(new ScreenshotOptions
+                {
+                    FromSurface = false,
+                });
+
+                Assert.Greater(screenshot.Length, 0);
+            }
+        }
+        
         [PuppeteerTimeout]
         public void ShouldInferScreenshotTypeFromName()
         {
