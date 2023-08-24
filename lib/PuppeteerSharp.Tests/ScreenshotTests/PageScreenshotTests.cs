@@ -386,7 +386,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work in \"fromSurface: false\" mode")]
-        [Skip(SkipAttribute.Targets.Firefox | SkipAttribute.Targets.Windows)]
+        [Skip(SkipAttribute.Targets.Firefox, SkipAttribute.Targets.Windows)]
         public async Task ShouldWorkInFromSurfacedFalseMode()
         {
             await using (var page = await Context.NewPageAsync())
