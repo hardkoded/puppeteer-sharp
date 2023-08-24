@@ -64,13 +64,16 @@ namespace PuppeteerSharp
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
+            var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
+                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
+                : options.ReferrerPolicy;
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
                 try
                 {
-                    var navigateTask = NavigateAsync(Client, url, referrer, frame.Id);
+                    var navigateTask = NavigateAsync(Client, url, referrer, referrerPolicy, frame.Id);
                     var task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
                         navigateTask).ConfigureAwait(false);
@@ -189,12 +192,13 @@ namespace PuppeteerSharp
             return context;
         }
 
-        private async Task NavigateAsync(CDPSession client, string url, string referrer, string frameId)
+        private async Task NavigateAsync(CDPSession client, string url, string referrer, string referrerPolicy, string frameId)
         {
             var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
+                ReferrerPolicy = referrerPolicy ?? string.Empty,
                 FrameId = frameId,
             }).ConfigureAwait(false);
 

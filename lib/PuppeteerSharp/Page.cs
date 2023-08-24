@@ -329,9 +329,9 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <inheritdoc/>
-        #pragma warning disable CS0618 // Using obsolets
+#pragma warning disable CS0618 // Using obsolets
         public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-        #pragma warning restore CS0618
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
@@ -784,10 +784,10 @@ namespace PuppeteerSharp
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         /// <inheritdoc/>
-        #pragma warning disable CS0618 // WaitForXPathAsync is obsolete
+#pragma warning disable CS0618 // WaitForXPathAsync is obsolete
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
-        #pragma warning restore CS0618
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
@@ -1268,58 +1268,54 @@ namespace PuppeteerSharp
             }
 
             var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
+            var captureBeyondViewport = options.CaptureBeyondViewport;
 
             if (!_screenshotBurstModeOn)
             {
-                if (options != null && options.FullPage)
+                if (options?.FullPage == true)
                 {
-                    var metrics = _screenshotBurstModeOn
-                        ? _burstModeMetrics :
-                        await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
-
-                    if (options.BurstMode)
-                    {
-                        _burstModeMetrics = metrics;
-                    }
-
-                    var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
-
-                    var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                    var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
-
                     // Overwrite clip for full page at all times.
-                    clip = new Clip
-                    {
-                        X = 0,
-                        Y = 0,
-                        Width = width,
-                        Height = height,
-                        Scale = 1,
-                    };
+                    clip = null;
 
-                    var isMobile = Viewport?.IsMobile ?? false;
-                    var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                    var isLandscape = Viewport?.IsLandscape ?? false;
-                    var screenOrientation = isLandscape
-                        ? new ScreenOrientation
+                    if (!captureBeyondViewport)
+                    {
+                        var metrics = _screenshotBurstModeOn
+                            ? _burstModeMetrics :
+                            await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+
+                        if (options.BurstMode)
                         {
-                            Angle = 90,
-                            Type = ScreenOrientationType.LandscapePrimary,
+                            _burstModeMetrics = metrics;
                         }
-                        : new ScreenOrientation
-                        {
-                            Angle = 0,
-                            Type = ScreenOrientationType.PortraitPrimary,
-                        };
 
-                    await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                    {
-                        Mobile = isMobile,
-                        Width = width,
-                        Height = height,
-                        DeviceScaleFactor = deviceScaleFactor,
-                        ScreenOrientation = screenOrientation,
-                    }).ConfigureAwait(false);
+                        var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
+
+                        var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                        var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+                        var isMobile = Viewport?.IsMobile ?? false;
+                        var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                        var isLandscape = Viewport?.IsLandscape ?? false;
+                        var screenOrientation = isLandscape
+                            ? new ScreenOrientation
+                            {
+                                Angle = 90,
+                                Type = ScreenOrientationType.LandscapePrimary,
+                            }
+                            : new ScreenOrientation
+                            {
+                                Angle = 0,
+                                Type = ScreenOrientationType.PortraitPrimary,
+                            };
+
+                        await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                        {
+                            Mobile = isMobile,
+                            Width = width,
+                            Height = height,
+                            DeviceScaleFactor = deviceScaleFactor,
+                            ScreenOrientation = screenOrientation,
+                        }).ConfigureAwait(false);
+                    }
                 }
 
                 if (options?.OmitBackground == true && type == ScreenshotType.Png)
@@ -1328,9 +1324,16 @@ namespace PuppeteerSharp
                 }
             }
 
+            if (options?.FullPage == false && clip == null)
+            {
+                captureBeyondViewport = false;
+            }
+
             var screenMessage = new PageCaptureScreenshotRequest
             {
                 Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
+                CaptureBeyondViewport = captureBeyondViewport,
+                FromSurface = options.FromSurface,
             };
 
             if (options.Quality.HasValue)
@@ -1470,7 +1473,7 @@ namespace PuppeteerSharp
                         await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Runtime.bindingCalled":
-                        await OnBindingCalled(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Page.fileChooserOpened":
                         await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
@@ -1519,7 +1522,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnBindingCalled(BindingCalledResponse e)
+        private async Task OnBindingCalledAsync(BindingCalledResponse e)
         {
             if (e.BindingPayload.Type != "exposedFun" || !_bindings.ContainsKey(e.BindingPayload.Name))
             {

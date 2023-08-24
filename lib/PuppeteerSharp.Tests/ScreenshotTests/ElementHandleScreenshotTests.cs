@@ -181,5 +181,20 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot));
         }
+
+        [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work with a null viewport")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldWorkWithANullViewport()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await page.EvaluateExpressionAsync("window.scrollBy(50, 100)");
+            var elementHandle = await page.QuerySelectorAsync(".box:nth-of-type(3)");
+            var screenshot = await elementHandle.ScreenshotDataAsync();
+            Assert.Greater(screenshot.Length, 0);
+        }
     }
 }

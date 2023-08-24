@@ -15,5 +15,10 @@ namespace PuppeteerSharp
         /// PNG type.
         /// </summary>
         Png,
+
+        /// <summary>
+        /// Webp type.
+        /// </summary>
+        Webp,
     }
 }
