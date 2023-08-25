@@ -24,7 +24,7 @@ namespace PuppeteerSharp
         public LauncherBase(string executable, LaunchOptions options)
         {
             _stateManager = new StateManager();
-            _stateManager.Starting = new ChromiumStartingState(_stateManager);
+            _stateManager.Starting = new ProcessStartingState(_stateManager);
 
             Options = options ?? throw new ArgumentNullException(nameof(options));
 

@@ -1,0 +1,50 @@
+name: Publish docs
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+
+    name: Publish docs
+    runs-on: windows-latest
+    env:
+      DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Build
+        run: |
+          dotnet tool install --global docfx --version 2.60.2 
+
+          docfx metadata docfx_project\docfx.json
+          docfx build docfx_project\docfx.json -o docs
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: 'docs'
+      - name: Publish Documentation on GitHub Pages
+        uses: actions/deploy-pages@v2
+        id: deployment
+      - name: Upload Site to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'Website'
+          path: docs/
+          retention-days: 1
+          if-no-files-found: ignore
+        if: always()
+        continue-on-error: true
