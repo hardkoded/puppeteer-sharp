@@ -243,7 +243,18 @@ namespace PuppeteerSharp
         }
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
-            => await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
+        {
+            try
+            {
+                await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                // We could just catch ObjectDisposedException but as this is an event listener
+                // we don't want to crash the whole process.
+                _logger.LogError(exception, $"Failed to process message {e.Message}");
+            }
+        }
 
         private async Task ProcessMessage(MessageReceivedEventArgs e)
         {

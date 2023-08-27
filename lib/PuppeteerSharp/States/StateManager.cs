@@ -10,7 +10,7 @@ namespace PuppeteerSharp.States
         public StateManager()
         {
             Initial = new InitialState(this);
-            Starting = new ChromiumStartingState(this);
+            Starting = new ProcessStartingState(this);
             Started = new StartedState(this);
             Exiting = new ExitingState(this);
             Killing = new KillingState(this);

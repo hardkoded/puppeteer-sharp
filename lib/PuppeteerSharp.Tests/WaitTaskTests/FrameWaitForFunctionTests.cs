@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest, IDisposable
+    public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest
     {
         private PollerInterceptor _pollerInterceptor;
 
@@ -28,8 +28,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             };
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             _pollerInterceptor.Dispose();
         }
 

@@ -1,10 +1,11 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest
+    public class PuppeteerBrowserBaseTest : PuppeteerBaseTest, IDisposable, IAsyncDisposable
     {
         protected IBrowser Browser { get; set; }
 
@@ -18,5 +19,19 @@ namespace PuppeteerSharp.Tests
 
         [TearDown]
         public virtual async Task DisposeAsync() => await Browser.CloseAsync();
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) => _ = DisposeAsync();
+
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            GC.SuppressFinalize(this);
+            return Browser.DisposeAsync();
+        }
     }
 }

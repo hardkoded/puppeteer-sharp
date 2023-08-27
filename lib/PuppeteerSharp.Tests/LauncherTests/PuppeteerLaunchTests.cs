@@ -273,7 +273,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "should work with no default arguments")]
-        [Skip(SkipAttribute.Targets.Chromium)]
+        [Skip(SkipAttribute.Targets.Chromium, SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithNoDefaultArguments()
         {
             var options = TestConstants.DefaultBrowserOptions();

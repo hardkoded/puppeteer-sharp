@@ -10,7 +10,7 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    public sealed class FrameWaitForXPathTests : PuppeteerPageBaseTest, IDisposable
+    public sealed class FrameWaitForXPathTests : PuppeteerPageBaseTest
     {
         const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
         private PollerInterceptor _pollerInterceptor;
@@ -32,8 +32,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             };
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             _pollerInterceptor.Dispose();
         }
 
