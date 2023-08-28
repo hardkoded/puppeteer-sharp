@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Tests.Attributes;
@@ -279,7 +280,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                         Button = 0,
                     },
                 },
-                data[0..3]);
+                data.Take(3));
 
             Assert.AreEqual(
                 new ClickData[]
@@ -315,7 +316,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                         Button = 0,
                     },
                 },
-                data[3..6]);
+                data.Skip(3).Take(3));
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should reset properly")]
