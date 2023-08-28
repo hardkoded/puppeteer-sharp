@@ -9,7 +9,9 @@ namespace PuppeteerSharp.Input
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter), true)]
     [Flags]
+    #pragma warning disable CA1714 // Flags enums should have plural names. We don't want to break compatibility for this
     public enum MouseButton
+    #pragma warning restore CA1714 // Flags enums should have plural names
     {
         /// <summary>
         /// Non specified.

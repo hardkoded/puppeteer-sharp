@@ -94,5 +94,11 @@ namespace PuppeteerSharp.Input
         /// <param name="deltaY">Delta Y.</param>
         /// <returns>Task.</returns>
         Task WheelAsync(decimal deltaX, decimal deltaY);
+
+        /// <summary>
+        /// Resets the mouse to the default state: No buttons pressed; position at (0,0).
+        /// </summary>
+        /// <returns>Task.</returns>
+        Task ResetAsync();
     }
 }

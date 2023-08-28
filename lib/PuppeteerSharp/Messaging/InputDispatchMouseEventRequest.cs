@@ -21,5 +21,7 @@ namespace PuppeteerSharp.Messaging
         public decimal DeltaY { get; set; }
 
         public PointerType PointerType { get; set; }
+
+        public int Buttons { get; set; }
     }
 }

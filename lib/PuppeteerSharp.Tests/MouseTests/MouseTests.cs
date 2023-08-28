@@ -222,6 +222,220 @@ namespace PuppeteerSharp.Tests.MouseTests
             }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
         }
 
+        [PuppeteerTest("mouse.spec.ts", "Mouse", "should throw if buttons are pressed incorrectly")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldThrowIfButtonsArePressedIncorrectly()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            
+            await Page.Mouse.DownAsync();
+            Assert.ThrowsAsync<PuppeteerException>(async () => await Page.Mouse.DownAsync());
+        }
+
+        [PuppeteerTest("mouse.spec.ts", "Mouse", "should not throw if clicking in parallel")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldNotThrowIfClickingInParallel()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await AddMouseDataListenersAsync(Page);
+
+            await Task.WhenAll(
+                Page.Mouse.ClickAsync(0, 5),
+                Page.Mouse.ClickAsync(6, 10));
+
+            var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
+
+            Assert.AreEqual(
+                new ClickData[]
+                {
+                    new()
+                    {
+                        Type = "mousedown",
+                        Buttons = 1,
+                        Detail = 1,
+                        ClientX = 0,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "mouseup",
+                        Buttons = 0,
+                        Detail = 1,
+                        ClientX = 0,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "click",
+                        Buttons = 0,
+                        Detail = 1,
+                        ClientX = 0,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                },
+                data[0..3]);
+
+            Assert.AreEqual(
+                new ClickData[]
+                {
+                    new()
+                    {
+                        Type = "mousedown",
+                        Buttons = 1,
+                        Detail = 1,
+                        ClientX = 6,
+                        ClientY = 10,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "mouseup",
+                        Buttons = 0,
+                        Detail = 1,
+                        ClientX = 6,
+                        ClientY = 10,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "click",
+                        Buttons = 0,
+                        Detail = 1,
+                        ClientX = 6,
+                        ClientY = 10,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                },
+                data[3..6]);
+        }
+
+        [PuppeteerTest("mouse.spec.ts", "Mouse", "should reset properly")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldResetProperly()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.Mouse.MoveAsync(5, 5);
+
+            await Task.WhenAll(
+                Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Left }),
+                Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Middle }),
+                Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Right }));
+            );
+
+            await AddMouseDataListenersAsync(Page, true);
+            await Page.Mouse.ResetAsync();
+            
+            var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
+
+            Assert.AreEqual(
+                new ClickData[]
+                {
+                    new()
+                    {
+                        Type = "mouseup",
+                        Buttons = 6,
+                        Detail = 1,
+                        ClientX = 5,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "click",
+                        Buttons = 6,
+                        Detail = 0,
+                        ClientX = 5,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    new()
+                    {
+                        Type = "mouseup",
+                        Buttons = 2,
+                        Detail = 0,
+                        ClientX = 5,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 1,
+                    },
+                    new()
+                    {
+                        Type = "mouseup",
+                        Buttons = 0,
+                        Detail = 0,
+                        ClientX = 5,
+                        ClientY = 5,
+                        IsTrusted = true,
+                        Button = 2,
+                    },
+                    new()
+                    {
+                        Type = "mousemove",
+                        Buttons = 0,
+                        Detail = 0,
+                        ClientX = 0,
+                        ClientY = 0,
+                        IsTrusted = true,
+                        Button = 0,
+                    },
+                    }
+                },
+                data);
+        }
+        private Task AddMouseDataListenersAsync(IPage page, bool includeMove = false)
+        {
+            return Page.EvaluateFunctionAsync(@"(includeMove) => {
+                const clicks = [];
+                const mouseEventListener = (event) => {
+                    clicks.push({
+                        type: event.type,
+                        detail: event.detail,
+                        clientX: event.clientX,
+                        clientY: event.clientY,
+                        isTrusted: event.isTrusted,
+                        button: event.button,
+                        buttons: event.buttons,
+                    });
+                };
+                document.addEventListener('mousedown', mouseEventListener);
+                if (includeMove) {
+                    document.addEventListener('mousemove', mouseEventListener);
+                }
+                document.addEventListener('mouseup', mouseEventListener);
+                document.addEventListener('click', mouseEventListener);
+                window.clicks = clicks;
+            }",
+            includeMove);
+        }
+
+        internal struct ClickData
+        {
+            public string Type { get; set; }
+
+            public int Detail { get; set; }
+
+            public int ClientX { get; set; }
+
+            public int ClientY { get; set; }
+
+            public bool IsTrusted { get; set; }
+
+            public int Button { get; set; }
+
+            public int Buttons { get; set; }
+        }
+
         internal struct WheelEventInternal
         {
             public WheelEventInternal(decimal deltaX, decimal deltaY)
