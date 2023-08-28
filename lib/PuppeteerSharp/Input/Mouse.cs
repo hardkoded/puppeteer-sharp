@@ -237,11 +237,12 @@ namespace PuppeteerSharp.Input
                 });
 
         /// <inheritdoc/>
-        public Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
+        public async Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
         {
-            return _multipleActionsQueue.Enqueue(async () =>
+            // DragAsync is already using _multipleActionsQueue
+            var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
+            await _multipleActionsQueue.Enqueue(async () =>
             {
-                var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
                 await DragEnterAsync(endX, endY, data).ConfigureAwait(false);
                 await DragOverAsync(endX, endY, data).ConfigureAwait(false);
 
@@ -252,7 +253,7 @@ namespace PuppeteerSharp.Input
 
                 await DropAsync(endX, endY, data).ConfigureAwait(false);
                 await UpAsync().ConfigureAwait(false);
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
