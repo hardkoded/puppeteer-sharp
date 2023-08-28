@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         }
 
         [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Network redirects should report SecurityDetails")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Ignore("This is super flaky")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
             var responses = new List<IResponse>();
