@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
+/*
+    The implementation of transctions is not the same as in the original Puppeteer
+    due to the differences in the threading model.
+*/
 namespace PuppeteerSharp.Input
 {
     /// <inheritdoc/>
@@ -12,7 +16,9 @@ namespace PuppeteerSharp.Input
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
         private readonly MouseState _mouseState = new();
-        private readonly ConcurrentSet<MouseTransaction.TransactionData> _transactions = new();
+        private readonly TaskQueue _actionsQueue = new();
+        private readonly TaskQueue _multipleActionsQueue = new();
+        private MouseTransaction.TransactionData _inFlightTransaction = null;
 
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
@@ -60,40 +66,43 @@ namespace PuppeteerSharp.Input
         }
 
         /// <inheritdoc/>
-        public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
+        public Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
             options ??= new ClickOptions();
 
-            if (options.Delay > 0)
+            return _multipleActionsQueue.Enqueue(async () =>
             {
-                await Task.WhenAll(
-                    MoveAsync(x, y),
-                    DownAsync(options)).ConfigureAwait(false);
+                if (options.Delay > 0)
+                {
+                    await Task.WhenAll(
+                        MoveAsync(x, y),
+                        DownAsync(options)).ConfigureAwait(false);
 
-                await Task.Delay(options.Delay).ConfigureAwait(false);
-                await UpAsync(options).ConfigureAwait(false);
-            }
-            else
-            {
-                await Task.WhenAll(
-                   MoveAsync(x, y),
-                   DownAsync(options),
-                   UpAsync(options)).ConfigureAwait(false);
-            }
+                    await Task.Delay(options.Delay).ConfigureAwait(false);
+                    await UpAsync(options).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Task.WhenAll(
+                    MoveAsync(x, y),
+                    DownAsync(options),
+                    UpAsync(options)).ConfigureAwait(false);
+                }
+            });
         }
 
         /// <inheritdoc/>
         public Task DownAsync(ClickOptions options = null)
         {
-            options ??= new ClickOptions();
-
-            if (GetState().Buttons.HasFlag(options.Button))
-            {
-                throw new PuppeteerException($"{options.Button} is already pressed");
-            }
-
             return WithTransactionAsync((updateState) =>
             {
+                options ??= new ClickOptions();
+
+                if (GetState().Buttons.HasFlag(options.Button))
+                {
+                    throw new PuppeteerException($"{options.Button} is already pressed");
+                }
+
                 updateState(new MouseTransaction.TransactionData
                 {
                     Buttons = GetState().Buttons | options.Button,
@@ -116,15 +125,15 @@ namespace PuppeteerSharp.Input
         /// <inheritdoc/>
         public Task UpAsync(ClickOptions options = null)
         {
-            options ??= new ClickOptions();
-
-            if (!GetState().Buttons.HasFlag(options.Button))
-            {
-                throw new PuppeteerException($"{options.Button} is not pressed");
-            }
-
             return WithTransactionAsync((updateState) =>
             {
+                options ??= new ClickOptions();
+
+                if (!GetState().Buttons.HasFlag(options.Button))
+                {
+                    throw new PuppeteerException($"{options.Button} is not pressed");
+                }
+
                 updateState(new MouseTransaction.TransactionData
                 {
                     Buttons = GetState().Buttons & ~options.Button,
@@ -164,25 +173,28 @@ namespace PuppeteerSharp.Input
         }
 
         /// <inheritdoc/>
-        public async Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)
+        public Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)
         {
-            var result = new TaskCompletionSource<DragData>();
-
-            void DragIntercepted(object sender, MessageEventArgs e)
+            return _multipleActionsQueue.Enqueue(async () =>
             {
-                if (e.MessageID == "Input.dragIntercepted")
+                var result = new TaskCompletionSource<DragData>();
+
+                void DragIntercepted(object sender, MessageEventArgs e)
                 {
-                    result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
-                    _client.MessageReceived -= DragIntercepted;
+                    if (e.MessageID == "Input.dragIntercepted")
+                    {
+                        result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
+                        _client.MessageReceived -= DragIntercepted;
+                    }
                 }
-            }
 
-            _client.MessageReceived += DragIntercepted;
-            await MoveAsync(startX, startY).ConfigureAwait(false);
-            await DownAsync().ConfigureAwait(false);
-            await MoveAsync(endX, endY).ConfigureAwait(false);
+                _client.MessageReceived += DragIntercepted;
+                await MoveAsync(startX, startY).ConfigureAwait(false);
+                await DownAsync().ConfigureAwait(false);
+                await MoveAsync(endX, endY).ConfigureAwait(false);
 
-            return await result.Task.ConfigureAwait(false);
+                return await result.Task.ConfigureAwait(false);
+            });
         }
 
         /// <inheritdoc/>
@@ -225,57 +237,79 @@ namespace PuppeteerSharp.Input
                 });
 
         /// <inheritdoc/>
-        public async Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
+        public Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
         {
-            var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
-            await DragEnterAsync(endX, endY, data).ConfigureAwait(false);
-            await DragOverAsync(endX, endY, data).ConfigureAwait(false);
-
-            if (delay > 0)
+            return _multipleActionsQueue.Enqueue(async () =>
             {
-                await Task.Delay(delay).ConfigureAwait(false);
-            }
+                var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
+                await DragEnterAsync(endX, endY, data).ConfigureAwait(false);
+                await DragOverAsync(endX, endY, data).ConfigureAwait(false);
 
-            await DropAsync(endX, endY, data).ConfigureAwait(false);
-            await UpAsync().ConfigureAwait(false);
+                if (delay > 0)
+                {
+                    await Task.Delay(delay).ConfigureAwait(false);
+                }
+
+                await DropAsync(endX, endY, data).ConfigureAwait(false);
+                await UpAsync().ConfigureAwait(false);
+            });
         }
 
         /// <inheritdoc/>
         public Task ResetAsync()
         {
-            var actions = new List<Task>();
-            var state = GetState();
+            return _multipleActionsQueue.Enqueue(() =>
+            {
+                var actions = new List<Task>();
+                var state = GetState();
 
-            foreach (var button in new[]
-            {
-                MouseButton.Left,
-                MouseButton.Middle,
-                MouseButton.Right,
-                MouseButton.Back,
-                MouseButton.Forward,
-            })
-            {
-                if (state.Buttons.HasFlag(button))
+                foreach (var button in new[]
                 {
-                    actions.Add(UpAsync(new()
+                    MouseButton.Left,
+                    MouseButton.Middle,
+                    MouseButton.Right,
+                    MouseButton.Back,
+                    MouseButton.Forward,
+                })
+                {
+                    if (state.Buttons.HasFlag(button))
                     {
-                        Button = button,
-                    }));
+                        actions.Add(UpAsync(new()
+                        {
+                            Button = button,
+                        }));
+                    }
                 }
-            }
 
-            if (state.Position.X != 0 || state.Position.Y != 0)
+                if (state.Position.X != 0 || state.Position.Y != 0)
+                {
+                    actions.Add(MoveAsync(0, 0));
+                }
+
+                return Task.WhenAll(actions);
+            });
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                actions.Add(MoveAsync(0, 0));
+                _actionsQueue.Dispose();
+                _multipleActionsQueue.Dispose();
             }
-
-            return Task.WhenAll(actions);
         }
 
         private MouseTransaction CreateTrasaction()
         {
-            var transaction = new MouseTransaction.TransactionData();
-            _transactions.Add(transaction);
+            _inFlightTransaction = new MouseTransaction.TransactionData();
 
             return new MouseTransaction()
             {
@@ -283,37 +317,40 @@ namespace PuppeteerSharp.Input
                 {
                     if (updates.Position.HasValue)
                     {
-                        transaction.Position = updates.Position.Value;
+                        _inFlightTransaction.Position = updates.Position.Value;
                     }
 
                     if (updates.Buttons.HasValue)
                     {
-                        transaction.Buttons = updates.Buttons.Value;
+                        _inFlightTransaction.Buttons = updates.Buttons.Value;
                     }
                 },
                 Commit = () =>
                 {
-                    _mouseState.Position = transaction.Position ?? _mouseState.Position;
-                    _mouseState.Buttons = transaction.Buttons ?? _mouseState.Buttons;
-                    _transactions.Remove(transaction);
+                    _mouseState.Position = _inFlightTransaction.Position ?? _mouseState.Position;
+                    _mouseState.Buttons = _inFlightTransaction.Buttons ?? _mouseState.Buttons;
+                    _inFlightTransaction = null;
                 },
-                Rollback = () => _transactions.Remove(transaction),
+                Rollback = () => _inFlightTransaction = null,
             };
         }
 
-        private async Task WithTransactionAsync(Func<Action<MouseTransaction.TransactionData>, Task> action)
+        private Task WithTransactionAsync(Func<Action<MouseTransaction.TransactionData>, Task> action)
         {
-            var transaction = CreateTrasaction();
-            try
+            return _actionsQueue.Enqueue(async () =>
             {
-                await action(transaction.Update).ConfigureAwait(false);
-                transaction.Commit();
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw new PuppeteerException("Failed to perform mouse action", ex);
-            }
+                var transaction = CreateTrasaction();
+                try
+                {
+                    await action(transaction.Update).ConfigureAwait(false);
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new PuppeteerException("Failed to perform mouse action", ex);
+                }
+            });
         }
 
         private MouseButton GetButtonFromPressedButtons(MouseButton buttons)
@@ -354,16 +391,16 @@ namespace PuppeteerSharp.Input
                 Buttons = _mouseState.Buttons,
             };
 
-            foreach (var transaction in _transactions)
+            if (_inFlightTransaction != null)
             {
-                if (transaction.Position.HasValue)
+                if (_inFlightTransaction.Position.HasValue)
                 {
-                    state.Position = transaction.Position.Value;
+                    state.Position = _inFlightTransaction.Position.Value;
                 }
 
-                if (transaction.Buttons.HasValue)
+                if (_inFlightTransaction.Buttons.HasValue)
                 {
-                    state.Buttons = transaction.Buttons.Value;
+                    state.Buttons = _inFlightTransaction.Buttons.Value;
                 }
             }
 
