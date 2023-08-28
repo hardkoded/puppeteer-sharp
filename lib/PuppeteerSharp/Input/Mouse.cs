@@ -348,7 +348,11 @@ namespace PuppeteerSharp.Input
 
         private MouseState GetState()
         {
-            var state = new MouseTransaction.TransactionData();
+            var state = new MouseTransaction.TransactionData()
+            {
+                Position = _mouseState.Position,
+                Buttons = _mouseState.Buttons,
+            };
 
             foreach (var transaction in _transactions)
             {
@@ -361,16 +365,6 @@ namespace PuppeteerSharp.Input
                 {
                     state.Buttons = transaction.Buttons.Value;
                 }
-            }
-
-            if (!state.Position.HasValue)
-            {
-                state.Position = _mouseState.Position;
-            }
-
-            if (!state.Buttons.HasValue)
-            {
-                state.Buttons = _mouseState.Buttons;
             }
 
             return new MouseState
