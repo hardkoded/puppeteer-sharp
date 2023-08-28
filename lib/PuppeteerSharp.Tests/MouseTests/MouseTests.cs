@@ -329,11 +329,10 @@ namespace PuppeteerSharp.Tests.MouseTests
                 Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Left }),
                 Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Middle }),
                 Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Right }));
-            );
 
             await AddMouseDataListenersAsync(Page, true);
             await Page.Mouse.ResetAsync();
-            
+
             var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
 
             Assert.AreEqual(
@@ -353,7 +352,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                     {
                         Type = "click",
                         Buttons = 6,
-                        Detail = 0,
+                        Detail = 1,
                         ClientX = 5,
                         ClientY = 5,
                         IsTrusted = true,
@@ -389,10 +388,10 @@ namespace PuppeteerSharp.Tests.MouseTests
                         IsTrusted = true,
                         Button = 0,
                     },
-                    }
                 },
                 data);
         }
+
         private Task AddMouseDataListenersAsync(IPage page, bool includeMove = false)
         {
             return Page.EvaluateFunctionAsync(@"(includeMove) => {

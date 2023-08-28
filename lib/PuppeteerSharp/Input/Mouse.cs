@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Input
@@ -11,7 +12,7 @@ namespace PuppeteerSharp.Input
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
         private readonly MouseState _mouseState = new();
-        private readonly List<MouseTransaction.TransactionData> _transactions = new();
+        private readonly ConcurrentSet<MouseTransaction.TransactionData> _transactions = new();
 
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
@@ -25,8 +26,9 @@ namespace PuppeteerSharp.Input
         {
             options ??= new MoveOptions();
 
-            var fromX = GetState().Position.X;
-            var fromY = GetState().Position.Y;
+            var position = GetState().Position;
+            var fromX = position.X;
+            var fromY = position.Y;
             var steps = options.Steps;
 
             for (var i = 1; i <= steps; i++)
