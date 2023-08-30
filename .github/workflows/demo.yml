@@ -32,11 +32,10 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Install dependencies
+      working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-        cd demos/PuppeteerSharpPdfDemo
-        dir
         dotnet restore PuppeteerSharpPdfDemo-Local.csproj
     - name: Run Project
+      working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          cd demos/PuppeteerSharpPdfDemo
           dotnet run -p PuppeteerSharpPdfDemo-Local.csproj -f net6.0 auto-exit
