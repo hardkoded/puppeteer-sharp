@@ -99,6 +99,21 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.AreEqual(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
         }
 
+        [PuppeteerTest("click.spec.ts", "Page.click", "should scroll and click with disabled javascript")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldScrollAndClickWithDisabledJavascript()
+        {
+            await Page.SetJavaScriptEnabledAsync(false);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/wrappedlink.html");
+            var body = await Page.WaitForSelectorAsync("body");
+            await body.EvaluateFunctionAsync("body => body.style.paddingTop = '3000px'", body);
+            await Task.WhenAll(
+                Page.ClickAsync("a"),
+                Page.WaitForNavigationAsync()
+            );
+            Assert.AreEqual(TestConstants.ServerUrl + "/wrappedlink.html#clicked", Page.Url);
+        }
+
         [PuppeteerTest("click.spec.ts", "Page.click", "should click when one of inline box children is outside of viewport")]
         [PuppeteerTimeout]
         public async Task ShouldClickWhenOneOfInlineBoxChildrenIsOutsideOfViewport()
@@ -301,6 +316,33 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Right });
             Assert.AreEqual("context menu", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+        }
+
+        [PuppeteerTest("click.spec.ts", "Page.click", "should fire aux event on middle click")]
+        [PuppeteerTimeout]
+        public async Task ShouldFireAuxEventOnMiddleClick()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Middle });
+            Assert.AreEqual("aux click", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+        }
+
+        [PuppeteerTest("click.spec.ts", "Page.click", "should fire back click")]
+        [PuppeteerTimeout]
+        public async Task ShouldFireBackClick()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Back });
+            Assert.AreEqual("back click", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
+        }
+
+        [PuppeteerTest("click.spec.ts", "Page.click", "should fire forward click")]
+        [PuppeteerTimeout]
+        public async Task ShouldFireForwardClick()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
+            await Page.ClickAsync("#button-8", new ClickOptions { Button = MouseButton.Forward });
+            Assert.AreEqual("forward click", await Page.EvaluateExpressionAsync<string>("document.querySelector('#button-8').textContent"));
         }
 
         // @see https://github.com/GoogleChrome/puppeteer/issues/206
