@@ -28,8 +28,6 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
 
@@ -38,10 +36,6 @@ jobs:
         cd demos/PuppeteerSharpPdfDemo
         dir
         dotnet restore PuppeteerSharpPdfDemo-Local.csproj
-    - name: Build
-      run: |
-         cd demos/PuppeteerSharpPdfDemo
-         msbuild PuppeteerSharpPdfDemo-Local.csproj
     - name: Run Project
       run: |
           cd demos/PuppeteerSharpPdfDemo
