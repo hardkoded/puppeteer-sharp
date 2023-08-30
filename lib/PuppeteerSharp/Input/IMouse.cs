@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Input
@@ -5,7 +6,7 @@ namespace PuppeteerSharp.Input
     /// <summary>
     /// Provides methods to interact with the mouse.
     /// </summary>
-    public interface IMouse
+    public interface IMouse : IDisposable
     {
         /// <summary>
         /// Shortcut for <see cref="MoveAsync(decimal, decimal, MoveOptions)"/>, <see cref="DownAsync(ClickOptions)"/> and <see cref="UpAsync(ClickOptions)"/>.
@@ -94,5 +95,11 @@ namespace PuppeteerSharp.Input
         /// <param name="deltaY">Delta Y.</param>
         /// <returns>Task.</returns>
         Task WheelAsync(decimal deltaX, decimal deltaY);
+
+        /// <summary>
+        /// Resets the mouse to the default state: No buttons pressed; position at (0,0).
+        /// </summary>
+        /// <returns>Task.</returns>
+        Task ResetAsync();
     }
 }

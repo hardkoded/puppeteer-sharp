@@ -1,6 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
+/*
+    The implementation of transctions is not the same as in the original Puppeteer
+    due to the differences in the threading model.
+*/
 namespace PuppeteerSharp.Input
 {
     /// <inheritdoc/>
@@ -8,10 +15,10 @@ namespace PuppeteerSharp.Input
     {
         private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
-
-        private decimal _x = 0;
-        private decimal _y = 0;
-        private MouseButton _button = MouseButton.None;
+        private readonly MouseState _mouseState = new();
+        private readonly TaskQueue _actionsQueue = new();
+        private readonly TaskQueue _multipleActionsQueue = new();
+        private MouseTransaction.TransactionData _inFlightTransaction = null;
 
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
@@ -25,119 +32,169 @@ namespace PuppeteerSharp.Input
         {
             options ??= new MoveOptions();
 
-            var fromX = _x;
-            var fromY = _y;
-            _x = x;
-            _y = y;
+            var position = GetState().Position;
+            var fromX = position.X;
+            var fromY = position.Y;
             var steps = options.Steps;
 
             for (var i = 1; i <= steps; i++)
             {
-                await _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+                await WithTransactionAsync(async (updateState) =>
                 {
-                    Type = MouseEventType.MouseMoved,
-                    Button = _button,
-                    X = fromX + ((_x - fromX) * ((decimal)i / steps)),
-                    Y = fromY + ((_y - fromY) * ((decimal)i / steps)),
-                    Modifiers = _keyboard.Modifiers,
+                    updateState(new MouseTransaction.TransactionData
+                    {
+                        Position = new Point
+                        {
+                            X = fromX + ((x - fromX) * ((decimal)i / steps)),
+                            Y = fromY + ((y - fromY) * ((decimal)i / steps)),
+                        },
+                    });
+
+                    var state = GetState();
+
+                    await _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+                    {
+                        Type = MouseEventType.MouseMoved,
+                        Modifiers = _keyboard.Modifiers,
+                        Buttons = (int)state.Buttons,
+                        Button = GetButtonFromPressedButtons(state.Buttons),
+                        X = state.Position.X,
+                        Y = state.Position.Y,
+                    }).ConfigureAwait(false);
                 }).ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
-        public async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
+        public Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
         {
             options ??= new ClickOptions();
 
-            if (options.Delay > 0)
+            return _multipleActionsQueue.Enqueue(async () =>
             {
-                await Task.WhenAll(
-                    MoveAsync(x, y),
-                    DownAsync(options)).ConfigureAwait(false);
+                if (options.Delay > 0)
+                {
+                    await Task.WhenAll(
+                        MoveAsync(x, y),
+                        DownAsync(options)).ConfigureAwait(false);
 
-                await Task.Delay(options.Delay).ConfigureAwait(false);
-                await UpAsync(options).ConfigureAwait(false);
-            }
-            else
-            {
-                await Task.WhenAll(
-                   MoveAsync(x, y),
-                   DownAsync(options),
-                   UpAsync(options)).ConfigureAwait(false);
-            }
+                    await Task.Delay(options.Delay).ConfigureAwait(false);
+                    await UpAsync(options).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Task.WhenAll(
+                    MoveAsync(x, y),
+                    DownAsync(options),
+                    UpAsync(options)).ConfigureAwait(false);
+                }
+            });
         }
 
         /// <inheritdoc/>
         public Task DownAsync(ClickOptions options = null)
         {
-            options ??= new ClickOptions();
-
-            _button = options.Button;
-
-            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+            return WithTransactionAsync((updateState) =>
             {
-                Type = MouseEventType.MousePressed,
-                Button = _button,
-                X = _x,
-                Y = _y,
-                Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount,
+                options ??= new ClickOptions();
+
+                if (GetState().Buttons.HasFlag(options.Button))
+                {
+                    throw new PuppeteerException($"{options.Button} is already pressed");
+                }
+
+                updateState(new MouseTransaction.TransactionData
+                {
+                    Buttons = GetState().Buttons | options.Button,
+                });
+
+                var state = GetState();
+                return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+                {
+                    Type = MouseEventType.MousePressed,
+                    Modifiers = _keyboard.Modifiers,
+                    ClickCount = options.ClickCount,
+                    Buttons = (int)state.Buttons,
+                    Button = options.Button,
+                    X = state.Position.X,
+                    Y = state.Position.Y,
+                });
             });
         }
 
         /// <inheritdoc/>
         public Task UpAsync(ClickOptions options = null)
         {
-            options ??= new ClickOptions();
-
-            _button = MouseButton.None;
-
-            return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+            return WithTransactionAsync((updateState) =>
             {
-                Type = MouseEventType.MouseReleased,
-                Button = options.Button,
-                X = _x,
-                Y = _y,
-                Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount,
+                options ??= new ClickOptions();
+
+                if (!GetState().Buttons.HasFlag(options.Button))
+                {
+                    throw new PuppeteerException($"{options.Button} is not pressed");
+                }
+
+                updateState(new MouseTransaction.TransactionData
+                {
+                    Buttons = GetState().Buttons & ~options.Button,
+                });
+
+                var state = GetState();
+                return _client.SendAsync("Input.dispatchMouseEvent", new InputDispatchMouseEventRequest
+                {
+                    Type = MouseEventType.MouseReleased,
+                    Modifiers = _keyboard.Modifiers,
+                    ClickCount = options.ClickCount,
+                    Buttons = (int)state.Buttons,
+                    Button = options.Button,
+                    X = state.Position.X,
+                    Y = state.Position.Y,
+                });
             });
         }
 
         /// <inheritdoc/>
         public Task WheelAsync(decimal deltaX, decimal deltaY)
-            => _client.SendAsync(
+        {
+            var state = GetState();
+
+            return _client.SendAsync(
                 "Input.dispatchMouseEvent",
                 new InputDispatchMouseEventRequest
                 {
                     Type = MouseEventType.MouseWheel,
                     DeltaX = deltaX,
                     DeltaY = deltaY,
-                    X = _x,
-                    Y = _y,
+                    X = state.Position.X,
+                    Y = state.Position.Y,
                     Modifiers = _keyboard.Modifiers,
                     PointerType = PointerType.Mouse,
                 });
+        }
 
         /// <inheritdoc/>
-        public async Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)
+        public Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY)
         {
-            var result = new TaskCompletionSource<DragData>();
-
-            void DragIntercepted(object sender, MessageEventArgs e)
+            return _multipleActionsQueue.Enqueue(async () =>
             {
-                if (e.MessageID == "Input.dragIntercepted")
+                var result = new TaskCompletionSource<DragData>();
+
+                void DragIntercepted(object sender, MessageEventArgs e)
                 {
-                    result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
-                    _client.MessageReceived -= DragIntercepted;
+                    if (e.MessageID == "Input.dragIntercepted")
+                    {
+                        result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
+                        _client.MessageReceived -= DragIntercepted;
+                    }
                 }
-            }
 
-            _client.MessageReceived += DragIntercepted;
-            await MoveAsync(startX, startY).ConfigureAwait(false);
-            await DownAsync().ConfigureAwait(false);
-            await MoveAsync(endX, endY).ConfigureAwait(false);
+                _client.MessageReceived += DragIntercepted;
+                await MoveAsync(startX, startY).ConfigureAwait(false);
+                await DownAsync().ConfigureAwait(false);
+                await MoveAsync(endX, endY).ConfigureAwait(false);
 
-            return await result.Task.ConfigureAwait(false);
+                return await result.Task.ConfigureAwait(false);
+            });
         }
 
         /// <inheritdoc/>
@@ -182,17 +239,177 @@ namespace PuppeteerSharp.Input
         /// <inheritdoc/>
         public async Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0)
         {
+            // DragAsync is already using _multipleActionsQueue
             var data = await DragAsync(startX, startY, endX, endY).ConfigureAwait(false);
-            await DragEnterAsync(endX, endY, data).ConfigureAwait(false);
-            await DragOverAsync(endX, endY, data).ConfigureAwait(false);
-
-            if (delay > 0)
+            await _multipleActionsQueue.Enqueue(async () =>
             {
-                await Task.Delay(delay).ConfigureAwait(false);
+                await DragEnterAsync(endX, endY, data).ConfigureAwait(false);
+                await DragOverAsync(endX, endY, data).ConfigureAwait(false);
+
+                if (delay > 0)
+                {
+                    await Task.Delay(delay).ConfigureAwait(false);
+                }
+
+                await DropAsync(endX, endY, data).ConfigureAwait(false);
+                await UpAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public Task ResetAsync()
+        {
+            return _multipleActionsQueue.Enqueue(() =>
+            {
+                var actions = new List<Task>();
+                var state = GetState();
+
+                foreach (var button in new[]
+                {
+                    MouseButton.Left,
+                    MouseButton.Middle,
+                    MouseButton.Right,
+                    MouseButton.Back,
+                    MouseButton.Forward,
+                })
+                {
+                    if (state.Buttons.HasFlag(button))
+                    {
+                        actions.Add(UpAsync(new()
+                        {
+                            Button = button,
+                        }));
+                    }
+                }
+
+                if (state.Position.X != 0 || state.Position.Y != 0)
+                {
+                    actions.Add(MoveAsync(0, 0));
+                }
+
+                return Task.WhenAll(actions);
+            });
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _actionsQueue.Dispose();
+                _multipleActionsQueue.Dispose();
+            }
+        }
+
+        private MouseTransaction CreateTrasaction()
+        {
+            _inFlightTransaction = new MouseTransaction.TransactionData();
+
+            return new MouseTransaction()
+            {
+                Update = updates =>
+                {
+                    if (updates.Position.HasValue)
+                    {
+                        _inFlightTransaction.Position = updates.Position.Value;
+                    }
+
+                    if (updates.Buttons.HasValue)
+                    {
+                        _inFlightTransaction.Buttons = updates.Buttons.Value;
+                    }
+                },
+                Commit = () =>
+                {
+                    _mouseState.Position = _inFlightTransaction.Position ?? _mouseState.Position;
+                    _mouseState.Buttons = _inFlightTransaction.Buttons ?? _mouseState.Buttons;
+                    _inFlightTransaction = null;
+                },
+                Rollback = () => _inFlightTransaction = null,
+            };
+        }
+
+        private Task WithTransactionAsync(Func<Action<MouseTransaction.TransactionData>, Task> action)
+        {
+            return _actionsQueue.Enqueue(async () =>
+            {
+                var transaction = CreateTrasaction();
+                try
+                {
+                    await action(transaction.Update).ConfigureAwait(false);
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new PuppeteerException("Failed to perform mouse action", ex);
+                }
+            });
+        }
+
+        private MouseButton GetButtonFromPressedButtons(MouseButton buttons)
+        {
+            if (buttons.HasFlag(MouseButton.Left))
+            {
+                return MouseButton.Left;
             }
 
-            await DropAsync(endX, endY, data).ConfigureAwait(false);
-            await UpAsync().ConfigureAwait(false);
+            if (buttons.HasFlag(MouseButton.Right))
+            {
+                return MouseButton.Right;
+            }
+
+            if (buttons.HasFlag(MouseButton.Middle))
+            {
+                return MouseButton.Middle;
+            }
+
+            if (buttons.HasFlag(MouseButton.Back))
+            {
+                return MouseButton.Back;
+            }
+
+            if (buttons.HasFlag(MouseButton.Forward))
+            {
+                return MouseButton.Forward;
+            }
+
+            return MouseButton.None;
+        }
+
+        private MouseState GetState()
+        {
+            var state = new MouseTransaction.TransactionData()
+            {
+                Position = _mouseState.Position,
+                Buttons = _mouseState.Buttons,
+            };
+
+            if (_inFlightTransaction != null)
+            {
+                if (_inFlightTransaction.Position.HasValue)
+                {
+                    state.Position = _inFlightTransaction.Position.Value;
+                }
+
+                if (_inFlightTransaction.Buttons.HasValue)
+                {
+                    state.Buttons = _inFlightTransaction.Buttons.Value;
+                }
+            }
+
+            return new MouseState
+            {
+                Position = state.Position.Value,
+                Buttons = state.Buttons.Value,
+            };
         }
     }
 }

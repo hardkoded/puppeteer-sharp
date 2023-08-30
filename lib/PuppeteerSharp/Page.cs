@@ -1197,7 +1197,10 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing)
-            => _ = DisposeAsync();
+        {
+            Mouse.Dispose();
+            _ = DisposeAsync();
+        }
 
         private async Task InitializeAsync()
         {
