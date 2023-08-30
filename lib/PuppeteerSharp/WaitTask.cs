@@ -79,7 +79,13 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _timeoutTimer.Dispose();
+            if (_timeoutTimer?.Status == TaskStatus.RanToCompletion ||
+                _timeoutTimer?.Status == TaskStatus.Faulted ||
+                _timeoutTimer?.Status == TaskStatus.Canceled)
+            {
+                _timeoutTimer.Dispose();
+            }
+
             _cts.Dispose();
 
             _isDisposed = true;
