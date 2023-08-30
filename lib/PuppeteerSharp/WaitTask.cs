@@ -79,6 +79,7 @@ namespace PuppeteerSharp
                 return;
             }
 
+            _timeoutTimer.Dispose();
             _cts.Dispose();
 
             _isDisposed = true;
