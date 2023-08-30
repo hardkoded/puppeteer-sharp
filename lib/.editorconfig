@@ -327,6 +327,9 @@ dotnet_diagnostic.IL3000.severity = none
 # Default severity for analyzer diagnostics with category 'Usage'
 dotnet_analyzer_diagnostic.category-Usage.severity = none
 
+# Default severity for analyzer diagnostics with category 'CodeQuality'
+dotnet_analyzer_diagnostic.category-CodeQuality.severity = error
+
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
 indent_brace_style = Allman

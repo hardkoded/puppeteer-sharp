@@ -143,7 +143,6 @@ namespace PuppeteerSharp
                         options.IgnoreHTTPSErrors,
                         options.DefaultViewport,
                         null,
-                        null,
                         options.TargetFilter,
                         null,
                         options.InitAction)

@@ -25,7 +25,6 @@ namespace PuppeteerSharp
         private readonly Func<TargetInfo, bool> _isPageTargetFunc;
         private readonly BrowserContext _defaultContext;
         private readonly CustomQueriesManager _customQueriesManager = new();
-        private readonly Func<Task> _closeCallback;
         private Task _closeTask;
 
         internal Browser(
@@ -35,7 +34,6 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
             LauncherBase launcher,
-            Func<Task> closeCallback = null,
             Func<TargetInfo, bool> targetFilter = null,
             Func<TargetInfo, bool> isPageTargetFunc = null)
         {
@@ -43,7 +41,6 @@ namespace PuppeteerSharp
             DefaultViewport = defaultViewport;
             Launcher = launcher;
             Connection = connection;
-            _closeCallback = closeCallback;
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             _isPageTargetFunc =
@@ -271,7 +268,6 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
             LauncherBase launcher,
-            Func<Task> closeCallback = null,
             Func<TargetInfo, bool> targetFilter = null,
             Func<TargetInfo, bool> isPageTargetCallback = null,
             Action<IBrowser> initAction = null)
@@ -283,7 +279,6 @@ namespace PuppeteerSharp
                 ignoreHTTPSErrors,
                 defaultViewPort,
                 launcher,
-                closeCallback,
                 targetFilter,
                 isPageTargetCallback);
 

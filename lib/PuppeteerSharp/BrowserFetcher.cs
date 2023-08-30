@@ -263,25 +263,6 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
-        private string GetFolderPath(string revision)
-            => Path.Combine(CacheDir, $"{Platform}-{revision}");
-
-        private void NativeExtractToDirectory(string zipPath, string folderPath)
-        {
-            var destinationDirectoryInfo = new DirectoryInfo(folderPath);
-
-            if (!destinationDirectoryInfo.Exists)
-            {
-                destinationDirectoryInfo.Create();
-            }
-
-            using var process = new Process();
-            process.StartInfo.FileName = "unzip";
-            process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
-            process.Start();
-            process.WaitForExit();
-        }
-
         private Task InstallDMGAsync(string dmgPath, string folderPath)
         {
             try
