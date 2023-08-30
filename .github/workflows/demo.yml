@@ -10,6 +10,7 @@ on:
     paths:
       - "**.cs"
       - "**.csproj"
+      - "**/demo.yml"
 
 jobs:
   build:
@@ -18,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2022]
+        os: [windows-2022, macos-latest]
     env:
       DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
 
@@ -27,21 +28,14 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
 
     - name: Install dependencies
+      working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-        cd demos/PuppeteerSharpPdfDemo
-        dir
         dotnet restore PuppeteerSharpPdfDemo-Local.csproj
-    - name: Build
-      run: |
-         cd demos/PuppeteerSharpPdfDemo
-         msbuild PuppeteerSharpPdfDemo-Local.csproj
     - name: Run Project
+      working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          cd demos/PuppeteerSharpPdfDemo
           dotnet run -p PuppeteerSharpPdfDemo-Local.csproj -f net6.0 auto-exit

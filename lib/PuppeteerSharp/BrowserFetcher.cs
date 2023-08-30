@@ -268,6 +268,13 @@ namespace PuppeteerSharp
 
         private void NativeExtractToDirectory(string zipPath, string folderPath)
         {
+            var destinationDirectoryInfo = new DirectoryInfo(folderPath);
+
+            if (!destinationDirectoryInfo.Exists)
+            {
+                destinationDirectoryInfo.Create();
+            }
+
             using var process = new Process();
             process.StartInfo.FileName = "unzip";
             process.StartInfo.Arguments = $"\"{zipPath}\" -d \"{folderPath}\"";
@@ -392,14 +399,7 @@ namespace PuppeteerSharp
         {
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
-                if (Platform == Platform.MacOS)
-                {
-                    NativeExtractToDirectory(archivePath, outputPath);
-                }
-                else
-                {
-                    ZipFile.ExtractToDirectory(archivePath, outputPath);
-                }
+                ZipFile.ExtractToDirectory(archivePath, outputPath);
             }
             else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
             {
