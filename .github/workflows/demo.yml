@@ -10,6 +10,7 @@ on:
     paths:
       - "**.cs"
       - "**.csproj"
+      - "**/demo.yml"
 
 jobs:
   build:
