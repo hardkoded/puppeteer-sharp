@@ -141,6 +141,7 @@ namespace PuppeteerSharp
         internal void Detach()
         {
             _detached = true;
+            _client.MessageReceived -= Client_MessageReceived;
             TaskManager.TerminateAll(new Exception("waitForFunction failed: frame got detached."));
         }
 
