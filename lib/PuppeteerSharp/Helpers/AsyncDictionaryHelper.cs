@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -9,15 +10,14 @@ namespace PuppeteerSharp.Helpers
     {
         private readonly string _timeoutMessage;
         private readonly MultiMap<TKey, TaskCompletionSource<TValue>> _pendingRequests = new();
-        private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
+        private readonly ConcurrentDictionary<TKey, TValue> _dictionary = new();
 
-        public AsyncDictionaryHelper(ConcurrentDictionary<TKey, TValue> dictionary, string timeoutMessage)
+        public AsyncDictionaryHelper(string timeoutMessage)
         {
-            _dictionary = dictionary;
             _timeoutMessage = timeoutMessage;
         }
 
-        internal ConcurrentDictionary<TKey, TValue> InnerDictionary => _dictionary;
+        internal ICollection<TValue> Values => _dictionary.Values;
 
         internal async Task<TValue> GetItemAsync(TKey key)
         {
@@ -58,5 +58,27 @@ namespace PuppeteerSharp.Helpers
                 tcs.TrySetResult(value);
             }
         }
+
+        internal bool TryRemove(TKey key, out TValue value)
+        {
+            var result = _dictionary.TryRemove(key, out value);
+            _ = _pendingRequests.TryRemove(key, out _);
+            return result;
+        }
+
+        internal void Clear()
+        {
+            _dictionary.Clear();
+            _pendingRequests.Clear();
+        }
+
+        internal TValue GetValueOrDefault(TKey key)
+            => _dictionary.GetValueOrDefault(key);
+
+        internal bool TryGetValue(TKey key, out TValue value)
+            => _dictionary.TryGetValue(key, out value);
+
+        internal bool ContainsKey(TKey key)
+            => _dictionary.ContainsKey(key);
     }
 }

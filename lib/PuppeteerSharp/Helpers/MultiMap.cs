@@ -20,7 +20,13 @@ namespace PuppeteerSharp.Helpers
         internal bool Delete(TKey key, TValue value)
             => _map.TryGetValue(key, out var set) && set.Remove(value);
 
+        internal bool TryRemove(TKey key, out ICollection<TValue> value)
+            => _map.TryRemove(key, out value);
+
         internal TValue FirstValue(TKey key)
             => _map.TryGetValue(key, out var set) ? set.FirstOrDefault() : default;
+
+        internal void Clear()
+            => _map.Clear();
     }
 }

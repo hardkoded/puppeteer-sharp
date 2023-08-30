@@ -23,8 +23,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _callbackQueue = new();
 
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
-        private readonly ConcurrentDictionary<string, CDPSession> _sessions = new();
-        private readonly AsyncDictionaryHelper<string, CDPSession> _asyncSessions;
+        private readonly AsyncDictionaryHelper<string, CDPSession> _sessions = new("Session {0} not found");
         private readonly List<string> _manuallyAttached = new();
         private int _lastId;
 
@@ -38,7 +37,6 @@ namespace PuppeteerSharp
             _logger = LoggerFactory.CreateLogger<Connection>();
 
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
-            _asyncSessions = new AsyncDictionaryHelper<string, CDPSession>(_sessions, "Session {0} not found");
 
             Transport.MessageReceived += Transport_MessageReceived;
             Transport.Closed += Transport_Closed;
@@ -221,7 +219,7 @@ namespace PuppeteerSharp
 
         internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
-        internal Task<CDPSession> GetSessionAsync(string sessionId) => _asyncSessions.GetItemAsync(sessionId);
+        internal Task<CDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
@@ -298,7 +296,7 @@ namespace PuppeteerSharp
             {
                 var sessionId = param.SessionId;
                 var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
-                _asyncSessions.AddItem(sessionId, session);
+                _sessions.AddItem(sessionId, session);
 
                 SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
 

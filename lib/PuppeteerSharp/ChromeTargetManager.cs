@@ -19,8 +19,7 @@ namespace PuppeteerSharp
         private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<TargetInfo, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
-        private readonly ConcurrentDictionary<string, Target> _availableTargetsByTargetIdDictionary = new();
-        private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId;
+        private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
@@ -37,7 +36,6 @@ namespace PuppeteerSharp
             Func<TargetInfo, bool> targetFilterFunc,
             int targetDiscoveryTimeout = 0)
         {
-            _attachedTargetsByTargetId = new AsyncDictionaryHelper<string, Target>(_availableTargetsByTargetIdDictionary, "Target {0} not found");
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
@@ -188,7 +186,7 @@ namespace PuppeteerSharp
 
             if (e.TargetInfo.Type == TargetType.Browser && e.TargetInfo.Attached)
             {
-                if (_availableTargetsByTargetIdDictionary.ContainsKey(e.TargetInfo.TargetId))
+                if (_attachedTargetsByTargetId.ContainsKey(e.TargetInfo.TargetId))
                 {
                     return;
                 }
@@ -206,7 +204,7 @@ namespace PuppeteerSharp
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(e.TargetId);
 
-                if (targetInfo?.Type == TargetType.ServiceWorker && _availableTargetsByTargetIdDictionary.TryRemove(e.TargetId, out var target))
+                if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
                 {
                     TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
                 }
@@ -222,7 +220,7 @@ namespace PuppeteerSharp
             _discoveredTargetsByTargetId[e.TargetInfo.TargetId] = e.TargetInfo;
 
             if (_ignoredTargets.Contains(e.TargetInfo.TargetId) ||
-                !_availableTargetsByTargetIdDictionary.TryGetValue(e.TargetInfo.TargetId, out var target) ||
+                !_attachedTargetsByTargetId.TryGetValue(e.TargetInfo.TargetId, out var target) ||
                 !e.TargetInfo.Attached)
             {
                 return;
@@ -266,7 +264,7 @@ namespace PuppeteerSharp
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await SilentDetach().ConfigureAwait(false);
-                if (_availableTargetsByTargetIdDictionary.ContainsKey(targetInfo.TargetId))
+                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {
                     return;
                 }
@@ -286,7 +284,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var existingTarget = _availableTargetsByTargetIdDictionary.TryGetValue(targetInfo.TargetId, out var target);
+            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             if (!existingTarget)
             {
                 target = _targetFactoryFunc(targetInfo, session);
@@ -384,7 +382,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            _availableTargetsByTargetIdDictionary.TryRemove(target.TargetId, out _);
+            _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
         }
     }

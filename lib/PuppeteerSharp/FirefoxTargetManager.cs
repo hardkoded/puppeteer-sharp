@@ -17,9 +17,7 @@ namespace PuppeteerSharp
         private readonly Func<TargetInfo, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
-
-        private readonly ConcurrentDictionary<string, Target> _availableTargetsByTargetIdDictionary = new();
-        private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId;
+        private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _availableTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
@@ -31,7 +29,6 @@ namespace PuppeteerSharp
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
             Func<TargetInfo, bool> targetFilterFunc)
         {
-            _availableTargetsByTargetId = new AsyncDictionaryHelper<string, Target>(_availableTargetsByTargetIdDictionary, "Target {0} not found");
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
@@ -148,7 +145,7 @@ namespace PuppeteerSharp
             _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
             FinishInitializationIfReady(e.TargetId);
 
-            if (_availableTargetsByTargetIdDictionary.TryGetValue(e.TargetId, out var target))
+            if (_availableTargetsByTargetId.TryGetValue(e.TargetId, out var target))
             {
                 TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
             }
@@ -159,7 +156,7 @@ namespace PuppeteerSharp
             var parent = sender as ICDPConnection;
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
-            var existingTarget = _availableTargetsByTargetIdDictionary.TryGetValue(targetInfo.TargetId, out var target);
+            var existingTarget = _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             session.MessageReceived += OnMessageReceived;
 
             _availableTargetsBySessionId.TryAdd(session.Id, target);

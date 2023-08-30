@@ -10,24 +10,18 @@ namespace PuppeteerSharp
 {
     internal class FrameTree
     {
-        private readonly ConcurrentDictionary<string, Frame> _frames = new();
+        private readonly AsyncDictionaryHelper<string, Frame> _frames = new("Frame {0} not found");
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
         private readonly ConcurrentDictionary<string, List<TaskCompletionSource<Frame>>> _waitRequests = new();
-        private readonly AsyncDictionaryHelper<string, Frame> _asyncFrames;
-
-        public FrameTree()
-        {
-            _asyncFrames = new AsyncDictionaryHelper<string, Frame>(_frames, "Frame {0} not found");
-        }
 
         public Frame MainFrame { get; set; }
 
         public Frame[] Frames => _frames.Values.ToArray();
 
-        internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
+        internal Task<Frame> GetFrameAsync(string frameId) => _frames.GetItemAsync(frameId);
 
-        internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
+        internal Task<Frame> TryGetFrameAsync(string frameId) => _frames.TryGetItemAsync(frameId);
 
         internal Frame GetById(string id)
         {
@@ -52,7 +46,7 @@ namespace PuppeteerSharp
 
         internal void AddFrame(Frame frame)
         {
-            _asyncFrames.AddItem(frame.Id, frame);
+            _frames.AddItem(frame.Id, frame);
             if (frame.ParentId != null)
             {
                 _parentIds.TryAdd(frame.Id, frame.ParentId);
@@ -78,7 +72,7 @@ namespace PuppeteerSharp
 
         internal void RemoveFrame(Frame frame)
         {
-            _frames.TryRemove(frame.Id, out var _);
+            _frames.TryRemove(frame.Id, out _);
             _parentIds.TryRemove(frame.Id, out var _);
 
             if (frame.ParentId != null)
