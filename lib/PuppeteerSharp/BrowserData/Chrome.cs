@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
@@ -76,7 +77,7 @@ namespace PuppeteerSharp.BrowserData
         {
             var data = await JsonUtils.GetAsync<ChromeGoodVersionsResult>("https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json").ConfigureAwait(false);
 
-            foreach (var channelKey in data.Channels.Keys)
+            foreach (var channelKey in data.Channels.Keys.ToArray())
             {
                 data.Channels[channelKey.ToUpperInvariant()] = data.Channels[channelKey]!;
             }
