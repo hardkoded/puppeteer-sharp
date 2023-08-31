@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Nunit;
@@ -93,5 +94,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
 
             Assert.AreEqual("Canary is not supported", ex.Message);
         }
+
+        [Test]
+        public async Task ShouldReturnLatestVersion()
+            => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
     }
 }
