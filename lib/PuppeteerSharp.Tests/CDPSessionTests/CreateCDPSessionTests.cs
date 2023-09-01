@@ -92,6 +92,26 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             StringAssert.Contains("Session closed.", exception.Message);
         }
 
+        [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldNotReportCreatedTArgetsForCustomCDPSessions()
+        {
+            var called = 0;
+            async void EventHandler(object sender, TargetChangedArgs e)
+            {
+                called++;
+                if (called > 1)
+                {
+                    throw new Exception("Too many targets created");
+                }
+
+                await e.Target.CreateCDPSessionAsync();
+            }
+            Page.BrowserContext.TargetCreated += EventHandler;
+            await Browser.NewPageAsync();
+            Page.BrowserContext.TargetCreated -= EventHandler;
+        }
+
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should throw nice errors")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowNiceErrors()
