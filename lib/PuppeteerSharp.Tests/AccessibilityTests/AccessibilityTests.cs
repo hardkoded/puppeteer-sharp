@@ -153,6 +153,57 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 })));
         }
 
+        [PuppeteerTest("accessibility.spec.ts", "Accessibility", "get snapshots while the tree is re-calculated")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task GetSnapshotsWhileTheTreeIsReCalculated()
+        {
+            await Page.SetContentAsync(@"
+            <!DOCTYPE html>
+            <html lang=""en"">
+            <head>
+                <meta charset=""UTF-8"">
+                <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"">
+                <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                <title>Accessible name + aria-expanded puppeteer bug</title>
+                <style>
+                [aria-expanded=""false""] + * {
+                    display: none;
+                }
+                </style>
+            </head>
+            <body>
+                <button hidden>Show</button>
+                <p>Some content</p>
+                <script>
+                const button = document.querySelector('button');
+                button.removeAttribute('hidden')
+                button.setAttribute('aria-expanded', 'false');
+                button.addEventListener('click', function() {
+                    button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') !== 'true')
+                    if (button.getAttribute('aria-expanded') == 'true') {
+                    button.textContent = 'Hide'
+                    } else {
+                    button.textContent = 'Show'
+                    }
+                })
+                </script>
+            </body>
+            </html>");
+
+            var button = await Page.QuerySelectorAsync("button");
+            Assert.AreEqual("Show", await GetAccessibleNameAsync(Page, button));
+            await button?.ClickAsync();
+            await Page.WaitForSelectorAsync("aria/Hide");
+        }
+
+        private async Task<string> GetAccessibleNameAsync(IPage page, IElementHandle element)
+        {
+            return (await page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                Root = element
+            })).Name;
+        }
+
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "roledescription")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task RoleDescription()
