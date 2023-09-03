@@ -328,7 +328,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.setCookie", "should set secure same-site cookies from a frame")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSetSecureSameSiteCookiesFromAFrame()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -336,7 +335,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
 
             await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             await using var page = await browser.NewPageAsync();
-            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/grid.html");
             await page.EvaluateFunctionAsync(@"src => {
                     let fulfill;
                     const promise = new Promise(x => fulfill = x);
