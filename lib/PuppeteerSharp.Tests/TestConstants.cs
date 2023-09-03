@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests
         public const int HttpsPort = Port + 1;
         public const string ServerUrl = "http://localhost:8081";
         public const string ServerIpUrl = "http://127.0.0.1:8081";
-        public const string HttpsPrefix = "https://localhost:8082";
+        public const string HttpsPrefix = "https://localhost:8081";
         public const string AboutBlank = "about:blank";
         public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8081";
         public static readonly string CrossProcessHttpsPrefix = "https://127.0.0.1:8081";
