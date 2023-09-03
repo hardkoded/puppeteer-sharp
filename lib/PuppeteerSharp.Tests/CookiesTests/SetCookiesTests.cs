@@ -349,36 +349,23 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 new CookieParam
                 {
                     Name = "127-cookie",
-                    Value = "worst",
-                    Url = TestConstants.CrossProcessHttpsPrefix,
+                    Value = "best",
+                    Url = TestConstants.CrossProcessHttpsPrefix + "/grid.html",
                     SameSite = SameSite.None,
                 });
-            Assert.AreEqual("localhost-cookie=best", await page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"));
-            var cookies = await page.GetCookiesAsync();
+            Assert.AreEqual("127-cookie=best", await page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"));
+            var cookies = await page.GetCookiesAsync(TestConstants.CrossProcessHttpsPrefix + "/grid.html");
             Assert.That(cookies, Has.Exactly(1).Items);
             var cookie = cookies.First();
-            Assert.AreEqual("localhost-cookie", cookie.Name);
-            Assert.AreEqual("best", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(cookie.Expires, -1);
-            Assert.AreEqual(20, cookie.Size);
-            Assert.AreEqual(SameSite.None, cookie.SameSite);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
-
-            cookies = await page.GetCookiesAsync(TestConstants.CrossProcessHttpPrefix);
-            Assert.That(cookies, Has.Exactly(1).Items);
-            cookie = cookies.First();
             Assert.AreEqual("127-cookie", cookie.Name);
-            Assert.AreEqual("worst", cookie.Value);
+            Assert.AreEqual("best", cookie.Value);
             Assert.AreEqual("127.0.0.1", cookie.Domain);
             Assert.AreEqual("/", cookie.Path);
             Assert.AreEqual(cookie.Expires, -1);
-            Assert.AreEqual(15, cookie.Size);
+            Assert.AreEqual(14, cookie.Size);
+            Assert.AreEqual(SameSite.None, cookie.SameSite);
             Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
+            Assert.True(cookie.Secure);
             Assert.True(cookie.Session);
         }
     }
