@@ -344,7 +344,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     iframe.onload = fulfill;
                     iframe.src = src;
                     return promise;
-                }", TestConstants.CrossProcessHttpsPrefix);
+                }", TestConstants.CrossProcessHttpsPrefix + "/grid.html");
             await page.SetCookieAsync(
                 new CookieParam
                 {
