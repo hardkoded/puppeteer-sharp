@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -62,5 +63,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
               BrowserData.Chromium.RelativeExecutablePath(Platform.Win64, "12372323"),
               Path.Combine("chrome-win", "chrome.exe"));
         }
+
+        [Test]
+        public async Task ShouldResolveBuildIdFromPlatform()
+            => Assert.True(int.TryParse(await BrowserData.Chromium.ResolveBuildIdAsync(Platform.MacOSArm64), out var _));
     }
 }
