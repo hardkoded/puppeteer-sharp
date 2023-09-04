@@ -14,10 +14,10 @@ namespace PuppeteerSharp.BrowserData
             return JsonConvert.DeserializeObject<T>(response);
         }
 
-        internal static Task<string> GetTextAsync(string url)
+        internal static async Task<string> GetTextAsync(string url)
         {
             using var client = new HttpClient();
-            return client.GetStringAsync(url);
+            return await client.GetStringAsync(url).ConfigureAwait(false);
         }
     }
 }
