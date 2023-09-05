@@ -131,7 +131,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
                 dir,
                 "bin",
                 build,
-                "net6.0");
+                "net7.0");
 #else
             return Path.Combine(
                 TestUtils.FindParentDirectory("lib"),

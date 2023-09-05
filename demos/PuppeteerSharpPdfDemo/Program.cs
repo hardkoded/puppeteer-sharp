@@ -16,6 +16,7 @@ namespace PuppeteerSharpPdfDemo
             };
 
             Console.WriteLine("Downloading chromium");
+
             using var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
 
