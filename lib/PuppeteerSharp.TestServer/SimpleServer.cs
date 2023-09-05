@@ -75,6 +75,7 @@ namespace PuppeteerSharp.TestServer
                     }))
                 .UseKestrel(options =>
                 {
+                    options.ConfigureEndpointDefaults(lo => lo.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1);
                     if (isHttps)
                     {
                         options.Listen(IPAddress.Loopback, port, listenOptions => listenOptions.UseHttps("testCert.cer"));

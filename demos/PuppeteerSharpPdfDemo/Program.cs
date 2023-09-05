@@ -16,8 +16,13 @@ namespace PuppeteerSharpPdfDemo
             };
 
             Console.WriteLine("Downloading chromium");
-            using var browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync();
+
+            using var browserFetcher = new BrowserFetcher(new BrowserFetcherOptions
+            {
+                Path = Path.GetTempPath(),
+                Browser = SupportedBrowser.Chromium
+            });
+            await browserFetcher.DownloadAsync(BrowserTag.Latest).ConfigureAwait(false);
 
             Console.WriteLine("Navigating google");
             using (var browser = await Puppeteer.LaunchAsync(options))
