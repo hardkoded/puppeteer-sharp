@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for non-existent target")]
+        [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for a non-existent target")]
         [PuppeteerTimeout]
         public async Task ShouldTimeoutWaitingForNonExistantTarget()
         {
