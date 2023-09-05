@@ -38,4 +38,4 @@ jobs:
     - name: Run Project
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run -p PuppeteerSharpPdfDemo-Local.csproj auto-exit
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit
