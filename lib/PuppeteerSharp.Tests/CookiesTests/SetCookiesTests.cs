@@ -363,7 +363,12 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.AreEqual("/", cookie.Path);
             Assert.AreEqual(cookie.Expires, -1);
             Assert.AreEqual(14, cookie.Size);
-            Assert.AreEqual(SameSite.None, cookie.SameSite);
+
+            // Puppeteer uses expectCookieEquals which excludes SameSite attribute
+            if(TestConstants.IsChrome)
+            {
+                Assert.AreEqual(SameSite.None, cookie.SameSite);
+            }
             Assert.False(cookie.HttpOnly);
             Assert.True(cookie.Secure);
             Assert.True(cookie.Session);
