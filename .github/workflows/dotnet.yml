@@ -15,7 +15,7 @@ on:
     - '**.runsettings'
 
 env:
-  DOTNET_VERSION: '6.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
 
 jobs:
   build:
