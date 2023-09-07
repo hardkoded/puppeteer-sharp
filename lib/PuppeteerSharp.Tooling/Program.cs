@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tooling
     {
         internal static void Main(string[] args)
         {
-            ParserResult<object> result = Parser.Default.ParseArguments<ScaffoldTestOptions, IdentifyMissingTestsOptions>(args);
+            var result = Parser.Default.ParseArguments<ScaffoldTestOptions, IdentifyMissingTestsOptions>(args);
             result.WithParsed<ScaffoldTestOptions>(ScaffoldTest.Run);
             result.WithParsed<IdentifyMissingTestsOptions>(IdentifyMissingTests.Run);
         }
