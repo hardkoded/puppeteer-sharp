@@ -54,12 +54,6 @@ namespace PuppeteerSharp.Tooling
             // let's map the test cases from the spec files
             MapTestsCases(directoryInfo, options, string.Empty);
 
-            // now, let's load the DLL and use some reflection-fu
-            var assembly = Assembly.LoadFrom(options.TestsAssemblyPath);
-
-            var attributes = assembly.DefinedTypes.SelectMany(
-                type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
-
             var potentialMatches = 0;
             var fullMatches = 0;
             var noMatches = 0;
@@ -67,27 +61,34 @@ namespace PuppeteerSharp.Tooling
 
             List<PuppeteerTestAttribute> missingTests = new();
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
-            foreach (var x in _testPairs)
-            {
-                totalTests++;
 
-                // a test can either be a full match, a partial (i.e. just the test name) or no match
-                var potentialMatch = attributes.Where(atx => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase))
-                                               .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
-                if (!potentialMatch.Any())
+            foreach (var assemblyName in Assembly.GetExecutingAssembly().GetReferencedAssemblies())
+            {
+                var attributes = Assembly.Load(assemblyName).DefinedTypes.SelectMany(
+                    type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
+
+                foreach (var x in _testPairs)
                 {
-                    noMatches++;
-                    missingTests.Add(x);
-                }
-                else if (potentialMatch.Any(atx => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    fullMatches++;
-                    continue;
-                }
-                else
-                {
-                    invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(x, potentialMatch.ToList()));
-                    potentialMatches++;
+                    totalTests++;
+
+                    // a test can either be a full match, a partial (i.e. just the test name) or no match
+                    var potentialMatch = attributes.Where(atx => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase))
+                                                .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
+                    if (!potentialMatch.Any())
+                    {
+                        noMatches++;
+                        missingTests.Add(x);
+                    }
+                    else if (potentialMatch.Any(atx => string.Equals(x.TrimmedName, atx.TrimmedName, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        fullMatches++;
+                        continue;
+                    }
+                    else
+                    {
+                        invalidMaps.Add(new KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>(x, potentialMatch.ToList()));
+                        potentialMatches++;
+                    }
                 }
             }
 
