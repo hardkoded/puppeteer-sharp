@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should handle many elements")]
+        [PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "$$eval should handle many elements")]
         [PuppeteerTimeout]
         public async Task ShouldHandleManyElements()
         {
