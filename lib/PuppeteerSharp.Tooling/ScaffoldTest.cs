@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tooling
         public static void FindTestsInFile(string path, Action<string, string> callback)
         {
             var keywords1 = new string[] { "it", "itChromeOnly", "itFailsFirefox", "xit" };
-            var keywords2 = new string[] { "describe", "describeChromeOnly", "describeFailsFirefox" };
+            var keywords2 = new string[] { "describe", "describeChromeOnly", "describeFailsFirefox", "describeWithDebugLogs" };
             var keywords = keywords1.Concat(keywords2);
             var rx = new Regex(@"^( *).*\b(" + string.Join("|", keywords) + @")\b.*[(](?:[']([^']+)[']|[""]([^""]+)[""])", RegexOptions.Multiline);
 

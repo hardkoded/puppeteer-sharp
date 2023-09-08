@@ -223,6 +223,18 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [Ignore("See why this is so brittle")]
         public async Task ShouldReportOopifFrames()
         {
+            var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("oopif.html"));
+            await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/dunamic-oopif.html");
+            var frame = await frameTask.WithTimeout();
+            Assert.AreEqual(2, Oopifs.Count());
+            Assert.AreEqual(2, Page.Frames.Count(frame => frame.IsOopFrame));
+            Assert.AreEqual(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
+        }
+
+        [PuppeteerTest("oopif.spec.ts", "OOPIF", "should wait for inner OOPIFs")]
+        [Ignore("See why this is so brittle")]
+        public async Task ShouldWaitForInnerOopifs()
+        {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
             var frame = await frameTask.WithTimeout();
@@ -347,6 +359,15 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
             await Page.SetViewportAsync(new ViewPortOptions() { Width = 1000, Height = 1000 });
             Assert.That(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading), Has.Exactly(1).Items);
+        }
+
+        [PuppeteerTest("oopif.spec.ts", "waitForFrame", "should resolve immediately if the frame already exists")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/empty.html"));
         }
 
         private IEnumerable<ITarget> Oopifs => Context.Targets().Where(target => ((Target)target).TargetInfo.Type == TargetType.IFrame);
