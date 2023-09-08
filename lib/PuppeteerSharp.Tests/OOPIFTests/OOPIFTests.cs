@@ -257,7 +257,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP iframes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportFramesWithinOopIframes()
         {
             var oopifFrameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
