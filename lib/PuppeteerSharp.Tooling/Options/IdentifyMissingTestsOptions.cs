@@ -32,9 +32,6 @@ namespace PuppeteerSharp.Tooling
     [Verb("missing-tests", HelpText = "Checks if there are missing tests in the C# variant, compared to the specs.")]
     internal class IdentifyMissingTestsOptions
     {
-        [Option(Required = true, HelpText = "Location of the PuppeteerShar.Tests assembly.")]
-        public string TestsAssemblyPath { get; set; }
-
         [Option(Required = true, HelpText = "Location of spec files.")]
         public string SpecFileLocations { get; set; }
 

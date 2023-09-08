@@ -20,5 +20,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp.Tests\PuppeteerSharp.Tests.csproj" />
 	</ItemGroup>
 </Project>

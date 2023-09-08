@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests;
 
 namespace PuppeteerSharp.Tooling
 {
@@ -54,12 +55,6 @@ namespace PuppeteerSharp.Tooling
             // let's map the test cases from the spec files
             MapTestsCases(directoryInfo, options, string.Empty);
 
-            // now, let's load the DLL and use some reflection-fu
-            var assembly = Assembly.LoadFrom(options.TestsAssemblyPath);
-
-            var attributes = assembly.DefinedTypes.SelectMany(
-                type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
-
             var potentialMatches = 0;
             var fullMatches = 0;
             var noMatches = 0;
@@ -67,13 +62,17 @@ namespace PuppeteerSharp.Tooling
 
             List<PuppeteerTestAttribute> missingTests = new();
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
+
+            var attributes = new ScreenshotHelper().GetType().Assembly .DefinedTypes.SelectMany(
+                type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
+
             foreach (var x in _testPairs)
             {
                 totalTests++;
 
                 // a test can either be a full match, a partial (i.e. just the test name) or no match
                 var potentialMatch = attributes.Where(atx => string.Equals(x.TestName, atx.TestName, StringComparison.InvariantCultureIgnoreCase))
-                                               .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
+                                            .Where(atx => string.Equals(x.Describe, atx.Describe, StringComparison.InvariantCultureIgnoreCase));
                 if (!potentialMatch.Any())
                 {
                     noMatches++;
