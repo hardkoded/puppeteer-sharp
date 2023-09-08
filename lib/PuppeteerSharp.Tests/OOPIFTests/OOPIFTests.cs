@@ -267,7 +267,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               oopIframe,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
-            ).WithTimeout();
+            ).WithTimeout(2_000);
             var frame1 = oopIframe.ChildFrames.First();
             StringAssert.Contains("empty.html", frame1.Url);
             await FrameUtils.NavigateFrameAsync(
