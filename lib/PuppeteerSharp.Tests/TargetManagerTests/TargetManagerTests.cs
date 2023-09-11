@@ -24,7 +24,8 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
         }
 
         [PuppeteerTest("TargetManager.spec.ts", "TargetManager", "should handle targets")]
-        [PuppeteerTimeout]
+        [Skip(SkipAttribute.Targets.Firefox)]
+
         public async Task ShouldHandleTargets()
         {
             var targetManager = (Browser as Browser).TargetManager;
