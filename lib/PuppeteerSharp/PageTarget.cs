@@ -19,7 +19,7 @@ namespace PuppeteerSharp
             PageTask = null;
         }
 
-        internal Task<IPage> PageTask { get; set; }
+        internal Task<Page> PageTask { get; set; }
 
         /// <inheritdoc/>
         public override async Task<IPage> PageAsync()
@@ -28,12 +28,12 @@ namespace PuppeteerSharp
             {
                 var session = Session ?? await SessionFactory(true).ConfigureAwait(false);
 
-                return await Page.CreateAsync(
+                PageTask = Page.CreateAsync(
                     session,
                     this,
                     _ignoreHTTPSErrors,
                     _defaultViewport,
-                    _screenshotTaskQueue).ConfigureAwait(false);
+                    _screenshotTaskQueue);
             }
 
             return await PageTask.ConfigureAwait(false);
