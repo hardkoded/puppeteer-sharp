@@ -23,6 +23,7 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
 
             // .NET has a race here where we get the target created of the default page.
             // We will wait for the new page before moving on.
+            await Task.Delay(500);
             await browser.PagesAsync();
             var events = new List<string>();
             browser.TargetCreated += (_, _) => events.Add("CREATED");
