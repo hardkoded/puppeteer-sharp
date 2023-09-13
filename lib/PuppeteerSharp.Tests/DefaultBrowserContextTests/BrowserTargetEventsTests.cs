@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
 {
-    public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
+    public class BrowserTargetEventsTests : PuppeteerBaseTest
     {
         public BrowserTargetEventsTests(): base()
         {
@@ -19,11 +19,12 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
+            using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var events = new List<string>();
-            Browser.TargetCreated += (_, _) => events.Add("CREATED");
-            Browser.TargetChanged += (_, _) => events.Add("CHANGED");
-            Browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
-            var page = await Browser.NewPageAsync();
+            browser.TargetCreated += (_, _) => events.Add("CREATED");
+            browser.TargetChanged += (_, _) => events.Add("CHANGED");
+            browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
+            var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
             Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
