@@ -21,13 +21,11 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
         {
             using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
 
-            var page = await browser.NewPageAsync();
-            await browser.PagesAsync();
             var events = new List<string>();
             browser.TargetCreated += (_, _) => events.Add("CREATED");
             browser.TargetChanged += (_, _) => events.Add("CHANGED");
             browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
-            page = await browser.NewPageAsync();
+            var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
 

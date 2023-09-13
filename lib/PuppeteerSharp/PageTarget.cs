@@ -68,13 +68,19 @@ namespace PuppeteerSharp
                     openerPage.OnPopup(popupPage);
                 },
                 TaskScheduler.Default);
+            CheckIfInitialized();
         }
 
         protected override void CheckIfInitialized()
         {
-            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
+            if (IsInitialized)
             {
-                IsInitialized = true;
+                return;
+            }
+
+            IsInitialized = !string.IsNullOrEmpty(TargetInfo.Url);
+            if (IsInitialized)
+            {
                 InitializedTaskWrapper.TrySetResult(true);
             }
         }

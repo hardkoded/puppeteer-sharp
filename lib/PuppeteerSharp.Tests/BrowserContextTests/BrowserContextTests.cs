@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should timeout waiting for a non-existent target")]
         [PuppeteerTimeout]
-        public async Task ShouldTimeoutWaitingForNonExistantTarget()
+        public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()

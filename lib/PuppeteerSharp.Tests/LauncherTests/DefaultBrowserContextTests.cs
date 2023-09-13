@@ -21,14 +21,11 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var events = new List<string>();
-            // This new page is not in upstream but we use to to wait for the browser to be ready
-            // If we don't do this the first event we get is the target of the about:blank page
-            var page = await browser.NewPageAsync();
 
             Browser.TargetCreated += (_, _) => events.Add("CREATED");
             Browser.TargetChanged += (_, _) => events.Add("CHANGED");
             Browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
-            page = await Browser.NewPageAsync();
+            var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
             Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
