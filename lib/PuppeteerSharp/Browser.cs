@@ -22,7 +22,6 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
         private readonly Func<TargetInfo, bool> _targetFilterCallback;
-        private readonly Func<TargetInfo, bool> _isPageTargetFunc;
         private readonly BrowserContext _defaultContext;
         private readonly CustomQueriesManager _customQueriesManager = new();
         private Task _closeTask;
@@ -43,7 +42,7 @@ namespace PuppeteerSharp
             Connection = connection;
             _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
-            _isPageTargetFunc =
+            IsPageTargetFunc =
                 isPageTargetFunc ??
                 new Func<TargetInfo, bool>((TargetInfo target) =>
                 {
@@ -139,6 +138,8 @@ namespace PuppeteerSharp
         internal CustomQueriesManager CustomQueriesManager => _customQueriesManager;
 
         internal ITargetManager TargetManager { get; }
+
+        internal Func<TargetInfo, bool> IsPageTargetFunc { get; set; }
 
         /// <inheritdoc/>
         public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
@@ -478,16 +479,25 @@ namespace PuppeteerSharp
                 context = _defaultContext;
             }
 
+            if (IsPageTargetFunc(targetInfo))
+            {
+                return new PageTarget(
+                    targetInfo,
+                    session,
+                    context,
+                    TargetManager,
+                    (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
+                    IgnoreHTTPSErrors,
+                    DefaultViewport,
+                    ScreenshotTaskQueue);
+            }
+
             return new Target(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
-                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
-                IgnoreHTTPSErrors,
-                DefaultViewport,
-                ScreenshotTaskQueue,
-                _isPageTargetFunc);
+                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated));
         }
     }
 }

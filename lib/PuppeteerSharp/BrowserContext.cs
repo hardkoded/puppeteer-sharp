@@ -49,7 +49,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync()
         => (await Task.WhenAll(
-            Targets().Where(t => t.Type == TargetType.Page).Select(t => t.PageAsync())).ConfigureAwait(false))
+            Targets()
+                .Where(t =>
+                    t.Type == TargetType.Page ||
+                    (t.Type == TargetType.Other && Browser.IsPageTargetFunc((t as Target).TargetInfo)))
+                .Select(t => t.PageAsync())).ConfigureAwait(false))
             .Where(p => p != null).ToArray();
 
         /// <inheritdoc/>

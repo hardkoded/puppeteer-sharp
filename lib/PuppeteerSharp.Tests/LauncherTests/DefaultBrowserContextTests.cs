@@ -19,7 +19,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
+            using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var events = new List<string>();
+
             Browser.TargetCreated += (_, _) => events.Add("CREATED");
             Browser.TargetChanged += (_, _) => events.Add("CHANGED");
             Browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
