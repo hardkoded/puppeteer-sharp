@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
-using NUnit.Framework.Internal.Execution;
 
 namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
 {
@@ -21,19 +20,19 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
         public async Task ShouldWork()
         {
             using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+
+            // .NET has a race here where we get the target created of the default page.
+            // We will wait for the new page before moving on.
+            await browser.PagesAsync();
             var events = new List<string>();
-            browser.TargetCreated += (_, t) => events.Add($"CREATED {t.Target.GetHashCode()}");
-            browser.TargetChanged += (_, t) => events.Add($"CHANGED {t.Target.GetHashCode()}");
-            browser.TargetDestroyed += (_, t) => events.Add($"DESTROYED {t.Target.GetHashCode()}");
+            browser.TargetCreated += (_, _) => events.Add("CREATED");
+            browser.TargetChanged += (_, _) => events.Add("CHANGED");
+            browser.TargetDestroyed += (_, _) => events.Add("DESTROYED");
             var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
 
-            // TODO: Review why these might come in different order
-            Assert.AreEqual(3, events.Count, $"Events: {string.Join(", ", events)}");
-            Assert.That(events, Does.Contain("CREATED"));
-            Assert.That(events, Does.Contain("CHANGED"));
-            Assert.That(events, Does.Contain("DESTROYED"));
+            Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
         }
     }
 }
