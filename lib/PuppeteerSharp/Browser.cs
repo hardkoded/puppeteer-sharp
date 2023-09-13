@@ -478,16 +478,25 @@ namespace PuppeteerSharp
                 context = _defaultContext;
             }
 
+            if (_isPageTargetFunc(targetInfo))
+            {
+                return new PageTarget(
+                    targetInfo,
+                    session,
+                    context,
+                    TargetManager,
+                    (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
+                    IgnoreHTTPSErrors,
+                    DefaultViewport,
+                    ScreenshotTaskQueue);
+            }
+
             return new Target(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
-                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
-                IgnoreHTTPSErrors,
-                DefaultViewport,
-                ScreenshotTaskQueue,
-                _isPageTargetFunc);
+                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated));
         }
     }
 }

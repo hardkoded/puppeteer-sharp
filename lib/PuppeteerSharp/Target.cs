@@ -12,11 +12,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Target {Type} - {Url}")]
     public class Target : ITarget
     {
-        private readonly Func<bool, Task<CDPSession>> _sessionFactory;
-        private readonly bool _ignoreHTTPSErrors;
-        private readonly ViewPortOptions _defaultViewport;
-        private readonly TaskQueue _screenshotTaskQueue;
-        private readonly Func<TargetInfo, bool> _isPageTargetFunc;
         private Task<Worker> _workerTask;
 
         internal Target(
@@ -24,57 +19,15 @@ namespace PuppeteerSharp
             CDPSession session,
             BrowserContext context,
             ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewport,
-            TaskQueue screenshotTaskQueue,
-            Func<TargetInfo, bool> isPageTargetFunc)
+            Func<bool, Task<CDPSession>> sessionFactory)
         {
             Session = session;
             TargetInfo = targetInfo;
-            _isPageTargetFunc = isPageTargetFunc;
-            _sessionFactory = sessionFactory;
-            _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            _defaultViewport = defaultViewport;
-            _screenshotTaskQueue = screenshotTaskQueue;
+            SessionFactory = sessionFactory;
             BrowserContext = context;
-            PageTask = null;
             TargetManager = targetManager;
 
-            _ = InitializedTaskWrapper.Task.ContinueWith(
-                async initializedTask =>
-                {
-                    var success = initializedTask.Result;
-                    if (!success)
-                    {
-                        return;
-                    }
-
-                    var opener = Opener as Target;
-
-                    var openerPageTask = opener?.PageTask;
-                    if (openerPageTask == null || Type != TargetType.Page)
-                    {
-                        return;
-                    }
-
-                    var openerPage = (Page)await openerPageTask.ConfigureAwait(false);
-                    if (!openerPage.HasPopupEventListeners)
-                    {
-                        return;
-                    }
-
-                    var popupPage = await PageAsync().ConfigureAwait(false);
-                    openerPage.OnPopup(popupPage);
-                },
-                TaskScheduler.Default);
-
-            IsInitialized = !_isPageTargetFunc(TargetInfo) || !string.IsNullOrEmpty(TargetInfo.Url);
-
-            if (IsInitialized)
-            {
-                InitializedTaskWrapper.TrySetResult(true);
-            }
+            Initialize();
         }
 
         /// <inheritdoc/>
@@ -106,7 +59,7 @@ namespace PuppeteerSharp
 
         internal TaskCompletionSource<bool> CloseTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal Task<IPage> PageTask { get; set; }
+        internal Func<bool, Task<CDPSession>> SessionFactory { get; private set; }
 
         internal ITargetManager TargetManager { get; }
 
@@ -116,24 +69,10 @@ namespace PuppeteerSharp
 
         internal TargetInfo TargetInfo { get; set; }
 
-        /// <summary>
-        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>.
-        /// </summary>
-        /// <returns>a task that returns a <see cref="IPage"/>.</returns>
-        public Task<IPage> PageAsync()
-        {
-            if (_isPageTargetFunc(TargetInfo) && PageTask == null)
-            {
-                PageTask = CreatePageAsync();
-            }
+        /// <inheritdoc/>
+        public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
 
-            return PageTask ?? Task.FromResult<IPage>(null);
-        }
-
-        /// <summary>
-        /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
-        /// </summary>
-        /// <returns>A task that returns a <see cref="Worker"/>.</returns>
+        /// <inheritdoc/>
         public Task<Worker> WorkerAsync()
         {
             if (TargetInfo.Type != TargetType.ServiceWorker && TargetInfo.Type != TargetType.SharedWorker)
@@ -149,43 +88,41 @@ namespace PuppeteerSharp
             return _workerTask;
         }
 
-        /// <summary>
-        /// Creates a Chrome Devtools Protocol session attached to the target.
-        /// </summary>
-        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
-        public async Task<ICDPSession> CreateCDPSessionAsync() => await _sessionFactory(false).ConfigureAwait(false);
+        /// <inheritdoc/>
+        public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
         {
             TargetInfo = targetInfo;
+            CheckIfInitialized();
+        }
 
-            if (!IsInitialized && (TargetInfo.Type != TargetType.Page || !string.IsNullOrEmpty(TargetInfo.Url)))
-            {
-                IsInitialized = true;
-                InitializedTaskWrapper.TrySetResult(true);
-            }
+        /// <summary>
+        /// Initializes the target.
+        /// </summary>
+        protected virtual void Initialize()
+        {
+            IsInitialized = true;
+            InitializedTaskWrapper.TrySetResult(true);
+        }
+
+        /// <summary>
+        /// Check is the target is not initialized.
+        /// </summary>
+        protected virtual void CheckIfInitialized()
+        {
+            IsInitialized = true;
+            InitializedTaskWrapper.TrySetResult(true);
         }
 
         private async Task<Worker> WorkerInternalAsync()
         {
-            var client = Session ?? await _sessionFactory(false).ConfigureAwait(false);
+            var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
             return new Worker(
                 client,
                 TargetInfo.Url,
                 (_, _, _) => Task.CompletedTask,
                 _ => { });
-        }
-
-        private async Task<IPage> CreatePageAsync()
-        {
-            var session = Session ?? await _sessionFactory(true).ConfigureAwait(false);
-
-            return await Page.CreateAsync(
-                session,
-                this,
-                _ignoreHTTPSErrors,
-                _defaultViewport,
-                _screenshotTaskQueue).ConfigureAwait(false);
         }
     }
 }

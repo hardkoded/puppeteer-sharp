@@ -51,7 +51,7 @@ namespace PuppeteerSharp
         Task<ICDPSession> CreateCDPSessionAsync();
 
         /// <summary>
-        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c> or <c>"background_page"</c> returns <c>null</c>.
+        /// Returns the <see cref="IPage"/> associated with the target. If the target is not <c>"page"</c>, <c>"webview"</c> or <c>"background_page"</c> returns <c>null</c>.
         /// </summary>
         /// <returns>a task that returns a <see cref="IPage"/>.</returns>
         Task<IPage> PageAsync();
