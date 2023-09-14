@@ -226,7 +226,18 @@ namespace PuppeteerSharp
                 return;
             }
 
-            TargetChanged?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = e.TargetInfo });
+            var previousURL = target.Url;
+            var wasInitialized = target.IsInitialized;
+            target.TargetInfoChanged(e.TargetInfo);
+
+            if (wasInitialized && previousURL != target.Url)
+            {
+                TargetChanged?.Invoke(this, new TargetChangedArgs
+                {
+                    Target = target,
+                    TargetInfo = e.TargetInfo,
+                });
+            }
         }
 
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
@@ -339,7 +350,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to call setautoAttach and runIfWaitingForDebugger", ex);
+                _logger.LogError("Failed to call setAutoAttach and runIfWaitingForDebugger", ex);
             }
         }
 

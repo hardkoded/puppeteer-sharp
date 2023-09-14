@@ -341,20 +341,14 @@ namespace PuppeteerSharp
         private void TargetManager_TargetDiscovered(object sender, TargetChangedArgs e)
             => TargetDiscovered?.Invoke(this, e);
 
-        private void TargetManager_TargetChanged(object sender, TargetChangedArgs e)
+        private void OnTargetChanged(object sender, TargetChangedArgs e)
         {
-            var previousURL = e.Target.Url;
-            var wasInitialized = e.Target.IsInitialized;
-            e.Target.TargetInfoChanged(e.TargetInfo);
-            if (wasInitialized && previousURL != e.Target.Url)
-            {
-                var args = new TargetChangedArgs { Target = e.Target };
-                TargetChanged?.Invoke(this, args);
-                e.Target.BrowserContext.OnTargetChanged(this, args);
-            }
+            var args = new TargetChangedArgs { Target = e.Target };
+            TargetChanged?.Invoke(this, args);
+            e.Target.BrowserContext.OnTargetChanged(this, args);
         }
 
-        private async void TargetManager_TargetGone(object sender, TargetChangedArgs e)
+        private async void OnDetachedFromTargetAsync(object sender, TargetChangedArgs e)
         {
             try
             {
@@ -376,7 +370,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async void TargetManager_TargetAvailable(object sender, TargetChangedArgs e)
+        private async void OnAttachedToTargetAsync(object sender, TargetChangedArgs e)
         {
             try
             {
@@ -454,9 +448,9 @@ namespace PuppeteerSharp
         private Task AttachAsync()
         {
             Connection.Disconnected += Connection_Disconnected;
-            TargetManager.TargetAvailable += TargetManager_TargetAvailable;
-            TargetManager.TargetGone += TargetManager_TargetGone;
-            TargetManager.TargetChanged += TargetManager_TargetChanged;
+            TargetManager.TargetAvailable += OnAttachedToTargetAsync;
+            TargetManager.TargetGone += OnDetachedFromTargetAsync;
+            TargetManager.TargetChanged += OnTargetChanged;
             TargetManager.TargetDiscovered += TargetManager_TargetDiscovered;
             return TargetManager.InitializeAsync();
         }
@@ -464,9 +458,9 @@ namespace PuppeteerSharp
         private void Detach()
         {
             Connection.Disconnected -= Connection_Disconnected;
-            TargetManager.TargetAvailable -= TargetManager_TargetAvailable;
-            TargetManager.TargetGone -= TargetManager_TargetGone;
-            TargetManager.TargetChanged -= TargetManager_TargetChanged;
+            TargetManager.TargetAvailable -= OnAttachedToTargetAsync;
+            TargetManager.TargetGone -= OnDetachedFromTargetAsync;
+            TargetManager.TargetChanged -= OnTargetChanged;
             TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
         }
 
