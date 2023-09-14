@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         {
             if (PageTask == null)
             {
-                var session = Session ?? await SessionFactory(true).ConfigureAwait(false);
+                var session = Session ?? await SessionFactory(false).ConfigureAwait(false);
 
                 PageTask = Page.CreateAsync(
                     session,

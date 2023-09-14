@@ -479,6 +479,8 @@ namespace PuppeteerSharp
                 context = _defaultContext;
             }
 
+            Func<bool, Task<CDPSession>> createSession = (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
+
             if (IsPageTargetFunc(targetInfo))
             {
                 return new PageTarget(
@@ -486,18 +488,28 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated),
+                    createSession,
                     IgnoreHTTPSErrors,
                     DefaultViewport,
                     ScreenshotTaskQueue);
             }
 
-            return new Target(
+            if (targetInfo.Type == TargetType.ServiceWorker || targetInfo.Type == TargetType.SharedWorker)
+            {
+                return new WorkerTarget(
+                    targetInfo,
+                    session,
+                    context,
+                    TargetManager,
+                    createSession);
+            }
+
+            return new OtherTarget(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
-                (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated));
+                createSession);
         }
     }
 }

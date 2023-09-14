@@ -12,8 +12,6 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Target {Type} - {Url}")]
     public class Target : ITarget
     {
-        private Task<Worker> _workerTask;
-
         internal Target(
             TargetInfo targetInfo,
             CDPSession session,
@@ -73,20 +71,7 @@ namespace PuppeteerSharp
         public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
 
         /// <inheritdoc/>
-        public Task<Worker> WorkerAsync()
-        {
-            if (TargetInfo.Type != TargetType.ServiceWorker && TargetInfo.Type != TargetType.SharedWorker)
-            {
-                return Task.FromResult<Worker>(null);
-            }
-
-            if (_workerTask == null)
-            {
-                _workerTask = WorkerInternalAsync();
-            }
-
-            return _workerTask;
-        }
+        public virtual Task<Worker> WorkerAsync() => Task.FromResult<Worker>(null);
 
         /// <inheritdoc/>
         public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);
@@ -113,16 +98,6 @@ namespace PuppeteerSharp
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(true);
-        }
-
-        private async Task<Worker> WorkerInternalAsync()
-        {
-            var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
-            return new Worker(
-                client,
-                TargetInfo.Url,
-                (_, _, _) => Task.CompletedTask,
-                _ => { });
         }
     }
 }
