@@ -8,7 +8,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 ```cs
 using var browserFetcher = new BrowserFetcher();
-await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+await browserFetcher.DownloadAsync();
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true

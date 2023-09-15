@@ -11,7 +11,7 @@ namespace Example.Searching
             var options = new LaunchOptions { Headless = true };
             Console.WriteLine("Downloading chromium");
 
-            await new BrowserFetcher().DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+            await new BrowserFetcher().DownloadAsync();
             Console.WriteLine("Navigating to developers.google.com");
 
             using (var browser = await Puppeteer.LaunchAsync(options))
