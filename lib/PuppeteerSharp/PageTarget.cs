@@ -39,7 +39,7 @@ namespace PuppeteerSharp
             return await PageTask.ConfigureAwait(false);
         }
 
-        protected override void Initialize()
+        internal override void Initialize()
         {
             _ = InitializedTaskWrapper.Task.ContinueWith(
                 async initializedTask =>

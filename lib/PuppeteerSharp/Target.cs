@@ -85,7 +85,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes the target.
         /// </summary>
-        protected virtual void Initialize()
+        internal virtual void Initialize()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);

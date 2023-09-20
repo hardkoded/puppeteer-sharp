@@ -199,6 +199,7 @@ namespace PuppeteerSharp
                 }
 
                 var target = _targetFactoryFunc(e.TargetInfo, null);
+                target.Initialize();
                 _attachedTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             }
         }
@@ -288,6 +289,7 @@ namespace PuppeteerSharp
                 }
 
                 var workerTarget = _targetFactoryFunc(targetInfo, null);
+                workerTarget.Initialize();
                 _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, workerTarget);
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = workerTarget });
                 return;
@@ -316,6 +318,8 @@ namespace PuppeteerSharp
             }
             else
             {
+                target.Initialize();
+
                 _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, target);
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
