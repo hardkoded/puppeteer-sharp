@@ -94,7 +94,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Check is the target is not initialized.
         /// </summary>
-        protected virtual void CheckIfInitialized()
+        protected internal virtual void CheckIfInitialized()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);

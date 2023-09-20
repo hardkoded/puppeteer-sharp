@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     public class HeadfulTests : PuppeteerBaseTest
     {
         private readonly LaunchOptions _forcedOopifOptions;
-        
+
         public HeadfulTests(): base()
         {
             _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
@@ -217,6 +217,24 @@ namespace PuppeteerSharp.Tests.HeadfulTests
                     context.NewPageAsync(),
                     browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
             }
+        }
+
+        [PuppeteerTest("headful.spec.ts", "HEADFUL", "should expose DevTools as a page")]
+        [Skip(SkipAttribute.Targets.Firefox, SkipAttribute.Targets.Windows)]
+        public async Task ShouldExposeDevToolsAsAPage()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Devtools = true;
+            await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
+            var context = await browser.CreateIncognitoBrowserContextAsync();
+            var targetTask = browser.WaitForTargetAsync(target => target.Url.Contains("devtools://"));
+            await Task.WhenAll(
+                context.NewPageAsync(),
+                targetTask);
+
+            var target = await targetTask;
+            var page = await target.PageAsync();
+            Assert.True(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"));
         }
     }
 }

@@ -482,6 +482,19 @@ namespace PuppeteerSharp
                 TargetManager,
                 createSession);
 
+            if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return new DevToolsTarget(
+                    targetInfo,
+                    session,
+                    context,
+                    TargetManager,
+                    createSession,
+                    IgnoreHTTPSErrors,
+                    DefaultViewport,
+                    ScreenshotTaskQueue);
+            }
+
             if (IsPageTargetFunc(otherTarget))
             {
                 return new PageTarget(

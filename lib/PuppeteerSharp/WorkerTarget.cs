@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    internal class WorkerTarget : Target
+    /// <summary>
+    /// Worker target.
+    /// </summary>
+    public class WorkerTarget : Target
     {
         private Task<Worker> _workerTask;
 
-        public WorkerTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory) : base(targetInfo, session, context, targetManager, sessionFactory)
+        internal WorkerTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory) : base(targetInfo, session, context, targetManager, sessionFactory)
         {
         }
 
