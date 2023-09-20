@@ -32,7 +32,7 @@ await page.SetViewportAsync(new ViewPortOptions
 
 ```cs
 using var browserFetcher = new BrowserFetcher();
-await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision);
+await browserFetcher.DownloadAsync();
 var browser = await Puppeteer.LaunchAsync(new LaunchOptions
 {
     Headless = true

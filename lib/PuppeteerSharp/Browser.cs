@@ -352,10 +352,10 @@ namespace PuppeteerSharp
         {
             try
             {
-                e.Target.InitializedTaskWrapper.TrySetResult(false);
+                e.Target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
                 e.Target.CloseTaskWrapper.TrySetResult(true);
 
-                if (await e.Target.InitializedTask.ConfigureAwait(false))
+                if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
                 {
                     var args = new TargetChangedArgs { Target = e.Target };
                     TargetDestroyed?.Invoke(this, args);
@@ -374,7 +374,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if (await e.Target.InitializedTask.ConfigureAwait(false))
+                if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
                 {
                     var args = new TargetChangedArgs { Target = e.Target };
                     TargetCreated?.Invoke(this, args);
