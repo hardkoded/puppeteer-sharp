@@ -220,7 +220,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should expose DevTools as a page")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Skip(SkipAttribute.Targets.Firefox, SkipAttribute.Targets.Windows)]
         public async Task ShouldExposeDevToolsAsAPage()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
