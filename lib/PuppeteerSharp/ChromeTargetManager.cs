@@ -17,7 +17,7 @@ namespace PuppeteerSharp
         private readonly List<string> _ignoredTargets = new();
         private readonly Connection _connection;
         private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
-        private readonly Func<TargetInfo, bool> _targetFilterFunc;
+        private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
         private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
@@ -33,7 +33,7 @@ namespace PuppeteerSharp
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
-            Func<TargetInfo, bool> targetFilterFunc,
+            Func<Target, bool> targetFilterFunc,
             int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
@@ -119,7 +119,14 @@ namespace PuppeteerSharp
         {
             foreach (var kv in _discoveredTargetsByTargetId)
             {
-                if ((_targetFilterFunc == null || _targetFilterFunc(kv.Value)) &&
+                var targetForFilter = new Target(
+                    kv.Value,
+                    null,
+                    null,
+                    this,
+                    null);
+
+                if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) &&
                     kv.Value.Type != TargetType.Browser)
                 {
                     _targetsIdsForInit.Add(kv.Key);
@@ -286,19 +293,19 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (_targetFilterFunc?.Invoke(targetInfo) == false)
+            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            if (!existingTarget)
+            {
+                target = _targetFactoryFunc(targetInfo, session);
+            }
+
+            if (_targetFilterFunc?.Invoke(target) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
                 await SilentDetach().ConfigureAwait(false);
                 return;
-            }
-
-            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
-            if (!existingTarget)
-            {
-                target = _targetFactoryFunc(targetInfo, session);
             }
 
             session.MessageReceived += OnMessageReceived;

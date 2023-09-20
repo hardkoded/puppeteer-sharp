@@ -21,7 +21,7 @@ namespace PuppeteerSharp
 
         private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
         private readonly ILogger<Browser> _logger;
-        private readonly Func<TargetInfo, bool> _targetFilterCallback;
+        private readonly Func<Target, bool> _targetFilterCallback;
         private readonly BrowserContext _defaultContext;
         private readonly CustomQueriesManager _customQueriesManager = new();
         private Task _closeTask;
@@ -33,18 +33,18 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
             LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter = null,
-            Func<TargetInfo, bool> isPageTargetFunc = null)
+            Func<Target, bool> targetFilter = null,
+            Func<Target, bool> isPageTargetFunc = null)
         {
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
             Launcher = launcher;
             Connection = connection;
-            _targetFilterCallback = targetFilter ?? ((TargetInfo _) => true);
+            _targetFilterCallback = targetFilter ?? ((Target _) => true);
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             IsPageTargetFunc =
                 isPageTargetFunc ??
-                new Func<TargetInfo, bool>((TargetInfo target) =>
+                new Func<Target, bool>((Target target) =>
                 {
                     return
                         target.Type == TargetType.Page ||
@@ -139,7 +139,7 @@ namespace PuppeteerSharp
 
         internal ITargetManager TargetManager { get; }
 
-        internal Func<TargetInfo, bool> IsPageTargetFunc { get; set; }
+        internal Func<Target, bool> IsPageTargetFunc { get; set; }
 
         /// <inheritdoc/>
         public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
@@ -269,8 +269,8 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewPort,
             LauncherBase launcher,
-            Func<TargetInfo, bool> targetFilter = null,
-            Func<TargetInfo, bool> isPageTargetCallback = null,
+            Func<Target, bool> targetFilter = null,
+            Func<Target, bool> isPageTargetCallback = null,
             Action<IBrowser> initAction = null)
         {
             var browser = new Browser(
@@ -475,7 +475,14 @@ namespace PuppeteerSharp
 
             Func<bool, Task<CDPSession>> createSession = (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
 
-            if (IsPageTargetFunc(targetInfo))
+            var otherTarget = new OtherTarget(
+                targetInfo,
+                session,
+                context,
+                TargetManager,
+                createSession);
+
+            if (IsPageTargetFunc(otherTarget))
             {
                 return new PageTarget(
                     targetInfo,
@@ -498,12 +505,7 @@ namespace PuppeteerSharp
                     createSession);
             }
 
-            return new OtherTarget(
-                targetInfo,
-                session,
-                context,
-                TargetManager,
-                createSession);
+            return otherTarget;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace PuppeteerSharp
     {
         private readonly Connection _connection;
         private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
-        private readonly Func<TargetInfo, bool> _targetFilterFunc;
+        private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
         private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
         private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId = new("Target {0} not found");
@@ -27,7 +27,7 @@ namespace PuppeteerSharp
         public FirefoxTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
-            Func<TargetInfo, bool> targetFilterFunc)
+            Func<Target, bool> targetFilterFunc)
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
@@ -121,14 +121,14 @@ namespace PuppeteerSharp
                 FinishInitializationIfReady(e.TargetInfo.TargetId);
             }
 
-            if (_targetFilterFunc != null && !_targetFilterFunc(e.TargetInfo))
+            var target = _targetFactoryFunc(e.TargetInfo, null);
+            if (_targetFilterFunc != null && !_targetFilterFunc(target))
             {
                 _ignoredTargets.Add(e.TargetInfo.TargetId);
                 FinishInitializationIfReady(e.TargetInfo.TargetId);
                 return;
             }
 
-            var target = _targetFactoryFunc(e.TargetInfo, null);
             _availableTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             TargetAvailable?.Invoke(
                 this,
