@@ -4,13 +4,16 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
-    internal class PageTarget : Target
+    /// <summary>
+    /// Page target.
+    /// </summary>
+    public class PageTarget : Target
     {
         private readonly bool _ignoreHTTPSErrors;
         private readonly ViewPortOptions _defaultViewport;
         private readonly TaskQueue _screenshotTaskQueue;
 
-        public PageTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, TaskQueue screenshotTaskQueue)
+        internal PageTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, TaskQueue screenshotTaskQueue)
             : base(targetInfo, session, context, targetManager, sessionFactory)
         {
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
