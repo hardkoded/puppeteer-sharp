@@ -52,7 +52,7 @@ namespace PuppeteerSharp
             Targets()
                 .Where(t =>
                     t.Type == TargetType.Page ||
-                    (t.Type == TargetType.Other && Browser.IsPageTargetFunc((t as Target).TargetInfo)))
+                    (t.Type == TargetType.Other && Browser.IsPageTargetFunc(t as Target)))
                 .Select(t => t.PageAsync())).ConfigureAwait(false))
             .Where(p => p != null).ToArray();
 

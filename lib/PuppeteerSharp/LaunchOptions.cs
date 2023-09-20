@@ -186,6 +186,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
-        public Func<TargetInfo, bool> TargetFilter { get; set; }
+        public Func<Target, bool> TargetFilter { get; set; }
     }
 }
