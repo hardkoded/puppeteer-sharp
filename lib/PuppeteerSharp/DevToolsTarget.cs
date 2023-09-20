@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -8,7 +9,16 @@ namespace PuppeteerSharp
     /// </summary>
     public class DevToolsTarget : PageTarget
     {
-        internal DevToolsTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> createSession) : base(targetInfo, session, context, targetManager, createSession)
+        internal DevToolsTarget(
+            TargetInfo targetInfo,
+            CDPSession session,
+            BrowserContext context,
+            ITargetManager targetManager,
+            Func<bool, Task<CDPSession>> sessionFactory,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewport,
+            TaskQueue screenshotTaskQueue)
+            : base(targetInfo, session, context, targetManager, sessionFactory, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue)
         {
         }
     }

@@ -489,7 +489,10 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession);
+                    createSession,
+                    IgnoreHTTPSErrors,
+                    DefaultViewport,
+                    ScreenshotTaskQueue);
             }
 
             if (IsPageTargetFunc(otherTarget))
