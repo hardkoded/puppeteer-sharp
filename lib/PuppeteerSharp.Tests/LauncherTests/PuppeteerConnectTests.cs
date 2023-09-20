@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
                 var browser = await Puppeteer.ConnectAsync(new ConnectOptions {
                     BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                    TargetFilter = (TargetInfo targetInfo) => !targetInfo.Url.Contains("should-be-ignored"),
+                    TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
                 }, TestConstants.LoggerFactory);
 
                 var pages = await browser.PagesAsync();
