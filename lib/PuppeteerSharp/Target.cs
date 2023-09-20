@@ -49,9 +49,9 @@ namespace PuppeteerSharp
 
         internal BrowserContext BrowserContext { get; }
 
-        internal Task<bool> InitializedTask => InitializedTaskWrapper.Task;
+        internal Task<InitializationStatus> InitializedTask => InitializedTaskWrapper.Task;
 
-        internal TaskCompletionSource<bool> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<InitializationStatus> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Task CloseTask => CloseTaskWrapper.Task;
 
@@ -88,7 +88,7 @@ namespace PuppeteerSharp
         protected virtual void Initialize()
         {
             IsInitialized = true;
-            InitializedTaskWrapper.TrySetResult(true);
+            InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace PuppeteerSharp
         protected virtual void CheckIfInitialized()
         {
             IsInitialized = true;
-            InitializedTaskWrapper.TrySetResult(true);
+            InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace PuppeteerSharp
                 async initializedTask =>
                 {
                     var success = initializedTask.Result;
-                    if (!success)
+                    if (success != InitializationStatus.Success)
                     {
                         return;
                     }
@@ -81,7 +81,7 @@ namespace PuppeteerSharp
             IsInitialized = !string.IsNullOrEmpty(TargetInfo.Url);
             if (IsInitialized)
             {
-                InitializedTaskWrapper.TrySetResult(true);
+                InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
             }
         }
     }
