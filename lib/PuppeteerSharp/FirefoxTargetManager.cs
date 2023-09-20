@@ -117,6 +117,7 @@ namespace PuppeteerSharp
             if (e.TargetInfo.Type == TargetType.Browser && e.TargetInfo.Attached)
             {
                 var browserTarget = _targetFactoryFunc(e.TargetInfo, null);
+                browserTarget.Initialize();
                 _availableTargetsByTargetId.AddItem(e.TargetInfo.TargetId, browserTarget);
                 FinishInitializationIfReady(e.TargetInfo.TargetId);
             }
@@ -129,6 +130,7 @@ namespace PuppeteerSharp
                 return;
             }
 
+            target.Initialize();
             _availableTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             TargetAvailable?.Invoke(
                 this,
