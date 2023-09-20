@@ -74,6 +74,7 @@ namespace PuppeteerSharp
             CheckIfInitialized();
         }
 
+        /// <inheritdoc/>
         protected internal override void CheckIfInitialized()
         {
             if (IsInitialized)
