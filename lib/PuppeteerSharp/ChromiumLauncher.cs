@@ -52,6 +52,7 @@ namespace PuppeteerSharp
             "--disable-popup-blocking",
             "--disable-prompt-on-repost",
             "--disable-renderer-backgrounding",
+            "--disable-search-engine-choice-screen",
             "--disable-sync",
             "--enable-automation",
             "--enable-blink-features=IdleDetection",
