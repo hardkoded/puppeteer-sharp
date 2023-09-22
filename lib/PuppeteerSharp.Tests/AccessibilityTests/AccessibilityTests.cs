@@ -4,11 +4,11 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
 
-namespace PuppeteerSharp.Tests.AccesibilityTests
+namespace PuppeteerSharp.Tests.AccessibilityTests
 {
-    public class AccesibilityTests : PuppeteerPageBaseTest
+    public class AccessibilityTests : PuppeteerPageBaseTest
     {
-        public AccesibilityTests(): base()
+        public AccessibilityTests() : base()
         {
         }
 
@@ -43,66 +43,62 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                 Name = "Accessibility Test",
                 Children = new SerializedAXNode[]
                     {
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "StaticText",
                             Name = "Hello World"
                         },
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "heading",
                             Name = "Inputs",
                             Level = 1
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "Empty input",
                             Focused = true
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "readonly input",
                             Readonly = true
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "disabled input",
                             Disabled= true
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "Input with whitespace",
                             Value= "  "
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "",
                             Value= "value only"
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "placeholder",
                             Value= "and a value"
                         },
-                        new SerializedAXNode{
+                        new (){
                             Role = "textbox",
                             Name = "placeholder",
                             Value= "and a value",
                             Description= "This is a description!"},
-                        new SerializedAXNode{
+                        new (){
                             Role= "combobox",
                             Name= "",
                             Value= "First Option",
                             HasPopup = "menu",
                             Children= new SerializedAXNode[]{
-                                new SerializedAXNode
-                                {
+                                new() {
                                     Role = "menuitem",
                                     Name = "First Option",
                                     Selected= true
                                 },
-                                new SerializedAXNode
-                                {
+                                new() {
                                     Role = "menuitem",
                                     Name = "Second Option"
                                 }
@@ -132,14 +128,12 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     Multiline = true,
                     Children = new SerializedAXNode[]
                     {
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "generic",
                             Name = "",
                             Children = new SerializedAXNode[]
                             {
-                                new SerializedAXNode
-                                {
+                                new() {
                                     Role = "StaticText",
                                     Name = "hi"
                                 }
@@ -266,14 +260,12 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     Name = "",
                     Children = new SerializedAXNode[]
                     {
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "tab",
                             Name = "Tab1",
                             Selected = true
                         },
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "tab",
                             Name = "Tab2"
                         }
@@ -298,14 +290,12 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     Value = "Edit this image: ",
                     Children = new SerializedAXNode[]
                     {
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "StaticText",
                             Name = "Edit this image: "
                         },
-                        new SerializedAXNode
-                        {
-                            Role = "img",
+                        new() {
+                            Role = "image",
                             Name = "my fake image"
                         }
                     }
@@ -330,8 +320,7 @@ namespace PuppeteerSharp.Tests.AccesibilityTests
                     Multiline = true,
                     Children = new SerializedAXNode[]
                     {
-                        new SerializedAXNode
-                        {
+                        new() {
                             Role = "StaticText",
                             Name = "Edit this image: "
                         },

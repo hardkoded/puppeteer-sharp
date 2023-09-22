@@ -99,6 +99,7 @@ namespace PuppeteerSharp.PageAccessibility
                 case "doc-cover":
                 case "graphics-symbol":
                 case "img":
+                case "image":
                 case "Meter":
                 case "scrollbar":
                 case "slider":
