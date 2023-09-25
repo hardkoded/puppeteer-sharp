@@ -36,6 +36,11 @@ namespace PuppeteerSharp
         IBrowser Browser { get; }
 
         /// <summary>
+        /// Whether this <see href="IBrowserContext"/> is closed.
+        /// </summary>
+        bool IsClosed { get; }
+
+        /// <summary>
         /// Returns whether BrowserContext is incognito
         /// The default browser context is the only non-incognito browser context.
         /// </summary>
