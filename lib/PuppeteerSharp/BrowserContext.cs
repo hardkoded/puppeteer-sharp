@@ -33,6 +33,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsIncognito => Id != null;
 
+        /// <inheritdoc/>
+        public bool IsClosed => Browser.BrowserContexts().Contains(this);
+
         /// <inheritdoc cref="Browser"/>
         public Browser Browser { get; }
 
