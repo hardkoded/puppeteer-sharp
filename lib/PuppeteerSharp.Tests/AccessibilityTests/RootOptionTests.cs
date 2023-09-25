@@ -4,7 +4,7 @@ using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
 
-namespace PuppeteerSharp.Tests.AccesibilityTests
+namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class RootOptionTests : PuppeteerPageBaseTest
     {
