@@ -51,7 +51,7 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// When BurstMode is <c>true</c> the screenshot process will only execute all the screenshot setup actions (background and metrics overrides)
-        /// before the first screenshot call and it will ignore the reset actions after the screenshoot is taken.
+        /// before the first screenshot call and it will ignore the reset actions after the screenshot is taken.
         /// <see cref="IPage.SetBurstModeOffAsync"/> needs to be called after the last screenshot is taken.
         /// </summary>
         /// <example><![CDATA[
@@ -78,7 +78,12 @@ namespace PuppeteerSharp
         /// <summary>
         /// Capture the screenshot from the surface, rather than the view. Defaults to <c>true</c>.
         /// </summary>
-        public bool? FromSurface { get; set; }
+        public bool FromSurface { get; set; } = true;
+
+        /// <summary>
+        /// Optimize image encoding for speed.
+        /// </summary>
+        public bool? OptimizeForSpeed { get; set; }
 
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {

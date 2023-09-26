@@ -1337,6 +1337,7 @@ namespace PuppeteerSharp
                 Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
                 CaptureBeyondViewport = captureBeyondViewport,
                 FromSurface = options.FromSurface,
+                OptimizeForSpeed = options.OptimizeForSpeed,
             };
 
             if (options.Quality.HasValue)
