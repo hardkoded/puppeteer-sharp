@@ -25,8 +25,8 @@ namespace PuppeteerSharp
             ExecutionContext context,
             CDPSession client,
             RemoteObject remoteObject,
-            IFrame frame,
-            IPage page,
+            Frame frame,
+            Page page,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
             Page = page;
@@ -35,11 +35,11 @@ namespace PuppeteerSharp
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        internal IPage Page { get; }
+        internal Page Page { get; }
 
         internal Frame Frame { get; }
 
-        internal CustomQueriesManager CustomQueriesManager => ((Browser)Page.Browser).CustomQueriesManager;
+        internal CustomQueriesManager CustomQueriesManager => Page.Browser.CustomQueriesManager;
 
         private string DebuggerDisplay =>
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";

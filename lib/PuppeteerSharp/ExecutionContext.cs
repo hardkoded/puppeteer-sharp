@@ -35,7 +35,9 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public IFrame Frame => World?.Frame;
+        IFrame IExecutionContext.Frame => World?.Frame;
+
+        internal Frame Frame => World?.Frame;
 
         internal int ContextId { get; }
 
