@@ -42,12 +42,14 @@ namespace PuppeteerSharp
             ((Browser)Browser).TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
 
         /// <inheritdoc/>
-        public IBrowser Browser => BrowserContext.Browser;
+        IBrowser ITarget.Browser => Browser;
 
         /// <inheritdoc/>
         IBrowserContext ITarget.BrowserContext => BrowserContext;
 
         internal BrowserContext BrowserContext { get; }
+
+        internal Browser Browser => BrowserContext.Browser;
 
         internal Task<InitializationStatus> InitializedTask => InitializedTaskWrapper.Task;
 
