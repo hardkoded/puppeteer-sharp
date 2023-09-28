@@ -60,6 +60,11 @@ namespace PuppeteerSharp
         string Name { get; }
 
         /// <summary>
+        ///  The <see cref="IPage"/> associated with the frame.
+        /// </summary>
+        IPage Page { get; }
+
+        /// <summary>
         /// Gets the parent frame, if any. Detached frames and main frames return <c>null</c>.
         /// </summary>
         IFrame ParentFrame { get; }
