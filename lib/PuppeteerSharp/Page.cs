@@ -198,7 +198,7 @@ namespace PuppeteerSharp
         public string Url => MainFrame.Url;
 
         /// <inheritdoc/>
-        public ITarget Target { get; }
+        ITarget IPage.Target => Target;
 
         /// <inheritdoc/>
         public IKeyboard Keyboard { get; }
@@ -239,7 +239,9 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal Browser Browser { get; }
+        internal Browser Browser => Target.Browser;
+
+        internal Target Target { get; }
 
         internal bool JavascriptEnabled { get; set; } = true;
 

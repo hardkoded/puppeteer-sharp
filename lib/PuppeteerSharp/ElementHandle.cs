@@ -26,7 +26,7 @@ namespace PuppeteerSharp
             CDPSession client,
             RemoteObject remoteObject,
             IFrame frame,
-            IPage page,
+            Page page,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
             Page = page;
@@ -35,11 +35,11 @@ namespace PuppeteerSharp
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
-        internal IPage Page { get; }
+        internal Page Page { get; }
 
         internal Frame Frame { get; }
 
-        internal CustomQueriesManager CustomQueriesManager => ((Browser)Page.Browser).CustomQueriesManager;
+        internal CustomQueriesManager CustomQueriesManager => Page.Browser.CustomQueriesManager;
 
         private string DebuggerDisplay =>
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
@@ -413,11 +413,13 @@ namespace PuppeteerSharp
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             if (Page.IsDragInterceptionEnabled)
             {
                 var start = await ClickablePointAsync().ConfigureAwait(false);
-                await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
+                return await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             try
             {
@@ -434,18 +436,25 @@ namespace PuppeteerSharp
                 Page.IsDragging = false;
                 throw new PuppeteerException("Failed to process drag.", ex);
             }
+
+            return null;
         }
 
         /// <inheritdoc/>
-        public async Task<DragData> DragAsync(ElementHandle target)
+        public async Task<DragData> DragAsync(IElementHandle target)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException("Target cannot be null", nameof(Target));
+            }
+
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
 
             if (Page.IsDragInterceptionEnabled)
             {
                 var start = await ClickablePointAsync().ConfigureAwait(false);
                 var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
-                await Page.Mouse.DragAsync(start.X, start.Y, targetPoint.X, targetPoint.Y).ConfigureAwait(false);
+                return await Page.Mouse.DragAsync(start.X, start.Y, targetPoint.X, targetPoint.Y).ConfigureAwait(false);
             }
 
             try
@@ -463,6 +472,8 @@ namespace PuppeteerSharp
                 Page.IsDragging = false;
                 throw new PuppeteerException("Failed to process drag.", ex);
             }
+
+            return null;
         }
 
         /// <inheritdoc/>
@@ -492,7 +503,13 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task DropAsync(IElementHandle target)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+#pragma warning disable CS0618 // Type or member is obsolete
             await target.DragAsync(this).ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
             Page.IsDragging = false;
             await Page.Mouse.UpAsync().ConfigureAwait(false);
         }

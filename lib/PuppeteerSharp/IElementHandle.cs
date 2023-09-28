@@ -69,7 +69,7 @@ namespace PuppeteerSharp
         /// <param name="target">Target Element.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data.</returns>
         [Obsolete("Just use " + nameof(DropAsync) + " instead")]
-        Task<DragData> DragAsync(ElementHandle target);
+        Task<DragData> DragAsync(IElementHandle target);
 
         /// <summary>
         /// Dispatches a `dragenter` event.

@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drop")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
+        public async Task ShouldDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
             var draggable = await Page.QuerySelectorAsync("#drag");
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drop using mouse")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
+        public async Task ShouldDropUsingMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
             var draggable = await Page.QuerySelectorAsync("#drag");
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drag and drop")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
+        public async Task ShouldDragAndDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
             var draggable = await Page.QuerySelectorAsync("#drag");
@@ -55,14 +55,15 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             var dropzone = await Page.QuerySelectorAsync("#drop");
             Assert.NotNull(dropzone);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             await draggable.DragAsync(dropzone);
+#pragma warning restore CS0618 // Type or member is obsolete
             await dropzone.DropAsync(draggable);
 
             Assert.AreEqual(1234, await GetDragStateAsync());
         }
 
-        private Task GetDragStateAsync()
-            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync("element => parseInt(element.innerHTML, 10)");
+        private Task<int> GetDragStateAsync()
+            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync<int>("element => parseInt(element.innerHTML, 10)");
     }
-}
 }

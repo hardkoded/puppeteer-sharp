@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
-
+#pragma warning disable CS0618 // Type or member is obsolete
 namespace PuppeteerSharp.Tests.DragAndDropTests
 {
     public class LegacyDragAndDropTests : PuppeteerPageBaseTest
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             }
             catch (PuppeteerException exception)
             {
-                Assert.Contains("Drag Interception is not enabled!", exception.Message);
+                Assert.Equals("Drag Interception is not enabled!", exception.Message);
             }
         }
 
@@ -110,8 +110,8 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.AreEqual(12334, await GetDragStateAsync());
         }
 
-        private Task GetDragStateAsync()
-            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync("element => parseInt(element.innerHTML, 10)");
+        private Task<int> GetDragStateAsync()
+            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync<int>("element => parseInt(element.innerHTML, 10)");
     }
 }
-}
+#pragma warning restore CS0618 // Type or member is obsolete
