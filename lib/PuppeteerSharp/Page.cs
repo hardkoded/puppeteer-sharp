@@ -1276,6 +1276,20 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
             }
 
+            // FromSurface is not supported on Firefox.
+            // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
+            if (Browser.Launcher.Options.Browser == SupportedBrowser.Firefox)
+            {
+                if (options.FromSurface != null)
+                {
+                    throw new ArgumentException("Screenshots from surface are not supported on Firefox.", nameof(options.FromSurface));
+                }
+            }
+            else
+            {
+                options.FromSurface = options.FromSurface.HasValue ? options.FromSurface : true;
+            }
+
             var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
             var captureBeyondViewport = options.CaptureBeyondViewport;
 
@@ -1343,6 +1357,7 @@ namespace PuppeteerSharp
                 Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
                 CaptureBeyondViewport = captureBeyondViewport,
                 FromSurface = options.FromSurface,
+                OptimizeForSpeed = options.OptimizeForSpeed,
             };
 
             if (options.Quality.HasValue)

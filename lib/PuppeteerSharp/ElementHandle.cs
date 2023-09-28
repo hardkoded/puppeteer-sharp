@@ -25,7 +25,7 @@ namespace PuppeteerSharp
             ExecutionContext context,
             CDPSession client,
             RemoteObject remoteObject,
-            IFrame frame,
+            Frame frame,
             Page page,
             FrameManager frameManager) : base(context, client, remoteObject)
         {
