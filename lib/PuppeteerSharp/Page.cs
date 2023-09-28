@@ -1278,9 +1278,12 @@ namespace PuppeteerSharp
 
             // FromSurface is not supported on Firefox.
             // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
-            if (Browser.Launcher.Options.Browser == SupportedBrowser.Firefox && options.FromSurface == true)
+            if (Browser.Launcher.Options.Browser == SupportedBrowser.Firefox)
             {
-                throw new ArgumentException("Screenshots from surface are not supported on Firefox.", nameof(options.FromSurface));
+                if (options.FromSurface != null)
+                {
+                    throw new ArgumentException("Screenshots from surface are not supported on Firefox.", nameof(options.FromSurface));
+                }
             }
             else
             {
