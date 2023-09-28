@@ -226,6 +226,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// `true` if drag events are being intercepted, `false` otherwise.
         /// </summary>
+        [Obsolete("We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)")]
         bool IsDragInterceptionEnabled { get; }
 
         /// <summary>
@@ -1062,6 +1063,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <param name="enabled">Interception enabled.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        [Obsolete("We no longer support intercepting drag payloads. Use the new drag APIs found on ElementHandle to drag (or just use the Page.Mouse)")]
         Task SetDragInterceptionAsync(bool enabled);
 
         /// <summary>

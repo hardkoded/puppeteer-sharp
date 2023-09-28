@@ -411,24 +411,63 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<DragData> DragAsync(decimal x, decimal y)
         {
-            if (!Page.IsDragInterceptionEnabled)
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+
+            if (Page.IsDragInterceptionEnabled)
             {
-                throw new PuppeteerException("Drag Interception is not enabled!");
+                var start = await ClickablePointAsync().ConfigureAwait(false);
+                await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
             }
 
+            try
+            {
+                if (!Page.IsDragging)
+                {
+                    Page.IsDragging = true;
+                    await HoverAsync().ConfigureAwait(false);
+                    await Page.Mouse.DownAsync().ConfigureAwait(false);
+                    await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Page.IsDragging = false;
+                throw new PuppeteerException("Failed to process drag.", ex);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<DragData> DragAsync(ElementHandle target)
+        {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var start = await ClickablePointAsync().ConfigureAwait(false);
-            return await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
+
+            if (Page.IsDragInterceptionEnabled)
+            {
+                var start = await ClickablePointAsync().ConfigureAwait(false);
+                var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
+                await Page.Mouse.DragAsync(start.X, start.Y, targetPoint.X, targetPoint.Y).ConfigureAwait(false);
+            }
+
+            try
+            {
+                if (!Page.IsDragging)
+                {
+                    Page.IsDragging = true;
+                    await HoverAsync().ConfigureAwait(false);
+                    await Page.Mouse.DownAsync().ConfigureAwait(false);
+                    await target.HoverAsync().ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Page.IsDragging = false;
+                throw new PuppeteerException("Failed to process drag.", ex);
+            }
         }
 
         /// <inheritdoc/>
         public async Task DragEnterAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
-            {
-                throw new PuppeteerException("Drag Interception is not enabled!");
-            }
-
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
             await Page.Mouse.DragEnterAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
@@ -437,11 +476,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task DragOverAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
-            {
-                throw new PuppeteerException("Drag Interception is not enabled!");
-            }
-
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
             await Page.Mouse.DragOverAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
@@ -450,14 +484,17 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task DropAsync(DragData data)
         {
-            if (!Page.IsDragInterceptionEnabled)
-            {
-                throw new PuppeteerException("Drag Interception is not enabled!");
-            }
-
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
             var clickablePoint = await ClickablePointAsync().ConfigureAwait(false);
             await Page.Mouse.DropAsync(clickablePoint.X, clickablePoint.Y, data).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task DropAsync(IElementHandle target)
+        {
+            await target.DragAsync(this).ConfigureAwait(false);
+            Page.IsDragging = false;
+            await Page.Mouse.UpAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

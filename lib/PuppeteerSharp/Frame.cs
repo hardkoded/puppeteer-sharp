@@ -33,6 +33,9 @@ namespace PuppeteerSharp
         public bool Detached { get; set; }
 
         /// <inheritdoc/>
+        public IPage Page => FrameManager.Page;
+
+        /// <inheritdoc/>
         public IFrame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
         /// <inheritdoc/>

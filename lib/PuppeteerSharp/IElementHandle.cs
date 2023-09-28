@@ -60,13 +60,23 @@ namespace PuppeteerSharp
         /// <param name="x">X coordinate.</param>
         /// <param name="y">Y coordinate.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data.</returns>
+        [Obsolete("Just use " + nameof(DropAsync) + " instead")]
         Task<DragData> DragAsync(decimal x, decimal y);
+
+        /// <summary>
+        /// This method creates and captures a dragevent from the element.
+        /// </summary>
+        /// <param name="target">Target Element.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser with the drag data.</returns>
+        [Obsolete("Just use " + nameof(DropAsync) + " instead")]
+        Task<DragData> DragAsync(ElementHandle target);
 
         /// <summary>
         /// Dispatches a `dragenter` event.
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        [Obsolete("Don't use" + nameof(DragEnterAsync) + ". `dragenter` will automatically be performed during dragging. ")]
         Task DragEnterAsync(DragData data);
 
         /// <summary>
@@ -74,6 +84,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        [Obsolete("Don't use" + nameof(DragOverAsync) + ". `dragover` will automatically be performed during dragging. ")]
         Task DragOverAsync(DragData data);
 
         /// <summary>
@@ -82,6 +93,13 @@ namespace PuppeteerSharp
         /// <param name="data">Drag data containing items and operations mask.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task DropAsync(DragData data);
+
+        /// <summary>
+        /// Performs a dragenter, dragover, and drop in sequence.
+        /// </summary>
+        /// <param name="element">Element to drop.</param>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        Task DropAsync(IElementHandle element);
 
         /// <summary>
         /// Calls <c>focus</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus"/> on the element.

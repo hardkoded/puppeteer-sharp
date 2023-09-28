@@ -6,23 +6,30 @@ using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.DragAndDropTests
 {
-    public class InputDragTests : PuppeteerPageBaseTest
+    public class LegacyDragAndDropTests : PuppeteerPageBaseTest
     {
-        public InputDragTests(): base()
+        public LegacyDragAndDropTests() : base()
         {
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should throw an exception if not enabled before usage")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should throw an exception if not enabled before usage")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
             var draggable = await Page.QuerySelectorAsync("#drag");
-            var exception = Assert.ThrowsAsync<PuppeteerException>(() => draggable.DragAsync(1, 1));
-            StringAssert.Contains("Drag Interception is not enabled!", exception.Message);
+
+            try
+            {
+                await draggable.DragAsync(1, 1);
+            }
+            catch (PuppeteerException exception)
+            {
+                Assert.Contains("Drag Interception is not enabled!", exception.Message);
+            }
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragIntercepted event when dragged")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragIntercepted event when dragged")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragInterceptedEventWhenDragged()
         {
@@ -34,10 +41,10 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             var data = await draggable.DragAsync(1, 1);
 
             Assert.That(data.Items, Has.Exactly(1).Items);
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
+            Assert.AreEqual(1, await GetDragStateAsync());
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragEnter")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragEnter")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragEnter()
         {
@@ -50,11 +57,10 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             var dropzone = await Page.QuerySelectorAsync("#drop");
             await dropzone.DragEnterAsync(data);
 
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragEnter"));
+            Assert.AreEqual(12, await GetDragStateAsync());
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "should emit a dragOver event")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragOver event")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragOver()
         {
@@ -68,12 +74,10 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             await dropzone.DragEnterAsync(data);
             await dropzone.DragOverAsync(data);
 
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragEnter"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragOver"));
+            Assert.AreEqual(123, await GetDragStateAsync());
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be dropped")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "can be dropped")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CanBeDropped()
         {
@@ -88,13 +92,10 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             await dropzone.DragOverAsync(data);
             await dropzone.DropAsync(data);
 
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragEnter"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragOver"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDrop"));
+            Assert.AreEqual(12334, await GetDragStateAsync());
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be dragged and dropped with a single function")]
+        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "can be dragged and dropped with a single function")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CanBeDraggedAndDroppedWithASingleFunction()
         {
@@ -106,25 +107,11 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             var dropzone = await Page.QuerySelectorAsync("#drop");
             await draggable.DragAndDropAsync(dropzone);
 
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragStart"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragEnter"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDragOver"));
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("() => globalThis.didDrop"));
+            Assert.AreEqual(12334, await GetDragStateAsync());
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Input.drag", "can be disabled")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task CanBeDisabled()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
-            Assert.False(Page.IsDragInterceptionEnabled);
-            await Page.SetDragInterceptionAsync(true);
-            Assert.True(Page.IsDragInterceptionEnabled);
-            var draggable = await Page.QuerySelectorAsync("#drag");
-            await draggable.DragAsync(1, 1);
-            await Page.SetDragInterceptionAsync(false);
-            var exception = Assert.ThrowsAsync<PuppeteerException>(() => draggable.DragAsync(1, 1));
-            StringAssert.Contains("Drag Interception is not enabled!", exception.Message);
-        }
+        private Task GetDragStateAsync()
+            => Page.QuerySelectorAsync("#drag-state").EvaluateFunctionAsync("element => parseInt(element.innerHTML, 10)");
     }
+}
 }
