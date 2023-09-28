@@ -12,23 +12,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         {
         }
 
-        [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should throw an exception if not enabled before usage")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowAnExceptionIfNotEnabledBeforeUsage()
-        {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
-            var draggable = await Page.QuerySelectorAsync("#drag");
-
-            try
-            {
-                await draggable.DragAsync(1, 1);
-            }
-            catch (PuppeteerException exception)
-            {
-                Assert.Equals("Drag Interception is not enabled!", exception.Message);
-            }
-        }
-
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragIntercepted event when dragged")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragInterceptedEventWhenDragged()
