@@ -312,6 +312,11 @@ namespace PuppeteerSharp
                 {
                     session.Close("Target.detachedFromTarget");
                     SessionDetached?.Invoke(this, new SessionEventArgs() { Session = session });
+
+                    if (_sessions.TryGetValue(sessionId, out var parentSession))
+                    {
+                        parentSession.OnSessionDetached(session);
+                    }
                 }
             }
 

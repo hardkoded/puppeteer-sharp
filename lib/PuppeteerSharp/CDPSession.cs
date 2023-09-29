@@ -28,7 +28,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler Disconnected;
 
-        internal event EventHandler<SessionEventArgs> SessionAttached;
+        /// <inheritdoc/>
+        public event EventHandler<SessionEventArgs> SessionAttached;
+
+        /// <inheritdoc/>
+        public event EventHandler<SessionEventArgs> SessionDetached;
 
         /// <inheritdoc/>
         public TargetType TargetType { get; }
@@ -158,6 +162,9 @@ namespace PuppeteerSharp
 
         internal void OnSessionAttached(CDPSession session)
             => SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
+
+        internal void OnSessionDetached(CDPSession session)
+            => SessionDetached?.Invoke(this, new SessionEventArgs { Session = session });
 
         internal ICollection<MessageTask> GetPendingMessages() => _callbacks.Values;
     }
