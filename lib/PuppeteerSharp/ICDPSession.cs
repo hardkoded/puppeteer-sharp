@@ -39,6 +39,16 @@ namespace PuppeteerSharp
         event EventHandler Disconnected;
 
         /// <summary>
+        /// Occurs when the session is attached to the target.
+        /// </summary>
+        event EventHandler<SessionEventArgs> SessionAttached;
+
+        /// <summary>
+        /// Occurs when the session is detached from the target.
+        /// </summary>
+        event EventHandler<SessionEventArgs> SessionDetached;
+
+        /// <summary>
         /// Connection close reason.
         /// </summary>
         string CloseReason { get; }
