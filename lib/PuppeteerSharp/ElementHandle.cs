@@ -189,11 +189,9 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Multiple file uploads only work with <input type=file multiple>");
             }
 
-            /**
-            * The zero-length array is a special case, it seems that
-            * DOM.setFileInputFiles does not actually update the files in that case, so
-            * the solution is to eval the element value to a new FileList directly.
-            */
+            // The zero-length array is a special case, it seems that
+            // DOM.setFileInputFiles does not actually update the files in that case, so
+            // the solution is to eval the element value to a new FileList directly.
             if (!filePaths.Any() || filePaths == null)
             {
                 await EvaluateFunctionAsync(@"(element) => {
