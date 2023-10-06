@@ -141,5 +141,37 @@ namespace PuppeteerSharp
 
             return new { objectId };
         }
+
+        public async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IElementHandle handle)
+        {
+            var iterator = await handle.EvaluateFunctionHandleAsync(@"iterable => {
+                return (async function* () {
+                    yield* iterable;
+                })();
+            }").ConfigureAwait(false);
+
+            yield iterator.TransposeIteratorHandleAsync(iterator).ConfigureAwait(false);
+        }
+
+        public async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(this IElementHandle handle)
+        {
+            var array = await handle.EvaluateFunctionHandleAsync(@"async (iterator, size) =>
+            {
+                const results = [];
+                while (results.length < size)
+                {
+                    const result = await iterator.next();
+                    if (result.done)
+                    {
+                        break;
+                    }
+                    results.push(result.value);
+                }
+                return results;
+            }", 20).ConfigureAwait(false);
+            var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
+            await array.DisposeAsync();
+            return properties.Values();
+        }
     }
 }

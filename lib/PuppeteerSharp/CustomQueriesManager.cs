@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     internal class CustomQueriesManager
     {
         private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
-        private readonly Dictionary<string, PuppeteerQueryHandler> _internalQueryHandlers = new()
+        private readonly Dictionary<string, QueryHandler> _internalQueryHandlers = new()
         {
             ["aria"] = AriaQueryHandlerFactory.Create(),
             ["pierce"] = CreatePierceHandler(),
@@ -16,14 +16,16 @@ namespace PuppeteerSharp
             ["xpath"] = CreateXpathHandler(),
         };
 
-        private readonly Dictionary<string, PuppeteerQueryHandler> _queryHandlers = new();
+        private readonly Dictionary<string, QueryHandler> _queryHandlers = new();
 
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
-        private readonly PuppeteerQueryHandler _defaultHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
+        private readonly QueryHandler _defaultHandler = CreatePuppeteerQueryHandler(new CustomQueryHandler
         {
             QueryOne = "(element, selector) => element.querySelector(selector)",
             QueryAll = "(element, selector) => element.querySelectorAll(selector)",
         });
+
+        public Browser Browser { get; private set; }
 
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
@@ -48,7 +50,7 @@ namespace PuppeteerSharp
             _queryHandlers.Add(name, internalHandler);
         }
 
-        internal (string UpdatedSelector, PuppeteerQueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
             var handlers = _internalQueryHandlers.Concat(_queryHandlers);
 
@@ -83,7 +85,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private static PuppeteerQueryHandler CreatePierceHandler() =>
+        private static QueryHandler CreatePierceHandler() =>
             CreatePuppeteerQueryHandler(new CustomQueryHandler
             {
                 QueryOne = @"(element, selector) => {
@@ -134,7 +136,7 @@ namespace PuppeteerSharp
                   }",
             });
 
-        private static PuppeteerQueryHandler CreateTextQueryHandler() =>
+        private static QueryHandler CreateTextQueryHandler() =>
             CreatePuppeteerQueryHandler(new CustomQueryHandler
             {
                 QueryOne = @"(element, selector, {createTextContent}) => {
@@ -188,7 +190,7 @@ namespace PuppeteerSharp
                   }",
             });
 
-        private static PuppeteerQueryHandler CreateXpathHandler() =>
+        private static QueryHandler CreateXpathHandler() =>
             CreatePuppeteerQueryHandler(new CustomQueryHandler
             {
                 QueryOne = @"(element, selector) => {
@@ -218,9 +220,9 @@ namespace PuppeteerSharp
                 }",
             });
 
-        private static PuppeteerQueryHandler CreatePuppeteerQueryHandler(CustomQueryHandler handler)
+        private static QueryHandler CreatePuppeteerQueryHandler(CustomQueryHandler handler)
         {
-            var internalHandler = new PuppeteerQueryHandler();
+            var internalHandler = new QueryHandler();
 
             if (!string.IsNullOrEmpty(handler.QueryOne))
             {

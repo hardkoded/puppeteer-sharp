@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -23,7 +24,6 @@ namespace PuppeteerSharp
         private readonly ILogger<Browser> _logger;
         private readonly Func<Target, bool> _targetFilterCallback;
         private readonly BrowserContext _defaultContext;
-        private readonly CustomQueriesManager _customQueriesManager = new();
         private Task _closeTask;
 
         internal Browser(
@@ -135,7 +135,9 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; set; }
 
-        internal CustomQueriesManager CustomQueriesManager => _customQueriesManager;
+        internal CustomQueriesManager CustomQueriesManager { get; } = new();
+
+        internal FunctionsManager FunctionsManager { get; } = new();
 
         internal ITargetManager TargetManager { get; }
 

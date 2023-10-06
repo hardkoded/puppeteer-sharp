@@ -16,7 +16,7 @@ namespace PuppeteerSharp
 
         private static readonly Regex _normalizedRegex = new(" +", RegexOptions.Compiled);
 
-        internal static PuppeteerQueryHandler Create()
+        internal static QueryHandler Create()
         {
             async Task<object> QueryOneId(IElementHandle element, string selector)
             {
