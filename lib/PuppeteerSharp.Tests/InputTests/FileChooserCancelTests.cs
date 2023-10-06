@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.InputTests
             var fileChooser = waitForTask.Result;
             await fileChooser.CancelAsync();
 
-            var ex = Assert.Throws<PuppeteerException>(() => fileChooser.Cancel());
+            var ex = Assert.ThrowsAsync<PuppeteerException>(() => fileChooser.CancelAsync());
             Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }
