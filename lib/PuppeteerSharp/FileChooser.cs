@@ -64,7 +64,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Closes the file chooser without selecting any files.
         /// </summary>
-        public Task Cancel()
+        public Task CancelAsync()
         {
             if (_handled)
             {
