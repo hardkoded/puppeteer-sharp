@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
 
             var fileChooser = waitForTask.Result;
-            fileChooser.Cancel();
+            await fileChooser.CancelAsync();
 
             await Task.WhenAll(
                 Page.WaitForFileChooserAsync(),
@@ -47,9 +47,9 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
 
             var fileChooser = waitForTask.Result;
-            fileChooser.Cancel();
+            await fileChooser.CancelAsync();
 
-            var ex = Assert.Throws<PuppeteerException>(() => fileChooser.Cancel());
+            var ex = Assert.ThrowsAsync<PuppeteerException>(() => fileChooser.CancelAsync());
             Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
         }
     }

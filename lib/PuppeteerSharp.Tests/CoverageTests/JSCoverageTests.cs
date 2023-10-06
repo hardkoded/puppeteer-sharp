@@ -117,6 +117,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
             await Page.Coverage.StartJSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/ranges.html");
+            // Prevent flaky tests.
+            await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
