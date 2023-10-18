@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -137,8 +138,6 @@ namespace PuppeteerSharp
 
         internal CustomQueriesManager CustomQueriesManager { get; } = new();
 
-        internal FunctionsManager FunctionsManager { get; } = new();
-
         internal ITargetManager TargetManager { get; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; set; }
@@ -235,7 +234,19 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
-            => CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Custom query handler name must not be empty", nameof(name));
+            }
+
+            if (queryHandler == null)
+            {
+                throw new ArgumentNullException(nameof(queryHandler));
+            }
+
+            CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
+        }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)

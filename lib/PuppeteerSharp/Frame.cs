@@ -104,7 +104,7 @@ namespace PuppeteerSharp
 
             var customQueriesManager = ((Browser)FrameManager.Page.Browser).CustomQueriesManager;
             var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
-            return await queryHandler.WaitFor(this, null, updatedSelector, options).ConfigureAwait(false);
+            return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

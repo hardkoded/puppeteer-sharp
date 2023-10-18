@@ -12,6 +12,11 @@ namespace PuppeteerSharp
     public interface IElementHandle : IJSHandle
     {
         /// <summary>
+        /// Parent frame.
+        /// </summary>
+        IFrame Frame { get; }
+
+        /// <summary>
         /// This method returns the bounding box of the element (relative to the main frame),
         /// or null if the element is not visible.
         /// </summary>

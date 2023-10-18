@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -142,7 +145,7 @@ namespace PuppeteerSharp
             return new { objectId };
         }
 
-        public async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IElementHandle handle)
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IJSHandle handle)
         {
             var iterator = await handle.EvaluateFunctionHandleAsync(@"iterable => {
                 return (async function* () {
@@ -150,28 +153,56 @@ namespace PuppeteerSharp
                 })();
             }").ConfigureAwait(false);
 
-            yield iterator.TransposeIteratorHandleAsync(iterator).ConfigureAwait(false);
+            await foreach (var item in iterator.TransposeIteratorHandleAsync())
+            {
+                yield return item;
+            }
         }
 
-        public async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(this IElementHandle handle)
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(this IJSHandle iterator)
         {
-            var array = await handle.EvaluateFunctionHandleAsync(@"async (iterator, size) =>
+            try
             {
-                const results = [];
-                while (results.length < size)
+                IEnumerable<IElementHandle> result;
+                do
                 {
-                    const result = await iterator.next();
-                    if (result.done)
+                    result = await iterator.FastTransposeIteratorHandleAsync().ConfigureAwait(false);
+                    foreach (var item in result)
                     {
-                        break;
+                        yield return item;
                     }
-                    results.push(result.value);
                 }
-                return results;
-            }", 20).ConfigureAwait(false);
+                while (result.Any());
+            }
+            finally
+            {
+                await iterator.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        internal static async Task<IEnumerable<IElementHandle>> FastTransposeIteratorHandleAsync(this IJSHandle handle)
+        {
+            var array = await handle.EvaluateFunctionHandleAsync(
+                @"async (iterator, size) =>
+                {
+                    const results = [];
+                    while (results.length < size)
+                    {
+                        const result = await iterator.next();
+                        if (result.done)
+                        {
+                            break;
+                        }
+                        results.push(result.value);
+                    }
+                    return results;
+                }",
+                20).ConfigureAwait(false);
+
             var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
-            await array.DisposeAsync();
-            return properties.Values();
+
+            await array.DisposeAsync().ConfigureAwait(false);
+            return properties.Values.Cast<IElementHandle>();
         }
     }
 }
