@@ -202,7 +202,7 @@ namespace PuppeteerSharp
             var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
 
             await array.DisposeAsync().ConfigureAwait(false);
-            return properties.Values.Cast<IElementHandle>();
+            return properties.Values.Where(handle => handle is IElementHandle).Cast<IElementHandle>();
         }
     }
 }
