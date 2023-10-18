@@ -18,10 +18,10 @@ namespace PuppeteerSharp.QueryHandlers
 
         public AriaQueryHandler()
         {
-            QuerySelector = @"
+            QuerySelector = @"async (node, selector) => {
                 const context = globalThis;
                 return context.__ariaQuerySelector(node, selector);
-            ";
+            }";
         }
 
         internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
