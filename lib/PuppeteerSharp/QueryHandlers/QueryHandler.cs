@@ -27,7 +27,7 @@ namespace PuppeteerSharp.QueryHandlers
                 }";
 
                 // Upstream uses a CreateFunction util. We don't need that because we always use strings instead of node functions.
-                _querySelectorAll = querySelectorAll.Replace("FUNCTION_DEFINITION", QuerySelector);
+                _querySelectorAll = querySelectorAll.Replace("'FUNCTION_DEFINITION'", QuerySelector);
                 return _querySelectorAll;
             }
 
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.QueryHandlers
                 }";
 
                 // Upstream uses a CreateFunction util. We don't need that because we always use strings instead of node functions.
-                _querySelector = querySelector.Replace("FUNCTION_DEFINITION", QuerySelectorAll);
+                _querySelector = querySelector.Replace("'FUNCTION_DEFINITION'", QuerySelectorAll);
                 return _querySelector;
             }
 
@@ -116,9 +116,9 @@ namespace PuppeteerSharp.QueryHandlers
                 await element.DisposeAsync().ConfigureAwait(false);
             }
 
-            if (result is ElementHandle handle)
+            if (result is not ElementHandle)
             {
-                await handle.DisposeAsync().ConfigureAwait(false);
+                await element.DisposeAsync().ConfigureAwait(false);
                 return null;
             }
 
