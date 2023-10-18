@@ -118,7 +118,11 @@ namespace PuppeteerSharp.QueryHandlers
 
             if (result is not ElementHandle)
             {
-                await element.DisposeAsync().ConfigureAwait(false);
+                if (element != null)
+                {
+                    await element.DisposeAsync().ConfigureAwait(false);
+                }
+
                 return null;
             }
 
