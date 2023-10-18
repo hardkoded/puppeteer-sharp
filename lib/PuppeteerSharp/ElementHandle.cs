@@ -193,6 +193,24 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Multiple file uploads only work with <input type=file multiple>");
             }
 
+            // The zero-length array is a special case, it seems that
+            // DOM.setFileInputFiles does not actually update the files in that case, so
+            // the solution is to eval the element value to a new FileList directly.
+            if (!filePaths.Any() || filePaths == null)
+            {
+                await EvaluateFunctionAsync(@"(element) => {
+                    element.files = new DataTransfer().files;
+
+                    // Dispatch events for this case because it should behave akin to a user action.
+                    element.dispatchEvent(
+                        new Event('input', {bubbles: true, composed: true})
+                    );
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                }").ConfigureAwait(false);
+
+                return;
+            }
+
             var objectId = RemoteObject.ObjectId;
             var node = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
@@ -200,27 +218,14 @@ namespace PuppeteerSharp
             }).ConfigureAwait(false);
             var backendNodeId = node.Node.BackendNodeId;
 
-            if (!filePaths.Any() || filePaths == null)
+            var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
+            CheckForFileAccess(files);
+            await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
             {
-                await EvaluateFunctionAsync(@"(element) => {
-                    element.files = new DataTransfer().files;
-
-                    // Dispatch events for this case because it should behave akin to a user action.
-                    element.dispatchEvent(new Event('input', { bubbles: true }));
-                    element.dispatchEvent(new Event('change', { bubbles: true }));
-                }").ConfigureAwait(false);
-            }
-            else
-            {
-                var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
-                CheckForFileAccess(files);
-                await Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
-                {
-                    ObjectId = objectId,
-                    Files = files,
-                    BackendNodeId = backendNodeId,
-                }).ConfigureAwait(false);
-            }
+                ObjectId = objectId,
+                Files = files,
+                BackendNodeId = backendNodeId,
+            }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

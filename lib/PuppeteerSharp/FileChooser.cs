@@ -64,7 +64,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Closes the file chooser without selecting any files.
         /// </summary>
-        public void Cancel()
+        /// <returns>A task that resolves after the cancel event is sent to the browser.</returns>
+        public Task CancelAsync()
         {
             if (_handled)
             {
@@ -72,6 +73,7 @@ namespace PuppeteerSharp
             }
 
             _handled = true;
+            return _element.EvaluateFunctionAsync("element => element.dispatchEvent(new Event('cancel', {bubbles: true}))");
         }
     }
 }
