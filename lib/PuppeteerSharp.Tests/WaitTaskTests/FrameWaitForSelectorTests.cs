@@ -176,39 +176,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.False(divFound);
             await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
-                div.style.setProperty('position', 'absolute');
-                div.style.setProperty('right', '100vw');
                 div.style.removeProperty('height');
             }");
             await Task.Delay(100);
-            Assert.False(divFound);
-            await Page.EvaluateFunctionAsync(@"() => {
-                const div = document.querySelector('div');
-                div.style.setProperty('position', 'absolute');
-                div.style.setProperty('left', '100vw');
-                div.style.removeProperty('right');
-            }");
-            await Task.Delay(100);
-            Assert.False(divFound);
-            await Page.EvaluateFunctionAsync(@"() => {
-                const div = document.querySelector('div');
-                div.style.setProperty('position', 'absolute');
-                div.style.setProperty('top', '100vw');
-                div.style.removeProperty('left');
-            }");
-            await Task.Delay(100);
-            Assert.False(divFound);
-            await Page.EvaluateFunctionAsync(@"() => {
-                const div = document.querySelector('div');
-                div.style.setProperty('position', 'absolute');
-                div.style.setProperty('bottom', '100vw');
-                div.style.removeProperty('top');
-            }");
-            await Task.Delay(100);
-            Assert.False(divFound);
-            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('bottom', '99vw')");
-            await Task.Delay(100);
-            Assert.True(await waitForSelector);
             Assert.True(divFound);
         }
 

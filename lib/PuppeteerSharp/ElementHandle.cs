@@ -11,6 +11,7 @@ using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -34,6 +35,9 @@ namespace PuppeteerSharp
             _frameManager = frameManager;
             _logger = client.LoggerFactory.CreateLogger<ElementHandle>();
         }
+
+        /// <inheritdoc/>
+        IFrame IElementHandle.Frame => Frame;
 
         internal Page Page { get; }
 
@@ -86,9 +90,9 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var customQueriesManager = ((Browser)Frame.FrameManager.Page.Browser).CustomQueriesManager;
+            var customQueriesManager = Frame.FrameManager.Page.Browser.CustomQueriesManager;
             var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
-            return await queryHandler.WaitFor(null, this, updatedSelector, options).ConfigureAwait(false);
+            return await queryHandler.WaitForAsync(null, this, updatedSelector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -258,11 +262,11 @@ namespace PuppeteerSharp
             }
 
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.QueryOne(this, updatedSelector);
+            return queryHandler.QueryOneAsync(this, updatedSelector);
         }
 
         /// <inheritdoc/>
-        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
+        public async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
         {
             if (string.IsNullOrEmpty(selector))
             {
@@ -270,7 +274,13 @@ namespace PuppeteerSharp
             }
 
             var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
-            return queryHandler.QueryAll(this, updatedSelector);
+            var result = new List<IElementHandle>();
+            await foreach (var item in queryHandler.QueryAllAsync(this, updatedSelector))
+            {
+                result.Add(item);
+            }
+
+            return result.ToArray();
         }
 
         /// <inheritdoc/>
@@ -281,8 +291,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
-            var handles = await queryHandler.QueryAll(this, updatedSelector).ConfigureAwait(false);
+            var handles = await QuerySelectorAllAsync(selector).ConfigureAwait(false);
 
             var elements = await EvaluateFunctionHandleAsync(
                 @"(_, ...elements) => {

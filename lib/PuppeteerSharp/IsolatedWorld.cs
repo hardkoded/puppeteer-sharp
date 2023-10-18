@@ -105,21 +105,34 @@ namespace PuppeteerSharp
 
         internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
-            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
             var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
-                ExecutionContextId = executionContext.ContextId,
+                ExecutionContextId = context.ContextId,
             }).ConfigureAwait(false);
 
-            return executionContext.CreateJSHandle(obj.Object) as IElementHandle;
+            return context.CreateJSHandle(obj.Object) as IElementHandle;
         }
 
         internal async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            var result = await AdoptHandleAsync(handle).ConfigureAwait(false);
+            var context = await GetExecutionContextAsync().ConfigureAwait(false);
+            if (handle.ExecutionContext == context)
+            {
+                return handle;
+            }
+
+            var info = await _client.SendAsync<DomDescribeNodeResponse>(
+                "DOM.describeNode",
+                new DomDescribeNodeRequest
+                {
+                    ObjectId = handle.RemoteObject.ObjectId,
+                }).ConfigureAwait(false);
+
+            var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
+            return newHandle;
         }
 
         internal async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
@@ -250,7 +263,12 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(string queryOne, IElementHandle root, string selector, WaitForSelectorOptions options, PageBinding[] bindings = null)
+        internal async Task<IElementHandle> WaitForSelectorInPageAsync(
+            string queryOne,
+            IElementHandle root,
+            string selector,
+            WaitForSelectorOptions options,
+            PageBinding[] bindings = null)
         {
             try
             {
@@ -364,15 +382,15 @@ namespace PuppeteerSharp
         internal async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
             using var waitTask = new WaitTask(
-                 this,
-                 script,
-                 false,
-                 options.Polling,
-                 options.PollingInterval,
-                 options.Timeout ?? _timeoutSettings.Timeout,
-                 options.Root,
-                 options.Bindings,
-                 args);
+                this,
+                script,
+                false,
+                options.Polling,
+                options.PollingInterval,
+                options.Timeout ?? _timeoutSettings.Timeout,
+                options.Root,
+                options.Bindings,
+                args);
 
             return await waitTask
                 .Task
@@ -406,7 +424,7 @@ namespace PuppeteerSharp
                 return _documentTask;
             }
 
-            async Task<ElementHandle> EvalauteDocumentInContext()
+            async Task<ElementHandle> EvaluateDocumentInContext()
             {
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
                 var document = await context.EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
@@ -419,7 +437,7 @@ namespace PuppeteerSharp
                 return element;
             }
 
-            _documentTask = EvalauteDocumentInContext();
+            _documentTask = EvaluateDocumentInContext();
 
             return _documentTask;
         }

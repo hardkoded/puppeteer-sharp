@@ -51,7 +51,7 @@ namespace PuppeteerSharp
 
                             // This is not straight-forward since some arguments can stringify, but
                             // aren't plain objects so add subtypes when the use-case arises.
-                            if (int.TryParse(kv.Key, out var index) && args.Length < index)
+                            if (int.TryParse(kv.Key, out var index) && args.Length > index)
                             {
                                 switch (handle.RemoteObject.Subtype)
                                 {
@@ -62,7 +62,7 @@ namespace PuppeteerSharp
                                     default:
                                         garbage.Add(handle.DisposeAsync().AsTask());
                                         break;
-                              }
+                                }
                             }
                             else
                             {

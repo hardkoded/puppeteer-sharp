@@ -3,11 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -23,7 +25,6 @@ namespace PuppeteerSharp
         private readonly ILogger<Browser> _logger;
         private readonly Func<Target, bool> _targetFilterCallback;
         private readonly BrowserContext _defaultContext;
-        private readonly CustomQueriesManager _customQueriesManager = new();
         private Task _closeTask;
 
         internal Browser(
@@ -135,7 +136,7 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; set; }
 
-        internal CustomQueriesManager CustomQueriesManager => _customQueriesManager;
+        internal CustomQueriesManager CustomQueriesManager { get; } = new();
 
         internal ITargetManager TargetManager { get; }
 
@@ -233,7 +234,19 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
-            => CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Custom query handler name must not be empty", nameof(name));
+            }
+
+            if (queryHandler == null)
+            {
+                throw new ArgumentNullException(nameof(queryHandler));
+            }
+
+            CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
+        }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
@@ -26,7 +27,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("<div id='not-foo'></div><div id='foo'></div>");
 
             Browser.RegisterCustomQueryHandler("getById", new CustomQueryHandler
-            { 
+            {
                 QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             });
 
@@ -98,7 +99,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             var elements = await Page.QuerySelectorAllHandleAsync("getByClass/foo")
                 .EvaluateFunctionAsync<int>("(divs) =>  divs.length");
-            
+
             Assert.AreEqual(2, elements);
         }
 

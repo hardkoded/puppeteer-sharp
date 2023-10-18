@@ -30,7 +30,7 @@ namespace PuppeteerSharp
             int? pollingInterval,
             int timeout,
             IElementHandle root,
-            PageBinding[] bidings = null,
+            PageBinding[] bindings = null,
             object[] args = null)
         {
             if (string.IsNullOrEmpty(fn))
@@ -49,7 +49,7 @@ namespace PuppeteerSharp
             _polling = _pollingInterval.HasValue ? null : polling;
             _args = args ?? Array.Empty<object>();
             _root = root;
-            _bindings = bidings ?? Array.Empty<PageBinding>();
+            _bindings = bindings ?? Array.Empty<PageBinding>();
 
             foreach (var binding in _bindings)
             {
@@ -230,7 +230,7 @@ namespace PuppeteerSharp
             // We don't have this check upstream.
             // We have a situation in our async code where a new navigation could be executed
             // before the WaitForFunction completes its initialization
-            // See FrameWaitForSelectorTests.ShouldSurviveCrossProssNavigation
+            // See FrameWaitForSelectorTests.ShouldSurviveCrossProcessNavigation
             if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
             {
                 return null;

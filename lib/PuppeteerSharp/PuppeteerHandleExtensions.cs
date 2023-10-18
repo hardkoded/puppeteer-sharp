@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -140,6 +143,66 @@ namespace PuppeteerSharp
             var objectId = jSHandle.RemoteObject.ObjectId;
 
             return new { objectId };
+        }
+
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IJSHandle handle)
+        {
+            var iterator = await handle.EvaluateFunctionHandleAsync(@"iterable => {
+                return (async function* () {
+                    yield* iterable;
+                })();
+            }").ConfigureAwait(false);
+
+            await foreach (var item in iterator.TransposeIteratorHandleAsync())
+            {
+                yield return item;
+            }
+        }
+
+        internal static async IAsyncEnumerable<IElementHandle> TransposeIteratorHandleAsync(this IJSHandle iterator)
+        {
+            try
+            {
+                IEnumerable<IElementHandle> result;
+                do
+                {
+                    result = await iterator.FastTransposeIteratorHandleAsync().ConfigureAwait(false);
+                    foreach (var item in result)
+                    {
+                        yield return item;
+                    }
+                }
+                while (result.Any());
+            }
+            finally
+            {
+                await iterator.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        internal static async Task<IEnumerable<IElementHandle>> FastTransposeIteratorHandleAsync(this IJSHandle handle)
+        {
+            var array = await handle.EvaluateFunctionHandleAsync(
+                @"async (iterator, size) =>
+                {
+                    const results = [];
+                    while (results.length < size)
+                    {
+                        const result = await iterator.next();
+                        if (result.done)
+                        {
+                            break;
+                        }
+                        results.push(result.value);
+                    }
+                    return results;
+                }",
+                20).ConfigureAwait(false);
+
+            var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
+
+            await array.DisposeAsync().ConfigureAwait(false);
+            return properties.Values.Where(handle => handle is IElementHandle).Cast<IElementHandle>();
         }
     }
 }
