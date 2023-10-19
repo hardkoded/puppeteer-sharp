@@ -9,9 +9,9 @@ namespace PuppeteerSharp
 {
     internal class ScriptInjector
     {
+        private static string _injectedSource;
         private readonly List<string> _amendments = new();
         private bool _updated = false;
-        private string _injectedSource;
 
         public void Append(string statement)
         {
@@ -45,7 +45,7 @@ namespace PuppeteerSharp
             _updated = false;
         }
 
-        private string GetInjectedSource()
+        private static string GetInjectedSource()
         {
             if (string.IsNullOrEmpty(_injectedSource))
             {
