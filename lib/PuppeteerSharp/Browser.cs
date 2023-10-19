@@ -136,8 +136,6 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; set; }
 
-        internal CustomQueriesManager CustomQueriesManager { get; } = new();
-
         internal ITargetManager TargetManager { get; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; set; }
@@ -245,16 +243,16 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(queryHandler));
             }
 
-            CustomQueriesManager.RegisterCustomQueryHandler(name, queryHandler);
+            Connection.CustomQuerySelectorRegistry.RegisterCustomQueryHandler(name, queryHandler);
         }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)
-            => CustomQueriesManager.UnregisterCustomQueryHandler(name);
+            => Connection.CustomQuerySelectorRegistry.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
-            => CustomQueriesManager.ClearCustomQueryHandlers();
+            => Connection.CustomQuerySelectorRegistry.ClearCustomQueryHandlers();
 
         /// <inheritdoc />
         public void Dispose()
@@ -311,7 +309,7 @@ namespace PuppeteerSharp
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => CustomQueriesManager.GetCustomQueryHandlerNames();
+            => Connection.CustomQuerySelectorRegistry.GetCustomQueryHandlerNames();
 
         internal async Task<IPage> CreatePageInContextAsync(string contextId)
         {

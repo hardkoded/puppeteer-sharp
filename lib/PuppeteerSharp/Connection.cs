@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
@@ -92,6 +93,12 @@ namespace PuppeteerSharp
         public ILoggerFactory LoggerFactory { get; }
 
         internal AsyncMessageQueue MessageQueue { get; }
+
+        // The connection is a good place to keep the state of custom queries and injectors.
+        // It should be the browser ideally. But the connection is used across the child objects
+        internal CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
+
+        internal ScriptInjector ScriptInjector { get; } = new();
 
         /// <inheritdoc />
         public void Dispose()
