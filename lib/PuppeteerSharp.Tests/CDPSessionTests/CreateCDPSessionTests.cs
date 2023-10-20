@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.AreEqual(3, evalResponse["result"]["value"].ToObject<int>());
             await client.DetachAsync();
 
-            var exception = Assert.ThrowsAsync<PuppeteerException>(()
+            var exception = Assert.ThrowsAsync<TargetClosedException>(()
                 => client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
                 {
                     Expression = "3 + 1",

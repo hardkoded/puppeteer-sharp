@@ -67,7 +67,8 @@ namespace PuppeteerSharp
                 throw new TargetClosedException(
                     $"Protocol error ({method}): Session closed. " +
                     $"Most likely the {TargetType} has been closed." +
-                    $"Close reason: {CloseReason}");
+                    $"Close reason: {CloseReason}",
+                    CloseReason);
             }
 
             var id = Connection.GetMessageID();
