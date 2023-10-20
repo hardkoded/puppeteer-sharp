@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -10,7 +11,13 @@ namespace PuppeteerSharp
     {
         private Task<Worker> _workerTask;
 
-        internal WorkerTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory) : base(targetInfo, session, context, targetManager, sessionFactory)
+        internal WorkerTarget(
+            TargetInfo targetInfo,
+            CDPSession session,
+            BrowserContext context,
+            ITargetManager targetManager,
+            Func<bool, Task<CDPSession>> sessionFactory)
+            : base(targetInfo, session, context, targetManager, sessionFactory)
         {
         }
 

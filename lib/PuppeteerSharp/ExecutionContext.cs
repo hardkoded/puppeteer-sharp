@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -18,9 +19,9 @@ namespace PuppeteerSharp
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
-        private static string _injectedSource;
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
 
         internal ExecutionContext(
@@ -98,12 +99,27 @@ namespace PuppeteerSharp
 
         internal async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
-            if (_puppeteerUtil == null)
+            await _puppeteerUtilQueue.Enqueue(async () =>
             {
-                var injectedSource = GetInjectedSource();
-                _puppeteerUtil = await EvaluateExpressionHandleAsync(injectedSource).ConfigureAwait(false);
-            }
+                if (_puppeteerUtil == null)
+                {
+                    await Client.Connection.ScriptInjector.InjectAsync(
+                        async (string script) =>
+                        {
+                            if (_puppeteerUtil != null)
+                            {
+                                await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                            }
 
+                            await InstallGlobalBindingAsync(new Binding(
+                                "__ariaQuerySelector",
+                                (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
+                                .ConfigureAwait(false);
+                            _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+                        },
+                        _puppeteerUtil == null).ConfigureAwait(false);
+                }
+            }).ConfigureAwait(false);
             return _puppeteerUtil;
         }
 
@@ -138,22 +154,6 @@ namespace PuppeteerSharp
             return CreateJSHandle(obj.Object) as ElementHandle;
         }
 
-        private static string GetInjectedSource()
-        {
-            if (string.IsNullOrEmpty(_injectedSource))
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "PuppeteerSharp.Injected.injected.js";
-
-                using var stream = assembly.GetManifestResourceStream(resourceName);
-                using var reader = new StreamReader(stream);
-                var fileContent = reader.ReadToEnd();
-                _injectedSource = fileContent;
-            }
-
-            return _injectedSource;
-        }
-
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
@@ -173,6 +173,24 @@ namespace PuppeteerSharp
             }
 
             return message;
+        }
+
+        private async Task InstallGlobalBindingAsync(Binding binding)
+        {
+            try
+            {
+                if (World != null)
+                {
+                    World.Bindings.TryAdd(binding.Name, binding);
+                    await World.AddBindingToContextAsync(this, binding.Name).ConfigureAwait(false);
+                }
+            }
+            catch
+            {
+                // If the binding cannot be added, then either the browser doesn't support
+                // bindings (e.g. Firefox) or the context is broken. Either breakage is
+                // okay, so we ignore the error.
+            }
         }
 
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)

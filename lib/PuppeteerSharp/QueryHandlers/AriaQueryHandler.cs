@@ -43,27 +43,6 @@ namespace PuppeteerSharp.QueryHandlers
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
         }
 
-        internal override async Task<IElementHandle> WaitForAsync(
-            Frame frame,
-            ElementHandle element,
-            string selector,
-            WaitForSelectorOptions options,
-            PageBinding[] bindings = null)
-        {
-            var binding = new PageBinding()
-            {
-                Name = "__ariaQuerySelector",
-                Function = (Func<IElementHandle, string, Task<IElementHandle>>)QueryOneAsync,
-            };
-
-            return await base.WaitForAsync(
-                frame,
-                element,
-                selector,
-                options,
-                new[] { binding }).ConfigureAwait(false);
-        }
-
         private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, IElementHandle element, string accessibleName, string role)
         {
             var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(

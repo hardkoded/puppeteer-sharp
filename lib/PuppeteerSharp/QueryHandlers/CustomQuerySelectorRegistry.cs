@@ -6,16 +6,9 @@ using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.QueryHandlers
 {
-    internal class CustomQueriesManager
+    internal class CustomQuerySelectorRegistry
     {
         private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
-        private readonly Dictionary<string, QueryHandler> _internalQueryHandlers = new()
-        {
-            ["aria"] = new AriaQueryHandler(),
-            ["pierce"] = new PierceQueryHandler(),
-            ["text"] = new TextQueryHandler(),
-            ["xpath"] = new XPathQueryHandler(),
-        };
 
         private readonly Dictionary<string, QueryHandler> _queryHandlers = new();
 
@@ -24,9 +17,17 @@ namespace PuppeteerSharp.QueryHandlers
 
         public Browser Browser { get; private set; }
 
+        internal Dictionary<string, QueryHandler> InternalQueryHandlers => new()
+        {
+            ["aria"] = new AriaQueryHandler(),
+            ["pierce"] = new PierceQueryHandler(),
+            ["text"] = new TextQueryHandler(),
+            ["xpath"] = new XPathQueryHandler(),
+        };
+
         internal void RegisterCustomQueryHandler(string name, CustomQueryHandler queryHandler)
         {
-            if (_internalQueryHandlers.ContainsKey(name))
+            if (InternalQueryHandlers.ContainsKey(name))
             {
                 throw new PuppeteerException($"A query handler named \"{name}\" already exists");
             }
@@ -53,7 +54,7 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
-            var handlers = _internalQueryHandlers.Concat(_queryHandlers);
+            var handlers = InternalQueryHandlers.Concat(_queryHandlers);
 
             foreach (var kv in handlers)
             {

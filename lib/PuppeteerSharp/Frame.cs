@@ -102,8 +102,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var customQueriesManager = ((Browser)FrameManager.Page.Browser).CustomQueriesManager;
-            var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = Client.Connection.CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 

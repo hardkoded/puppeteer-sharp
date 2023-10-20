@@ -95,8 +95,7 @@ namespace PuppeteerSharp.QueryHandlers
             Frame frame,
             ElementHandle element,
             string selector,
-            WaitForSelectorOptions options,
-            PageBinding[] bindings = null)
+            WaitForSelectorOptions options)
         {
             if (element != null)
             {
@@ -108,8 +107,7 @@ namespace PuppeteerSharp.QueryHandlers
                 QuerySelector,
                 element,
                 selector,
-                options,
-                bindings).ConfigureAwait(false);
+                options).ConfigureAwait(false);
 
             if (element != null)
             {

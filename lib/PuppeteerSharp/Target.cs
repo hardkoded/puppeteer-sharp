@@ -39,7 +39,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public ITarget Opener => TargetInfo.OpenerId != null ?
-            ((Browser)Browser).TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
+            Browser.TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
 
         /// <inheritdoc/>
         IBrowser ITarget.Browser => Browser;

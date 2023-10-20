@@ -43,7 +43,7 @@ namespace PuppeteerSharp
 
         internal Frame Frame { get; }
 
-        internal CustomQueriesManager CustomQueriesManager => Page.Browser.CustomQueriesManager;
+        internal CustomQuerySelectorRegistry CustomQuerySelectorRegistry => Client.Connection.CustomQuerySelectorRegistry;
 
         private string DebuggerDisplay =>
             string.IsNullOrEmpty(RemoteObject.ClassName) ? ToString() : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
@@ -90,8 +90,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var customQueriesManager = Frame.FrameManager.Page.Browser.CustomQueriesManager;
-            var (updatedSelector, queryHandler) = customQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitForAsync(null, this, updatedSelector, options).ConfigureAwait(false);
         }
 
@@ -261,7 +260,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return queryHandler.QueryOneAsync(this, updatedSelector);
         }
 
@@ -273,7 +272,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQueriesManager.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             var result = new List<IElementHandle>();
             await foreach (var item in queryHandler.QueryAllAsync(this, updatedSelector))
             {
