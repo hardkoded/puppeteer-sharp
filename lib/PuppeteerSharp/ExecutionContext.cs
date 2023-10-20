@@ -21,6 +21,7 @@ namespace PuppeteerSharp
         private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
 
         private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
+        private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
 
         internal ExecutionContext(
@@ -98,25 +99,27 @@ namespace PuppeteerSharp
 
         internal async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
-            if (_puppeteerUtil == null)
+            await _puppeteerUtilQueue.Enqueue(async () =>
             {
-                await Client.Connection.ScriptInjector.InjectAsync(
-                    async (string script) =>
-                    {
-                        if (_puppeteerUtil != null)
+                if (_puppeteerUtil == null)
+                {
+                    await Client.Connection.ScriptInjector.InjectAsync(
+                        async (string script) =>
                         {
-                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
-                        }
+                            if (_puppeteerUtil != null)
+                            {
+                                await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                            }
 
-                        await InstallGlobalBindingAsync(new Binding(
-                            "__ariaQuerySelector",
-                            (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
-                            .ConfigureAwait(false);
-                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-                    },
-                    _puppeteerUtil == null).ConfigureAwait(false);
-            }
-
+                            await InstallGlobalBindingAsync(new Binding(
+                                "__ariaQuerySelector",
+                                (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
+                                .ConfigureAwait(false);
+                            _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+                        },
+                        _puppeteerUtil == null).ConfigureAwait(false);
+                }
+            }).ConfigureAwait(false);
             return _puppeteerUtil;
         }
 

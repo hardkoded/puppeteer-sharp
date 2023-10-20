@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp.QueryHandlers
+﻿namespace PuppeteerSharp
 {
     // This class represents both InternalQueryHandler and CustomQueryHandler upstream.
 
