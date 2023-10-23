@@ -148,9 +148,15 @@ namespace PuppeteerSharp
             => TargetManager.GetAvailableTargets().Values.ToArray();
 
         /// <inheritdoc/>
-        public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync()
+        public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync(BrowserContextOptions options = null)
         {
-            var response = await Connection.SendAsync<CreateBrowserContextResponse>("Target.createBrowserContext", null).ConfigureAwait(false);
+            var response = await Connection.SendAsync<CreateBrowserContextResponse>(
+                "Target.createBrowserContext",
+                new TargetCreateBrowserContextRequest
+                {
+                    ProxyServer = options?.ProxyServer ?? string.Empty,
+                    ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
+                }).ConfigureAwait(false);
             var context = new BrowserContext(Connection, this, response.BrowserContextId);
             _contexts.TryAdd(response.BrowserContextId, context);
             return context;
