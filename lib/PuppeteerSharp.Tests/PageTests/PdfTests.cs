@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 fileInfo.Delete();
             }
-
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
             await Page.PdfAsync(outputFile);
             await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
 
