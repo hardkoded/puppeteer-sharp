@@ -31,5 +31,7 @@ namespace PuppeteerSharp.Messaging
         public bool PreferCSSPageSize { get; set; }
 
         public string TransferMode { get; set; }
+
+        public bool GenerateTaggedPDF { get; set; }
     }
 }

@@ -1186,6 +1186,7 @@ namespace PuppeteerSharp
                 MarginRight = marginRight,
                 PageRanges = options.PageRanges,
                 PreferCSSPageSize = options.PreferCSSPageSize,
+                GenerateTaggedPDF = options.Tagged,
             }).ConfigureAwait(false);
 
             if (options.OmitBackground)

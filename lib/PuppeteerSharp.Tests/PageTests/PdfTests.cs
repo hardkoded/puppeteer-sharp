@@ -72,12 +72,38 @@ namespace PuppeteerSharp.Tests.PageTests
                 fileInfo.Delete();
             }
             await Page.PdfAsync(outputFile);
-            
+
             var stream = await Page.PdfStreamAsync();
 
             // Firefox in Linux might generate and of by one result here.
             // If the difference is less than 2 bytes is good
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
+        }
+
+        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task CanPrintToPdfWithAccessible()
+        {
+            // We test this differently compared to puppeteer.
+            // We will compare that we can get to the same file using both PDF methods
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            var accessibleOutputFile = Path.Combine(BaseDirectory, "output-accessible.pdf");
+            fileInfo = new FileInfo(accessibleOutputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
+
+            Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
         }
 
         [PuppeteerTimeout]

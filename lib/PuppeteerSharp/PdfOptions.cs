@@ -92,6 +92,11 @@ namespace PuppeteerSharp
         /// </summary>
         public bool OmitBackground { get; set; }
 
+        /// <summary>
+        /// Generate tagged (accessible) PDF.
+        /// </summary>
+        public bool Tagged { get; set; }
+
         /// <summary>Overriding == operator for <see cref="PdfOptions"/>.</summary>
         /// <param name="left">the value to compare against <paramref name="right" />.</param>
         /// <param name="right">the value to compare against <paramref name="left" />.</param>
