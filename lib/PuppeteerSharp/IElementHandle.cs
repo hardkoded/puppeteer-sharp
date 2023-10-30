@@ -299,5 +299,17 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
         [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
         Task<IElementHandle[]> XPathAsync(string expression);
+
+        /// <summary>
+        /// Checks if an element is visible using the same mechanism as <see cref="WaitForSelectorAsync"/>.
+        /// </summary>
+        /// <returns>Task which resolves to true if the element is visible.</returns>
+        Task<bool> IsVisibleAsync();
+
+        /// <summary>
+        /// Checks if an element is hidden using the same mechanism as <see cref="WaitForSelectorAsync"/>.
+        /// </summary>
+        /// <returns>Task which resolves to true if the element is hidden.</returns>
+        Task<bool> IsHiddenAsync();
     }
 }

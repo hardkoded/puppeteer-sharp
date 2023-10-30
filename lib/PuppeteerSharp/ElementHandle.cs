@@ -671,6 +671,33 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <inheritdoc/>
+        public Task<bool> IsVisibleAsync() => CheckVisibilityAsync(true);
+
+        /// <inheritdoc/>
+        public Task<bool> IsHiddenAsync() => CheckVisibilityAsync(false);
+
+        private async Task<bool> CheckVisibilityAsync(bool visibility)
+        {
+            var element = await Frame.PuppeteerWorld.AdoptHandleAsync(this).ConfigureAwait(false);
+
+            try
+            {
+                return await Frame.PuppeteerWorld.EvaluateFunctionAsync<bool>(
+                    @"async (PuppeteerUtil, element, visibility) =>
+                    {
+                        return Boolean(PuppeteerUtil.checkVisibility(element, visibility));
+                    }",
+                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                    element,
+                    visibility).ConfigureAwait(false);
+            }
+            finally
+            {
+                await element.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
         private void CheckForFileAccess(string[] files)
         {
             foreach (var file in files)
