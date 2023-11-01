@@ -28,10 +28,5 @@ namespace PuppeteerSharp
         /// Root element.
         /// </summary>
         internal IElementHandle Root { get; set; }
-
-        /// <summary>
-        /// Page bindings.
-        /// </summary>
-        internal PageBinding[] Bindings { get; set; }
     }
 }

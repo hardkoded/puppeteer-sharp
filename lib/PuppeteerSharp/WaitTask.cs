@@ -16,7 +16,6 @@ namespace PuppeteerSharp
         private readonly IElementHandle _root;
         private readonly CancellationTokenSource _cts = new();
         private readonly TaskCompletionSource<IJSHandle> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly PageBinding[] _bindings;
 
         private bool _isDisposed;
         private IJSHandle _poller;
@@ -30,7 +29,6 @@ namespace PuppeteerSharp
             int? pollingInterval,
             int timeout,
             IElementHandle root,
-            PageBinding[] bindings = null,
             object[] args = null)
         {
             if (string.IsNullOrEmpty(fn))
@@ -49,13 +47,6 @@ namespace PuppeteerSharp
             _polling = _pollingInterval.HasValue ? null : polling;
             _args = args ?? Array.Empty<object>();
             _root = root;
-            _bindings = bindings ?? Array.Empty<PageBinding>();
-
-            foreach (var binding in _bindings)
-            {
-                var bindingObj = new Binding(binding.Name, binding.Function);
-                _isolatedWorld.Bindings.AddOrUpdate(binding.Name, bindingObj, (_, __) => bindingObj);
-            }
 
             _isolatedWorld.TaskManager.Add(this);
 
@@ -93,12 +84,6 @@ namespace PuppeteerSharp
         {
             try
             {
-                if (_bindings.Length > 0)
-                {
-                    var context = await _isolatedWorld.GetExecutionContextAsync().ConfigureAwait(false);
-                    await System.Threading.Tasks.Task.WhenAll(_bindings.Select(binding => _isolatedWorld.AddBindingToContextAsync(context, binding.Name))).ConfigureAwait(false);
-                }
-
                 if (_pollingInterval.HasValue)
                 {
                     _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(

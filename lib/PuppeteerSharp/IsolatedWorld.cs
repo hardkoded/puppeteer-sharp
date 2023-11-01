@@ -263,72 +263,6 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<IElementHandle> WaitForSelectorInPageAsync(
-            string queryOne,
-            IElementHandle root,
-            string selector,
-            WaitForSelectorOptions options,
-            PageBinding[] bindings = null)
-        {
-            try
-            {
-                var waitForVisible = options?.Visible ?? false;
-                var waitForHidden = options?.Hidden ?? false;
-                var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-
-                var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
-                  if (!PuppeteerUtil) {{
-                    return;
-                  }}
-                  const node = (await PuppeteerUtil.createFunction(query)(
-                    root || document,
-                    selector,
-                    PuppeteerUtil,
-                  ));
-                  return PuppeteerUtil.checkVisibility(node, visible);
-                }}";
-
-                var args = new List<object>
-                {
-                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                    queryOne,
-                    selector,
-                    root,
-                };
-
-                // Puppeteer's injected code checks for visible to be undefined
-                // As we don't support passing undefined values we need to ignore sending this value
-                // if visible is false
-                if (waitForVisible || waitForHidden)
-                {
-                    args.Add(waitForVisible);
-                }
-
-                var jsHandle = await WaitForFunctionAsync(
-                    predicate,
-                    new()
-                    {
-                        Bindings = bindings,
-                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
-                        Root = root,
-                        Timeout = timeout,
-                    },
-                    args.ToArray()).ConfigureAwait(false);
-
-                if (jsHandle is not ElementHandle elementHandle)
-                {
-                    await jsHandle.DisposeAsync().ConfigureAwait(false);
-                    return null;
-                }
-
-                return elementHandle;
-            }
-            catch (Exception ex)
-            {
-                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
-            }
-        }
-
         internal async Task ClickAsync(string selector, ClickOptions options = null)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false) ?? throw new SelectorException($"No node found for selector: {selector}", selector);
@@ -389,7 +323,6 @@ namespace PuppeteerSharp
                 options.PollingInterval,
                 options.Timeout ?? _timeoutSettings.Timeout,
                 options.Root,
-                options.Bindings,
                 args);
 
             return await waitTask
@@ -407,7 +340,6 @@ namespace PuppeteerSharp
                 options.PollingInterval,
                 options.Timeout ?? _timeoutSettings.Timeout,
                 null, // Root
-                null, // PageBinding
                 null); // args
 
             return await waitTask

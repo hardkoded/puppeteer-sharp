@@ -103,28 +103,62 @@ namespace PuppeteerSharp.QueryHandlers
                 element = await frame.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false) as ElementHandle;
             }
 
-            var result = await frame.PuppeteerWorld.WaitForSelectorInPageAsync(
-                QuerySelector,
-                element,
-                selector,
-                options).ConfigureAwait(false);
-
-            if (element != null)
+            try
             {
-                await element.DisposeAsync().ConfigureAwait(false);
-            }
+                var waitForVisible = options?.Visible ?? false;
+                var waitForHidden = options?.Hidden ?? false;
+                var timeout = options?.Timeout;
 
-            if (result is not ElementHandle)
-            {
-                if (element != null)
+                var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
+                  if (!PuppeteerUtil) {{
+                    return;
+                  }}
+                  const node = (await PuppeteerUtil.createFunction(query)(
+                    root || document,
+                    selector,
+                    PuppeteerUtil,
+                  ));
+                  return PuppeteerUtil.checkVisibility(node, visible);
+                }}";
+
+                var args = new List<object>
                 {
-                    await element.DisposeAsync().ConfigureAwait(false);
+                    new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                    QuerySelector,
+                    selector,
+                    element,
+                };
+
+                // Puppeteer's injected code checks for visible to be undefined
+                // As we don't support passing undefined values we need to ignore sending this value
+                // if visible is false
+                if (waitForVisible || waitForHidden)
+                {
+                    args.Add(waitForVisible);
                 }
 
-                return null;
-            }
+                var jsHandle = await frame.PuppeteerWorld.WaitForFunctionAsync(
+                    predicate,
+                    new()
+                    {
+                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
+                        Root = element,
+                        Timeout = timeout,
+                    },
+                    args.ToArray()).ConfigureAwait(false);
 
-            return await frame.MainWorld.TransferHandleAsync(result).ConfigureAwait(false) as IElementHandle;
+                if (jsHandle is not ElementHandle elementHandle)
+                {
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    return null;
+                }
+
+                return await frame.MainWorld.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
+            }
+            catch (Exception ex)
+            {
+                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+            }
         }
 
         internal virtual async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
