@@ -457,16 +457,14 @@ namespace PuppeteerSharp
         internal void UpdateClient(CDPSession client)
         {
             Client = client;
-            MainWorld = new IsolatedWorld(
-              Client,
-              FrameManager,
+            MainRealm = new IsolatedWorld(
               this,
+              null,
               FrameManager.TimeoutSettings);
 
-            PuppeteerWorld = new IsolatedWorld(
-              Client,
-              FrameManager,
+            IsolatedRealm = new IsolatedWorld(
               this,
+              null,
               FrameManager.TimeoutSettings);
         }
     }
