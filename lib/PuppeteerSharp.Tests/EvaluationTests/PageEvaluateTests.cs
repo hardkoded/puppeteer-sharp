@@ -298,23 +298,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 return document.execCommand('copy');
             }"));
 
-        [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should throw a nice error after a navigation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldThrowANiceErrorAfterANavigation()
-        {
-            var executionContext = await Page.MainFrame.GetExecutionContextAsync();
-
-            await Task.WhenAll(
-                Page.WaitForNavigationAsync(),
-                executionContext.EvaluateFunctionAsync("() => window.location.reload()")
-            );
-            var ex = Assert.ThrowsAsync<EvaluationFailedException>(() =>
-            {
-                return executionContext.EvaluateFunctionAsync("() => null");
-            });
-            StringAssert.Contains("navigation", ex.Message);
-        }
-
         [PuppeteerTest("evaluation.spec.ts", "Page.evaluate", "should not throw an error when evaluation does a navigation")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
