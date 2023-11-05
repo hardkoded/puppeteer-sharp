@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class WorkerTarget : Target
     {
-        private Task<Worker> _workerTask;
+        private Task<WebWorker> _workerTask;
 
         internal WorkerTarget(
             TargetInfo targetInfo,
@@ -22,16 +22,16 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public override Task<Worker> WorkerAsync()
+        public override Task<WebWorker> WorkerAsync()
         {
             _workerTask ??= WorkerInternalAsync();
             return _workerTask;
         }
 
-        private async Task<Worker> WorkerInternalAsync()
+        private async Task<WebWorker> WorkerInternalAsync()
         {
             var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
-            return new Worker(
+            return new WebWorker(
                 client,
                 TargetInfo.Url,
                 (_, _, _) => Task.CompletedTask,

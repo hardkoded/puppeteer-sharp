@@ -355,16 +355,18 @@ namespace PuppeteerSharp
         private void OnFrameDetached(PageFrameDetachedResponse e)
         {
             var frame = GetFrame(e.FrameId);
-            if (frame != null)
+            if (frame == null)
             {
-                if (e.Reason == FrameDetachedReason.Remove)
-                {
-                    RemoveFramesRecursively(frame);
-                }
-                else if (e.Reason == FrameDetachedReason.Swap)
-                {
-                    FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
-                }
+                return;
+            }
+
+            if (e.Reason == FrameDetachedReason.Remove)
+            {
+                RemoveFramesRecursively(frame);
+            }
+            else if (e.Reason == FrameDetachedReason.Swap)
+            {
+                FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
             }
         }
 

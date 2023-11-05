@@ -214,12 +214,6 @@ namespace PuppeteerSharp
         Task<string> GetContentAsync();
 
         /// <summary>
-        /// Gets the <see cref="IExecutionContext"/> associated with the frame.
-        /// </summary>
-        /// <returns><see cref="IExecutionContext"/> associated with the frame.</returns>
-        Task<IExecutionContext> GetExecutionContextAsync();
-
-        /// <summary>
         /// Returns page's title.
         /// </summary>
         /// <returns>page's title.</returns>

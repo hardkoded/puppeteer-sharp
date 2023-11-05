@@ -24,30 +24,30 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Worker
+    public class WebWorker : IEnvironment
     {
         private readonly ILogger _logger;
-        private readonly CDPSession _client;
         private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private ExecutionContext _executionContext;
         private Func<ExecutionContext, RemoteObject, IJSHandle> _jsHandleFactory;
 
-        internal Worker(
+        internal WebWorker(
             CDPSession client,
             string url,
             Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
             Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
-            _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
-            _client = client;
+            _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
+            Client = client;
+            MainRealm = new IsolatedWorld(null, this, new TimeoutSettings());
             Url = url;
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;
-            _client.MessageReceived += OnMessageReceived;
+            Client.MessageReceived += OnMessageReceived;
 
-            _ = _client.SendAsync("Runtime.enable").ContinueWith(
+            _ = Client.SendAsync("Runtime.enable").ContinueWith(
                 task =>
                 {
                     if (task.IsFaulted)
@@ -57,7 +57,7 @@ namespace PuppeteerSharp
                 },
                 TaskScheduler.Default);
 
-            _ = _client.SendAsync("Log.enable").ContinueWith(
+            _ = Client.SendAsync("Log.enable").ContinueWith(
                 task =>
                 {
                     if (task.IsFaulted)
@@ -73,6 +73,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>Worker URL.</value>
         public string Url { get; }
+
+        /// <inheritdoc/>
+        CDPSession IEnvironment.Client => Client;
+
+        /// <inheritdoc/>
+        Realm IEnvironment.MainRealm => MainRealm;
+
+        internal CDPSession Client { get; }
+
+        internal Realm MainRealm { get; }
 
         internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
 
@@ -149,7 +159,7 @@ namespace PuppeteerSharp
             {
                 var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                Client.Close(message);
             }
         }
 
@@ -169,9 +179,9 @@ namespace PuppeteerSharp
         {
             if (_jsHandleFactory == null)
             {
-                _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
+                _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, Client, remoteObject);
                 _executionContext = new ExecutionContext(
-                    _client,
+                    Client,
                     e.Context,
                     null);
                 _executionContextCallback.TrySetResult(_executionContext);

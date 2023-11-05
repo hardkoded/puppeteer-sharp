@@ -71,32 +71,6 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
-        /// <inheritdoc/>
-        public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
-        {
-            if (prototypeHandle == null)
-            {
-                throw new ArgumentNullException(nameof(prototypeHandle));
-            }
-
-            if (prototypeHandle.Disposed)
-            {
-                throw new PuppeteerException("Prototype JSHandle is disposed!");
-            }
-
-            if (prototypeHandle.RemoteObject.ObjectId == null)
-            {
-                throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
-            }
-
-            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
-            {
-                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(response.Objects);
-        }
-
         internal async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
