@@ -121,8 +121,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Evaluates if the element is visible in the current viewport.
         /// </summary>
+        /// <param name="threshold">A number between 0 and 1 specifying the fraction of the element's area that must be visible to pass the check.</param>
         /// <returns>A task which resolves to true if the element is visible in the current viewport.</returns>
-        Task<bool> IsIntersectingViewportAsync();
+        Task<bool> IsIntersectingViewportAsync(int threshold);
 
         /// <summary>
         /// Focuses the element, and then uses <see cref="IKeyboard.DownAsync(string, DownOptions)"/> and <see cref="IKeyboard.UpAsync(string)"/>.
