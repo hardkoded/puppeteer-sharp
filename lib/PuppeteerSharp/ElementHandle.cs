@@ -650,6 +650,12 @@ namespace PuppeteerSharp
             await ScrollIntoViewAsync().ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
+        public Task<bool> IsVisibleAsync() => CheckVisibilityAsync(true);
+
+        /// <inheritdoc/>
+        public Task<bool> IsHiddenAsync() => CheckVisibilityAsync(false);
+
         private Task ScrollIntoViewAsync()
             => EvaluateFunctionAsync(@"element => {
                 element.scrollIntoView({
@@ -658,12 +664,6 @@ namespace PuppeteerSharp
                     behavior: 'instant',
                 });
             }");
-
-        /// <inheritdoc/>
-        public Task<bool> IsVisibleAsync() => CheckVisibilityAsync(true);
-
-        /// <inheritdoc/>
-        public Task<bool> IsHiddenAsync() => CheckVisibilityAsync(false);
 
         private Task<bool> CheckVisibilityAsync(bool visibility)
             => EvaluateFunctionAsync<bool>(
