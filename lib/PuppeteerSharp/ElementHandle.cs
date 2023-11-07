@@ -385,12 +385,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<bool> IsIntersectingViewportAsync(int threshold)
             => ExecutionContext.EvaluateFunctionAsync<bool>(
-                @"async element =>
-                {
-                    const visibleRatio = await new Promise(resolve =>
-                    {
-                        const observer = new IntersectionObserver(entries =>
-                        {
+                @"async (element, threshold) => {
+                    const visibleRatio = await new Promise(resolve => {
+                        const observer = new IntersectionObserver(entries => {
                             resolve(entries[0].intersectionRatio);
                             observer.disconnect();
                         });
