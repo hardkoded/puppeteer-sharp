@@ -383,7 +383,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<bool> IsIntersectingViewportAsync(int threshold = 1)
+        public Task<bool> IsIntersectingViewportAsync(int threshold)
             => ExecutionContext.EvaluateFunctionAsync<bool>(
                 @"async element =>
                 {
