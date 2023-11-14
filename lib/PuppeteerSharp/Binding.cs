@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp
 {
@@ -85,7 +82,7 @@ namespace PuppeteerSharp
                     if (taskResult.GetType().IsGenericType)
                     {
                         // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = taskResult.GetType().GetProperty(taskResultPropertyName).GetValue(taskResult);
+                        result = taskResult.GetType().GetProperty(taskResultPropertyName)?.GetValue(taskResult);
                     }
                 }
 

@@ -3,12 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -43,8 +41,6 @@ namespace PuppeteerSharp
 
         internal Frame Frame { get; }
 
-        internal WebWorker Worker { get; }
-
         internal CDPSession Client => Frame?.Client ?? Worker?.Client;
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
@@ -52,6 +48,8 @@ namespace PuppeteerSharp
         internal ConcurrentDictionary<string, Binding> Bindings { get; } = new();
 
         internal override IEnvironment Environment => (IEnvironment)Frame ?? Worker;
+
+        private WebWorker Worker { get; }
 
         public void Dispose() => _bindingQueue.Dispose();
 
@@ -91,11 +89,8 @@ namespace PuppeteerSharp
                     {
                         return;
                     }
-                    else
-                    {
-                        _logger.LogError(ex.ToString());
-                        return;
-                    }
+
+                    _logger.LogError(ex.ToString());
                 }
             }).ConfigureAwait(false);
         }
@@ -114,7 +109,7 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle).Realm == this)
+            if ((handle as JSHandle)?.Realm == this)
             {
                 return handle;
             }
@@ -133,9 +128,7 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
-
-            if ((handle as JSHandle).Realm == this)
+            if ((handle as JSHandle)?.Realm == this)
             {
                 return handle;
             }

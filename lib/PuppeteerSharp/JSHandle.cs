@@ -18,9 +18,9 @@ namespace PuppeteerSharp
     {
         internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
         {
-            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
             Realm = world;
             RemoteObject = remoteObject;
+            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
         }
 
         /// <inheritdoc/>
@@ -29,7 +29,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public RemoteObject RemoteObject { get; }
 
-        internal CDPSession Client { get; }
+        internal CDPSession Client => Realm.Environment.Client;
 
         internal Func<Task> DisposeAction { get; set; }
 
@@ -46,20 +46,11 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<IJSHandle> GetPropertyAsync(string propertyName)
-            => BindIsolatedHandleAsync(async handle =>
-            {
-                var objectHandle = await handle.EvaluateFunctionHandleAsync(
-                    @"(object, propertyName) => {
-                        const result = { __proto__: null};
-                        result[propertyName] = object[propertyName];
-                        return result;
-                    }",
-                    propertyName).ConfigureAwait(false);
-                var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
-                properties.TryGetValue(propertyName, out var result);
-                await objectHandle.DisposeAsync().ConfigureAwait(false);
-                return result;
-            });
+            => EvaluateFunctionHandleAsync(
+                @"(object, propertyName) => {
+                    return object[propertyName];
+                }",
+                propertyName);
 
         /// <inheritdoc/>
         public Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()

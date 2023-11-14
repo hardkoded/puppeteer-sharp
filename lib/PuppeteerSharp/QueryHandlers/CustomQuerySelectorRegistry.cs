@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.QueryHandlers
 {
@@ -14,8 +13,6 @@ namespace PuppeteerSharp.QueryHandlers
 
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly QueryHandler _defaultHandler = new CssQueryHandler();
-
-        public Browser Browser { get; private set; }
 
         internal Dictionary<string, QueryHandler> InternalQueryHandlers => new()
         {
