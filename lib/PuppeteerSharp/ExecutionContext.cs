@@ -99,34 +99,8 @@ namespace PuppeteerSharp
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
-                : new JSHandle(this, Client, remoteObject);
-
-        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
-        {
-            if (elementHandle.ExecutionContext == this)
-            {
-                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
-            }
-
-            if (World == null)
-            {
-                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
-            }
-
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
-            {
-                ObjectId = elementHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
-
-            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
-            {
-                BackendNodeId = nodeInfo.Node.BackendNodeId,
-                ExecutionContextId = ContextId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(obj.Object) as ElementHandle;
-        }
+                ? new ElementHandle(World, remoteObject)
+                : new JSHandle(World, remoteObject);
 
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {

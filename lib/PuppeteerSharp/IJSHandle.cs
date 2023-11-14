@@ -18,12 +18,6 @@ namespace PuppeteerSharp
         bool Disposed { get; }
 
         /// <summary>
-        /// Gets the execution context.
-        /// </summary>
-        /// <value>The execution context.</value>
-        IExecutionContext ExecutionContext { get; }
-
-        /// <summary>
         /// Gets the remote object.
         /// </summary>
         /// <value>The remote object.</value>

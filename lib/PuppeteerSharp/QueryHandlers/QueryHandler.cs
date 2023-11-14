@@ -73,9 +73,6 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal virtual async Task<IElementHandle> QueryOneAsync(IElementHandle element, string selector)
         {
-            var world = (element.ExecutionContext as ExecutionContext).World
-                ?? throw new PuppeteerException("Element doesn't have a valid world");
-
             var result = await element.EvaluateFunctionHandleAsync(
                 QuerySelector,
                 selector,
@@ -163,9 +160,6 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal virtual async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
         {
-            var world = (element.ExecutionContext as ExecutionContext).World
-                ?? throw new PuppeteerException("Element doesn't have a valid world");
-
             var handle = await element.EvaluateFunctionHandleAsync(
                 QuerySelectorAll,
                 selector,

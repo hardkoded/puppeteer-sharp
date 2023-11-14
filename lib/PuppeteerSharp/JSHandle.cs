@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -14,19 +16,12 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
+        internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
         {
-            ExecutionContext = context;
-            Client = client;
             Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
+            Realm = world;
             RemoteObject = remoteObject;
         }
-
-        /// <inheritdoc cref="ExecutionContext"/>
-        public ExecutionContext ExecutionContext { get; }
-
-        /// <inheritdoc/>
-        IExecutionContext IJSHandle.ExecutionContext => ExecutionContext;
 
         /// <inheritdoc/>
         public bool Disposed { get; private set; }
@@ -38,68 +33,83 @@ namespace PuppeteerSharp
 
         internal Func<Task> DisposeAction { get; set; }
 
+        internal IsolatedWorld Realm { get; }
+
+        internal Frame Frame => Realm.Environment as Frame;
+
+        internal string Id => RemoteObject.ObjectId;
+
         /// <summary>
         /// Logger.
         /// </summary>
         protected ILogger Logger { get; }
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> GetPropertyAsync(string propertyName)
-        {
-            var objectHandle = await EvaluateFunctionHandleAsync(
-                @"(object, propertyName) => {
-                    const result = { __proto__: null};
-                    result[propertyName] = object[propertyName];
-                    return result;
-                }",
-                propertyName).ConfigureAwait(false);
-            var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
-            properties.TryGetValue(propertyName, out var result);
-            await objectHandle.DisposeAsync().ConfigureAwait(false);
-            return result;
-        }
+        public Task<IJSHandle> GetPropertyAsync(string propertyName)
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                var objectHandle = await handle.EvaluateFunctionHandleAsync(
+                    @"(object, propertyName) => {
+                        const result = { __proto__: null};
+                        result[propertyName] = object[propertyName];
+                        return result;
+                    }",
+                    propertyName).ConfigureAwait(false);
+                var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
+                properties.TryGetValue(propertyName, out var result);
+                await objectHandle.DisposeAsync().ConfigureAwait(false);
+                return result;
+            });
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
-        {
-            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
+        public Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
+            => BindIsolatedHandleAsync(async handle =>
             {
-                ObjectId = RemoteObject.ObjectId,
-                OwnProperties = true,
-            }).ConfigureAwait(false);
+                var propertyNames = await handle.EvaluateFunctionAsync<string[]>(@"object => {
+                    const enumerableProperties = [];
+                    const descriptors = Object.getOwnPropertyDescriptors(object);
+                    for (const propertyName in descriptors) {
+                        if (descriptors[propertyName]?.enumerable)
+                        {
+                            enumerableProperties.push(propertyName);
+                        }
+                    }
+                    return enumerableProperties;
+                }").ConfigureAwait(false);
 
-            var result = new Dictionary<string, IJSHandle>();
+                var dic = new Dictionary<string, IJSHandle>();
+                var results = await Task.WhenAll(propertyNames.Select(key => GetPropertyAsync(key))).ConfigureAwait(false);
 
-            foreach (var property in response.Result)
-            {
-                if (property.Enumerable == null)
+                foreach (var key in propertyNames)
                 {
-                    continue;
+                    var handleItem = await GetPropertyAsync(key).ConfigureAwait(false);
+                    if (handleItem is not null)
+                    {
+                        dic.Add(key, handleItem);
+                    }
                 }
 
-                result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
-            }
-
-            return result;
-        }
+                return dic;
+            });
 
         /// <inheritdoc/>
         public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <inheritdoc/>
-        public async Task<T> JsonValueAsync<T>()
-        {
-            var objectId = RemoteObject.ObjectId;
-
-            if (objectId == null)
+        public Task<T> JsonValueAsync<T>()
+            => BindIsolatedHandleAsync(async handle =>
             {
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
-            }
+                var objectId = handle.RemoteObject.ObjectId;
 
-            var value = await EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
+                if (objectId == null)
+                {
+                    return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
+                }
 
-            return value == null ? throw new PuppeteerException("Could not serialize referenced object") : value;
-        }
+                var value = await handle.EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
+
+                return value == null ? throw new PuppeteerException("Could not serialize referenced object") : value;
+            });
 
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
@@ -139,23 +149,72 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+            return Realm.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
         }
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-        {
-            var list = new List<object>(args);
-            list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
-        }
+            => EvaluateFunctionAsync(script, args, false);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
+            return Realm.EvaluateFunctionAsync<T>(script, list.ToArray());
+        }
+
+        internal async Task<JToken> EvaluateFunctionAsync(string script, object[] args, bool adopt)
+        {
+            var list = new List<object>(args);
+            var adoptedThis = await Frame.IsolatedRealm.AdoptHandleAsync(this).ConfigureAwait(false);
+            list.Insert(0, adoptedThis);
+            return await Frame.IsolatedRealm.EvaluateFunctionAsync<JToken>(script, list.ToArray()).ConfigureAwait(false);
+        }
+
+        internal async Task<T> BindIsolatedHandleAsync<T>(Func<JSHandle, Task<T>> action)
+        {
+            if (action == null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            if (Realm == Frame.IsolatedRealm)
+            {
+                return await action(this).ConfigureAwait(false);
+            }
+
+            var adoptedThis = await Frame.IsolatedRealm.AdoptHandleAsync(this).ConfigureAwait(false) as JSHandle;
+            var result = await action(adoptedThis).ConfigureAwait(false);
+
+            if (result is IJSHandle jsHandleResult)
+            {
+                // If the function returns `adoptedThis`, then we return `this` and T is a IJSHandle.
+                if (jsHandleResult == adoptedThis)
+                {
+                    return (T)(object)this;
+                }
+
+                return (T)(object)await Realm.TransferHandleAsync(jsHandleResult).ConfigureAwait(false);
+            }
+
+            // If the function returns an array of handlers, transfer them into the current realm.
+            if (typeof(T).IsArray)
+            {
+                var enumerable = result as IEnumerable<IJSHandle>;
+                return (T)(object)await Task.WhenAll(
+                    enumerable.Select(item => item is IJSHandle ? Realm.TransferHandleAsync(item) : Task.FromResult(item))).ConfigureAwait(false);
+            }
+
+            if (result is IDictionary<string, IJSHandle> dictionaryResult)
+            {
+                foreach (var key in dictionaryResult.Keys)
+                {
+                    dictionaryResult[key] = await Realm.TransferHandleAsync(dictionaryResult[key]).ConfigureAwait(false);
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -123,7 +123,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("JSHandle is disposed!");
             }
 
-            if (jSHandle.ExecutionContext != context)
+            if ((jSHandle as JSHandle).Realm != context.World)
             {
                 throw new PuppeteerException("JSHandles can be evaluated only in the context they were created!");
             }

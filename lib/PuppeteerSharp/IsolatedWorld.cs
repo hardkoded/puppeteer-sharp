@@ -114,8 +114,7 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            if (handle.ExecutionContext == context)
+            if ((handle as JSHandle).Realm == this)
             {
                 return handle;
             }
@@ -136,7 +135,7 @@ namespace PuppeteerSharp
         {
             var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
 
-            if (executionContext == handle.ExecutionContext)
+            if ((handle as JSHandle).Realm == this)
             {
                 return handle;
             }

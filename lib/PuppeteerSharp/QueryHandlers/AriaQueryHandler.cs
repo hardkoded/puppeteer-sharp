@@ -26,14 +26,13 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
         {
-            var context = (ExecutionContext)element.ExecutionContext;
-            var world = context.World;
+            var elementHandle = element as ElementHandle;
             var ariaSelector = ParseAriaSelector(selector);
-            var results = await QueryAXTreeAsync(context.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
+            var results = await QueryAXTreeAsync(elementHandle.Realm.Environment.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
 
             foreach (var item in results)
             {
-                yield return await world.AdoptBackendNodeAsync(item.BackendDOMNodeId).ConfigureAwait(false);
+                yield return await elementHandle.Realm.AdoptBackendNodeAsync(item.BackendDOMNodeId).ConfigureAwait(false);
             }
         }
 

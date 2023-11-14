@@ -30,8 +30,6 @@ namespace PuppeteerSharp
         private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
         private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private ExecutionContext _executionContext;
-        private Func<ExecutionContext, RemoteObject, IJSHandle> _jsHandleFactory;
 
         internal WebWorker(
             CDPSession client,
@@ -41,7 +39,7 @@ namespace PuppeteerSharp
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
             Client = client;
-            MainRealm = new IsolatedWorld(null, this, new TimeoutSettings());
+            World = new IsolatedWorld(null, this, new TimeoutSettings());
             Url = url;
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;
@@ -78,11 +76,11 @@ namespace PuppeteerSharp
         CDPSession IEnvironment.Client => Client;
 
         /// <inheritdoc/>
-        Realm IEnvironment.MainRealm => MainRealm;
+        Realm IEnvironment.MainRealm => World;
 
         internal CDPSession Client { get; }
 
-        internal Realm MainRealm { get; }
+        internal IsolatedWorld World { get; }
 
         internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
 
@@ -170,21 +168,19 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray(),
+                consoleData.Args.Select(i => new JSHandle(World, i)).ToArray(),
                 consoleData.StackTrace)
                     .ConfigureAwait(false);
         }
 
         private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
         {
-            if (_jsHandleFactory == null)
+            if (!World.HasContext)
             {
-                _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, Client, remoteObject);
-                _executionContext = new ExecutionContext(
+                World.SetContext(new ExecutionContext(
                     Client,
                     e.Context,
-                    null);
-                _executionContextCallback.TrySetResult(_executionContext);
+                    World));
             }
         }
     }
