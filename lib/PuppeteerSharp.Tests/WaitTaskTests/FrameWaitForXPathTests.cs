@@ -12,10 +12,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     public sealed class FrameWaitForXPathTests : PuppeteerPageBaseTest
     {
-        const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+        private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
         private PollerInterceptor _pollerInterceptor;
 
-        public FrameWaitForXPathTests(): base()
+        public FrameWaitForXPathTests()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
 
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForXPathPromise;
-            Assert.AreEqual(frame2, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(frame2, eHandle.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should throw when frame is detached")]

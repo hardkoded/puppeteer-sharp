@@ -9,11 +9,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     public class FrameWaitForSelectorTests : PuppeteerPageBaseTest
     {
-        const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
-
-        public FrameWaitForSelectorTests(): base()
-        {
-        }
+        private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should immediately resolve promise if node exists")]
         [PuppeteerTimeout]
@@ -57,7 +53,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should work when node is added through innerHTML")]
         [PuppeteerTimeout]
-        public async Task ShouldWorkWhenNodeIsAddedThroughInnerHTML()
+        public async Task ShouldWorkWhenNodeIsAddedThroughInnerHtml()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var watchdog = Page.WaitForSelectorAsync("h3 div");
@@ -77,7 +73,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await watchdog;
-            Assert.AreEqual(Page.MainFrame, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(Page.MainFrame, eHandle.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should run in specified frame")]
@@ -92,7 +88,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForSelectorPromise;
-            Assert.AreEqual(frame2, eHandle.ExecutionContext.Frame);
+            Assert.AreEqual(frame2, eHandle.Frame);
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should throw when frame is detached")]
@@ -162,7 +158,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldWaitForVisibleBoundingBox()
         {
             var divFound = false;
-            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+            var _ = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
                 .ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div style='width: 0;'>text</div>");
             await Task.Delay(100);
