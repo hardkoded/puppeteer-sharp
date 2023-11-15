@@ -46,11 +46,12 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<IJSHandle> GetPropertyAsync(string propertyName)
-            => EvaluateFunctionHandleAsync(
-                @"(object, propertyName) => {
-                    return object[propertyName];
-                }",
-                propertyName);
+            => BindIsolatedHandleAsync(handle =>
+                handle.EvaluateFunctionHandleAsync(
+                    @"(object, propertyName) => {
+                        return object[propertyName];
+                    }",
+                    propertyName));
 
         /// <inheritdoc/>
         public Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()

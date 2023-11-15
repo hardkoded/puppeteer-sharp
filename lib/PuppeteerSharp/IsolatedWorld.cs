@@ -114,6 +114,11 @@ namespace PuppeteerSharp
                 return handle;
             }
 
+            if (handle.RemoteObject.ObjectId == null)
+            {
+                return handle;
+            }
+
             var info = await Client.SendAsync<DomDescribeNodeResponse>(
                 "DOM.describeNode",
                 new DomDescribeNodeRequest
