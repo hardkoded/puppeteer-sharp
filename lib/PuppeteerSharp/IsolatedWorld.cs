@@ -135,7 +135,7 @@ namespace PuppeteerSharp
 
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = ((ElementHandle)handle).RemoteObject.ObjectId,
+                ObjectId = ((JSHandle)handle).RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
