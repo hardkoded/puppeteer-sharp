@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -845,20 +846,33 @@ namespace PuppeteerSharp
             }
 
             // If the function returns an array of handlers, transfer them into the current realm.
-            if (typeof(T).IsArray)
+            // Dynamic arrays using generics can be hard to translate
+            if (typeof(T).IsArray && result is IEnumerable enumerable)
             {
-                var enumerable = result as IEnumerable<IJSHandle>;
+                var resultArray = new List<object>();
 
-                if (typeof(T).GetElementType() == typeof(IElementHandle))
+                foreach (var item in enumerable)
                 {
-                    return (T)(object)await Task.WhenAll(
-                        enumerable.Select(
-                            async item => await Realm.TransferHandleAsync(item).ConfigureAwait(false) as IElementHandle)).ConfigureAwait(false);
+                    if (item is IJSHandle jsHandle)
+                    {
+                        resultArray.Add(await Realm.TransferHandleAsync(jsHandle).ConfigureAwait(false));
+                    }
+                    else
+                    {
+                        resultArray.Add(item);
+                    }
                 }
 
-                return (T)(object)await Task.WhenAll(
-                    enumerable.Select(
-                        item => item is IJSHandle ? Realm.TransferHandleAsync(item) : Task.FromResult(item))).ConfigureAwait(false);
+                var elementType = typeof(T).GetElementType();
+                var output = Array.CreateInstance(elementType, resultArray.Count);
+
+                for (var i = 0; i < resultArray.Count; i++)
+                {
+                    // You can use Convert.ChangeType to convert values to the desired type
+                    output.SetValue(Convert.ChangeType(resultArray[i], elementType, CultureInfo.CurrentCulture), i);
+                }
+
+                return (T)(object)output;
             }
 
             if (result is IDictionary<string, IJSHandle> dictionaryResult)
