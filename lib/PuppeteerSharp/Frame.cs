@@ -396,30 +396,6 @@ namespace PuppeteerSharp
 
         internal void ClearContext() => _documentTask = null;
 
-        internal Task<ElementHandle> GetDocumentAsync()
-        {
-            if (_documentTask != null)
-            {
-                return _documentTask;
-            }
-
-            async Task<ElementHandle> EvaluateDocumentInContext()
-            {
-                var document = await EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
-
-                if (document is not ElementHandle element)
-                {
-                    throw new PuppeteerException("Document is null");
-                }
-
-                return element;
-            }
-
-            _documentTask = EvaluateDocumentInContext();
-
-            return _documentTask;
-        }
-
         internal void OnLoadingStarted() => HasStartedLoading = true;
 
         internal void OnLoadingStopped()
@@ -466,6 +442,30 @@ namespace PuppeteerSharp
               this,
               null,
               FrameManager.TimeoutSettings);
+        }
+
+        private Task<ElementHandle> GetDocumentAsync()
+        {
+            if (_documentTask != null)
+            {
+                return _documentTask;
+            }
+
+            async Task<ElementHandle> EvaluateDocumentInContext()
+            {
+                var document = await IsolatedRealm.EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
+
+                if (document is not ElementHandle)
+                {
+                    throw new PuppeteerException("Document is null");
+                }
+
+                return await MainRealm.TransferHandleAsync(document).ConfigureAwait(false) as ElementHandle;
+            }
+
+            _documentTask = EvaluateDocumentInContext();
+
+            return _documentTask;
         }
     }
 }
