@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -847,8 +848,17 @@ namespace PuppeteerSharp
             if (typeof(T).IsArray)
             {
                 var enumerable = result as IEnumerable<IJSHandle>;
+
+                if (typeof(T).GetElementType() == typeof(IElementHandle))
+                {
+                    return (T)(object)await Task.WhenAll(
+                        enumerable.Select(
+                            async item => await Realm.TransferHandleAsync(item).ConfigureAwait(false) as IElementHandle)).ConfigureAwait(false);
+                }
+
                 return (T)(object)await Task.WhenAll(
-                    enumerable.Select(item => item is IJSHandle ? Realm.TransferHandleAsync(item) : Task.FromResult(item))).ConfigureAwait(false);
+                    enumerable.Select(
+                        item => item is IJSHandle ? Realm.TransferHandleAsync(item) : Task.FromResult(item))).ConfigureAwait(false);
             }
 
             if (result is IDictionary<string, IJSHandle> dictionaryResult)
