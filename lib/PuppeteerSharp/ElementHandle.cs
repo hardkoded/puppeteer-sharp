@@ -292,7 +292,7 @@ namespace PuppeteerSharp
 
                 var handles = await handle.QuerySelectorAllAsync(selector).ConfigureAwait(false);
 
-                var elements = await EvaluateFunctionHandleAsync(
+                var elements = await handle.EvaluateFunctionHandleAsync(
                     @"(_, ...elements) => {
                         return elements;
                     }",

@@ -109,7 +109,7 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            if ((handle as JSHandle)?.Realm.Client == Client)
             {
                 return handle;
             }
