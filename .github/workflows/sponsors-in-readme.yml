@@ -16,3 +16,8 @@ jobs:
           organization: true
           token: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
           file: 'README.md'
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: master
+          folder: '.'
