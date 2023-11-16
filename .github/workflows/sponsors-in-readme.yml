@@ -16,8 +16,12 @@ jobs:
           organization: true
           token: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
           file: 'README.md'
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Push PR
+        uses: peter-evans/create-pull-request@v5
         with:
-          branch: master
-          folder: '.'
+          commit-message: Update sponsors
+          title: "Update sponsors"
+          body: Update sponsors
+          branch: sponsors
+          base: ${{ inputs.target_branch }}
+          delete-branch: true
