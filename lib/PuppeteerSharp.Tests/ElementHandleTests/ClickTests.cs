@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is detached from document", exception.Message);
+            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for hidden nodes")]

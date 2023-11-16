@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
@@ -8,7 +7,7 @@ using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
-    /// <inheritdoc/>
+    /// <inheritdoc cref="PuppeteerSharp.IFrame" />
     public class Frame : IFrame, IEnvironment
     {
         private Task<ElementHandle> _documentTask;
@@ -33,7 +32,7 @@ namespace PuppeteerSharp
         public string Url { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public bool Detached { get; set; }
+        public bool Detached { get; private set; }
 
         /// <inheritdoc/>
         public IPage Page => FrameManager.Page;
@@ -59,7 +58,7 @@ namespace PuppeteerSharp
 
         internal FrameManager FrameManager { get; }
 
-        internal string LoaderId { get; set; }
+        internal string LoaderId { get; private set; }
 
         internal List<string> LifecycleEvents { get; } = new();
 
@@ -158,6 +157,12 @@ namespace PuppeteerSharp
         public async Task<string[]> SelectAsync(string selector, params string[] values)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
             return await handle.SelectAsync(values).ConfigureAwait(false);
         }
 
@@ -369,6 +374,12 @@ namespace PuppeteerSharp
         public async Task ClickAsync(string selector, ClickOptions options = null)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
             await handle.ClickAsync(options).ConfigureAwait(false);
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -377,6 +388,12 @@ namespace PuppeteerSharp
         public async Task HoverAsync(string selector)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
             await handle.HoverAsync().ConfigureAwait(false);
         }
 
@@ -384,6 +401,12 @@ namespace PuppeteerSharp
         public async Task FocusAsync(string selector)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
             await handle.FocusAsync().ConfigureAwait(false);
         }
 
@@ -391,6 +414,12 @@ namespace PuppeteerSharp
         public async Task TypeAsync(string selector, string text, TypeOptions options = null)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
             await handle.TypeAsync(text, options).ConfigureAwait(false);
         }
 

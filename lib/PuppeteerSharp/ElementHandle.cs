@@ -693,8 +693,7 @@ namespace PuppeteerSharp
                                 inline: 'center',
                                 behavior: 'instant',
                             });
-                        }",
-                        null).ConfigureAwait(false);
+                        }").ConfigureAwait(false);
                 }
 
                 return handle;
