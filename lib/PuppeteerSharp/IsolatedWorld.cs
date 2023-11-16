@@ -29,15 +29,22 @@ namespace PuppeteerSharp
         public IsolatedWorld(
             Frame frame,
             WebWorker worker,
-            TimeoutSettings timeoutSettings) : base(timeoutSettings)
+            TimeoutSettings timeoutSettings,
+            bool isMainWorld) : base(timeoutSettings)
         {
             Frame = frame;
             Worker = worker;
+            IsMainWorld = isMainWorld;
             _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
             Client.MessageReceived += Client_MessageReceived;
         }
+
+        /// <summary>
+        /// This property is not upstream. It's helpful for debugging.
+        /// </summary>
+        internal bool IsMainWorld { get; }
 
         internal Frame Frame { get; }
 

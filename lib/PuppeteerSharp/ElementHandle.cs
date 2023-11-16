@@ -284,33 +284,32 @@ namespace PuppeteerSharp
             });
 
         /// <inheritdoc/>
-        public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
-            => BindIsolatedHandleAsync(async handle =>
+        public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
+        {
+            if (string.IsNullOrEmpty(selector))
             {
-                if (string.IsNullOrEmpty(selector))
-                {
-                    throw new ArgumentNullException(nameof(selector));
-                }
+                throw new ArgumentNullException(nameof(selector));
+            }
 
-                var handles = await handle.QuerySelectorAllAsync(selector).ConfigureAwait(false);
+            var handles = await QuerySelectorAllAsync(selector).ConfigureAwait(false);
 
-                var elements = await handle.EvaluateFunctionHandleAsync(
-                    @"(_, ...elements) => {
+            var elements = await EvaluateFunctionHandleAsync(
+                @"(_, ...elements) => {
                         return elements;
                     }",
-                    handles).ConfigureAwait(false) as JSHandle;
+                handles).ConfigureAwait(false) as JSHandle;
 
-                elements.DisposeAction = async () =>
+            elements.DisposeAction = async () =>
+            {
+                // We can't use Task.WhenAll with ValueTask :(
+                foreach (var item in handles)
                 {
-                    // We can't use Task.WhenAll with ValueTask :(
-                    foreach (var item in handles)
-                    {
-                        await item.DisposeAsync().ConfigureAwait(false);
-                    }
-                };
+                    await item.DisposeAsync().ConfigureAwait(false);
+                }
+            };
 
-                return (IJSHandle)elements;
-            });
+            return elements;
+        }
 
         /// <inheritdoc/>
         public Task<IElementHandle[]> XPathAsync(string expression)

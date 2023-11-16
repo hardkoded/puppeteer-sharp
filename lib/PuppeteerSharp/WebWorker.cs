@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
             Client = client;
-            World = new IsolatedWorld(null, this, new TimeoutSettings());
+            World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
             Url = url;
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;

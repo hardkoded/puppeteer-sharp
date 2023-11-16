@@ -436,12 +436,14 @@ namespace PuppeteerSharp
             MainRealm = new IsolatedWorld(
               this,
               null,
-              FrameManager.TimeoutSettings);
+              FrameManager.TimeoutSettings,
+              true);
 
             IsolatedRealm = new IsolatedWorld(
               this,
               null,
-              FrameManager.TimeoutSettings);
+              FrameManager.TimeoutSettings,
+              false);
         }
 
         private Task<ElementHandle> GetDocumentAsync()
