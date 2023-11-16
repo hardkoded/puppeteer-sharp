@@ -868,7 +868,7 @@ namespace PuppeteerSharp
                 for (var i = 0; i < resultArray.Count; i++)
                 {
                     // You can use Convert.ChangeType to convert values to the desired type
-                    output.SetValue(Convert.ChangeType(resultArray[i], elementType, CultureInfo.CurrentCulture), i);
+                    output.SetValue(resultArray[i], i);
                 }
 
                 return (T)(object)output;
