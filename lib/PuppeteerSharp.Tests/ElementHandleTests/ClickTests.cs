@@ -32,15 +32,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for TextNodes")]
+        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should not work for TextNodes")]
         [PuppeteerTimeout]
-        public async Task ShouldWorkForTextNodes()
+        public async Task ShouldNotWorkForTextNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var buttonTextNode = (IElementHandle)await Page.EvaluateExpressionHandleAsync(
                 "document.querySelector('button').firstChild");
-            var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await buttonTextNode.ClickAsync());
-            Assert.AreEqual("Node is not of type HTMLElement", exception.Message);
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () => await buttonTextNode.ClickAsync());
+            Assert.That(exception.Message, Does.Contain("is not of type 'Element'"));
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for detached nodes")]

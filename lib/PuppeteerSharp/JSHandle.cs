@@ -139,8 +139,14 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync(script, args, false);
+        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        {
+            var list = new List<object>(args);
+            var adoptedThis = await Realm.AdoptHandleAsync(this).ConfigureAwait(false);
+            list.Insert(0, adoptedThis);
+            return await Realm.EvaluateFunctionAsync<JToken>(script, list.ToArray())
+                .ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -148,15 +154,6 @@ namespace PuppeteerSharp
             var list = new List<object>(args);
             list.Insert(0, this);
             return Realm.EvaluateFunctionAsync<T>(script, list.ToArray());
-        }
-
-        internal async Task<JToken> EvaluateFunctionAsync(string script, object[] args, bool adopt)
-        {
-            var list = new List<object>(args);
-            var adoptedThis = await Frame.IsolatedRealm.AdoptHandleAsync(this).ConfigureAwait(false);
-            list.Insert(0, adoptedThis);
-            return await Frame.IsolatedRealm.EvaluateFunctionAsync<JToken>(script, list.ToArray())
-                .ConfigureAwait(false);
         }
     }
 }

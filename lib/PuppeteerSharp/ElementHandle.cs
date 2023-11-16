@@ -694,8 +694,7 @@ namespace PuppeteerSharp
                                 behavior: 'instant',
                             });
                         }",
-                        null,
-                        true).ConfigureAwait(false);
+                        null).ConfigureAwait(false);
                 }
 
                 return handle;
