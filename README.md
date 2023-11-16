@@ -166,7 +166,7 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 <img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/JetBrains_beam_logo.svg/1200px-JetBrains_beam_logo.svg.png" width="200" height="200"/>
 </div>
 
-And a huge thanks to everyone who has sponsored this project:
+And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
 <!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/curtiswmcmillin"><img src="https://github.com/curtiswmcmillin.png" width="60px" alt="Curtis W McMillin" /></a><!-- sponsors -->
 
