@@ -159,10 +159,15 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ## Sponsors
 
-A huge thanks to everyone who has sponsored this project:
+A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp from Nov 2023 via the [.NET on AWS Open Source Software Fund](https://github.com/aws/dotnet-foss) and [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
+
+<div style="display:inline">
+<img src="https://raw.githubusercontent.com/aaubry/YamlDotNet/master/Sponsors/aws-logo-small.png" width="200" height="200"/>
+<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/JetBrains_beam_logo.svg/1200px-JetBrains_beam_logo.svg.png" width="200" height="200"/>
+</div>
+
+And a huge thanks to everyone who has sponsored this project:
 
 <!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/curtiswmcmillin"><img src="https://github.com/curtiswmcmillin.png" width="60px" alt="Curtis W McMillin" /></a><!-- sponsors -->
 
-But a massive thanks in particular to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp from Nov 2023 via the [.NET on AWS Open Source Software Fund](https://github.com/aws/dotnet-foss).
 
-Thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
