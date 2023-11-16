@@ -14,5 +14,5 @@ jobs:
         uses: JamesIves/github-sponsors-readme-action@v1
         with:
           organization: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
           file: 'README.md'
