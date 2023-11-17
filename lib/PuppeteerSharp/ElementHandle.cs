@@ -659,7 +659,7 @@ namespace PuppeteerSharp
         public Task<bool> IsVisibleAsync() => BindIsolatedHandleAsync(handle => CheckVisibilityAsync(handle, true));
 
         /// <inheritdoc/>
-        public Task<bool> IsHiddenAsync() => BindIsolatedHandleAsync(handle => CheckVisibilityAsync(handle, true));
+        public Task<bool> IsHiddenAsync() => BindIsolatedHandleAsync(handle => CheckVisibilityAsync(handle, false));
 
         /// <inheritdoc/>
         public override Task<IJSHandle> GetPropertyAsync(string propertyName)
