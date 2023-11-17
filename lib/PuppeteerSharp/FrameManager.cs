@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
-using static System.Collections.Specialized.BitVector32;
 
 namespace PuppeteerSharp
 {
@@ -57,7 +56,7 @@ namespace PuppeteerSharp
 
         internal TimeoutSettings TimeoutSettings { get; }
 
-        internal FrameTree FrameTree { get; private set; } = new();
+        internal FrameTree FrameTree { get; } = new();
 
         public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
@@ -67,48 +66,44 @@ namespace PuppeteerSharp
             var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
                 ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
                 : options.ReferrerPolicy;
-            var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+            var timeout = options.Timeout ?? TimeoutSettings.NavigationTimeout;
 
-            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
+            using var watcher = new LifecycleWatcher(this, frame, options.WaitUntil, timeout);
+            try
             {
-                try
-                {
-                    var navigateTask = NavigateAsync(Client, url, referrer, referrerPolicy, frame.Id);
-                    var task = await Task.WhenAny(
-                        watcher.TimeoutOrTerminationTask,
-                        navigateTask).ConfigureAwait(false);
+                var navigateTask = NavigateAsync(Client, url, referrer, referrerPolicy, frame.Id);
+                var task = await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    navigateTask).ConfigureAwait(false);
 
-                    await task.ConfigureAwait(false);
+                await task.ConfigureAwait(false);
 
-                    task = await Task.WhenAny(
-                        watcher.TimeoutOrTerminationTask,
-                        _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
+                task = await Task.WhenAny(
+                    watcher.TimeoutOrTerminationTask,
+                    _ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
 
-                    await task.ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    throw new NavigationException(ex.Message, ex);
-                }
-
-                return watcher.NavigationResponse;
+                await task.ConfigureAwait(false);
             }
+            catch (Exception ex)
+            {
+                throw new NavigationException(ex.Message, ex);
+            }
+
+            return watcher.NavigationResponse;
         }
 
         public async Task<IResponse> WaitForFrameNavigationAsync(Frame frame, NavigationOptions options = null)
         {
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
-            using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
-            {
-                var raceTask = await Task.WhenAny(
-                    watcher.NewDocumentNavigationTask,
-                    watcher.SameDocumentNavigationTask,
-                    watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
+            using var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout);
+            var raceTask = await Task.WhenAny(
+                watcher.NewDocumentNavigationTask,
+                watcher.SameDocumentNavigationTask,
+                watcher.TimeoutOrTerminationTask).ConfigureAwait(false);
 
-                await raceTask.ConfigureAwait(false);
+            await raceTask.ConfigureAwait(false);
 
-                return watcher.NavigationResponse;
-            }
+            return watcher.NavigationResponse;
         }
 
         internal async Task InitializeAsync(CDPSession client = null)
@@ -182,8 +177,6 @@ namespace PuppeteerSharp
             _ = InitializeAsync(e.Target.Session);
         }
 
-        internal Frame GetFrame(string frameid) => FrameTree.GetById(frameid);
-
         internal Frame[] GetFrames() => FrameTree.Frames;
 
         internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
@@ -191,6 +184,8 @@ namespace PuppeteerSharp
             _contextIdToContext.TryGetValue($"{session.Id}:{contextId}", out var context);
             return context;
         }
+
+        private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string referrerPolicy, string frameId)
         {
@@ -255,8 +250,6 @@ namespace PuppeteerSharp
                         case "Page.lifecycleEvent":
                             OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
                             break;
-                        default:
-                            break;
                     }
                 }
                 catch (Exception ex)
@@ -319,7 +312,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload, CDPSession session)
+        private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload, ICDPSession session)
         {
             var frameId = contextPayload.AuxData?.FrameId;
             var frame = !string.IsNullOrEmpty(frameId) ? await FrameTree.GetFrameAsync(frameId).ConfigureAwait(false) : null;
@@ -343,6 +336,12 @@ namespace PuppeteerSharp
                     // We can use either.
                     world = frame.PuppeteerWorld;
                 }
+            }
+
+            // If there is no world, the context is not meant to be handled by us.
+            if (world == null)
+            {
+                return;
             }
 
             var context = new ExecutionContext(frame?.Client ?? Client, contextPayload, world);

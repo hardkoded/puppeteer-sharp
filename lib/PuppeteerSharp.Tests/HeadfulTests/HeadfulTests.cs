@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     {
         private readonly LaunchOptions _forcedOopifOptions;
 
-        public HeadfulTests(): base()
+        public HeadfulTests()
         {
             _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
             _forcedOopifOptions.Headless =  false;
@@ -29,9 +29,9 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task BackgroundPageTargetTypeShouldBeAvailable()
         {
-            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory))
+                TestConstants.LoggerFactory);
             await using (await browserWithExtension.NewPageAsync())
             {
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
@@ -43,59 +43,51 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         [Ignore("Marked as Fail/Pass upstream")]
         public async Task TargetPageShouldReturnABackgroundPage()
         {
-            await using (var browserWithExtension = await Puppeteer.LaunchAsync(
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory))
-            {
-                var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
-                await using (var page = await backgroundPageTarget.PageAsync())
-                {
-                    Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-                    Assert.AreEqual(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
-                }
-            }
+                TestConstants.LoggerFactory);
+            var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
+            await using var page = await backgroundPageTarget.PageAsync();
+            Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
+            Assert.AreEqual(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "should have default url when launching browser")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
-            await using (var browser = await Puppeteer.LaunchAsync(
+            await using var browser = await Puppeteer.LaunchAsync(
                 TestConstants.BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory))
-            {
-                var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
-                Assert.AreEqual(new[] { "about:blank" }, pages);
-            }
+                TestConstants.LoggerFactory);
+            var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
+            Assert.AreEqual(new[] { "about:blank" }, pages);
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "headless should be able to read cookies written by headful")]
         [Ignore("Puppeteer ignores this in windows we do not have a platform filter yet")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
-            using (var userDataDir = new TempDirectory())
+            using var userDataDir = new TempDirectory();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+            options.Headless = false;
+            await using (var browser = await launcher.LaunchAsync(options))
+            await using (var page = await browser.NewPageAsync())
             {
-                var launcher = new Launcher(TestConstants.LoggerFactory);
-                var options = TestConstants.DefaultBrowserOptions();
-                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
-                options.Headless = false;
-                await using (var browser = await launcher.LaunchAsync(options))
-                await using (var page = await browser.NewPageAsync())
-                {
-                    await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync(
-                        "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
-                }
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync(
+                    "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
+            }
 
-                await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
+            await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
 
-                options.Headless = true;
-                await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-                {
-                    var page2 = await browser2.NewPageAsync();
-                    await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.AreEqual("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
-                }
+            options.Headless = true;
+            await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var page2 = await browser2.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage);
+                Assert.AreEqual("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
             }
         }
 
@@ -106,24 +98,22 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             // https://google.com is isolated by default in Chromium embedder.
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Headless = false;
-            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
-            await using (var page = await browser.NewPageAsync())
-            {
-                await page.GoToAsync(TestConstants.EmptyPage);
-                await page.SetRequestInterceptionAsync(true);
-                page.Request += async (_, e) => await e.Request.RespondAsync(
-                    new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
-                await page.EvaluateFunctionHandleAsync(@"() => {
+            await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.EmptyPage);
+            await page.SetRequestInterceptionAsync(true);
+            page.Request += async (_, e) => await e.Request.RespondAsync(
+                new ResponseData { Body = "{ body: 'YO, GOOGLE.COM'}" });
+            await page.EvaluateFunctionHandleAsync(@"() => {
                     const frame = document.createElement('iframe');
                     frame.setAttribute('src', 'https://google.com/');
                     document.body.appendChild(frame);
                     return new Promise(x => frame.onload = x);
                 }");
-                await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
-                var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
-                Array.Sort(urls);
-                Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
-            }
+            await page.WaitForSelectorAsync("iframe[src=\"https://google.com/\"]");
+            var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
+            Array.Sort((Array)urls);
+            Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
         }
 
         [PuppeteerTest("headful.spec.ts", "HEADFUL", "OOPIF: should expose events within OOPIFs")]

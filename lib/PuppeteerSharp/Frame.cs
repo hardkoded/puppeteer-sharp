@@ -73,7 +73,15 @@ namespace PuppeteerSharp
         internal bool HasStartedLoading { get; private set; }
 
         /// <inheritdoc/>
-        public Task<IResponse> GoToAsync(string url, NavigationOptions options) => FrameManager.NavigateFrameAsync(this, url, options);
+        public Task<IResponse> GoToAsync(string url, NavigationOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            return FrameManager.NavigateFrameAsync(this, url, options);
+        }
 
         /// <inheritdoc/>
         public Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)

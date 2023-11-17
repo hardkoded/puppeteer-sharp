@@ -1675,6 +1675,13 @@ namespace PuppeteerSharp
             }
 
             var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, Client);
+
+            if (ctx == null)
+            {
+                _logger.LogError($"ExecutionContext not found from message.");
+                return Task.CompletedTask;
+            }
+
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
