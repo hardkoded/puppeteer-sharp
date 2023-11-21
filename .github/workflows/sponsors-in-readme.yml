@@ -1,0 +1,27 @@
+name: Generate Sponsors README
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 30 15 * * 0-6
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Generate Sponsors 💖
+        uses: JamesIves/github-sponsors-readme-action@v1
+        with:
+          organization: true
+          token: ${{ secrets.SPONSORS_README_ACTION_PERSONAL_ACCESS_TOKEN }}
+          file: 'README.md'
+      - name: Push PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update sponsors
+          title: "Update sponsors"
+          body: Update sponsors
+          branch: sponsors
+          base: ${{ inputs.target_branch }}
+          delete-branch: true

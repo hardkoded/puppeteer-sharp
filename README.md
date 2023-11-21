@@ -14,23 +14,6 @@
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/puppeteer/puppeteer).
 
-# Google for testing is here!
-
-Puppeteer Sharp v11 introduced some breaking changes. 
-
-![image](https://github.com/hardkoded/puppeteer-sharp/assets/2198466/fa8ef603-d402-4df3-bef6-08a088c29c71)
-
-I recommend you to go to [the release page](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v11.0.0) and take a look at those changes.
-
-But it brings Google for testing!
-
-![image](https://github.com/hardkoded/puppeteer-sharp/assets/2198466/57ab6d98-21e0-43c2-9259-4d05d41ef55b)
-
-Now, PuppeteerSharp uses Google for testing instead of Chromium. And the new supported version is v115!  
-You can still you Chromium if you want to by using `SupportedBrowser.Chromium`.
-
-Feel free to [create an issue](https://github.com/hardkoded/puppeteer-sharp/issues/new) if these new changes don't work for you.
-
 ## Useful links
 
 * [API Documentation](http://www.puppeteersharp.com/api/index.html)
@@ -174,16 +157,17 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 }
 ```
 
-## Backers
+## Sponsors
 
-Support us with a monthly donation and help us continue our activities. [Become a backer](https://opencollective.com/hardkoded-projects).
+A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp from Nov 2023 via the [.NET on AWS Open Source Software Fund](https://github.com/aws/dotnet-foss) and [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
 
-<a href="https://opencollective.com/puppeteer-sharp/backer/0/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/1/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/2/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/puppeteer-sharp/backer/3/website" target="_blank"><img src="https://opencollective.com/hardkoded-projects/backer/4/avatar.svg"></a>
+<div style="display:inline">
+<img src="https://raw.githubusercontent.com/aaubry/YamlDotNet/master/Sponsors/aws-logo-small.png" width="200" height="200"/>
+<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/JetBrains_beam_logo.svg/1200px-JetBrains_beam_logo.svg.png" width="200" height="200"/>
+</div>
 
-## Thanks
+And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-Thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper license to use on this project.
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/curtiswmcmillin"><img src="https://github.com/curtiswmcmillin.png" width="60px" alt="Curtis W McMillin" /></a><!-- sponsors -->
+
+
