@@ -40,7 +40,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var buttonTextNode = (IElementHandle)await Page.EvaluateExpressionHandleAsync(
                 "document.querySelector('button').firstChild");
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () => await buttonTextNode.ClickAsync());
-            Assert.That(exception.Message, Does.Contain("is not of type 'Element'"));
+
+            if (TestConstants.IsChrome)
+            {
+                Assert.That(exception.Message, Does.Contain("is not of type 'Element'"));
+            }
+            else
+            {
+                Assert.That(exception.Message, Does.Contain("implement interface Element"));
+            }
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for detached nodes")]
