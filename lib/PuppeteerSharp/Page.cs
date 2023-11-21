@@ -55,7 +55,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly ConcurrentDictionary<string, Binding> _bindings = new();
-        private readonly ConcurrentDictionary<string, Worker> _workers = new();
+        private readonly ConcurrentDictionary<string, WebWorker> _workers = new();
         private readonly ILogger _logger;
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings = new();
@@ -192,7 +192,7 @@ namespace PuppeteerSharp
         public IFrame[] Frames => FrameManager.GetFrames();
 
         /// <inheritdoc/>
-        public Worker[] Workers => _workers.Values.ToArray();
+        public WebWorker[] Workers => _workers.Values.ToArray();
 
         /// <inheritdoc/>
         public string Url => MainFrame.Url;
@@ -335,23 +335,17 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <inheritdoc/>
-#pragma warning disable CS0618 // Using obsolets
+#pragma warning disable CS0618 // Using obsolete
         public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
 #pragma warning restore CS0618
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
-        {
-            var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
-        }
+        public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+            => MainFrame.EvaluateExpressionHandleAsync(script);
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
-        {
-            var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionHandleAsync(pageFunction, args).ConfigureAwait(false);
-        }
+        public Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
+            => MainFrame.EvaluateFunctionHandleAsync(pageFunction, args);
 
         /// <inheritdoc/>
         public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
@@ -373,8 +367,28 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
         {
-            var context = await MainFrame.GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.QueryObjectsAsync(prototypeHandle).ConfigureAwait(false);
+            if (prototypeHandle == null)
+            {
+                throw new ArgumentNullException(nameof(prototypeHandle));
+            }
+
+            if (prototypeHandle.Disposed)
+            {
+                throw new PuppeteerException("Prototype JSHandle is disposed!");
+            }
+
+            if (prototypeHandle.RemoteObject.ObjectId == null)
+            {
+                throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
+            }
+
+            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
+            {
+                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId,
+            }).ConfigureAwait(false);
+
+            var context = await FrameManager.MainFrame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
+            return context.CreateJSHandle(response.Objects);
         }
 
         /// <inheritdoc/>
@@ -1532,9 +1546,7 @@ namespace PuppeteerSharp
             }
 
             var frame = await FrameManager.FrameTree.GetFrameAsync(e.FrameId).ConfigureAwait(false);
-            var context = await frame.GetExecutionContextAsync().ConfigureAwait(false) as ExecutionContext;
-            var world = context.World;
-            var element = await world.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
+            var element = await frame.MainWorld.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
             var fileChooser = new FileChooser(element, e);
             while (!_fileChooserInterceptors.IsEmpty)
             {
@@ -1577,7 +1589,7 @@ namespace PuppeteerSharp
             if (targetInfo.Type == TargetType.Worker)
             {
                 var session = target.Session;
-                var worker = new Worker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
+                var worker = new WebWorker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
                 _workers[sessionId] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
@@ -1663,6 +1675,13 @@ namespace PuppeteerSharp
             }
 
             var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, Client);
+
+            if (ctx == null)
+            {
+                _logger.LogError($"ExecutionContext not found from message.");
+                return Task.CompletedTask;
+            }
+
             var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);

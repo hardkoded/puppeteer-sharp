@@ -14,19 +14,12 @@ namespace PuppeteerSharp
     [JsonConverter(typeof(JSHandleMethodConverter))]
     public class JSHandle : IJSHandle
     {
-        internal JSHandle(ExecutionContext context, CDPSession client, RemoteObject remoteObject)
+        internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
         {
-            ExecutionContext = context;
-            Client = client;
-            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
+            Realm = world;
             RemoteObject = remoteObject;
+            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
         }
-
-        /// <inheritdoc cref="ExecutionContext"/>
-        public ExecutionContext ExecutionContext { get; }
-
-        /// <inheritdoc/>
-        IExecutionContext IJSHandle.ExecutionContext => ExecutionContext;
 
         /// <inheritdoc/>
         public bool Disposed { get; private set; }
@@ -34,9 +27,15 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public RemoteObject RemoteObject { get; }
 
-        internal CDPSession Client { get; }
+        internal CDPSession Client => Realm.Environment.Client;
 
         internal Func<Task> DisposeAction { get; set; }
+
+        internal IsolatedWorld Realm { get; }
+
+        internal Frame Frame => Realm.Environment as Frame;
+
+        internal string Id => RemoteObject.ObjectId;
 
         /// <summary>
         /// Logger.
@@ -44,50 +43,47 @@ namespace PuppeteerSharp
         protected ILogger Logger { get; }
 
         /// <inheritdoc/>
-        public async Task<IJSHandle> GetPropertyAsync(string propertyName)
-        {
-            var objectHandle = await EvaluateFunctionHandleAsync(
+        public virtual Task<IJSHandle> GetPropertyAsync(string propertyName)
+            => EvaluateFunctionHandleAsync(
                 @"(object, propertyName) => {
-                    const result = { __proto__: null};
-                    result[propertyName] = object[propertyName];
-                    return result;
-                }",
-                propertyName).ConfigureAwait(false);
-            var properties = await objectHandle.GetPropertiesAsync().ConfigureAwait(false);
-            properties.TryGetValue(propertyName, out var result);
-            await objectHandle.DisposeAsync().ConfigureAwait(false);
-            return result;
-        }
+                        return object[propertyName];
+                    }",
+                propertyName);
 
         /// <inheritdoc/>
-        public async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
+        public virtual async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
         {
-            var response = await Client.SendAsync<RuntimeGetPropertiesResponse>("Runtime.getProperties", new RuntimeGetPropertiesRequest
-            {
-                ObjectId = RemoteObject.ObjectId,
-                OwnProperties = true,
-            }).ConfigureAwait(false);
+            var propertyNames = await EvaluateFunctionAsync<string[]>(@"object => {
+                    const enumerableProperties = [];
+                    const descriptors = Object.getOwnPropertyDescriptors(object);
+                    for (const propertyName in descriptors) {
+                        if (descriptors[propertyName]?.enumerable)
+                        {
+                            enumerableProperties.push(propertyName);
+                        }
+                    }
+                    return enumerableProperties;
+                }").ConfigureAwait(false);
 
-            var result = new Dictionary<string, IJSHandle>();
+            var dic = new Dictionary<string, IJSHandle>();
 
-            foreach (var property in response.Result)
+            foreach (var key in propertyNames)
             {
-                if (property.Enumerable == null)
+                var handleItem = await GetPropertyAsync(key).ConfigureAwait(false);
+                if (handleItem is not null)
                 {
-                    continue;
+                    dic.Add(key, handleItem);
                 }
-
-                result.Add(property.Name, ExecutionContext.CreateJSHandle(property.Value));
             }
 
-            return result;
+            return dic;
         }
 
         /// <inheritdoc/>
         public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <inheritdoc/>
-        public async Task<T> JsonValueAsync<T>()
+        public virtual async Task<T> JsonValueAsync<T>()
         {
             var objectId = RemoteObject.ObjectId;
 
@@ -123,15 +119,15 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override string ToString()
         {
-            if (RemoteObject.ObjectId != null)
+            if (RemoteObject.ObjectId == null)
             {
-                var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
-                    ? RemoteObject.Subtype.ToString()
-                    : RemoteObject.Type.ToString();
-                return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
+                return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true);
             }
 
-            return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true)?.ToString();
+            var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
+                ? RemoteObject.Subtype.ToString()
+                : RemoteObject.Type.ToString();
+            return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
         }
 
         /// <inheritdoc/>
@@ -139,15 +135,17 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+            return Realm.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
         }
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var list = new List<object>(args);
-            list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<JToken>(script, list.ToArray());
+            var adoptedThis = await Realm.AdoptHandleAsync(this).ConfigureAwait(false);
+            list.Insert(0, adoptedThis);
+            return await Realm.EvaluateFunctionAsync<JToken>(script, list.ToArray())
+                .ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -155,7 +153,7 @@ namespace PuppeteerSharp
         {
             var list = new List<object>(args);
             list.Insert(0, this);
-            return ExecutionContext.EvaluateFunctionAsync<T>(script, list.ToArray());
+            return Realm.EvaluateFunctionAsync<T>(script, list.ToArray());
         }
     }
 }

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
-            var world =  (Page.MainFrame as Frame).PuppeteerWorld;
+            var world = (Page.MainFrame as Frame).IsolatedRealm;
             var result = await world.EvaluateFunctionAsync<bool>(@"
                       PuppeteerUtil => {
                         return typeof PuppeteerUtil === 'object';
@@ -30,9 +30,9 @@ namespace PuppeteerSharp.Tests.InjectedTests
         [PuppeteerTimeout]
         public async Task CreateFunctionShouldWork()
         {
-            var world = (Page.MainFrame as Frame).PuppeteerWorld;
+            var world = (Page.MainFrame as Frame).IsolatedRealm;
             var result = await (Page.MainFrame as Frame)
-                .PuppeteerWorld.EvaluateFunctionAsync<int>(@"({createFunction}, fnString) => {
+                .IsolatedRealm.EvaluateFunctionAsync<int>(@"({createFunction}, fnString) => {
                     return createFunction(fnString)(4);
                 }",
                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),

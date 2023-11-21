@@ -275,7 +275,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets all workers in the page.
         /// </summary>
-        Worker[] Workers { get; }
+        WebWorker[] Workers { get; }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.

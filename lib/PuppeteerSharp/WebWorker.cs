@@ -24,30 +24,27 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Worker
+    public class WebWorker : IEnvironment
     {
         private readonly ILogger _logger;
-        private readonly CDPSession _client;
         private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
-        private readonly TaskCompletionSource<ExecutionContext> _executionContextCallback = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private ExecutionContext _executionContext;
-        private Func<ExecutionContext, RemoteObject, IJSHandle> _jsHandleFactory;
 
-        internal Worker(
+        internal WebWorker(
             CDPSession client,
             string url,
             Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
             Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
-            _logger = client.Connection.LoggerFactory.CreateLogger<Worker>();
-            _client = client;
+            _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
+            Client = client;
+            World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
             Url = url;
             _consoleAPICalled = consoleAPICalled;
             _exceptionThrown = exceptionThrown;
-            _client.MessageReceived += OnMessageReceived;
+            Client.MessageReceived += OnMessageReceived;
 
-            _ = _client.SendAsync("Runtime.enable").ContinueWith(
+            _ = Client.SendAsync("Runtime.enable").ContinueWith(
                 task =>
                 {
                     if (task.IsFaulted)
@@ -57,7 +54,7 @@ namespace PuppeteerSharp
                 },
                 TaskScheduler.Default);
 
-            _ = _client.SendAsync("Log.enable").ContinueWith(
+            _ = Client.SendAsync("Log.enable").ContinueWith(
                 task =>
                 {
                     if (task.IsFaulted)
@@ -74,7 +71,15 @@ namespace PuppeteerSharp
         /// <value>Worker URL.</value>
         public string Url { get; }
 
-        internal Task<ExecutionContext> ExecutionContextTask => _executionContextCallback.Task;
+        /// <inheritdoc/>
+        CDPSession IEnvironment.Client => Client;
+
+        /// <inheritdoc/>
+        Realm IEnvironment.MainRealm => World;
+
+        internal CDPSession Client { get; }
+
+        internal IsolatedWorld World { get; }
 
         /// <summary>
         /// Executes a script in browser context.
@@ -87,7 +92,7 @@ namespace PuppeteerSharp
         /// <seealso cref="ExecutionContext.EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
         public async Task<T> EvaluateExpressionAsync<T>(string script)
-            => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
+            => await World.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -100,7 +105,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+            => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a function in the context.
@@ -114,7 +119,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-            => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
+            => await World.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -126,7 +131,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
-            => await (await ExecutionContextTask.ConfigureAwait(false)).EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+            => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
         internal async void OnMessageReceived(object sender, MessageEventArgs e)
         {
@@ -149,7 +154,7 @@ namespace PuppeteerSharp
             {
                 var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                Client.Close(message);
             }
         }
 
@@ -160,21 +165,19 @@ namespace PuppeteerSharp
             var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
             await _consoleAPICalled(
                 consoleData.Type,
-                consoleData.Args.Select(i => _jsHandleFactory(_executionContext, i)).ToArray(),
+                consoleData.Args.Select(i => new JSHandle(World, i)).ToArray(),
                 consoleData.StackTrace)
                     .ConfigureAwait(false);
         }
 
         private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
         {
-            if (_jsHandleFactory == null)
+            if (!World.HasContext)
             {
-                _jsHandleFactory = (ctx, remoteObject) => new JSHandle(ctx, _client, remoteObject);
-                _executionContext = new ExecutionContext(
-                    _client,
+                World.SetContext(new ExecutionContext(
+                    Client,
                     e.Context,
-                    null);
-                _executionContextCallback.TrySetResult(_executionContext);
+                    World));
             }
         }
     }

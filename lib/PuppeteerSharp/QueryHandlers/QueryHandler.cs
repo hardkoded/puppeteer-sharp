@@ -73,9 +73,6 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal virtual async Task<IElementHandle> QueryOneAsync(IElementHandle element, string selector)
         {
-            var world = (element.ExecutionContext as ExecutionContext).World
-                ?? throw new PuppeteerException("Element doesn't have a valid world");
-
             var result = await element.EvaluateFunctionHandleAsync(
                 QuerySelector,
                 selector,
@@ -100,7 +97,7 @@ namespace PuppeteerSharp.QueryHandlers
             if (element != null)
             {
                 frame = element.Frame as Frame;
-                element = await frame.PuppeteerWorld.AdoptHandleAsync(element).ConfigureAwait(false) as ElementHandle;
+                element = await frame.IsolatedRealm.AdoptHandleAsync(element).ConfigureAwait(false) as ElementHandle;
             }
 
             try
@@ -137,7 +134,7 @@ namespace PuppeteerSharp.QueryHandlers
                     args.Add(waitForVisible);
                 }
 
-                var jsHandle = await frame.PuppeteerWorld.WaitForFunctionAsync(
+                var jsHandle = await frame.IsolatedRealm.WaitForFunctionAsync(
                     predicate,
                     new()
                     {
@@ -153,7 +150,7 @@ namespace PuppeteerSharp.QueryHandlers
                     return null;
                 }
 
-                return await frame.MainWorld.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
+                return await frame.MainRealm.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
             }
             catch (Exception ex)
             {
@@ -163,9 +160,6 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal virtual async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
         {
-            var world = (element.ExecutionContext as ExecutionContext).World
-                ?? throw new PuppeteerException("Element doesn't have a valid world");
-
             var handle = await element.EvaluateFunctionHandleAsync(
                 QuerySelectorAll,
                 selector,

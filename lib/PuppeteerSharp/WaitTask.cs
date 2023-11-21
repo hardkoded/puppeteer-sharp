@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     internal sealed class WaitTask : IDisposable
     {
-        private readonly IsolatedWorld _isolatedWorld;
+        private readonly Realm _realm;
         private readonly string _fn;
         private readonly WaitForFunctionPollingOption? _polling;
         private readonly int? _pollingInterval;
@@ -22,7 +22,7 @@ namespace PuppeteerSharp
         private bool _terminated;
 
         internal WaitTask(
-            IsolatedWorld isolatedWorld,
+            Realm realm,
             string fn,
             bool isExpression,
             WaitForFunctionPollingOption polling,
@@ -41,14 +41,14 @@ namespace PuppeteerSharp
                 throw new ArgumentOutOfRangeException(nameof(pollingInterval), "Cannot poll with non-positive interval");
             }
 
-            _isolatedWorld = isolatedWorld;
+            _realm = realm;
             _fn = isExpression ? $"() => {{return ({fn});}}" : fn;
             _pollingInterval = pollingInterval;
             _polling = _pollingInterval.HasValue ? null : polling;
             _args = args ?? Array.Empty<object>();
             _root = root;
 
-            _isolatedWorld.TaskManager.Add(this);
+            _realm.TaskManager.Add(this);
 
             if (timeout > 0)
             {
@@ -86,7 +86,7 @@ namespace PuppeteerSharp
             {
                 if (_pollingInterval.HasValue)
                 {
-                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                    _poller = await _realm.EvaluateFunctionHandleAsync(
                             @"
                             ({IntervalPoller, createFunction}, ms, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -103,7 +103,7 @@ namespace PuppeteerSharp
                 }
                 else if (_polling == WaitForFunctionPollingOption.Raf)
                 {
-                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                    _poller = await _realm.EvaluateFunctionHandleAsync(
                             @"
                             ({RAFPoller, createFunction}, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -119,7 +119,7 @@ namespace PuppeteerSharp
                 }
                 else
                 {
-                    _poller = await _isolatedWorld.EvaluateFunctionHandleAsync(
+                    _poller = await _realm.EvaluateFunctionHandleAsync(
                             @"
                             ({MutationPoller, createFunction}, root, fn, ...args) => {
                                 const fun = createFunction(fn);
@@ -161,7 +161,7 @@ namespace PuppeteerSharp
             }
 
             _terminated = true;
-            _isolatedWorld.TaskManager.Delete(this);
+            _realm.TaskManager.Delete(this);
             Cleanup(); // This matches the clearTimeout upstream
 
             if (exception != null)

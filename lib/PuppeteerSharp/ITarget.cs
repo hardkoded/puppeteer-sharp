@@ -59,7 +59,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
         /// </summary>
-        /// <returns>A task that returns a <see cref="Worker"/>.</returns>
-        Task<Worker> WorkerAsync();
+        /// <returns>A task that returns a <see cref="WebWorker"/>.</returns>
+        Task<WebWorker> WorkerAsync();
     }
 }

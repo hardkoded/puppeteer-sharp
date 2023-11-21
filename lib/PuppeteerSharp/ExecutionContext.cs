@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -71,32 +68,6 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
-        /// <inheritdoc/>
-        public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
-        {
-            if (prototypeHandle == null)
-            {
-                throw new ArgumentNullException(nameof(prototypeHandle));
-            }
-
-            if (prototypeHandle.Disposed)
-            {
-                throw new PuppeteerException("Prototype JSHandle is disposed!");
-            }
-
-            if (prototypeHandle.RemoteObject.ObjectId == null)
-            {
-                throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
-            }
-
-            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
-            {
-                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(response.Objects);
-        }
-
         internal async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
@@ -125,34 +96,8 @@ namespace PuppeteerSharp
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(this, Client, remoteObject, Frame, ((Frame)Frame).FrameManager.Page, ((Frame)Frame).FrameManager)
-                : new JSHandle(this, Client, remoteObject);
-
-        internal async Task<IElementHandle> AdoptElementHandleAsync(IElementHandle elementHandle)
-        {
-            if (elementHandle.ExecutionContext == this)
-            {
-                throw new PuppeteerException("Cannot adopt handle that already belongs to this execution context");
-            }
-
-            if (World == null)
-            {
-                throw new PuppeteerException("Cannot adopt handle without DOMWorld");
-            }
-
-            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
-            {
-                ObjectId = elementHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
-
-            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
-            {
-                BackendNodeId = nodeInfo.Node.BackendNodeId,
-                ExecutionContextId = ContextId,
-            }).ConfigureAwait(false);
-
-            return CreateJSHandle(obj.Object) as ElementHandle;
-        }
+                ? new ElementHandle(World, remoteObject)
+                : new JSHandle(World, remoteObject);
 
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {

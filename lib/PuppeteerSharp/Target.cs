@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
 
         /// <inheritdoc/>
-        public virtual Task<Worker> WorkerAsync() => Task.FromResult<Worker>(null);
+        public virtual Task<WebWorker> WorkerAsync() => Task.FromResult<WebWorker>(null);
 
         /// <inheritdoc/>
         public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);

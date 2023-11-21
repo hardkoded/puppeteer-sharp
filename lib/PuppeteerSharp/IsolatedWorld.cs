@@ -3,12 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
@@ -20,41 +18,45 @@ namespace PuppeteerSharp
     /// <returns>Resolved argument.</returns>
     public delegate Task<object> LazyArg(ExecutionContext context);
 
-    internal class IsolatedWorld : IDisposable, IAsyncDisposable
+    internal class IsolatedWorld : Realm, IDisposable, IAsyncDisposable
     {
-        private readonly FrameManager _frameManager;
-        private readonly TimeoutSettings _timeoutSettings;
-        private readonly CDPSession _client;
         private readonly ILogger _logger;
         private readonly List<string> _contextBindings = new();
         private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private Task<ElementHandle> _documentTask;
 
         public IsolatedWorld(
-            CDPSession client,
-            FrameManager frameManager,
             Frame frame,
-            TimeoutSettings timeoutSettings)
+            WebWorker worker,
+            TimeoutSettings timeoutSettings,
+            bool isMainWorld) : base(timeoutSettings)
         {
-            _logger = client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
-            _client = client;
-            _frameManager = frameManager;
             Frame = frame;
-            _timeoutSettings = timeoutSettings;
+            Worker = worker;
+            IsMainWorld = isMainWorld;
+            _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
-            _client.MessageReceived += Client_MessageReceived;
+            Client.MessageReceived += Client_MessageReceived;
         }
 
-        internal TaskManager TaskManager { get; set; } = new();
+        /// <summary>
+        /// This property is not upstream. It's helpful for debugging.
+        /// </summary>
+        internal bool IsMainWorld { get; }
 
         internal Frame Frame { get; }
+
+        internal CDPSession Client => Frame?.Client ?? Worker?.Client;
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
         internal ConcurrentDictionary<string, Binding> Bindings { get; } = new();
+
+        internal override IEnvironment Environment => (IEnvironment)Frame ?? Worker;
+
+        private WebWorker Worker { get; }
 
         public void Dispose() => _bindingQueue.Dispose();
 
@@ -94,19 +96,16 @@ namespace PuppeteerSharp
                     {
                         return;
                     }
-                    else
-                    {
-                        _logger.LogError(ex.ToString());
-                        return;
-                    }
+
+                    _logger.LogError(ex.ToString());
                 }
             }).ConfigureAwait(false);
         }
 
-        internal async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
+        internal override async Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            var obj = await _client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
+            var obj = await Client.SendAsync<DomResolveNodeResponse>("DOM.resolveNode", new DomResolveNodeRequest
             {
                 BackendNodeId = backendNodeId,
                 ExecutionContextId = context.ContextId,
@@ -115,15 +114,19 @@ namespace PuppeteerSharp
             return context.CreateJSHandle(obj.Object) as IElementHandle;
         }
 
-        internal async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
+        internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            if (handle.ExecutionContext == context)
+            if ((handle as JSHandle)?.Realm == this)
             {
                 return handle;
             }
 
-            var info = await _client.SendAsync<DomDescribeNodeResponse>(
+            if (handle.RemoteObject.ObjectId == null)
+            {
+                return handle;
+            }
+
+            var info = await Client.SendAsync<DomDescribeNodeResponse>(
                 "DOM.describeNode",
                 new DomDescribeNodeRequest
                 {
@@ -135,18 +138,16 @@ namespace PuppeteerSharp
             return newHandle;
         }
 
-        internal async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+        internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            var executionContext = await GetExecutionContextAsync().ConfigureAwait(false);
-
-            if (executionContext == handle.ExecutionContext)
+            if ((handle as JSHandle)?.Realm == this)
             {
                 return handle;
             }
 
-            var nodeInfo = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
+            var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = ((ElementHandle)handle).RemoteObject.ObjectId,
+                ObjectId = ((JSHandle)handle).RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
@@ -154,7 +155,7 @@ namespace PuppeteerSharp
         internal void Detach()
         {
             _detached = true;
-            _client.MessageReceived -= Client_MessageReceived;
+            Client.MessageReceived -= Client_MessageReceived;
             TaskManager.TerminateAll(new Exception("waitForFunction failed: frame got detached."));
         }
 
@@ -168,216 +169,46 @@ namespace PuppeteerSharp
             return _contextResolveTaskWrapper.Task;
         }
 
-        internal async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
         }
 
-        internal async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionHandleAsync(script, args).ConfigureAwait(false);
         }
 
-        internal async Task<T> EvaluateExpressionAsync<T>(string script)
+        internal override async Task<T> EvaluateExpressionAsync<T>(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        internal async Task<JToken> EvaluateExpressionAsync(string script)
+        internal override async Task<JToken> EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
-        internal async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
-        internal async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        internal override async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
             return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
         }
 
-        internal async Task<IElementHandle> QuerySelectorAsync(string selector)
-        {
-            var document = await GetDocumentAsync().ConfigureAwait(false);
-            return await document.QuerySelectorAsync(selector).ConfigureAwait(false);
-        }
-
-        internal async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
-        {
-            var document = await GetDocumentAsync().ConfigureAwait(false);
-            return await document.QuerySelectorAllHandleAsync(selector).ConfigureAwait(false);
-        }
-
-        internal async Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
-        {
-            var document = await GetDocumentAsync().ConfigureAwait(false);
-            return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-        }
-
-        internal async Task<IElementHandle[]> XPathAsync(string expression)
-        {
-            var document = await GetDocumentAsync().ConfigureAwait(false);
-            return await document.XPathAsync(expression).ConfigureAwait(false);
-        }
-
-        internal Task<string> GetContentAsync() => EvaluateFunctionAsync<string>(
-            @"() => {
-                let retVal = '';
-                if (document.doctype)
-                    retVal = new XMLSerializer().serializeToString(document.doctype);
-                if (document.documentElement)
-                    retVal += document.documentElement.outerHTML;
-                return retVal;
-            }");
-
-        internal async Task SetContentAsync(string html, NavigationOptions options = null)
-        {
-            var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
-            var timeout = options?.Timeout ?? _timeoutSettings.NavigationTimeout;
-
-            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-            // lifecycle event. @see https://crrev.com/608658
-            await EvaluateFunctionAsync(
-                @"html => {
-                    document.open();
-                    document.write(html);
-                    document.close();
-                }",
-                html).ConfigureAwait(false);
-
-            using (var watcher = new LifecycleWatcher(_frameManager, Frame, waitUntil, timeout))
-            {
-                var watcherTask = await Task.WhenAny(
-                    watcher.TimeoutOrTerminationTask,
-                    watcher.LifecycleTask).ConfigureAwait(false);
-
-                await watcherTask.ConfigureAwait(false);
-            }
-        }
-
-        internal async Task ClickAsync(string selector, ClickOptions options = null)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false) ?? throw new SelectorException($"No node found for selector: {selector}", selector);
-            await handle.ClickAsync(options).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
-
-        internal async Task HoverAsync(string selector)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
-                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
-            await handle.HoverAsync().ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
-
-        internal async Task FocusAsync(string selector)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false) ?? throw new SelectorException($"No node found for selector: {selector}", selector);
-            await handle.FocusAsync().ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
-
-        internal async Task<string[]> SelectAsync(string selector, params string[] values)
-        {
-            if ((await QuerySelectorAsync(selector).ConfigureAwait(false)) is not IElementHandle handle)
-            {
-                throw new SelectorException($"No node found for selector: {selector}", selector);
-            }
-
-            var result = await handle.SelectAsync(values).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return result;
-        }
-
-        internal async Task TapAsync(string selector)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
-                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
-            await handle.TapAsync().ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
-
-        internal async Task TypeAsync(string selector, string text, TypeOptions options = null)
-        {
-            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false)
-                ?? throw new SelectorException($"No node found for selector: {selector}", selector);
-            await handle.TypeAsync(text, options).ConfigureAwait(false);
-            await handle.DisposeAsync().ConfigureAwait(false);
-        }
-
-        internal async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
-        {
-            using var waitTask = new WaitTask(
-                this,
-                script,
-                false,
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout,
-                options.Root,
-                args);
-
-            return await waitTask
-                .Task
-                .ConfigureAwait(false);
-        }
-
-        internal async Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options)
-        {
-            using var waitTask = new WaitTask(
-                this,
-                script,
-                true,
-                options.Polling,
-                options.PollingInterval,
-                options.Timeout ?? _timeoutSettings.Timeout,
-                null, // Root
-                null); // args
-
-            return await waitTask
-                .Task
-                .ConfigureAwait(false);
-        }
-
-        internal Task<string> GetTitleAsync() => EvaluateExpressionAsync<string>("document.title");
-
-        internal Task<ElementHandle> GetDocumentAsync()
-        {
-            if (_documentTask != null)
-            {
-                return _documentTask;
-            }
-
-            async Task<ElementHandle> EvaluateDocumentInContext()
-            {
-                var context = await GetExecutionContextAsync().ConfigureAwait(false);
-                var document = await context.EvaluateFunctionHandleAsync("() => document").ConfigureAwait(false);
-
-                if (document is not ElementHandle element)
-                {
-                    throw new PuppeteerException("Document is null");
-                }
-
-                return element;
-            }
-
-            _documentTask = EvaluateDocumentInContext();
-
-            return _documentTask;
-        }
-
         internal void ClearContext()
         {
-            _documentTask = null;
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Frame?.ClearContext();
         }
 
         internal void SetContext(ExecutionContext context)
@@ -407,7 +238,7 @@ namespace PuppeteerSharp
             {
                 var message = $"IsolatedWorld failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                Client.Close(message);
             }
         }
 

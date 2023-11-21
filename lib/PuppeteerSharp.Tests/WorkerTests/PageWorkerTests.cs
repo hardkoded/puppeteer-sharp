@@ -38,12 +38,12 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
-            var workerCreatedTcs = new TaskCompletionSource<Worker>();
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
             var workerObj = await Page.EvaluateFunctionHandleAsync("() => new Worker('data:text/javascript,1')");
             var worker = await workerCreatedTcs.Task;
-            var workerDestroyedTcs = new TaskCompletionSource<Worker>();
+            var workerDestroyedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerDestroyed += (_, e) => workerDestroyedTcs.TrySetResult(e.Worker);
             await Page.EvaluateFunctionAsync("workerObj => workerObj.terminate()", workerObj);
             Assert.AreSame(worker, await workerDestroyedTcs.Task);
@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveAnExecutionContext()
         {
-            var workerCreatedTcs = new TaskCompletionSource<Worker>();
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
 
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");

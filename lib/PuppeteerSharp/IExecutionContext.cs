@@ -90,12 +90,5 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args);
-
-        /// <summary>
-        /// The method iterates JavaScript heap and finds all the objects with the given prototype.
-        /// </summary>
-        /// <returns>A task which resolves to a handle to an array of objects with this prototype.</returns>
-        /// <param name="prototypeHandle">A handle to the object prototype.</param>
-        Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle);
     }
 }
