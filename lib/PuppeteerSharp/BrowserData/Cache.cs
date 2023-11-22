@@ -9,7 +9,7 @@ namespace PuppeteerSharp.BrowserData
     {
         private readonly string _rootDir;
 
-        public Cache() => _rootDir = BrowserFetcher.GetExecutablePath();
+        public Cache() => _rootDir = BrowserFetcher.GetBrowsersLocation();
 
         public Cache(string rootDir) => _rootDir = rootDir;
 
@@ -27,8 +27,8 @@ namespace PuppeteerSharp.BrowserData
                 return Array.Empty<InstalledBrowser>();
             }
 
-            var browerNames = Enum.GetNames(typeof(SupportedBrowser)).Select(browser => browser.ToUpperInvariant());
-            var browsers = rootInfo.GetDirectories().Where(browser => browerNames.Contains(browser.Name.ToUpperInvariant()));
+            var browserNames = Enum.GetNames(typeof(SupportedBrowser)).Select(browser => browser.ToUpperInvariant());
+            var browsers = rootInfo.GetDirectories().Where(browser => browserNames.Contains(browser.Name.ToUpperInvariant()));
 
             return browsers.SelectMany(browser =>
             {

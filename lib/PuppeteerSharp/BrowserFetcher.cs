@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -35,7 +34,7 @@ namespace PuppeteerSharp
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
         {
-            CacheDir = GetExecutablePath();
+            CacheDir = GetBrowsersLocation();
             Platform = GetCurrentPlatform();
             Browser = SupportedBrowser.Chrome;
             _customFileDownload = _webClient.DownloadFileTaskAsync;
@@ -55,7 +54,7 @@ namespace PuppeteerSharp
             }
 
             Browser = options.Browser;
-            CacheDir = string.IsNullOrEmpty(options.Path) ? GetExecutablePath() : options.Path;
+            CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
             _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
         }
@@ -92,10 +91,8 @@ namespace PuppeteerSharp
                 var client = WebRequest.Create(url);
                 client.Proxy = _webClient.Proxy;
                 client.Method = "HEAD";
-                using (var response = (HttpWebResponse)await client.GetResponseAsync().ConfigureAwait(false))
-                {
-                    return response.StatusCode == HttpStatusCode.OK;
-                }
+                using var response = (HttpWebResponse)await client.GetResponseAsync().ConfigureAwait(false);
+                return response.StatusCode == HttpStatusCode.OK;
             }
             catch (WebException)
             {
@@ -171,6 +168,14 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public string GetExecutablePath(string buildId)
+            => new InstalledBrowser(
+                new Cache(CacheDir),
+                Browser,
+                buildId,
+                Platform).GetExecutablePath();
+
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -197,7 +202,7 @@ namespace PuppeteerSharp
             return Platform.Unknown;
         }
 
-        internal static string GetExecutablePath()
+        internal static string GetBrowsersLocation()
         {
             var assembly = typeof(Puppeteer).Assembly;
             var assemblyName = assembly.GetName().Name + ".dll";
@@ -276,11 +281,8 @@ namespace PuppeteerSharp
 
                 var mountAndCopyTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-                using var process = new Process
-                {
-                    EnableRaisingEvents = true,
-                };
-
+                using var process = new Process();
+                process.EnableRaisingEvents = true;
                 process.StartInfo.FileName = "hdiutil";
                 process.StartInfo.Arguments = $"attach -nobrowse -noautoopen \"{dmgPath}\"";
                 process.StartInfo.RedirectStandardOutput = true;
