@@ -8,13 +8,12 @@ namespace PuppeteerSharp
 {
     /// <summary>
     /// BrowserFetcher can download and manage different versions of Chromium.
-    /// BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. 533271. Revision strings can be obtained from omahaproxy.appspot.com.
     /// </summary>
     /// <example>
     /// Example on how to use BrowserFetcher to download a specific version of Chromium and run Puppeteer against it:
     /// <code>
     /// var browserFetcher = Puppeteer.CreateBrowserFetcher();
-    /// var revisionInfo = await browserFetcher.DownloadAsync("533271");
+    /// var revisionInfo = await browserFetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
     /// var browser = await await Puppeteer.LaunchAsync(new LaunchOptions { ExecutablePath = revisionInfo.ExecutablePath});
     /// </code>
     /// </example>
@@ -88,5 +87,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="buildId">Browser to remove.</param>
         void Uninstall(string buildId);
+
+        /// <summary>
+        /// Gets the executable path.
+        /// </summary>
+        /// <param name="buildId">Browser buildId.</param>
+        /// <returns>The executable path.</returns>
+        string GetExecutablePath(string buildId);
     }
 }
