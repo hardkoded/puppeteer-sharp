@@ -15,6 +15,7 @@ namespace PuppeteerSharp.QueryHandlers
             RegexOptions.Compiled);
 
         private static readonly Regex _normalizedRegex = new(" +", RegexOptions.Compiled);
+        private static readonly string[] _nonElementNodeRoles = { "StaticText", "InlineTextBox" };
 
         public AriaQueryHandler()
         {
@@ -26,8 +27,12 @@ namespace PuppeteerSharp.QueryHandlers
 
         internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
         {
-            var elementHandle = element as ElementHandle;
             var ariaSelector = ParseAriaSelector(selector);
+            if (element is not ElementHandle elementHandle)
+            {
+                yield break;
+            }
+
             var results = await QueryAXTreeAsync(elementHandle.Realm.Environment.Client, element, ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false);
 
             foreach (var item in results)
@@ -53,16 +58,16 @@ namespace PuppeteerSharp.QueryHandlers
                     Role = role,
                 }).ConfigureAwait(false);
 
-            return nodes.Nodes.Where((node) => node?.Role?.Value?.ToObject<string>() != "StaticText");
+            return nodes.Nodes.Where(node =>
+                node?.Role?.Value?.ToObject<string>() is not null &&
+                !_nonElementNodeRoles.Contains(node.Role.Value.ToObject<string>()));
         }
 
         private static AriaQueryOption ParseAriaSelector(string selector)
         {
-            static string NormalizeValue(string value) => _normalizedRegex.Replace(value, " ").Trim();
-
             var knownAriaAttributes = new[] { "name", "role" };
             AriaQueryOption queryOptions = new();
-            var defaultName = _ariaSelectorAttributeRegEx.Replace(selector, new MatchEvaluator((Match match) =>
+            var defaultName = _ariaSelectorAttributeRegEx.Replace(selector, match =>
             {
                 var attribute = match.Groups["attribute"].Value.Trim();
                 if (!knownAriaAttributes.Contains(attribute))
@@ -80,7 +85,7 @@ namespace PuppeteerSharp.QueryHandlers
                 }
 
                 return string.Empty;
-            }));
+            });
 
             if (!string.IsNullOrEmpty(defaultName) && string.IsNullOrEmpty(queryOptions.Name))
             {
@@ -88,6 +93,8 @@ namespace PuppeteerSharp.QueryHandlers
             }
 
             return queryOptions;
+
+            static string NormalizeValue(string value) => _normalizedRegex.Replace(value, " ").Trim();
         }
     }
 }
