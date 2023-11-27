@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.BrowserData;
@@ -30,41 +29,6 @@ namespace PuppeteerSharp
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
 
-        /// <summary>
-        /// The default flags that Chromium will be launched with.
-        /// </summary>
-        internal static string[] DefaultArgs { get; } =
-        {
-            "--allow-pre-commit-input",
-            "--disable-background-networking",
-            "--disable-background-timer-throttling",
-            "--disable-backgrounding-occluded-windows",
-            "--disable-breakpad",
-            "--disable-client-side-phishing-detection",
-            "--disable-component-extensions-with-background-pages",
-            "--disable-component-update",
-            "--disable-default-apps",
-            "--disable-dev-shm-usage",
-            "--disable-extensions",
-            "--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints",
-            "--disable-hang-monitor",
-            "--disable-ipc-flooding-protection",
-            "--disable-popup-blocking",
-            "--disable-prompt-on-repost",
-            "--disable-renderer-backgrounding",
-            "--disable-search-engine-choice-screen",
-            "--disable-sync",
-            "--enable-automation",
-            "--enable-blink-features=IdleDetection",
-            "--enable-features=NetworkServiceInProcess2",
-            "--export-tagged-pdf",
-            "--force-color-profile=srgb",
-            "--metrics-recording-only",
-            "--no-first-run",
-            "--password-store=basic",
-            "--use-mock-keychain",
-        };
-
         /// <inheritdoc />
         public override Task<string> GetDefaultBuildIdAsync() => Task.FromResult(Chrome.DefaultBuildId);
 
@@ -73,7 +37,74 @@ namespace PuppeteerSharp
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
-            var chromiumArguments = new List<string>(DefaultArgs);
+            var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
+            var args = options.Args;
+            if (args is not null && userDisabledFeatures.Length > 0)
+            {
+                args = RemoveMatchingFlags(options.Args, "--disable-features");
+            }
+
+            // Merge default disabled features with user-provided ones, if any.
+            var disabledFeatures = new List<string>
+            {
+                "Translate",
+                "AcceptCHFrame",
+                "MediaRouter",
+                "OptimizationHints",
+                "ProcessPerSiteUpToMainFrameThreshold",
+            };
+
+            disabledFeatures.AddRange(userDisabledFeatures);
+
+            var userEnabledFeatures = GetFeatures("--enable-features", options.Args);
+            if (args != null && userEnabledFeatures.Length > 0)
+            {
+                args = RemoveMatchingFlags(options.Args, "--enable-features");
+            }
+
+            // Merge default enabled features with user-provided ones, if any.
+            var enabledFeatures = new List<string>
+            {
+                "NetworkServiceInProcess2",
+            };
+
+            disabledFeatures.AddRange(userEnabledFeatures);
+
+            var chromiumArguments = new List<string>(
+                new string[]
+                {
+                    "--allow-pre-commit-input",
+                    "--disable-background-networking",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
+                    "--disable-breakpad",
+                    "--disable-client-side-phishing-detection",
+                    "--disable-component-extensions-with-background-pages",
+                    "--disable-component-update",
+                    "--disable-default-apps",
+                    "--disable-dev-shm-usage",
+                    "--disable-extensions",
+                    "--disable-field-trial-config",
+                    "--disable-hang-monitor",
+                    "--disable-infobars",
+                    "--disable-ipc-flooding-protection",
+                    "--disable-popup-blocking",
+                    "--disable-prompt-on-repost",
+                    "--disable-renderer-backgrounding",
+                    "--disable-search-engine-choice-screen",
+                    "--disable-sync",
+                    "--enable-automation",
+                    "--enable-blink-features=IdleDetection",
+                    "--export-tagged-pdf",
+                    "--force-color-profile=srgb",
+                    "--metrics-recording-only",
+                    "--no-first-run",
+                    "--password-store=basic",
+                    "--use-mock-keychain",
+                });
+
+            chromiumArguments.Add($"--disable-features={string.Join(",", disabledFeatures)}");
+            chromiumArguments.Add($"--enable-features={string.Join(",", enabledFeatures)}");
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
@@ -95,14 +126,23 @@ namespace PuppeteerSharp
                 });
             }
 
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
+            if (args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {
                 chromiumArguments.Add("about:blank");
             }
 
-            chromiumArguments.AddRange(options.Args);
+            chromiumArguments.AddRange(args);
             return chromiumArguments.ToArray();
         }
+
+        internal static string[] GetFeatures(string flag, string[] options)
+            => options
+                .Where(s => s.StartsWith($"{flag}=", StringComparison.InvariantCultureIgnoreCase))
+                .Select(s => s.Substring(flag.Length + 1))
+                .Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+        internal static string[] RemoveMatchingFlags(string[] array, string flag)
+            => array.Where(arg => !arg.StartsWith(flag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
         private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
