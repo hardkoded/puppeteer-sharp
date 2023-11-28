@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp.Messaging
