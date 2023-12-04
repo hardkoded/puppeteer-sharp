@@ -168,6 +168,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/curtiswmcmillin"><img src="https://github.com/curtiswmcmillin.png" width="60px" alt="Curtis W McMillin" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/janschreier"><img src="https://github.com/janschreier.png" width="60px" alt="Jan" /></a><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/curtiswmcmillin"><img src="https://github.com/curtiswmcmillin.png" width="60px" alt="Curtis W McMillin" /></a><!-- sponsors -->
 
 
