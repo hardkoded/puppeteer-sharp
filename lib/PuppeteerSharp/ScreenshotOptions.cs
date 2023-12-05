@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -11,7 +10,7 @@ namespace PuppeteerSharp
     /// </summary>
     public class ScreenshotOptions
     {
-        private static readonly Dictionary<string, ScreenshotType?> _extensionScreenshotTypeMap = new Dictionary<string, ScreenshotType?>
+        private static readonly Dictionary<string, ScreenshotType?> _extensionScreenshotTypeMap = new()
         {
             ["jpe"] = ScreenshotType.Jpeg,
             ["jpeg"] = ScreenshotType.Jpeg,

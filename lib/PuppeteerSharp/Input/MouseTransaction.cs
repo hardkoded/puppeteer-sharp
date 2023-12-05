@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Input
 
         public class TransactionData
         {
-            public Point? Position { get; set; }
+            public Point Position { get; set; }
 
             public MouseButton? Buttons { get; set; }
         }

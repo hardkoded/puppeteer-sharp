@@ -1,18 +1,11 @@
+using System;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Represents a Point.
     /// </summary>
-    public struct Point
+    public record Point(decimal X, decimal Y)
     {
-        /// <summary>
-        /// Gets the X point.
-        /// </summary>
-        public decimal X { get; set; }
-
-        /// <summary>
-        /// Gets the y point.
-        /// </summary>
-        public decimal Y { get; set; }
     }
 }

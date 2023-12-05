@@ -131,7 +131,6 @@ namespace PuppeteerSharp
             var url = _downloadsUrl[Browser](Platform, buildId, BaseUrl);
             var fileName = url.Split('/').Last();
             var cache = new Cache(CacheDir);
-            var browserRoot = cache.GetBrowserRoot(Browser);
             var archivePath = Path.Combine(CacheDir, fileName);
             var downloadFolder = new DirectoryInfo(CacheDir);
 
@@ -287,7 +286,7 @@ namespace PuppeteerSharp
                 process.StartInfo.Arguments = $"attach -nobrowse -noautoopen \"{dmgPath}\"";
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.UseShellExecute = false;
-                process.OutputDataReceived += (sender, e) =>
+                process.OutputDataReceived += (_, e) =>
                 {
                     if (e.Data == null || mountAndCopyTcs.Task.IsCompleted)
                     {
@@ -310,11 +309,11 @@ namespace PuppeteerSharp
                         return;
                     }
 
-                    using var process = new Process();
-                    process.StartInfo.FileName = "cp";
-                    process.StartInfo.Arguments = $"-R \"{appFile.FullName}\" \"{folderPath}\"";
-                    process.Start();
-                    process.WaitForExit();
+                    using var copyProcess = new Process();
+                    copyProcess.StartInfo.FileName = "cp";
+                    copyProcess.StartInfo.Arguments = $"-R \"{appFile.FullName}\" \"{folderPath}\"";
+                    copyProcess.Start();
+                    copyProcess.WaitForExit();
                     mountAndCopyTcs.TrySetResult(true);
                 };
 
@@ -395,7 +394,7 @@ namespace PuppeteerSharp
 
             if (GetCurrentPlatform() == Platform.Linux)
             {
-                var executables = new string[]
+                var executables = new[]
                 {
                     "chrome",
                     "chrome_crashpad_handler",

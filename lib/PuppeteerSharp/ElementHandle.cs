@@ -135,10 +135,9 @@ namespace PuppeteerSharp
 
                 var clip = boundingBox;
                 var metricsViewport = getLayoutMetricsResponse.CssVisualViewport ?? getLayoutMetricsResponse.LayoutViewport;
-                clip.X += metricsViewport.PageX;
-                clip.Y += metricsViewport.PageY;
+                clip = clip with { X = clip.X + metricsViewport.PageX, Y = clip.Y + metricsViewport.PageY };
 
-                options.Clip = boundingBox.ToClip();
+                options.Clip = boundingBox;
                 var imageData = await Page.ScreenshotBase64Async(options).ConfigureAwait(false);
 
                 if (needsViewportReset)
