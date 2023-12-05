@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -69,6 +68,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The default context.</value>
         IBrowserContext DefaultContext { get; }
+
+        /// <summary>
+        /// Returns the browser type. Chrome, Chromium or Firefox.
+        /// </summary>
+        SupportedBrowser BrowserType { get; }
 
         /// <summary>
         /// Default wait time in milliseconds. Defaults to 30 seconds.
