@@ -239,15 +239,15 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal Browser Browser => Target.Browser;
-
-        internal Target Target { get; }
-
-        internal bool JavascriptEnabled { get; set; } = true;
-
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
 
-        internal FrameManager FrameManager { get; private set; }
+        private Browser Browser => Target.Browser;
+
+        private Target Target { get; }
+
+        private bool JavascriptEnabled { get; set; } = true;
+
+        private FrameManager FrameManager { get; set; }
 
         private Task SessionClosedTask
         {
@@ -405,7 +405,7 @@ namespace PuppeteerSharp
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
             => (await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
             {
-                Urls = urls.Length > 0 ? urls : new string[] { Url },
+                Urls = urls.Length > 0 ? urls : new[] { Url },
             }).ConfigureAwait(false)).Cookies;
 
         /// <inheritdoc/>
@@ -620,10 +620,8 @@ namespace PuppeteerSharp
 
             var data = await ScreenshotDataAsync(options).ConfigureAwait(false);
 
-            using (var fs = AsyncFileHelper.CreateStream(file, FileMode.Create))
-            {
-                await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-            }
+            using var fs = AsyncFileHelper.CreateStream(file, FileMode.Create);
+            await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -659,12 +657,12 @@ namespace PuppeteerSharp
                 }
             }
 
-            if (options?.Clip?.Width == 0)
+            if (options.Clip?.Width == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Width not to be 0.");
             }
 
-            if (options?.Clip?.Height == 0)
+            if (options.Clip?.Height == 0)
             {
                 throw new PuppeteerException("Expected options.Clip.Height not to be 0.");
             }
@@ -826,7 +824,7 @@ namespace PuppeteerSharp
                 Interval = idleTime,
             };
 
-            idleTimer.Elapsed += (sender, args) =>
+            idleTimer.Elapsed += (_, _) =>
             {
                 networkIdleTcs.TrySetResult(true);
             };
@@ -1098,7 +1096,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task EmulateCPUThrottlingAsync(decimal? factor = null)
         {
-            if (factor != null && factor < 1)
+            if (factor is < 1)
             {
                 throw new ArgumentException("Throttling rate should be greater or equal to 1", nameof(factor));
             }
@@ -1150,7 +1148,19 @@ namespace PuppeteerSharp
             }
         }
 
-        internal async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
+        internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Mouse.Dispose();
+            _ = DisposeAsync();
+        }
+
+        private async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
         {
             var paperWidth = PaperFormat.Letter.Width;
             var paperHeight = PaperFormat.Letter.Height;
@@ -1211,18 +1221,6 @@ namespace PuppeteerSharp
             return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
         }
 
-        internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
-
-        /// <summary>
-        /// Dispose resources.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            Mouse.Dispose();
-            _ = DisposeAsync();
-        }
-
         private async Task InitializeAsync()
         {
             await FrameManager.InitializeAsync().ConfigureAwait(false);
@@ -1240,8 +1238,8 @@ namespace PuppeteerSharp
             networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
 
             await Task.WhenAll(
-               Client.SendAsync("Performance.enable", null),
-               Client.SendAsync("Log.enable", null)).ConfigureAwait(false);
+               Client.SendAsync("Performance.enable"),
+               Client.SendAsync("Log.enable")).ConfigureAwait(false);
         }
 
         private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
@@ -1293,7 +1291,7 @@ namespace PuppeteerSharp
 
             // FromSurface is not supported on Firefox.
             // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
-            if (Browser.Launcher.Options.Browser == SupportedBrowser.Firefox)
+            if (Browser.BrowserType == SupportedBrowser.Firefox)
             {
                 if (options.FromSurface != null)
                 {
@@ -1302,7 +1300,7 @@ namespace PuppeteerSharp
             }
             else
             {
-                options.FromSurface = options.FromSurface.HasValue ? options.FromSurface : true;
+                options.FromSurface ??= true;
             }
 
             var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
@@ -1310,7 +1308,7 @@ namespace PuppeteerSharp
 
             if (!_screenshotBurstModeOn)
             {
-                if (options?.FullPage == true)
+                if (options.FullPage)
                 {
                     // Overwrite clip for full page at all times.
                     clip = null;
@@ -1356,13 +1354,13 @@ namespace PuppeteerSharp
                     }
                 }
 
-                if (options?.OmitBackground == true && type == ScreenshotType.Png)
+                if (options.OmitBackground && type == ScreenshotType.Png)
                 {
                     await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
                 }
             }
 
-            if (options?.FullPage == false && clip == null)
+            if (options.FullPage == false && clip == null)
             {
                 captureBeyondViewport = false;
             }
@@ -1417,7 +1415,7 @@ namespace PuppeteerSharp
 
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
-            var omitBackgroundTask = options?.OmitBackground == true && options.Type == ScreenshotType.Png ?
+            var omitBackgroundTask = options is { OmitBackground: true, Type: ScreenshotType.Png } ?
                 ResetDefaultBackgroundColorAsync() : Task.CompletedTask;
             var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
                 SetViewportAsync(Viewport) : Task.CompletedTask;
@@ -1604,7 +1602,7 @@ namespace PuppeteerSharp
         {
             if (e.Entry.Args != null)
             {
-                foreach (var arg in e.Entry?.Args)
+                foreach (var arg in e.Entry.Args)
                 {
                     await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
                 }
@@ -1648,14 +1646,16 @@ namespace PuppeteerSharp
             }
 
             var message = exceptionDetails.Text;
-            if (exceptionDetails.StackTrace != null)
+            if (exceptionDetails.StackTrace == null)
             {
-                foreach (var callframe in exceptionDetails.StackTrace.CallFrames)
-                {
-                    var location = $"{callframe.Url}:{callframe.LineNumber}:{callframe.ColumnNumber}";
-                    var functionName = callframe.FunctionName ?? "<anonymous>";
-                    message += $"\n at {functionName} ({location})";
-                }
+                return message;
+            }
+
+            foreach (var callFrame in exceptionDetails.StackTrace.CallFrames)
+            {
+                var location = $"{callFrame.Url}:{callFrame.LineNumber}:{callFrame.ColumnNumber}";
+                var functionName = callFrame.FunctionName ?? "<anonymous>";
+                message += $"\n at {functionName} ({location})";
             }
 
             return message;
@@ -1732,7 +1732,7 @@ namespace PuppeteerSharp
                     .ContinueWith(
                         task =>
                         {
-                            if (task.IsFaulted)
+                            if (task.IsFaulted && task.Exception != null)
                             {
                                 _logger.LogError(task.Exception.ToString());
                             }
