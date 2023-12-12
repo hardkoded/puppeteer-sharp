@@ -944,7 +944,7 @@ namespace PuppeteerSharp
         Task<IResponse> ReloadAsync(NavigationOptions options);
 
         /// <summary>
-        /// Takes a screenshot of the page.
+        /// Captures a screenshot of this <see cref="IPage"/>.
         /// </summary>
         /// <returns>The screenshot task.</returns>
         /// <param name="file">The file path to save the image to. The screenshot type will be inferred from file extension.

@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class ElementHandleQuerySelectorAllEvalTests : PuppeteerPageBaseTest
     {
-        public ElementHandleQuerySelectorAllEvalTests(): base()
-        {
-        }
-
         [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$$eval", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()

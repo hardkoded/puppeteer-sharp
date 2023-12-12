@@ -4,8 +4,12 @@ namespace PuppeteerSharp.Media
     /// Clip data.
     /// </summary>
     /// <seealso cref="ScreenshotOptions.Clip"/>
-    public record Clip(decimal X, decimal Y, decimal Width, decimal Height, decimal Scale = 1)
-        : BoundingBox(X, Y, Width, Height)
+    public class Clip : BoundingBox
     {
+        /// <summary>
+        /// Scale of the webpage rendering. Defaults to 1.
+        /// </summary>
+        /// <value>The scale.</value>
+        public int Scale { get; set; } = 1;
     }
 }

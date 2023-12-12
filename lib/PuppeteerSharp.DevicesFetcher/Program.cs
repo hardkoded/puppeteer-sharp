@@ -8,27 +8,26 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 namespace PuppeteerSharp.DevicesFetcher
 {
-    class Program
+    static class Program
     {
-        const string DEVICES_URL = "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
-
-        static readonly string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
-        static readonly string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
+        private const string DevicesURL = "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
+        private const string DeviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
+        private const string DeviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";
 
         static async Task Main(string[] args)
         {
-            var url = DEVICES_URL;
+            var url = DevicesURL;
             if (args.Length > 0)
             {
                 url = args[0];
             }
 
             Console.WriteLine($"GET {url}");
-            var text = await HttpGET(url).ConfigureAwait(false);
+            var text = await HttpGet(url).ConfigureAwait(false);
 
-            const string DeviceArray = "Device[] = [";
-            var startIndex = text.IndexOf(DeviceArray) + DeviceArray.Length;
-            var endIndex = text.IndexOf("];", startIndex);
+            const string deviceArray = "Device[] = [";
+            var startIndex = text.IndexOf(deviceArray, StringComparison.Ordinal) + deviceArray.Length;
+            var endIndex = text.IndexOf("];", startIndex, StringComparison.Ordinal);
             var length = endIndex - startIndex;
             text = "[" + text.Substring(startIndex, length) + "]";
 
@@ -86,7 +85,7 @@ namespace PuppeteerSharp.Mobile
             builder.AppendJoin(",\n", devices.Select(GenerateCsharpFromDevice));
             builder.Append(end);
 
-            File.WriteAllText(deviceDescriptorsOutput, builder.ToString());
+            File.WriteAllText(DeviceDescriptorsOutput, builder.ToString());
         }
 
         static void WriteDeviceDescriptorName(IEnumerable<Device> devices)
@@ -104,17 +103,14 @@ namespace PuppeteerSharp.Mobile
 }";
 
             builder.Append(begin);
-            builder.AppendJoin(",", devices.Select(device =>
-            {
-                return $@"
+            builder.AppendJoin(",", devices.Select(device => $@"
         /// <summary>
         /// {device.Name}
         /// </summary>
-        {DeviceNameToEnumValue(device)}";
-            }));
+        {DeviceNameToEnumValue(device)}"));
             builder.Append(end);
 
-            File.WriteAllText(deviceDescriptorNameOutput, builder.ToString());
+            File.WriteAllText(DeviceDescriptorNameOutput, builder.ToString());
         }
 
         static string GenerateCsharpFromDevice(Device device)
@@ -156,7 +152,7 @@ namespace PuppeteerSharp.Mobile
             return output.ToString();
         }
 
-        static async Task<string> HttpGET(string url)
+        private static async Task<string> HttpGet(string url)
         {
             using var httpClient = new HttpClient();
             return await httpClient.GetStringAsync(url).ConfigureAwait(false);
