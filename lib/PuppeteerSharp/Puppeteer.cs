@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
@@ -41,7 +39,7 @@ namespace PuppeteerSharp
         public static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> Devices => DeviceDescriptors.ToReadOnly();
 
         /// <summary>
-        /// Returns a list of network conditions to be used with <seealso cref="IPage.EmulateNetworkConditionsAsync(NetworkConditions)"/>.
+        /// Returns a list of network conditions to be used with <seealso cref="IPage.EmulateNetworkConditionsAsync(PuppeteerSharp.NetworkConditions)"/>.
         /// Actual list of conditions can be found in <seealso cref="PredefinedNetworkConditions.Conditions"/>.
         /// </summary>
         /// <example>

@@ -3,13 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -37,6 +34,7 @@ namespace PuppeteerSharp
             Func<Target, bool> targetFilter = null,
             Func<Target, bool> isPageTargetFunc = null)
         {
+            BrowserType = browser;
             IgnoreHTTPSErrors = ignoreHTTPSErrors;
             DefaultViewport = defaultViewport;
             Launcher = launcher;
@@ -95,6 +93,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public string WebSocketEndpoint => Connection.Url;
+
+        /// <inheritdoc/>
+        public SupportedBrowser BrowserType { get; }
 
         /// <inheritdoc/>
         public Process Process => Launcher?.Process;
