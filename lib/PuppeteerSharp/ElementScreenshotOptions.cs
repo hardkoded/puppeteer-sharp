@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Options to be used in <see cref="IElementHandle.ScreenshotAsync(string, ScreenshotOptions)"/>, <see cref="IElementHandle.ScreenshotStreamAsync(ScreenshotOptions)"/> and <see cref="IElementHandle.ScreenshotDataAsync(ScreenshotOptions)"/>.
+    /// Options to be used in <see cref="IElementHandle.ScreenshotAsync(string, ElementScreenshotOptions)"/>, <see cref="IElementHandle.ScreenshotStreamAsync(ElementScreenshotOptions)"/> and <see cref="IElementHandle.ScreenshotDataAsync(ElementScreenshotOptions)"/>.
     /// </summary>
     public class ElementScreenshotOptions : ScreenshotOptions
     {
