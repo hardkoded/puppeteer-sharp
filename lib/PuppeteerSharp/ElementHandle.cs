@@ -116,7 +116,7 @@ namespace PuppeteerSharp
                     return [
                         window.visualViewport.pageLeft,
                         window.visualViewport.pageTop,
-                    ] as const;
+                    ];
                 }").ConfigureAwait(false);
 
                 clip.X += points[0];
