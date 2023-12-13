@@ -88,7 +88,7 @@ namespace PuppeteerSharp.QueryHandlers
             return null;
         }
 
-        internal virtual async Task<IElementHandle> WaitForAsync(
+        internal async Task<IElementHandle> WaitForAsync(
             Frame frame,
             ElementHandle element,
             string selector,
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.QueryHandlers
         {
             if (element != null)
             {
-                frame = element.Frame as Frame;
+                frame = element.Frame;
                 element = await frame.IsolatedRealm.AdoptHandleAsync(element).ConfigureAwait(false) as ElementHandle;
             }
 

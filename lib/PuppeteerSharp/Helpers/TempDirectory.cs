@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Helpers
         {
         }
 
-        public TempDirectory(string path)
+        private TempDirectory(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -46,10 +46,10 @@ namespace PuppeteerSharp.Helpers
 
         private static async Task DeleteAsync(string path)
         {
-            const int minDelayInMsec = 200;
-            const int maxDelayInMsec = 8000;
+            const int minDelayInMillis = 200;
+            const int maxDelayInMillis = 8000;
 
-            int retryDelay = minDelayInMsec;
+            var retryDelay = minDelayInMillis;
             while (true)
             {
                 if (!Directory.Exists(path))
@@ -65,9 +65,9 @@ namespace PuppeteerSharp.Helpers
                 catch
                 {
                     await Task.Delay(retryDelay).ConfigureAwait(false);
-                    if (retryDelay < maxDelayInMsec)
+                    if (retryDelay < maxDelayInMillis)
                     {
-                        retryDelay = Math.Min(2 * retryDelay, maxDelayInMsec);
+                        retryDelay = Math.Min(2 * retryDelay, maxDelayInMillis);
                     }
                 }
             }

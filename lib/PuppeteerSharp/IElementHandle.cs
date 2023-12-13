@@ -158,7 +158,7 @@ namespace PuppeteerSharp
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses <seealso cref="IPage.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task.</returns>
@@ -176,7 +176,7 @@ namespace PuppeteerSharp
         /// If path is a relative path, then it is resolved relative to current working directory. If no path is provided,
         /// the image won't be saved to the disk.</param>
         /// <param name="options">Screenshot options.</param>
-        Task ScreenshotAsync(string file, ScreenshotOptions options);
+        Task ScreenshotAsync(string file, ElementScreenshotOptions options);
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.IPage.ScreenshotBase64Async(ScreenshotOptions)"/> to take a screenshot of the element.
@@ -191,7 +191,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="string"/> containing the image data as base64.</returns>
         /// <param name="options">Screenshot options.</param>
-        Task<string> ScreenshotBase64Async(ScreenshotOptions options);
+        Task<string> ScreenshotBase64Async(ElementScreenshotOptions options);
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.IPage.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
@@ -206,7 +206,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="byte"/>[] containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
-        Task<byte[]> ScreenshotDataAsync(ScreenshotOptions options);
+        Task<byte[]> ScreenshotDataAsync(ElementScreenshotOptions options);
 
         /// <summary>
         /// This method scrolls element into view if needed, and then uses <seealso cref="PuppeteerSharp.IPage.ScreenshotDataAsync(ScreenshotOptions)"/> to take a screenshot of the element.
@@ -221,7 +221,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a <see cref="Stream"/> containing the image data.</returns>
         /// <param name="options">Screenshot options.</param>
-        Task<Stream> ScreenshotStreamAsync(ScreenshotOptions options);
+        Task<Stream> ScreenshotStreamAsync(ElementScreenshotOptions options);
 
         /// <summary>
         /// Triggers a `change` and `input` event once all the provided options have been selected.
