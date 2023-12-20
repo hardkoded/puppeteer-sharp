@@ -13,6 +13,9 @@ You will find the available versions [here](https://googlechromelabs.github.io/c
 Once you have the version you want, you can download it using the `BrowserFetcher` class.
 
 ```cs
+<!-- snippet: CustomVersionsExample -->
+<a id='snippet-customversionsexample'></a>
+```cs
 Console.WriteLine("Downloading browsers");
 
 using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
@@ -21,9 +24,9 @@ var chrome119 = await browserFetcher.DownloadAsync("119.0.5997.0");
 
 Console.WriteLine("Navigating");
 await using (var browser = await Puppeteer.LaunchAsync(new()
-                {
-                    ExecutablePath = chrome118.GetExecutablePath(),
-                }))
+             {
+                 ExecutablePath = chrome118.GetExecutablePath(),
+             }))
 {
     await using var page = await browser.NewPageAsync();
     await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -35,9 +38,9 @@ await using (var browser = await Puppeteer.LaunchAsync(new()
 }
 
 await using (var browser = await Puppeteer.LaunchAsync(new()
-                {
-                    ExecutablePath = chrome119.GetExecutablePath(),
-                }))
+             {
+                 ExecutablePath = chrome119.GetExecutablePath(),
+             }))
 {
     await using var page = await browser.NewPageAsync();
     await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -47,4 +50,7 @@ await using (var browser = await Puppeteer.LaunchAsync(new()
 
     Console.WriteLine("Export completed");
 }
+```
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/Browsers/Chrome/ChromeDataTests.cs#L15-L50' title='Snippet source file'>snippet source</a> | <a href='#snippet-customversionsexample' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 ```
