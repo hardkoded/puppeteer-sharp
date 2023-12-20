@@ -16,6 +16,8 @@
       href: Page.WaitForFunctionAsync.md
     - name: How to log network requests
       href: Page.Request.md
+    - name: How to download an specific browser
+      href: DownloadFetcher.Download.md
 - name: Advanced
   items:
     - name: How to log CDP communication
