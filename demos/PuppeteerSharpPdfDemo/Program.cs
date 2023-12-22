@@ -10,10 +10,7 @@ namespace PuppeteerSharpPdfDemo
     {
         public static async Task Main(string[] args)
         {
-            var options = new LaunchOptions
-            {
-                Headless = true
-            };
+            var options = new LaunchOptions { Headless = true };
 
             Console.WriteLine("Downloading chromium");
 
@@ -21,20 +18,19 @@ namespace PuppeteerSharpPdfDemo
             await browserFetcher.DownloadAsync();
 
             Console.WriteLine("Navigating google");
-            using (var browser = await Puppeteer.LaunchAsync(options))
-            using (var page = await browser.NewPageAsync())
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            await using var page = await browser.NewPageAsync();
+
+            await page.GoToAsync("https://www.google.com");
+
+            Console.WriteLine("Generating PDF");
+            await page.PdfAsync(Path.Combine(Directory.GetCurrentDirectory(), "google.pdf"));
+
+            Console.WriteLine("Export completed");
+
+            if (!args.Any(arg => arg == "auto-exit"))
             {
-                await page.GoToAsync("http://www.google.com");
-
-                Console.WriteLine("Generating PDF");
-                await page.PdfAsync(Path.Combine(Directory.GetCurrentDirectory(), "google.pdf"));
-
-                Console.WriteLine("Export completed");
-
-                if (!args.Any(arg => arg == "auto-exit"))
-                {
-                    Console.ReadLine();
-                }
+                Console.ReadLine();
             }
         }
     }
