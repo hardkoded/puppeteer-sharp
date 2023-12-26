@@ -5,6 +5,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 		<IsTool>true</IsTool>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<LangVersion>12</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />

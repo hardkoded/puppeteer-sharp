@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        public FrameEvaluateTests(): base()
-        {
-        }
-
         [PuppeteerTest("evaluation.spec.ts", "Frame.evaluate", "should have different execution contexts")]
         [PuppeteerTimeout]
         public async Task ShouldHaveDifferentExecutionContexts()
