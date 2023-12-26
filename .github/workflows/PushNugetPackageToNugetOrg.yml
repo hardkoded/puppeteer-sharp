@@ -7,7 +7,7 @@ on:
         - v*
 
 env:
-  DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
 
 jobs:
    PushToNugetOrg:
