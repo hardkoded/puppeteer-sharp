@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>12</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="NUnit" Version="3.13.3" />

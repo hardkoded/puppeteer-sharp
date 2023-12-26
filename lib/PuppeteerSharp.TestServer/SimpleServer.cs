@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 
 namespace PuppeteerSharp.TestServer
@@ -24,7 +23,7 @@ namespace PuppeteerSharp.TestServer
         public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
         public static SimpleServer CreateHttps(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: true);
 
-        public SimpleServer(int port, string contentRoot, bool isHttps)
+        private SimpleServer(int port, string contentRoot, bool isHttps)
         {
             _requestSubscribers = new ConcurrentDictionary<string, Action<HttpRequest>>();
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
@@ -66,7 +65,7 @@ namespace PuppeteerSharp.TestServer
                                 fileResponseContext.Context.Response.Headers["Content-Security-Policy"] = csp;
                             }
 
-                            if (!fileResponseContext.Context.Request.Path.Value.StartsWith("/cached/"))
+                            if (fileResponseContext.Context.Request.Path.Value != null && !fileResponseContext.Context.Request.Path.Value.StartsWith("/cached/"))
                             {
                                 fileResponseContext.Context.Response.Headers["Cache-Control"] = "no-cache, no-store";
                                 fileResponseContext.Context.Response.Headers["Expires"] = "-1";
@@ -139,7 +138,7 @@ namespace PuppeteerSharp.TestServer
             return request;
         }
 
-        public Task WaitForRequest(string path) => WaitForRequest<bool>(path, _ => true);
+        public Task WaitForRequest(string path) => WaitForRequest(path, _ => true);
 
         private static bool Authenticate(string username, string password, HttpContext context)
         {

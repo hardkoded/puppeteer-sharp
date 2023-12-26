@@ -16,7 +16,7 @@ jobs:
     name: Publish docs
     runs-on: windows-latest
     env:
-      DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
+      DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
 
     steps:
       - uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Build
         run: |
-          dotnet tool install --global docfx --version 2.60.2 
+          dotnet tool install --global docfx --version 2.60.2
 
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs

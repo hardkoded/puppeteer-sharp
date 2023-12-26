@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="testCert.cer">

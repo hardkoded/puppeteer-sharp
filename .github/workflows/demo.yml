@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [windows-2022, macos-latest]
     env:
-      DOTNET_VERSION: '7.0.x' # The .NET SDK version to use
+      DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
 
     steps:
     - uses: actions/checkout@v2

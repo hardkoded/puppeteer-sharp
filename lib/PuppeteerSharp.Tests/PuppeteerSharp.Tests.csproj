@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
 		<IsTestProject>true</IsTestProject>
+		<LangVersion>12</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="MarkdownSnippets.MsBuild" Version="24.2.2" PrivateAssets="All" />

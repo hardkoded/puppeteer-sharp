@@ -24,6 +24,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
   <Import Project="../Common/SignAssembly.props" />
   <ItemGroup>
