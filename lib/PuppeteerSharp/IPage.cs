@@ -205,8 +205,8 @@ namespace PuppeteerSharp
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForFunctionAsync(string, object[])"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
-        /// - <see cref="WaitForRequestAsync(string, WaitForOptions)"/>
-        /// - <see cref="WaitForResponseAsync(string, WaitForOptions)"/>
+        /// - <see cref="WaitForRequestAsync(string, WaitTimeoutOptions)"/>
+        /// - <see cref="WaitForResponseAsync(string, WaitTimeoutOptions)"/>
         /// - <see cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>.
         /// </summary>
@@ -1185,7 +1185,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
         /// <param name="url">Frame url.</param>
         /// <param name="options">Options.</param>
-        public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null);
+        public Task<IFrame> WaitForFrameAsync(string url, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a frame.
@@ -1200,7 +1200,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
         /// <param name="predicate">Function which looks for a matching frame.</param>
         /// <param name="options">Options.</param>
-        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
+        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a page to open a file picker.
@@ -1227,7 +1227,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after a page requests a file picker.</returns>
-        Task<FileChooser> WaitForFileChooserAsync(WaitForFileChooserOptions options = null);
+        Task<FileChooser> WaitForFileChooserAsync(WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a function to be evaluated to a truthy value.
@@ -1299,7 +1299,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="predicate">Function which looks for a matching request.</param>
         /// <param name="options">Options.</param>
-        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
+        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a request.
@@ -1315,7 +1315,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null);
+        Task<IRequest> WaitForRequestAsync(string url, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1331,7 +1331,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1347,7 +1347,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1363,7 +1363,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null);
+        Task<IResponse> WaitForResponseAsync(string url, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM.
@@ -1422,5 +1422,18 @@ namespace PuppeteerSharp
         /// </remarks>
         [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
         Task<IElementHandle[]> XPathAsync(string expression);
+
+        /// <summary>
+        /// This method is typically coupled with an action that triggers a device
+        /// request from an api such as WebBluetooth.
+        ///
+        /// Xaution.
+        ///
+        /// This must be called before the device request is made. It will not return a
+        /// currently active device prompt.
+        /// </summary>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task that resolves after the page get's the prompt.</returns>
+        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = null);
     }
 }

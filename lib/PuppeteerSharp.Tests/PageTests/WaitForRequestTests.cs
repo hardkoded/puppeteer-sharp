@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
@@ -9,10 +8,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class WaitForRequestTests : PuppeteerPageBaseTest
     {
-        public WaitForRequestTests(): base()
-        {
-        }
-
         [PuppeteerTest("page.spec.ts", "Page.waitForRequest", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
@@ -55,10 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.WaitForRequestAsync(_ => false, new WaitForOptions
-                {
-                    Timeout = 1
-                }));
+                await Page.WaitForRequestAsync(_ => false, new WaitTimeoutOptions(1)));
 
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
@@ -80,10 +72,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForRequestAsync(TestConstants.ServerUrl + "/digits/2.png", new WaitForOptions
-            {
-                Timeout = 0
-            });
+            var task = Page.WaitForRequestAsync(TestConstants.ServerUrl + "/digits/2.png", new WaitTimeoutOptions(0));
 
             await Task.WhenAll(
                 task,

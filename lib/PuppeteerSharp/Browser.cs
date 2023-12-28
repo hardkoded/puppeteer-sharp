@@ -199,7 +199,7 @@ namespace PuppeteerSharp
         public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
 
         /// <inheritdoc/>
-        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
+        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null)
         {
             if (predicate == null)
             {

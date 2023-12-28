@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.InputTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldRespectTimeout()
         {
-            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitTimeoutOptions
             {
                 Timeout = 1
             }));
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForFileChooserOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitTimeoutOptions
             {
                 Timeout = 1
             }));
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.InputTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithNoTimeout()
         {
-            var waitForTask = Page.WaitForFileChooserAsync(new WaitForFileChooserOptions { Timeout = 0 });
+            var waitForTask = Page.WaitForFileChooserAsync(new WaitTimeoutOptions { Timeout = 0 });
 
             await Task.WhenAll(
                 waitForTask,
