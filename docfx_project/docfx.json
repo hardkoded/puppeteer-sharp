@@ -3,17 +3,18 @@
     {
       "src": [
         {
-          "cwd": "../",
           "files": [
-            "lib/PuppeteerSharp/**.csproj"
-          ]
+            "**.csproj"
+        ],
+        "src": "../lib/PuppeteerSharp"
         }
       ],
       "dest": "api",
       "disableGitFeatures": false,
       "properties": {
-        "TargetFramework": "net46"
-      }
+        "TargetFramework": "net8"
+    },
+    "allowCompilationErrors": true
     }
   ],
   "build": {
@@ -59,8 +60,7 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default",
-      "./template"
+    "default",
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",

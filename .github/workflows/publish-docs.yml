@@ -26,7 +26,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Build
         run: |
-          dotnet tool install --global docfx --version 2.60.2
+          dotnet tool install --global docfx --version 2.74.1
 
           docfx metadata docfx_project\docfx.json
           docfx build docfx_project\docfx.json -o docs
