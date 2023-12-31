@@ -61,9 +61,14 @@
     "fileMetadataFiles": [],
     "template": [
         "default",
-        "modern"
+        "modern",
+        "./templates/custom"
     ],
     "postProcessors": [],
+    "globalMetadata": {
+        "_appFooter": "<span>Made with love by <a href=\"https://www.hardkoded.com\" rel=\"noreferrer\">Dario Kondratiuk</a></span>",
+        "_googleAnalyticsTagId": "UA-586295-9"
+    },
     "markdownEngineName": "markdig",
     "noLangKeyword": false,
     "keepFileLink": false,
