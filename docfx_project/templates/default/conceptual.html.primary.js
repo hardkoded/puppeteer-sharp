@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 var common = require('./common.js');
 var extension = require('./conceptual.extension.js')
@@ -9,7 +10,7 @@ exports.transform = function (model) {
   }
 
   model._disableToc = model._disableToc || !model._tocPath || (model._navPath === model._tocPath);
-  model.docurl = "https://github.com/kblok/puppeteer-sharp/issues/new?title=Improve%20" + model.source.remote.path + "&body=Explain%20how%20would%20you%20like%20this%20document%20to%20be%20impoved";
+  model.docurl = model.docurl || common.getImproveTheDocHref(model, model._gitContribute, model._gitUrlPattern);
 
   if (extension && extension.postTransform) {
     model = extension.postTransform(model);
