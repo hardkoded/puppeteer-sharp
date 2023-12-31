@@ -1,6 +1,7 @@
 name: Publish docs
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
