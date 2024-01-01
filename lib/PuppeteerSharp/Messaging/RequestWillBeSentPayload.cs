@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace PuppeteerSharp.Messaging
 {
     internal class RequestWillBeSentPayload

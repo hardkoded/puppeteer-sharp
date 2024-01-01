@@ -1,0 +1,20 @@
+{{!Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license.}}
+
+<ul class="nav level{{level}}">
+{{#items}}
+  <li class="{{#active}}active{{/active}}">
+    {{^leaf}}
+    <span class="expand-stub"></span>
+    {{/leaf}}
+    {{#href}}
+    <a href="{{href}}" title="{{name}}" class="{{#active}}active{{/active}}">{{name}}</a>
+    {{/href}}
+    {{^href}}
+    <a class="{{#active}}active{{/active}}">{{{name}}}</a>
+    {{/href}}
+    {{^leaf}}
+      {{>partials/li}}
+    {{/leaf}}
+  </li>
+{{/items}}
+</ul>
