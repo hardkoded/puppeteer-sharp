@@ -220,7 +220,7 @@ namespace PuppeteerSharp
         internal void ClearContext()
         {
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _context.Dispose();
+            _context?.Dispose();
             _context = null;
             Frame?.ClearContext();
         }
