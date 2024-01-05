@@ -9,8 +9,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
 {
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select",
-        "should succeed with listed device")]
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should succeed with listed device")]
     [PuppeteerTimeout]
     public async Task ShouldSucceedWithListedDevice()
     {
@@ -21,7 +20,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
             timeoutSettings,
             new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" });
 
-        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name.Contains("1"));
+        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -60,11 +59,10 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         var exception = Assert.ThrowsAsync<PuppeteerException>(() =>
             prompt.SelectAsync(new DeviceRequestPromptDevice("My Device 2", "0001")));
 
-        Assert.AreEqual("Cannot select unknown device!", exception.Message);
+        Assert.AreEqual("Cannot select unknown device!", exception!.Message);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select",
-        "should fail when selecting prompt twice")]
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
     [PuppeteerTimeout]
     public async Task ShouldFailWhenSelectingPromptTwice()
     {
@@ -75,7 +73,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
             timeoutSettings,
             new DeviceAccessDeviceRequestPromptedResponse() { Id = "000" });
 
-        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name.Contains("1"));
+        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -99,6 +97,6 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         await prompt.SelectAsync(device);
 
         var exception = Assert.ThrowsAsync<PuppeteerException>(() => prompt.SelectAsync(device));
-        Assert.AreEqual("Cannot select DeviceRequestPrompt which is already handled!", exception.Message);
+        Assert.AreEqual("Cannot select DeviceRequestPrompt which is already handled!", exception!.Message);
     }
 }

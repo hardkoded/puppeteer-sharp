@@ -63,8 +63,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         Assert.AreEqual(2, prompt.Devices.Count);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices",
-        "does not list devices from events of another prompt")]
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
     [PuppeteerTimeout]
     public void ShouldNotListDevicesFromEventsOfAnotherPrompt()
     {

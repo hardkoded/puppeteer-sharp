@@ -132,8 +132,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             await promptTask;
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt",
-            "should return the same prompt when there are many watchdogs simultaneously")]
+        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return the same prompt when there are many watchdogs simultaneously")]
         [PuppeteerTimeout]
         public async Task ShouldReturnTheSamePromptWhenThereAreManyWatchdogsSimultaneously()
         {
