@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
@@ -44,8 +43,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         await prompt.SelectAsync(device);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select",
-        "should error for device not listed in devices")]
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should error for device not listed in devices")]
     [PuppeteerTimeout]
     public void ShouldErrorForDeviceNotListedInDevices()
     {
