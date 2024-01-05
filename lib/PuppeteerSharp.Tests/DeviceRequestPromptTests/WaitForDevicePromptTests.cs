@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public async Task ShouldReturnPrompt()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             var promptTask = manager.WaitForDevicePromptAsync();
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public void ShouldRespectTimeout()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitTimeoutOptions(1)));
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             timeoutSettings.Timeout = 1;
@@ -103,7 +103,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             timeoutSettings.Timeout = 0;
@@ -114,7 +114,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             var promptTask = manager.WaitForDevicePromptAsync(new WaitTimeoutOptions(0));
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public async Task ShouldReturnTheSamePromptWhenThereAreManyWatchdogsSimultaneously()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
+            var client =  new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             var promptTask = manager.WaitForDevicePromptAsync();

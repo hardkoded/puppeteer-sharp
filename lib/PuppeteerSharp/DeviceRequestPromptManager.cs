@@ -30,10 +30,10 @@ namespace PuppeteerSharp;
 internal class DeviceRequestPromptManager
 {
     private readonly TimeoutSettings _timeoutSettings;
-    private CDPSession _client;
+    private ICDPSession _client;
     private TaskCompletionSource<DeviceRequestPrompt> _deviceRequestPromptTcs;
 
-    internal DeviceRequestPromptManager(CDPSession client, TimeoutSettings timeoutSettings)
+    internal DeviceRequestPromptManager(ICDPSession client, TimeoutSettings timeoutSettings)
     {
         _client = client;
         _timeoutSettings = timeoutSettings;
@@ -81,7 +81,7 @@ internal class DeviceRequestPromptManager
         catch (Exception ex)
         {
             var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            _client?.Close(message);
+            (_client as CDPSession)?.Close(message);
         }
     }
 
