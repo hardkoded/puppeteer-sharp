@@ -11,7 +11,7 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    internal class FrameManager
+    internal class FrameManager : IDisposable, IAsyncDisposable
     {
         private const string RefererHeaderName = "referer";
         private const string UtilityWorldName = "__puppeteer_utility_world__";
@@ -21,6 +21,7 @@ namespace PuppeteerSharp
         private readonly List<string> _isolatedWorlds = new();
         private readonly List<string> _frameNavigatedReceived = new();
         private readonly TaskQueue _eventsQueue = new();
+        private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
         private bool _ensureNewDocumentNavigation;
 
         internal FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
@@ -50,13 +51,13 @@ namespace PuppeteerSharp
 
         internal NetworkManager NetworkManager { get; }
 
-        internal Frame MainFrame => FrameTree.MainFrame;
-
         internal Page Page { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
 
         internal FrameTree FrameTree { get; } = new();
+
+        internal Frame MainFrame => FrameTree.MainFrame;
 
         public async Task<IResponse> NavigateFrameAsync(Frame frame, string url, NavigationOptions options)
         {
@@ -106,6 +107,58 @@ namespace PuppeteerSharp
             return watcher.NavigationResponse;
         }
 
+        public void Dispose()
+        {
+            _eventsQueue?.Dispose();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_eventsQueue != null)
+            {
+                await _eventsQueue.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
+        {
+            session ??= Client;
+            var key = $"{session.Id}:{contextId}";
+            _contextIdToContext.TryGetValue(key, out var context);
+
+            if (context == null)
+            {
+                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
+            }
+
+            return context;
+        }
+
+        internal void OnAttachedToTarget(TargetChangedArgs e)
+        {
+            if (e.TargetInfo.Type != TargetType.IFrame)
+            {
+                return;
+            }
+
+            var frame = GetFrame(e.TargetInfo.TargetId);
+            frame?.UpdateClient(e.Target.Session);
+
+            e.Target.Session.MessageReceived += Client_MessageReceived;
+            _ = InitializeAsync(e.Target.Session);
+        }
+
+        internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
+        {
+            _contextIdToContext.TryGetValue($"{session.Id}:{contextId}", out var context);
+            return context;
+        }
+
+        internal DeviceRequestPromptManager GetDeviceRequestPromptManager(CDPSession client)
+            => _deviceRequestPromptManagerMap.GetOrAdd(client, _ => new DeviceRequestPromptManager(client, TimeoutSettings));
+
+        internal Frame[] GetFrames() => FrameTree.Frames;
+
         internal async Task InitializeAsync(CDPSession client = null)
         {
             try
@@ -139,50 +192,14 @@ namespace PuppeteerSharp
             {
                 // The target might have been closed before the initialization finished.
                 if (
-                  ex.Message.Contains("Target closed") ||
-                  ex.Message.Contains("Session closed"))
+                    ex.Message.Contains("Target closed") ||
+                    ex.Message.Contains("Session closed"))
                 {
                     return;
                 }
 
                 throw;
             }
-        }
-
-        internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
-        {
-            session ??= Client;
-            var key = $"{session.Id}:{contextId}";
-            _contextIdToContext.TryGetValue(key, out var context);
-
-            if (context == null)
-            {
-                _logger.LogError("INTERNAL ERROR: missing context with id = {ContextId}", contextId);
-            }
-
-            return context;
-        }
-
-        internal void OnAttachedToTarget(TargetChangedArgs e)
-        {
-            if (e.TargetInfo.Type != TargetType.IFrame)
-            {
-                return;
-            }
-
-            var frame = GetFrame(e.TargetInfo.TargetId);
-            frame?.UpdateClient(e.Target.Session);
-
-            e.Target.Session.MessageReceived += Client_MessageReceived;
-            _ = InitializeAsync(e.Target.Session);
-        }
-
-        internal Frame[] GetFrames() => FrameTree.Frames;
-
-        internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
-        {
-            _contextIdToContext.TryGetValue($"{session.Id}:{contextId}", out var context);
-            return context;
         }
 
         private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
@@ -306,7 +323,9 @@ namespace PuppeteerSharp
         private void OnExecutionContextDestroyed(int contextId, CDPSession session)
         {
             var key = $"{session.Id}:{contextId}";
+#pragma warning disable CA2000
             if (_contextIdToContext.TryRemove(key, out var context))
+#pragma warning restore CA2000
             {
                 context.World?.ClearContext();
             }
@@ -344,8 +363,8 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var context = new ExecutionContext(frame?.Client ?? Client, contextPayload, world);
-            world?.SetContext(context);
+            var context = new ExecutionContext(frame.Client ?? Client, contextPayload, world);
+            world.SetContext(context);
 
             var key = $"{session.Id}:{contextPayload.Id}";
             _contextIdToContext[key] = context;

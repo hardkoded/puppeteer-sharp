@@ -22,16 +22,7 @@
 
 namespace PuppeteerSharp.Messaging;
 
-internal class DeviceRequestPromptedEvent
+internal class DeviceAccessCancelPrompt
 {
-    public string Id { get; set; }
-
-    public PromptDevice[] Devices { get; set; }
-
-    internal class PromptDevice
-    {
-        public string Name { get; set; }
-
-        public string Id { get; set; }
-    }
+    public string RequestId { get; set; }
 }

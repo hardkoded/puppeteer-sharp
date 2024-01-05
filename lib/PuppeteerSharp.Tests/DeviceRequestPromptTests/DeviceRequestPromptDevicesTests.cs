@@ -1,125 +1,110 @@
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
+namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
+
+public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 {
-    public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
+    [PuppeteerTimeout]
+    public void ShouldListDevicesAsTheyArrive()
     {
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
-        [PuppeteerTimeout]
-        public void ShouldListDevicesAsTheyArrive()
+        var client = new MockCDPSession();
+        var timeoutSettings = new TimeoutSettings();
+        var prompt = new DeviceRequestPrompt(
+            client,
+            timeoutSettings,
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "00000000000000000000000000000000" });
+
+        Assert.IsEmpty(prompt.Devices);
+
+        var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
-            var timeoutSettings = new TimeoutSettings();
-            var prompt = new DeviceRequestPrompt(
-                client,
-                timeoutSettings, new DeviceRequestPromptedEvent()
-                {
-                    Id = "00000000000000000000000000000000"
-                });
-
-            Assert.IsEmpty(prompt.Devices);
-
-            var promptData = new DeviceAccessDeviceRequestPromptedResponse()
+            Id = "00000000000000000000000000000000",
+            Devices = new[]
             {
-                Id = "00000000000000000000000000000000",
-                Devices = new[]
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
-                    {
-                        Name = "My Device", Id = "0000",
-                    }
+                    Name = "My Device", Id = "0000",
                 }
-            };
+            }
+        };
 
-            client.OnMessage(new ConnectionResponse()
-            {
-                Method = "DeviceAccess.deviceRequestPrompted",
-                Params = WaitForDevicePromptTests.ToJToken(promptData),
-            });
-
-            Assert.AreEqual(1, prompt.Devices.Count);
-
-            promptData = new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "00000000000000000000000000000000",
-                Devices = new[]
-                {
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
-                    {
-                        Name = "My Device", Id = "0000",
-                    },
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
-                    {
-                        Name = "My Device 2", Id = "0001",
-                    }
-                }
-            };
-
-            client.OnMessage(new ConnectionResponse()
-            {
-                Method = "DeviceAccess.deviceRequestPrompted",
-                Params = WaitForDevicePromptTests.ToJToken(promptData),
-            });
-
-            Assert.AreEqual(2, prompt.Devices.Count);
-        }
-
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices",
-            "does not list devices from events of another prompt")]
-        [PuppeteerTimeout]
-        public void ShouldNotListDevicesFromEventsOfAnotherPrompt()
+        client.OnMessage(new ConnectionResponse()
         {
-            var client = new CDPSession(null, TargetType.Browser, "1");
-            var timeoutSettings = new TimeoutSettings();
-            var prompt = new DeviceRequestPrompt(
-                client,
-                timeoutSettings, new DeviceRequestPromptedEvent()
+            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+        });
+
+        Assert.AreEqual(1, prompt.Devices.Count);
+
+        promptData = new DeviceAccessDeviceRequestPromptedResponse()
+        {
+            Id = "00000000000000000000000000000000",
+            Devices =
+            [
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Id = "00000000000000000000000000000000"
-                });
-
-            var promptData = new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "00000000000000000000000000000000",
-            };
-
-            client.OnMessage(new ConnectionResponse()
-            {
-                Method = "DeviceAccess.deviceRequestPrompted",
-                Params = WaitForDevicePromptTests.ToJToken(promptData),
-            });
-
-            Assert.IsEmpty(prompt.Devices);
-
-            promptData = new DeviceAccessDeviceRequestPromptedResponse()
-            {
-                Id = "8888888888",
-                Devices = new[]
+                    Name = "My Device", Id = "0000",
+                },
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
-                    {
-                        Name = "My Device", Id = "0000",
-                    },
-                    new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
-                    {
-                        Name = "My Device 2", Id = "0001",
-                    }
+                    Name = "My Device 2", Id = "0001",
                 }
-            };
+            ]
+        };
 
-            client.OnMessage(new ConnectionResponse()
+        client.OnMessage(new ConnectionResponse()
+        {
+            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+        });
+
+        Assert.AreEqual(2, prompt.Devices.Count);
+    }
+
+    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices",
+        "does not list devices from events of another prompt")]
+    [PuppeteerTimeout]
+    public void ShouldNotListDevicesFromEventsOfAnotherPrompt()
+    {
+        var client = new MockCDPSession();
+        var timeoutSettings = new TimeoutSettings();
+        var prompt = new DeviceRequestPrompt(
+            client,
+            timeoutSettings,
+            new DeviceAccessDeviceRequestPromptedResponse() { Id = "00000000000000000000000000000000" });
+
+        var promptData = new DeviceAccessDeviceRequestPromptedResponse() { Id = "00000000000000000000000000000000", };
+
+        client.OnMessage(new ConnectionResponse()
+        {
+            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+        });
+
+        Assert.IsEmpty(prompt.Devices);
+
+        promptData = new DeviceAccessDeviceRequestPromptedResponse()
+        {
+            Id = "8888888888",
+            Devices = new[]
             {
-                Method = "DeviceAccess.deviceRequestPrompted",
-                Params = WaitForDevicePromptTests.ToJToken(promptData),
-            });
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                {
+                    Name = "My Device", Id = "0000",
+                },
+                new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
+                {
+                    Name = "My Device 2", Id = "0001",
+                }
+            }
+        };
 
-            Assert.IsEmpty(prompt.Devices);
-        }
+        client.OnMessage(new ConnectionResponse()
+        {
+            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+        });
+
+        Assert.IsEmpty(prompt.Devices);
     }
 }

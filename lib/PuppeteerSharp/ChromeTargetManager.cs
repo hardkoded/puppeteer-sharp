@@ -358,7 +358,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to call setAutoAttach and runIfWaitingForDebugger", ex);
+                _logger.LogError(ex, "Failed to call setAutoAttach and runIfWaitingForDebugger");
             }
         }
 

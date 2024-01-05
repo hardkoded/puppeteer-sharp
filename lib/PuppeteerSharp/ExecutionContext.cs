@@ -10,14 +10,13 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    /// <inheritdoc/>
-    public class ExecutionContext : IExecutionContext
+    /// <inheritdoc cref="IExecutionContext"/>
+    public sealed class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
+        private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
 
         private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
-
-        private readonly string _evaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
         private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
 
@@ -35,8 +34,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         IFrame IExecutionContext.Frame => World?.Frame;
 
-        internal Frame Frame => World?.Frame;
-
         internal int ContextId { get; }
 
         internal string ContextName { get; }
@@ -44,6 +41,8 @@ namespace PuppeteerSharp
         internal CDPSession Client { get; }
 
         internal IsolatedWorld World { get; }
+
+        private Frame Frame => World?.Frame;
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
@@ -68,6 +67,34 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => RemoteObjectTaskToObject<T>(EvaluateFunctionInternalAsync(true, script, args));
 
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync()
+        {
+            if (_puppeteerUtilQueue != null)
+            {
+                await _puppeteerUtilQueue.DisposeAsync().ConfigureAwait(false);
+            }
+
+            if (_puppeteerUtil != null)
+            {
+                await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+            }
+
+            if (World != null)
+            {
+                await World.DisposeAsync().ConfigureAwait(false);
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         internal async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
@@ -75,7 +102,7 @@ namespace PuppeteerSharp
                 if (_puppeteerUtil == null)
                 {
                     await Client.Connection.ScriptInjector.InjectAsync(
-                        async (string script) =>
+                        async (script) =>
                         {
                             if (_puppeteerUtil != null)
                             {
@@ -138,6 +165,9 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <inheritdoc cref="IDisposable.Dispose" />
+        private void Dispose(bool disposing) => _ = DisposeAsync();
+
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
             var response = await remote.ConfigureAwait(false);
@@ -147,7 +177,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{_evaluationScriptSuffix}",
+                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
                 ["contextId"] = ContextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
@@ -157,7 +187,7 @@ namespace PuppeteerSharp
         private async Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
             => await ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
-                FunctionDeclaration = $"{script}\n{_evaluationScriptSuffix}\n",
+                FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
                 ExecutionContextId = ContextId,
                 Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false),
                 ReturnByValue = returnByValue,

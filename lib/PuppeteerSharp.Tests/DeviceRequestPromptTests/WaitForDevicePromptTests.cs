@@ -25,6 +25,37 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             #endregion
         }
 
+        public async Task PageUsage()
+        {
+            #region IPageWaitForDevicePromptAsyncUsage
+            var promptTask = Page.WaitForDevicePromptAsync();
+            await Task.WhenAll(
+                promptTask,
+                Page.ClickAsync("#connect-bluetooth"));
+
+            var devicePrompt = await promptTask;
+            await devicePrompt.SelectAsync(
+                await devicePrompt.WaitForDeviceAsync(device => device.Name.Contains("My Device")).ConfigureAwait(false)
+            );
+            #endregion
+        }
+
+        public async Task FrameUsage()
+        {
+            var frame = Page.MainFrame;
+            #region IFrameWaitForDevicePromptAsyncUsage
+            var promptTask = frame.WaitForDevicePromptAsync();
+            await Task.WhenAll(
+                promptTask,
+                Page.ClickAsync("#connect-bluetooth"));
+
+            var devicePrompt = await promptTask;
+            await devicePrompt.SelectAsync(
+                await devicePrompt.WaitForDeviceAsync(device => device.Name.Contains("My Device")).ConfigureAwait(false)
+            );
+            #endregion
+        }
+
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return prompt")]
         [PuppeteerTimeout]
         public async Task ShouldReturnPrompt()

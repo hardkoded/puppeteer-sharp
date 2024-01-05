@@ -174,10 +174,7 @@ namespace PuppeteerSharp
         {
             if (!World.HasContext)
             {
-                World.SetContext(new ExecutionContext(
-                    Client,
-                    e.Context,
-                    World));
+                World.SetNewContext(Client, e.Context, World);
             }
         }
     }

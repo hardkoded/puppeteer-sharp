@@ -340,7 +340,9 @@ namespace PuppeteerSharp
 #pragma warning restore CS0618
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default(WaitTimeoutOptions)) => throw new NotImplementedException();
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(
+            WaitTimeoutOptions options = default(WaitTimeoutOptions))
+            => MainFrame.WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
@@ -406,14 +408,26 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
-            => (await Client.SendAsync<NetworkGetCookiesResponse>("Network.getCookies", new NetworkGetCookiesRequest
+        {
+            if (urls == null)
             {
-                Urls = urls.Length > 0 ? urls : new[] { Url },
-            }).ConfigureAwait(false)).Cookies;
+                throw new ArgumentNullException(nameof(urls));
+            }
+
+            return (await Client.SendAsync<NetworkGetCookiesResponse>(
+                    "Network.getCookies",
+                    new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : new[] { Url }, })
+                .ConfigureAwait(false)).Cookies;
+        }
 
         /// <inheritdoc/>
         public async Task SetCookieAsync(params CookieParam[] cookies)
         {
+            if (cookies == null)
+            {
+                throw new ArgumentNullException(nameof(cookies));
+            }
+
             foreach (var cookie in cookies)
             {
                 if (string.IsNullOrEmpty(cookie.Url) && Url.StartsWith("http", StringComparison.Ordinal))
@@ -441,6 +455,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
+            if (cookies == null)
+            {
+                throw new ArgumentNullException(nameof(cookies));
+            }
+
             var pageURL = Url;
             foreach (var cookie in cookies)
             {

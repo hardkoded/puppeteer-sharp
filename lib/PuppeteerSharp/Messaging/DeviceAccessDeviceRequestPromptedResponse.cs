@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Messaging
     {
         public string Id { get; set; }
 
-        public DeviceAccessDevice[] Devices { get; set; }
+        public DeviceAccessDevice[] Devices { get; set; } = [];
 
         internal class DeviceAccessDevice
         {
