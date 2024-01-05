@@ -18,15 +18,17 @@ namespace PuppeteerSharp;
 public class DeviceRequestPrompt
 {
     private readonly string _id;
+    private readonly TimeoutSettings _timeoutSettings;
     private bool _handled;
+    private ICDPSession _client;
 
     internal DeviceRequestPrompt(ICDPSession client, TimeoutSettings timeoutSettings, DeviceAccessDeviceRequestPromptedResponse firstEvent)
     {
-        Client = client;
-        TimeoutSettings = timeoutSettings;
+        _client = client;
+        _timeoutSettings = timeoutSettings;
         _id = firstEvent.Id;
 
-        Client.MessageReceived += OnMessageReceived;
+        _client.MessageReceived += OnMessageReceived;
 
         UpdateDevices(firstEvent);
     }
@@ -40,10 +42,6 @@ public class DeviceRequestPrompt
     /// </summary>
     public List<DeviceRequestPromptDevice> Devices { get; } = [];
 
-    internal ICDPSession Client { get; set; }
-
-    internal TimeoutSettings TimeoutSettings { get; set; }
-
     /// <summary>
     /// Select a device in the prompt's list.
     /// </summary>
@@ -56,7 +54,7 @@ public class DeviceRequestPrompt
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (Client == null)
+        if (_client == null)
         {
             throw new PuppeteerException("Cannot select device through a detached session!");
         }
@@ -73,7 +71,7 @@ public class DeviceRequestPrompt
 
         _handled = true;
 
-        return Client.SendAsync("DeviceAccess.selectPrompt", new DeviceAccessSelectPrompt
+        return _client.SendAsync("DeviceAccess.selectPrompt", new DeviceAccessSelectPrompt
         {
             RequestId = _id,
             DeviceId = device.Id,
@@ -94,7 +92,7 @@ public class DeviceRequestPrompt
         }
 
         var tcs = new TaskCompletionSource<DeviceRequestPromptDevice>();
-        var timeout = options?.Timeout ?? TimeoutSettings.Timeout;
+        var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
         var task = tcs.Task.WithTimeout(timeout);
 
         NewDevice += OnNewDevice;
@@ -116,7 +114,7 @@ public class DeviceRequestPrompt
     /// <returns>A task that resolves after the cancel message is processed by the browser.</returns>
     public Task CancelAsync()
     {
-        if (Client == null)
+        if (_client == null)
         {
             throw new PuppeteerException("Cannot cancel prompt through detached session!");
         }
@@ -128,7 +126,7 @@ public class DeviceRequestPrompt
 
         _handled = true;
 
-        return Client.SendAsync("DeviceAccess.cancelPrompt", new DeviceAccessCancelPrompt
+        return _client.SendAsync("DeviceAccess.cancelPrompt", new DeviceAccessCancelPrompt
         {
             RequestId = _id,
         });
@@ -149,14 +147,14 @@ public class DeviceRequestPrompt
 
                     break;
                 case "Target.detachedFromTarget":
-                    Client = null;
+                    _client = null;
                     break;
             }
         }
         catch (Exception ex)
         {
             var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            (Client as CDPSession)?.Close(message);
+            (_client as CDPSession)?.Close(message);
         }
     }
 

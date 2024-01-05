@@ -21,8 +21,6 @@
 //  * SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
@@ -31,22 +29,20 @@ namespace PuppeteerSharp;
 
 internal class DeviceRequestPromptManager
 {
+    private readonly TimeoutSettings _timeoutSettings;
+    private CDPSession _client;
     private TaskCompletionSource<DeviceRequestPrompt> _deviceRequestPromptTcs;
 
     internal DeviceRequestPromptManager(CDPSession client, TimeoutSettings timeoutSettings)
     {
-        Client = client;
-        TimeoutSettings = timeoutSettings;
-        Client.MessageReceived += OnMessageReceived;
+        _client = client;
+        _timeoutSettings = timeoutSettings;
+        _client.MessageReceived += OnMessageReceived;
     }
-
-    public CDPSession Client { get; set; }
-
-    public TimeoutSettings TimeoutSettings { get; set; }
 
     public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default)
     {
-        if (Client == null)
+        if (_client == null)
         {
             throw new PuppeteerException("Cannot wait for device prompt through detached session!");
         }
@@ -57,10 +53,10 @@ internal class DeviceRequestPromptManager
         if (needsEnable)
         {
             _deviceRequestPromptTcs = new TaskCompletionSource<DeviceRequestPrompt>();
-            enableTask = Client.SendAsync("DeviceAccess.enable");
+            enableTask = _client.SendAsync("DeviceAccess.enable");
         }
 
-        var timeout = options?.Timeout ?? TimeoutSettings.Timeout;
+        var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
         var task = _deviceRequestPromptTcs.Task.WithTimeout(timeout);
 
         await Task.WhenAll(enableTask, task).ConfigureAwait(false);
@@ -78,14 +74,14 @@ internal class DeviceRequestPromptManager
                     OnDeviceRequestPrompted(e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>());
                     break;
                 case "Target.detachedFromTarget":
-                    Client = null;
+                    _client = null;
                     break;
             }
         }
         catch (Exception ex)
         {
             var message = $"Connection failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-            Client?.Close(message);
+            _client?.Close(message);
         }
     }
 
@@ -96,13 +92,13 @@ internal class DeviceRequestPromptManager
             return;
         }
 
-        if (Client == null)
+        if (_client == null)
         {
             _deviceRequestPromptTcs.TrySetException(new PuppeteerException("Session closed. Most likely the target has been closed."));
             return;
         }
 
-        var devicePrompt = new DeviceRequestPrompt(Client, TimeoutSettings, e);
+        var devicePrompt = new DeviceRequestPrompt(_client, _timeoutSettings, e);
         _deviceRequestPromptTcs.TrySetResult(devicePrompt);
     }
 }

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
     {
         public async Task Usage()
         {
-        #region DeviceRequestPromptUsage
+            #region DeviceRequestPromptUsage
             var promptTask = Page.WaitForDevicePromptAsync();
             await Task.WhenAll(
                 promptTask,
