@@ -208,7 +208,7 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target.</param>
         /// <param name="options">options.</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
+        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null);
 
         /// <summary>
         /// Registers a custom query handler.

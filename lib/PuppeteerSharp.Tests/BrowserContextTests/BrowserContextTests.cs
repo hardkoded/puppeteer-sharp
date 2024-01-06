@@ -9,10 +9,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextTests : PuppeteerBrowserBaseTest
     {
-        public BrowserContextTests(): base()
-        {
-        }
-
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should have default context")]
         [PuppeteerTimeout]
         public void ShouldHaveDefaultContext()
@@ -22,7 +18,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.False(defaultContext.IsIncognito);
             var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
             Assert.AreSame(defaultContext, Browser.DefaultContext);
-            StringAssert.Contains("cannot be closed", exception.Message);
+            StringAssert.Contains("cannot be closed", exception!.Message);
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should create new incognito context")]
@@ -188,7 +184,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
-                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions { Timeout = 1 }));
+                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitTimeoutOptions(1)));
             await context.CloseAsync();
         }
     }

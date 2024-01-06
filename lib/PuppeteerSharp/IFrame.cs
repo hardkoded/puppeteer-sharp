@@ -430,5 +430,21 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
         [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
         Task<IElementHandle[]> XPathAsync(string expression);
+
+        /// <summary>
+        /// This method is typically coupled with an action that triggers a device
+        /// request from an api such as WebBluetooth.
+        ///
+        /// Caution.
+        ///
+        /// This must be called before the device request is made. It will not return a
+        /// currently active device prompt.
+        /// </summary>
+        /// <example>
+        /// <code source="../PuppeteerSharp.Tests/DeviceRequestPromptTests/WaitForDevicePromptTests.cs" region="IFrameWaitForDevicePromptAsyncUsage" lang="csharp"/>
+        /// </example>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task that resolves after the page gets the prompt.</returns>
+        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = null);
     }
 }

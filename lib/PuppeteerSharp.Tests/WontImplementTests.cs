@@ -1,16 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
+﻿using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests
 {
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        public WontImplementTests(): base()
-        {
-        }
-
         // We don't implement pipes
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |pipe| option", "should support the pipe option")]
         [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |pipe| option", "should support the pipe argument")]
@@ -51,8 +45,10 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with function shorthands")]
         [PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitFor")]
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return undefined in case of Buffer error")]
+        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
+        [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTimeout]
-        public void TheseTesstWontBeImplemented()
+        public void TheseTestWontBeImplemented()
         {
         }
     }

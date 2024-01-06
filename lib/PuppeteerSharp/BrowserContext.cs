@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         public ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
         /// <inheritdoc/>
-        public Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
+        public Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null)
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <inheritdoc/>

@@ -25,6 +25,7 @@ namespace PuppeteerSharp
         private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private ExecutionContext _context;
 
         public IsolatedWorld(
             Frame frame,
@@ -58,9 +59,20 @@ namespace PuppeteerSharp
 
         private WebWorker Worker { get; }
 
-        public void Dispose() => _bindingQueue.Dispose();
+        public void Dispose()
+        {
+            _bindingQueue.Dispose();
+            _context?.Dispose();
+        }
 
-        public ValueTask DisposeAsync() => _bindingQueue.DisposeAsync();
+        public async ValueTask DisposeAsync()
+        {
+            await _bindingQueue.DisposeAsync().ConfigureAwait(false);
+            if (_context != null)
+            {
+                await _context.DisposeAsync().ConfigureAwait(false);
+            }
+        }
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
@@ -163,7 +175,7 @@ namespace PuppeteerSharp
         {
             if (_detached)
             {
-                throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\"(are you trying to evaluate?)");
+                throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
             }
 
             return _contextResolveTaskWrapper.Task;
@@ -208,7 +220,22 @@ namespace PuppeteerSharp
         internal void ClearContext()
         {
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _context?.Dispose();
+            _context = null;
             Frame?.ClearContext();
+        }
+
+        internal void SetNewContext(
+            CDPSession client,
+            ContextPayload contextPayload,
+            IsolatedWorld world)
+        {
+            _context = new ExecutionContext(
+                client,
+                contextPayload,
+                world);
+
+            SetContext(_context);
         }
 
         internal void SetContext(ExecutionContext context)

@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Helpers
     internal sealed class TaskQueue : IDisposable, IAsyncDisposable
     {
         private readonly SemaphoreSlim _semaphore;
-        private readonly AsyncLocal<bool> _held = new AsyncLocal<bool>();
+        private readonly AsyncLocal<bool> _held = new();
         private int _disposed;
 
         internal TaskQueue() => _semaphore = new SemaphoreSlim(1);

@@ -6,14 +6,8 @@ namespace PuppeteerSharp
     /// <seealso cref="IPage.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
     /// <seealso cref="IFrame.WaitForFunctionAsync(string, WaitForFunctionOptions, object[])"/>
     /// <seealso cref="WaitForSelectorOptions"/>
-    public class WaitForFunctionOptions
+    public class WaitForFunctionOptions : WaitTimeoutOptions
     {
-        /// <summary>
-        /// Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.
-        /// The default value can be changed by setting the <see cref="IPage.DefaultTimeout"/> property.
-        /// </summary>
-        public int? Timeout { get; set; }
-
         /// <summary>
         /// An interval at which the <c>pageFunction</c> is executed. defaults to <see cref="WaitForFunctionPollingOption.Raf"/>.
         /// </summary>

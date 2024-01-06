@@ -10,6 +10,6 @@ namespace PuppeteerSharp
             set => _defaultNavigationTimeout = value;
         }
 
-        public int Timeout { get; set; } = 30000;
+        public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
     }
 }

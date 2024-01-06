@@ -77,10 +77,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.WaitForResponseAsync(_ => false, new WaitForOptions
-                {
-                    Timeout = 1
-                }));
+                await Page.WaitForResponseAsync(_ => false, new WaitTimeoutOptions(1)));
 
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
@@ -102,10 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var task = Page.WaitForResponseAsync(TestConstants.ServerUrl + "/digits/2.png", new WaitForOptions
-            {
-                Timeout = 0
-            });
+            var task = Page.WaitForResponseAsync(TestConstants.ServerUrl + "/digits/2.png", new WaitTimeoutOptions(0));
 
             await Task.WhenAll(
                 task,

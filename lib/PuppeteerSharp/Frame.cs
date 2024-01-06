@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         public IPage Page => FrameManager.Page;
 
         /// <inheritdoc/>
-        public IFrame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+        IFrame IFrame.ParentFrame => ParentFrame;
 
         /// <inheritdoc/>
         public bool IsOopFrame => Client != FrameManager.Client;
@@ -55,6 +55,8 @@ namespace PuppeteerSharp
         internal CDPSession Client { get; private set; }
 
         internal string ParentId { get; }
+
+        internal Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
         internal FrameManager FrameManager { get; }
 
@@ -201,6 +203,10 @@ namespace PuppeteerSharp
             var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.XPathAsync(expression).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default)
+            => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
         public async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
@@ -481,6 +487,21 @@ namespace PuppeteerSharp
               null,
               FrameManager.TimeoutSettings,
               false);
+        }
+
+        internal DeviceRequestPromptManager GetDeviceRequestPromptManager()
+        {
+            if (IsOopFrame)
+            {
+                return FrameManager.GetDeviceRequestPromptManager(Client);
+            }
+
+            if (ParentFrame == null)
+            {
+                throw new PuppeteerException("Unable to find parent frame");
+            }
+
+            return ParentFrame.GetDeviceRequestPromptManager();
         }
 
         private Task<ElementHandle> GetDocumentAsync()

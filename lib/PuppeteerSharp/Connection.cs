@@ -280,7 +280,7 @@ namespace PuppeteerSharp
                 }
                 catch (JsonException exc)
                 {
-                    _logger.LogError(exc, "Failed to deserialize response", response);
+                    _logger.LogError(exc, "Failed to deserialize response");
                     return;
                 }
 
