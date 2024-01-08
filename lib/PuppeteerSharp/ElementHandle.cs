@@ -639,12 +639,7 @@ namespace PuppeteerSharp
 
         private async Task<BoundingBox> NonEmptyVisibleBoundingBoxAsync()
         {
-            var box = await BoundingBoxAsync().ConfigureAwait(false);
-
-            if (box == null)
-            {
-                throw new PuppeteerException("Node is either not visible or not an HTMLElement");
-            }
+            var box = await BoundingBoxAsync().ConfigureAwait(false) ?? throw new PuppeteerException("Node is either not visible or not an HTMLElement");
 
             if (box.Width == 0)
             {

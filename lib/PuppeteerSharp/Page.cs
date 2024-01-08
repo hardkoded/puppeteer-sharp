@@ -1305,10 +1305,7 @@ namespace PuppeteerSharp
         {
             if (!_screenshotBurstModeOn)
             {
-                await Client.SendAsync("Target.activateTarget", new TargetActivateTargetRequest
-                {
-                    TargetId = Target.TargetId,
-                }).ConfigureAwait(false);
+                await BringToFrontAsync().ConfigureAwait(false);
             }
 
             // FromSurface is not supported on Firefox.
