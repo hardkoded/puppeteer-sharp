@@ -60,7 +60,7 @@ await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L61-L69' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L55-L63' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also change the view port before generating the screenshot
@@ -74,7 +74,7 @@ await Page.SetViewportAsync(new ViewPortOptions
     Height = 500
 });
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L19-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L15-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Generate PDF files
