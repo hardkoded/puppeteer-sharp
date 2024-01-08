@@ -76,6 +76,16 @@ namespace PuppeteerSharp
         public virtual Task<WebWorker> WorkerAsync() => Task.FromResult<WebWorker>(null);
 
         /// <inheritdoc/>
+        public async Task<IPage> AsPageAsync()
+        {
+            if (Session == null)
+            {
+                var session = await CreateCDPSessionAsync().ConfigureAwait(false);
+                return await Page.CreateAsync(session, this, false, null)
+            }
+        }
+
+        /// <inheritdoc/>
         public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
