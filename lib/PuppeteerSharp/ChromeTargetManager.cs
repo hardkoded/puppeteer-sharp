@@ -26,11 +26,13 @@ namespace PuppeteerSharp
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
         private readonly int _targetDiscoveryTimeout;
         private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
+        private readonly Browser _browser;
 
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
+            Browser browser,
             int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
@@ -40,19 +42,20 @@ namespace PuppeteerSharp
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
             _targetDiscoveryTimeout = targetDiscoveryTimeout;
+            _browser = browser;
 
             _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true,
-                Filter = new[]
-                {
+                Filter =
+                [
                     new TargetSetDiscoverTargetsRequest.DiscoverFilter()
                     {
                         Type = "tab",
                         Exclude = true,
                     },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
-                },
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                ],
             }).ContinueWith(
                 t =>
                 {
@@ -121,7 +124,8 @@ namespace PuppeteerSharp
                     null,
                     null,
                     this,
-                    null);
+                    null,
+                    _browser.ScreenshotTaskQueue);
 
                 if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) &&
                     kv.Value.Type != TargetType.Browser)

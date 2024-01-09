@@ -43,13 +43,9 @@ namespace PuppeteerSharp
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             IsPageTargetFunc =
                 isPageTargetFunc ??
-                new Func<Target, bool>((Target target) =>
-                {
-                    return
-                        target.Type == TargetType.Page ||
-                        target.Type == TargetType.BackgroundPage ||
-                        target.Type == TargetType.Webview;
-                });
+                (target => target.Type == TargetType.Page ||
+                           target.Type == TargetType.BackgroundPage ||
+                           target.Type == TargetType.Webview);
 
             _defaultContext = new BrowserContext(Connection, this, null);
             _contexts = new ConcurrentDictionary<string, BrowserContext>(
@@ -69,6 +65,7 @@ namespace PuppeteerSharp
                     connection,
                     CreateTarget,
                     _targetFilterCallback,
+                    this,
                     launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
             }
         }
@@ -498,7 +495,8 @@ namespace PuppeteerSharp
                 session,
                 context,
                 TargetManager,
-                createSession);
+                createSession,
+                this.ScreenshotTaskQueue);
 
             if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -533,7 +531,8 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession);
+                    createSession,
+                    this.ScreenshotTaskQueue);
             }
 
             return otherTarget;
