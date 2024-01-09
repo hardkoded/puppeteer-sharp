@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     public class ElementHandleScreenshotTests : PuppeteerPageBaseTest
     {
-        public ElementHandleScreenshotTests(): base()
-        {
-        }
-
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
@@ -149,7 +145,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await Page.EvaluateFunctionAsync("element => element.remove()", elementHandle);
 
             var exception = Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotStreamAsync);
-            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
+            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception!.Message);
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should not hang with zero width/height element")]
@@ -159,7 +155,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await Page.SetContentAsync(@"<div style='width: 50px; height: 0'></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
             var exception = Assert.ThrowsAsync<PuppeteerException>(elementHandle.ScreenshotDataAsync);
-            Assert.AreEqual("Node has 0 height.", exception.Message);
+            Assert.AreEqual("Node has 0 height.", exception!.Message);
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work for an element with fractional dimensions")]
