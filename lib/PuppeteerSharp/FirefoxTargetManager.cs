@@ -136,7 +136,6 @@ namespace PuppeteerSharp
 
         private void OnAttachedToTarget(object sender, TargetAttachedToTargetResponse e)
         {
-            var parentConnection = sender as Connection;
             var parentSession = sender as CDPSession;
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
@@ -145,7 +144,7 @@ namespace PuppeteerSharp
             session.Target = target;
             _availableTargetsBySessionId.TryAdd(session.Id, target);
 
-            parentSession?.OnReady();
+            parentSession?.OnSessionReady(session);
         }
 
         private void FinishInitializationIfReady(string targetId = null)

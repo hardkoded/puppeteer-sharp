@@ -34,7 +34,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler<SessionEventArgs> SessionDetached;
 
-        internal event EventHandler Ready;
+        internal event EventHandler<SessionEventArgs> Ready;
 
         /// <inheritdoc/>
         public TargetType TargetType { get; }
@@ -120,7 +120,7 @@ namespace PuppeteerSharp
 
         internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
-        internal void OnReady() => Ready?.Invoke(this, EventArgs.Empty);
+        internal void OnSessionReady(CDPSession session) => Ready?.Invoke(this, new SessionEventArgs(session));
 
         internal void OnMessage(ConnectionResponse obj)
         {
@@ -164,10 +164,10 @@ namespace PuppeteerSharp
         }
 
         internal void OnSessionAttached(CDPSession session)
-            => SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
+            => SessionAttached?.Invoke(this, new SessionEventArgs(session));
 
         internal void OnSessionDetached(CDPSession session)
-            => SessionDetached?.Invoke(this, new SessionEventArgs { Session = session });
+            => SessionDetached?.Invoke(this, new SessionEventArgs(session));
 
         internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
     }

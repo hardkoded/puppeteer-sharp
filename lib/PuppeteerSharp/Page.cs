@@ -1597,9 +1597,9 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnAttachedToTarget(object sender, EventArgs e)
+        private void OnAttachedToTarget(object sender, SessionEventArgs e)
         {
-            var session = sender as CDPSession;
+            var session = e.Session as CDPSession;
             Debug.Assert(session != null, nameof(session) + " != null");
             FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
 
@@ -1609,6 +1609,8 @@ namespace PuppeteerSharp
                 _workers[session.Id] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
+
+            session.Ready += OnAttachedToTarget;
         }
 
         private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)

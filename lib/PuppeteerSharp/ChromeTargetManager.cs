@@ -292,7 +292,7 @@ namespace PuppeteerSharp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            parentSession?.OnReady();
+            parentSession?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
