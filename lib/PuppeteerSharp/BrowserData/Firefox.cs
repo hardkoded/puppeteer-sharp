@@ -11,7 +11,7 @@ namespace PuppeteerSharp.BrowserData
     public static class Firefox
     {
         /// <summary>
-        /// Default firefoxbuild.
+        /// Default firefox build.
         /// </summary>
         public const string DefaultBuildId = "FIREFOX_NIGHTLY";
 
@@ -24,9 +24,9 @@ namespace PuppeteerSharp.BrowserData
 
         internal static async Task<string> ResolveBuildIdAsync(string channel)
         {
-            if (_cachedBuildIds.ContainsKey(channel))
+            if (_cachedBuildIds.TryGetValue(channel, out var build))
             {
-                return _cachedBuildIds[channel];
+                return build;
             }
 
             var version = await JsonUtils.GetAsync<Dictionary<string, string>>("https://product-details.mozilla.org/1.0/firefox_versions.json").ConfigureAwait(false);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.BrowserData
             return version[channel];
         }
 
-        internal static string RelativeExecutablePath(Platform platform, string builId)
+        internal static string RelativeExecutablePath(Platform platform, string buildId)
             => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(

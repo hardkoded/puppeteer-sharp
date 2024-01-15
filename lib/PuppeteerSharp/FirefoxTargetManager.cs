@@ -16,13 +16,11 @@ namespace PuppeteerSharp
         private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
-        private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
         private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _availableTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
-        private readonly List<string> _ignoredTargets = new();
-        private List<string> _targetsIdsForInit = new();
+        private List<string> _targetsIdsForInit = [];
 
         public FirefoxTargetManager(
             Connection connection,
@@ -45,19 +43,6 @@ namespace PuppeteerSharp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            var interceptors = _targetInterceptors.GetOrAdd(session, static _ => new());
-            interceptors.Add(interceptor);
-        }
-
-        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            _targetInterceptors.TryGetValue(session, out var interceptors);
-
-            interceptors?.Remove(interceptor);
-        }
-
         public async Task InitializeAsync()
         {
             await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
@@ -69,7 +54,7 @@ namespace PuppeteerSharp
                 },
             }).ConfigureAwait(false);
 
-            _targetsIdsForInit = new List<string>(_discoveredTargetsByTargetId.Keys);
+            _targetsIdsForInit = [.._discoveredTargetsByTargetId.Keys];
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
@@ -102,10 +87,7 @@ namespace PuppeteerSharp
         }
 
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
-        {
-            e.Session.MessageReceived -= OnMessageReceived;
-            _targetInterceptors.TryRemove(e.Session, out var _);
-        }
+            => e.Session.MessageReceived -= OnMessageReceived;
 
         private void OnTargetCreated(TargetCreatedResponse e)
         {
@@ -125,7 +107,6 @@ namespace PuppeteerSharp
             var target = _targetFactoryFunc(e.TargetInfo, null);
             if (_targetFilterFunc != null && !_targetFilterFunc(target))
             {
-                _ignoredTargets.Add(e.TargetInfo.TargetId);
                 FinishInitializationIfReady(e.TargetInfo.TargetId);
                 return;
             }
@@ -155,27 +136,16 @@ namespace PuppeteerSharp
 
         private void OnAttachedToTarget(object sender, TargetAttachedToTargetResponse e)
         {
-            var parent = sender as ICDPConnection;
+            var parentConnection = sender as Connection;
+            var parentSession = sender as CDPSession;
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
-            var existingTarget = _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             session.MessageReceived += OnMessageReceived;
-
+            session.Target = target;
             _availableTargetsBySessionId.TryAdd(session.Id, target);
 
-            if (_targetInterceptors.TryGetValue(parent, out var interceptors))
-            {
-                foreach (var interceptor in interceptors)
-                {
-                    Target parentTarget = null;
-                    if (parent is CDPSession parentSession && !_availableTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
-                    {
-                        throw new PuppeteerException("Parent session not found in attached targets");
-                    }
-
-                    interceptor(target, parentTarget);
-                }
-            }
+            parentSession?.OnReady();
         }
 
         private void FinishInitializationIfReady(string targetId = null)

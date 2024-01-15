@@ -86,7 +86,7 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            target.TargetManager.AddTargetInterceptor(Client, OnAttachedToTarget);
+            Client.Ready += OnAttachedToTarget;
 
             target.TargetManager.TargetGone += OnDetachedFromTarget;
 
@@ -95,7 +95,7 @@ namespace PuppeteerSharp
                 {
                     try
                     {
-                        target.TargetManager.RemoveTargetInterceptor(Client, OnAttachedToTarget);
+                        Client.Ready -= OnAttachedToTarget;
                         target.TargetManager.TargetGone -= OnDetachedFromTarget;
                         Close?.Invoke(this, EventArgs.Empty);
                     }
@@ -1597,24 +1597,20 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnAttachedToTarget(Target target, Target parentTarget)
+        private void OnAttachedToTarget(object sender, EventArgs e)
         {
-            FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = target });
-            var targetInfo = target.TargetInfo;
-            var sessionId = target.Session.Id;
+            var session = sender as CDPSession;
+            Debug.Assert(session != null, nameof(session) + " != null");
+            FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
 
-            if (targetInfo.Type == TargetType.Worker)
+            if (session.Target.TargetInfo.Type == TargetType.Worker)
             {
-                var session = target.Session;
-                var worker = new WebWorker(session, targetInfo.Url, AddConsoleMessageAsync, HandleException);
-                _workers[sessionId] = worker;
+                var worker = new WebWorker(session, session.Target.Url, AddConsoleMessageAsync, HandleException);
+                _workers[session.Id] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
 
-            if (target.Session != null)
-            {
-                target.TargetManager.AddTargetInterceptor(target.Session, OnAttachedToTarget);
-            }
+            session.OnReady();
         }
 
         private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)

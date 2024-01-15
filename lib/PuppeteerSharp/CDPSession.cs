@@ -34,6 +34,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public event EventHandler<SessionEventArgs> SessionDetached;
 
+        internal event EventHandler Ready;
+
         /// <inheritdoc/>
         public TargetType TargetType { get; }
 
@@ -49,8 +51,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
-        /// <inheritdoc cref="Connection"/>
         internal Connection Connection { get; private set; }
+
+        internal Target Target { get; set; }
 
         /// <inheritdoc/>
         public async Task<T> SendAsync<T>(string method, object args = null)
@@ -117,6 +120,8 @@ namespace PuppeteerSharp
 
         internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+        internal void OnReady() => Ready?.Invoke(this, EventArgs.Empty);
+
         internal void OnMessage(ConnectionResponse obj)
         {
             var id = obj.Id;
@@ -164,6 +169,6 @@ namespace PuppeteerSharp
         internal void OnSessionDetached(CDPSession session)
             => SessionDetached?.Invoke(this, new SessionEventArgs { Session = session });
 
-        internal ICollection<MessageTask> GetPendingMessages() => _callbacks.Values;
+        internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
     }
 }

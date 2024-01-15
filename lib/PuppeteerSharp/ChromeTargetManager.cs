@@ -19,8 +19,7 @@ namespace PuppeteerSharp
         private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
-        private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
-        private readonly List<string> _targetsIdsForInit = new();
+        private readonly List<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
@@ -100,18 +99,6 @@ namespace PuppeteerSharp
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
-        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            var interceptors = _targetInterceptors.GetOrAdd(session, static _ => new());
-            interceptors.Add(interceptor);
-        }
-
-        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            _targetInterceptors.TryGetValue(session, out var interceptors);
-            interceptors?.Remove(interceptor);
-        }
-
         private void StoreExistingTargetsForInit()
         {
             foreach (var kv in _discoveredTargetsByTargetId)
@@ -179,7 +166,6 @@ namespace PuppeteerSharp
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
         {
             e.Session.MessageReceived -= OnMessageReceived;
-            _targetInterceptors.TryRemove(e.Session, out var _);
         }
 
         private void OnTargetCreated(TargetCreatedResponse e)
@@ -247,27 +233,11 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
-            var parent = sender as ICDPConnection;
+            var parentConnection = sender as Connection;
+            var parentSession = sender as CDPSession;
+
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
-
-            async Task SilentDetach()
-            {
-                try
-                {
-                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
-                    await parent.SendAsync(
-                        "Target.detachFromTarget",
-                        new TargetDetachFromTargetRequest
-                        {
-                            SessionId = session.Id,
-                        }).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "silentDetach failed.");
-                }
-            }
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
@@ -292,8 +262,8 @@ namespace PuppeteerSharp
                 return;
             }
 
-            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
-            if (!existingTarget)
+            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            if (!isExistingTarget)
             {
                 target = _targetFactoryFunc(targetInfo, session);
             }
@@ -309,8 +279,9 @@ namespace PuppeteerSharp
 
             session.MessageReceived += OnMessageReceived;
 
-            if (existingTarget)
+            if (isExistingTarget)
             {
+                session.Target = target;
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
             else
@@ -321,24 +292,12 @@ namespace PuppeteerSharp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            if (_targetInterceptors.TryGetValue(parent, out var interceptors))
-            {
-                foreach (var interceptor in interceptors)
-                {
-                    Target parentTarget = null;
-                    if (parent is CDPSession parentSession && !_attachedTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
-                    {
-                        throw new PuppeteerException("Parent session not found in attached targets");
-                    }
-
-                    interceptor(target, parentTarget);
-                }
-            }
+            parentSession?.OnReady();
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
-            if (!existingTarget)
+            if (!isExistingTarget)
             {
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = target });
             }
@@ -359,6 +318,26 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to call setAutoAttach and runIfWaitingForDebugger");
+            }
+
+            return;
+
+            async Task SilentDetach()
+            {
+                try
+                {
+                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                    await parentConnection.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest
+                        {
+                            SessionId = session.Id,
+                        }).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "silentDetach failed.");
+                }
             }
         }
 
