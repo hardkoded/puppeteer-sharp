@@ -1609,8 +1609,6 @@ namespace PuppeteerSharp
                 _workers[session.Id] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
-
-            session.OnReady();
         }
 
         private async Task OnLogEntryAddedAsync(LogEntryAddedResponse e)
