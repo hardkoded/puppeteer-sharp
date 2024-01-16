@@ -233,8 +233,7 @@ namespace PuppeteerSharp
 
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
-            var parentConnection = sender as Connection;
-            var parentSession = sender as CDPSession;
+            var parentSession = sender as ICDPConnection;
 
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
@@ -291,7 +290,7 @@ namespace PuppeteerSharp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            parentSession?.OnSessionReady(session);
+            (parentSession as CDPSession)?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
@@ -326,7 +325,7 @@ namespace PuppeteerSharp
                 try
                 {
                     await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
-                    await parentConnection.SendAsync(
+                    await parentSession!.SendAsync(
                         "Target.detachFromTarget",
                         new TargetDetachFromTargetRequest
                         {
