@@ -244,8 +244,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            if (targetInfo.Type == TargetType.ServiceWorker &&
-                _connection.IsAutoAttached(targetInfo.TargetId))
+            if (targetInfo.Type == TargetType.ServiceWorker)
             {
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
