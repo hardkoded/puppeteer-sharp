@@ -25,6 +25,11 @@ namespace PuppeteerSharp
             BrowserContext = context;
             TargetManager = targetManager;
 
+            if (session != null)
+            {
+                session.Target = this;
+            }
+
             Initialize();
         }
 
@@ -76,7 +81,12 @@ namespace PuppeteerSharp
         public virtual Task<WebWorker> WorkerAsync() => Task.FromResult<WebWorker>(null);
 
         /// <inheritdoc/>
-        public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);
+        public async Task<ICDPSession> CreateCDPSessionAsync()
+        {
+            var session = await SessionFactory(false).ConfigureAwait(false);
+            session.Target = this;
+            return session;
+        }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
         {

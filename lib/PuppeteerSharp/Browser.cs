@@ -392,7 +392,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
+                if (await e.Target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
                 {
                     var args = new TargetChangedArgs { Target = e.Target };
                     TargetCreated?.Invoke(this, args);
