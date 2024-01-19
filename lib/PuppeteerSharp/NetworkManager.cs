@@ -11,25 +11,18 @@ namespace PuppeteerSharp
 {
     internal class NetworkManager
     {
-        private readonly CDPSession _client;
-        private readonly ILogger _logger;
-        private readonly ConcurrentSet<string> _attemptedAuthentications = new();
         private readonly bool _ignoreHTTPSErrors;
-        private readonly InternalNetworkConditions _emulatedNetworkConditions = new()
-        {
-            Offline = false,
-            Upload = -1,
-            Download = -1,
-            Latency = 0,
-        };
-
         private readonly NetworkEventManager _networkEventManager = new();
+        private readonly ILogger _logger;
+        private readonly ConcurrentSet<string> _attemptedAuthentications = [];
+        private readonly InternalNetworkConditions _emulatedNetworkConditions = null;
 
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
-        private bool _userCacheDisabled;
         private bool _protocolRequestInterceptionEnabled;
+        private bool? _userCacheDisabled;
+        private string _userAgent;
 
         internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
         {
@@ -52,9 +45,9 @@ namespace PuppeteerSharp
 
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
-        internal FrameManager FrameManager { get; set; }
-
         internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
+
+        private FrameManager FrameManager { get; }
 
         internal async Task InitializeAsync()
         {
@@ -76,7 +69,7 @@ namespace PuppeteerSharp
 
         internal Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
-            _extraHTTPHeaders = new Dictionary<string, string>();
+            _extraHTTPHeaders = [];
 
             foreach (var item in extraHTTPHeaders)
             {
@@ -131,11 +124,11 @@ namespace PuppeteerSharp
                 DownloadThroughput = _emulatedNetworkConditions.Download,
             });
 
-        private Task UpdateProtocolCacheDisabledAsync()
-            => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
+        private async Task UpdateProtocolCacheDisabledAsync()
+            => await _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
             {
                 CacheDisabled = _userCacheDisabled,
-            });
+            }).ConfigureAwait(false);
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -300,7 +293,7 @@ namespace PuppeteerSharp
             var request = _networkEventManager.GetRequest(e.RequestId);
             ResponseReceivedExtraInfoResponse extraInfo = null;
 
-            if (request != null && !request.FromMemoryCache && e.HasExtraInfo)
+            if (request is { FromMemoryCache: false } && e.HasExtraInfo)
             {
                 extraInfo = _networkEventManager.ShiftResponseExtraInfo(e.RequestId);
 
