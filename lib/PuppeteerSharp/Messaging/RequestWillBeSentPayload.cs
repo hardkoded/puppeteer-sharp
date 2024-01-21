@@ -15,5 +15,7 @@ namespace PuppeteerSharp.Messaging
         public string FrameId { get; set; }
 
         public bool RedirectHasExtraInfo { get; set; }
+
+        public string NetworkId { get; set; }
     }
 }

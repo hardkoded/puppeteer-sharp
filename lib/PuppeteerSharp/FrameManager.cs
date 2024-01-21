@@ -202,7 +202,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
+        internal Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private async Task NavigateAsync(CDPSession client, string url, string referrer, string referrerPolicy, string frameId)
         {

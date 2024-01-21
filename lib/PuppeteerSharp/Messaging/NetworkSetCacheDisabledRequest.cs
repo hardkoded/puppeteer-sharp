@@ -1,7 +1,7 @@
 namespace PuppeteerSharp.Messaging
 {
-    internal class NetworkSetCacheDisabledRequest
+    internal class NetworkSetCacheDisabledRequest(bool cacheDisabled)
     {
-        public bool CacheDisabled { get; set; }
+        public bool CacheDisabled { get; set; } = cacheDisabled;
     }
 }
