@@ -10,10 +10,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
-        public RequestPostDataTests(): base()
-        {
-        }
-
         [PuppeteerTest("network.spec.ts", "Request.postData", "should work")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
@@ -33,6 +29,26 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.Request.PostData);
+        }
+
+        [PuppeteerTest("network.spec.ts", "Request.postData", "should work with blobs")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldWorkWithBlobs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            IRequest request = null;
+            Page.Request += (_, e) => request = e.Request;
+            await Page.EvaluateExpressionHandleAsync(@"fetch('./post', {
+                method: 'POST',
+                body:new Blob([JSON.stringify({foo: 'bar'})], {
+                  type: 'application/json',
+                }),
+            })");
+            Assert.NotNull(request);
+            Assert.Null(request.PostData);
+            Assert.True(request.HasPostData);
+            Assert.AreEqual("{\"foo\":\"bar\"}", await request.FetchPostDataAsync());
         }
     }
 }

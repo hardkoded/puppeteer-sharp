@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Messaging.Protocol.Network;
 
 namespace PuppeteerSharp
 {
@@ -39,6 +40,7 @@ namespace PuppeteerSharp
             ResourceType = e.Type;
             Method = e.Request.Method;
             PostData = e.Request.PostData;
+            HasPostData = e.Request.HasPostData ?? false;
             Frame = frame;
             RedirectChainList = redirectChain;
 
@@ -89,6 +91,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public IRequest[] RedirectChain => RedirectChainList.ToArray();
+
+        /// <inheritdoc/>
+        public bool HasPostData { get; private set; }
 
         internal bool FromMemoryCache { get; set; }
 
@@ -261,6 +266,24 @@ namespace PuppeteerSharp
                 // or the page was closed. We should tolerate these errors
                 _logger.LogError(ex.ToString());
             }
+        }
+
+        /// <inheritdoc />
+        public async Task<string> FetchPostDataAsync()
+        {
+            try
+            {
+                var result = await _client.SendAsync<GetRequestPostDataResponse>(
+                    "Network.getRequestPostData",
+                    new GetRequestPostDataRequest(RequestId)).ConfigureAwait(false);
+                return result.PostData;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.ToString());
+            }
+
+            return null;
         }
 
         private Header[] HeadersArray(Dictionary<string, string> headers)

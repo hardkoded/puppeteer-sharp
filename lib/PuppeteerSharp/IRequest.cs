@@ -17,7 +17,7 @@ namespace PuppeteerSharp
     public interface IRequest
     {
         /// <summary>
-        /// Responsed attached to the request.
+        /// Response attached to the request.
         /// </summary>
         /// <value>The response.</value>
         public IResponse Response { get; }
@@ -106,6 +106,13 @@ namespace PuppeteerSharp
         IRequest[] RedirectChain { get; }
 
         /// <summary>
+        /// True when the request has POST data. Note that <see cref="PostData"/> might still be null when this flag is true
+        /// when the data is too long or not readily available in the decoded form.
+        /// In that case, use <see cref="FetchPostDataAsync"/>.
+        /// </summary>
+        bool HasPostData { get; }
+
+        /// <summary>
         /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
@@ -127,5 +134,11 @@ namespace PuppeteerSharp
         /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/>.</param>
         /// <returns>Task.</returns>
         Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed);
+
+        /// <summary>
+        /// Fetches the POST data for the request from the browser.
+        /// </summary>
+        /// <returns>Task which resolves to the request's POST data.</returns>
+        Task<string> FetchPostDataAsync();
     }
 }
