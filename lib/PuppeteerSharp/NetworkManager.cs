@@ -467,6 +467,15 @@ namespace PuppeteerSharp
             {
                 Request = request,
             });
+
+            try
+            {
+                await request.FinalizeInterceptionsAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to FinalizeInterceptionsAsync");
+            }
         }
 
         private void OnRequestServedFromCache(RequestServedFromCacheResponse response)

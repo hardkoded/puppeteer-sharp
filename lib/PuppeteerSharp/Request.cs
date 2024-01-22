@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Messaging.Protocol.Network;
 
 namespace PuppeteerSharp
 {
@@ -17,38 +18,42 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly bool _allowInterception;
         private readonly ILogger _logger;
-        private bool _interceptionHandled;
+        private readonly bool _hasPostData;
+        private Payload _continueRequestOverrides = new();
+        private ResponseData _responseForRequest;
+        private RequestAbortErrorCode _abortErrorReason;
+        private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+        private List<Func<Task>> _interceptHandlers = [];
+        private Initiator _initiator;
 
         internal Request(
             CDPSession client,
-            Frame frame,
+            IFrame frame,
             string interceptionId,
             bool allowInterception,
-            RequestWillBeSentPayload e,
+            RequestWillBeSentPayload data,
             List<IRequest> redirectChain)
         {
             _client = client;
-            _allowInterception = allowInterception;
-            _interceptionHandled = false;
             _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
-
-            RequestId = e.RequestId;
+            RequestId = data.RequestId;
+            IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
             InterceptionId = interceptionId;
-            IsNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
-            Url = e.Request.Url;
-            ResourceType = e.Type;
-            Method = e.Request.Method;
-            PostData = e.Request.PostData;
+            _allowInterception = allowInterception;
+            Url = data.Request.Url;
+            ResourceType = data.Type ?? ResourceType.Other;
+            Method = data.Request.Method;
+            PostData = data.Request.PostData;
+            _hasPostData = PostData != null;
             Frame = frame;
             RedirectChainList = redirectChain;
+            _initiator = data.Initiator;
 
             Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var keyValue in e.Request.Headers)
+            foreach (var keyValue in data.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
-
-            FromMemoryCache = false;
         }
 
         /// <inheritdoc cref="Response"/>
@@ -90,9 +95,66 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public IRequest[] RedirectChain => RedirectChainList.ToArray();
 
-        internal bool FromMemoryCache { get; set; }
-
         internal List<IRequest> RedirectChainList { get; }
+
+        internal Payload ContinueRequestOverrides
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _continueRequestOverrides;
+            }
+        }
+
+        internal ResponseData ResponseForRequest
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _responseForRequest;
+            }
+        }
+
+        internal ErrorReason AbortErrorReason
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _abortErrorReason;
+            }
+        }
+
+        internal InterceptResolutionState InterceptResolutionState
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    return new InterceptResolutionState(InterceptResolutionAction.Disabled);
+                }
+
+                if (IsInterceptResolutionHandled)
+                {
+                    return new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled);
+                }
+
+                return _interceptResolutionState;
+            }
+        }
+
+        internal bool IsInterceptResolutionHandled { get; private set; }
 
         /// <inheritdoc/>
         public async Task ContinueAsync(Payload overrides = null)
@@ -108,12 +170,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
 
-            if (_interceptionHandled)
+            if (IsInterceptResolutionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
             }
 
-            _interceptionHandled = true;
+            IsInterceptResolutionHandled = true;
 
             try
             {
@@ -164,12 +226,12 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
 
-            if (_interceptionHandled)
+            if (IsInterceptResolutionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
             }
 
-            _interceptionHandled = true;
+            IsInterceptResolutionHandled = true;
 
             var responseHeaders = new List<Header>();
 
@@ -238,14 +300,14 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
 
-            if (_interceptionHandled)
+            if (IsInterceptResolutionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
             }
 
             var errorReason = errorCode.ToString();
 
-            _interceptionHandled = true;
+            IsInterceptResolutionHandled = true;
 
             try
             {
@@ -262,6 +324,35 @@ namespace PuppeteerSharp
                 _logger.LogError(ex.ToString());
             }
         }
+
+        internal async Task FinalizeInterceptionsAsync()
+        {
+            foreach (var handler in _interceptHandlers)
+            {
+                await handler().ConfigureAwait(false);
+            }
+
+            switch (InterceptResolutionState.Action)
+            {
+                case InterceptResolutionAction.Abort:
+                    await AbortAsync(_abortErrorReason).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Respond:
+                    if (_responseForRequest == null)
+                    {
+                        throw new PuppeteerException("Response is missing for the interception");
+                    }
+
+                    await RespondAsync(_responseForRequest).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Continue:
+                    await ContinueAsync(_continueRequestOverrides).ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        internal EnqueueInterceptionAction(Func<Task> pendingHandler)
+            => _interceptHandlers.Add(pendingHandler);
 
         private Header[] HeadersArray(Dictionary<string, string> headers)
             => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
