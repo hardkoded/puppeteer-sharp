@@ -179,7 +179,7 @@ namespace PuppeteerSharp
                             await poller.stop();
                         }").ConfigureAwait(false);
 
-                        poller = null;
+                        _poller = null;
                     }
                     catch (Exception)
                     {
@@ -216,9 +216,14 @@ namespace PuppeteerSharp
             // We have a situation in our async code where a new navigation could be executed
             // before the WaitForFunction completes its initialization
             // See FrameWaitForSelectorTests.ShouldSurviveCrossProcessNavigation
-            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!") ||
-                // This is a different message coming from Firefox in the same situation.
-                exception.Message.Contains("Could not find object with given id"))
+            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
+            {
+                return null;
+            }
+
+            // This is a different message coming from Firefox in the same situation.
+            // This is not upstream.
+            if (exception.Message.Contains("Could not find object with given id"))
             {
                 return null;
             }
