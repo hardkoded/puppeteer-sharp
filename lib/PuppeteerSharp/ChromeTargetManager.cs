@@ -43,15 +43,15 @@ namespace PuppeteerSharp
             _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
                 Discover = true,
-                Filter = new[]
-                {
+                Filter =
+                [
                     new TargetSetDiscoverTargetsRequest.DiscoverFilter()
                     {
                         Type = "tab",
                         Exclude = true,
                     },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
-                },
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                ],
             }).ContinueWith(
                 t =>
                 {

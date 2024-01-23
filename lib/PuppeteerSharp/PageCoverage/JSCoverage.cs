@@ -10,11 +10,11 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly CDPSession _client;
         private readonly Dictionary<string, string> _scriptURLs = new();
         private readonly Dictionary<string, string> _scriptSources = new();
         private readonly ILogger _logger;
 
+        private CDPSession _client;
         private bool _enabled;
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
@@ -27,6 +27,8 @@ namespace PuppeteerSharp.PageCoverage
 
             _resetOnNavigation = false;
         }
+
+        internal void UpdateClient(CDPSession client) => _client = client;
 
         internal Task StartAsync(CoverageStartOptions options)
         {

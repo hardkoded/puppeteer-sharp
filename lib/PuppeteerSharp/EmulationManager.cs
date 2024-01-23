@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     internal class EmulationManager
     {
-        private readonly CDPSession _client;
+        private CDPSession _client;
         private bool _hasTouch;
         private bool _emulatingMobile;
 
@@ -15,6 +15,8 @@ namespace PuppeteerSharp
         {
             _client = client;
         }
+
+        internal void UpdateClient(CDPSession client) => _client = client;
 
         internal async Task<bool> EmulateViewportAsync(ViewPortOptions viewport)
         {

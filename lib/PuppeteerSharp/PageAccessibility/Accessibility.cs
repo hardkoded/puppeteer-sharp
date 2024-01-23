@@ -7,7 +7,7 @@ namespace PuppeteerSharp.PageAccessibility
     /// <inheritdoc/>
     public class Accessibility : IAccessibility
     {
-        private readonly CDPSession _client;
+        private CDPSession _client;
 
         /// <inheritdoc cref="Accessibility"/>
         public Accessibility(CDPSession client) => _client = client;
@@ -53,6 +53,8 @@ namespace PuppeteerSharp.PageAccessibility
             return SerializeTree(needle, interestingNodes)[0];
         }
 
+        internal void UpdateClient(CDPSession client) => _client = client;
+
         private void CollectInterestingNodes(List<AXNode> collection, AXNode node, bool insideControl)
         {
             if (node.IsInteresting(insideControl))
@@ -91,7 +93,7 @@ namespace PuppeteerSharp.PageAccessibility
                 serializedNode.Children = children.ToArray();
             }
 
-            return new[] { serializedNode };
+            return [serializedNode];
         }
     }
 }

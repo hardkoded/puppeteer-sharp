@@ -332,8 +332,8 @@ namespace PuppeteerSharp
 
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
-            var target = await TargetManager.GetAvailableTargets().GetItemAsync(targetId).ConfigureAwait(false);
-            await target.InitializedTask.ConfigureAwait(false);
+            var target = await WaitForTargetAsync(t => t.TargetId == targetId).ConfigureAwait(false) as Target;
+            await target!.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
         }
 

@@ -22,6 +22,9 @@ namespace PuppeteerSharp
             UpdateClient(client);
         }
 
+        /// <inheritdoc />
+        public event EventHandler FrameSwappedByActivation;
+
         /// <inheritdoc/>
         public IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
@@ -473,20 +476,37 @@ namespace PuppeteerSharp
             PuppeteerWorld.Detach();
         }
 
-        internal void UpdateClient(CDPSession client)
+        internal void UpdateClient(CDPSession client, bool keepWorlds = false)
         {
             Client = client;
-            MainRealm = new IsolatedWorld(
-              this,
-              null,
-              FrameManager.TimeoutSettings,
-              true);
 
-            IsolatedRealm = new IsolatedWorld(
-              this,
-              null,
-              FrameManager.TimeoutSettings,
-              false);
+            if (!keepWorlds)
+            {
+                MainRealm = new IsolatedWorld(
+                  this,
+                  null,
+                  FrameManager.TimeoutSettings,
+                  true);
+
+                IsolatedRealm = new IsolatedWorld(
+                  this,
+                  null,
+                  FrameManager.TimeoutSettings,
+                  false);
+            }
+            else
+            {
+                MainWorld.FrameUpdated(client);
+                PuppeteerWorld.FrameUpdated(client);
+            }
+        }
+
+        internal void OnFrameSwappedByActivation()
+        {
+            // Emulate loading process for swapped frames.
+            OnLoadingStarted();
+            OnLoadingStopped();
+            FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
         }
 
         internal DeviceRequestPromptManager GetDeviceRequestPromptManager()

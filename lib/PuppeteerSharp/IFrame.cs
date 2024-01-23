@@ -39,6 +39,11 @@ namespace PuppeteerSharp
     public interface IFrame
     {
         /// <summary>
+        /// Raised when the frame is swapped.
+        /// </summary>
+        event EventHandler FrameSwappedByActivation;
+
+        /// <summary>
         /// Gets the child frames of the this frame.
         /// </summary>
         IReadOnlyCollection<IFrame> ChildFrames { get; }
