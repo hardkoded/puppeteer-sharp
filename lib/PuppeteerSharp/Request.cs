@@ -142,7 +142,9 @@ namespace PuppeteerSharp
             }
         }
 
-        internal InterceptResolutionState InterceptResolutionState
+        internal bool FromMemoryCache { get; set; }
+
+        private InterceptResolutionState InterceptResolutionState
         {
             get
             {
@@ -157,9 +159,7 @@ namespace PuppeteerSharp
             }
         }
 
-        internal bool IsInterceptResolutionHandled { get; private set; }
-
-        internal bool FromMemoryCache { get; set; }
+        private bool IsInterceptResolutionHandled { get; set; }
 
         /// <inheritdoc/>
         public async Task ContinueAsync(Payload overrides = null, int? priority = null)
@@ -354,7 +354,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.PostData != null)
                 {
-                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides?.PostData));
+                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData));
                 }
 
                 if (overrides?.Headers?.Count > 0)

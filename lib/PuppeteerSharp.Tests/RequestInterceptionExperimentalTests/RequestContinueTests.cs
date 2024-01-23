@@ -103,10 +103,12 @@ public class RequestContinueTests : PuppeteerPageBaseTest
     public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
     {
         await Page.SetRequestInterceptionAsync(true);
-        Page.AddRequestInterceptor( request => request.ContinueAsync(new Payload
-        {
-            Method = HttpMethod.Post, PostData = "doggo"
-        }, 0));
+        Page.AddRequestInterceptor(request => request.ContinueAsync(
+            new Payload
+            {
+                Method = HttpMethod.Post, PostData = "doggo"
+            },
+            0));
 
         var serverRequestTask = Server.WaitForRequest("/empty.html", async req =>
         {

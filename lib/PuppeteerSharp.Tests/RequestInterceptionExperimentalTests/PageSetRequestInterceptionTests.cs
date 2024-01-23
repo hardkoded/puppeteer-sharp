@@ -192,7 +192,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         {
             var headers = request.Headers.Clone();
             headers["foo"] = "bar";
-            await request.ContinueAsync(new Payload { Headers = headers },0);
+            await request.ContinueAsync(new Payload { Headers = headers }, 0);
         });
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
@@ -385,7 +385,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
     {
         await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string> { ["referer"] = "http://google.com/" });
         await Page.SetRequestInterceptionAsync(true);
-        Page.AddRequestInterceptor( request => request.ContinueAsync(new Payload(), 0));
+        Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
         var requestTask = Server.WaitForRequest("/grid.html", request => request.Headers["referer"].ToString());
         await Task.WhenAll(
             requestTask,
@@ -400,7 +400,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
     public async Task ShouldFailNavigationWhenAbortingMainResource()
     {
         await Page.SetRequestInterceptionAsync(true);
-        Page.AddRequestInterceptor( request => request.AbortAsync(RequestAbortErrorCode.Failed, 0));
+        Page.AddRequestInterceptor(request => request.AbortAsync(RequestAbortErrorCode.Failed, 0));
         var exception = Assert.ThrowsAsync<NavigationException>(
             () => Page.GoToAsync(TestConstants.EmptyPage));
 
@@ -633,7 +633,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         // The requestWillBeSent will report encoded URL, whereas interception will
         // report URL as-is. @see crbug.com/759388
         await Page.SetRequestInterceptionAsync(true);
-        Page.AddRequestInterceptor( request => request.ContinueAsync(new Payload(), 0));
+        Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
         Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
     }
