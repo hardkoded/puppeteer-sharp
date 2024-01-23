@@ -50,5 +50,5 @@ public class Initiator
     /// <summary>
     /// Set if another request triggered this request (e.g. preflight).
     /// </summary>
-    public int? RequestId { get; set; }
+    public string RequestId { get; set; }
 }
