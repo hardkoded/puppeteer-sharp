@@ -20,17 +20,35 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Messaging.Protocol.Network;
+namespace PuppeteerSharp;
 
-internal class Initiator
+/// <summary>
+/// Information about the request initiator.
+/// </summary>
+public class Initiator
 {
+    /// <summary>
+    /// Gets or sets the type of the initiator.
+    /// </summary>
     public InitiatorType Type { get; set; }
 
+    /// <summary>
+    /// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
+    /// </summary>
     public string Url { get; set; }
 
+    /// <summary>
+    /// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// </summary>
     public int? LineNumber { get; set; }
 
+    /// <summary>
+    /// Initiator column number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// </summary>
     public int? ColumnNumber { get; set; }
 
+    /// <summary>
+    /// Set if another request triggered this request (e.g. preflight).
+    /// </summary>
     public int? RequestId { get; set; }
 }

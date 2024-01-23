@@ -242,10 +242,7 @@ namespace PuppeteerSharp
 
             ForgetRequest(request, true);
 
-            RequestFailed?.Invoke(this, new RequestEventArgs
-            {
-                Request = request,
-            });
+            RequestFailed?.Invoke(this, new RequestEventArgs(request));
         }
 
         private void OnLoadingFinished(LoadingFinishedEventResponse e)
@@ -274,10 +271,7 @@ namespace PuppeteerSharp
 
             ForgetRequest(request, true);
 
-            RequestFinished?.Invoke(this, new RequestEventArgs
-            {
-                Request = request,
-            });
+            RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
         private void ForgetRequest(Request request, bool events)
@@ -335,10 +329,7 @@ namespace PuppeteerSharp
 
             request.Response = response;
 
-            Response?.Invoke(this, new ResponseCreatedEventArgs
-            {
-                Response = response,
-            });
+            Response?.Invoke(this, new ResponseCreatedEventArgs(response));
         }
 
         private async Task OnAuthRequiredAsync(FetchAuthRequiredResponse e)
@@ -463,10 +454,7 @@ namespace PuppeteerSharp
 
             _networkEventManager.StoreRequest(e.RequestId, request);
 
-            Request?.Invoke(this, new RequestEventArgs
-            {
-                Request = request,
-            });
+            Request?.Invoke(this, new RequestEventArgs(request));
 
             try
             {
@@ -487,7 +475,7 @@ namespace PuppeteerSharp
                 request.FromMemoryCache = true;
             }
 
-            RequestServedFromCache?.Invoke(this, new RequestEventArgs { Request = request });
+            RequestServedFromCache?.Invoke(this, new RequestEventArgs(request));
         }
 
         private void HandleRequestRedirect(Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
@@ -505,15 +493,8 @@ namespace PuppeteerSharp
 
             ForgetRequest(request, false);
 
-            Response?.Invoke(this, new ResponseCreatedEventArgs
-            {
-                Response = response,
-            });
-
-            RequestFinished?.Invoke(this, new RequestEventArgs
-            {
-                Request = request,
-            });
+            Response?.Invoke(this, new ResponseCreatedEventArgs(response));
+            RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
         private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)

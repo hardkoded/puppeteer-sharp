@@ -1098,8 +1098,8 @@ namespace PuppeteerSharp
         Task SetOfflineModeAsync(bool value);
 
         /// <summary>
-        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>,
-        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
+        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode, int?)">request.AbortAsync</see>,
+        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload, int?)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData, int?)">request.RespondAsync</see> methods.
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
@@ -1438,5 +1438,19 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after the page gets the prompt.</returns>
         Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = null);
+
+        /// <summary>
+        /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
+        /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
+        /// The interception is resolved to the highest-priority resolution.
+        /// </summary>
+        /// <param name="interceptionTask">Interception task.</param>
+        void AddRequestInterceptor(Func<IRequest, Task> interceptionTask);
+
+        /// <summary>
+        /// Removes a previously added request interceptor.
+        /// </summary>
+        /// <param name="interceptionTask">Interception task.</param>
+        void RemoveRequestInterceptor(Func<IRequest, Task> interceptionTask);
     }
 }

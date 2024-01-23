@@ -20,11 +20,9 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Messaging;
+namespace PuppeteerSharp.Messaging.Protocol.Network;
 
-internal class DeviceAccessSelectPrompt
+internal class GetRequestPostDataRequest(string requestId)
 {
-    public string RequestId { get; set; }
-
-    public string DeviceId { get; set; }
+    public string RequestId { get; set; } = requestId;
 }

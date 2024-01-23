@@ -15,7 +15,7 @@ namespace PuppeteerSharp.BrowserData
         /// </summary>
         public const string DefaultBuildId = "FIREFOX_NIGHTLY";
 
-        private static readonly Dictionary<string, string> _cachedBuildIds = new();
+        private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
         internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(DefaultBuildId);
 

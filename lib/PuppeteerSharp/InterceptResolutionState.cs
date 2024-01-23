@@ -22,9 +22,9 @@
 
 namespace PuppeteerSharp;
 
-internal class InterceptResolutionState(InterceptResolutionAction action)
+internal class InterceptResolutionState(InterceptResolutionAction action, int? priority = null)
 {
     public InterceptResolutionAction Action { get; set; } = action;
 
-    public int? Priority { get; set; }
+    public int? Priority { get; set; } = priority;
 }
