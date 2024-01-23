@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) Darío Kondratiuk
+//  * Copyright (c) 2020 Darío Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,14 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Messaging;
+namespace PuppeteerSharp;
 
-internal class DeviceAccessSelectPrompt
+internal enum InterceptResolutionAction
 {
-    public string RequestId { get; set; }
-
-    public string DeviceId { get; set; }
+    Abort,
+    Respond,
+    Continue,
+    Disabled,
+    None,
+    AlreadyHandled,
 }

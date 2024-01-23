@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) Darío Kondratiuk
+//  * Copyright (c) 2020 Darío Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,35 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Messaging;
+namespace PuppeteerSharp;
 
-internal class DeviceAccessSelectPrompt
+/// <summary>
+/// Information about the request initiator.
+/// </summary>
+public class Initiator
 {
-    public string RequestId { get; set; }
+    /// <summary>
+    /// Gets or sets the type of the initiator.
+    /// </summary>
+    public InitiatorType Type { get; set; }
 
-    public string DeviceId { get; set; }
+    /// <summary>
+    /// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
+    /// </summary>
+    public string Url { get; set; }
+
+    /// <summary>
+    /// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// </summary>
+    public int? LineNumber { get; set; }
+
+    /// <summary>
+    /// Initiator column number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// </summary>
+    public int? ColumnNumber { get; set; }
+
+    /// <summary>
+    /// Set if another request triggered this request (e.g. preflight).
+    /// </summary>
+    public string RequestId { get; set; }
 }

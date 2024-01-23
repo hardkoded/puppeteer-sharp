@@ -58,7 +58,7 @@ namespace PuppeteerSharp
                         TaskScheduler.Default);
             }
 
-            _ = Rerun();
+            _ = RerunAsync();
         }
 
         internal Task<IJSHandle> Task => _result.Task;
@@ -80,7 +80,7 @@ namespace PuppeteerSharp
             _isDisposed = true;
         }
 
-        internal async Task Rerun()
+        internal async Task RerunAsync()
         {
             try
             {
@@ -179,7 +179,7 @@ namespace PuppeteerSharp
                             await poller.stop();
                         }").ConfigureAwait(false);
 
-                        poller = null;
+                        _poller = null;
                     }
                     catch (Exception)
                     {
@@ -217,6 +217,13 @@ namespace PuppeteerSharp
             // before the WaitForFunction completes its initialization
             // See FrameWaitForSelectorTests.ShouldSurviveCrossProcessNavigation
             if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
+            {
+                return null;
+            }
+
+            // This is a different message coming from Firefox in the same situation.
+            // This is not upstream.
+            if (exception.Message.Contains("Could not find object with given id"))
             {
                 return null;
             }

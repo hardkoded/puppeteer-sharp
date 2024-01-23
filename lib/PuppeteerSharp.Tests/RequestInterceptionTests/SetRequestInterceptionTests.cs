@@ -15,10 +15,6 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
-        public SetRequestInterceptionTests(): base()
-        {
-        }
-
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should intercept")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldIntercept()
@@ -51,7 +47,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
         [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when POST is redirected with 302")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldWorkWhenPostIsEedirectedWith302()
+        public async Task ShouldWorkWhenPostIsRedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
             await Page.GoToAsync(TestConstants.EmptyPage);
