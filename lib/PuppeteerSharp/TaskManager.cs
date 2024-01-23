@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         {
             foreach (var waitTask in WaitTasks)
             {
-                _ = waitTask.Rerun();
+                _ = waitTask.RerunAsync();
             }
         }
 

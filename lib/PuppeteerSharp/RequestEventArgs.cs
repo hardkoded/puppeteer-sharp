@@ -8,12 +8,12 @@ namespace PuppeteerSharp
     /// <seealso cref="IPage.Request"/>
     /// <seealso cref="IPage.RequestFailed"/>
     /// <seealso cref="IPage.RequestFinished"/>
-    public class RequestEventArgs : EventArgs
+    public class RequestEventArgs(IRequest request) : EventArgs
     {
         /// <summary>
         /// Gets the request.
         /// </summary>
         /// <value>The request.</value>
-        public IRequest Request { get; internal set; }
+        public IRequest Request { get; } = request;
     }
 }

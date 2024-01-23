@@ -106,6 +106,11 @@ namespace PuppeteerSharp
         IRequest[] RedirectChain { get; }
 
         /// <summary>
+        /// Information about the request initiator.
+        /// </summary>
+        public Initiator Initiator { get; }
+
+        /// <summary>
         /// True when the request has POST data. Note that <see cref="PostData"/> might still be null when this flag is true
         /// when the data is too long or not readily available in the decoded form.
         /// In that case, use <see cref="FetchPostDataAsync"/>.
@@ -117,23 +122,29 @@ namespace PuppeteerSharp
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
         /// <param name="payloadOverrides">Optional request overwrites.</param>
+        /// <param name="priority">Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately.
+        /// IMPORTANT: If you set the priority, you will need to attach Request listener using <see cref="IPage.AddRequestInterceptor"/> instead of <see cref="IPage.Request"/>.</param>
         /// <returns>Task.</returns>
-        Task ContinueAsync(Payload payloadOverrides = null);
+        Task ContinueAsync(Payload payloadOverrides = null, int? priority = null);
 
         /// <summary>
         /// Fulfills request with given response. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is thrown if request interception is not enabled.
         /// </summary>
         /// <param name="response">Response that will fulfill this request.</param>
+        /// <param name="priority">Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately.
+        /// IMPORTANT: If you set the priority, you will need to attach Request listener using <see cref="IPage.AddRequestInterceptor"/> instead of <see cref="IPage.Request"/>.</param>
         /// <returns>Task.</returns>
-        Task RespondAsync(ResponseData response);
+        Task RespondAsync(ResponseData response, int? priority = null);
 
         /// <summary>
         /// Aborts request. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>.
         /// Exception is immediately thrown if the request interception is not enabled.
         /// </summary>
         /// <param name="errorCode">Optional error code. Defaults to <see cref="RequestAbortErrorCode.Failed"/>.</param>
+        /// <param name="priority">Optional intercept abort priority. If provided, intercept will be resolved using cooperative handling rules. Otherwise, intercept will be resolved immediately.
+        /// IMPORTANT: If you set the priority, you will need to attach Request listener using <see cref="IPage.AddRequestInterceptor"/> instead of <see cref="IPage.Request"/>.</param>
         /// <returns>Task.</returns>
-        Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed);
+        Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null);
 
         /// <summary>
         /// Fetches the POST data for the request from the browser.

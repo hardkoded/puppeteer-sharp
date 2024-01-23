@@ -60,6 +60,7 @@ namespace PuppeteerSharp
         private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings = new();
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
+        private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
@@ -1143,6 +1144,14 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
+        /// <inheritdoc />
+        public void AddRequestInterceptor(Func<IRequest, Task> interceptionTask)
+            => _requestInterceptionTask.Add(interceptionTask);
+
+        /// <inheritdoc />
+        public void RemoveRequestInterceptor(Func<IRequest, Task> interceptionTask)
+            => _requestInterceptionTask.Remove(interceptionTask);
+
         internal static async Task<Page> CreateAsync(
             CDPSession client,
             Target target,
@@ -1253,7 +1262,7 @@ namespace PuppeteerSharp
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
             FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
 
-            networkManager.Request += (_, e) => Request?.Invoke(this, e);
+            networkManager.Request += (_, e) => OnRequest(e.Request);
             networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
             networkManager.Response += (_, e) => Response?.Invoke(this, e);
             networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
@@ -1262,6 +1271,22 @@ namespace PuppeteerSharp
             await Task.WhenAll(
                Client.SendAsync("Performance.enable"),
                Client.SendAsync("Log.enable")).ConfigureAwait(false);
+        }
+
+        private void OnRequest(IRequest request)
+        {
+            if (request == null)
+            {
+                return;
+            }
+
+            // Run tasks one after the other
+            foreach (var subscriber in _requestInterceptionTask)
+            {
+                (request as Request)?.EnqueueInterceptionAction(subscriber);
+            }
+
+            Request?.Invoke(this, new RequestEventArgs(request));
         }
 
         private async Task<IResponse> GoAsync(int delta, NavigationOptions options)

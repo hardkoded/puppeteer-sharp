@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -18,39 +19,41 @@ namespace PuppeteerSharp
         private readonly CDPSession _client;
         private readonly bool _allowInterception;
         private readonly ILogger _logger;
-        private bool _interceptionHandled;
+        private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
+        private Payload _continueRequestOverrides = new();
+        private ResponseData _responseForRequest;
+        private RequestAbortErrorCode _abortErrorReason;
+        private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
 
         internal Request(
             CDPSession client,
-            Frame frame,
+            IFrame frame,
             string interceptionId,
             bool allowInterception,
-            RequestWillBeSentPayload e,
+            RequestWillBeSentPayload data,
             List<IRequest> redirectChain)
         {
             _client = client;
-            _allowInterception = allowInterception;
-            _interceptionHandled = false;
             _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
-
-            RequestId = e.RequestId;
+            RequestId = data.RequestId;
+            IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
             InterceptionId = interceptionId;
-            IsNavigationRequest = e.RequestId == e.LoaderId && e.Type == ResourceType.Document;
-            Url = e.Request.Url;
-            ResourceType = e.Type;
-            Method = e.Request.Method;
-            PostData = e.Request.PostData;
-            HasPostData = e.Request.HasPostData ?? false;
+            _allowInterception = allowInterception;
+            Url = data.Request.Url;
+            ResourceType = data.Type ?? ResourceType.Other;
+            Method = data.Request.Method;
+            PostData = data.Request.PostData;
+            HasPostData = data.Request.HasPostData ?? false;
+
             Frame = frame;
             RedirectChainList = redirectChain;
+            Initiator = data.Initiator;
 
             Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var keyValue in e.Request.Headers)
+            foreach (var keyValue in data.Request.Headers)
             {
                 Headers[keyValue.Key] = keyValue.Value;
             }
-
-            FromMemoryCache = false;
         }
 
         /// <inheritdoc cref="Response"/>
@@ -92,15 +95,74 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public IRequest[] RedirectChain => RedirectChainList.ToArray();
 
-        /// <inheritdoc/>
-        public bool HasPostData { get; private set; }
+        /// <inheritdoc />
+        public Initiator Initiator { get; }
 
-        internal bool FromMemoryCache { get; set; }
+        /// <inheritdoc />
+        public bool HasPostData { get; }
 
         internal List<IRequest> RedirectChainList { get; }
 
+        internal Payload ContinueRequestOverrides
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _continueRequestOverrides;
+            }
+        }
+
+        internal ResponseData ResponseForRequest
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _responseForRequest;
+            }
+        }
+
+        internal RequestAbortErrorCode AbortErrorReason
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    throw new PuppeteerException("Request Interception is not enabled!");
+                }
+
+                return _abortErrorReason;
+            }
+        }
+
+        internal bool FromMemoryCache { get; set; }
+
+        private InterceptResolutionState InterceptResolutionState
+        {
+            get
+            {
+                if (!_allowInterception)
+                {
+                    return new InterceptResolutionState(InterceptResolutionAction.Disabled);
+                }
+
+                return IsInterceptResolutionHandled
+                    ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
+                    : _interceptResolutionState;
+            }
+        }
+
+        private bool IsInterceptResolutionHandled { get; set; }
+
         /// <inheritdoc/>
-        public async Task ContinueAsync(Payload overrides = null)
+        public async Task ContinueAsync(Payload overrides = null, int? priority = null)
         {
             // Request interception is not supported for data: urls.
             if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
@@ -113,12 +175,166 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Request Interception is not enabled!");
             }
 
-            if (_interceptionHandled)
+            if (IsInterceptResolutionHandled)
             {
                 throw new PuppeteerException("Request is already handled!");
             }
 
-            _interceptionHandled = true;
+            if (priority is null)
+            {
+                await ContinueInternalAsync(overrides).ConfigureAwait(false);
+                return;
+            }
+
+            _continueRequestOverrides = overrides;
+
+            if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+            {
+                _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Continue, priority);
+                return;
+            }
+
+            if (priority == _interceptResolutionState.Priority)
+            {
+                if (_interceptResolutionState.Action == InterceptResolutionAction.Abort ||
+                    _interceptResolutionState.Action == InterceptResolutionAction.Respond)
+                {
+                    return;
+                }
+
+                _interceptResolutionState.Action = InterceptResolutionAction.Continue;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task RespondAsync(ResponseData response, int? priority = null)
+        {
+            if (Url.StartsWith("data:", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request Interception is not enabled!");
+            }
+
+            if (IsInterceptResolutionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
+
+            if (priority is null)
+            {
+                Debug.Assert(response != null, nameof(response) + " != null");
+                await RespondInternalAsync(response).ConfigureAwait(false);
+            }
+
+            _responseForRequest = response;
+
+            if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+            {
+                _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Respond, priority);
+                return;
+            }
+
+            if (priority == _interceptResolutionState.Priority)
+            {
+                if (_interceptResolutionState.Action == InterceptResolutionAction.Abort)
+                {
+                    return;
+                }
+
+                _interceptResolutionState.Action = InterceptResolutionAction.Respond;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+        {
+            // Request interception is not supported for data: urls.
+            if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return;
+            }
+
+            if (!_allowInterception)
+            {
+                throw new PuppeteerException("Request Interception is not enabled!");
+            }
+
+            if (IsInterceptResolutionHandled)
+            {
+                throw new PuppeteerException("Request is already handled!");
+            }
+
+            if (priority is null)
+            {
+                await AbortInternalAsync(errorCode).ConfigureAwait(false);
+                return;
+            }
+
+            _abortErrorReason = errorCode;
+
+            if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+            {
+                _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Abort, priority);
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task<string> FetchPostDataAsync()
+        {
+            try
+            {
+                var result = await _client.SendAsync<GetRequestPostDataResponse>(
+                    "Network.getRequestPostData",
+                    new GetRequestPostDataRequest(RequestId)).ConfigureAwait(false);
+                return result.PostData;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.ToString());
+            }
+
+            return null;
+        }
+
+        internal async Task FinalizeInterceptionsAsync()
+        {
+            foreach (var handler in _interceptHandlers)
+            {
+                await handler(this).ConfigureAwait(false);
+            }
+
+            switch (InterceptResolutionState.Action)
+            {
+                case InterceptResolutionAction.Abort:
+                    await AbortAsync(_abortErrorReason).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Respond:
+                    if (_responseForRequest is null)
+                    {
+                        throw new PuppeteerException("Response is missing for the interception");
+                    }
+
+                    await RespondAsync(_responseForRequest).ConfigureAwait(false);
+                    return;
+                case InterceptResolutionAction.Continue:
+                    await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        internal void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+            => _interceptHandlers.Add(pendingHandler);
+
+        private Header[] HeadersArray(Dictionary<string, string> headers)
+            => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
+
+        private async Task ContinueInternalAsync(Payload overrides = null)
+        {
+            IsInterceptResolutionHandled = true;
 
             try
             {
@@ -138,7 +354,7 @@ namespace PuppeteerSharp
 
                 if (overrides?.PostData != null)
                 {
-                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides?.PostData));
+                    requestData.PostData = Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData));
                 }
 
                 if (overrides?.Headers?.Count > 0)
@@ -150,31 +366,39 @@ namespace PuppeteerSharp
             }
             catch (PuppeteerException ex)
             {
+                IsInterceptResolutionHandled = false;
+
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
                 _logger.LogError(ex.ToString());
             }
         }
 
-        /// <inheritdoc/>
-        public async Task RespondAsync(ResponseData response)
+        private async Task AbortInternalAsync(RequestAbortErrorCode errorCode)
         {
-            if (Url.StartsWith("data:", StringComparison.Ordinal))
-            {
-                return;
-            }
+            var errorReason = errorCode.ToString();
+            IsInterceptResolutionHandled = true;
 
-            if (!_allowInterception)
+            try
             {
-                throw new PuppeteerException("Request Interception is not enabled!");
+                await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
+                {
+                    RequestId = InterceptionId,
+                    ErrorReason = errorReason,
+                }).ConfigureAwait(false);
             }
-
-            if (_interceptionHandled)
+            catch (PuppeteerException ex)
             {
-                throw new PuppeteerException("Request is already handled!");
+                // In certain cases, protocol will return error if the request was already canceled
+                // or the page was closed. We should tolerate these errors
+                _logger.LogError(ex.ToString());
+                IsInterceptResolutionHandled = false;
             }
+        }
 
-            _interceptionHandled = true;
+        private async Task RespondInternalAsync(ResponseData response)
+        {
+            IsInterceptResolutionHandled = true;
 
             var responseHeaders = new List<Header>();
 
@@ -211,13 +435,18 @@ namespace PuppeteerSharp
                 responseHeaders.Add(new Header { Name = "content-type", Value = response.ContentType });
             }
 
+            if (string.IsNullOrEmpty(InterceptionId))
+            {
+                throw new PuppeteerException("HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest");
+            }
+
             try
             {
                 await _client.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
                 {
                     RequestId = InterceptionId,
                     ResponseCode = response.Status != null ? (int)response.Status : 200,
-                    ResponseHeaders = responseHeaders.ToArray(),
+                    ResponseHeaders = [.. responseHeaders],
                     Body = response.BodyData != null ? Convert.ToBase64String(response.BodyData) : null,
                 }).ConfigureAwait(false);
             }
@@ -226,67 +455,8 @@ namespace PuppeteerSharp
                 // In certain cases, protocol will return error if the request was already canceled
                 // or the page was closed. We should tolerate these errors
                 _logger.LogError(ex.ToString());
+                IsInterceptResolutionHandled = false;
             }
         }
-
-        /// <inheritdoc/>
-        public async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed)
-        {
-            // Request interception is not supported for data: urls.
-            if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return;
-            }
-
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            if (_interceptionHandled)
-            {
-                throw new PuppeteerException("Request is already handled!");
-            }
-
-            var errorReason = errorCode.ToString();
-
-            _interceptionHandled = true;
-
-            try
-            {
-                await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
-                {
-                    RequestId = InterceptionId,
-                    ErrorReason = errorReason,
-                }).ConfigureAwait(false);
-            }
-            catch (PuppeteerException ex)
-            {
-                // In certain cases, protocol will return error if the request was already canceled
-                // or the page was closed. We should tolerate these errors
-                _logger.LogError(ex.ToString());
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task<string> FetchPostDataAsync()
-        {
-            try
-            {
-                var result = await _client.SendAsync<GetRequestPostDataResponse>(
-                    "Network.getRequestPostData",
-                    new GetRequestPostDataRequest(RequestId)).ConfigureAwait(false);
-                return result.PostData;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.ToString());
-            }
-
-            return null;
-        }
-
-        private Header[] HeadersArray(Dictionary<string, string> headers)
-            => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
     }
 }
