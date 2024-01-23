@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Messaging
 
         internal class Pattern(string urlPattern)
         {
-            public string UrlPattern { get; set; } = urlPattern
+            public string UrlPattern { get; set; } = urlPattern;
         }
     }
 }

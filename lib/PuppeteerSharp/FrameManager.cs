@@ -29,7 +29,7 @@ namespace PuppeteerSharp
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
+            NetworkManager = new NetworkManager(ignoreHTTPSErrors, this, client.Connection);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
@@ -184,7 +184,7 @@ namespace PuppeteerSharp
                 await Task.WhenAll(
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
-                    client == Client ? NetworkManager.InitializeAsync() : Task.CompletedTask).ConfigureAwait(false);
+                    client == Client ? NetworkManager.AddClientAsync(Client) : Task.CompletedTask).ConfigureAwait(false);
 
                 await EnsureIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
             }
