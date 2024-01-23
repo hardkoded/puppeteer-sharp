@@ -58,7 +58,7 @@ namespace PuppeteerSharp
                         TaskScheduler.Default);
             }
 
-            _ = Rerun();
+            _ = RerunAsync();
         }
 
         internal Task<IJSHandle> Task => _result.Task;
@@ -80,7 +80,7 @@ namespace PuppeteerSharp
             _isDisposed = true;
         }
 
-        internal async Task Rerun()
+        internal async Task RerunAsync()
         {
             try
             {
@@ -216,7 +216,9 @@ namespace PuppeteerSharp
             // We have a situation in our async code where a new navigation could be executed
             // before the WaitForFunction completes its initialization
             // See FrameWaitForSelectorTests.ShouldSurviveCrossProcessNavigation
-            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!"))
+            if (exception.Message.Contains("JSHandles can be evaluated only in the context they were created!") ||
+                // This is a different message coming from Firefox in the same situation.
+                exception.Message.Contains("Could not find object with given id"))
             {
                 return null;
             }
