@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -20,9 +19,9 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle",
             };
 
-        private static readonly WaitUntilNavigation[] _defaultWaitUntil = { WaitUntilNavigation.Load };
+        private static readonly WaitUntilNavigation[] _defaultWaitUntil = [WaitUntilNavigation.Load];
 
-        private readonly FrameManager _frameManager;
+        private readonly NetworkManager _networkManager;
         private readonly Frame _frame;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
@@ -37,7 +36,7 @@ namespace PuppeteerSharp
         private bool _swapped;
 
         public LifecycleWatcher(
-            FrameManager frameManager,
+            NetworkManager networkManager,
             Frame frame,
             WaitUntilNavigation[] waitUntil,
             int timeout)
@@ -49,19 +48,19 @@ namespace PuppeteerSharp
                 return protocolEvent;
             });
 
-            _frameManager = frameManager;
+            _networkManager = networkManager;
             _frame = frame;
             _initialLoaderId = frame.LoaderId;
             _timeout = timeout;
             _hasSameDocumentNavigation = false;
 
-            frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
-            frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
-            frameManager.FrameNavigated += Navigated;
-            frameManager.FrameDetached += OnFrameDetached;
-            frameManager.NetworkManager.Request += OnRequest;
-            frameManager.Client.Disconnected += OnClientDisconnected;
-            frameManager.FrameSwapped += FrameManager_FrameSwapped;
+            frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
+            frame.FrameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
+            frame.FrameManager.FrameNavigated += Navigated;
+            frame.FrameManager.FrameDetached += OnFrameDetached;
+            _networkManager.Request += OnRequest;
+            frame.FrameManager.Client.Disconnected += OnClientDisconnected;
+            frame.FrameManager.FrameSwapped += FrameManager_FrameSwapped;
             CheckLifecycleComplete();
         }
 
@@ -71,25 +70,25 @@ namespace PuppeteerSharp
 
         public Response NavigationResponse => (Response)_navigationRequest?.Response;
 
-        public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         public void Dispose()
         {
-            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
-            _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
-            _frameManager.FrameNavigated -= Navigated;
-            _frameManager.FrameDetached -= OnFrameDetached;
-            _frameManager.NetworkManager.Request -= OnRequest;
-            _frameManager.Client.Disconnected -= OnClientDisconnected;
-            _frameManager.FrameSwapped -= FrameManager_FrameSwapped;
+            _frame.FrameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
+            _frame.FrameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
+            _frame.FrameManager.FrameNavigated -= Navigated;
+            _frame.FrameManager.FrameDetached -= OnFrameDetached;
+            _frame.FrameManager.NetworkManager.Request -= OnRequest;
+            _frame.FrameManager.Client.Disconnected -= OnClientDisconnected;
+            _frame.FrameManager.FrameSwapped -= FrameManager_FrameSwapped;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
 
         private void OnClientDisconnected(object sender, EventArgs e)
-            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
+            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frame.FrameManager.Client.CloseReason));
 
         private void Navigated(object sender, FrameEventArgs e)
         {
@@ -172,7 +171,8 @@ namespace PuppeteerSharp
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
         {
-            foreach (var item in expectedLifecycle)
+            var enumerable = expectedLifecycle as string[] ?? expectedLifecycle.ToArray();
+            foreach (var item in enumerable)
             {
                 if (!frame.LifecycleEvents.Contains(item))
                 {
@@ -180,9 +180,10 @@ namespace PuppeteerSharp
                 }
             }
 
-            foreach (Frame child in frame.ChildFrames)
+            foreach (var childFrame in frame.ChildFrames)
             {
-                if (child.HasStartedLoading && !CheckLifecycle(child, expectedLifecycle))
+                var child = (Frame)childFrame;
+                if (child.HasStartedLoading && !CheckLifecycle(child, enumerable))
                 {
                     return false;
                 }

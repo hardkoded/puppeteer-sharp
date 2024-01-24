@@ -832,7 +832,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
-            => FrameManager.WaitForFrameNavigationAsync(FrameManager.MainFrame, options);
+            => MainFrame.WaitForNavigationAsync(options);
 
         /// <inheritdoc/>
         public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)

@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="PuppeteerSharp.IFrame" />
     public class Frame : IFrame, IEnvironment
     {
+        private const string RefererHeaderName = "referer";
+
         private Task<ElementHandle> _documentTask;
 
         internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
@@ -56,8 +59,6 @@ namespace PuppeteerSharp
 
         internal string ParentId { get; }
 
-        internal Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
-
         internal FrameManager FrameManager { get; }
 
         internal string LoaderId { get; private set; }
@@ -74,15 +75,66 @@ namespace PuppeteerSharp
 
         internal bool HasStartedLoading { get; private set; }
 
+        private Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+
         /// <inheritdoc/>
-        public Task<IResponse> GoToAsync(string url, NavigationOptions options)
+        public async Task<IResponse> GoToAsync(string url, NavigationOptions options)
         {
+            var ensureNewDocumentNavigation = false;
+
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return FrameManager.NavigateFrameAsync(this, url, options);
+            var referrer = string.IsNullOrEmpty(options.Referer)
+                ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
+                : options.Referer;
+            var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
+                ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
+                : options.ReferrerPolicy;
+            var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
+
+            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout);
+            try
+            {
+                var navigateTask = NavigateAsync();
+                var task = await Task.WhenAny(
+                    watcher.TerminationTask,
+                    navigateTask).ConfigureAwait(false);
+
+                await task.ConfigureAwait(false);
+
+                task = await Task.WhenAny(
+                    watcher.TerminationTask,
+                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
+
+                await task.ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new NavigationException(ex.Message, ex);
+            }
+
+            return watcher.NavigationResponse;
+
+            async Task NavigateAsync()
+            {
+                var response = await Client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
+                {
+                    Url = url,
+                    Referrer = referrer ?? string.Empty,
+                    ReferrerPolicy = referrerPolicy ?? string.Empty,
+                    FrameId = Id,
+                }).ConfigureAwait(false);
+
+                ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
+
+                if (!string.IsNullOrEmpty(response.ErrorText) && response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
+                {
+                    throw new NavigationException(response.ErrorText, url);
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -90,7 +142,19 @@ namespace PuppeteerSharp
             => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <inheritdoc/>
-        public Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null) => FrameManager.WaitForFrameNavigationAsync(this, options);
+        public async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
+        {
+            var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
+            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options?.WaitUntil, timeout);
+            var raceTask = await Task.WhenAny(
+                watcher.NewDocumentNavigationTask,
+                watcher.SameDocumentNavigationTask,
+                watcher.TerminationTask).ConfigureAwait(false);
+
+            await raceTask.ConfigureAwait(false);
+
+            return watcher.NavigationResponse;
+        }
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
@@ -373,9 +437,9 @@ namespace PuppeteerSharp
                 }",
                 html).ConfigureAwait(false);
 
-            using var watcher = new LifecycleWatcher(FrameManager, this, waitUntil, timeout);
+            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout);
             var watcherTask = await Task.WhenAny(
-                watcher.TimeoutOrTerminationTask,
+                watcher.TerminationTask,
                 watcher.LifecycleTask).ConfigureAwait(false);
 
             await watcherTask.ConfigureAwait(false);
@@ -489,7 +553,7 @@ namespace PuppeteerSharp
               false);
         }
 
-        internal DeviceRequestPromptManager GetDeviceRequestPromptManager()
+        private DeviceRequestPromptManager GetDeviceRequestPromptManager()
         {
             if (IsOopFrame)
             {
