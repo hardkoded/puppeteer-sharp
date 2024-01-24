@@ -115,7 +115,6 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
-
             // This object has more children than in upstream.
             // Because upstream uses `toMatchObject` which stops going deeper if the element has not Children.
             Assert.AreEqual(

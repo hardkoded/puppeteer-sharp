@@ -88,10 +88,10 @@ namespace PuppeteerSharp.PageAccessibility
             var serializedNode = node.Serialize();
             if (children.Count > 0)
             {
-                serializedNode.Children = children.ToArray();
+                serializedNode.Children = [.. children];
             }
 
-            return new[] { serializedNode };
+            return [serializedNode];
         }
     }
 }
