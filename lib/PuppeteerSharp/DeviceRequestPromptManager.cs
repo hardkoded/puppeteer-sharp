@@ -40,7 +40,7 @@ internal class DeviceRequestPromptManager
         _client.MessageReceived += OnMessageReceived;
     }
 
-    public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default)
+    public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
     {
         if (_client == null)
         {

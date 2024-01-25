@@ -5,7 +5,7 @@ namespace PuppeteerSharp
     /// </summary>
     /// <seealso cref="IPage.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
     /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
-    public class WaitForSelectorOptions : WaitTimeoutOptions
+    public class WaitForSelectorOptions : WaitForOptions
     {
         /// <summary>
         /// Wait for element to be present in DOM and to be visible.

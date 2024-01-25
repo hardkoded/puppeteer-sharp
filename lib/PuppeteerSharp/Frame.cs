@@ -269,7 +269,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default)
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
