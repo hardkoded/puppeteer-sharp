@@ -3,20 +3,20 @@ namespace PuppeteerSharp
     /// <summary>
     /// Timeout options.
     /// </summary>
-    public class WaitTimeoutOptions
+    public class WaitForOptions
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaitTimeoutOptions"/> class.
+        /// Initializes a new instance of the <see cref="WaitForOptions"/> class.
         /// </summary>
-        public WaitTimeoutOptions()
+        public WaitForOptions()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaitTimeoutOptions"/> class.
+        /// Initializes a new instance of the <see cref="WaitForOptions"/> class.
         /// </summary>
         /// <param name="timeout">Maximum time to wait for in milliseconds. Defaults to 30000 (30 seconds). Pass 0 to disable timeout.</param>
-        public WaitTimeoutOptions(int timeout)
+        public WaitForOptions(int timeout)
         {
             Timeout = timeout;
         }

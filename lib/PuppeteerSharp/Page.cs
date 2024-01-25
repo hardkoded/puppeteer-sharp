@@ -342,7 +342,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(
-            WaitTimeoutOptions options = default(WaitTimeoutOptions))
+            WaitForOptions options = default(WaitForOptions))
             => MainFrame.WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
@@ -897,11 +897,11 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IRequest> WaitForRequestAsync(string url, WaitTimeoutOptions options = null)
+        public Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null)
             => WaitForRequestAsync(request => request.Url == url, options);
 
         /// <inheritdoc/>
-        public async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitTimeoutOptions options = null)
+        public async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultTimeout;
             var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -932,11 +932,11 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IFrame> WaitForFrameAsync(string url, WaitTimeoutOptions options = null)
+        public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null)
             => WaitForFrameAsync((frame) => frame.Url == url, options);
 
         /// <inheritdoc/>
-        public async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitTimeoutOptions options = null)
+        public async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
         {
             if (predicate == null)
             {
@@ -985,15 +985,15 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IResponse> WaitForResponseAsync(string url, WaitTimeoutOptions options = null)
+        public Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null)
             => WaitForResponseAsync(response => response.Url == url, options);
 
         /// <inheritdoc/>
-        public Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitTimeoutOptions options = null)
+        public Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options = null)
             => WaitForResponseAsync((response) => Task.FromResult(predicate(response)), options);
 
         /// <inheritdoc/>
-        public async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitTimeoutOptions options = null)
+        public async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultTimeout;
             var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -1027,7 +1027,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<FileChooser> WaitForFileChooserAsync(WaitTimeoutOptions options = null)
+        public async Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null)
         {
             if (_fileChooserInterceptors.IsEmpty)
             {

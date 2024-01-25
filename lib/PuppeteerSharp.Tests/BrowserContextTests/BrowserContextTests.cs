@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
-                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitTimeoutOptions(1)));
+                => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
             await context.CloseAsync();
         }
     }
