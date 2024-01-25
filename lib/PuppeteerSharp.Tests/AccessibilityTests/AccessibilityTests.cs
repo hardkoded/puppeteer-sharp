@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class AccessibilityTests : PuppeteerPageBaseTest
     {
-        public AccessibilityTests() : base()
-        {
-        }
-
         [PuppeteerTest("accessibility.spec.ts", "Accessibility", "should work")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
@@ -86,7 +82,8 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                             Role = "textbox",
                             Name = "placeholder",
                             Value= "and a value",
-                            Description= "This is a description!"},
+                            Description= "This is a description!"
+                        },
                         new (){
                             Role= "combobox",
                             Name= "",
@@ -118,6 +115,8 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
+            // This object has more children than in upstream.
+            // Because upstream uses `toMatchObject` which stops going deeper if the element has not Children.
             Assert.AreEqual(
                 new SerializedAXNode
                 {
@@ -135,7 +134,14 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                             {
                                 new() {
                                     Role = "StaticText",
-                                    Name = "hi"
+                                    Name = "hi",
+                                    Children = new SerializedAXNode[]
+                                    {
+                                        new()
+                                        {
+                                            Role = "InlineTextBox",
+                                        }
+                                    }
                                 }
                             }
                         }
