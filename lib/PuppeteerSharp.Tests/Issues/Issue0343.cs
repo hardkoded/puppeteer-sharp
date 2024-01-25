@@ -1,12 +1,12 @@
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0343 : PuppeteerPageBaseTest
     {
-        public Issue0343(): base()
+        public Issue0343() : base()
         {
         }
 

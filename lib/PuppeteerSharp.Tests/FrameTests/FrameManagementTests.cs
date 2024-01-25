@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
+using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameManagementTests : PuppeteerPageBaseTest
     {
-        public FrameManagementTests(): base()
+        public FrameManagementTests() : base()
         {
         }
 
@@ -200,7 +200,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             Page.FrameAttached += (_, e) => attachedFrames.Add(e.Frame);
             Page.FrameDetached += (_, e) => detachedFrames.Add(e.Frame);
-            Page.FrameNavigated+= (_, e) => navigatedFrames.Add(e.Frame);
+            Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
 

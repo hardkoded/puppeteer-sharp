@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Mobile;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
     public class FileChooserIsMultipleTests : PuppeteerPageBaseTest
     {
-        public FileChooserIsMultipleTests(): base()
+        public FileChooserIsMultipleTests() : base()
         {
         }
 

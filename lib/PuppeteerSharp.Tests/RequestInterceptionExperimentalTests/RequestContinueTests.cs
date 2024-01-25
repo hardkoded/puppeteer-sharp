@@ -3,9 +3,9 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionExperimentalTests;
 
@@ -106,7 +106,8 @@ public class RequestContinueTests : PuppeteerPageBaseTest
         Page.AddRequestInterceptor(request => request.ContinueAsync(
             new Payload
             {
-                Method = HttpMethod.Post, PostData = "doggo"
+                Method = HttpMethod.Post,
+                PostData = "doggo"
             },
             0));
 

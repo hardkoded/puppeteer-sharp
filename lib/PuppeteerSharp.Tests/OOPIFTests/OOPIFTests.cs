@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Helpers;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
     {
         static int _port = 21221;
 
-        public OOPIFTests(): base()
+        public OOPIFTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args = new[]
@@ -214,7 +214,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 document.body.style.margin = '250px';
                 document.body.style.padding = '50px';
             }");
-            await frame.WaitForSelectorAsync("#test-button", new WaitForSelectorOptions{ Visible = true });
+            await frame.WaitForSelectorAsync("#test-button", new WaitForSelectorOptions { Visible = true });
             await frame.ClickAsync("#test-button");
             await frame.WaitForSelectorAsync("#clicked");
         }
@@ -344,7 +344,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.AreEqual(2, Page.Frames.Length);
 
             var browserURL = $"http://127.0.0.1:{_port}";
-            var browser1 = await Puppeteer.ConnectAsync(new (){ BrowserURL = browserURL }, TestConstants.LoggerFactory);
+            var browser1 = await Puppeteer.ConnectAsync(new() { BrowserURL = browserURL }, TestConstants.LoggerFactory);
             var target = await browser1.WaitForTargetAsync((target) =>
               target.Url.EndsWith("dynamic-oopif.html")
             ).WithTimeout();

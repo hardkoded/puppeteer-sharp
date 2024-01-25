@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue2251 : PuppeteerPageBaseTest
     {
-        public Issue2251(): base()
+        public Issue2251() : base()
         {
         }
 

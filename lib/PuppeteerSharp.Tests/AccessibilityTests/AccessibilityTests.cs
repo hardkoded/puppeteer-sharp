@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AccessibilityTests
 {

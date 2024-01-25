@@ -26,7 +26,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
   </PropertyGroup>
-  <Import Project="../Common/SignAssembly.props" />
+  <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>

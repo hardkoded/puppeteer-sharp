@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/kblok/puppeteer-sharp</PackageProjectUrl>
     <Summary>Puppeteer-Sharp Helpers for ASP.NET Full Framework</Summary>
   </PropertyGroup>
-  <Import Project="../Common/SignAssembly.props" />
+  <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
   </ItemGroup>

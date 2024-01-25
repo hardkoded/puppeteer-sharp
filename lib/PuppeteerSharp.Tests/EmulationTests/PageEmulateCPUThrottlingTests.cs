@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageEmulateCPUThrottlingTests : PuppeteerPageBaseTest
     {
-        public PageEmulateCPUThrottlingTests(): base()
+        public PageEmulateCPUThrottlingTests() : base()
         {
         }
 

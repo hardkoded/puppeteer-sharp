@@ -1,18 +1,18 @@
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers.Json;
-using System.Numerics;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers.Json;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class EvaluateTests : PuppeteerPageBaseTest
     {
-        public EvaluateTests(): base()
+        public EvaluateTests() : base()
         {
         }
 

@@ -1,17 +1,17 @@
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class NetworkEventTests : PuppeteerPageBaseTest
     {
-        public NetworkEventTests(): base()
+        public NetworkEventTests() : base()
         {
         }
 
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsRequestServedFromCache()
         {
-            var cached= new List<string>();
+            var cached = new List<string>();
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             Assert.IsEmpty(cached);

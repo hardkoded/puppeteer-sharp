@@ -1,6 +1,6 @@
 using System;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ChromeLauncherTests
 {

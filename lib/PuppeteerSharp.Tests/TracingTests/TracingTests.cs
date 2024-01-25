@@ -4,9 +4,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TracingTests
 {
@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.TracingTests
     {
         private readonly string _file;
 
-        public TracingTests(): base()
+        public TracingTests() : base()
         {
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }

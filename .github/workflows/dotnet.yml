@@ -53,6 +53,8 @@ jobs:
       run: |
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
+    - name: Check formatting
+      run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes -v:diag
     - name: Build
       working-directory: lib
       run: dotnet build PuppeteerSharp.sln

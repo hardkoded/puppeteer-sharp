@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
@@ -34,7 +34,8 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 
         client.OnMessage(new ConnectionResponse()
         {
-            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Method = "DeviceAccess.deviceRequestPrompted",
+            Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
         Assert.AreEqual(1, prompt.Devices.Count);
@@ -46,18 +47,21 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device", Id = "0000",
+                    Name = "My Device",
+                    Id = "0000",
                 },
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 2", Id = "0001",
+                    Name = "My Device 2",
+                    Id = "0001",
                 }
             ]
         };
 
         client.OnMessage(new ConnectionResponse()
         {
-            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Method = "DeviceAccess.deviceRequestPrompted",
+            Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
         Assert.AreEqual(2, prompt.Devices.Count);
@@ -78,7 +82,8 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 
         client.OnMessage(new ConnectionResponse()
         {
-            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Method = "DeviceAccess.deviceRequestPrompted",
+            Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
         Assert.IsEmpty(prompt.Devices);
@@ -101,7 +106,8 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 
         client.OnMessage(new ConnectionResponse()
         {
-            Method = "DeviceAccess.deviceRequestPrompted", Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Method = "DeviceAccess.deviceRequestPrompted",
+            Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
         Assert.IsEmpty(prompt.Devices);

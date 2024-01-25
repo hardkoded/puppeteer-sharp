@@ -84,7 +84,7 @@ await Page.SetViewportAsync(new ViewPortOptions
 ```cs
 using var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
-await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
+await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
 await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded from a CDN, use WaitUntilNavigation.Networkidle0 as a second param.
 await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
@@ -102,7 +102,7 @@ await using var page = await browser.NewPageAsync();
 await page.SetContentAsync("<div>My Receipt</div>");
 var result = await page.GetContentAsync();
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L19-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L15-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Evaluate Javascript

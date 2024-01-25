@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class PageQuerySelectorAllTests : PuppeteerPageBaseTest
     {
-        public PageQuerySelectorAllTests(): base()
+        public PageQuerySelectorAllTests() : base()
         {
         }
 

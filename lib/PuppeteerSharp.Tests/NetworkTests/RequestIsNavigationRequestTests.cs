@@ -1,19 +1,19 @@
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestIsNavigationRequestTests : PuppeteerPageBaseTest
     {
-        public RequestIsNavigationRequestTests(): base()
+        public RequestIsNavigationRequestTests() : base()
         {
         }
 

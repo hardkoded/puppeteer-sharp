@@ -1,16 +1,16 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageEventRequestTests : PuppeteerPageBaseTest
     {
-        public PageEventRequestTests(): base()
+        public PageEventRequestTests() : base()
         {
         }
 

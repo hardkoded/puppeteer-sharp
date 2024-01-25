@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageViewPortTests : PuppeteerPageBaseTest
     {
-        public PageViewPortTests(): base()
+        public PageViewPortTests() : base()
         {
         }
 

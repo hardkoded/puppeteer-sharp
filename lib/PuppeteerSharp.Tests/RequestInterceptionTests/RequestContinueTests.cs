@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,16 +6,17 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     public class RequestContinueTests : PuppeteerPageBaseTest
     {
-        public RequestContinueTests(): base()
+        public RequestContinueTests() : base()
         {
         }
 
@@ -130,13 +130,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Method = HttpMethod.Post,
                 PostData = "doggo"
             });
-            
+
             var serverRequestTask = Server.WaitForRequest("/empty.html", async req =>
             {
                 var body = await new StreamReader(req.Body).ReadToEndAsync();
                 return new { req.Method, Body = body };
             });
-            
+
             await Task.WhenAll(
                 serverRequestTask,
                 Page.GoToAsync(TestConstants.EmptyPage)

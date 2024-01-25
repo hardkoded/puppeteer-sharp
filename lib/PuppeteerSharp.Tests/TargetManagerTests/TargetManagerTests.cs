@@ -1,18 +1,18 @@
 
-using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TargetManagerTests
 {
     public class TargetManagerTests : PuppeteerBrowserContextBaseTest
     {
-        public TargetManagerTests(): base()
+        public TargetManagerTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args = new[]
