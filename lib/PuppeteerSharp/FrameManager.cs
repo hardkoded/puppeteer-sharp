@@ -17,8 +17,8 @@ namespace PuppeteerSharp
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
         private readonly ILogger _logger;
-        private readonly List<string> _isolatedWorlds = new();
-        private readonly List<string> _frameNavigatedReceived = new();
+        private readonly List<string> _isolatedWorlds = [];
+        private readonly List<string> _frameNavigatedReceived = [];
         private readonly TaskQueue _eventsQueue = new();
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
 
@@ -31,6 +31,15 @@ namespace PuppeteerSharp
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
+            Client.Disconnected += (sender, e) =>
+            {
+                var mainFrame = FrameTree.MainFrame;
+
+                if (mainFrame != null)
+                {
+                    RemoveFramesRecursively(mainFrame);
+                }
+            };
         }
 
         internal event EventHandler<FrameEventArgs> FrameAttached;
@@ -317,6 +326,7 @@ namespace PuppeteerSharp
             else if (e.Reason == FrameDetachedReason.Swap)
             {
                 FrameSwapped?.Invoke(frame, new FrameEventArgs(frame));
+                frame.OnSwapped();
             }
         }
 
