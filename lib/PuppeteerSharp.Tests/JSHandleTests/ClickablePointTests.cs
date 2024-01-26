@@ -3,15 +3,15 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class ClickablePointTests : PuppeteerPageBaseTest
     {
-        public ClickablePointTests(): base()
+        public ClickablePointTests() : base()
         {
         }
 

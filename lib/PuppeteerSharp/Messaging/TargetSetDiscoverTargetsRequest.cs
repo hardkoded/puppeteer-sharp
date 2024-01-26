@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Messaging
             public string Type { get; set; }
 
             [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-            public bool? Exclude { get; set;  }
+            public bool? Exclude { get; set; }
         }
     }
 }

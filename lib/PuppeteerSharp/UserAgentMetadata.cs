@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     ///  Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints

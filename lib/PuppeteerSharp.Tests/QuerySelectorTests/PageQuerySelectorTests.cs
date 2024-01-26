@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class PageQuerySelectorTests : PuppeteerPageBaseTest
     {
-        public PageQuerySelectorTests(): base()
+        public PageQuerySelectorTests() : base()
         {
         }
 

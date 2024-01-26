@@ -1,19 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
     public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
     {
-        public ResponseSecurityDetailsTests(): base()
+        public ResponseSecurityDetailsTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.IgnoreHTTPSErrors = true;

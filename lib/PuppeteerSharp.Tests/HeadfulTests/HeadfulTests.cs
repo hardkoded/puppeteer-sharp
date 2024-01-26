@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
-using NUnit.Framework;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.HeadfulTests
 {
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
         public HeadfulTests()
         {
             _forcedOopifOptions = TestConstants.DefaultBrowserOptions();
-            _forcedOopifOptions.Headless =  false;
+            _forcedOopifOptions.Headless = false;
             _forcedOopifOptions.Devtools = true;
             _forcedOopifOptions.Args = new[] {
                 $"--host-rules=\"MAP oopifdomain 127.0.0.1\"",
@@ -169,7 +169,8 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 
                 // Resume the iframe and trigger another request.
                 var iframeSession = otherSessions[0];
-                await iframeSession.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest {
+                await iframeSession.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
+                {
                     Expression = "fetch('/fetch')",
                     AwaitPromise = true,
                 });

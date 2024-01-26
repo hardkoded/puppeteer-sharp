@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        public SetUserAgentTests(): base()
+        public SetUserAgentTests() : base()
         {
         }
 
@@ -58,9 +58,9 @@ namespace PuppeteerSharp.Tests.PageTests
                 "MockBrowser",
                 new UserAgentMetadata
                 {
-                    Architecture= "Mock1",
-                    Mobile= false,
-                    Model= "Mockbook",
+                    Architecture = "Mock1",
+                    Mobile = false,
+                    Model = "Mockbook",
                     Platform = "MockOS",
                     PlatformVersion = "3.1",
                 });

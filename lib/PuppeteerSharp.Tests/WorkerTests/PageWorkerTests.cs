@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
     public class PageWorkerTests : PuppeteerPageBaseTest
     {
-        public PageWorkerTests(): base()
+        public PageWorkerTests() : base()
         {
         }
 

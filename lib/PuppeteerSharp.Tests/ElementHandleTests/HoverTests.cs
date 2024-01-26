@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class HoverTests : PuppeteerPageBaseTest
     {
-        public HoverTests(): base()
+        public HoverTests() : base()
         {
         }
 

@@ -1,18 +1,18 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class ElementHandleQuerySelectorEvalTests : PuppeteerPageBaseTest
     {
-        public ElementHandleQuerySelectorEvalTests(): base()
+        public ElementHandleQuerySelectorEvalTests() : base()
         {
         }
 
-        async Task Usage(Browser browser)
+        public async Task Usage(Browser browser)
         {
             #region Evaluate
             await using var page = await browser.NewPageAsync();

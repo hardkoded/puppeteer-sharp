@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsDOMContentLoadedTests : PuppeteerPageBaseTest
     {
-        public PageEventsDOMContentLoadedTests(): base()
+        public PageEventsDOMContentLoadedTests() : base()
         {
         }
 

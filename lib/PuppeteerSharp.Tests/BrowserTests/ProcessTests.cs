@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class ProcessTests : PuppeteerBrowserBaseTest
     {
-        public ProcessTests(): base() { }
+        public ProcessTests() : base() { }
 
         [PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
         [PuppeteerTimeout]

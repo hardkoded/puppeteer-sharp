@@ -1,16 +1,16 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.QueryHandlers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class CustomQueriesTests : PuppeteerPageBaseTest
     {
-        public CustomQueriesTests(): base()
+        public CustomQueriesTests() : base()
         {
         }
 
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [PuppeteerTimeout]
         public void ShouldThrowWithInvalidQueryNames()
         {
-            var ex = Assert.Throws<PuppeteerException>(()=> Browser.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
+            var ex = Assert.Throws<PuppeteerException>(() => Browser.RegisterCustomQueryHandler("1/2/3", new CustomQueryHandler
             {
                 QueryOne = "(element, selector) => element.querySelector(`[id='${selector}']`)",
             }));
@@ -154,7 +154,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
+                QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 
@@ -172,7 +172,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             Browser.RegisterCustomQueryHandler("getByClass", new CustomQueryHandler
             {
-                QueryOne= "(element, selector) => element.querySelector(`.${selector}`)",
+                QueryOne = "(element, selector) => element.querySelector(`.${selector}`)",
                 QueryAll = "(element, selector) => element.querySelectorAll(`.${selector}`)",
             });
 

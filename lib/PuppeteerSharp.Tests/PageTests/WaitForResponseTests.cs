@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class WaitForResponseTests : PuppeteerPageBaseTest
     {
-        public WaitForResponseTests(): base()
+        public WaitForResponseTests() : base()
         {
         }
 

@@ -2,15 +2,15 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class FrameGoToTests : PuppeteerPageBaseTest
     {
-        public FrameGoToTests(): base()
+        public FrameGoToTests() : base()
         {
         }
 

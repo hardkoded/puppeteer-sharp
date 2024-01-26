@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class GetPropertyTests : PuppeteerPageBaseTest
     {
-        public GetPropertyTests(): base()
+        public GetPropertyTests() : base()
         {
         }
 

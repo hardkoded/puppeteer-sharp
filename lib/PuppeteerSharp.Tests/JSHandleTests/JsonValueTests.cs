@@ -1,14 +1,14 @@
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class JsonValueTests : PuppeteerPageBaseTest
     {
-        public JsonValueTests(): base()
+        public JsonValueTests() : base()
         {
         }
 
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
             var json = await aHandle.JsonValueAsync<string[]>();
-            Assert.AreEqual(new[] {"a","b" }, json);
+            Assert.AreEqual(new[] { "a", "b" }, json);
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]

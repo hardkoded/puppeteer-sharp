@@ -55,7 +55,7 @@ public class MockCDPSession : ICDPSession
     public Task DetachAsync() => Task.CompletedTask;
 
     internal void OnMessage(ConnectionResponse obj)
-        =>  MessageReceived?.Invoke(this, new MessageEventArgs
+        => MessageReceived?.Invoke(this, new MessageEventArgs
         {
             MessageID = obj.Method,
             MessageData = obj.Params,

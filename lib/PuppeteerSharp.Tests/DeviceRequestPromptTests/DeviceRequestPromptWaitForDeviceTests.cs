@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
@@ -28,7 +28,8 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 }
             ]
         };
@@ -46,11 +47,13 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 },
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 1", Id = "0001",
+                    Name = "My Device 1",
+                    Id = "0001",
                 }
             ]
         };
@@ -200,7 +203,8 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 },
             ]
         };

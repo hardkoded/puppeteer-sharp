@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseStatusTextTests : PuppeteerPageBaseTest
     {
-        public ResponseStatusTextTests(): base()
+        public ResponseStatusTextTests() : base()
         {
         }
 

@@ -54,7 +54,7 @@ namespace PuppeteerSharp
                 },
             }).ConfigureAwait(false);
 
-            _targetsIdsForInit = [.._discoveredTargetsByTargetId.Keys];
+            _targetsIdsForInit = [.. _discoveredTargetsByTargetId.Keys];
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 

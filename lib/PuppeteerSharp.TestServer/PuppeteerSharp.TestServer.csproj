@@ -9,7 +9,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="../Common/SignAssembly.props" />
+  <Import Project="../Common/CommonProps.props" />
   <Target Name="testCertCheck" BeforeTargets="BeforeBuild" Condition="!Exists('testCert.cer')">
     <Error Text="Follow https://github.com/hardkoded/puppeteer-sharp/blob/master/CONTRIBUTING.md#getting-setup to setup a development certificate." />
   </Target>

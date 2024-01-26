@@ -1,5 +1,5 @@
-﻿using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests
 {

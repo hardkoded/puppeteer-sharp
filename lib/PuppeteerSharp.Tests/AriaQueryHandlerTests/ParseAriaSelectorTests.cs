@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using static System.Net.Mime.MediaTypeNames;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
-        public ParseAriaSelectorTests(): base()
+        public ParseAriaSelectorTests() : base()
         {
         }
 
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 Assert.AreEqual("btn", id);
             }
 
-            var button= await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
+            var button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role='button']");
             await ExpectFound(button);

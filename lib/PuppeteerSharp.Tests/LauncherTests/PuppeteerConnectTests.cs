@@ -2,17 +2,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
-using PuppeteerSharp.Transport;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
-        public PuppeteerConnectTests(): base()
+        public PuppeteerConnectTests() : base()
         {
         }
 
@@ -97,7 +97,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 var page2 = await originalBrowser.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage + "?should-be-ignored");
 
-                var browser = await Puppeteer.ConnectAsync(new ConnectOptions {
+                var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+                {
                     BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                     TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
                 }, TestConstants.LoggerFactory);

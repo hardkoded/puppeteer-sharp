@@ -1,17 +1,17 @@
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
-using System.Linq;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.FixturesTests
 {
     public class FixturesTests : PuppeteerBaseTest
     {
-        public FixturesTests(): base() { }
+        public FixturesTests() : base() { }
 
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
         [Skip(SkipAttribute.Targets.Firefox)]
