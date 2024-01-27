@@ -112,7 +112,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 },
                 pages.Select((IPage p) => p.Url).OrderBy(t => t));
 
-
             await page2.CloseAsync();
             await page1.CloseAsync();
             remoteBrowser.Disconnect();
