@@ -53,29 +53,37 @@ namespace PuppeteerSharp
 
         public async Task InitializeAsync()
         {
-            await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
+            try
             {
-                Discover = true,
-                Filter =
-                [
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                ],
-            }).ConfigureAwait(false);
+                await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
+                {
+                    Discover = true,
+                    Filter =
+                    [
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                    ],
+                }).ConfigureAwait(false);
 
-            StoreExistingTargetsForInit();
+                StoreExistingTargetsForInit();
 
-            await _connection.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest()
+                await _connection.SendAsync(
+                    "Target.setAutoAttach",
+                    new TargetSetAutoAttachRequest()
+                    {
+                        WaitForDebuggerOnStart = true,
+                        Flatten = true,
+                        AutoAttach = true,
+                    }).ConfigureAwait(false);
+
+                FinishInitializationIfReady();
+
+                await _initializeCompletionSource.Task.ConfigureAwait(false);
+            }
+            finally
             {
-                WaitForDebuggerOnStart = true,
-                Flatten = true,
-                AutoAttach = true,
-            }).ConfigureAwait(false);
-
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
-            FinishInitializationIfReady();
-
-            await _initializeCompletionSource.Task.ConfigureAwait(false);
+                _targetDiscoveryCompletionSource.SetResult(true);
+            }
         }
 
         private void StoreExistingTargetsForInit()
