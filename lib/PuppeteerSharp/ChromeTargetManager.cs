@@ -64,26 +64,26 @@ namespace PuppeteerSharp
                         new TargetSetDiscoverTargetsRequest.DiscoverFilter()
                     ],
                 }).ConfigureAwait(false);
-
-                StoreExistingTargetsForInit();
-
-                await _connection.SendAsync(
-                    "Target.setAutoAttach",
-                    new TargetSetAutoAttachRequest()
-                    {
-                        WaitForDebuggerOnStart = true,
-                        Flatten = true,
-                        AutoAttach = true,
-                    }).ConfigureAwait(false);
-
-                FinishInitializationIfReady();
-
-                await _initializeCompletionSource.Task.ConfigureAwait(false);
             }
             finally
             {
                 _targetDiscoveryCompletionSource.SetResult(true);
             }
+
+            StoreExistingTargetsForInit();
+
+            await _connection.SendAsync(
+                "Target.setAutoAttach",
+                new TargetSetAutoAttachRequest()
+                {
+                    WaitForDebuggerOnStart = true,
+                    Flatten = true,
+                    AutoAttach = true,
+                }).ConfigureAwait(false);
+
+            FinishInitializationIfReady();
+
+            await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
         private void StoreExistingTargetsForInit()
