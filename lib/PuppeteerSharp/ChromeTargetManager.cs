@@ -19,7 +19,7 @@ namespace PuppeteerSharp
         private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
-        private readonly List<string> _targetsIdsForInit = [];
+        private readonly ConcurrentSet<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
@@ -39,39 +39,6 @@ namespace PuppeteerSharp
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
             _targetDiscoveryTimeout = targetDiscoveryTimeout;
-
-            _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-                Filter = new[]
-                {
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                    {
-                        Type = "tab",
-                        Exclude = true,
-                    },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
-                },
-            }).ContinueWith(
-                t =>
-                {
-                    try
-                    {
-                        if (t.IsFaulted)
-                        {
-                            _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
-                        }
-                        else
-                        {
-                            StoreExistingTargetsForInit();
-                        }
-                    }
-                    finally
-                    {
-                        _targetDiscoveryCompletionSource.SetResult(true);
-                    }
-                },
-                TaskScheduler.Default);
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -86,14 +53,34 @@ namespace PuppeteerSharp
 
         public async Task InitializeAsync()
         {
-            await _connection.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest()
+            try
             {
-                WaitForDebuggerOnStart = true,
-                Flatten = true,
-                AutoAttach = true,
-            }).ConfigureAwait(false);
+                await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
+                {
+                    Discover = true,
+                    Filter =
+                    [
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                    ],
+                }).ConfigureAwait(false);
+            }
+            finally
+            {
+                _targetDiscoveryCompletionSource.SetResult(true);
+            }
 
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            StoreExistingTargetsForInit();
+
+            await _connection.SendAsync(
+                "Target.setAutoAttach",
+                new TargetSetAutoAttachRequest()
+                {
+                    WaitForDebuggerOnStart = true,
+                    Flatten = true,
+                    AutoAttach = true,
+                }).ConfigureAwait(false);
+
             FinishInitializationIfReady();
 
             await _initializeCompletionSource.Task.ConfigureAwait(false);

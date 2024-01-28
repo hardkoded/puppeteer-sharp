@@ -55,12 +55,11 @@ namespace PuppeteerSharp
             _hasSameDocumentNavigation = false;
 
             frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
-            frame.FrameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
-            frame.FrameManager.FrameNavigated += Navigated;
-            frame.FrameManager.FrameDetached += OnFrameDetached;
+            frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
+            frame.FrameNavigated += Navigated;
+            frame.FrameSwapped += FrameManager_FrameSwapped;
+            frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
-            frame.FrameManager.Client.Disconnected += OnClientDisconnected;
-            frame.FrameManager.FrameSwapped += FrameManager_FrameSwapped;
             CheckLifecycleComplete();
         }
 
@@ -77,45 +76,28 @@ namespace PuppeteerSharp
         public void Dispose()
         {
             _frame.FrameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
-            _frame.FrameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
-            _frame.FrameManager.FrameNavigated -= Navigated;
-            _frame.FrameManager.FrameDetached -= OnFrameDetached;
-            _frame.FrameManager.NetworkManager.Request -= OnRequest;
-            _frame.FrameManager.Client.Disconnected -= OnClientDisconnected;
-            _frame.FrameManager.FrameSwapped -= FrameManager_FrameSwapped;
+            _frame.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
+            _frame.FrameNavigated -= Navigated;
+            _frame.FrameDetached -= OnFrameDetached;
+            _frame.FrameSwapped -= FrameManager_FrameSwapped;
+            _networkManager.Request -= OnRequest;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
 
-        private void OnClientDisconnected(object sender, EventArgs e)
-            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frame.FrameManager.Client.CloseReason));
-
-        private void Navigated(object sender, FrameEventArgs e)
-        {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
-            CheckLifecycleComplete();
-        }
+        private void Navigated(object sender, EventArgs e) => CheckLifecycleComplete();
 
         private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
 
-        private void FrameManager_FrameSwapped(object sender, FrameEventArgs e)
+        private void FrameManager_FrameSwapped(object sender, EventArgs e)
         {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
             _swapped = true;
             CheckLifecycleComplete();
         }
 
-        private void OnFrameDetached(object sender, FrameEventArgs e)
+        private void OnFrameDetached(object sender, EventArgs e)
         {
-            var frame = e.Frame;
+            var frame = sender as Frame;
             if (_frame == frame)
             {
                 Terminate(new PuppeteerException("Navigating frame was detached"));
@@ -158,13 +140,8 @@ namespace PuppeteerSharp
             _navigationRequest = e.Request;
         }
 
-        private void NavigatedWithinDocument(object sender, FrameEventArgs e)
+        private void NavigatedWithinDocument(object sender, EventArgs e)
         {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
             _hasSameDocumentNavigation = true;
             CheckLifecycleComplete();
         }

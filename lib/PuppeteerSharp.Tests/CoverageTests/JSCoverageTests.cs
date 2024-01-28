@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "shouldn't ignore eval() scripts if reportAnonymousScripts is true")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldntIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
+        public async Task ShouldNotIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
             {

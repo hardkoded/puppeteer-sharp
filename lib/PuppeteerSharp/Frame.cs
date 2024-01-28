@@ -25,6 +25,16 @@ namespace PuppeteerSharp
             UpdateClient(client);
         }
 
+        internal event EventHandler FrameDetached;
+
+        internal event EventHandler FrameNavigated;
+
+        internal event EventHandler FrameNavigatedWithinDocument;
+
+        internal event EventHandler LifecycleEvent;
+
+        internal event EventHandler FrameSwapped;
+
         /// <inheritdoc/>
         public IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
@@ -509,6 +519,7 @@ namespace PuppeteerSharp
         {
             LifecycleEvents.Add("DOMContentLoaded");
             LifecycleEvents.Add("load");
+            LifecycleEvent?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnLifecycleEvent(string loaderId, string name)
@@ -520,21 +531,31 @@ namespace PuppeteerSharp
             }
 
             LifecycleEvents.Add(name);
+            LifecycleEvent?.Invoke(this, EventArgs.Empty);
         }
 
         internal void Navigated(FramePayload framePayload)
         {
             Name = framePayload.Name ?? string.Empty;
             Url = framePayload.Url + framePayload.UrlFragment;
+            FrameNavigated?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void NavigatedWithinDocument(string url) => Url = url;
+        internal void OnSwapped() => FrameSwapped?.Invoke(this, EventArgs.Empty);
+
+        internal void NavigatedWithinDocument(string url)
+        {
+            Url = url;
+            FrameNavigatedWithinDocument?.Invoke(this, EventArgs.Empty);
+            FrameNavigated?.Invoke(this, EventArgs.Empty);
+        }
 
         internal void Detach()
         {
             Detached = true;
             MainWorld.Detach();
             PuppeteerWorld.Detach();
+            FrameDetached?.Invoke(this, EventArgs.Empty);
         }
 
         internal void UpdateClient(CDPSession client)
