@@ -10,4 +10,7 @@
       <Link>keypair.snk</Link>
     </None>
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet format $(ProjectPath)" />
+  </Target>
 </Project>

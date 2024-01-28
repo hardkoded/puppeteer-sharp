@@ -1,18 +1,18 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using static System.Net.Mime.MediaTypeNames;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
-        public QueryAllArrayTests(): base()
+        public QueryAllArrayTests() : base()
         {
         }
 

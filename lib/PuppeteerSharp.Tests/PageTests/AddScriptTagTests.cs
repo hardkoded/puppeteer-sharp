@@ -1,15 +1,15 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class AddScriptTagTests : PuppeteerPageBaseTest
     {
-        public AddScriptTagTests(): base()
+        public AddScriptTagTests() : base()
         {
         }
 
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldAddIdWhenProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 1;", Id= "one" });
+            await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 1;", Id = "one" });
             await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js", Id = "two" });
 
             Assert.NotNull(await Page.QuerySelectorAsync("#one"));

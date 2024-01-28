@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
 {
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public async Task ShouldReturnPrompt()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             var promptTask = manager.WaitForDevicePromptAsync();
@@ -71,8 +71,8 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
 
             client.OnMessage(new ConnectionResponse()
             {
-               Method = "DeviceAccess.deviceRequestPrompted",
-               Params = ToJToken(promptData),
+                Method = "DeviceAccess.deviceRequestPrompted",
+                Params = ToJToken(promptData),
             });
 
             await promptTask;
@@ -82,17 +82,17 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public void ShouldRespectTimeout()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
-            Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitTimeoutOptions(1)));
+            Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect default timeout when there is no custom timeout")]
         [PuppeteerTimeout]
         public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             timeoutSettings.Timeout = 1;
@@ -103,21 +103,21 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             timeoutSettings.Timeout = 0;
-            Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitTimeoutOptions(1)));
+            Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should work with no timeout")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
-            var promptTask = manager.WaitForDevicePromptAsync(new WaitTimeoutOptions(0));
+            var promptTask = manager.WaitForDevicePromptAsync(new WaitForOptions(0));
             var promptData = new DeviceAccessDeviceRequestPromptedResponse()
             {
                 Id = "00000000000000000000000000000000",
@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         [PuppeteerTimeout]
         public async Task ShouldReturnTheSamePromptWhenThereAreManyWatchdogsSimultaneously()
         {
-            var client =  new MockCDPSession();
+            var client = new MockCDPSession();
             var timeoutSettings = new TimeoutSettings();
             var manager = new DeviceRequestPromptManager(client, timeoutSettings);
             var promptTask = manager.WaitForDevicePromptAsync();

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Mobile;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TouchScreenTests
 {
@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
     {
         private readonly DeviceDescriptor _iPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
 
-        public TouchScreenTests(): base()
+        public TouchScreenTests() : base()
         {
         }
 

@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseFromCacheTests : PuppeteerPageBaseTest
     {
-        public ResponseFromCacheTests(): base()
+        public ResponseFromCacheTests() : base()
         {
         }
 

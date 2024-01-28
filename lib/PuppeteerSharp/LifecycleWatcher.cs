@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
@@ -20,9 +19,9 @@ namespace PuppeteerSharp
                 [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle",
             };
 
-        private static readonly WaitUntilNavigation[] _defaultWaitUntil = { WaitUntilNavigation.Load };
+        private static readonly WaitUntilNavigation[] _defaultWaitUntil = [WaitUntilNavigation.Load];
 
-        private readonly FrameManager _frameManager;
+        private readonly NetworkManager _networkManager;
         private readonly Frame _frame;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
@@ -37,7 +36,7 @@ namespace PuppeteerSharp
         private bool _swapped;
 
         public LifecycleWatcher(
-            FrameManager frameManager,
+            NetworkManager networkManager,
             Frame frame,
             WaitUntilNavigation[] waitUntil,
             int timeout)
@@ -49,19 +48,18 @@ namespace PuppeteerSharp
                 return protocolEvent;
             });
 
-            _frameManager = frameManager;
+            _networkManager = networkManager;
             _frame = frame;
             _initialLoaderId = frame.LoaderId;
             _timeout = timeout;
             _hasSameDocumentNavigation = false;
 
-            frameManager.LifecycleEvent += FrameManager_LifecycleEvent;
-            frameManager.FrameNavigatedWithinDocument += NavigatedWithinDocument;
-            frameManager.FrameNavigated += Navigated;
-            frameManager.FrameDetached += OnFrameDetached;
-            frameManager.NetworkManager.Request += OnRequest;
-            frameManager.Client.Disconnected += OnClientDisconnected;
-            frameManager.FrameSwapped += FrameManager_FrameSwapped;
+            frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
+            frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
+            frame.FrameNavigated += Navigated;
+            frame.FrameSwapped += FrameManager_FrameSwapped;
+            frame.FrameDetached += OnFrameDetached;
+            _networkManager.Request += OnRequest;
             CheckLifecycleComplete();
         }
 
@@ -71,52 +69,35 @@ namespace PuppeteerSharp
 
         public Response NavigationResponse => (Response)_navigationRequest?.Response;
 
-        public Task TimeoutOrTerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
         public void Dispose()
         {
-            _frameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
-            _frameManager.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
-            _frameManager.FrameNavigated -= Navigated;
-            _frameManager.FrameDetached -= OnFrameDetached;
-            _frameManager.NetworkManager.Request -= OnRequest;
-            _frameManager.Client.Disconnected -= OnClientDisconnected;
-            _frameManager.FrameSwapped -= FrameManager_FrameSwapped;
+            _frame.FrameManager.LifecycleEvent -= FrameManager_LifecycleEvent;
+            _frame.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
+            _frame.FrameNavigated -= Navigated;
+            _frame.FrameDetached -= OnFrameDetached;
+            _frame.FrameSwapped -= FrameManager_FrameSwapped;
+            _networkManager.Request -= OnRequest;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
 
-        private void OnClientDisconnected(object sender, EventArgs e)
-            => Terminate(new TargetClosedException("Navigation failed because browser has disconnected!", _frameManager.Client.CloseReason));
-
-        private void Navigated(object sender, FrameEventArgs e)
-        {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
-            CheckLifecycleComplete();
-        }
+        private void Navigated(object sender, EventArgs e) => CheckLifecycleComplete();
 
         private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
 
-        private void FrameManager_FrameSwapped(object sender, FrameEventArgs e)
+        private void FrameManager_FrameSwapped(object sender, EventArgs e)
         {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
             _swapped = true;
             CheckLifecycleComplete();
         }
 
-        private void OnFrameDetached(object sender, FrameEventArgs e)
+        private void OnFrameDetached(object sender, EventArgs e)
         {
-            var frame = e.Frame;
+            var frame = sender as Frame;
             if (_frame == frame)
             {
                 Terminate(new PuppeteerException("Navigating frame was detached"));
@@ -159,20 +140,16 @@ namespace PuppeteerSharp
             _navigationRequest = e.Request;
         }
 
-        private void NavigatedWithinDocument(object sender, FrameEventArgs e)
+        private void NavigatedWithinDocument(object sender, EventArgs e)
         {
-            if (e.Frame != _frame)
-            {
-                return;
-            }
-
             _hasSameDocumentNavigation = true;
             CheckLifecycleComplete();
         }
 
         private bool CheckLifecycle(Frame frame, IEnumerable<string> expectedLifecycle)
         {
-            foreach (var item in expectedLifecycle)
+            var enumerable = expectedLifecycle as string[] ?? expectedLifecycle.ToArray();
+            foreach (var item in enumerable)
             {
                 if (!frame.LifecycleEvents.Contains(item))
                 {
@@ -180,9 +157,10 @@ namespace PuppeteerSharp
                 }
             }
 
-            foreach (Frame child in frame.ChildFrames)
+            foreach (var childFrame in frame.ChildFrames)
             {
-                if (child.HasStartedLoading && !CheckLifecycle(child, expectedLifecycle))
+                var child = (Frame)childFrame;
+                if (child.HasStartedLoading && !CheckLifecycle(child, enumerable))
                 {
                     return false;
                 }

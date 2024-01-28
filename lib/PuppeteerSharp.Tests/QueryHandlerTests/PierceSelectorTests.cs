@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
     public class PierceSelectorTests : PuppeteerPageBaseTest
     {
-        public PierceSelectorTests(): base()
+        public PierceSelectorTests() : base()
         {
         }
 
@@ -56,7 +56,8 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
         {
             var divs = await Page.QuerySelectorAllAsync("pierce/.foo");
             var text = await Task.WhenAll(
-                divs.Select(div => {
+                divs.Select(div =>
+                {
                     return div.EvaluateFunctionAsync<string>(@"(element) => {
                         return element.textContent;
                     }");
@@ -83,7 +84,8 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             var parentElement = await Page.QuerySelectorAsync("html > div");
             var childElements = await parentElement.QuerySelectorAllAsync("pierce/div");
             var text = await Task.WhenAll(
-                childElements.Select(div => {
+                childElements.Select(div =>
+                {
                     return div.EvaluateFunctionAsync<string>(@"(element) => {
                         return element.textContent;
                     }");

@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
@@ -28,7 +28,8 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 }
             ]
         };
@@ -46,11 +47,13 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 },
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 1", Id = "0001",
+                    Name = "My Device 1",
+                    Id = "0001",
                 }
             ]
         };
@@ -141,7 +144,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             {
                 Id = "000",
             });
-        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitTimeoutOptions(1)));
+        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
     }
 
     [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect default timeout when there is no custom timeout")]
@@ -175,7 +178,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
                 Id = "000",
             });
         timeoutSettings.Timeout = 0;
-        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitTimeoutOptions(1)));
+        Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
     }
 
     [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should work with no timeout")]
@@ -191,7 +194,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             {
                 Id = "000",
             });
-        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitTimeoutOptions(0));
+        var deviceTask = prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(0));
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -200,7 +203,8 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
             [
                 new DeviceAccessDeviceRequestPromptedResponse.DeviceAccessDevice()
                 {
-                    Name = "My Device 0", Id = "0000",
+                    Name = "My Device 0",
+                    Id = "0000",
                 },
             ]
         };

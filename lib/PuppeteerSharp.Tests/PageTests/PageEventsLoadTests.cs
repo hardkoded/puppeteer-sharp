@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
+using System.Threading.Tasks;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsLoadTests : PuppeteerPageBaseTest
     {
-        public PageEventsLoadTests(): base()
+        public PageEventsLoadTests() : base()
         {
         }
 

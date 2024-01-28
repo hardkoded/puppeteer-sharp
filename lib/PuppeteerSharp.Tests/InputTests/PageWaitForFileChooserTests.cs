@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Mobile;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
     public class PageWaitForFileChooserTests : PuppeteerPageBaseTest
     {
-        public PageWaitForFileChooserTests(): base()
+        public PageWaitForFileChooserTests() : base()
         {
         }
 
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.InputTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldRespectTimeout()
         {
-            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitTimeoutOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForOptions
             {
                 Timeout = 1
             }));
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.InputTests
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
-            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitTimeoutOptions
+            Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForOptions
             {
                 Timeout = 1
             }));
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.InputTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithNoTimeout()
         {
-            var waitForTask = Page.WaitForFileChooserAsync(new WaitTimeoutOptions { Timeout = 0 });
+            var waitForTask = Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 0 });
 
             await Task.WhenAll(
                 waitForTask,

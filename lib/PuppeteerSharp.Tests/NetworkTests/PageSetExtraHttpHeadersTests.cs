@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public PageSetExtraHttpHeadersTests(): base()
+        public PageSetExtraHttpHeadersTests() : base()
         {
         }
 

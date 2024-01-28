@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class PageEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
-        public PageEvaluateOnNewDocumentTests(): base()
+        public PageEvaluateOnNewDocumentTests() : base()
         {
         }
 

@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CDPSessionTests
 {
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
-        public CreateCDPSessionTests(): base()
+        public CreateCDPSessionTests() : base()
         {
         }
 

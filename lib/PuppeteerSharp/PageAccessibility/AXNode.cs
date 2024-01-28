@@ -15,14 +15,16 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly bool _editable;
         private readonly bool _hidden;
         private readonly string _role;
+        private readonly bool _ignored;
         private bool? _cachedHasFocusableChild;
 
-        public AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
+        private AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
             Payload = payload;
 
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
+            _ignored = payload.Ignored;
 
             _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
@@ -151,6 +153,7 @@ namespace PuppeteerSharp.PageAccessibility
                 case "tab":
                 case "textbox":
                 case "tree":
+                case "treeitem":
                     return true;
                 default:
                     return false;
@@ -159,7 +162,7 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal bool IsInteresting(bool insideControl)
         {
-            if (_role == "Ignored" || _hidden)
+            if (_role == "Ignored" || _hidden || _ignored)
             {
                 return false;
             }
@@ -252,7 +255,8 @@ namespace PuppeteerSharp.PageAccessibility
         private bool IsTextOnlyObject()
             => _role == "LineBreak" ||
                 _role == "text" ||
-                _role == "InlineTextBox";
+                _role == "InlineTextBox" ||
+                _role == "StaticText";
 
         private bool HasFocusableChild()
         {

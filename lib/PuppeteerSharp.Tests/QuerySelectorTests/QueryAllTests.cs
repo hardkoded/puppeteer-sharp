@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.QueryHandlers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -40,10 +40,10 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var html = await Page.QuerySelectorAsync("html");
             var elements = await html.QuerySelectorAllAsync("allArray/div");
             Assert.AreEqual(2, elements.Length);
-            var tasks= elements.Select((element) =>
+            var tasks = elements.Select((element) =>
               Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element)
             );
-            Assert.AreEqual(new[] { "A", "B"}, await Task.WhenAll(tasks));
+            Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
         [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should return empty array for non-existing elements")]

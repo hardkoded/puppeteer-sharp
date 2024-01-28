@@ -179,10 +179,9 @@ namespace PuppeteerSharp
                     return handle;
                 }
 
-                var objectId = RemoteObject.ObjectId;
                 var node = await handle.Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
                 {
-                    ObjectId = RemoteObject.ObjectId,
+                    ObjectId = Id,
                 }).ConfigureAwait(false);
                 var backendNodeId = node.Node.BackendNodeId;
 
@@ -190,7 +189,7 @@ namespace PuppeteerSharp
                 CheckForFileAccess(files);
                 await handle.Client.SendAsync("DOM.setFileInputFiles", new DomSetFileInputFilesRequest
                 {
-                    ObjectId = objectId,
+                    ObjectId = Id,
                     Files = files,
                     BackendNodeId = backendNodeId,
                 }).ConfigureAwait(false);
@@ -350,7 +349,7 @@ namespace PuppeteerSharp
         {
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = RemoteObject.ObjectId,
+                ObjectId = Id,
             }).ConfigureAwait(false);
 
             return string.IsNullOrEmpty(nodeInfo.Node.FrameId) ? null : await FrameManager.FrameTree.GetFrameAsync(nodeInfo.Node.FrameId).ConfigureAwait(false);
@@ -537,7 +536,7 @@ namespace PuppeteerSharp
 
                 var contentQuadsTask = handle.Client.SendAsync<GetContentQuadsResponse>("DOM.getContentQuads", new DomGetContentQuadsRequest
                 {
-                    ObjectId = handle.RemoteObject.ObjectId,
+                    ObjectId = handle.Id,
                 });
                 var layoutTask = Page.Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics");
 
@@ -776,7 +775,7 @@ namespace PuppeteerSharp
             {
                 return await Client.SendAsync<DomGetBoxModelResponse>("DOM.getBoxModel", new DomGetBoxModelRequest
                 {
-                    ObjectId = RemoteObject.ObjectId,
+                    ObjectId = Id,
                 }).ConfigureAwait(false);
             }
             catch (PuppeteerException ex)

@@ -2,17 +2,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
-using PuppeteerSharp.Transport;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
-        public PuppeteerConnectTests(): base()
+        public PuppeteerConnectTests() : base()
         {
         }
 
@@ -89,33 +89,33 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportTargetFilter()
         {
-            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+            var page1 = await browser.NewPageAsync();
+            await page1.GoToAsync(TestConstants.EmptyPage);
+
+            var page2 = await browser.NewPageAsync();
+            await page2.GoToAsync(TestConstants.EmptyPage + "?should-be-ignored");
+
+            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                var page1 = await originalBrowser.NewPageAsync();
-                await page1.GoToAsync(TestConstants.EmptyPage);
+                BrowserWSEndpoint = browser.WebSocketEndpoint,
+                TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
+            }, TestConstants.LoggerFactory);
 
-                var page2 = await originalBrowser.NewPageAsync();
-                await page2.GoToAsync(TestConstants.EmptyPage + "?should-be-ignored");
+            var pages = await remoteBrowser.PagesAsync();
 
-                var browser = await Puppeteer.ConnectAsync(new ConnectOptions {
-                    BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                    TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
-                }, TestConstants.LoggerFactory);
+            Assert.AreEqual(
+                new string[]
+                {
+                    "about:blank",
+                    TestConstants.EmptyPage
+                },
+                pages.Select((IPage p) => p.Url).OrderBy(t => t));
 
-                var pages = await browser.PagesAsync();
-
-                await page2.CloseAsync();
-                await page1.CloseAsync();
-                await browser.CloseAsync();
-
-                Assert.AreEqual(
-                    new string[]
-                    {
-                        "about:blank",
-                        TestConstants.EmptyPage
-                    },
-                    pages.Select((IPage p) => p.Url).OrderBy(t => t));
-            }
+            await page2.CloseAsync();
+            await page1.CloseAsync();
+            remoteBrowser.Disconnect();
+            await browser.CloseAsync();
         }
 
         [PuppeteerTimeout]
@@ -152,16 +152,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             Browser.Disconnect();
 
-            await using (var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
-            {
-                var pages = (await browser.PagesAsync()).ToList();
-                var restoredPage = pages.FirstOrDefault(x => x.Url == url);
-                Assert.NotNull(restoredPage);
-                var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
-                Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
-                var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.AreEqual(56, response);
-            }
+            await using var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
+            var pages = (await browser.PagesAsync()).ToList();
+            var restoredPage = pages.FirstOrDefault(x => x.Url == url);
+            Assert.NotNull(restoredPage);
+            var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
+            Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
+            var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
+            Assert.AreEqual(56, response);
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.connect", "should be able to connect to the same page simultaneously")]

@@ -1,22 +1,18 @@
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageGotoTests : PuppeteerPageBaseTest
     {
-        public PageGotoTests(): base()
-        {
-        }
-
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
@@ -127,7 +123,25 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
-            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
+            var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions
+            {
+                WaitUntil =
+                [WaitUntilNavigation.Networkidle0]
+            });
+            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+        }
+
+
+        [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to page with iframe and networkidle0")]
+        [Skip(SkipAttribute.Targets.Firefox)]
+        public async Task ShouldNavigateToPageWithIframeAndNetworkidle0()
+
+        {
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html", new NavigationOptions
+            {
+                WaitUntil =
+                [WaitUntilNavigation.Networkidle0]
+            });
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 

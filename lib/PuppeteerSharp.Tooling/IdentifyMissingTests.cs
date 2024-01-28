@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tooling
             List<PuppeteerTestAttribute> missingTests = new();
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
 
-            var attributes = new ScreenshotHelper().GetType().Assembly .DefinedTypes.SelectMany(
+            var attributes = new ScreenshotHelper().GetType().Assembly.DefinedTypes.SelectMany(
                 type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
 
             foreach (var x in _testPairs)

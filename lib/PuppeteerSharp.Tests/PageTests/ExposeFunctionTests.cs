@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class ExposeFunctionTests : PuppeteerPageBaseTest
     {
-        public ExposeFunctionTests(): base()
+        public ExposeFunctionTests() : base()
         {
         }
 
@@ -145,7 +145,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             if (session.HasPendingCallbacks())
             {
-                foreach(var pendingMessage in session.GetPendingMessages())
+                foreach (var pendingMessage in session.GetPendingMessages())
                 {
                     message += $" - {pendingMessage.Message}\n";
                 }
