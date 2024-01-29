@@ -8,8 +8,8 @@ namespace PuppeteerSharp.Input
     /// <inheritdoc/>
     public class Keyboard : IKeyboard
     {
-        private readonly CDPSession _client;
-        private readonly HashSet<string> _pressedKeys = new HashSet<string>();
+        private readonly HashSet<string> _pressedKeys = [];
+        private CDPSession _client;
 
         internal Keyboard(CDPSession client)
         {
@@ -110,6 +110,8 @@ namespace PuppeteerSharp.Input
 
             await UpAsync(key).ConfigureAwait(false);
         }
+
+        internal void UpdateClient(CDPSession newSession) => _client = newSession;
 
         private int ModifierBit(string key)
         {

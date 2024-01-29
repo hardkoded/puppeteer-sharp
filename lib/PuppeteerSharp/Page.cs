@@ -57,7 +57,6 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, Binding> _bindings = new();
         private readonly ConcurrentDictionary<string, WebWorker> _workers = new();
         private readonly ILogger _logger;
-        private readonly TaskCompletionSource<bool> _closeCompletedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TimeoutSettings _timeoutSettings = new();
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
@@ -73,7 +72,7 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors)
         {
             Client = client;
-            TabClient = client.Pare
+            TabSession = client.ParentSession;
             Target = target;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, (Keyboard)Keyboard);
@@ -88,26 +87,27 @@ namespace PuppeteerSharp
 
             _screenshotTaskQueue = screenshotTaskQueue;
 
-            Client.Ready += OnAttachedToTarget;
-
-            target.TargetManager.TargetGone += OnDetachedFromTarget;
-
-            _ = target.CloseTask.ContinueWith(
-                _ =>
+            TabSession.Swapped += async (sender, args) =>
+            {
+                try
                 {
-                    try
-                    {
-                        Client.Ready -= OnAttachedToTarget;
-                        target.TargetManager.TargetGone -= OnDetachedFromTarget;
-                        Close?.Invoke(this, EventArgs.Empty);
-                    }
-                    finally
-                    {
-                        IsClosed = true;
-                        _closeCompletedTcs.TrySetResult(true);
-                    }
-                },
-                TaskScheduler.Default);
+                    Client = (args.Session as CDPSession)!;
+                    Target = Client.Target;
+                    Keyboard.UpdateClient(Client);
+                    Mouse.UpdateClient(Client);
+                    Touchscreen.UpdateClient(Client);
+                    Accessibility.UpdateClient(Client);
+                    _emulationManager.UpdateClient(Client);
+                    Tracing.UpdateClient(Client);
+                    Coverage.UpdateClient(Client);
+                    await FrameManager.SwapFrameTreeAsync(Client).ConfigureAwait(false);
+                    SetupEventListeners();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to swap session");
+                }
+            };
         }
 
         /// <inheritdoc/>
@@ -168,7 +168,7 @@ namespace PuppeteerSharp
         public event EventHandler<PopupEventArgs> Popup;
 
         /// <inheritdoc cref="CDPSession"/>
-        public CDPSession Client { get; }
+        public CDPSession Client { get; private set; }
 
         /// <inheritdoc cref="ICDPSession"/>
         ICDPSession IPage.Client => Client;
@@ -203,19 +203,19 @@ namespace PuppeteerSharp
         ITarget IPage.Target => Target;
 
         /// <inheritdoc/>
-        public IKeyboard Keyboard { get; }
+        IKeyboard IPage.Keyboard => Keyboard;
 
         /// <inheritdoc/>
-        public ITouchscreen Touchscreen { get; }
+        ITouchscreen IPage.Touchscreen => Touchscreen;
 
         /// <inheritdoc/>
-        public ICoverage Coverage { get; }
+        ICoverage IPage.Coverage => Coverage;
 
         /// <inheritdoc/>
-        public ITracing Tracing { get; }
+        ITracing IPage.Tracing => Tracing;
 
         /// <inheritdoc/>
-        public IMouse Mouse { get; }
+        IMouse IPage.Mouse => Mouse;
 
         /// <inheritdoc/>
         public ViewPortOptions Viewport { get; private set; }
@@ -234,12 +234,24 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the accessibility.
         /// </summary>
-        public IAccessibility Accessibility { get; }
+        IAccessibility IPage.Accessibility => Accessibility;
 
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; private set; }
 
-        internal CDPSession TabClient { get; }
+        internal Accessibility Accessibility { get; }
+
+        internal Keyboard Keyboard { get; }
+
+        internal Touchscreen Touchscreen { get; }
+
+        internal Coverage Coverage { get; }
+
+        internal Tracing Tracing { get; }
+
+        internal Mouse Mouse { get; }
+
+        internal CDPSession TabSession { get; }
 
         internal bool IsDragging { get; set; }
 
@@ -247,7 +259,7 @@ namespace PuppeteerSharp
 
         private Browser Browser => Target.Browser;
 
-        private Target Target { get; }
+        private Target Target { get; set; }
 
         private bool JavascriptEnabled { get; set; } = true;
 
@@ -733,7 +745,7 @@ namespace PuppeteerSharp
                     TargetId = Target.TargetId,
                 }).ConfigureAwait(false);
 
-                await _closeCompletedTcs.Task.ConfigureAwait(false);
+                await Target.CloseTask.ConfigureAwait(false);
             }
         }
 
@@ -1258,18 +1270,6 @@ namespace PuppeteerSharp
         private async Task InitializeAsync()
         {
             await FrameManager.InitializeAsync().ConfigureAwait(false);
-            var networkManager = FrameManager.NetworkManager;
-
-            Client.MessageReceived += Client_MessageReceived;
-            FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
-            FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
-            FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
-
-            networkManager.Request += (_, e) => OnRequest(e.Request);
-            networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
-            networkManager.Response += (_, e) => Response?.Invoke(this, e);
-            networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
-            networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
 
             await Task.WhenAll(
                Client.SendAsync("Performance.enable"),
@@ -1782,6 +1782,40 @@ namespace PuppeteerSharp
                         },
                         TaskScheduler.Default)))
                 .ConfigureAwait(false);
+        }
+
+        private void SetupEventListeners()
+        {
+            Target.TargetManager.TargetGone += OnDetachedFromTarget;
+            Client.Ready += OnAttachedToTarget;
+
+            var networkManager = FrameManager.NetworkManager;
+
+            Client.MessageReceived += Client_MessageReceived;
+            FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
+            FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
+            FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
+
+            networkManager.Request += (_, e) => OnRequest(e.Request);
+            networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
+            networkManager.Response += (_, e) => Response?.Invoke(this, e);
+            networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
+            networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
+
+            _ = Target.CloseTask.ContinueWith(
+                _ =>
+                {
+                    try
+                    {
+                        Target.TargetManager.TargetGone -= OnDetachedFromTarget;
+                        Close?.Invoke(this, EventArgs.Empty);
+                    }
+                    finally
+                    {
+                        IsClosed = true;
+                    }
+                },
+                TaskScheduler.Default);
         }
     }
 }

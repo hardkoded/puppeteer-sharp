@@ -47,7 +47,7 @@ namespace PuppeteerSharp
 
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
-        internal CDPSession Client { get; private set;  }
+        internal CDPSession Client { get; private set; }
 
         internal NetworkManager NetworkManager { get; }
 

@@ -21,13 +21,13 @@ namespace PuppeteerSharp.Tests
         {
             var wrapper = new TaskCompletionSource<bool>();
 
-            void errorEvent(object sender, ErrorEventArgs e)
+            void ErrorEvent(object sender, ErrorEventArgs e)
             {
                 wrapper.SetResult(true);
-                Page.Error -= errorEvent;
+                Page.Error -= ErrorEvent;
             }
 
-            Page.Error += errorEvent;
+            Page.Error += ErrorEvent;
 
             return wrapper.Task;
         }

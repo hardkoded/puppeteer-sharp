@@ -97,6 +97,5 @@ namespace PuppeteerSharp.PageCoverage
             _jsCoverage.UpdateClient(client);
             _cssCoverage.UpdateClient(client);
         }
-
     }
 }

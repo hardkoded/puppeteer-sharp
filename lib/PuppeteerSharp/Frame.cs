@@ -588,8 +588,8 @@ namespace PuppeteerSharp
             }
             else
             {
-                MainWorld.FrameUpdated(client);
-                PuppeteerWorld.FrameUpdated(client);
+                MainWorld.FrameUpdated();
+                PuppeteerWorld.FrameUpdated();
             }
         }
 

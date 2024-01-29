@@ -7,8 +7,8 @@ namespace PuppeteerSharp.Input
     /// <inheritdoc/>
     public class Touchscreen : ITouchscreen
     {
-        private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
+        private CDPSession _client;
 
         /// <inheritdoc cref="Touchscreen"/>
         public Touchscreen(CDPSession client, Keyboard keyboard)
@@ -43,5 +43,7 @@ namespace PuppeteerSharp.Input
                 Modifiers = _keyboard.Modifiers,
             }).ConfigureAwait(false);
         }
+
+        internal void UpdateClient(CDPSession newSession) => _client = newSession;
     }
 }

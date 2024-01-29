@@ -482,7 +482,7 @@ namespace PuppeteerSharp
             TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
         }
 
-        private Target CreateTarget(TargetInfo targetInfo, CDPSession session)
+        private Target CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
         {
             var browserContextId = targetInfo.BrowserContextId;
 
@@ -491,14 +491,14 @@ namespace PuppeteerSharp
                 context = _defaultContext;
             }
 
-            Func<bool, Task<CDPSession>> createSession = (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
+            Task<CDPSession> CreateSession(bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
 
             var otherTarget = new OtherTarget(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
-                createSession);
+                CreateSession);
 
             if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -507,7 +507,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession,
+                    CreateSession,
                     IgnoreHTTPSErrors,
                     DefaultViewport,
                     ScreenshotTaskQueue);
@@ -520,7 +520,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession,
+                    CreateSession,
                     IgnoreHTTPSErrors,
                     DefaultViewport,
                     ScreenshotTaskQueue);
@@ -533,7 +533,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession);
+                    CreateSession);
             }
 
             return otherTarget;

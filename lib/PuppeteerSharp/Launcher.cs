@@ -76,7 +76,7 @@ namespace PuppeteerSharp
                         .CreateAsync(
                             options.Browser,
                             connection,
-                            Array.Empty<string>(),
+                            [],
                             options.IgnoreHTTPSErrors,
                             options.DefaultViewport,
                             Process,
