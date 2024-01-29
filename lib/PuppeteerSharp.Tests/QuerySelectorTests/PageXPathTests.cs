@@ -1,14 +1,14 @@
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete but we test the funcionatlity anyway
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class PageXPathTests : PuppeteerPageBaseTest
     {
-        public PageXPathTests(): base()
+        public PageXPathTests() : base()
         {
         }
 

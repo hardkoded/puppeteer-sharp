@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
 {
     public class TextSelectorInPageTests : PuppeteerPageBaseTest
     {
-        public TextSelectorInPageTests(): base()
+        public TextSelectorInPageTests() : base()
         {
         }
 

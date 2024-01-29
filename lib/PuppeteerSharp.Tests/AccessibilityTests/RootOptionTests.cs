@@ -1,17 +1,13 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class RootOptionTests : PuppeteerPageBaseTest
     {
-        public RootOptionTests(): base()
-        {
-        }
-
         [PuppeteerTest("accessibility.spec.ts", "root option", "should work a button")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkAButton()
@@ -124,6 +120,13 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                                 {
                                     Role = "StaticText",
                                     Name = "My Button",
+                                    Children = new SerializedAXNode[]
+                                    {
+                                        new()
+                                        {
+                                            Role = "InlineTextBox",
+                                        }
+                                    }
                                 }
                             }
                         }

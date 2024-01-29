@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Media;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Media;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.ScreenshotTests
 {

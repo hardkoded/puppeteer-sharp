@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class QueryObjectsTests : PuppeteerPageBaseTest
     {
-        public QueryObjectsTests(): base()
+        public QueryObjectsTests() : base()
         {
         }
 
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 await Page.EvaluateFunctionAsync<int>(@"objects => {
                     return objects.length;
                 }", objectsHandle));
-      
+
             // Check that instances.
             Assert.True(await Page.EvaluateFunctionAsync<bool>(@"objects => {
                 return objects[0] === self.customClass;

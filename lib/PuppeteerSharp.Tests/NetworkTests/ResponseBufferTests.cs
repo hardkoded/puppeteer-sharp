@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseBufferTests : PuppeteerPageBaseTest
     {
-        public ResponseBufferTests(): base()
+        public ResponseBufferTests() : base()
         {
         }
 

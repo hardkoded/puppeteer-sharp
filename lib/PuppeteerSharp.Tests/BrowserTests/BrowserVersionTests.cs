@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class BrowserVersionTests : PuppeteerBrowserBaseTest
     {
-        public BrowserVersionTests(): base()
+        public BrowserVersionTests() : base()
         {
         }
 
@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         [PuppeteerTimeout]
         public async Task ShouldReturnWhetherWeAreInHeadless()
         {
-            var version= await Browser.GetVersionAsync();
+            var version = await Browser.GetVersionAsync();
             Assert.IsNotEmpty(version);
         }
     }

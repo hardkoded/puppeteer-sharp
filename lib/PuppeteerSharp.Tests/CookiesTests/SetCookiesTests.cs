@@ -1,15 +1,15 @@
 using System;
-using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class SetCookiesTests : PuppeteerPageBaseTest
     {
-        public SetCookiesTests(): base()
+        public SetCookiesTests() : base()
         {
         }
 
@@ -365,7 +365,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.AreEqual(14, cookie.Size);
 
             // Puppeteer uses expectCookieEquals which excludes SameSite attribute
-            if(TestConstants.IsChrome)
+            if (TestConstants.IsChrome)
             {
                 Assert.AreEqual(SameSite.None, cookie.SameSite);
             }

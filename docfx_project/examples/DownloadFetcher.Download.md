@@ -24,9 +24,9 @@ var chrome119 = await browserFetcher.DownloadAsync("119.0.5997.0");
 
 Console.WriteLine("Navigating");
 await using (var browser = await Puppeteer.LaunchAsync(new()
-             {
-                 ExecutablePath = chrome118.GetExecutablePath(),
-             }))
+{
+    ExecutablePath = chrome118.GetExecutablePath(),
+}))
 {
     await using var page = await browser.NewPageAsync();
     await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -38,9 +38,9 @@ await using (var browser = await Puppeteer.LaunchAsync(new()
 }
 
 await using (var browser = await Puppeteer.LaunchAsync(new()
-             {
-                 ExecutablePath = chrome119.GetExecutablePath(),
-             }))
+{
+    ExecutablePath = chrome119.GetExecutablePath(),
+}))
 {
     await using var page = await browser.NewPageAsync();
     await page.GoToAsync("https://www.whatismybrowser.com/");

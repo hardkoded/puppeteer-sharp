@@ -1,4 +1,4 @@
-﻿namespace PuppeteerSharp
+namespace PuppeteerSharp
 {
     /// <summary>
     /// Item returned by drag methods.

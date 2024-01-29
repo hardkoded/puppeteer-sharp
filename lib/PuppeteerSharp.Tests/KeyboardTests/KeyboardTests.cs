@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Input;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.KeyboardTests
 {
     public class KeyboardTests : PuppeteerPageBaseTest
     {
-        public KeyboardTests(): base()
+        public KeyboardTests() : base()
         {
         }
 

@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.BrowserTests.Events
 {
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
-        public BrowserCloseTests(): base()
+        public BrowserCloseTests() : base()
         {
         }
 

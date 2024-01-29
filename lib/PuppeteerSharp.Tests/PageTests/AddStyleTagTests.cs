@@ -1,15 +1,15 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class AddStyleTagTests : PuppeteerPageBaseTest
     {
-        public AddStyleTagTests(): base()
+        public AddStyleTagTests() : base()
         {
         }
 

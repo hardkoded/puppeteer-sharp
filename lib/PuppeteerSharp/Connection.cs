@@ -303,7 +303,7 @@ namespace PuppeteerSharp
             if (method == "Target.attachedToTarget")
             {
                 var sessionId = param.SessionId;
-                var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
+                var session = new CDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
                 _sessions.AddItem(sessionId, session);
 
                 SessionAttached?.Invoke(this, new SessionEventArgs(session));

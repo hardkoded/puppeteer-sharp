@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -10,11 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
 
-        public SetContentTests(): base()
-        {
-        }
-
-        async Task Usage(IBrowser browser)
+        public async Task Usage(IBrowser browser)
         {
             #region SetContentAsync
 

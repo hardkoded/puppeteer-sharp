@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class IsConnectedTests : PuppeteerBrowserBaseTest
     {
-        public IsConnectedTests(): base()
+        public IsConnectedTests() : base()
         {
         }
 

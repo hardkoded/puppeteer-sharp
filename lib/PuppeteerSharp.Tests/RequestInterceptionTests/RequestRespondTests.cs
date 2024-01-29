@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     public class RequestRespondTests : PuppeteerPageBaseTest
     {
-        public RequestRespondTests(): base()
+        public RequestRespondTests() : base()
         {
         }
 
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
             {
-                await e.    Request.RespondAsync(new ResponseData
+                await e.Request.RespondAsync(new ResponseData
                 {
                     Status = HttpStatusCode.UpgradeRequired,
                     Body = "Yo, page!"

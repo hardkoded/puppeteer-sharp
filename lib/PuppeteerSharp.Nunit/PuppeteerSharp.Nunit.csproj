@@ -7,5 +7,5 @@
 	<ItemGroup>
 	  <PackageReference Include="NUnit" Version="3.13.3" />
 	</ItemGroup>
-	<Import Project="../Common/SignAssembly.props" />
+	<Import Project="../Common/CommonProps.props" />
 </Project>

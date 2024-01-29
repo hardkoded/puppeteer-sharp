@@ -13,14 +13,15 @@ namespace PuppeteerSharp
 {
     internal class NetworkManager
     {
+
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkEventManager _networkEventManager = new();
-        private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = [];
         private readonly ConcurrentDictionary<CDPSession, DisposableActionsStack> _clients = new();
         private readonly FrameManager _frameManager;
 
         private InternalNetworkConditions _emulatedNetworkConditions;
+        private CDPSession _client;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
@@ -56,7 +57,16 @@ namespace PuppeteerSharp
 
         internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
 
-        internal Task AddClientAsync(CDPSession client)
+
+        internal Task UpdateClientAsync(CDPSession client)
+        {
+            _client = client;
+            _client.MessageReceived += Client_MessageReceived;
+
+            return InitializeAsync();
+        }
+
+        internal async Task InitializeAsync()
         {
             if (_clients.ContainsKey(client))
             {

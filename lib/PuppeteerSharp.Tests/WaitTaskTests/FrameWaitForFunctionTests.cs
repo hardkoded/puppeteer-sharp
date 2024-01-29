@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     {
         private PollerInterceptor _pollerInterceptor;
 
-        public FrameWaitForFunctionTests(): base()
+        public FrameWaitForFunctionTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
 
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var startTime = DateTime.UtcNow;
             var polling = 100;
-            var startedPolling =  _pollerInterceptor.WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
             await startedPolling;
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");

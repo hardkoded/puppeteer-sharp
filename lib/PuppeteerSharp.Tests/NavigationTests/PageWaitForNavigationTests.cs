@@ -1,15 +1,15 @@
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public PageWaitForNavigationTests(): base()
+        public PageWaitForNavigationTests() : base()
         {
         }
 

@@ -66,7 +66,7 @@ namespace PuppeteerSharp
         public string CacheDir { get; set; }
 
         /// <inheritdoc/>
-        public string BaseUrl { get; set;  }
+        public string BaseUrl { get; set; }
 
         /// <inheritdoc/>
         public Platform Platform { get; set; }

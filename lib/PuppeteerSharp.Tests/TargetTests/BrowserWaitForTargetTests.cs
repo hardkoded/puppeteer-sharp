@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
     public class BrowserWaitForTargetTests : PuppeteerPageBaseTest
     {
-        public BrowserWaitForTargetTests(): base()
+        public BrowserWaitForTargetTests() : base()
         {
         }
 
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(targetTask.IsCompleted);
             Assert.AreSame(await targetTask.Result.PageAsync(), page);
-            
+
             await page.CloseAsync();
         }
 
@@ -33,6 +33,6 @@ namespace PuppeteerSharp.Tests.TargetTests
         public void ShouldTimeoutWaitingForANonExistentTarget()
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
-                new() { Timeout = 1}));
+                new() { Timeout = 1 }));
     }
 }

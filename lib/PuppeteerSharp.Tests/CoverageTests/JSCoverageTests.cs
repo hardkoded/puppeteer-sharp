@@ -3,16 +3,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.CoverageTests
 {
     public class JSCoverageTests : PuppeteerPageBaseTest
     {
-        public JSCoverageTests(): base()
+        public JSCoverageTests() : base()
         {
         }
 
@@ -65,9 +65,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "shouldn't ignore eval() scripts if reportAnonymousScripts is true")]
+        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should not ignore eval() scripts if reportAnonymousScripts is true")]
         [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldntIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
+        public async Task ShouldNotIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
             {

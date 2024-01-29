@@ -13,7 +13,7 @@ namespace PuppeteerSharp
     internal class FirefoxTargetManager : ITargetManager
     {
         private readonly Connection _connection;
-        private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
+        private readonly Func<TargetInfo, CDPSession, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
         private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId = new("Target {0} not found");
@@ -24,7 +24,7 @@ namespace PuppeteerSharp
 
         public FirefoxTargetManager(
             Connection connection,
-            Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
+            Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc)
         {
             _connection = connection;
@@ -54,7 +54,7 @@ namespace PuppeteerSharp
                 },
             }).ConfigureAwait(false);
 
-            _targetsIdsForInit = [.._discoveredTargetsByTargetId.Keys];
+            _targetsIdsForInit = [.. _discoveredTargetsByTargetId.Keys];
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
@@ -98,13 +98,13 @@ namespace PuppeteerSharp
 
             if (e.TargetInfo.Type == TargetType.Browser && e.TargetInfo.Attached)
             {
-                var browserTarget = _targetFactoryFunc(e.TargetInfo, null);
+                var browserTarget = _targetFactoryFunc(e.TargetInfo, null, null);
                 browserTarget.Initialize();
                 _availableTargetsByTargetId.AddItem(e.TargetInfo.TargetId, browserTarget);
                 FinishInitializationIfReady(e.TargetInfo.TargetId);
             }
 
-            var target = _targetFactoryFunc(e.TargetInfo, null);
+            var target = _targetFactoryFunc(e.TargetInfo, null, null);
             if (_targetFilterFunc != null && !_targetFilterFunc(target))
             {
                 FinishInitializationIfReady(e.TargetInfo.TargetId);

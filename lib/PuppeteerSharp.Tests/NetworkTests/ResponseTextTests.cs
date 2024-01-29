@@ -3,15 +3,15 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseTextTests : PuppeteerPageBaseTest
     {
-        public ResponseTextTests(): base()
+        public ResponseTextTests() : base()
         {
         }
 

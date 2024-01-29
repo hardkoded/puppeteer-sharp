@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
 using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
 {
     public class CSSResetOnNavigationTests : PuppeteerPageBaseTest
     {
-        public CSSResetOnNavigationTests(): base()
+        public CSSResetOnNavigationTests() : base()
         {
         }
 

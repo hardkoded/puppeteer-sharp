@@ -21,9 +21,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
 
             Console.WriteLine("Navigating");
             await using (var browser = await Puppeteer.LaunchAsync(new()
-                         {
-                             ExecutablePath = chrome118.GetExecutablePath(),
-                         }))
+            {
+                ExecutablePath = chrome118.GetExecutablePath(),
+            }))
             {
                 await using var page = await browser.NewPageAsync();
                 await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -35,9 +35,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             }
 
             await using (var browser = await Puppeteer.LaunchAsync(new()
-                         {
-                             ExecutablePath = chrome119.GetExecutablePath(),
-                         }))
+            {
+                ExecutablePath = chrome119.GetExecutablePath(),
+            }))
             {
                 await using var page = await browser.NewPageAsync();
                 await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -126,7 +126,8 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                     Platform.MacOS,
                     ChromeReleaseChannel.Beta));
 
-            var ex = Assert.Throws<PuppeteerException>(() => {
+            var ex = Assert.Throws<PuppeteerException>(() =>
+            {
                 BrowserData.Chrome.ResolveSystemExecutablePath(
                     Platform.Linux,
                     ChromeReleaseChannel.Canary);

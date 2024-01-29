@@ -84,7 +84,7 @@ public class DeviceRequestPrompt
     /// <param name="filter">The filter to apply.</param>
     /// <param name="options">The options.</param>
     /// <returns>A task that resolves to the first device matching the filter.</returns>
-    public Task<DeviceRequestPromptDevice> WaitForDeviceAsync(Func<DeviceRequestPromptDevice, bool> filter, WaitTimeoutOptions options = default)
+    public Task<DeviceRequestPromptDevice> WaitForDeviceAsync(Func<DeviceRequestPromptDevice, bool> filter, WaitForOptions options = default)
     {
         foreach (var device in Devices.Where(filter))
         {

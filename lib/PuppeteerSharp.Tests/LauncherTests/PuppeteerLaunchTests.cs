@@ -1,22 +1,22 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
-using System.ComponentModel;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        public PuppeteerLaunchTests(): base() { }
+        public PuppeteerLaunchTests() : base() { }
 
         [PuppeteerTimeout]
         public async Task ShouldWorkInRealLife()

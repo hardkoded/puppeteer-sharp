@@ -6,7 +6,7 @@ namespace PuppeteerSharp.PageAccessibility
     public enum CheckedState
     {
         /// <summary>
-        /// Flse.
+        /// False.
         /// </summary>
         False = 0,
 

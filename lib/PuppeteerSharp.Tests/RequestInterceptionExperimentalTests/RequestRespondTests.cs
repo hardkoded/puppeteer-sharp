@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionExperimentalTests;
 
@@ -40,7 +40,8 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         await Page.SetRequestInterceptionAsync(true);
         Page.AddRequestInterceptor(request => request.RespondAsync(new ResponseData
         {
-            Status = HttpStatusCode.UpgradeRequired, Body = "Yo, page!"
+            Status = HttpStatusCode.UpgradeRequired,
+            Body = "Yo, page!"
         }, 0));
 
         var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -128,8 +129,8 @@ public class RequestRespondTests : PuppeteerPageBaseTest
                 Status = HttpStatusCode.OK,
                 Headers = new Dictionary<string, object>
                 {
-                    ["foo"] = new [] { true, false },
-                    ["Set-Cookie"] = new [] { "sessionId=abcdef", "specialId=123456" }
+                    ["foo"] = new[] { true, false },
+                    ["Set-Cookie"] = new[] { "sessionId=abcdef", "specialId=123456" }
                 },
                 Body = "Yo, page!"
             }, 0);

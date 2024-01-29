@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using PuppeteerSharp.Input;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
-using NUnit.Framework;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Input;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.MouseTests
 {
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             };
         }";
 
-        public MouseTests(): base()
+        public MouseTests() : base()
         {
         }
 
@@ -228,7 +228,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldThrowIfButtonsArePressedIncorrectly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            
+
             await Page.Mouse.DownAsync();
             Assert.ThrowsAsync<PuppeteerException>(async () => await Page.Mouse.DownAsync());
         }

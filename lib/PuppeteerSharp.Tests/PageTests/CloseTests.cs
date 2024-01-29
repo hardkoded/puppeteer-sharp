@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class CloseTests : PuppeteerPageBaseTest
     {
-        public CloseTests(): base() { }
+        public CloseTests() : base() { }
 
         // [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
         // [Skip(SkipAttribute.Targets.Firefox)]
