@@ -86,7 +86,7 @@ namespace PuppeteerSharp
             Accessibility = new Accessibility(client);
 
             _screenshotTaskQueue = screenshotTaskQueue;
-
+            SetupEventListeners();
             TabSession.Swapped += async (sender, args) =>
             {
                 try
