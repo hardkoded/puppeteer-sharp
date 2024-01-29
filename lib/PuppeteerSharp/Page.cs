@@ -73,6 +73,7 @@ namespace PuppeteerSharp
             bool ignoreHTTPSErrors)
         {
             Client = client;
+            TabClient = client.Pare
             Target = target;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, (Keyboard)Keyboard);
@@ -237,6 +238,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; private set; }
+
+        internal CDPSession TabClient { get; }
 
         internal bool IsDragging { get; set; }
 

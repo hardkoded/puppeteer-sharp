@@ -23,6 +23,13 @@ namespace PuppeteerSharp
             ParentId = parentFrameId;
 
             UpdateClient(client);
+
+            FrameSwappedByActivation += (sender, args) =>
+            {
+                // Emulate loading process for swapped frames.
+                OnLoadingStarted();
+                OnLoadingStopped();
+            };
         }
 
         /// <inheritdoc />
@@ -587,12 +594,7 @@ namespace PuppeteerSharp
         }
 
         internal void OnFrameSwappedByActivation()
-        {
-            // Emulate loading process for swapped frames.
-            OnLoadingStarted();
-            OnLoadingStopped();
-            FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
-        }
+            => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
 
         private DeviceRequestPromptManager GetDeviceRequestPromptManager()
         {
