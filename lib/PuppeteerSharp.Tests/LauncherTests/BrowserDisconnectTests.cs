@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 {
                     "Navigating frame was detached",
                     "Protocol error(Page.navigate): Target closed. (Connection disposed)",
-                }.Any(value => exception.Message.Contains(value)));
+                }.Any(value => exception!.Message.Contains(value)));
         }
 
         [PuppeteerTest("launcher.spec.ts", "Browser.disconnect", "should reject waitForSelector when browser closes")]
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
             remote.Disconnect();
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => watchdog);
-            Assert.True(exception.Message.Contains("frame got detached"));
+            Assert.True(exception!.Message.Contains("Session closed"));
         }
     }
 }

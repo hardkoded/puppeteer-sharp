@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "shouldn't ignore eval() scripts if reportAnonymousScripts is true")]
+        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should not ignore eval() scripts if reportAnonymousScripts is true")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {

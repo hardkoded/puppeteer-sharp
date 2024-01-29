@@ -98,7 +98,7 @@ namespace PuppeteerSharp.PageCoverage
                 });
             }
 
-            return coverage.ToArray();
+            return [.. coverage];
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
