@@ -43,10 +43,10 @@ namespace PuppeteerSharp
             "disabled-by-default-v8.cpu_profiler",
         };
 
-        private readonly CDPSession _client;
         private readonly ILogger _logger;
         private bool _recording;
         private string _path;
+        private CDPSession _client;
 
         internal Tracing(CDPSession client)
         {
@@ -120,5 +120,7 @@ namespace PuppeteerSharp
 
             return await taskWrapper.Task.ConfigureAwait(false);
         }
+
+        internal void UpdateClient(CDPSession newSession) => _client = newSession;
     }
 }

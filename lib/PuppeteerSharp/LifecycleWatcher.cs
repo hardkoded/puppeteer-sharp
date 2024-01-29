@@ -58,6 +58,7 @@ namespace PuppeteerSharp
             frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frame.FrameNavigated += Navigated;
             frame.FrameSwapped += FrameManager_FrameSwapped;
+            frame.FrameSwappedByActivation += FrameManager_FrameSwapped;
             frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
             CheckLifecycleComplete();

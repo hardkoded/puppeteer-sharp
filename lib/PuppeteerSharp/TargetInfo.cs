@@ -49,5 +49,12 @@ namespace PuppeteerSharp
         /// </summary>
         [JsonProperty]
         public bool Attached { get; internal set; }
+
+        /// <summary>
+        /// Provides additional details for specific target types. For example, for
+        /// the type of "page", this may be set to "portal" or "prerender".
+        /// </summary>
+        [JsonProperty]
+        public string Subtype { get; set; }
     }
 }

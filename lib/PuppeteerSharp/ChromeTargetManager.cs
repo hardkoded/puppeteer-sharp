@@ -13,7 +13,7 @@ namespace PuppeteerSharp
     {
         private readonly List<string> _ignoredTargets = new();
         private readonly Connection _connection;
-        private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
+        private readonly Func<TargetInfo, CDPSession, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
         private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
@@ -28,7 +28,7 @@ namespace PuppeteerSharp
 
         public ChromeTargetManager(
             Connection connection,
-            Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
+            Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
             int targetDiscoveryTimeout = 0)
         {
@@ -168,7 +168,7 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                var target = _targetFactoryFunc(e.TargetInfo, null);
+                var target = _targetFactoryFunc(e.TargetInfo, null, null);
                 target.Initialize();
                 _attachedTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             }
@@ -206,6 +206,13 @@ namespace PuppeteerSharp
 
             var previousURL = target.Url;
             var wasInitialized = target.IsInitialized;
+
+            if (IsPageTargetBecomingPrimary(target, e.TargetInfo))
+            {
+                var session = target.Session;
+                session.ParentSession?.OnSwapped(session);
+            }
+
             target.TargetInfoChanged(e.TargetInfo);
 
             if (wasInitialized && previousURL != target.Url)
@@ -218,9 +225,13 @@ namespace PuppeteerSharp
             }
         }
 
+        private bool IsPageTargetBecomingPrimary(Target target, TargetInfo newTargetInfo)
+            => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
+
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
-            var parentSession = sender as ICDPConnection;
+            var parentConnection = sender as ICDPConnection;
+            var parentSession = sender as CDPSession;
 
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
@@ -240,7 +251,7 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                var workerTarget = _targetFactoryFunc(targetInfo, null);
+                var workerTarget = _targetFactoryFunc(targetInfo, null, null);
                 workerTarget.Initialize();
                 _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, workerTarget);
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = workerTarget });
@@ -250,7 +261,7 @@ namespace PuppeteerSharp
             var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
             if (!isExistingTarget)
             {
-                target = _targetFactoryFunc(targetInfo, session);
+                target = _targetFactoryFunc(targetInfo, session, parentSession);
             }
 
             if (_targetFilterFunc?.Invoke(target) == false)
@@ -277,7 +288,7 @@ namespace PuppeteerSharp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            (parentSession as CDPSession)?.OnSessionReady(session);
+            (parentConnection as CDPSession)?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
@@ -312,7 +323,7 @@ namespace PuppeteerSharp
                 try
                 {
                     await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
-                    await parentSession!.SendAsync(
+                    await parentConnection!.SendAsync(
                         "Target.detachFromTarget",
                         new TargetDetachFromTargetRequest
                         {

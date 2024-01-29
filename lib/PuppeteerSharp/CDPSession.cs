@@ -14,12 +14,14 @@ namespace PuppeteerSharp
     public class CDPSession : ICDPSession
     {
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
+        private readonly string _parentSessionId;
 
-        internal CDPSession(Connection connection, TargetType targetType, string sessionId)
+        internal CDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
         {
             Connection = connection;
             TargetType = targetType;
             Id = sessionId;
+            _parentSessionId = parentSessionId;
         }
 
         /// <inheritdoc/>
@@ -35,6 +37,8 @@ namespace PuppeteerSharp
         public event EventHandler<SessionEventArgs> SessionDetached;
 
         internal event EventHandler<SessionEventArgs> Ready;
+
+        internal event EventHandler<SessionEventArgs> Swapped;
 
         /// <inheritdoc/>
         public TargetType TargetType { get; }
@@ -54,6 +58,9 @@ namespace PuppeteerSharp
         internal Connection Connection { get; private set; }
 
         internal Target Target { get; set; }
+
+        internal CDPSession ParentSession
+            => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
 
         /// <inheritdoc/>
         public async Task<T> SendAsync<T>(string method, object args = null)
@@ -170,5 +177,7 @@ namespace PuppeteerSharp
             => SessionDetached?.Invoke(this, new SessionEventArgs(session));
 
         internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
+
+        internal void OnSwapped(CDPSession session) => Swapped?.Invoke(this, new SessionEventArgs(session));
     }
 }

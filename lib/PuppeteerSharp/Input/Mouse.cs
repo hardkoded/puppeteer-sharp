@@ -5,7 +5,7 @@ using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
 /*
-    The implementation of transctions is not the same as in the original Puppeteer
+    The implementation of transactions is not the same as in the original Puppeteer
     due to the differences in the threading model.
 */
 namespace PuppeteerSharp.Input
@@ -13,12 +13,12 @@ namespace PuppeteerSharp.Input
     /// <inheritdoc/>
     public class Mouse : IMouse
     {
-        private readonly CDPSession _client;
         private readonly Keyboard _keyboard;
         private readonly MouseState _mouseState = new();
         private readonly TaskQueue _actionsQueue = new();
         private readonly TaskQueue _multipleActionsQueue = new();
         private MouseTransaction.TransactionData _inFlightTransaction = null;
+        private CDPSession _client;
 
         /// <inheritdoc cref="Mouse"/>
         public Mouse(CDPSession client, Keyboard keyboard)
@@ -298,6 +298,8 @@ namespace PuppeteerSharp.Input
             GC.SuppressFinalize(this);
         }
 
+        internal void UpdateClient(CDPSession newSession) => _client = newSession;
+
         /// <inheritdoc cref="IDisposable.Dispose"/>
         protected virtual void Dispose(bool disposing)
         {
@@ -308,7 +310,7 @@ namespace PuppeteerSharp.Input
             }
         }
 
-        private MouseTransaction CreateTrasaction()
+        private MouseTransaction CreateTransaction()
         {
             _inFlightTransaction = new MouseTransaction.TransactionData();
 
@@ -340,7 +342,7 @@ namespace PuppeteerSharp.Input
         {
             return _actionsQueue.Enqueue(async () =>
             {
-                var transaction = CreateTrasaction();
+                var transaction = CreateTransaction();
                 try
                 {
                     await action(transaction.Update).ConfigureAwait(false);

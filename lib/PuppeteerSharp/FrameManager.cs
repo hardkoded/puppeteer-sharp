@@ -13,6 +13,7 @@ namespace PuppeteerSharp
 {
     internal class FrameManager : IDisposable, IAsyncDisposable
     {
+        private const int TimeForWaitingForSwap = 200;
         private const string UtilityWorldName = "__puppeteer_utility_world__";
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
@@ -31,15 +32,7 @@ namespace PuppeteerSharp
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
-            Client.Disconnected += (sender, e) =>
-            {
-                var mainFrame = FrameTree.MainFrame;
-
-                if (mainFrame != null)
-                {
-                    RemoveFramesRecursively(mainFrame);
-                }
-            };
+            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
         }
 
         internal event EventHandler<FrameEventArgs> FrameAttached;
@@ -54,7 +47,7 @@ namespace PuppeteerSharp
 
         internal event EventHandler<FrameEventArgs> LifecycleEvent;
 
-        internal CDPSession Client { get; }
+        internal CDPSession Client { get; private set; }
 
         internal NetworkManager NetworkManager { get; }
 
@@ -159,6 +152,38 @@ namespace PuppeteerSharp
 
                 throw;
             }
+        }
+
+        /**
+       * When the main frame is replaced by another main frame,
+       * we maintain the main frame object identity while updating
+       * its frame tree and ID.
+       */
+        internal async Task SwapFrameTreeAsync(CDPSession client)
+        {
+            OnExecutionContextsCleared(Client);
+
+            Client = client;
+
+            var frame = FrameTree.MainFrame;
+            if (frame != null)
+            {
+                _frameNavigatedReceived.Add(Client.Target.TargetId);
+                FrameTree.RemoveFrame(frame);
+                frame.Id = Client.Target.TargetId;
+                frame.MainWorld.ClearContext();
+                frame.PuppeteerWorld.ClearContext();
+                FrameTree.AddFrame(frame);
+                frame.UpdateClient(client, true);
+            }
+
+            Client.MessageReceived += Client_MessageReceived;
+            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
+
+            await InitializeAsync(client).ConfigureAwait(false);
+            await NetworkManager.UpdateClientAsync(client).ConfigureAwait(false);
+
+            frame?.OnFrameSwappedByActivation();
         }
 
         private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
@@ -473,6 +498,40 @@ namespace PuppeteerSharp
             catch (PuppeteerException ex)
             {
                 _logger.LogError(ex.ToString());
+            }
+        }
+
+        private async Task OnClientDisconnectAsync()
+        {
+            try
+            {
+                var mainFrame = FrameTree.MainFrame;
+                if (mainFrame == null)
+                {
+                    return;
+                }
+
+                foreach (var child in mainFrame.ChildFrames)
+                {
+                    RemoveFramesRecursively(child as Frame);
+                }
+
+                var swappedTcs = new TaskCompletionSource<bool>();
+
+                mainFrame.FrameSwappedByActivation += (sender, args) => swappedTcs.TrySetResult(true);
+
+                try
+                {
+                    await swappedTcs.Task.WithTimeout(TimeForWaitingForSwap).ConfigureAwait(false);
+                }
+                catch
+                {
+                    RemoveFramesRecursively(mainFrame);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error while disconnecting");
             }
         }
     }
