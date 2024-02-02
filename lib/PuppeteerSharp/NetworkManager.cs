@@ -13,15 +13,15 @@ namespace PuppeteerSharp
 {
     internal class NetworkManager
     {
-
         private readonly bool _ignoreHTTPSErrors;
         private readonly NetworkEventManager _networkEventManager = new();
+        private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = [];
-        private readonly ConcurrentDictionary<CDPSession, DisposableActionsStack> _clients = new();
-        private readonly FrameManager _frameManager;
+        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _clients = new();
+        private readonly IFrameProvider _frameManager;
+        private readonly ILoggerFactory _loggerFactory;
 
         private InternalNetworkConditions _emulatedNetworkConditions;
-        private CDPSession _client;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
@@ -35,12 +35,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="ignoreHTTPSErrors">If set to <c>true</c> ignore http errors.</param>
         /// <param name="frameManager">Frame manager.</param>
-        /// <param name="connection">NOTE: We only need the connection to create a logger.</param>
-        internal NetworkManager(bool ignoreHTTPSErrors, FrameManager frameManager, Connection connection)
+        /// <param name="loggerFactory">Logger factory.</param>
+        internal NetworkManager(bool ignoreHTTPSErrors, IFrameProvider frameManager, ILoggerFactory loggerFactory)
         {
             _frameManager = frameManager;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            _logger = connection.LoggerFactory.CreateLogger<NetworkManager>();
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<NetworkManager>();
         }
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
@@ -57,16 +58,7 @@ namespace PuppeteerSharp
 
         internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
 
-
-        internal Task UpdateClientAsync(CDPSession client)
-        {
-            _client = client;
-            _client.MessageReceived += Client_MessageReceived;
-
-            return InitializeAsync();
-        }
-
-        internal async Task InitializeAsync()
+        internal Task AddClientAsync(ICDPSession client)
         {
             if (_clients.ContainsKey(client))
             {
@@ -75,6 +67,7 @@ namespace PuppeteerSharp
 
             var subscriptions = new DisposableActionsStack();
             _clients[client] = subscriptions;
+            client.MessageReceived += Client_MessageReceived;
             subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
 
             return Task.WhenAll(
@@ -205,7 +198,7 @@ namespace PuppeteerSharp
                 _logger.LogError(ex, message);
                 _ = ApplyToAllClientsAsync(client =>
                 {
-                    client.Close(message);
+                    (client as CDPSession)?.Close(message);
                     return Task.CompletedTask;
                 });
             }
@@ -422,7 +415,7 @@ namespace PuppeteerSharp
 
             if (string.IsNullOrEmpty(e.NetworkId))
             {
-                OnRequestWithoutNetworkInstrumentation(client, e);
+                OnRequestWithoutNetworkInstrumentationAsync(client, e);
                 return;
             }
 
@@ -449,12 +442,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnRequestWithoutNetworkInstrumentation(CDPSession client, FetchRequestPausedResponse e)
+        private async void OnRequestWithoutNetworkInstrumentationAsync(CDPSession client, FetchRequestPausedResponse e)
         {
             // If an event has no networkId it should not have any network events. We
             // still want to dispatch it for the interception by the user.
             var frame = !string.IsNullOrEmpty(e.FrameId)
-                ? _frameManager.GetFrame(e.FrameId)
+                ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false)
                 : null;
 
             var request = new Request(
@@ -463,7 +456,8 @@ namespace PuppeteerSharp
                     e.RequestId,
                     _userRequestInterceptionEnabled,
                     e,
-                    []);
+                    [],
+                    _loggerFactory);
 
             Request?.Invoke(this, new RequestEventArgs(request));
             _ = request.FinalizeInterceptionsAsync();
@@ -500,7 +494,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            var frame = !string.IsNullOrEmpty(e.FrameId) ? await _frameManager.FrameTree.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
+            var frame = !string.IsNullOrEmpty(e.FrameId) ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
             request = new Request(
                 client,
@@ -508,7 +502,8 @@ namespace PuppeteerSharp
                 fetchRequestId,
                 _userRequestInterceptionEnabled,
                 e,
-                redirectChain);
+                redirectChain,
+                _loggerFactory);
 
             _networkEventManager.StoreRequest(e.RequestId, request);
 
@@ -585,7 +580,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task ApplyUserAgentAsync(CDPSession client)
+        private async Task ApplyUserAgentAsync(ICDPSession client)
         {
             if (_userAgent == null)
             {
@@ -601,7 +596,7 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
         }
 
-        private async Task ApplyProtocolRequestInterceptionAsync(CDPSession client)
+        private async Task ApplyProtocolRequestInterceptionAsync(ICDPSession client)
         {
             _userCacheDisabled ??= false;
 
@@ -625,7 +620,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task ApplyProtocolCacheDisabledAsync(CDPSession client)
+        private async Task ApplyProtocolCacheDisabledAsync(ICDPSession client)
         {
             if (_userCacheDisabled == null)
             {
@@ -637,7 +632,7 @@ namespace PuppeteerSharp
                 new NetworkSetCacheDisabledRequest(_userCacheDisabled.Value)).ConfigureAwait(false);
         }
 
-        private async Task ApplyNetworkConditionsAsync(CDPSession client)
+        private async Task ApplyNetworkConditionsAsync(ICDPSession client)
         {
             if (_emulatedNetworkConditions == null)
             {
@@ -655,7 +650,7 @@ namespace PuppeteerSharp
                 }).ConfigureAwait(false);
         }
 
-        private async Task ApplyExtraHTTPHeadersAsync(CDPSession client)
+        private async Task ApplyExtraHTTPHeadersAsync(ICDPSession client)
         {
             if (_extraHTTPHeaders == null)
             {
@@ -667,7 +662,7 @@ namespace PuppeteerSharp
                 new NetworkSetExtraHTTPHeadersRequest(_extraHTTPHeaders)).ConfigureAwait(false);
         }
 
-        private Task ApplyToAllClientsAsync(Func<CDPSession, Task> func)
+        private Task ApplyToAllClientsAsync(Func<ICDPSession, Task> func)
             => Task.WhenAll(_clients.Keys.Select(func));
     }
 }

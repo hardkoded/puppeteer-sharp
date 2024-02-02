@@ -1269,7 +1269,7 @@ namespace PuppeteerSharp
 
         private async Task InitializeAsync()
         {
-            await FrameManager.InitializeAsync().ConfigureAwait(false);
+            await FrameManager.InitializeAsync(Client).ConfigureAwait(false);
 
             await Task.WhenAll(
                Client.SendAsync("Performance.enable"),

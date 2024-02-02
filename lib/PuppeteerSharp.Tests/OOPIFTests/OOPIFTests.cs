@@ -250,10 +250,12 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += (sender, e) => _ = e.Request.ContinueAsync();
-
+            var requestTask = Page.WaitForRequestAsync(request => request.Url.Contains("requestFromOOPIF"));
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
+            await requestTask.WithTimeout();
             Assert.That(Oopifs, Has.Exactly(1).Items);
+            Assert.AreEqual(requestTask.Result.Frame, frameTask.Result);
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support frames within OOP iframes")]

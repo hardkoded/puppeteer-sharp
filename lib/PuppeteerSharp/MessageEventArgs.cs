@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
@@ -5,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// <seealso cref="CDPSession.MessageReceived"/> arguments.
     /// </summary>
-    public class MessageEventArgs
+    public class MessageEventArgs : EventArgs
     {
         /// <summary>
         /// Gets the message identifier.
