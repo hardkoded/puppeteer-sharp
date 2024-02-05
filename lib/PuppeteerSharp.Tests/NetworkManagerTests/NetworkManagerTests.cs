@@ -519,7 +519,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                 })
             });
 
-
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
@@ -557,7 +556,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
                     })
             });
-
 
         client.MessageReceived += Raise.EventWith(
             client,
@@ -640,7 +638,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                 })
             });
 
-
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
@@ -684,7 +681,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     })
             });
 
-
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
@@ -712,7 +708,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Type = ResourceType.Document,
                 })
             });
-
 
         client.MessageReceived += Raise.EventWith(
             client,
@@ -795,7 +790,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     HasExtraInfo = true,
                 })
             });
-
 
         client.MessageReceived += Raise.EventWith(
             client,
