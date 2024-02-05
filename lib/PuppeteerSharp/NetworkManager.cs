@@ -221,20 +221,19 @@ namespace PuppeteerSharp
 
             if (queuedEvents != null)
             {
+                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
                 EmitResponseEvent(client, queuedEvents.ResponseReceivedEvent, e);
 
                 if (queuedEvents.LoadingFinishedEvent != null)
                 {
-                    OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
+                    EmitLoadingFinished(queuedEvents.LoadingFinishedEvent);
                 }
 
                 if (queuedEvents.LoadingFailedEvent != null)
                 {
-                    OnLoadingFailed(queuedEvents.LoadingFailedEvent);
+                    EmitLoadingFailed(queuedEvents.LoadingFailedEvent);
                 }
 
-                // We need this in .NET to avoid race conditions
-                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
                 return;
             }
 

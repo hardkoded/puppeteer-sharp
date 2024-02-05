@@ -108,6 +108,28 @@ namespace PuppeteerSharp
                     _logger.LogError(ex, "Failed to swap session");
                 }
             };
+
+            TabSession.Ready += async (sender, args) =>
+            {
+                try
+                {
+                    if (sender is not CDPSession session)
+                    {
+                        return;
+                    }
+
+                    if (session.Target.TargetInfo.Subtype == "prerender")
+                    {
+                        return;
+                    }
+
+                    await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to initialize tab session");
+                }
+            };
         }
 
         /// <inheritdoc/>

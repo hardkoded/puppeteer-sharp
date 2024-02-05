@@ -185,6 +185,9 @@ namespace PuppeteerSharp
             frame?.OnFrameSwappedByActivation();
         }
 
+        internal Task RegisterSpeculativeSessionAsync(CDPSession client)
+            => NetworkManager.AddClientAsync(client);
+
         private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
