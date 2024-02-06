@@ -289,6 +289,7 @@ namespace PuppeteerSharp
             }
 
             (parentConnection as CDPSession)?.OnSessionReady(session);
+            parentSession?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);

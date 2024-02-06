@@ -114,7 +114,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                var networkInitTask = NetworkManager.AddClientAsync(Client);
+                var networkInitTask = NetworkManager.AddClientAsync(client);
                 var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 var autoAttachTask = client != Client
                     ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
