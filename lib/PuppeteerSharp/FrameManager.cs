@@ -114,6 +114,7 @@ namespace PuppeteerSharp
         {
             try
             {
+                var networkInitTask = NetworkManager.AddClientAsync(Client);
                 var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 var autoAttachTask = client != Client
                     ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
@@ -134,7 +135,7 @@ namespace PuppeteerSharp
                 await Task.WhenAll(
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
-                    client == Client ? NetworkManager.AddClientAsync(Client) : Task.CompletedTask).ConfigureAwait(false);
+                    networkInitTask).ConfigureAwait(false);
 
                 await CreateIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
             }
