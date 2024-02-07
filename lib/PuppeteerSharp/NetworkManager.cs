@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
@@ -11,33 +13,35 @@ namespace PuppeteerSharp
 {
     internal class NetworkManager
     {
-        private readonly ILogger _logger;
-        private readonly ConcurrentSet<string> _attemptedAuthentications = new();
         private readonly bool _ignoreHTTPSErrors;
-        private readonly InternalNetworkConditions _emulatedNetworkConditions = new()
-        {
-            Offline = false,
-            Upload = -1,
-            Download = -1,
-            Latency = 0,
-        };
-
         private readonly NetworkEventManager _networkEventManager = new();
+        private readonly ILogger _logger;
+        private readonly ConcurrentSet<string> _attemptedAuthentications = [];
+        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _clients = new();
+        private readonly IFrameProvider _frameManager;
+        private readonly ILoggerFactory _loggerFactory;
 
-        private CDPSession _client;
+        private InternalNetworkConditions _emulatedNetworkConditions;
         private Dictionary<string, string> _extraHTTPHeaders;
         private Credentials _credentials;
         private bool _userRequestInterceptionEnabled;
-        private bool _userCacheDisabled;
         private bool _protocolRequestInterceptionEnabled;
+        private bool? _userCacheDisabled;
+        private string _userAgent;
+        private UserAgentMetadata _userAgentMetadata;
 
-        internal NetworkManager(CDPSession client, bool ignoreHTTPSErrors, FrameManager frameManager)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NetworkManager"/> class.
+        /// </summary>
+        /// <param name="ignoreHTTPSErrors">If set to <c>true</c> ignore http errors.</param>
+        /// <param name="frameManager">Frame manager.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        internal NetworkManager(bool ignoreHTTPSErrors, IFrameProvider frameManager, ILoggerFactory loggerFactory)
         {
-            FrameManager = frameManager;
-            _client = client;
+            _frameManager = frameManager;
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<NetworkManager>();
-            _client.MessageReceived += Client_MessageReceived;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.CreateLogger<NetworkManager>();
         }
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
@@ -52,119 +56,130 @@ namespace PuppeteerSharp
 
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
-        internal FrameManager FrameManager { get; set; }
-
         internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
 
-        internal Task UpdateClientAsync(CDPSession client)
+        internal Task AddClientAsync(ICDPSession client)
         {
-            _client = client;
-            _client.MessageReceived += Client_MessageReceived;
-
-            return InitializeAsync();
-        }
-
-        internal async Task InitializeAsync()
-        {
-            await _client.SendAsync("Network.enable").ConfigureAwait(false);
-            if (_ignoreHTTPSErrors)
+            if (_clients.ContainsKey(client))
             {
-                await _client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest
-                {
-                    Ignore = true,
-                }).ConfigureAwait(false);
+                return Task.CompletedTask;
             }
+
+            var subscriptions = new DisposableActionsStack();
+            _clients[client] = subscriptions;
+            client.MessageReceived += Client_MessageReceived;
+            subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
+
+            return Task.WhenAll(
+                _ignoreHTTPSErrors ? client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true }) : Task.CompletedTask,
+                client.SendAsync("Network.enable"),
+                ApplyExtraHTTPHeadersAsync(client),
+                ApplyNetworkConditionsAsync(client),
+                ApplyProtocolCacheDisabledAsync(client),
+                ApplyProtocolRequestInterceptionAsync(client),
+                ApplyUserAgentAsync(client));
         }
 
-        internal Task AuthenticateAsync(Credentials credentials)
+        internal void RemoveClient(CDPSession client)
+        {
+            if (!_clients.TryRemove(client, out var subscriptions))
+            {
+                return;
+            }
+
+            subscriptions.Dispose();
+        }
+
+        internal async Task AuthenticateAsync(Credentials credentials)
         {
             _credentials = credentials;
-            return UpdateProtocolRequestInterceptionAsync();
+            var enabled = _userRequestInterceptionEnabled || _credentials != null;
+
+            if (enabled == _protocolRequestInterceptionEnabled)
+            {
+                return;
+            }
+
+            _protocolRequestInterceptionEnabled = enabled;
+            await ApplyToAllClientsAsync(ApplyProtocolRequestInterceptionAsync).ConfigureAwait(false);
         }
 
         internal Task SetExtraHTTPHeadersAsync(Dictionary<string, string> extraHTTPHeaders)
         {
-            _extraHTTPHeaders = new Dictionary<string, string>();
+            _extraHTTPHeaders = [];
 
             foreach (var item in extraHTTPHeaders)
             {
                 _extraHTTPHeaders[item.Key.ToLower(CultureInfo.CurrentCulture)] = item.Value;
             }
 
-            return _client.SendAsync("Network.setExtraHTTPHeaders", new NetworkSetExtraHTTPHeadersRequest
-            {
-                Headers = _extraHTTPHeaders,
-            });
-        }
-
-        internal async Task SetOfflineModeAsync(bool value)
-        {
-            _emulatedNetworkConditions.Offline = value;
-            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
-        }
-
-        internal async Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
-        {
-            _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
-            _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
-            _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
-            await UpdateNetworkConditionsAsync().ConfigureAwait(false);
+            return ApplyToAllClientsAsync(ApplyExtraHTTPHeadersAsync);
         }
 
         internal Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata)
-            => _client.SendAsync("Network.setUserAgentOverride", new NetworkSetUserAgentOverrideRequest
-            {
-                UserAgent = userAgent,
-                UserAgentMetadata = userAgentMetadata,
-            });
+        {
+            _userAgent = userAgent;
+            _userAgentMetadata = userAgentMetadata;
+            return ApplyToAllClientsAsync(ApplyUserAgentAsync);
+        }
 
         internal Task SetCacheEnabledAsync(bool enabled)
         {
             _userCacheDisabled = !enabled;
-            return UpdateProtocolCacheDisabledAsync();
+            return ApplyToAllClientsAsync(ApplyProtocolCacheDisabledAsync);
         }
 
-        internal Task SetRequestInterceptionAsync(bool value)
+        internal async Task SetRequestInterceptionAsync(bool value)
         {
             _userRequestInterceptionEnabled = value;
-            return UpdateProtocolRequestInterceptionAsync();
+            var enabled = _userRequestInterceptionEnabled || _credentials != null;
+
+            if (enabled == _protocolRequestInterceptionEnabled)
+            {
+                return;
+            }
+
+            _protocolRequestInterceptionEnabled = enabled;
+            await ApplyToAllClientsAsync(ApplyProtocolRequestInterceptionAsync).ConfigureAwait(false);
         }
 
-        private Task UpdateNetworkConditionsAsync()
-            => _client.SendAsync("Network.emulateNetworkConditions", new NetworkEmulateNetworkConditionsRequest
-            {
-                Offline = _emulatedNetworkConditions.Offline,
-                Latency = _emulatedNetworkConditions.Latency,
-                UploadThroughput = _emulatedNetworkConditions.Upload,
-                DownloadThroughput = _emulatedNetworkConditions.Download,
-            });
+        internal Task SetOfflineModeAsync(bool value)
+        {
+            _emulatedNetworkConditions ??= new InternalNetworkConditions();
+            _emulatedNetworkConditions.Offline = value;
+            return ApplyToAllClientsAsync(ApplyNetworkConditionsAsync);
+        }
 
-        private Task UpdateProtocolCacheDisabledAsync()
-            => _client.SendAsync("Network.setCacheDisabled", new NetworkSetCacheDisabledRequest
-            {
-                CacheDisabled = _userCacheDisabled,
-            });
+        internal Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
+        {
+            _emulatedNetworkConditions ??= new InternalNetworkConditions();
+            _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
+            _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
+            _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
+            return ApplyToAllClientsAsync(ApplyNetworkConditionsAsync);
+        }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
             try
             {
+                var client = sender as CDPSession;
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPausedAsync(e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
+                        await OnRequestPausedAsync(client, e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequiredAsync(e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
+                        await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
+                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
                         OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
                         break;
                     case "Network.responseReceived":
-                        OnResponseReceived(e.MessageData.ToObject<ResponseReceivedResponse>(true));
+                        OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>(true));
                         break;
                     case "Network.loadingFinished":
                         OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
@@ -173,7 +188,7 @@ namespace PuppeteerSharp
                         OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>(true));
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        await OnResponseReceivedExtraInfoAsync(e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
+                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
                         break;
                 }
             }
@@ -181,18 +196,22 @@ namespace PuppeteerSharp
             {
                 var message = $"NetworkManager failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                _client.Close(message);
+                _ = ApplyToAllClientsAsync(client =>
+                {
+                    (client as CDPSession)?.Close(message);
+                    return Task.CompletedTask;
+                });
             }
         }
 
-        private async Task OnResponseReceivedExtraInfoAsync(ResponseReceivedExtraInfoResponse e)
+        private async Task OnResponseReceivedExtraInfoAsync(CDPSession client, ResponseReceivedExtraInfoResponse e)
         {
             var redirectInfo = _networkEventManager.TakeQueuedRedirectInfo(e.RequestId);
 
             if (redirectInfo != null)
             {
                 _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
-                await OnRequestAsync(redirectInfo.Event, redirectInfo.FetchRequestId).ConfigureAwait(false);
+                await OnRequestAsync(client, redirectInfo.Event, redirectInfo.FetchRequestId).ConfigureAwait(false);
                 return;
             }
 
@@ -202,20 +221,19 @@ namespace PuppeteerSharp
 
             if (queuedEvents != null)
             {
-                EmitResponseEvent(queuedEvents.ResponseReceivedEvent, e);
+                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
+                EmitResponseEvent(client, queuedEvents.ResponseReceivedEvent, e);
 
                 if (queuedEvents.LoadingFinishedEvent != null)
                 {
-                    OnLoadingFinished(queuedEvents.LoadingFinishedEvent);
+                    EmitLoadingFinished(queuedEvents.LoadingFinishedEvent);
                 }
 
                 if (queuedEvents.LoadingFailedEvent != null)
                 {
-                    OnLoadingFailed(queuedEvents.LoadingFailedEvent);
+                    EmitLoadingFailed(queuedEvents.LoadingFailedEvent);
                 }
 
-                // We need this in .NET to avoid race conditions
-                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
                 return;
             }
 
@@ -278,7 +296,6 @@ namespace PuppeteerSharp
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
-
             RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
@@ -297,12 +314,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private void OnResponseReceived(ResponseReceivedResponse e)
+        private void OnResponseReceived(CDPSession client, ResponseReceivedResponse e)
         {
             var request = _networkEventManager.GetRequest(e.RequestId);
             ResponseReceivedExtraInfoResponse extraInfo = null;
 
-            if (request != null && !request.FromMemoryCache && e.HasExtraInfo)
+            if (request is { FromMemoryCache: false } && e.HasExtraInfo)
             {
                 extraInfo = _networkEventManager.ShiftResponseExtraInfo(e.RequestId);
 
@@ -316,10 +333,10 @@ namespace PuppeteerSharp
                 }
             }
 
-            EmitResponseEvent(e, extraInfo);
+            EmitResponseEvent(client, e, extraInfo);
         }
 
-        private void EmitResponseEvent(ResponseReceivedResponse e, ResponseReceivedExtraInfoResponse extraInfo)
+        private void EmitResponseEvent(CDPSession client, ResponseReceivedResponse e, ResponseReceivedExtraInfoResponse extraInfo)
         {
             var request = _networkEventManager.GetRequest(e.RequestId);
 
@@ -329,8 +346,13 @@ namespace PuppeteerSharp
                 return;
             }
 
+            if (e.Response.FromDiskCache)
+            {
+                extraInfo = null;
+            }
+
             var response = new Response(
-                _client,
+                client,
                 request,
                 e.Response,
                 extraInfo);
@@ -340,7 +362,7 @@ namespace PuppeteerSharp
             Response?.Invoke(this, new ResponseCreatedEventArgs(response));
         }
 
-        private async Task OnAuthRequiredAsync(FetchAuthRequiredResponse e)
+        private async Task OnAuthRequiredAsync(CDPSession client, FetchAuthRequiredResponse e)
         {
             var response = "Default";
             if (_attemptedAuthentications.Contains(e.RequestId))
@@ -356,7 +378,7 @@ namespace PuppeteerSharp
             var credentials = _credentials ?? new Credentials();
             try
             {
-                await _client.SendAsync("Fetch.continueWithAuth", new ContinueWithAuthRequest
+                await client.SendAsync("Fetch.continueWithAuth", new ContinueWithAuthRequest
                 {
                     RequestId = e.RequestId,
                     AuthChallengeResponse = new ContinueWithAuthRequestChallengeResponse
@@ -373,13 +395,13 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnRequestPausedAsync(FetchRequestPausedResponse e)
+        private async Task OnRequestPausedAsync(CDPSession client, FetchRequestPausedResponse e)
         {
             if (!_userRequestInterceptionEnabled && _protocolRequestInterceptionEnabled)
             {
                 try
                 {
-                    await _client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
+                    await client.SendAsync("Fetch.continueRequest", new FetchContinueRequestRequest
                     {
                         RequestId = e.RequestId,
                     }).ConfigureAwait(false);
@@ -392,11 +414,11 @@ namespace PuppeteerSharp
 
             if (string.IsNullOrEmpty(e.NetworkId))
             {
+                OnRequestWithoutNetworkInstrumentationAsync(client, e);
                 return;
             }
 
-            var requestWillBeSentEvent =
-              _networkEventManager.GetRequestWillBeSent(e.NetworkId);
+            var requestWillBeSentEvent = _networkEventManager.GetRequestWillBeSent(e.NetworkId);
 
             // redirect requests have the same `requestId`,
             if (
@@ -411,7 +433,7 @@ namespace PuppeteerSharp
             if (requestWillBeSentEvent != null)
             {
                 PatchRequestEventHeaders(requestWillBeSentEvent, e);
-                await OnRequestAsync(requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
+                await OnRequestAsync(client, requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
             }
             else
             {
@@ -419,7 +441,28 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task OnRequestAsync(RequestWillBeSentPayload e, string fetchRequestId)
+        private async void OnRequestWithoutNetworkInstrumentationAsync(CDPSession client, FetchRequestPausedResponse e)
+        {
+            // If an event has no networkId it should not have any network events. We
+            // still want to dispatch it for the interception by the user.
+            var frame = !string.IsNullOrEmpty(e.FrameId)
+                ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false)
+                : null;
+
+            var request = new Request(
+                    client,
+                    frame,
+                    e.RequestId,
+                    _userRequestInterceptionEnabled,
+                    e,
+                    [],
+                    _loggerFactory);
+
+            Request?.Invoke(this, new RequestEventArgs(request));
+            _ = request.FinalizeInterceptionsAsync();
+        }
+
+        private async Task OnRequestAsync(CDPSession client, RequestWillBeSentPayload e, string fetchRequestId)
         {
             Request request;
             var redirectChain = new List<IRequest>();
@@ -445,20 +488,21 @@ namespace PuppeteerSharp
                 // If we connect late to the target, we could have missed the requestWillBeSent event.
                 if (request != null)
                 {
-                    HandleRequestRedirect(request, e.RedirectResponse, redirectResponseExtraInfo);
+                    HandleRequestRedirect(client, request, e.RedirectResponse, redirectResponseExtraInfo);
                     redirectChain = request.RedirectChainList;
                 }
             }
 
-            var frame = !string.IsNullOrEmpty(e.FrameId) ? await FrameManager.FrameTree.TryGetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
+            var frame = !string.IsNullOrEmpty(e.FrameId) ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
             request = new Request(
-                _client,
+                client,
                 frame,
                 fetchRequestId,
                 _userRequestInterceptionEnabled,
                 e,
-                redirectChain);
+                redirectChain,
+                _loggerFactory);
 
             _networkEventManager.StoreRequest(e.RequestId, request);
 
@@ -486,10 +530,10 @@ namespace PuppeteerSharp
             RequestServedFromCache?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private void HandleRequestRedirect(Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
+        private void HandleRequestRedirect(CDPSession client, Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
         {
             var response = new Response(
-                _client,
+                client,
                 request,
                 responseMessage,
                 extraInfo);
@@ -505,7 +549,7 @@ namespace PuppeteerSharp
             RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private async Task OnRequestWillBeSentAsync(RequestWillBeSentPayload e)
+        private async Task OnRequestWillBeSentAsync(CDPSession client, RequestWillBeSentPayload e)
         {
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
@@ -517,14 +561,14 @@ namespace PuppeteerSharp
                 {
                     var fetchRequestId = requestPausedEvent.RequestId;
                     PatchRequestEventHeaders(e, requestPausedEvent);
-                    await OnRequestAsync(e, fetchRequestId).ConfigureAwait(false);
+                    await OnRequestAsync(client, e, fetchRequestId).ConfigureAwait(false);
                     _networkEventManager.ForgetRequestPaused(e.RequestId);
                 }
 
                 return;
             }
 
-            await OnRequestAsync(e, null).ConfigureAwait(false);
+            await OnRequestAsync(client, e, null).ConfigureAwait(false);
         }
 
         private void PatchRequestEventHeaders(RequestWillBeSentPayload requestWillBeSentEvent, FetchRequestPausedResponse requestPausedEvent)
@@ -535,32 +579,89 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task UpdateProtocolRequestInterceptionAsync()
+        private async Task ApplyUserAgentAsync(ICDPSession client)
         {
-            var enabled = _userRequestInterceptionEnabled || _credentials != null;
-
-            if (enabled == _protocolRequestInterceptionEnabled)
+            if (_userAgent == null)
             {
                 return;
             }
 
-            _protocolRequestInterceptionEnabled = enabled;
-            if (enabled)
+            await client.SendAsync(
+                "Network.setUserAgentOverride",
+                new NetworkSetUserAgentOverrideRequest
+                {
+                    UserAgent = _userAgent,
+                    UserAgentMetadata = _userAgentMetadata,
+                }).ConfigureAwait(false);
+        }
+
+        private async Task ApplyProtocolRequestInterceptionAsync(ICDPSession client)
+        {
+            _userCacheDisabled ??= false;
+
+            if (_protocolRequestInterceptionEnabled)
             {
                 await Task.WhenAll(
-                    UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.enable", new FetchEnableRequest
-                    {
-                        HandleAuthRequests = true,
-                        Patterns = new[] { new FetchEnableRequest.Pattern { UrlPattern = "*", } },
-                    })).ConfigureAwait(false);
+                    ApplyProtocolCacheDisabledAsync(client),
+                    client.SendAsync(
+                        "Fetch.enable",
+                        new FetchEnableRequest
+                        {
+                            HandleAuthRequests = true,
+                            Patterns = [new FetchEnableRequest.Pattern("*")],
+                        })).ConfigureAwait(false);
             }
             else
             {
                 await Task.WhenAll(
-                    UpdateProtocolCacheDisabledAsync(),
-                    _client.SendAsync("Fetch.disable")).ConfigureAwait(false);
+                    ApplyProtocolCacheDisabledAsync(client),
+                    client.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
+
+        private async Task ApplyProtocolCacheDisabledAsync(ICDPSession client)
+        {
+            if (_userCacheDisabled == null)
+            {
+                return;
+            }
+
+            await client.SendAsync(
+                "Network.setCacheDisabled",
+                new NetworkSetCacheDisabledRequest(_userCacheDisabled.Value)).ConfigureAwait(false);
+        }
+
+        private async Task ApplyNetworkConditionsAsync(ICDPSession client)
+        {
+            if (_emulatedNetworkConditions == null)
+            {
+                return;
+            }
+
+            await client.SendAsync(
+                "Network.emulateNetworkConditions",
+                new NetworkEmulateNetworkConditionsRequest
+                {
+                    Offline = _emulatedNetworkConditions.Offline,
+                    Latency = _emulatedNetworkConditions.Latency,
+                    UploadThroughput = _emulatedNetworkConditions.Upload,
+                    DownloadThroughput = _emulatedNetworkConditions.Download,
+                }).ConfigureAwait(false);
+        }
+
+        private async Task ApplyExtraHTTPHeadersAsync(ICDPSession client)
+        {
+            if (_extraHTTPHeaders == null)
+            {
+                return;
+            }
+
+            await client.SendAsync(
+                "Network.setExtraHTTPHeaders",
+                new NetworkSetExtraHTTPHeadersRequest(_extraHTTPHeaders)).ConfigureAwait(false);
+        }
+
+        private Task ApplyToAllClientsAsync(Func<ICDPSession, Task> func)
+            => Task.WhenAll(_clients.Keys.Select(func));
     }
 }

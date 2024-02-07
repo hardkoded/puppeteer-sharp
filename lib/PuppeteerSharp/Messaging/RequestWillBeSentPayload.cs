@@ -18,6 +18,8 @@ namespace PuppeteerSharp.Messaging
 
         public bool RedirectHasExtraInfo { get; set; }
 
+        public string NetworkId { get; set; }
+
         public Initiator Initiator { get; set; }
     }
 }

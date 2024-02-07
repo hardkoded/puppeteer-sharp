@@ -6,9 +6,9 @@ namespace PuppeteerSharp.Messaging
 
         public Pattern[] Patterns { get; set; }
 
-        internal class Pattern
+        internal class Pattern(string urlPattern)
         {
-            public string UrlPattern { get; set; }
+            public string UrlPattern { get; set; } = urlPattern;
         }
     }
 }

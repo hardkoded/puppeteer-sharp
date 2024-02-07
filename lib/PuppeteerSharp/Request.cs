@@ -31,10 +31,11 @@ namespace PuppeteerSharp
             string interceptionId,
             bool allowInterception,
             RequestWillBeSentPayload data,
-            List<IRequest> redirectChain)
+            List<IRequest> redirectChain,
+            ILoggerFactory loggerFactory)
         {
             _client = client;
-            _logger = _client.Connection.LoggerFactory.CreateLogger<Request>();
+            _logger = loggerFactory.CreateLogger<Request>();
             RequestId = data.RequestId;
             IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
             InterceptionId = interceptionId;

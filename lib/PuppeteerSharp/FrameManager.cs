@@ -11,7 +11,7 @@ using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
-    internal class FrameManager : IDisposable, IAsyncDisposable
+    internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
         private const int TimeForWaitingForSwap = 200;
         private const string UtilityWorldName = "__puppeteer_utility_world__";
@@ -28,7 +28,7 @@ namespace PuppeteerSharp
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
+            NetworkManager = new NetworkManager(ignoreHTTPSErrors, this, client.Connection.LoggerFactory);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
@@ -59,10 +59,7 @@ namespace PuppeteerSharp
 
         internal Frame MainFrame => FrameTree.MainFrame;
 
-        public void Dispose()
-        {
-            _eventsQueue?.Dispose();
-        }
+        public void Dispose() => _eventsQueue?.Dispose();
 
         public async ValueTask DisposeAsync()
         {
@@ -71,6 +68,8 @@ namespace PuppeteerSharp
                 await _eventsQueue.DisposeAsync().ConfigureAwait(false);
             }
         }
+
+        public Task<Frame> GetFrameAsync(string frameId) => FrameTree.TryGetFrameAsync(frameId);
 
         internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
         {
@@ -111,11 +110,11 @@ namespace PuppeteerSharp
 
         internal Frame[] GetFrames() => FrameTree.Frames;
 
-        internal async Task InitializeAsync(CDPSession client = null)
+        internal async Task InitializeAsync(CDPSession client)
         {
             try
             {
-                client ??= Client;
+                var networkInitTask = NetworkManager.AddClientAsync(client);
                 var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 var autoAttachTask = client != Client
                     ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
@@ -136,7 +135,7 @@ namespace PuppeteerSharp
                 await Task.WhenAll(
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
-                    client == Client ? NetworkManager.InitializeAsync() : Task.CompletedTask).ConfigureAwait(false);
+                    networkInitTask).ConfigureAwait(false);
 
                 await CreateIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
             }
@@ -154,11 +153,12 @@ namespace PuppeteerSharp
             }
         }
 
-        /**
-       * When the main frame is replaced by another main frame,
-       * we maintain the main frame object identity while updating
-       * its frame tree and ID.
-       */
+        /// <summary>
+        /// When the main frame is replaced by another main frame
+        /// we maintain the main frame object identity while updating
+        /// its frame tree and ID.
+        /// </summary>
+        /// <param name="client">New session.</param>
         internal async Task SwapFrameTreeAsync(CDPSession client)
         {
             OnExecutionContextsCleared(Client);
@@ -181,10 +181,13 @@ namespace PuppeteerSharp
             Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
 
             await InitializeAsync(client).ConfigureAwait(false);
-            await NetworkManager.UpdateClientAsync(client).ConfigureAwait(false);
+            await NetworkManager.AddClientAsync(client).ConfigureAwait(false);
 
             frame?.OnFrameSwappedByActivation();
         }
+
+        internal Task RegisterSpeculativeSessionAsync(CDPSession client)
+            => NetworkManager.AddClientAsync(client);
 
         private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
 

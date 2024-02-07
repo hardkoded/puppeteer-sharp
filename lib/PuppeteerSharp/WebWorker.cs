@@ -79,7 +79,7 @@ namespace PuppeteerSharp
 
         internal CDPSession Client { get; }
 
-        internal IsolatedWorld World { get; }
+        private IsolatedWorld World { get; }
 
         /// <summary>
         /// Executes a script in browser context.
@@ -133,7 +133,7 @@ namespace PuppeteerSharp
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
-        internal async void OnMessageReceived(object sender, MessageEventArgs e)
+        private async void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {

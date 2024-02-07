@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -15,6 +16,7 @@ namespace PuppeteerSharp
     {
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
         private readonly string _parentSessionId;
+        private int _lastId;
 
         internal CDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
         {
@@ -81,7 +83,7 @@ namespace PuppeteerSharp
                     CloseReason);
             }
 
-            var id = Connection.GetMessageID();
+            var id = GetMessageID();
             var message = Connection.GetMessage(id, method, args, Id);
 
             MessageTask callback = null;
@@ -147,6 +149,8 @@ namespace PuppeteerSharp
                 });
             }
         }
+
+        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
         internal void Close(string closeReason)
         {
