@@ -60,7 +60,8 @@ namespace PuppeteerSharp
                     "Emulation.setIdleOverride",
                     new EmulationSetIdleOverrideRequest
                     {
-                        IsUserActive = overrides.IsUserActive, IsScreenUnlocked = overrides.IsScreenUnlocked,
+                        IsUserActive = overrides.IsUserActive,
+                        IsScreenUnlocked = overrides.IsScreenUnlocked,
                     }).ConfigureAwait(false);
             }
             else
