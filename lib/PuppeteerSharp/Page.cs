@@ -120,7 +120,6 @@ namespace PuppeteerSharp
                 TaskScheduler.Default);
 
             SetupPrimaryTargetListeners();
-
         }
 
         /// <inheritdoc/>
@@ -1757,7 +1756,7 @@ namespace PuppeteerSharp
                 await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
                 await _emulationManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to register speculative session");
             }
