@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test, PuppeteerTest("emulation.spec", "Page.emulateTimezone", "should work")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateTimezone", "should work")]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync("globalThis.date = new Date(1479579154987);");
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
         }
 
-        [Test, PuppeteerTest("emulation.spec", "Page.emulateTimezone", "should throw for invalid timezone IDs")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateTimezone", "should throw for invalid timezone IDs")]
         public void ShouldThrowForInvalidTimezoneId()
         {
             var exception = Assert.ThrowsAsync<PuppeteerException>(
