@@ -201,10 +201,6 @@ namespace PuppeteerSharp
                     "Emulation.setTouchEmulationEnabled",
                     new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch, }),
             ]).ConfigureAwait(false);
-
-            var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;
-            _emulatingMobile = mobile;
-            _hasTouch = hasTouch;
         }
     }
 }
