@@ -60,6 +60,7 @@ namespace PuppeteerSharp
         private readonly TimeoutSettings _timeoutSettings = new();
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
+        private readonly ITargetManager _targetManager;
         private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
@@ -71,9 +72,11 @@ namespace PuppeteerSharp
             TaskQueue screenshotTaskQueue,
             bool ignoreHTTPSErrors)
         {
-            Client = client;
-            TabSession = client.ParentSession;
-            Target = target;
+            PrimaryTargetClient = client;
+            TabTargetClient = client.ParentSession;
+            TabTarget = TabTargetClient.Target;
+            PrimaryTarget = target;
+            _targetManager = target.TargetManager;
             Keyboard = new Keyboard(client);
             Mouse = new Mouse(client, (Keyboard)Keyboard);
             Touchscreen = new Touchscreen(client, (Keyboard)Keyboard);
@@ -86,51 +89,37 @@ namespace PuppeteerSharp
             Accessibility = new Accessibility(client);
 
             _screenshotTaskQueue = screenshotTaskQueue;
-            SetupEventListeners();
-            TabSession.Swapped += async (sender, args) =>
-            {
-                try
-                {
-                    Client = (args.Session as CDPSession)!;
-                    Target = Client.Target;
-                    Keyboard.UpdateClient(Client);
-                    Mouse.UpdateClient(Client);
-                    Touchscreen.UpdateClient(Client);
-                    Accessibility.UpdateClient(Client);
-                    _emulationManager.UpdateClient(Client);
-                    Tracing.UpdateClient(Client);
-                    Coverage.UpdateClient(Client);
-                    await FrameManager.SwapFrameTreeAsync(Client).ConfigureAwait(false);
-                    SetupEventListeners();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to swap session");
-                }
-            };
 
-            TabSession.Ready += async (sender, args) =>
-            {
-                try
+            FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
+            FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
+            FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
+
+            FrameManager.NetworkManager.Request += (_, e) => OnRequest(e.Request);
+            FrameManager.NetworkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
+            FrameManager.NetworkManager.Response += (_, e) => Response?.Invoke(this, e);
+            FrameManager.NetworkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
+            FrameManager.NetworkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
+
+            TabTargetClient.Swapped += (sender, args) => _ = OnActivationAsync(args.Session as CDPSession);
+            TabTargetClient.Ready += (sender, args) => _ = OnSecondaryTargetAsync(args.Session as CDPSession);
+            _targetManager.TargetGone += OnDetachedFromTarget;
+
+            _ = TabTarget.CloseTask.ContinueWith(
+                _ =>
                 {
-                    if (sender is not CDPSession session)
+                    try
                     {
-                        return;
+                        TabTarget.TargetManager.TargetGone -= OnDetachedFromTarget;
+                        Close?.Invoke(this, EventArgs.Empty);
                     }
-
-                    if (session.Target.TargetInfo.Subtype == "prerender")
+                    finally
                     {
-                        return;
+                        IsClosed = true;
                     }
+                },
+                TaskScheduler.Default);
 
-                    await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
-                    await _emulationManager.RegisterSecondaryPageAsync(session).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to initialize tab session");
-                }
-            };
+            SetupPrimaryTargetListeners();
         }
 
         /// <inheritdoc/>
@@ -191,7 +180,10 @@ namespace PuppeteerSharp
         public event EventHandler<PopupEventArgs> Popup;
 
         /// <inheritdoc cref="CDPSession"/>
-        public CDPSession Client { get; private set; }
+        public CDPSession Client => PrimaryTargetClient;
+
+        /// <inheritdoc cref="CDPSession"/>
+        public Target Target => PrimaryTarget;
 
         /// <inheritdoc cref="ICDPSession"/>
         ICDPSession IPage.Client => Client;
@@ -247,7 +239,7 @@ namespace PuppeteerSharp
         IBrowser IPage.Browser => Browser;
 
         /// <inheritdoc/>
-        public IBrowserContext BrowserContext => Target.BrowserContext;
+        public IBrowserContext BrowserContext => PrimaryTarget.BrowserContext;
 
         /// <summary>
         /// Get an indication that the page has been closed.
@@ -277,15 +269,19 @@ namespace PuppeteerSharp
 
         internal Mouse Mouse { get; }
 
-        internal CDPSession TabSession { get; }
+        internal CDPSession PrimaryTargetClient { get; private set; }
+
+        internal Target PrimaryTarget { get; private set; }
+
+        internal CDPSession TabTargetClient { get; }
+
+        internal Target TabTarget { get; }
 
         internal bool IsDragging { get; set; }
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
 
-        private Browser Browser => Target.Browser;
-
-        private Target Target { get; set; }
+        private Browser Browser => PrimaryTarget.Browser;
 
         private FrameManager FrameManager { get; set; }
 
@@ -317,7 +313,7 @@ namespace PuppeteerSharp
         public Task SetDragInterceptionAsync(bool enabled)
         {
             IsDragInterceptionEnabled = enabled;
-            return Client.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
+            return PrimaryTargetClient.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
         }
 
         /// <inheritdoc/>
@@ -432,7 +428,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(urls));
             }
 
-            return (await Client.SendAsync<NetworkGetCookiesResponse>(
+            return (await PrimaryTargetClient.SendAsync<NetworkGetCookiesResponse>(
                     "Network.getCookies",
                     new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : new[] { Url }, })
                 .ConfigureAwait(false)).Cookies;
@@ -463,7 +459,7 @@ namespace PuppeteerSharp
 
             if (cookies.Length > 0)
             {
-                await Client.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
+                await PrimaryTargetClient.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
                 {
                     Cookies = cookies,
                 }).ConfigureAwait(false);
@@ -486,7 +482,7 @@ namespace PuppeteerSharp
                     cookie.Url = pageURL;
                 }
 
-                await Client.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
+                await PrimaryTargetClient.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
             }
         }
 
@@ -583,7 +579,7 @@ namespace PuppeteerSharp
             => _emulationManager.SetJavaScriptEnabledAsync(enabled);
 
         /// <inheritdoc/>
-        public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
+        public Task SetBypassCSPAsync(bool enabled) => PrimaryTargetClient.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
         {
             Enabled = enabled,
         });
@@ -727,11 +723,11 @@ namespace PuppeteerSharp
 
             if (runBeforeUnload)
             {
-                await Client.SendAsync("Page.close").ConfigureAwait(false);
+                await PrimaryTargetClient.SendAsync("Page.close").ConfigureAwait(false);
             }
             else
             {
-                await Client.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
+                await PrimaryTargetClient.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
                 {
                     TargetId = Target.TargetId,
                 }).ConfigureAwait(false);
@@ -798,7 +794,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
               navigationTask,
-              Client.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
+              PrimaryTargetClient.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -1037,7 +1033,7 @@ namespace PuppeteerSharp
         {
             if (_fileChooserInterceptors.IsEmpty)
             {
-                await Client.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
+                await PrimaryTargetClient.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
                 {
                     Enabled = true,
                 }).ConfigureAwait(false);
@@ -1078,7 +1074,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task BringToFrontAsync() => Client.SendAsync("Page.bringToFront");
+        public Task BringToFrontAsync() => PrimaryTargetClient.SendAsync("Page.bringToFront");
 
         /// <inheritdoc/>
         public Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
@@ -1190,7 +1186,7 @@ namespace PuppeteerSharp
                 await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
             }
 
-            var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
+            var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
             {
                 TransferMode = "ReturnAsStream",
                 Landscape = options.Landscape,
@@ -1220,11 +1216,11 @@ namespace PuppeteerSharp
 
         private async Task InitializeAsync()
         {
-            await FrameManager.InitializeAsync(Client).ConfigureAwait(false);
+            await FrameManager.InitializeAsync(PrimaryTargetClient).ConfigureAwait(false);
 
             await Task.WhenAll(
-               Client.SendAsync("Performance.enable"),
-               Client.SendAsync("Log.enable")).ConfigureAwait(false);
+               PrimaryTargetClient.SendAsync("Performance.enable"),
+               PrimaryTargetClient.SendAsync("Log.enable")).ConfigureAwait(false);
         }
 
         private void OnRequest(IRequest request)
@@ -1245,7 +1241,7 @@ namespace PuppeteerSharp
 
         private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
         {
-            var history = await Client.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
+            var history = await PrimaryTargetClient.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 
             if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
             {
@@ -1257,7 +1253,7 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
                 waitTask,
-                Client.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
+                PrimaryTargetClient.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
                 {
                     EntryId = entry.Id,
                 })).ConfigureAwait(false);
@@ -1315,7 +1311,7 @@ namespace PuppeteerSharp
                     {
                         var metrics = _screenshotBurstModeOn
                             ? _burstModeMetrics :
-                            await Client.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+                            await PrimaryTargetClient.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
 
                         if (options.BurstMode)
                         {
@@ -1341,7 +1337,7 @@ namespace PuppeteerSharp
                                 Type = ScreenOrientationType.PortraitPrimary,
                             };
 
-                        await Client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                        await PrimaryTargetClient.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
                         {
                             Mobile = isMobile,
                             Width = width,
@@ -1381,7 +1377,7 @@ namespace PuppeteerSharp
                 screenMessage.Clip = clip;
             }
 
-            var result = await Client.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
+            var result = await PrimaryTargetClient.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
 
             if (options.BurstMode)
             {
@@ -1504,7 +1500,7 @@ namespace PuppeteerSharp
             {
                 var message = $"Page failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
                 _logger.LogError(ex, message);
-                Client.Close(message);
+                PrimaryTargetClient.Close(message);
             }
         }
 
@@ -1514,7 +1510,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await Client.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
+                    await PrimaryTargetClient.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
                     {
                         Action = FileChooserAction.Fallback,
                     }).ConfigureAwait(false);
@@ -1583,7 +1579,7 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in e.Entry.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObjectAsync(Client, arg, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObjectAsync(PrimaryTargetClient, arg, _logger).ConfigureAwait(false);
                 }
             }
 
@@ -1699,8 +1695,8 @@ namespace PuppeteerSharp
             }
 
             var expression = BindingUtils.PageBindingInitString("exposedFun", name);
-            await Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
-            await Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+            await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
+            await PrimaryTargetClient.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
             {
                 Source = expression,
             }).ConfigureAwait(false);
@@ -1720,38 +1716,50 @@ namespace PuppeteerSharp
                 .ConfigureAwait(false);
         }
 
-        private void SetupEventListeners()
+        private void SetupPrimaryTargetListeners()
         {
-            Target.TargetManager.TargetGone += OnDetachedFromTarget;
-            Client.Ready += OnAttachedToTarget;
+            PrimaryTargetClient.Ready += OnAttachedToTarget;
+            PrimaryTargetClient.MessageReceived += Client_MessageReceived;
+        }
 
-            var networkManager = FrameManager.NetworkManager;
+        private async Task OnActivationAsync(CDPSession newSession)
+        {
+            try
+            {
+                PrimaryTargetClient = newSession;
+                PrimaryTarget = PrimaryTargetClient.Target;
+                Keyboard.UpdateClient(Client);
+                Mouse.UpdateClient(Client);
+                Touchscreen.UpdateClient(Client);
+                Accessibility.UpdateClient(Client);
+                _emulationManager.UpdateClient(Client);
+                Tracing.UpdateClient(Client);
+                Coverage.UpdateClient(Client);
+                await FrameManager.SwapFrameTreeAsync(Client).ConfigureAwait(false);
+                SetupPrimaryTargetListeners();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to activate primary target");
+            }
+        }
 
-            Client.MessageReceived += Client_MessageReceived;
-            FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
-            FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
-            FrameManager.FrameNavigated += (_, e) => FrameNavigated?.Invoke(this, e);
+        private async Task OnSecondaryTargetAsync(CDPSession session)
+        {
+            if (session.Target.TargetInfo.Subtype != "prerender")
+            {
+                return;
+            }
 
-            networkManager.Request += (_, e) => OnRequest(e.Request);
-            networkManager.RequestFailed += (_, e) => RequestFailed?.Invoke(this, e);
-            networkManager.Response += (_, e) => Response?.Invoke(this, e);
-            networkManager.RequestFinished += (_, e) => RequestFinished?.Invoke(this, e);
-            networkManager.RequestServedFromCache += (_, e) => RequestServedFromCache?.Invoke(this, e);
-
-            _ = Target.CloseTask.ContinueWith(
-                _ =>
-                {
-                    try
-                    {
-                        Target.TargetManager.TargetGone -= OnDetachedFromTarget;
-                        Close?.Invoke(this, EventArgs.Empty);
-                    }
-                    finally
-                    {
-                        IsClosed = true;
-                    }
-                },
-                TaskScheduler.Default);
+            try
+            {
+                await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
+                await _emulationManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to register speculative session");
+            }
         }
     }
 }
