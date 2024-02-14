@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
 
@@ -8,9 +10,11 @@ namespace PuppeteerSharp
 {
     internal class EmulationManager
     {
+        private readonly ConcurrentSet<CDPSession> _secondaryClients = [];
         private CDPSession _client;
         private bool _emulatingMobile;
         private bool _hasTouch;
+        private ViewPortOptions _viewport;
 
         public EmulationManager(CDPSession client)
         {
@@ -19,7 +23,18 @@ namespace PuppeteerSharp
 
         public bool JavascriptEnabled { get; private set; } = true;
 
-        internal void UpdateClient(CDPSession client) => _client = client;
+        internal void UpdateClient(CDPSession client)
+        {
+            _client = client;
+            _secondaryClients.Remove(client);
+        }
+
+        internal async Task RegisterSecondaryPageAsync(CDPSession client)
+        {
+            _secondaryClients.Add(client);
+            await ApplyViewportAsync(client).ConfigureAwait(false);
+            client.Disconnected += (sender, e) => _secondaryClients.Remove(client);
+        }
 
         internal async Task EmulateTimezoneAsync(string timezoneId)
         {
@@ -72,33 +87,22 @@ namespace PuppeteerSharp
 
         internal async Task<bool> EmulateViewportAsync(ViewPortOptions viewport)
         {
+            _viewport = viewport;
+
+            await ApplyViewportAsync(_client).ConfigureAwait(false);
+
             var mobile = viewport.IsMobile;
-            var width = viewport.Width;
-            var height = viewport.Height;
-            var deviceScaleFactor = viewport.DeviceScaleFactor;
-            var screenOrientation = viewport.IsLandscape
-                ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
-                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
             var hasTouch = viewport.HasTouch;
-
-            await Task.WhenAll(
-            [
-                _client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                {
-                    Mobile = mobile,
-                    Width = width,
-                    Height = height,
-                    DeviceScaleFactor = deviceScaleFactor,
-                    ScreenOrientation = screenOrientation,
-                }),
-                _client.SendAsync(
-                    "Emulation.setTouchEmulationEnabled",
-                    new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch, }),
-            ]).ConfigureAwait(false);
-
             var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;
             _emulatingMobile = mobile;
             _hasTouch = hasTouch;
+
+            if (!reloadNeeded)
+            {
+                // If the page will be reloaded, no need to adjust secondary clients.
+                await Task.WhenAll(_secondaryClients.Select(ApplyViewportAsync)).ConfigureAwait(false);
+            }
+
             return reloadNeeded;
         }
 
@@ -164,6 +168,43 @@ namespace PuppeteerSharp
             {
                 Value = !enabled,
             });
+        }
+
+        private async Task ApplyViewportAsync(CDPSession client)
+        {
+            var viewport = _viewport;
+            if (viewport == null)
+            {
+                return;
+            }
+
+            var mobile = viewport.IsMobile;
+            var width = viewport.Width;
+            var height = viewport.Height;
+            var deviceScaleFactor = viewport.DeviceScaleFactor;
+            var screenOrientation = viewport.IsLandscape
+                ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
+                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
+            var hasTouch = viewport.HasTouch;
+
+            await Task.WhenAll(
+            [
+                client.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
+                {
+                    Mobile = mobile,
+                    Width = width,
+                    Height = height,
+                    DeviceScaleFactor = deviceScaleFactor,
+                    ScreenOrientation = screenOrientation,
+                }),
+                client.SendAsync(
+                    "Emulation.setTouchEmulationEnabled",
+                    new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch, }),
+            ]).ConfigureAwait(false);
+
+            var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;
+            _emulatingMobile = mobile;
+            _hasTouch = hasTouch;
         }
     }
 }
