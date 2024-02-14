@@ -278,6 +278,11 @@ namespace PuppeteerSharp
         WebWorker[] Workers { get; }
 
         /// <summary>
+        /// If the page has JavaScript enabled.
+        /// </summary>
+        bool IsJavaScriptEnabled { get; }
+
+        /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
         /// </summary>
         /// <param name="options">add script tag options.</param>

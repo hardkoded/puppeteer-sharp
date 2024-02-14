@@ -259,6 +259,9 @@ namespace PuppeteerSharp
         IAccessibility IPage.Accessibility => Accessibility;
 
         /// <inheritdoc/>
+        public bool IsJavaScriptEnabled => _emulationManager.JavascriptEnabled;
+
+        /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; private set; }
 
         internal Accessibility Accessibility { get; }
@@ -282,8 +285,6 @@ namespace PuppeteerSharp
         private Browser Browser => Target.Browser;
 
         private Target Target { get; set; }
-
-        private bool JavascriptEnabled { get; set; } = true;
 
         private FrameManager FrameManager { get; set; }
 
@@ -309,29 +310,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task SetGeolocationAsync(GeolocationOption options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (options.Longitude < -180 || options.Longitude > 180)
-            {
-                throw new ArgumentException($"Invalid longitude '{options.Longitude}': precondition - 180 <= LONGITUDE <= 180 failed.");
-            }
-
-            if (options.Latitude < -90 || options.Latitude > 90)
-            {
-                throw new ArgumentException($"Invalid latitude '{options.Latitude}': precondition - 90 <= LATITUDE <= 90 failed.");
-            }
-
-            if (options.Accuracy < 0)
-            {
-                throw new ArgumentException($"Invalid accuracy '{options.Accuracy}': precondition 0 <= ACCURACY failed.");
-            }
-
-            return Client.SendAsync("Emulation.setGeolocationOverride", options);
-        }
+            => _emulationManager.SetGeolocationAsync(options);
 
         /// <inheritdoc/>
         public Task SetDragInterceptionAsync(bool enabled)
@@ -600,18 +579,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task SetJavaScriptEnabledAsync(bool enabled)
-        {
-            if (enabled == JavascriptEnabled)
-            {
-                return Task.CompletedTask;
-            }
-
-            JavascriptEnabled = enabled;
-            return Client.SendAsync("Emulation.setScriptExecutionDisabled", new EmulationSetScriptExecutionDisabledRequest
-            {
-                Value = !enabled,
-            });
-        }
+            => _emulationManager.SetJavaScriptEnabledAsync(enabled);
 
         /// <inheritdoc/>
         public Task SetBypassCSPAsync(bool enabled) => Client.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
@@ -621,11 +589,11 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task EmulateMediaTypeAsync(MediaType type)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaTypeRequest { Media = type });
+            => _emulationManager.EmulateMediaTypeAsync(type);
 
         /// <inheritdoc/>
         public Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
-            => Client.SendAsync("Emulation.setEmulatedMedia", new EmulationSetEmulatedMediaFeatureRequest { Features = features });
+            => _emulationManager.EmulateMediaFeaturesAsync(features);
 
         /// <inheritdoc/>
         public async Task SetViewportAsync(ViewPortOptions viewport)
@@ -1113,59 +1081,19 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
-            => Client.SendAsync("Emulation.setEmulatedVisionDeficiency", new EmulationSetEmulatedVisionDeficiencyRequest
-            {
-                Type = type,
-            });
+            => _emulationManager.EmulateVisionDeficiencyAsync(type);
 
         /// <inheritdoc/>
-        public async Task EmulateTimezoneAsync(string timezoneId)
-        {
-            try
-            {
-                await Client.SendAsync("Emulation.setTimezoneOverride", new EmulateTimezoneRequest
-                {
-                    TimezoneId = timezoneId ?? string.Empty,
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex) when (ex.Message.Contains("Invalid timezone"))
-            {
-                throw new PuppeteerException($"Invalid timezone ID: {timezoneId}");
-            }
-        }
+        public Task EmulateTimezoneAsync(string timezoneId)
+            => _emulationManager.EmulateTimezoneAsync(timezoneId);
 
         /// <inheritdoc/>
-        public async Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
-        {
-            if (overrides != null)
-            {
-                await Client.SendAsync(
-                    "Emulation.setIdleOverride",
-                    new EmulationSetIdleOverrideRequest
-                    {
-                        IsUserActive = overrides.IsUserActive,
-                        IsScreenUnlocked = overrides.IsScreenUnlocked,
-                    }).ConfigureAwait(false);
-            }
-            else
-            {
-                await Client.SendAsync("Emulation.clearIdleOverride").ConfigureAwait(false);
-            }
-        }
+        public Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
+            => _emulationManager.EmulateIdleStateAsync(overrides);
 
         /// <inheritdoc/>
         public Task EmulateCPUThrottlingAsync(decimal? factor = null)
-        {
-            if (factor is < 1)
-            {
-                throw new ArgumentException("Throttling rate should be greater or equal to 1", nameof(factor));
-            }
-
-            return Client.SendAsync("Emulation.setCPUThrottlingRate", new EmulationSetCPUThrottlingRateRequest
-            {
-                Rate = factor ?? 1,
-            });
-        }
+            => _emulationManager.EmulateCPUThrottlingAsync(factor);
 
         /// <inheritdoc />
         public void Dispose()
@@ -1258,7 +1186,7 @@ namespace PuppeteerSharp
 
             if (options.OmitBackground)
             {
-                await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+                await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
             }
 
             var result = await Client.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
@@ -1283,7 +1211,7 @@ namespace PuppeteerSharp
 
             if (options.OmitBackground)
             {
-                await ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
+                await _emulationManager.ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
             }
 
             return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
@@ -1425,7 +1353,7 @@ namespace PuppeteerSharp
 
                 if (options.OmitBackground && type == ScreenshotType.Png)
                 {
-                    await SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+                    await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
                 }
             }
 
@@ -1485,26 +1413,11 @@ namespace PuppeteerSharp
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
             var omitBackgroundTask = options is { OmitBackground: true, Type: ScreenshotType.Png } ?
-                ResetDefaultBackgroundColorAsync() : Task.CompletedTask;
+                _emulationManager.ResetDefaultBackgroundColorAsync() : Task.CompletedTask;
             var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
                 SetViewportAsync(Viewport) : Task.CompletedTask;
             return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
-
-        private Task ResetDefaultBackgroundColorAsync()
-            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride");
-
-        private Task SetTransparentBackgroundColorAsync()
-            => Client.SendAsync("Emulation.setDefaultBackgroundColorOverride", new EmulationSetDefaultBackgroundColorOverrideRequest
-            {
-                Color = new EmulationSetDefaultBackgroundColorOverrideColor
-                {
-                    R = 0,
-                    G = 0,
-                    B = 0,
-                    A = 0,
-                },
-            });
 
         private decimal ConvertPrintParameterToInches(object parameter)
         {
