@@ -327,7 +327,12 @@ namespace PuppeteerSharp
 
             if (contextId != null)
             {
-                createTargetRequest.BrowserContextId = contextId;
+                // We don't have this code in upstream.
+                // Puppeteer sends a number if the contextId is a number, even if the typing says that it should be a string.
+                // It seems that firefox ignores the contextId if it's not a number. Which is what Firefox sent back.
+                createTargetRequest.BrowserContextId = int.TryParse(contextId, out var contextIdAsNumber)
+                    ? contextIdAsNumber
+                    : contextId;
             }
 
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
