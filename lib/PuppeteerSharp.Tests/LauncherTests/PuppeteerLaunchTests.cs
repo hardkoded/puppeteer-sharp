@@ -36,16 +36,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [PuppeteerTimeout]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
-            await using (var browser = await Puppeteer.LaunchAsync(
+            await using var browser = await Puppeteer.LaunchAsync(
                 TestConstants.DefaultBrowserOptions(),
-                TestConstants.LoggerFactory))
-            await using (var page = await browser.NewPageAsync())
-            {
-                var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
-                await browser.CloseAsync();
-                var exception = Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
-                StringAssert.Contains("Protocol error", exception.Message);
-            }
+                TestConstants.LoggerFactory);
+            await using var page = await browser.NewPageAsync();
+            var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
+            await browser.CloseAsync();
+            var exception = Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
+            StringAssert.Contains("Protocol error", exception.Message);
         }
 
         [Test, PuppeteerTest("launcher.spec", "Puppeteer.launch", "should reject if executable path is invalid")]

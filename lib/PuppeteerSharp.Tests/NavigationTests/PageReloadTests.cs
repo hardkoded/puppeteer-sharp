@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
@@ -17,7 +11,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.reload", "should work")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

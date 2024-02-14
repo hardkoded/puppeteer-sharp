@@ -14,8 +14,8 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should throw if networkidle is passed as an option")]
-        [PuppeteerTest("launcher.spec", "Puppeteer.launch", "should report the correct product")] //We don't use the product in this way
-        [PuppeteerTest("launcher.spec", "Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should report the correct product")] //We don't use the product in this way
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
         [PuppeteerTest("tracing.spec", "Tracing", "should return null in case of Buffer error")]
         [PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
         [PuppeteerTest("fixtures.spec", "Fixtures", "dumpio option should work with pipe option")]

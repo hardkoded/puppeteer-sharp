@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageGotoTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work with anchor navigation")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work with anchor navigation")]
         public async Task ShouldWorkWithAnchorNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual($"{TestConstants.EmptyPage}#bar", Page.Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work with redirects")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work with redirects")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithRedirects()
         {
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to about:blank")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to about:blank")]
         [PuppeteerTimeout]
         public async Task ShouldNavigateToAboutBlank()
         {
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Null(response);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should return response when page changes its URL after load")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should return response when page changes its URL after load")]
         [PuppeteerTimeout]
         public async Task ShouldReturnResponseWhenPageChangesItsURLAfterLoad()
         {
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work with subframes return 204")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work with subframes return 204")]
         public async Task ShouldWorkWithSubframesReturn204()
         {
             Server.SetRoute("/frames/frame.html", context =>
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when server returns 204")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when server returns 204")]
         public void ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
@@ -91,7 +91,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to empty page with domcontentloaded")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to empty page with domcontentloaded")]
         [PuppeteerTimeout]
         public async Task ShouldNavigateToEmptyPageWithDOMContentLoaded()
         {
@@ -103,7 +103,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Null(response.SecurityDetails);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work when page calls history API in beforeunload")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when page calls history API in beforeunload")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
         {
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to empty page with networkidle0")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to empty page with networkidle0")]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions
@@ -128,7 +128,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to page with iframe and networkidle0")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to page with iframe and networkidle0")]
         public async Task ShouldNavigateToPageWithIframeAndNetworkidle0()
 
         {
@@ -140,14 +140,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to empty page with networkidle2")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to empty page with networkidle2")]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle2()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when navigating to bad url")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when navigating to bad url")]
         public void ShouldFailWhenNavigatingToBadUrl()
         {
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync("asdfasdf"));
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when navigating to bad SSL")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when navigating to bad SSL")]
         public void ShouldFailWhenNavigatingToBadSSL()
         {
             Page.Request += (_, e) => Assert.NotNull(e.Request);
@@ -181,7 +181,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when navigating to bad SSL after redirects")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when navigating to bad SSL after redirects")]
         [PuppeteerTimeout]
         public void ShouldFailWhenNavigatingToBadSSLAfterRedirects()
         {
@@ -197,7 +197,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when main resources failed to load")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when main resources failed to load")]
         [PuppeteerTimeout]
         public void ShouldFailWhenMainResourcesFailedToLoad()
         {
@@ -213,7 +213,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when exceeding maximum navigation timeout")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding maximum navigation timeout")]
         [PuppeteerTimeout]
         public void ShouldFailWhenExceedingMaximumNavigationTimeout()
         {
@@ -224,7 +224,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when exceeding default maximum navigation timeout")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding default maximum navigation timeout")]
         [PuppeteerTimeout]
         public void ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
@@ -235,7 +235,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when exceeding default maximum timeout")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding default maximum timeout")]
         [PuppeteerTimeout]
         public void ShouldFailWhenExceedingDefaultMaximumTimeout()
         {
@@ -246,7 +246,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should prioritize default navigation timeout over default timeout")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should prioritize default navigation timeout over default timeout")]
         [PuppeteerTimeout]
         public void ShouldPrioritizeDefaultNavigationTimeoutOverDefaultTimeout()
         {
@@ -258,7 +258,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should disable timeout when its set to 0")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should disable timeout when its set to 0")]
         [PuppeteerTimeout]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
@@ -274,7 +274,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.True(loaded);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work when navigating to valid url")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when navigating to valid url")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenNavigatingToValidUrl()
         {
@@ -282,14 +282,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work when navigating to data url")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when navigating to data url")]
         public async Task ShouldWorkWhenNavigatingToDataUrl()
         {
             var response = await Page.GoToAsync("data:text/html,hello");
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work when navigating to 404")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when navigating to 404")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenNavigatingTo404()
         {
@@ -297,7 +297,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should not throw an error for a 404 response with an empty body")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should not throw an error for a 404 response with an empty body")]
         [PuppeteerTimeout]
         public async Task ShouldNotThrowAnErrorForA404ResponseWithAnEmptyBody()
         {
@@ -312,7 +312,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should not throw an error for a 500 response with an empty body")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should not throw an error for a 500 response with an empty body")]
         [PuppeteerTimeout]
         public async Task ShouldNotThrowAnErrorForA500ResponseWithAnEmptyBody()
         {
@@ -327,7 +327,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should return last response in redirect chain")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should return last response in redirect chain")]
         [PuppeteerTimeout]
         public async Task ShouldReturnLastResponseInRedirectChain()
         {
@@ -340,7 +340,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(TestConstants.EmptyPage, response.Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should wait for network idle to succeed navigation")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should wait for network idle to succeed navigation")]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new ConcurrentSet<TaskCompletionSource<Func<HttpResponse, Task>>>();
@@ -430,7 +430,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, navigationResponse.Status);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to dataURL and fire dataURL requests")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to dataURL and fire dataURL requests")]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<IRequest>();
@@ -448,7 +448,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(dataUrl, requests[0].Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should navigate to URL with hash and fire requests without hash")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to URL with hash and fire requests without hash")]
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<IRequest>();
@@ -466,7 +466,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should work with self requesting page")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work with self requesting page")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithSelfRequestingPage()
         {
@@ -475,7 +475,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("self-request.html", response.Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should fail when navigating and show the url at the error message")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when navigating and show the url at the error message")]
         [PuppeteerTimeout]
         public void ShouldFailWhenNavigatingAndShowTheUrlAtTheErrorMessage()
         {
@@ -485,7 +485,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains(url, exception.Url);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should send referer")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should send referer")]
         public async Task ShouldSendReferer()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -507,7 +507,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(TestConstants.ServerUrl + "/grid.html", referer2);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.goto", "should send referer policy")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should send referer policy")]
         public async Task ShouldSendRefererPolicy()
         {
             await Page.SetRequestInterceptionAsync(true);
