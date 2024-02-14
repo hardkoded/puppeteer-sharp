@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work")]
+        [Test, PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work")]
         public async Task ShouldWork()
         {
             // Create a custom class
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }", objectsHandle));
         }
 
-        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail for disposed handles")]
+        [Test, PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail for disposed handles")]
         [PuppeteerTimeout]
         public async Task ShouldFailForDisposedHandles()
         {
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("Prototype JSHandle is disposed!", exception.Message);
         }
 
-        [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail primitive values as prototypes")]
+        [Test, PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should fail primitive values as prototypes")]
         [PuppeteerTimeout]
         public async Task ShouldFailPrimitiveValuesAsPrototypes()
         {

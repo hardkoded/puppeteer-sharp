@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
-        [PuppeteerTest("frame.spec.ts", "Frame.evaluate", "should throw for detached frames")]
+        [Test, PuppeteerTest("frame.spec.ts", "Frame.evaluate", "should throw for detached frames")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForDetachedFrames()
         {

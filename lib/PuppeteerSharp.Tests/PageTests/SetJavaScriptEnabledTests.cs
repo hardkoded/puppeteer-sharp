@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setJavaScriptEnabled", "should work")]
+        [Test, PuppeteerTest("page.spec.ts", "Page.setJavaScriptEnabled", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetJavaScriptEnabledAsync(false);

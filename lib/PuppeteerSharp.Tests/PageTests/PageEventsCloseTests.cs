@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
@@ -10,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with window.close")]
+        [Test, PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with window.close")]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<IPage>();
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await closeTaskSource.Task;
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
+        [Test, PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithPageClose()
         {

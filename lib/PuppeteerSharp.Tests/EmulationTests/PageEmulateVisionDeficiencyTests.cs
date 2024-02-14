@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should work")]
+        [Test, PuppeteerTest("emulation.spec.ts", "Page.emulateVisionDeficiency", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });

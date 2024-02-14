@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
+        [Test, PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
         [PuppeteerTimeout]
         public async Task ShouldBeAbleToSaveFile()
         {
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
+        [Test, PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
         [PuppeteerTimeout]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
+        [Test, PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.

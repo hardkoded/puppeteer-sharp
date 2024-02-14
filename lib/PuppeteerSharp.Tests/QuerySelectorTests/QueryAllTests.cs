@@ -25,14 +25,14 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "should have registered handler")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "should have registered handler")]
         [PuppeteerTimeout]
         public void ShouldHaveRegisteredHandler()
         {
             Assert.Contains("allArray", ((Browser)Browser).GetCustomQueryHandlerNames().ToArray());
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should query existing elements")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should query existing elements")]
         [PuppeteerTimeout]
         public async Task QuerySelectorAllShouldQueryExistingElements()
         {
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should return empty array for non-existing elements")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$ should return empty array for non-existing elements")]
         [PuppeteerTimeout]
         public async Task QuerySelectorAllShouldReturnEmptyArrayForNonExistingElements()
         {
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.IsEmpty(elements);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should work")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should work")]
         [PuppeteerTimeout]
         public async Task QuerySelectorAllEvalShouldWork()
         {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual(3, divsCount);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should accept extra arguments")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should accept extra arguments")]
         [PuppeteerTimeout]
         public async Task QuerySelectorAllEvalShouldAcceptExtraArguments()
         {
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should accept ElementHandles as arguments")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "$$eval should accept ElementHandles as arguments")]
         [PuppeteerTimeout]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("8", text);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "QueryAll", "should handle many elements")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "QueryAll", "should handle many elements")]
         [PuppeteerTimeout]
         public async Task ShouldHandleManyElements()
         {

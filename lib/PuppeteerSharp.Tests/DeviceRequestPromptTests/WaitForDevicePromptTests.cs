@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             #endregion
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return prompt")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return prompt")]
         [PuppeteerTimeout]
         public async Task ShouldReturnPrompt()
         {
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             await promptTask;
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect timeout")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect timeout")]
         [PuppeteerTimeout]
         public void ShouldRespectTimeout()
         {
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect default timeout when there is no custom timeout")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect default timeout when there is no custom timeout")]
         [PuppeteerTimeout]
         public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
         {
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync());
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should prioritize exact timeout over default timeout")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should prioritize exact timeout over default timeout")]
         [PuppeteerTimeout]
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should work with no timeout")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should work with no timeout")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             await promptTask;
         }
 
-        [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return the same prompt when there are many watchdogs simultaneously")]
+        [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return the same prompt when there are many watchdogs simultaneously")]
         [PuppeteerTimeout]
         public async Task ShouldReturnTheSamePromptWhenThereAreManyWatchdogsSimultaneously()
         {

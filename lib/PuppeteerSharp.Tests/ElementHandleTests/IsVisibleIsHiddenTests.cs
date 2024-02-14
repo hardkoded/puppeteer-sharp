@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
+        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

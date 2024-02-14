@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
 {
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should succeed with listed device")]
+    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should succeed with listed device")]
     [PuppeteerTimeout]
     public async Task ShouldSucceedWithListedDevice()
     {
@@ -43,7 +43,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         await prompt.SelectAsync(device);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should error for device not listed in devices")]
+    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should error for device not listed in devices")]
     [PuppeteerTimeout]
     public void ShouldErrorForDeviceNotListedInDevices()
     {
@@ -60,7 +60,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         Assert.AreEqual("Cannot select unknown device!", exception!.Message);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
+    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
     [PuppeteerTimeout]
     public async Task ShouldFailWhenSelectingPromptTwice()
     {

@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Page = await Context.NewPageAsync();
         }
 
-        [PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.cookies() should work")]
+        [Test, PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.cookies() should work")]
         [PuppeteerTimeout]
         public async Task PageGetCookiesAsyncShouldWork()
         {
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.True(cookie.Session);
         }
 
-        [PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.setCookie() should work")]
+        [Test, PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.setCookie() should work")]
         [PuppeteerTimeout]
         public async Task PageSetCookiesAsyncShouldWork()
         {
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.True(cookie.Session);
         }
 
-        [PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.deleteCookie() should work")]
+        [Test, PuppeteerTest("defaultbrowsercontext.spec.ts", "DefaultBrowserContext", "page.deleteCookie() should work")]
         [PuppeteerTimeout]
         public async Task PageDeleteCookieAsyncShouldWork()
         {

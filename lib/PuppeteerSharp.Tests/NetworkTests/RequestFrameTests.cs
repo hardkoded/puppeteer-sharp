@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
+        [Test, PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(Page.MainFrame, requests[0].Frame);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
+        [Test, PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(Page.FirstChildFrame(), requests[1].Frame);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
+        [Test, PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForFetchRequests()
         {

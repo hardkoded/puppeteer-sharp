@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should query existing element")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should query existing element")]
         [PuppeteerTimeout]
         public async Task ShouldQueryExistingElement()
         {
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("A", content);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should return null for non-existing element")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "ElementHandle.$x", "should return null for non-existing element")]
         [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonExistingElement()
         {

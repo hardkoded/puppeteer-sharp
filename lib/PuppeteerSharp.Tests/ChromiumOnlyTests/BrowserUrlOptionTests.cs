@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
         {
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
+        [Test, PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
         public async Task ShouldBeAbleToConnectUsingBrowserURLWithAndWithoutTrailingSlash()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
+        [Test, PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
         public async Task ShouldThrowWhenUsingBothBrowserWSEndpointAndBrowserURL()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
+        [Test, PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
         public async Task ShouldThrowWhenTryingToConnectToNonExistingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();

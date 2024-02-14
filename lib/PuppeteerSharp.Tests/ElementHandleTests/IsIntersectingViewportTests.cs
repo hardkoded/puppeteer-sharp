@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.isIntersectingViewport", "should work")]
+        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.isIntersectingViewport", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

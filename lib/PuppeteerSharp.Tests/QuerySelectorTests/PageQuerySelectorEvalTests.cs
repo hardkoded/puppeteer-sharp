@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should work")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("testAttribute", idAttribute);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept arguments")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept arguments")]
         [PuppeteerTimeout]
         public async Task ShouldAcceptArguments()
         {
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("hello world!", text);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept ElementHandles as arguments")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should accept ElementHandles as arguments")]
         [PuppeteerTimeout]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("hello world", text);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should throw error if no element is found")]
+        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$eval", "should throw error if no element is found")]
         [PuppeteerTimeout]
         public void ShouldThrowErrorIfNoElementIsFound()
         {

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 {
     public class FirefoxDataTests
     {
-        [PuppeteerTest("firefox-data.spec.ts", "Firefox", "should resolve download URLs")]
+        [Test, PuppeteerTest("firefox-data.spec.ts", "Firefox", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.Win64, "111.0a1", null));
         }
 
-        [PuppeteerTest("firefox-data.spec.ts", "Firefox", "should resolve executable paths")]
+        [Test, PuppeteerTest("firefox-data.spec.ts", "Firefox", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(

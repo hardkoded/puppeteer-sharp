@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 {
     public class SetRequestInterceptionTests : PuppeteerPageBaseTest
     {
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should intercept")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should intercept")]
         public async Task ShouldIntercept()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(TestConstants.Port, response.RemoteAddress.Port);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when POST is redirected with 302")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when POST is redirected with 302")]
         public async Task ShouldWorkWhenPostIsRedirectedWith302()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             );
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when header manipulation headers with redirect")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work when header manipulation headers with redirect")]
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
             Server.SetRedirect("/rredirect", "/empty.html");
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to remove headers")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to remove headers")]
         public async Task ShouldBeAbleToRemoveHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.True(string.IsNullOrEmpty(requestTask.Result));
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should contain referer header")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should contain referer header")]
         public async Task ShouldContainRefererHeader()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             StringAssert.Contains("/one-style.html", requests[1].Headers["Referer"]);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should properly return navigation response when URL has cookies")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should properly return navigation response when URL has cookies")]
         public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
         {
             // Setup cookie.
@@ -144,7 +144,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should stop intercepting")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should stop intercepting")]
         public async Task ShouldStopIntercepting()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -159,7 +159,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should show custom HTTP headers")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should show custom HTTP headers")]
         public async Task ShouldShowCustomHTTPHeaders()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -176,7 +176,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.True(response.Ok);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirect inside sync XHR")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirect inside sync XHR")]
         public async Task ShouldWorkWithRedirectInsideSyncXHR()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -194,7 +194,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(200, status);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with custom referer headers")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with custom referer headers")]
         public async Task ShouldWorkWithCustomRefererHeaders()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -211,7 +211,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.True(response.Ok);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable")]
         public async Task ShouldBeAbortable()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -234,7 +234,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(1, failedRequests);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable with custom error codes")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be abortable with custom error codes")]
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -253,7 +253,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should send referer")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should send referer")]
         public async Task ShouldSendReferer()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>
@@ -270,7 +270,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("http://google.com/", requestTask.Result);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should fail navigation when aborting main resource")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should fail navigation when aborting main resource")]
         public async Task ShouldFailNavigationWhenAbortingMainResource()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -288,7 +288,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             }
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects")]
         public async Task ShouldWorkWithRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -323,7 +323,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             }
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects for subresources")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with redirects for subresources")]
         public async Task ShouldWorkWithRedirectsForSubresources()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -360,7 +360,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             StringAssert.Contains("three-style.css", redirectChain[2].Url);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to abort redirects")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to abort redirects")]
         public async Task ShouldBeAbleToAbortRedirects()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -399,7 +399,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             }
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with equal requests")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with equal requests")]
         public async Task ShouldWorkWithEqualRequests()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -436,7 +436,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(new[] { "11", "FAILED", "22" }, results);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to dataURL and fire dataURL requests")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to dataURL and fire dataURL requests")]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -453,7 +453,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(dataURL, requests[0].Url);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to fetch dataURL and fire dataURL requests")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should be able to fetch dataURL and fire dataURL requests")]
         public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -472,7 +472,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(dataURL, requests[0].Url);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to URL with hash and fire requests without hash")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should navigate to URL with hash and fire requests without hash")]
         public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -489,7 +489,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server")]
         public async Task ShouldWorkWithEncodedServer()
         {
             // The requestWillBeSent will report encoded URL, whereas interception will
@@ -500,7 +500,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with badly encoded server")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with badly encoded server")]
         public async Task ShouldWorkWithBadlyEncodedServer()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -510,7 +510,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server - 2")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with encoded server - 2")]
         public async Task ShouldWorkWithEncodedServerNegative2()
         {
             // The requestWillBeSent will report URL as-is, whereas interception will
@@ -528,7 +528,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual(HttpStatusCode.NotFound, requests[1].Response.Status);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not throw \"Invalid Interception Id\" if the request was cancelled")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not throw \"Invalid Interception Id\" if the request was cancelled")]
         public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
         {
             await Page.SetContentAsync("<iframe></iframe>");
@@ -549,7 +549,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await request.ContinueAsync();
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should throw if interception is not enabled")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should throw if interception is not enabled")]
         public async Task ShouldThrowIfInterceptionIsNotEnabled()
         {
             Exception exception = null;
@@ -568,7 +568,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             StringAssert.Contains("Request Interception is not enabled", exception.Message);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with file URLs")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should work with file URLs")]
         public async Task ShouldWorkWithFileURLs()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -586,7 +586,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.Contains("one-style.css", urls);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not cache if cache disabled")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should not cache if cache disabled")]
         public async Task ShouldNotCacheIfCacheDisabled()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
@@ -602,7 +602,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.IsEmpty(cached);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should cache if cache enabled")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should cache if cache enabled")]
         public async Task ShouldNotCacheIfCacheEnabled()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
@@ -618,7 +618,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(cached, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should load fonts if cache enabled")]
+        [Test, PuppeteerTest("requestinterception.spec.ts", "Page.setRequestInterception", "should load fonts if cache enabled")]
         public async Task ShouldLoadFontsIfCacheEnabled()
         {
             await Page.SetRequestInterceptionAsync(true);

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
-        [PuppeteerTest("frame.spec.ts", "Frame.evaluateHandle", "should work")]
+        [Test, PuppeteerTest("frame.spec.ts", "Frame.evaluateHandle", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

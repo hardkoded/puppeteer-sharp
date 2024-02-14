@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperty", "should work")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperty", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

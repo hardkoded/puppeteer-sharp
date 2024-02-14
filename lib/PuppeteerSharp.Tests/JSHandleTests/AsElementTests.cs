@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should work")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.NotNull(element);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return null for non-elements")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return null for non-elements")]
         [PuppeteerTimeout]
         public async Task ShouldReturnNullForNonElements()
         {
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Null(element);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return ElementHandle for TextNodes")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return ElementHandle for TextNodes")]
         [PuppeteerTimeout]
         public async Task ShouldReturnElementHandleForTextNodes()
         {

@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
+        [Test, PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first element in shadow")]
         [PuppeteerTimeout]
         public async Task ShouldFindFirstElementInShadow()
         {
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello", text);
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
+        [Test, PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all elements in shadow")]
         [PuppeteerTimeout]
         public async Task ShouldFindAllElementsInShadow()
         {
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello World", string.Join(" ", text));
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
+        [Test, PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find first child element")]
         [PuppeteerTimeout]
         public async Task ShouldFindFirstChildElement()
         {
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello", text);
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
+        [Test, PuppeteerTest("queryhandler.spec.ts", "Pierce selectors", "should find all child elements")]
         [PuppeteerTimeout]
         public async Task ShouldFindAllChildElements()
         {

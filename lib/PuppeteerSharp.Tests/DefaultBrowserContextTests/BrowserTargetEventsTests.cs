@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.DefaultBrowserContextTests
         {
         }
 
-        [PuppeteerTest("defaultbrowsercontext.spec.ts", "Browser target events", "should work")]
+        [Test, PuppeteerTest("defaultbrowsercontext.spec.ts", "Browser target events", "should work")]
         public async Task ShouldWork()
         {
             using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());

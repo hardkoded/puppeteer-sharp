@@ -14,14 +14,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
+        [Test, PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromServiceWorker);
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
+        [Test, PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, IResponse>();

@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         {
         }
 
-        [PuppeteerTest("injected.spec.ts", "PuppeteerUtil tests", "should work")]
+        [Test, PuppeteerTest("injected.spec.ts", "PuppeteerUtil tests", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
             Assert.True(result);
         }
 
-        [PuppeteerTest("injected.spec.ts", "createFunction tests", "should work")]
+        [Test, PuppeteerTest("injected.spec.ts", "createFunction tests", "should work")]
         [PuppeteerTimeout]
         public async Task CreateFunctionShouldWork()
         {

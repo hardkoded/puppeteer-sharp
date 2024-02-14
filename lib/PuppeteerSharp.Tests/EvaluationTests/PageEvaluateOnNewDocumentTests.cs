@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
         }
 
-        [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should evaluate before anything else on the page")]
+        [Test, PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should evaluate before anything else on the page")]
         public async Task ShouldEvaluateBeforeAnythingElseOnThePage()
         {
             await Page.EvaluateFunctionOnNewDocumentAsync(@"function(){
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.AreEqual(123, await Page.EvaluateExpressionAsync<int>("window.result"));
         }
 
-        [PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
+        [Test, PuppeteerTest("evaluation.spec.ts", "Page.evaluateOnNewDocument", "should work with CSP")]
         public async Task ShouldWorkWithCSP()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);

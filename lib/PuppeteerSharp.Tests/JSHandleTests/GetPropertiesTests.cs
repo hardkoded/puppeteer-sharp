@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should work")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual("bar", await foo.JsonValueAsync<string>());
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
+        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
         [PuppeteerTimeout]
         public async Task ShouldReturnEvenNonOwnProperties()
         {

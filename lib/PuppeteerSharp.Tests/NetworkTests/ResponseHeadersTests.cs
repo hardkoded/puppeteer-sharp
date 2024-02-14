@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.headers", "should work")]
+        [Test, PuppeteerTest("network.spec.ts", "Response.headers", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
