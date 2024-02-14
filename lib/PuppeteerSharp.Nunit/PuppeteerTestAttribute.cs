@@ -1,5 +1,8 @@
 using System;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace PuppeteerSharp.Nunit
 {
@@ -7,7 +10,7 @@ namespace PuppeteerSharp.Nunit
     /// Enables decorating test facts with information about the corresponding test in the upstream repository.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class PuppeteerTestAttribute : TestAttribute
+    public class PuppeteerTestAttribute : NUnitAttribute, IApplyToTest
     {
         /// <summary>
         /// Creates a new instance of the attribute.
@@ -52,14 +55,27 @@ namespace PuppeteerSharp.Nunit
         public string Describe { get; }
 
         public override string ToString()
+            => Describe == null ? $"{FileName}: {TestName}" : $"{FileName}: {Describe}: {TestName}";
+
+        public void ApplyToTest(Test test)
         {
-            if (Describe == null)
+            if (_combinations.Any(combination =>
+                {
+                    var requirements = (Enum.GetValues(typeof(Targets)) as Targets[]).Where(x => combination.HasFlag(x));
+                    return requirements.All(flag =>
+                        flag switch
+                        {
+                            Targets.Windows => RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows),
+                            Targets.Linux => RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux),
+                            Targets.OSX => RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX),
+                            Targets.Chromium => TestConstants.IsChrome,
+                            Targets.Firefox => !TestConstants.IsChrome,
+                            _ => false,
+                        });
+                }))
             {
-                return $"{FileName}: {TestName}";
-            }
-            else
-            {
-                return $"{FileName}: {Describe}: {TestName}";
+                test.RunState = RunState.Ignored;
+                test.Properties.Set(global::NUnit.Framework.Internal.PropertyNames.SkipReason, "Skipped by browser/platform");
             }
         }
     }

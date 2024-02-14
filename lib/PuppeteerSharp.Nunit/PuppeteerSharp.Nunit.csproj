@@ -5,7 +5,11 @@
     <LangVersion>12</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	  <PackageReference Include="NUnit" Version="3.13.3" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="TestExpectations\TestExpectations.json" />
 	</ItemGroup>
 	<Import Project="../Common/CommonProps.props" />
 </Project>
