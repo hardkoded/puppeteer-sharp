@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests
 {
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.Tests
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
         public static readonly string ExtensionPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension");
-        public static readonly bool IsChrome = Environment.GetEnvironmentVariable("PRODUCT") != "FIREFOX";
+        public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
 
         public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];

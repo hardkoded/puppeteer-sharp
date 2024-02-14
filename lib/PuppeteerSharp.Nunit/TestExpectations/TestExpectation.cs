@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -28,7 +29,27 @@ namespace PuppeteerSharp.Nunit.TestExpectations;
 
 public class TestExpectation
 {
+    private static readonly Regex _specialCharacters = new ("[.*+?^${}()|[]\\]", RegexOptions.Compiled);
     public string TestIdPattern { get; set; }
+
+    public Regex TestIdRegex
+    {
+        get
+        {
+            var patternRegExString = TestIdPattern
+                // Replace `*` with non special character
+                .Replace("*", "--STAR--");
+
+                // Escape special characters https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+                patternRegExString = _specialCharacters.Replace(patternRegExString, "\\$&");
+
+                // Replace placeholder with greedy match
+                patternRegExString = patternRegExString.Replace("--STAR--", "(.*)?");
+
+            // Match beginning and end explicitly
+            return new Regex($"^{patternRegExString}$");
+        }
+    }
 
     public TestExpectationPlatform[] Platforms { get; set; }
 
@@ -48,7 +69,6 @@ public class TestExpectation
     public enum TestExpectationsParameter
     {
         Firefox,
-        Webkit,
         Chromium,
         WebDriverBiDi,
     }
