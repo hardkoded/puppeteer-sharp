@@ -105,7 +105,6 @@ namespace PuppeteerSharp.Nunit
                     : TestExpectation.TestExpectationsParameter.Headful,
             ];
 
-
             var localExpectations = GetLocalExpectations();
             var upstreamExpectations = GetUpstreamExpectations();
             // Join local and upstream in one variable

@@ -88,7 +88,6 @@ namespace PuppeteerSharp.Tooling
                                 .ToList());
                     }
 
-
                     callback(describe, testName);
                 }
             }
