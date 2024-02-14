@@ -29,7 +29,7 @@ namespace PuppeteerSharp
             _secondaryClients.Remove(client);
         }
 
-        internal async Task RegisterSecondaryPageAsync(CDPSession client)
+        internal async Task RegisterSpeculativeSessionAsync(CDPSession client)
         {
             _secondaryClients.Add(client);
             await ApplyViewportAsync(client).ConfigureAwait(false);
