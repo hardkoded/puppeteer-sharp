@@ -9,7 +9,6 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 public class WithEmulationTests : PuppeteerPageBaseTest
 {
     [PuppeteerTest("prerender.spec.ts", "Prerender with emulation", "can configure viewport for prerendered pages")]
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task CanConfigureViewportForPrerenderedPages()
     {
         await Page.SetViewportAsync(new ViewPortOptions()
