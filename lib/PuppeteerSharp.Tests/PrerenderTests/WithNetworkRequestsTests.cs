@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 public class WithNetworkRequestsTests : PuppeteerPageBaseTest
 {
     [PuppeteerTest("prerender.spec.ts", "with network requests", "can receive requests from the prerendered page")]
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         var urls = new List<string>();

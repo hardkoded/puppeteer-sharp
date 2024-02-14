@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.FixturesTests
         public FixturesTests() : base() { }
 
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
@@ -34,7 +33,6 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.True(success);
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
@@ -62,7 +60,6 @@ namespace PuppeteerSharp.Tests.FixturesTests
         }
 
         [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should close the browser when the node process closes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();

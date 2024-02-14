@@ -11,7 +11,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateCPUThrottling", "should change the CPU throttling rate successfully")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldChangeTheCPUThrottlingRateSuccessfully()
         {
             await Page.EmulateCPUThrottlingAsync(100);

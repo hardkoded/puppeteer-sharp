@@ -96,7 +96,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.viewport", "should support landscape emulation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");

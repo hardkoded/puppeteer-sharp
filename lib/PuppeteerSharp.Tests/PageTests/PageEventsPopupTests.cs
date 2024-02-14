@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var popupTaskSource = new TaskCompletionSource<IPage>();
@@ -27,7 +26,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with noopener")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithNoopener()
         {
             var popupTaskSource = new TaskCompletionSource<IPage>();
@@ -42,7 +40,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and without rel=opener")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithClickingTargetBlankWithoutRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -60,7 +57,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and with rel=opener")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -78,7 +74,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with fake-clicking target=_blank and rel=noopener")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -96,7 +91,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.Events.Popup", "should work with clicking target=_blank and rel=noopener")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

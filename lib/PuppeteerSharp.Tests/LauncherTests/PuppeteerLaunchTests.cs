@@ -110,7 +110,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "userDataDir option should restore state")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task UserDataDirOptionShouldRestoreState()
         {
             using (var userDataDir = new TempDirectory())
@@ -273,7 +272,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "should work with no default arguments")]
-        [Skip(SkipAttribute.Targets.Chromium, SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithNoDefaultArguments()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -313,7 +311,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
         }
 
         [PuppeteerTest("launcher.spec.ts", "Puppeteer.launch", "should have custom URL when launching browser")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();

@@ -16,7 +16,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Request")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsRequest()
         {
             var requests = new List<IRequest>();
@@ -32,7 +31,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestServedFromCache")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsRequestServedFromCache()
         {
             var cached = new List<string>();
@@ -44,7 +42,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Response")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsResponse()
         {
             var responses = new List<IResponse>();
@@ -64,7 +61,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFailed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -101,7 +97,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFinished")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<IRequest>();
@@ -116,7 +111,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should fire events in proper order")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
@@ -128,7 +122,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();

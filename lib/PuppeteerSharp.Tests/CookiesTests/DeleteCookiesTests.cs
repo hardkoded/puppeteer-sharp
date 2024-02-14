@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.deleteCookie", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

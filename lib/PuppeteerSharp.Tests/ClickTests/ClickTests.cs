@@ -37,7 +37,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button if window.Node is removed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClickTheButtonIfWindowNodeIsRemoved()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -87,7 +86,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click with disabled javascript")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClickWithDisabledJavascript()
         {
             await Page.SetJavaScriptEnabledAsync(false);
@@ -100,7 +98,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should scroll and click with disabled javascript")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldScrollAndClickWithDisabledJavascript()
         {
             await Page.SetJavaScriptEnabledAsync(false);
@@ -218,7 +215,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click on checkbox label and toggle")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClickOnCheckboxLabelAndToggle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/checkbox.html");
@@ -247,7 +243,6 @@ namespace PuppeteerSharp.Tests.ClickTests
 
         // https://github.com/GoogleChrome/puppeteer/issues/161
         [PuppeteerTest("click.spec.ts", "Page.click", "should not hang with touch-enabled viewports")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotHangWithTouchEnabledViewports()
         {
             await Page.SetViewportAsync(TestConstants.IPhone.ViewPort);
@@ -356,7 +351,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button inside an iframe")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClickTheButtonInsideAnIframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -387,7 +381,6 @@ namespace PuppeteerSharp.Tests.ClickTests
         }
 
         [PuppeteerTest("click.spec.ts", "Page.click", "should click the button with deviceScaleFactor set")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClickTheButtonWithDeviceScaleFactorSet()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 400, Height = 400, DeviceScaleFactor = 5 });

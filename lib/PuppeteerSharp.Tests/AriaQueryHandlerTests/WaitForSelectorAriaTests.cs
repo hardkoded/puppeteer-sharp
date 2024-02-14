@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         private const string AddElement = @"(tag) => document.body.appendChild(document.createElement(tag))";
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should immediately resolve promise if node exists")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldImmediatelyResolvePromiseIfNodeExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -21,7 +20,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work for ElementHandle.waitForSelector")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkForElementHandleWaitForSelector()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -34,7 +32,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should persist query handler bindings across reloads")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldPersistQueryHandlerBindingsAcrossReloads()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -46,7 +43,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should persist query handler bindings across navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldPersistQueryHandlerBindingsAcrossNavigations()
         {
             await Page.GoToAsync("data:text/html,");
@@ -58,7 +54,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work independently of `exposeFunction")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkIndependentlyOfExposeFunction()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -70,7 +65,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work with removed MutationObserver")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithRemovedMutationObserver()
         {
             await Page.EvaluateFunctionAsync(@"() => delete window.MutationObserver");
@@ -83,7 +77,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should resolve promise when node is added")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldResolvePromiseWhenNodeIsAdded()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -99,7 +92,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should work when node is added through innerHTML")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWhenNodeIsAddedThroughInnerHtml()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -113,7 +105,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "Page.waitForSelector is shortcut for main frame")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageWaitForSelectorIsShortcutForMainFrame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -127,7 +118,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "waitForSelector (aria)", "should run in specified frame")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunInSpecifiedFrame()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

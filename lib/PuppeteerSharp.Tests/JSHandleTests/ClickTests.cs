@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.click", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var clicks = new List<BoxModelPoint>();

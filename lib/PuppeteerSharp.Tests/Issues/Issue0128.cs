@@ -8,7 +8,6 @@ namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0128
     {
-        [Skip(SkipAttribute.Targets.Firefox)]
         public void LauncherShouldFailGracefully()
         {
             Assert.ThrowsAsync<ProcessException>(async () =>

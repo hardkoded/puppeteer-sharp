@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         }
 
         [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should tap the button")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTapTheButton()
         {
             await Page.EmulateAsync(_iPhone);
@@ -25,7 +24,6 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         }
 
         [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should report touches")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportTouches()
         {
             await Page.EmulateAsync(_iPhone);

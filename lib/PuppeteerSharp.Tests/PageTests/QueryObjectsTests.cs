@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "ExecutionContext.queryObjects", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             // Create a custom class

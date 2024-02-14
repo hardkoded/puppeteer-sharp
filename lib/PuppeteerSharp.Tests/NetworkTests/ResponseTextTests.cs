@@ -16,7 +16,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
@@ -24,7 +23,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
@@ -34,7 +32,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
@@ -49,7 +46,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);

@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Frame.waitForNavigation", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");

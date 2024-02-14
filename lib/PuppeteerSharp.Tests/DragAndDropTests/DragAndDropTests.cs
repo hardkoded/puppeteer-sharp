@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drop")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -26,7 +25,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drop using mouse")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldDropUsingMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -46,7 +44,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Drag n' Drop", "should drag and drop")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldDragAndDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");

@@ -12,7 +12,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
             var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];

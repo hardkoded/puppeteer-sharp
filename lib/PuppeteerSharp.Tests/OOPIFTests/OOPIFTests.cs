@@ -24,7 +24,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should treat OOP iframes and normal iframes the same")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTreatOopIframesAndNormalIframesTheSame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -171,7 +170,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support evaluating in oop iframes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportEvaluatingInOopIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -188,7 +186,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should provide access to elements")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldProvideAccessToElements()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -244,7 +241,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should load oopif iframes with subresources and request interception")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldLoadOopifIframesWithSubresourcesAndRequestInterception()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
@@ -290,7 +286,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ClickablePointBoundingBoxBoxModelShouldWorkForElementsInsideOopifs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -336,7 +331,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should detect existing OOPIFs when Puppeteer connects to an existing page")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldDetectExistingOopifsWhenPuppeteerConnectsToAnExistingPage()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
@@ -355,7 +349,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "OOPIF", "should support lazy OOP frames")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportLazyOopframes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lazy-oopif-frame.html");
@@ -364,7 +357,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [PuppeteerTest("oopif.spec.ts", "waitForFrame", "should resolve immediately if the frame already exists")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

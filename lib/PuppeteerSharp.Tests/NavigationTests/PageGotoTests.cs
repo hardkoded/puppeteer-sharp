@@ -22,7 +22,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with anchor navigation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithAnchorNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -61,7 +60,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work with subframes return 204")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithSubframesReturn204()
         {
             Server.SetRoute("/frames/frame.html", context =>
@@ -73,7 +71,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when server returns 204")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldFailWhenServerReturns204()
         {
             Server.SetRoute("/empty.html", context =>
@@ -120,7 +117,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to empty page with networkidle0")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions
@@ -133,7 +129,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to page with iframe and networkidle0")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToPageWithIframeAndNetworkidle0()
 
         {
@@ -146,7 +141,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to empty page with networkidle2")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle2()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
@@ -154,7 +148,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad url")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldFailWhenNavigatingToBadUrl()
         {
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync("asdfasdf"));
@@ -170,7 +163,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should fail when navigating to bad SSL")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public void ShouldFailWhenNavigatingToBadSSL()
         {
             Page.Request += (_, e) => Assert.NotNull(e.Request);
@@ -291,7 +283,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should work when navigating to data url")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWhenNavigatingToDataUrl()
         {
             var response = await Page.GoToAsync("data:text/html,hello");
@@ -350,7 +341,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should wait for network idle to succeed navigation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new ConcurrentSet<TaskCompletionSource<Func<HttpResponse, Task>>>();
@@ -441,7 +431,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to dataURL and fire dataURL requests")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
         {
             var requests = new List<IRequest>();
@@ -460,7 +449,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should navigate to URL with hash and fire requests without hash")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNavigateToURLWithHashAndFireRequestsWithoutHash()
         {
             var requests = new List<IRequest>();
@@ -498,7 +486,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should send referer")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendReferer()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -521,7 +508,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should send referer policy")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendRefererPolicy()
         {
             await Page.SetRequestInterceptionAsync(true);

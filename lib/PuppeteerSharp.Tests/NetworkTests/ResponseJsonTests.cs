@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.json", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");

@@ -107,7 +107,6 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve system executable path")]
-        [Skip(SkipAttribute.Targets.Linux, SkipAttribute.Targets.OSX)]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(

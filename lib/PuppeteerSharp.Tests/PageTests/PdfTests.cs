@@ -81,7 +81,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.

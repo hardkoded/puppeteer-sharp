@@ -29,7 +29,6 @@ namespace PuppeteerSharp.Nunit.TestExpectations;
 
 public class TestExpectation
 {
-    private static readonly Regex _specialCharacters = new ("[.*+?^${}()|[]\\]", RegexOptions.Compiled);
     public string TestIdPattern { get; set; }
 
     public Regex TestIdRegex
@@ -40,11 +39,11 @@ public class TestExpectation
                 // Replace `*` with non special character
                 .Replace("*", "--STAR--");
 
-                // Escape special characters https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
-                patternRegExString = _specialCharacters.Replace(patternRegExString, "\\$&");
+            // Escape special characters https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+            patternRegExString = Regex.Escape(patternRegExString);
 
-                // Replace placeholder with greedy match
-                patternRegExString = patternRegExString.Replace("--STAR--", "(.*)?");
+            // Replace placeholder with greedy match
+            patternRegExString = patternRegExString.Replace("--STAR--", "(.*)?");
 
             // Match beginning and end explicitly
             return new Regex($"^{patternRegExString}$");
@@ -62,15 +61,20 @@ public class TestExpectation
     {
         [EnumMember(Value = "FAIL")] Fail,
         [EnumMember(Value = "PASS")] Pass,
-        [EnumMember(Value = "SKIP")] Skip
+        [EnumMember(Value = "SKIP")] Skip,
+        [EnumMember(Value = "TIMEOUT")] Timeout,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
     public enum TestExpectationsParameter
     {
         Firefox,
-        Chromium,
+        Chrome,
         WebDriverBiDi,
+        Cdp,
+        [EnumMember(Value = "chrome-headless-shell")] ChromeHeadlessShell,
+        Headless,
+        Headful,
     }
 
     [JsonConverter(typeof(StringEnumConverter))]

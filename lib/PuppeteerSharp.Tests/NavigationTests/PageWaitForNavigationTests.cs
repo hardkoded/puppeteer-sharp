@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +63,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with clicking on anchor links")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -79,7 +77,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.pushState()")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithHistoryPushState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -99,7 +96,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with history.replaceState()")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -119,7 +115,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -151,7 +146,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work when subframe issues window.stop()")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);

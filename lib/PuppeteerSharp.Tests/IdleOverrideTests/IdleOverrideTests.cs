@@ -30,7 +30,6 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
         }
 
         [PuppeteerTest("idle_override.spec.ts", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ChangingIdleStateEmulationCausesChangeOfTheIdleDetectorState()
         {
             await Context.OverridePermissionsAsync(

@@ -63,7 +63,6 @@ namespace PuppeteerSharp.Tests.PageTests
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
         [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect idleTime")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.UtcNow;

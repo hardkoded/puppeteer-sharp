@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         }
 
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAllArray", "$$eval should handle many elements")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task EvalShouldHandleManyElements()
         {
             await Page.SetContentAsync("");

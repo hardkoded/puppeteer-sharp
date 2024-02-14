@@ -10,7 +10,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task BufferAsyncShouldWorkWithBinaries()
         {
             var tcs = new TaskCompletionSource<byte[]>();

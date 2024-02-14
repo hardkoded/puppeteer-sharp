@@ -56,7 +56,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should resize the textarea")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldResizeTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -72,7 +71,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should select the text with mouse")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -94,7 +92,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should trigger hover state")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTriggerHoverState()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -107,7 +104,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should trigger hover state with removed window.Node")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -117,7 +113,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should set modifier keys on click")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSetModifierKeysOnClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -145,7 +140,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should send mouse wheel events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendMouseWheelEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
@@ -176,7 +170,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should tween mouse movement")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTweenMouseMovement()
         {
             await Page.Mouse.MoveAsync(100, 100);
@@ -197,7 +190,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should work with mobile viewports and cross process navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -224,7 +216,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should throw if buttons are pressed incorrectly")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowIfButtonsArePressedIncorrectly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -234,7 +225,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should not throw if clicking in parallel")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotThrowIfClickingInParallel()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -320,7 +310,6 @@ namespace PuppeteerSharp.Tests.MouseTests
         }
 
         [PuppeteerTest("mouse.spec.ts", "Mouse", "should reset properly")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldResetProperly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

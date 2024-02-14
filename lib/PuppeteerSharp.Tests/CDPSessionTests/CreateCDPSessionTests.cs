@@ -16,7 +16,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -30,7 +29,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should send events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendEvents()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -50,7 +48,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should enable and disable domains independently")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -70,7 +67,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should be able to detach session")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeAbleToDetachSession()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -93,7 +89,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotReportCreatedTArgetsForCustomCDPSessions()
         {
             var called = 0;
@@ -113,7 +108,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should throw nice errors")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowNiceErrors()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -128,7 +122,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [PuppeteerTest("CDPSession.spec.ts", "Target.createCDPSession", "should expose the underlying connection")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldExposeTheUnderlyingConnection()
             => Assert.NotNull(await Page.Target.CreateCDPSessionAsync());
     }

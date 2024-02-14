@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/resetcss.html");
@@ -74,7 +73,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boxModel", "should return null for invisible elements")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");

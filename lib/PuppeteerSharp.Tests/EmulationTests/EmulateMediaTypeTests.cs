@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
         }
 
         [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaType", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));

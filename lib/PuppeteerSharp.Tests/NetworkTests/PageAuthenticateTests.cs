@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
@@ -34,7 +33,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should fail if wrong credentials")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
@@ -50,7 +48,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should allow disable authentication")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
@@ -71,7 +68,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.authenticate", "should not disable caching")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");

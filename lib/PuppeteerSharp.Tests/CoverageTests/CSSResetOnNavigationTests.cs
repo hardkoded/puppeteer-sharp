@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should report stylesheets across navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {
             await Page.Coverage.StartCSSCoverageAsync(new CoverageStartOptions
@@ -27,7 +26,6 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should NOT report scripts across navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartCSSCoverageAsync();

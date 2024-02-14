@@ -18,7 +18,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -33,7 +32,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work with request interception")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithRequestInterception()
         {
             var requests = new Dictionary<string, IRequest>();

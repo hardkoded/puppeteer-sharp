@@ -50,7 +50,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should output a trace")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -65,7 +64,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with custom categories if provided")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -89,7 +87,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should run with default categories")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunWithDefaultCategories()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -108,7 +105,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should throw if tracing on two pages")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -129,7 +125,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should return a buffer")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -144,7 +139,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should work without options")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -154,7 +148,6 @@ namespace PuppeteerSharp.Tests.TracingTests
         }
 
         [PuppeteerTest("tracing.spec.ts", "Tracing", "should support a buffer without a path")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

@@ -8,7 +8,6 @@ namespace PuppeteerSharp.Tests.HeadfulTests
     public class PageBringToFrontTests : PuppeteerBaseTest
     {
         [PuppeteerTest("headful.spec.ts", "Page.bringToFront", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(

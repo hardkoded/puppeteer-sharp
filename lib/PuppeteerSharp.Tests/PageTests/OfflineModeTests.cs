@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
@@ -25,7 +24,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should emulate navigator.onLine")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmulateNavigatorOnLine()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));

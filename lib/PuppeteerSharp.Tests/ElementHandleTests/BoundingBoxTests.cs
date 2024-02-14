@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -28,7 +27,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should handle nested frames")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -53,7 +51,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should return null for invisible elements")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
@@ -62,7 +59,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should force a layout")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldForceALayout()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
@@ -74,7 +70,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work with SVG nodes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWworkWithSVGNodes()
         {
             await Page.SetContentAsync(@"

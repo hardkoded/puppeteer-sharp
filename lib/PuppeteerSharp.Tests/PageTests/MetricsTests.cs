@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.metrics", "should get metrics from a page")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldGetMetricsFromPage()
         {
             await Page.GoToAsync("about:blank");
@@ -24,7 +23,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.metrics", "metrics event fired on console.timeStamp")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();

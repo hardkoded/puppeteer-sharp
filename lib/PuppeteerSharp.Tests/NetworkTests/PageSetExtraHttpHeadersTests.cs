@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>

@@ -21,7 +21,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.cookies", "should get a cookie")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldGetACookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -88,7 +87,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.cookies", "should get multiple cookies")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -125,7 +123,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
         }
 
         [PuppeteerTest("cookies.spec.ts", "Page.cookies", "should get cookies from multiple urls")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldGetCookiesFromMultipleUrls()
         {
             await Page.SetCookieAsync(

@@ -22,7 +22,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
@@ -31,7 +30,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
@@ -40,7 +38,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         }
 
         [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should not work with dates")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotWorkWithDates()
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");

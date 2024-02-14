@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragIntercepted event when dragged")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragInterceptedEventWhenDragged()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -28,7 +27,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragEnter")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragEnter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -44,7 +42,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "should emit a dragOver event")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitADragOver()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -61,7 +58,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "can be dropped")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CanBeDropped()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -79,7 +75,6 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         }
 
         [PuppeteerTest("drag-and-drop.spec.ts", "Legacy Drag n' Drop", "can be dragged and dropped with a single function")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task CanBeDraggedAndDroppedWithASingleFunction()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");

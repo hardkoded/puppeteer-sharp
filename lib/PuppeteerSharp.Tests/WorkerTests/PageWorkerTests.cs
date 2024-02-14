@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "Page.workers")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -35,7 +34,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -50,7 +48,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -69,7 +66,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should have JSHandles for console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -86,7 +82,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -98,7 +93,6 @@ namespace PuppeteerSharp.Tests.WorkerTests
         }
 
         [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();

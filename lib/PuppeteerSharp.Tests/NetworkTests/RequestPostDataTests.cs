@@ -11,7 +11,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
         [PuppeteerTest("network.spec.ts", "Request.postData", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -24,7 +23,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.postData", "should be |undefined| when there is no post data")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -32,7 +30,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Request.postData", "should work with blobs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithBlobs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

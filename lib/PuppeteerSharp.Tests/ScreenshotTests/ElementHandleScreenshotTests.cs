@@ -52,7 +52,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should capture full element when larger than viewport")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCaptureFullElementWhenLargerThanViewport()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -137,7 +136,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should fail to screenshot a detached element")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFailToScreenshotADetachedElement()
         {
             await Page.SetContentAsync("<h1>remove this</h1>");
@@ -169,7 +167,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work for an element with an offset")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkForAnElementWithAnOffset()
         {
             await Page.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
@@ -179,7 +176,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "ElementHandle.screenshot", "should work with a null viewport")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithANullViewport()
         {
             var options = TestConstants.DefaultBrowserOptions();

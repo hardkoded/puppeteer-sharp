@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -38,7 +37,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should report sourceURLs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportSourceUrls()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -51,7 +49,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should report multiple stylesheets")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportMultipleStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -64,7 +61,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should report stylesheets that have no coverage")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportStylesheetsThatHaveNoCoverage()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -77,7 +73,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work with media queries")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithMediaQueries()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -102,7 +97,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work with complicated usecases")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithComplicatedUsecases()
         {
             const string involved = @"[
@@ -134,7 +128,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should ignore injected stylesheets")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldIgnoreInjectedStylesheets()
         {
             await Page.Coverage.StartCSSCoverageAsync();
@@ -150,7 +143,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "CSSCoverage", "should work with a recently loaded stylesheet")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithArRecentlyLoadedStylesheet()
         {
             await Page.Coverage.StartCSSCoverageAsync();

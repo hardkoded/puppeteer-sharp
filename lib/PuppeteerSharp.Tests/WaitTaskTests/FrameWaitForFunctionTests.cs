@@ -129,7 +129,6 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should work with strict CSP policy")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithStrictCSPPolicy()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);

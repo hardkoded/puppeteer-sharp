@@ -10,8 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public CloseTests() : base() { }
 
         // [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
-        // [Skip(SkipAttribute.Targets.Firefox)]
-        [Ignore("TODO: See how to refactor this on nunit")]
+        // [Ignore("TODO: See how to refactor this on nunit")]
         public void ShouldRejectAllPromisesWhenPageIsClosed()
         {
             /*
@@ -29,7 +28,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotBeVisibleInBrowserPages()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -39,7 +37,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -50,7 +47,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -89,7 +85,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should *not* run beforeunload by default")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -108,7 +103,6 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [PuppeteerTest("page.spec.ts", "Page.close", "should terminate network waiters")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTerminateNetworkWaiters()
         {
             var newPage = await Context.NewPageAsync();

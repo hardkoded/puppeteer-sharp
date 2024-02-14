@@ -14,7 +14,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should handle nested frames")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -24,7 +23,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should send events when frames are manipulated dynamically")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendEventsWhenFramesAreManipulatedDynamically()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -56,7 +54,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should send \"framenavigated\" when navigating on anchor URLs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendFrameNavigatedWhenNavigatingOnAnchorURLs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -101,7 +98,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should detach child frames on navigation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldDetachChildFramesOnNavigation()
         {
             var attachedFrames = new List<IFrame>();
@@ -191,7 +187,6 @@ namespace PuppeteerSharp.Tests.FrameTests
         }
 
         [PuppeteerTest("frame.spec.ts", "Frame Management", "should support framesets")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSupportFramesets()
         {
             var attachedFrames = new List<IFrame>();

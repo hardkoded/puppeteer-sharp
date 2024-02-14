@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
     public class QueryAllTests : PuppeteerPageBaseTest
     {
         [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAll", "should find menu by name")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFindMenuByName()
         {
             await Page.SetContentAsync(@"

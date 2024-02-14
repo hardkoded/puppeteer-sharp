@@ -8,7 +8,6 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 public class ViaFrameTests : PuppeteerPageBaseTest
 {
     [PuppeteerTest("prerender.spec.ts", "via frame", "can navigate to a prerendered page via input")]
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
@@ -29,7 +28,6 @@ public class ViaFrameTests : PuppeteerPageBaseTest
     }
 
     [PuppeteerTest("prerender.spec.ts", "via frame", "can navigate to a prerendered page via Puppeteer")]
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task CanNavigateToAPrerenderedPageViaPuppeteer()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");

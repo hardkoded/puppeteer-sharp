@@ -66,7 +66,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "ElementHandle.press should support |text| option")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -76,7 +75,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should send a character with sendCharacter")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -89,7 +87,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should report shiftKey")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReportShiftKey()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -191,7 +188,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should specify repeat property")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSpecifyRepeatProperty()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -213,7 +209,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type all kinds of characters")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -224,7 +219,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should specify location")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldSpecifyLocation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -258,7 +252,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTypeEmoji()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -269,7 +262,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should type emoji into an iframe")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -283,7 +275,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         }
 
         [PuppeteerTest("keyboard.spec.ts", "Keyboard", "should press the metaKey")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldPressTheMetaKey()
         {
             await Page.EvaluateFunctionAsync(@"() =>

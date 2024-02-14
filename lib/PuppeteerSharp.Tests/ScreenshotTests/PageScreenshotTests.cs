@@ -11,7 +11,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
@@ -65,7 +64,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await using var page = await Context.NewPageAsync();
@@ -104,7 +102,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should use scale for clip")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldUseScaleForClip()
         {
             await using var page = await Context.NewPageAsync();
@@ -153,7 +150,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should get screenshot bigger than the viewport")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldClipElementsToTheViewport()
         {
             await using var page = await Context.NewPageAsync();
@@ -204,7 +200,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should take fullPage screenshots")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldTakeFullPageScreenshots()
         {
             await using var page = await Context.NewPageAsync();
@@ -222,7 +217,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel in multiple pages")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRunInParallelInMultiplePages()
         {
             const int n = 2;
@@ -274,7 +268,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Cdp", "should allow transparency")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowTransparency()
         {
             await using var page = await Context.NewPageAsync();
@@ -293,7 +286,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Cdp", "should render white background on jpeg file")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldRenderWhiteBackgroundOnJpegFile()
         {
             await using var page = await Context.NewPageAsync();
@@ -308,7 +300,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Cdp", "should work with webp")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithWebp()
         {
             await using var page = await Context.NewPageAsync();
@@ -341,7 +332,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should return base64")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnBase64()
         {
             await using var page = await Context.NewPageAsync();
@@ -357,7 +347,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         }
 
         [PuppeteerTest("screenshot.spec.ts", "Cdp", "should work in \"fromSurface: false\" mode")]
-        [Skip(SkipAttribute.Targets.Firefox, SkipAttribute.Targets.Windows)]
         public async Task ShouldWorkInFromSurfacedFalseMode()
         {
             await using var page = await Context.NewPageAsync();
@@ -385,7 +374,6 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithQuality()
         {
             await using var page = await Context.NewPageAsync();

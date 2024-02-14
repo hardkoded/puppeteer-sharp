@@ -31,7 +31,6 @@ namespace PuppeteerSharp.Tests.DialogTests
         }
 
         [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>

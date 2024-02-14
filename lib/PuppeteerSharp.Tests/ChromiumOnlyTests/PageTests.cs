@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
         }
 
         [PuppeteerTest("chromiumonly.spec.ts", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithInterventionHeaders()
         {
             Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"

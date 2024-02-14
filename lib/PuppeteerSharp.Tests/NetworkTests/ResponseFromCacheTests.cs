@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromCache", "should return |false| for non-cached content")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -23,7 +22,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromCache", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             var responses = new Dictionary<string, IResponse>();

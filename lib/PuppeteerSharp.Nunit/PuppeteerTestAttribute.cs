@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,14 @@ namespace PuppeteerSharp.Nunit
     public class PuppeteerTestAttribute : NUnitAttribute, IApplyToTest
     {
         private static TestExpectation[] _localExpectations;
+        private static TestExpectation[] _upstreamExpectations;
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("PRODUCT") != "FIREFOX";
+        // TODO: Change implementation when we implement Webdriver Bidi
+        public static readonly bool IsCdp = true;
+        public static readonly bool Headless = Convert.ToBoolean(
+            Environment.GetEnvironmentVariable("HEADLESS") ??
+            (System.Diagnostics.Debugger.IsAttached ? "false" : "true"),
+            System.Globalization.CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Creates a new instance of the attribute.
@@ -63,30 +71,70 @@ namespace PuppeteerSharp.Nunit
         public string Describe { get; }
 
         public override string ToString()
-            => Describe == null ? $"{FileName}: {TestName}" : $"{FileName}: {Describe}: {TestName}";
+            => Describe == null ? $"[FileName] {TestName}" : $"[{FileName}] {Describe} {TestName}";
 
         public void ApplyToTest(Test test)
         {
-            if(ShouldSkipByExpectation(test, out var expectation))
+            if (test == null)
+            {
+                return;
+            }
+
+            if (ShouldSkipByExpectation(test, out var expectation))
             {
                 test.RunState = RunState.Ignored;
                 test.Properties.Set(global::NUnit.Framework.Internal.PropertyNames.SkipReason, $"Skipped by expectation {expectation.TestIdPattern}");
-            }
-
-            if (_combinations.Any(combination =>
-                {
-                    var requirements = (Enum.GetValues(typeof(Targets)) as Targets[]).Where(x => combination.HasFlag(x));
-
-                }))
-            {
-                test.RunState = RunState.Ignored;
-                test.Properties.Set(global::NUnit.Framework.Internal.PropertyNames.SkipReason, "Skipped by browser/platform");
             }
         }
 
         private bool ShouldSkipByExpectation(Test test, out TestExpectation output)
         {
-            TestExpectation.TestExpectationPlatform currentExpectationPlatform =
+            var currentExpectationPlatform = GetCurrentExpectationPlatform();
+            List<TestExpectation.TestExpectationsParameter> parameters =
+            [
+
+                IsChrome
+                    ? TestExpectation.TestExpectationsParameter.Chrome
+                    : TestExpectation.TestExpectationsParameter.Firefox,
+
+                IsCdp
+                    ? TestExpectation.TestExpectationsParameter.Cdp
+                    : TestExpectation.TestExpectationsParameter.WebDriverBiDi,
+                Headless
+                    ? TestExpectation.TestExpectationsParameter.Headless
+                    : TestExpectation.TestExpectationsParameter.Headful,
+            ];
+
+
+            var localExpectations = GetLocalExpectations();
+            var upstreamExpectations = GetUpstreamExpectations();
+            // Join local and upstream in one variable
+            var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
+
+            foreach (var expectation in allExpectations)
+            {
+                if (expectation.TestIdRegex.IsMatch(ToString()))
+                {
+                    if (expectation.Platforms.Contains(currentExpectationPlatform) &&
+                        expectation.Parameters.All(parameters.Contains) &&
+                        (
+                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
+                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout)))
+                    {
+                        output = expectation;
+                        return true;
+                    }
+                }
+            }
+
+            output = null;
+            return false;
+        }
+
+        private static TestExpectation.TestExpectationPlatform GetCurrentExpectationPlatform()
+        {
+            var currentExpectationPlatform =
                 TestExpectation.TestExpectationPlatform.Linux;
 
             if (RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
@@ -102,36 +150,14 @@ namespace PuppeteerSharp.Nunit
                 currentExpectationPlatform = TestExpectation.TestExpectationPlatform.Darwin;
             }
 
-            var localExpectations = GetLocalExpectations();
-            var upstreamExpectations = GetUpstreamExpectations();
-            // Join local and upstream in one variable
-            var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
-
-            foreach(var expectation in allExpectations)
-            {
-                if (expectation.TestIdRegex.IsMatch(ToString()))
-                {
-                    if (expectation.Platforms.Contains(currentExpectationPlatform) &&
-                        expectation.Parameters.Contains(IsChrome ? TestExpectation.TestExpectationsParameter.Chromium : TestExpectation.TestExpectationsParameter.Firefox) &&
-                        (
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail)))
-                    {
-                        output = expectation;
-                        return true;
-                    }
-                }
-            }
-
-            output = null;
-            return false;
+            return currentExpectationPlatform;
         }
 
         private static TestExpectation[] GetLocalExpectations() =>
-            _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.local.json");
+            _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.local.json");
 
         private static TestExpectation[] GetUpstreamExpectations() =>
-            _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.upstream.json");
+            _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
 
         private static TestExpectation[] LoadExpectationsFromResource(string resourceName)
         {

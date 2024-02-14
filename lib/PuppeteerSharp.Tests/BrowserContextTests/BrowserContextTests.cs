@@ -49,7 +49,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "window.open should use parent tab context")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task WindowOpenShouldUseParentTabContext()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -69,7 +68,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should fire target events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldFireTargetEvents()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -134,7 +132,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should work across sessions")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -152,7 +149,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should provide a context id")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldProvideAContextId()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -165,7 +161,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         }
 
         [PuppeteerTest("browsercontext.spec.ts", "BrowserContext", "should wait for a target")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWaitForTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();

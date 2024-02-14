@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
@@ -23,7 +22,6 @@ namespace PuppeteerSharp.Tests.NetworkTests
         }
 
         [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, IResponse>();
