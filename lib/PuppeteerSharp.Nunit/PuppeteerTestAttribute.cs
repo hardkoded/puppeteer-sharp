@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Nunit
     /// <summary>
     /// Enables decorating test facts with information about the corresponding test in the upstream repository.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class PuppeteerTestAttribute : NUnitAttribute, IApplyToTest
     {
         private static TestExpectation[] _localExpectations;
