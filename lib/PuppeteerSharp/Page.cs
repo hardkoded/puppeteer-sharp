@@ -124,6 +124,7 @@ namespace PuppeteerSharp
                     }
 
                     await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
+                    await _emulationManager.RegisterSecondaryPageAsync(session).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
