@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with window.close")]
+        [Test, PuppeteerTest("page.spec", "Page.Events.Close", "should work with window.close")]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<IPage>();
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await closeTaskSource.Task;
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
+        [Test, PuppeteerTest("page.spec", "Page.Events.Close", "should work with page.close")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithPageClose()
         {

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         //TODO: This is working in puppeteer. I don't know why is hanging here.
-        [Test, PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work")]
+        [Test, PuppeteerTest("navigation.spec", "Page.goBack", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Null(response);
         }
 
-        [Test, PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work with HistoryAPI")]
+        [Test, PuppeteerTest("navigation.spec", "Page.goBack", "should work with HistoryAPI")]
         public async Task ShouldWorkWithHistoryAPI()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

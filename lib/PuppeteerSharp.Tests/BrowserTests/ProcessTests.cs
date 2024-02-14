@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
     {
         public ProcessTests() : base() { }
 
-        [Test, PuppeteerTest("browser.spec.ts", "Browser.process", "should return child_process instance")]
+        [Test, PuppeteerTest("browser.spec", "Browser.process", "should return child_process instance")]
         [PuppeteerTimeout]
         public void ShouldReturnProcessInstance()
         {
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
             Assert.True(process.Id > 0);
         }
 
-        [Test, PuppeteerTest("browser.spec.ts", "Browser.process", "should not return child_process for remote browser")]
+        [Test, PuppeteerTest("browser.spec", "Browser.process", "should not return child_process for remote browser")]
         [PuppeteerTimeout]
         public async Task ShouldNotReturnChildProcessForRemoteBrowser()
         {

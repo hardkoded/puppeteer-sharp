@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
 {
     public class ChromiumDataTests
     {
-        [Test, PuppeteerTest("chromium-data.spec.ts", "Chromium", "should resolve download URLs")]
+        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
                 BrowserData.Chromium.ResolveDownloadUrl(Platform.Win64, "1083080", null));
         }
 
-        [Test, PuppeteerTest("chromium-data.spec.ts", "Chromium", "should resolve executable paths")]
+        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(

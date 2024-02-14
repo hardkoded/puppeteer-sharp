@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should work for Shadow DOM v1")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should work for Shadow DOM v1")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForShadowDomV1()
         {
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should not work for TextNodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should not work for TextNodes")]
         [PuppeteerTimeout]
         public async Task ShouldNotWorkForTextNodes()
         {
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for detached nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should throw for detached nodes")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForDetachedNodes()
         {
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for hidden nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should throw for hidden nodes")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForHiddenNodes()
         {
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for recursively hidden nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should throw for recursively hidden nodes")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForRecursivelyHiddenNodes()
         {
@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for <br> elements")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.click", "should throw for <br> elements")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForBrElements()
         {

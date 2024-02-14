@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         {
         }
 
-        [Test, PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should tap the button")]
+        [Test, PuppeteerTest("touchscreen.spec", "Touchscreen", "should tap the button")]
         public async Task ShouldTapTheButton()
         {
             await Page.EmulateAsync(_iPhone);
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
             Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Test, PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should report touches")]
+        [Test, PuppeteerTest("touchscreen.spec", "Touchscreen", "should report touches")]
         public async Task ShouldReportTouches()
         {
             await Page.EmulateAsync(_iPhone);

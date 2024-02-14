@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should work")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.jsonValue", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(JObject.Parse("{ foo: 'bar' }"), json);
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(new[] { "a", "b" }, json);
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual("foo", json);
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should not work with dates")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.jsonValue", "should not work with dates")]
         public async Task ShouldNotWorkWithDates()
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(JObject.Parse("{}"), json);
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should throw for circular objects")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.jsonValue", "should throw for circular objects")]
         [PuppeteerTimeout]
         public async Task ShouldThrowForCircularObjects()
         {

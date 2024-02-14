@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTest("jshandle.spec.ts", "JSHandle.click", "should work")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle.click", "should work")]
         public async Task ShouldWork()
         {
             var clicks = new List<BoxModelPoint>();

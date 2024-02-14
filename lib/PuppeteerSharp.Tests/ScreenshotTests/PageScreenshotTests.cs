@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should work")]
         public async Task ShouldWork()
         {
             await using var page = await Context.NewPageAsync();
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should clip rect")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should clip rect")]
         [PuppeteerTimeout]
         public async Task ShouldClipRect()
         {
@@ -101,7 +101,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should use scale for clip")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should use scale for clip")]
         public async Task ShouldUseScaleForClip()
         {
             await using var page = await Context.NewPageAsync();
@@ -149,7 +149,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should get screenshot bigger than the viewport")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should get screenshot bigger than the viewport")]
         public async Task ShouldClipElementsToTheViewport()
         {
             await using var page = await Context.NewPageAsync();
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should run in parallel")]
         [PuppeteerTimeout]
         public async Task ShouldRunInParallel()
         {
@@ -199,7 +199,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("grid-cell-1.png", tasks[0].Result));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should take fullPage screenshots")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should take fullPage screenshots")]
         public async Task ShouldTakeFullPageScreenshots()
         {
             await using var page = await Context.NewPageAsync();
@@ -216,7 +216,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should run in parallel in multiple pages")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should run in parallel in multiple pages")]
         public async Task ShouldRunInParallelInMultiplePages()
         {
             const int n = 2;
@@ -267,7 +267,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await Task.WhenAll(closeTasks);
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Cdp", "should allow transparency")]
+        [Test, PuppeteerTest("screenshot.spec", "Cdp", "should allow transparency")]
         public async Task ShouldAllowTransparency()
         {
             await using var page = await Context.NewPageAsync();
@@ -285,7 +285,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("transparent.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Cdp", "should render white background on jpeg file")]
+        [Test, PuppeteerTest("screenshot.spec", "Cdp", "should render white background on jpeg file")]
         public async Task ShouldRenderWhiteBackgroundOnJpegFile()
         {
             await using var page = await Context.NewPageAsync();
@@ -299,7 +299,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("white.jpg", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Cdp", "should work with webp")]
+        [Test, PuppeteerTest("screenshot.spec", "Cdp", "should work with webp")]
         public async Task ShouldWorkWithWebp()
         {
             await using var page = await Context.NewPageAsync();
@@ -312,7 +312,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.Greater(screenshot.Length, 0);
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should work with odd clip size on Retina displays")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should work with odd clip size on Retina displays")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
@@ -331,7 +331,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Page.screenshot", "should return base64")]
+        [Test, PuppeteerTest("screenshot.spec", "Page.screenshot", "should return base64")]
         public async Task ShouldReturnBase64()
         {
             await using var page = await Context.NewPageAsync();
@@ -346,7 +346,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", Convert.FromBase64String(screenshot)));
         }
 
-        [Test, PuppeteerTest("screenshot.spec.ts", "Cdp", "should work in \"fromSurface: false\" mode")]
+        [Test, PuppeteerTest("screenshot.spec", "Cdp", "should work in \"fromSurface: false\" mode")]
         public async Task ShouldWorkInFromSurfacedFalseMode()
         {
             await using var page = await Context.NewPageAsync();

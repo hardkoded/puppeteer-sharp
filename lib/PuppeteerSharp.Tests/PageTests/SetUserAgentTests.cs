@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page.setUserAgent", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("foobar", userAgentTask.Result);
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work for subframes")]
+        [Test, PuppeteerTest("page.spec", "Page.setUserAgent", "should work for subframes")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForSubframes()
         {
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should emulate device user-agent")]
+        [Test, PuppeteerTest("page.spec", "Page.setUserAgent", "should emulate device user-agent")]
         [PuppeteerTimeout]
         public async Task ShouldSimulateDeviceUserAgent()
         {
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work with additional userAgentMetdata")]
+        [Test, PuppeteerTest("page.spec", "Page.setUserAgent", "should work with additional userAgentMetdata")]
         public async Task ShouldWorkWithAdditionalUserAgentMetdata()
         {
             await Page.SetUserAgentAsync(

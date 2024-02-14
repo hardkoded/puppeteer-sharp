@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should work")]
+        [Test, PuppeteerTest("network.spec", "Page.setExtraHTTPHeaders", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>

@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
         public void DeleteDir()
             => new Cache(_cacheDir).Clear();
 
-        [Test, PuppeteerTest("CLI.spec.ts", "Chrome CLI", "should download Chrome binaries")]
+        [Test, PuppeteerTest("CLI.spec", "Chrome CLI", "should download Chrome binaries")]
         public async Task ShouldDownloadChromeBinaries()
         {
             using var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)

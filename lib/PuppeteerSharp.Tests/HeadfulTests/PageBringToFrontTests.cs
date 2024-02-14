@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class PageBringToFrontTests : PuppeteerBaseTest
     {
-        [Test, PuppeteerTest("headful.spec.ts", "Page.bringToFront", "should work")]
+        [Test, PuppeteerTest("headful.spec", "Page.bringToFront", "should work")]
         public async Task ShouldWork()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(

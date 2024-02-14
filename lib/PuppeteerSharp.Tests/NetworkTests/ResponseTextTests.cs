@@ -15,14 +15,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Response.text", "should work")]
+        [Test, PuppeteerTest("network.spec", "Response.text", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
+        [Test, PuppeteerTest("network.spec", "Response.text", "should return uncompressed text")]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
+        [Test, PuppeteerTest("network.spec", "Response.text", "should throw when requesting body of redirected response")]
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             StringAssert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
+        [Test, PuppeteerTest("network.spec", "Response.text", "should wait until response completes")]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

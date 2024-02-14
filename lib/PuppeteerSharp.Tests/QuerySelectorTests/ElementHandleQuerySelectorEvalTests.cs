@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             #endregion
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should work")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should work")]
         [PuppeteerTimeout]
         public async Task QuerySelectorShouldWork()
         {
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("100", content);
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should retrieve content from subtree")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should retrieve content from subtree")]
         [PuppeteerTimeout]
         public async Task QuerySelectorShouldRetrieveContentFromSubtree()
         {
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("a-child-div", content);
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should throw in case of missing selector")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should throw in case of missing selector")]
         [PuppeteerTimeout]
         public async Task QuerySelectorShouldThrowInCaseOfMissingSelector()
         {

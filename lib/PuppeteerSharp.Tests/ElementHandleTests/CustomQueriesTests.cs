@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should register and unregister")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should register and unregister")]
         [PuppeteerTimeout]
         public async Task ShouldRegisterAndUnregister()
         {
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.False(handlerNamesAfterUnregistering.Contains("getById"));
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should throw with invalid query names")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should throw with invalid query names")]
         [PuppeteerTimeout]
         public void ShouldThrowWithInvalidQueryNames()
         {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Custom query handler names may only contain [a-zA-Z]", ex.Message);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work for multiple elements")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should work for multiple elements")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForMultipleElements()
         {
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(new[] { "foo", "foo baz" }, classNames.ToArray());
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval correctly")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should eval correctly")]
         [PuppeteerTimeout]
         public async Task ShouldEvalCorrectly()
         {
@@ -103,7 +103,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(2, elements);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitForSelector")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should wait correctly with waitForSelector")]
         [PuppeteerTimeout]
         public async Task ShouldWaitCorrectlyWithWaitForSelector()
         {
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.NotNull(element);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should wait correctly with waitForSelector on an element")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should wait correctly with waitForSelector on an element")]
         [PuppeteerTimeout]
         public async Task ShouldWaitCorrectlyWithWaitForSelectorOnAnElement()
         {
@@ -146,7 +146,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("bar1", await element.EvaluateFunctionAsync<string>("(el) => el.innerText"));
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should work when both queryOne and queryAll are registered")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should work when both queryOne and queryAll are registered")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenBothQueryOneAndQueryAllAreRegistered()
         {
@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(3, elements.Length);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "Custom queries", "should eval when both queryOne and queryAll are registered")]
+        [Test, PuppeteerTest("elementhandle.spec", "Custom queries", "should eval when both queryOne and queryAll are registered")]
         [PuppeteerTimeout]
         public async Task ShouldEvalWhenBothQueryOneAndQueryAllAreRegistered()
         {

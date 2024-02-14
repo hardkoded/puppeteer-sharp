@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
         }
 
-        [Test, PuppeteerTest("browser.spec.ts", "Browser.version", "should return whether we are in headless")]
+        [Test, PuppeteerTest("browser.spec", "Browser.version", "should return whether we are in headless")]
         [PuppeteerTimeout]
         public async Task ShouldReturnWhetherWeAreInHeadless()
         {

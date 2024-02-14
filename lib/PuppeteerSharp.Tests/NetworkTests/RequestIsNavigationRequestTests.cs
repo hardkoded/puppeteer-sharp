@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work")]
+        [Test, PuppeteerTest("network.spec", "Request.isNavigationRequest", "should work")]
         public async Task ShouldWork()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work with request interception")]
+        [Test, PuppeteerTest("network.spec", "Request.isNavigationRequest", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
-        [Test, PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work when navigating to image")]
+        [Test, PuppeteerTest("network.spec", "Request.isNavigationRequest", "should work when navigating to image")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenNavigatingToImage()
         {

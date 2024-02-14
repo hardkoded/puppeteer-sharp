@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.browser", "should return the correct browser instance")]
+        [Test, PuppeteerTest("page.spec", "Page.browser", "should return the correct browser instance")]
         [PuppeteerTimeout]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.AreSame(Browser, Page.Browser);
     }

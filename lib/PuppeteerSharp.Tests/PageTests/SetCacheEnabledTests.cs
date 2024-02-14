@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
+        [Test, PuppeteerTest("page.spec", "Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
         [PuppeteerTimeout]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
 
-        [Test, PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
+        [Test, PuppeteerTest("page.spec", "Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
         public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
         {
             await Page.SetCacheEnabledAsync(false);

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should immediately resolve promise if node exists")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should immediately resolve promise if node exists")]
         [PuppeteerTimeout]
         public async Task ShouldImmediatelyResolveTaskIfNodeExists()
         {
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame.WaitForSelectorAsync("div");
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should work with removed MutationObserver")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should work with removed MutationObserver")]
         public async Task ShouldWorkWithRemovedMutationObserver()
         {
             await Page.EvaluateExpressionAsync("delete window.MutationObserver");
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should resolve promise when node is added")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should resolve promise when node is added")]
         [PuppeteerTimeout]
         public async Task ShouldResolveTaskWhenNodeIsAdded()
         {
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.AreEqual("DIV", tagName);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should work when node is added through innerHTML")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should work when node is added through innerHTML")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWhenNodeIsAddedThroughInnerHtml()
         {
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "Page.waitForSelector is shortcut for main frame")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "Page.waitForSelector is shortcut for main frame")]
         [PuppeteerTimeout]
         public async Task PageWaitForSelectorAsyncIsShortcutForMainFrame()
         {
@@ -75,7 +75,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.AreEqual(Page.MainFrame, eHandle.Frame);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should run in specified frame")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should run in specified frame")]
         [PuppeteerTimeout]
         public async Task ShouldRunInSpecifiedFrame()
         {
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.AreEqual(frame2, eHandle.Frame);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should throw when frame is detached")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should throw when frame is detached")]
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
@@ -103,7 +103,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should survive cross-process navigation")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should survive cross-process navigation")]
         [PuppeteerTimeout]
         public async Task ShouldSurviveCrossProcessNavigation()
         {
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(boxFound);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (display)")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be visible (display)")]
         [PuppeteerTimeout]
         public async Task ShouldWaitForVisibleDisplay()
         {
@@ -133,7 +133,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divFound);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (visibility)")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be visible (visibility)")]
         [PuppeteerTimeout]
         public async Task ShouldWaitForVisibleVisibility()
         {
@@ -151,7 +151,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divFound);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be visible (bounding box)")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be visible (bounding box)")]
         [PuppeteerTimeout]
         public async Task ShouldWaitForVisibleBoundingBox()
         {
@@ -176,7 +176,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divFound);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for visible recursively")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for visible recursively")]
         [PuppeteerTimeout]
         public async Task ShouldWaitForVisibleRecursively()
         {
@@ -193,8 +193,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [Test]
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
+        [PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
+        [PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
         [TestCase("visibility", "hidden")]
         [TestCase("display", "none")]
         public async Task HiddenShouldWaitForVisibility(string propertyName, string propertyValue)
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divHidden);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
         [PuppeteerTimeout]
         public async Task HiddenShouldWaitForRemoval()
         {
@@ -225,7 +225,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(divRemoved);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should return null if waiting to hide non-existing element")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should return null if waiting to hide non-existing element")]
         [PuppeteerTimeout]
         public async Task ShouldReturnNullIfWaitingToHideNonExistingElement()
         {
@@ -233,7 +233,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.Null(handle);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should respect timeout")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should respect timeout")]
         [PuppeteerTimeout]
         public void ShouldRespectTimeout()
         {
@@ -243,7 +243,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should have an error message specifically for awaiting an element to be hidden")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should have an error message specifically for awaiting an element to be hidden")]
         [PuppeteerTimeout]
         public async Task ShouldHaveAnErrorMessageSpecificallyForAwaitingAnElementToBeHidden()
         {
@@ -254,7 +254,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should respond to node attribute mutation")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should respond to node attribute mutation")]
         [PuppeteerTimeout]
         public async Task ShouldRespondToNodeAttributeMutation()
         {
@@ -266,7 +266,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(await waitForSelector);
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should return the element handle")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should return the element handle")]
         [PuppeteerTimeout]
         public async Task ShouldReturnTheElementHandle()
         {
@@ -275,7 +275,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
         }
 
-        [Test, PuppeteerTest("waittask.spec.ts", "Frame.waitForSelector", "should have correct stack trace for timeout")]
+        [Test, PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should have correct stack trace for timeout")]
         [PuppeteerTimeout]
         public void ShouldHaveCorrectStackTraceForTimeout()
         {

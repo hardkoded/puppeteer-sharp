@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, PuppeteerTest("elementhandle.spec.ts", "ElementHandle.hover", "should work")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle.hover", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

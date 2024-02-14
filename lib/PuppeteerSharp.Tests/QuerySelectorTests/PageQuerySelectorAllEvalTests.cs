@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should work")]
+        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(3, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept extra arguments")]
+        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept extra arguments")]
         [PuppeteerTimeout]
         public async Task ShouldAcceptExtraArguments()
         {
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "should accept ElementHandles as arguments")]
+        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept ElementHandles as arguments")]
         [PuppeteerTimeout]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec.ts", "Page.$$eval", "$$eval should handle many elements")]
+        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "$$eval should handle many elements")]
         [PuppeteerTimeout]
         public async Task ShouldHandleManyElements()
         {

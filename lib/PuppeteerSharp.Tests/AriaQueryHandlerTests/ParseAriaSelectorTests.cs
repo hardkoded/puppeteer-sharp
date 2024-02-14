@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec.ts", "parseAriaSelector", "should find button")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
         public async Task ShouldFindButton()
         {
             async Task ExpectFound(IElementHandle button)
