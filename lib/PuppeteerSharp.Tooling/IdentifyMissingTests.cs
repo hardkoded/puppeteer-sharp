@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tooling
             var noMatches = 0;
             var totalTests = 0;
 
-            List<PuppeteerTestAttribute> missingTests = new();
+            List<PuppeteerTestAttribute> missingTests = [];
             List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
 
             var attributes = new ScreenshotHelper().GetType().Assembly.DefinedTypes.SelectMany(

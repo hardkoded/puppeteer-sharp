@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
-        [Test, PuppeteerTest("network.spec", "Network Events", "should fire events in proper order")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "should fire events in proper order")]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
