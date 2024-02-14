@@ -106,7 +106,8 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
               Path.Combine("chrome-win64", "chrome.exe"));
         }
 
-        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
+        // This has a custom name
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(

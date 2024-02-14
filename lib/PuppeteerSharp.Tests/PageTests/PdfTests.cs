@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [Test, PuppeteerTest("page.spec", "printing to PDF", "can print to PDF and save to file")]
+        [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
         [PuppeteerTimeout]
         public async Task ShouldBeAbleToSaveFile()
         {
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Test, PuppeteerTest("page.spec", "printing to PDF", "can print to PDF and stream the result")]
+        [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and stream the result")]
         [PuppeteerTimeout]
         public async Task CanPrintToPDFAndStreamTheResult()
         {

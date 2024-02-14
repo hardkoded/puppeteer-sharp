@@ -1,2 +1,9 @@
 [
+  {
+    "description": "We have a different test that needs to run on windows",
+    "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
+    "platforms": ["darwin", "linux"],
+    "parameters": [],
+    "expectations": ["SKIP"]
+  }
 ]

@@ -76,10 +76,18 @@ namespace PuppeteerSharp.Tooling
                     var testName = branch.First().Name;
                     string describe = null;
 
-                    if (branch.Length >= 2 && keywords2.Contains(branch[1].Func))
+                    //if (branch.Length >= 2 && keywords2.Contains(branch[1].Func))
+                    if (branch.Any(b => keywords2.Contains(b.Func)))
                     {
-                        describe = branch[1].Name;
+                        describe = string.Join(
+                            " ",
+                            branch
+                                .Reverse()
+                                .Where(b => keywords2.Contains(b.Func))
+                                .Select(item => item.Name)
+                                .ToList());
                     }
+
 
                     callback(describe, testName);
                 }
