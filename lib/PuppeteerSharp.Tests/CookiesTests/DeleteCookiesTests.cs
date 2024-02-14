@@ -1,17 +1,12 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class DeleteCookiesTests : PuppeteerPageBaseTest
     {
-        public DeleteCookiesTests() : base()
-        {
-        }
-
-        [Test, PuppeteerTest("cookies.spec", "Page.deleteCookie", "should work")]
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
