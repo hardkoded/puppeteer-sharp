@@ -54,19 +54,19 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/linux64/chrome-linux64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Linux, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/mac-x64/chrome-mac-x64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-x64/chrome-mac-x64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.MacOS, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/mac-arm64/chrome-mac-arm64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-arm64/chrome-mac-arm64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.MacOSArm64, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/win32/chrome-win32.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win32/chrome-win32.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win32, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/win64/chrome-win64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win64/chrome-win64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win64, "113.0.5672.0", null));
         }
 
