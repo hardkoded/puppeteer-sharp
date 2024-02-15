@@ -12,5 +12,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["FIREFOX"],
     "expectations": ["FAIL"]
+  },
+  {
+    "description": "Remove when https://github.com/hardkoded/puppeteer-sharp/issues/2450 is implemented",
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["FIREFOX"],
+    "expectations": ["FAIL"]
   }
 ]
