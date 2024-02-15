@@ -19,7 +19,7 @@ namespace PuppeteerSharp.BrowserData
             => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
-            => $"{baseUrl ?? "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
+            => $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
         internal static string RelativeExecutablePath(Platform platform, string builId)
             => platform switch
