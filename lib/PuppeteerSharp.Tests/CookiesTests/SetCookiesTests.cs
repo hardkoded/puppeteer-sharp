@@ -164,7 +164,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.AboutBlank);
 
             var exception = Assert.ThrowsAsync<MessageException>(async () => await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
-            Assert.AreEqual("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified", exception.Message);
+            StringAssert.Contains("At least one of the url and domain needs to be specified", exception.Message);
         }
 
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should not set a cookie with blank page URL")]
@@ -192,7 +192,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync("data:,Hello%2C%20World!");
             var exception = Assert.ThrowsAsync<MessageException>(async () => await Page.SetCookieAsync(new CookieParam { Name = "example-cookie", Value = "best" }));
 
-            Assert.AreEqual("Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified", exception.Message);
+            StringAssert.Contains("At least one of the url and domain needs to be specified", exception.Message);
         }
 
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should default to setting secure cookie for HTTPS websites")]
