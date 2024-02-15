@@ -17,10 +17,11 @@ namespace PuppeteerSharp.Tests.FixturesTests
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
+            var browser = TestConstants.IsChrome ? "chrome" : "firefox";
             using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             using var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\"");
+                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\" \"${browser}\"");
 
             process.ErrorDataReceived += (_, e) =>
             {
