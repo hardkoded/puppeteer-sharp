@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "ElementHandle.press should support |text| option")]
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "ElementHandle.press should not support |text| option")]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
