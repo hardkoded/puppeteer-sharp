@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle.clickablePoint", "should work")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(30 + 15, clickablePoint.Y);
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle.clickablePoint", "should work for iframes")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
         [PuppeteerTimeout]
         public async Task ShouldWorkForIFrames()
         {
