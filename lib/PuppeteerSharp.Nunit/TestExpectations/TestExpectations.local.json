@@ -19,5 +19,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["FIREFOX"],
     "expectations": ["FAIL"]
+  },
+  {
+    "description": "TODO It's failing on CI/CD",
+    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["FIREFOX"],
+    "expectations": ["FAIL"]
   }
 ]
