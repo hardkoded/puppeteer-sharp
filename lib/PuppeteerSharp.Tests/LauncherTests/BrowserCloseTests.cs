@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
         {
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Browser.close", "should terminate network waiters")]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should terminate network waiters")]
         [PuppeteerTimeout]
         public async Task ShouldTerminateNetworkWaiters()
         {

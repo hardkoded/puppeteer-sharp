@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Browser.Events.disconnected", "should be emitted when: browser gets closed, disconnected or underlying websocket gets closed")]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.Events.disconnected", "should be emitted when: browser gets closed, disconnected or underlying websocket gets closed")]
         [PuppeteerTimeout]
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()
         {

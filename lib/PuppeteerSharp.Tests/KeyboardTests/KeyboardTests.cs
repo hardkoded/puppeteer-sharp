@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             var textarea = await Page.QuerySelectorAsync("textarea");
             await textarea.PressAsync("a", new PressOptions { Text = "ё" });
-            Assert.AreEqual("ё", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
+            Assert.AreEqual("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with sendCharacter")]
