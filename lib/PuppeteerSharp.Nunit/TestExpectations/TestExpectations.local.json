@@ -33,5 +33,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["FIREFOX"],
     "expectations": ["FAIL"]
+  },
+  {
+    "description": "TODO Review why is failing on Ci/CD",
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   }
 ]

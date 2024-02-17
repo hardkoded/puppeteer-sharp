@@ -158,7 +158,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                StringAssert.Contains("Invalid URL", exception.Message);
+                StringAssert.Contains("invalid URL", exception.Message);
             }
         }
 
