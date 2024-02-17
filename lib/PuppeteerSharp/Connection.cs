@@ -162,7 +162,6 @@ namespace PuppeteerSharp
 
         internal Task RawSendAsync(string message)
         {
-            Console.WriteLine("Send ► {0}", message);
             _logger.LogTrace("Send ► {Message}", message);
             return Transport.SendAsync(message);
         }
@@ -285,7 +284,6 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                Console.WriteLine("Receive ◀ {0}", response);
                 _logger.LogTrace("◀ Receive {Message}", response);
                 ProcessIncomingMessage(obj);
             }
