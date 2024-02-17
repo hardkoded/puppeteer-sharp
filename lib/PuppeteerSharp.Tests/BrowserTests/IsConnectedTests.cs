@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
         }
 
-        [Test, PuppeteerTest("browser.spec", "Browser.isConnected", "should set the browser connected state")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("browser.spec", "Browser.isConnected", "should set the browser connected state")]
         public async Task ShouldSetTheBrowserConnectedState()
         {
             var newBrowser = await Puppeteer.ConnectAsync(new ConnectOptions

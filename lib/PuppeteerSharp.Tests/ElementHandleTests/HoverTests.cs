@@ -12,8 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.hover", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.hover", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");

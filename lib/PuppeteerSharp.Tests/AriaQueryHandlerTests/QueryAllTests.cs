@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryAllTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "queryAll", "should find menu by name")]
+        [Test, PuppeteerTimeout, PuppeteerTest("ariaqueryhandler.spec", "queryAll", "should find menu by name")]
         public async Task ShouldFindMenuByName()
         {
             await Page.SetContentAsync(@"

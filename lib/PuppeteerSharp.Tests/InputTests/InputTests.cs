@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Test, PuppeteerTest("input.spec", "Input", "should upload the file")]
+        [Test, PuppeteerTimeout, PuppeteerTest("input.spec", "Input", "should upload the file")]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");

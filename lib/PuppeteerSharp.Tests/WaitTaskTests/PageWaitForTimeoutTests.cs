@@ -12,8 +12,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         {
         }
 
-        [Test, PuppeteerTest("waittask.spec", "Page.waitForTimeout", "waits for the given timeout before resolving")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("waittask.spec", "Page.waitForTimeout", "waits for the given timeout before resolving")]
         public async Task WaitsForTheGivenTimeoutBeforeResolving()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

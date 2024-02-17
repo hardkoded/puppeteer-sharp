@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
             };
         }
 
-        [Test, PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
+        [Test, PuppeteerTimeout, PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
         public async Task ShouldHandleTargets()
         {
             var targetManager = (Browser as Browser).TargetManager;

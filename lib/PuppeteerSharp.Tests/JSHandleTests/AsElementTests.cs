@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.body");
@@ -20,8 +19,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.NotNull(element);
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return null for non-elements")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return null for non-elements")]
         public async Task ShouldReturnNullForNonElements()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -29,8 +27,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Null(element);
         }
 
-        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return ElementHandle for TextNodes")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return ElementHandle for TextNodes")]
         public async Task ShouldReturnElementHandleForTextNodes()
         {
             await Page.SetContentAsync("<div>ee!</div>");

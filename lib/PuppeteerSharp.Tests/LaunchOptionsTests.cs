@@ -5,7 +5,6 @@ namespace PuppeteerSharp.Tests
 {
     public class LaunchOptionsTests
     {
-        [PuppeteerTimeout]
         public void DisableHeadlessWhenDevtoolsEnabled()
         {
             var options = new LaunchOptions

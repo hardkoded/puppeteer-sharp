@@ -12,8 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.url", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.url", "should work")]
         public async Task ShouldWork()
         {
             Assert.AreEqual(TestConstants.AboutBlank, Page.Url);

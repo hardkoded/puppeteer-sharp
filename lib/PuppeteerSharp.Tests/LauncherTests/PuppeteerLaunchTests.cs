@@ -18,7 +18,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
     {
         public PuppeteerLaunchTests() : base() { }
 
-        [PuppeteerTimeout]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -32,8 +31,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject all promises when browser is closed")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject all promises when browser is closed")]
         public async Task ShouldRejectAllPromisesWhenBrowserIsClosed()
         {
             await using var browser = await Puppeteer.LaunchAsync(
@@ -46,8 +44,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             StringAssert.Contains("Protocol error", exception.Message);
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject if executable path is invalid")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject if executable path is invalid")]
         public void ShouldRejectIfExecutablePathIsInvalid()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -59,8 +56,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             });
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option")]
         public async Task UserDataDirOption()
         {
             using (var userDataDir = new TempDirectory())
@@ -78,8 +74,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir argument")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir argument")]
         public async Task UserDataDirArgument()
         {
             using (var userDataDir = new TempDirectory())
@@ -107,7 +102,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore state")]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore state")]
         public async Task UserDataDirOptionShouldRestoreState()
         {
             using var userDataDir = new TempDirectory();
@@ -138,7 +133,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore cookies")]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore cookies")]
         [Ignore("This mysteriously fails on Windows on AppVeyor.")]
         public async Task UserDataDirOptionShouldRestoreCookies()
         {
@@ -166,8 +161,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should return the default arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should return the default arguments")]
         public void ShouldReturnTheDefaultArguments()
         {
             Assert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
@@ -236,7 +230,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [PuppeteerTimeout]
         public async Task ChromeShouldBeClosedOnDispose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -253,7 +246,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.True(launcher.Process.HasExited);
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
             var launcher = new Launcher(TestConstants.LoggerFactory);
@@ -267,7 +259,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with no default arguments")]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with no default arguments")]
         public async Task ShouldWorkWithNoDefaultArguments()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -279,8 +271,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments")]
         public async Task ShouldFilterOutIgnoredDefaultArguments()
         {
             var defaultArgs = Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions());
@@ -295,8 +286,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have default URL when launching browser")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have default URL when launching browser")]
         public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
         {
             await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory))
@@ -306,7 +296,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have custom URL when launching browser")]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have custom URL when launching browser")]
         public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -323,8 +313,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should set the default viewport")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should set the default viewport")]
         public async Task ShouldSetTheDefaultViewport()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -342,8 +331,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should disable the default viewport")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should disable the default viewport")]
         public async Task ShouldDisableTheDefaultViewport()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -356,8 +344,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should take fullPage screenshots when defaultViewport is null")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should take fullPage screenshots when defaultViewport is null")]
         public async Task ShouldTakeFullPageScreenshotsWhenDefaultViewportIsNull()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -371,7 +358,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -388,7 +374,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;

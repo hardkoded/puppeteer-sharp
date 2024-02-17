@@ -3,12 +3,13 @@ using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Browsers.Chromium
 {
     public class ChromiumDataTests
     {
-        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
                 BrowserData.Chromium.ResolveDownloadUrl(Platform.Win64, "1083080", null));
         }
 
-        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(

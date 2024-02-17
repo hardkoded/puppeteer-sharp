@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$$eval", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
@@ -20,8 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(3, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept extra arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept extra arguments")]
         public async Task ShouldAcceptExtraArguments()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
@@ -31,8 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept ElementHandles as arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept ElementHandles as arguments")]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
             await Page.SetContentAsync("<section>2</section><section>2</section><section>1</section><div>3</div>");
@@ -47,8 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(8, divsCount);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "$$eval should handle many elements")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$$eval", "$$eval should handle many elements")]
         public async Task ShouldHandleManyElements()
         {
             await Page.EvaluateExpressionAsync(@"
@@ -66,7 +62,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(500500, sum);
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");

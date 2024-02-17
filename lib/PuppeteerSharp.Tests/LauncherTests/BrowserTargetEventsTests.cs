@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
         public async Task ShouldWork()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());

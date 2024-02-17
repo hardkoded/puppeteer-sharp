@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.json", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Response.json", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");

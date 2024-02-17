@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class WithNetworkRequestsTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("prerender.spec", "Prerender with network requests", "can receive requests from the prerendered page")]
+    [Test, PuppeteerTimeout, PuppeteerTest("prerender.spec", "Prerender with network requests", "can receive requests from the prerendered page")]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         var urls = new List<string>();

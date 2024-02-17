@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             #endregion
         }
 
-        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win64, "113.0.5672.0", null));
         }
 
-        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         // This has a custom name
-        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                     ChromeReleaseChannel.Dev));
         }
 
-        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
+        [Test, PuppeteerTimeout, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.AreEqual(

@@ -9,8 +9,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should succeed on first call")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should succeed on first call")]
     public async Task ShouldSucceedOnFirstCall()
     {
         var client = new MockCDPSession();
@@ -23,8 +22,7 @@ public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
         await prompt.CancelAsync();
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should fail when canceling prompt twice")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should fail when canceling prompt twice")]
     public async Task ShouldFailWhenCancelingPromptTwice()
     {
         var client = new MockCDPSession();

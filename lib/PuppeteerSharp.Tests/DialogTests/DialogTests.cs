@@ -14,8 +14,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         {
         }
 
-        [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should fire")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should fire")]
         public async Task ShouldFire()
         {
             Page.Dialog += async (_, e) =>
@@ -30,7 +29,7 @@ namespace PuppeteerSharp.Tests.DialogTests
             await Page.EvaluateExpressionAsync("alert('yo');");
         }
 
-        [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should allow accepting prompts")]
+        [Test, PuppeteerTimeout, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should allow accepting prompts")]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>
@@ -46,8 +45,7 @@ namespace PuppeteerSharp.Tests.DialogTests
             Assert.AreEqual("answer!", result);
         }
 
-        [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should dismiss the prompt")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should dismiss the prompt")]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (_, e) =>

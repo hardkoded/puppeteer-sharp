@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
             Assert.AreEqual(expectedState, actualState);
         }
 
-        [Test, PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
+        [Test, PuppeteerTimeout, PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
         public async Task ChangingIdleStateEmulationCausesChangeOfTheIdleDetectorState()
         {
             await Context.OverridePermissionsAsync(

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work")]
         public async Task ShouldWork()
         {
             var popupTaskSource = new TaskCompletionSource<IPage>();
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with noopener")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with noopener")]
         public async Task ShouldWorkWithNoopener()
         {
             var popupTaskSource = new TaskCompletionSource<IPage>();
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and without rel=opener")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and without rel=opener")]
         public async Task ShouldWorkWithClickingTargetBlankWithoutRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and with rel=opener")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and with rel=opener")]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndRelOpener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with fake-clicking target=_blank and rel=noopener")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with fake-clicking target=_blank and rel=noopener")]
         public async Task ShouldWorkWithFakeClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and rel=noopener")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and rel=noopener")]
         public async Task ShouldWorkWithClickingTargetBlankAndRelNoopener()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

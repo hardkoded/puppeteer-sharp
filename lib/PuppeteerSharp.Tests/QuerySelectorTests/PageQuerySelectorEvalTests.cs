@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$eval", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
@@ -20,7 +19,6 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("testAttribute", idAttribute);
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
@@ -29,8 +27,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("testAttribute", idAttribute);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept arguments")]
         public async Task ShouldAcceptArguments()
         {
             await Page.SetContentAsync("<section>hello</section>");
@@ -38,8 +35,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("hello world!", text);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept ElementHandles as arguments")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept ElementHandles as arguments")]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
             await Page.SetContentAsync("<section>hello</section><div> world</div>");
@@ -48,8 +44,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("hello world", text);
         }
 
-        [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should throw error if no element is found")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryselector.spec", "Page.$eval", "should throw error if no element is found")]
         public void ShouldThrowErrorIfNoElementIsFound()
         {
             var exception = Assert.ThrowsAsync<SelectorException>(()

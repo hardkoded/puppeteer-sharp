@@ -9,8 +9,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device")]
     public async Task ShouldReturnFirstMatchingDevice()
     {
         var client = new MockCDPSession();
@@ -68,8 +67,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         Assert.AreEqual("My Device 1", device.Name);
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device from already known devices")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device from already known devices")]
     public async Task ShouldReturnFirstMatchingDeviceFromAlreadyKnownDevices()
     {
         var client = new MockCDPSession();
@@ -89,8 +87,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         await prompt.WaitForDeviceAsync(device => device.Name == "My Device 1");
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return device in the devices list")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return device in the devices list")]
     public async Task ShouldReturnDeviceInTheDevicesList()
     {
         var client = new MockCDPSession();
@@ -131,8 +128,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         Assert.Contains(device, prompt.Devices.ToArray());
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect timeout")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect timeout")]
     public void ShouldRespectTimeout()
     {
         var client = new MockCDPSession();
@@ -147,8 +143,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect default timeout when there is no custom timeout")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect default timeout when there is no custom timeout")]
     public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
     {
         var client = new MockCDPSession();
@@ -164,8 +159,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1"));
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should prioritize exact timeout over default timeout")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should prioritize exact timeout over default timeout")]
     public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
     {
         var client = new MockCDPSession();
@@ -181,8 +175,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         Assert.ThrowsAsync<TimeoutException>(() => prompt.WaitForDeviceAsync(device => device.Name == "My Device 1", new WaitForOptions(1)));
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should work with no timeout")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should work with no timeout")]
     public async Task ShouldWorkWithNoTimeout()
     {
         var client = new MockCDPSession();

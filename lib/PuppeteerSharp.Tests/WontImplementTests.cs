@@ -48,7 +48,6 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("tracing.spec", "Tracing", "should return undefined in case of Buffer error")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
-        [PuppeteerTimeout]
         public void TheseTestWontBeImplemented()
         {
         }

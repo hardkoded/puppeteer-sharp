@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec", "network Response.headers", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Response.headers", "should work")]
         public async Task ShouldWork()
         {
             Server.SetRoute("/empty.html", (context) =>

@@ -7,8 +7,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
     public void ShouldListDevicesAsTheyArrive()
     {
         var client = new MockCDPSession();
@@ -67,8 +66,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         Assert.AreEqual(2, prompt.Devices.Count);
     }
 
-    [Test, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
-    [PuppeteerTimeout]
+    [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
     public void ShouldNotListDevicesFromEventsOfAnotherPrompt()
     {
         var client = new MockCDPSession();

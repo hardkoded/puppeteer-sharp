@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.setGeolocation", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.setGeolocation", "should work")]
         public async Task ShouldWork()
         {
             await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
@@ -34,8 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }, geolocation);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
         public void ShouldThrowWhenInvalidLongitude()
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(() =>

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend HTTP headers")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend HTTP headers")]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("bar", requestTask.Result);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should redirect in a way non-observable to page")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should redirect in a way non-observable to page")]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("yellow", consoleMessage);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend method")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend method")]
         public async Task ShouldAmendMethodData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("POST", requestTask.Result);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend post data")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend post data")]
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.AreEqual("doggo", await requestTask.Result);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend both post data and method on navigation")]
+        [Test, PuppeteerTimeout, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend both post data and method on navigation")]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);

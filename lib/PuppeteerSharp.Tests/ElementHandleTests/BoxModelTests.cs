@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should work")]
+        [Test, PuppeteerTimeout, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/resetcss.html");
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }, box.Content[0]);
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should return null for invisible elements")]
+        [Test, PuppeteerTimeout, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should return null for invisible elements")]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");

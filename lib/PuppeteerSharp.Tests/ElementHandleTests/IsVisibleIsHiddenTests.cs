@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div style='display: none'>text</div>");

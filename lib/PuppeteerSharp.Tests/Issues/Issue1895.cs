@@ -9,7 +9,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerTimeout]
         public async Task ItNavigatesToSannySoft()
         {
             await Page.GoToAsync("https://bot.sannysoft.com/");

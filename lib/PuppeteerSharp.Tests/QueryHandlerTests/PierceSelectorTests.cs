@@ -39,8 +39,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find first element in shadow")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find first element in shadow")]
         public async Task ShouldFindFirstElementInShadow()
         {
             var div = await Page.QuerySelectorAsync("pierce/.foo");
@@ -50,8 +49,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello", text);
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find all elements in shadow")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find all elements in shadow")]
         public async Task ShouldFindAllElementsInShadow()
         {
             var divs = await Page.QuerySelectorAllAsync("pierce/.foo");
@@ -65,8 +63,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello World", string.Join(" ", text));
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find first child element")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find first child element")]
         public async Task ShouldFindFirstChildElement()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
@@ -77,8 +74,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.AreEqual("Hello", text);
         }
 
-        [Test, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find all child elements")]
-        [PuppeteerTimeout]
+        [Test, PuppeteerTimeout, PuppeteerTest("queryhandler.spec", "Pierce selectors", "should find all child elements")]
         public async Task ShouldFindAllChildElements()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
