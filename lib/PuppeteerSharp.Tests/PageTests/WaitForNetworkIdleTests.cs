@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForNetworkIdle", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True((t1 - t2).TotalMilliseconds >= 400);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForNetworkIdle", "should respect timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect timeout")]
         [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
@@ -62,7 +62,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
-        [Test, PuppeteerTest("page.spec", "Page.waitForNetworkIdle", "should respect idleTime")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect idleTime")]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.UtcNow;
@@ -94,7 +94,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(t2 > t1);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForNetworkIdle", "should work with no timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {

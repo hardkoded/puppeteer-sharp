@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.Events.PageError", "should fire")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.PageError", "should fire")]
         public async Task ShouldFire()
         {
             string error = null;

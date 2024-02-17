@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.Events.DOMContentLoaded", "should fire when expected")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.DOMContentLoaded", "should fire when expected")]
         [PuppeteerTimeout]
         public async Task ShouldFireWhenExpected()
         {

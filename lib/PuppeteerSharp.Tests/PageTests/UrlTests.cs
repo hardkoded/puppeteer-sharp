@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.url", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.url", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {

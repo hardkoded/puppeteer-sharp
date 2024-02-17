@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class WaitForRequestTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("page.spec", "Page.waitForRequest", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForRequest", "should work with predicate")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with predicate")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithPredicate()
         {
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForRequest", "should respect timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should respect timeout")]
         [PuppeteerTimeout]
         public async Task ShouldRespectTimeout()
         {
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForRequest", "should respect default timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should respect default timeout")]
         [PuppeteerTimeout]
         public async Task ShouldRespectDefaultTimeout()
         {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page.waitForRequest", "should work with no timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with no timeout")]
         [PuppeteerTimeout]
         public async Task ShouldWorkWithNoTimeout()
         {
