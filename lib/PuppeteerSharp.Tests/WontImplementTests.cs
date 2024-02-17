@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("waittask.spec", "Page.waitFor", "should log a deprecation warning")]
         [PuppeteerTest("waittask.spec", "Frame.waitForFunction", "should accept a string")]
         [PuppeteerTest("waittask.spec", "Frame.waitForFunction", "should throw on bad polling value")]
-        [PuppeteerTest("network.spec", "Page.setExtraHTTPHeaders", "should throw for non-string header values")]
+        [PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should throw for non-string header values")]
         [PuppeteerTest("page.spec", "removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
         [PuppeteerTest("page.spec", "removing and adding event handlers", "should correctly added and removed request events")]
         [PuppeteerTest("page.spec", "BrowserContext.overridePermissions", "should fail when bad permission is given")]

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTest("network.spec", "Response.statusText", "should work")]
+        [Test, PuppeteerTest("network.spec", "network Response.statusText", "should work")]
         [PuppeteerTimeout]
         public async Task ShouldWork()
         {
