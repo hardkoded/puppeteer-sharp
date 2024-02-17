@@ -3,7 +3,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Represents a point.
     /// </summary>
-    public class BoxModelPoint
+    public record BoxModelPoint
     {
         /// <summary>
         /// The X coordinate.

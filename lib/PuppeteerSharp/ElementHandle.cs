@@ -17,14 +17,11 @@ namespace PuppeteerSharp
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class ElementHandle : JSHandle, IElementHandle
     {
-        private readonly ILogger<ElementHandle> _logger;
-
         internal ElementHandle(
             IsolatedWorld world,
             RemoteObject remoteObject) : base(world, remoteObject)
         {
             Handle = new JSHandle(world, remoteObject);
-            _logger = world.Client.LoggerFactory.CreateLogger<ElementHandle>();
         }
 
         /// <inheritdoc/>
@@ -194,11 +191,11 @@ namespace PuppeteerSharp
                 await handle.Client.SendAsync(
                     "DOM.setFileInputFiles",
                     new DomSetFileInputFilesRequest
-                        {
-                            ObjectId = Id,
-                            Files = files,
-                            BackendNodeId = backendNodeId,
-                        })
+                    {
+                        ObjectId = Id,
+                        Files = files,
+                        BackendNodeId = backendNodeId,
+                    })
                     .ConfigureAwait(false);
 
                 return handle;
@@ -349,54 +346,6 @@ namespace PuppeteerSharp
                 };
             });
 
-        private async Task<Point?> GetTopLeftCornerOfFrameAsync()
-        {
-            var point = default(Point);
-
-            var frame = Frame;
-            var parentFrame = frame.ParentFrame;
-
-            while (parentFrame != null)
-            {
-                var handle = await frame.FrameElementAsync().ConfigureAwait(false);
-                if (handle == null)
-                {
-                    throw new PuppeteerException("Unsupported frame type");
-                }
-
-                var parentBox = await handle.EvaluateFunctionAsync<Point?>(@"element => {
-                    // Element is not visible.
-                    if (element.getClientRects().length === 0) {
-                        return null;
-                    }
-                    const rect = element.getBoundingClientRect();
-                    const style = window.getComputedStyle(element);
-                    return {
-                        x:
-                        rect.left +
-                            parseInt(style.paddingLeft, 10) +
-                            parseInt(style.borderLeftWidth, 10),
-                        y:
-                        rect.top +
-                            parseInt(style.paddingTop, 10) +
-                            parseInt(style.borderTopWidth, 10),
-                    };
-                }").ConfigureAwait(false);
-
-                if (parentBox == null)
-                {
-                    return null;
-                }
-
-                point.X += parentBox.Value.X;
-                point.Y += parentBox.Value.Y;
-                frame = parentFrame;
-                parentFrame = frame.ParentFrame;
-            }
-
-            return point;
-        }
-
         /// <inheritdoc/>
         public Task<BoxModel> BoxModelAsync()
             => BindIsolatedHandleAsync<BoxModel>(async handle =>
@@ -431,7 +380,7 @@ namespace PuppeteerSharp
                           bottom: parseInt(style.borderBottom, 10),
                         },
                       };
-                  const border: Quad = [
+                  const border = [
                     {x: rect.left, y: rect.top},
                     {x: rect.left + rect.width, y: rect.top},
                     {x: rect.left + rect.width, y: rect.top + rect.bottom},
@@ -450,9 +399,9 @@ namespace PuppeteerSharp
                   };
 
                   function transformQuadWithOffsets(
-                    quad: Quad,
-                    offsets: {top: number; left: number; right: number; bottom: number}
-                  ): Quad {
+                    quad,
+                    offsets
+                  ) {
                     return [
                       {
                         x: quad[0].x + offsets.left,
@@ -719,105 +668,6 @@ namespace PuppeteerSharp
                 return new BoxModelPoint() { X = box.X + (box.Width / 2), Y = box.Y + (box.Height / 2), };
             });
 
-        private async Task<BoundingBox> ClickableBoxAsync()
-        {
-            var boxes = await this.EvaluateFunctionAsync<BoundingBox[]>(@"element => {
-                if (!(element instanceof Element)) {
-                    return null;
-                }
-                return [...element.getClientRects()].map(rect => {
-                    return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
-                });
-            }").ConfigureAwait(false);
-
-            if (boxes == null || boxes.Length == 0)
-            {
-                return null;
-            }
-
-            await IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
-
-            var frame = Frame;
-            var parentFrame = frame.ParentFrame;
-            while (parentFrame != null)
-            {
-                var handle = await frame.FrameElementAsync().ConfigureAwait(false);
-                if (handle == null)
-                {
-                    throw new PuppeteerException("Unsupported frame type");
-                }
-
-                var parentBox = await handle.EvaluateFunctionAsync<BoundingBox>(@"element => {
-                    // Element is not visible.
-                    if (element.getClientRects().length === 0) {
-                        return null;
-                    }
-                    const rect = element.getBoundingClientRect();
-                    const style = window.getComputedStyle(element);
-                    return {
-                        X:
-                        rect.left +
-                            parseInt(style.paddingLeft, 10) +
-                            parseInt(style.borderLeftWidth, 10),
-                        Y:
-                        rect.top +
-                            parseInt(style.paddingTop, 10) +
-                            parseInt(style.borderTopWidth, 10),
-                    };
-                }").ConfigureAwait(false);
-
-                if (parentBox == null)
-                {
-                    return null;
-                }
-
-                foreach (var box in boxes)
-                {
-                    box.X += parentBox.X;
-                    box.Y += parentBox.Y;
-                }
-
-                await handle.IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
-                frame = parentFrame;
-                parentFrame = frame.ParentFrame;
-            }
-
-            var resultBox = boxes.FirstOrDefault(box => box.Width >= 1 && box.Height >= 1);
-
-            return resultBox;
-        }
-
-        private async Task IntersectBoundingBoxesWithFrameAsync(BoundingBox[] boxes)
-        {
-            var documentBox = await Frame
-                .IsolatedRealm
-                .EvaluateFunctionAsync<BoundingBox>(@"() => {
-                    return {
-                        width: document.documentElement.clientWidth,
-                        height: document.documentElement.clientHeight,
-                    };
-                }").ConfigureAwait(false);
-
-            foreach (var box in boxes)
-            {
-                IntersectBoundingBox(box, documentBox.Width, documentBox.Height);
-            }
-        }
-
-        private void IntersectBoundingBox(BoundingBox box, decimal width, decimal height)
-        {
-            box.Width = Math.Max(
-                box.X >= 0
-                    ? Math.Min(width - box.X, box.Width)
-                    : Math.Min(width, box.Width + box.X),
-                0);
-            box.Height = Math.Max(
-                box.Y >= 0
-                    ? Math.Min(height - box.Y, box.Height)
-                    : Math.Min(height, box.Height + box.Y),
-                0);
-        }
-
         /// <inheritdoc/>
         public Task<bool> IsVisibleAsync() => BindIsolatedHandleAsync(handle => CheckVisibilityAsync(handle, true));
 
@@ -985,6 +835,153 @@ namespace PuppeteerSharp
             }
 
             return result;
+        }
+
+        private async Task<Point?> GetTopLeftCornerOfFrameAsync()
+        {
+            var point = default(Point);
+
+            var frame = Frame;
+            var parentFrame = frame.ParentFrame;
+
+            while (parentFrame != null)
+            {
+                var handle = await frame.FrameElementAsync().ConfigureAwait(false);
+                if (handle == null)
+                {
+                    throw new PuppeteerException("Unsupported frame type");
+                }
+
+                var parentBox = await handle.EvaluateFunctionAsync<Point?>(@"element => {
+                    // Element is not visible.
+                    if (element.getClientRects().length === 0) {
+                        return null;
+                    }
+                    const rect = element.getBoundingClientRect();
+                    const style = window.getComputedStyle(element);
+                    return {
+                        x:
+                        rect.left +
+                            parseInt(style.paddingLeft, 10) +
+                            parseInt(style.borderLeftWidth, 10),
+                        y:
+                        rect.top +
+                            parseInt(style.paddingTop, 10) +
+                            parseInt(style.borderTopWidth, 10),
+                    };
+                }").ConfigureAwait(false);
+
+                if (parentBox == null)
+                {
+                    return null;
+                }
+
+                point.X += parentBox.Value.X;
+                point.Y += parentBox.Value.Y;
+                frame = parentFrame;
+                parentFrame = frame.ParentFrame;
+            }
+
+            return point;
+        }
+
+        private async Task<BoundingBox> ClickableBoxAsync()
+        {
+            var boxes = await this.EvaluateFunctionAsync<BoundingBox[]>(@"element => {
+                if (!(element instanceof Element)) {
+                    return null;
+                }
+                return [...element.getClientRects()].map(rect => {
+                    return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+                });
+            }").ConfigureAwait(false);
+
+            if (boxes == null || boxes.Length == 0)
+            {
+                return null;
+            }
+
+            await IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
+
+            var frame = Frame;
+            var parentFrame = frame.ParentFrame;
+            while (parentFrame != null)
+            {
+                var handle = await frame.FrameElementAsync().ConfigureAwait(false);
+                if (handle == null)
+                {
+                    throw new PuppeteerException("Unsupported frame type");
+                }
+
+                var parentBox = await handle.EvaluateFunctionAsync<BoundingBox>(@"element => {
+                    // Element is not visible.
+                    if (element.getClientRects().length === 0) {
+                        return null;
+                    }
+                    const rect = element.getBoundingClientRect();
+                    const style = window.getComputedStyle(element);
+                    return {
+                        X:
+                        rect.left +
+                            parseInt(style.paddingLeft, 10) +
+                            parseInt(style.borderLeftWidth, 10),
+                        Y:
+                        rect.top +
+                            parseInt(style.paddingTop, 10) +
+                            parseInt(style.borderTopWidth, 10),
+                    };
+                }").ConfigureAwait(false);
+
+                if (parentBox == null)
+                {
+                    return null;
+                }
+
+                foreach (var box in boxes)
+                {
+                    box.X += parentBox.X;
+                    box.Y += parentBox.Y;
+                }
+
+                await handle.IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
+                frame = parentFrame;
+                parentFrame = frame.ParentFrame;
+            }
+
+            var resultBox = boxes.FirstOrDefault(box => box.Width >= 1 && box.Height >= 1);
+
+            return resultBox;
+        }
+
+        private async Task IntersectBoundingBoxesWithFrameAsync(BoundingBox[] boxes)
+        {
+            var documentBox = await Frame
+                .IsolatedRealm
+                .EvaluateFunctionAsync<BoundingBox>(@"() => {
+                    return {
+                        width: document.documentElement.clientWidth,
+                        height: document.documentElement.clientHeight,
+                    };
+                }").ConfigureAwait(false);
+
+            foreach (var box in boxes)
+            {
+                IntersectBoundingBox(box, documentBox.Width, documentBox.Height);
+            }
+        }
+
+        private void IntersectBoundingBox(BoundingBox box, decimal width, decimal height)
+        {
+            box.Width = Math.Max(
+                box.X >= 0
+                    ? Math.Min(width - box.X, box.Width)
+                    : Math.Min(width, box.Width + box.X),
+                0);
+            box.Height = Math.Max(
+                box.Y >= 0
+                    ? Math.Min(height - box.Y, box.Height)
+                    : Math.Min(height, box.Height + box.Y),
+                0);
         }
     }
 }

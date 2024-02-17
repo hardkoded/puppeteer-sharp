@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class BoundingBoxTests : PuppeteerPageBaseTest
     {
-        public BoundingBoxTests() : base()
-        {
-        }
-
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.boundingBox", "should work")]
         [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()

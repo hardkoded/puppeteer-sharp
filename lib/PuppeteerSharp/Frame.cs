@@ -14,8 +14,8 @@ namespace PuppeteerSharp
     {
         private const string RefererHeaderName = "referer";
 
-        private Task<ElementHandle> _documentTask;
         private readonly ILogger _logger;
+        private Task<ElementHandle> _documentTask;
 
         internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
         {
@@ -600,6 +600,39 @@ namespace PuppeteerSharp
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
 
+        internal async Task<ElementHandle> FrameElementAsync()
+        {
+            var parentFrame = ParentFrame;
+            if (parentFrame == null)
+            {
+                return null;
+            }
+
+            var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
+                return document.querySelectorAll('iframe');
+            }").ConfigureAwait(false);
+
+            await foreach (var iframe in list.TransposeIterableHandleAsync())
+            {
+                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
+                if (frame.Id == Id)
+                {
+                    return iframe as ElementHandle;
+                }
+
+                try
+                {
+                    await iframe.DisposeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    _logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                }
+            }
+
+            return null;
+        }
+
         private DeviceRequestPromptManager GetDeviceRequestPromptManager()
         {
             if (IsOopFrame)
@@ -637,39 +670,6 @@ namespace PuppeteerSharp
             _documentTask = EvaluateDocumentInContext();
 
             return _documentTask;
-        }
-
-        internal async Task<ElementHandle> FrameElementAsync()
-        {
-            var parentFrame = ParentFrame;
-            if (parentFrame == null)
-            {
-                return null;
-            }
-
-            var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
-                return document.querySelectorAll('iframe');
-            }").ConfigureAwait(false);
-
-            await foreach (var iframe in list.TransposeIterableHandleAsync())
-            {
-                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
-                if (frame.Id == Id)
-                {
-                    return iframe as ElementHandle;
-                }
-
-                try
-                {
-                    await iframe.DisposeAsync().ConfigureAwait(false);
-                }
-                catch
-                {
-                    _logger.LogWarning("FrameElementAsync: Error disposing iframe");
-                }
-            }
-
-            return null;
         }
     }
 }
