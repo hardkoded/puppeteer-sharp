@@ -158,7 +158,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                StringAssert.Contains("Invalid url", exception.Message);
+                StringAssert.Contains("Invalid URL", exception.Message);
             }
         }
 
@@ -510,7 +510,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should send referer policy")]
         public async Task ShouldSendRefererPolicy()
         {
-            await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) => await e.Request.ContinueAsync();
             string referer1 = null;
             string referer2 = null;

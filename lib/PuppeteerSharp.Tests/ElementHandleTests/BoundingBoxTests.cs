@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work with SVG nodes")]
-        public async Task ShouldWworkWithSVGNodes()
+        public async Task ShouldWorkWithSVGNodes()
         {
             await Page.SetContentAsync(@"
                 <svg xmlns=""http://www.w3.org/2000/svg"" width=""500"" height=""500"">

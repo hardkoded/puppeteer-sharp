@@ -110,33 +110,31 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore state")]
         public async Task UserDataDirOptionShouldRestoreState()
         {
-            using (var userDataDir = new TempDirectory())
+            using var userDataDir = new TempDirectory();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            var options = TestConstants.DefaultBrowserOptions();
+
+            if (TestConstants.IsChrome)
             {
-                var launcher = new Launcher(TestConstants.LoggerFactory);
-                var options = TestConstants.DefaultBrowserOptions();
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+            }
+            else
+            {
+                options.Args = options.Args.Concat(new string[] { "-profile", userDataDir.ToString() }).ToArray();
+            }
 
-                if (TestConstants.IsChrome)
-                {
-                    options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
-                }
-                else
-                {
-                    options.Args = options.Args.Concat(new string[] { "-profile", userDataDir.ToString() }).ToArray();
-                }
+            await using (var browser = await launcher.LaunchAsync(options))
+            {
+                var page = await browser.NewPageAsync();
+                await page.GoToAsync(TestConstants.EmptyPage);
+                await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
+            }
 
-                await using (var browser = await launcher.LaunchAsync(options))
-                {
-                    var page = await browser.NewPageAsync();
-                    await page.GoToAsync(TestConstants.EmptyPage);
-                    await page.EvaluateExpressionAsync("localStorage.hey = 'hello'");
-                }
-
-                await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
-                {
-                    var page2 = await browser2.NewPageAsync();
-                    await page2.GoToAsync(TestConstants.EmptyPage);
-                    Assert.AreEqual("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
-                }
+            await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            {
+                var page2 = await browser2.NewPageAsync();
+                await page2.GoToAsync(TestConstants.EmptyPage);
+                Assert.AreEqual("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
             }
         }
 
