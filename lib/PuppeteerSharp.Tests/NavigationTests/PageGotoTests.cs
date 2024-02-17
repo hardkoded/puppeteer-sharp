@@ -488,8 +488,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should send referer")]
         public async Task ShouldSendReferer()
         {
-            await Page.SetRequestInterceptionAsync(true);
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             string referer1 = null;
             string referer2 = null;
 
@@ -510,7 +508,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should send referer policy")]
         public async Task ShouldSendRefererPolicy()
         {
-            Page.Request += async (_, e) => await e.Request.ContinueAsync();
             string referer1 = null;
             string referer2 = null;
 
