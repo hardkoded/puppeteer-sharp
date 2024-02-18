@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("page.spec", "Page printing to PDF", "can print to PDF with accessible")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.
