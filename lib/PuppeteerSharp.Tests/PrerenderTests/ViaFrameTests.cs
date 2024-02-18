@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class ViaFrameTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via input")]
+    [Test,  Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via input")]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
@@ -27,7 +27,7 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         Assert.AreSame(mainFrame, Page.MainFrame);
     }
 
-    [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via Puppeteer")]
+    [Test,  Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via Puppeteer")]
     public async Task CanNavigateToAPrerenderedPageViaPuppeteer()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("frame.spec", "Frame.evaluateHandle", "should work")]
+        [Test,  Retry(2), PuppeteerTest("frame.spec", "Frame.evaluateHandle", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

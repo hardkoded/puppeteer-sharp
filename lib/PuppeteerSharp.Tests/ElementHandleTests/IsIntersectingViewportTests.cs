@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class IsIntersectingViewportTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work")]
+        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isIntersectingViewport", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/offscreenbuttons.html");

@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should click the document")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should click the document")]
         public async Task ShouldClickTheDocument()
         {
             await Page.EvaluateFunctionAsync(@"() => {
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.AreEqual(0, e.Button);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should resize the textarea")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should resize the textarea")]
         public async Task ShouldResizeTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.AreEqual(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero), newDimensions.Height);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should select the text with mouse")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should select the text with mouse")]
         public async Task ShouldSelectTheTextWithMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             }"));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state")]
         public async Task ShouldTriggerHoverState()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.AreEqual("button-91", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state with removed window.Node")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state with removed window.Node")]
         public async Task ShouldTriggerHoverStateWithRemovedWindowNode()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should set modifier keys on click")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should set modifier keys on click")]
         public async Task ShouldSetModifierKeysOnClick()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             }
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should send mouse wheel events")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should send mouse wheel events")]
         public async Task ShouldSendMouseWheelEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
@@ -168,7 +168,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             }
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should tween mouse movement")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should tween mouse movement")]
         public async Task ShouldTweenMouseMovement()
         {
             await Page.Mouse.MoveAsync(100, 100);
@@ -188,7 +188,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             }, await Page.EvaluateExpressionAsync<int[][]>("result"));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should work with mobile viewports and cross process navigations")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should work with mobile viewports and cross process navigations")]
         public async Task ShouldWorkWithMobileViewportsAndCrossProcessNavigations()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -214,7 +214,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should throw if buttons are pressed incorrectly")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should throw if buttons are pressed incorrectly")]
         public async Task ShouldThrowIfButtonsArePressedIncorrectly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -223,7 +223,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             Assert.ThrowsAsync<PuppeteerException>(async () => await Page.Mouse.DownAsync());
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should not throw if clicking in parallel")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should not throw if clicking in parallel")]
         public async Task ShouldNotThrowIfClickingInParallel()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -308,7 +308,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                 data.Skip(3).Take(3));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should reset properly")]
+        [Test,  Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should reset properly")]
         public async Task ShouldResetProperly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

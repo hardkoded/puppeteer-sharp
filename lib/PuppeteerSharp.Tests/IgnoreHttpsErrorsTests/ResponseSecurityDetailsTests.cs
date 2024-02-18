@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             DefaultOptions.IgnoreHTTPSErrors = true;
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Should Work")]
+        [Test,  Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Should Work")]
         public async Task ShouldWork()
         {
             // Checking for the TLS socket is it is in upstreams proves to be flacky in .net framework.
@@ -31,14 +31,14 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             StringAssert.Contains("TLS", response.SecurityDetails.Protocol);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
+        [Test,  Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
         public async Task ShouldBeNullForNonSecureRequests()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.SecurityDetails);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
+        [Test,  Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
         [Ignore("This is super flaky")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should query existing element")]
+        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
@@ -21,14 +21,14 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(elements, Has.Exactly(1).Items);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return empty array for non-existing element")]
+        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return empty array for non-existing element")]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.XPathAsync("/html/body/non-existing-element");
             Assert.IsEmpty(elements);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return multiple elements")]
+        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return multiple elements")]
         public async Task ShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div></div><div></div>");

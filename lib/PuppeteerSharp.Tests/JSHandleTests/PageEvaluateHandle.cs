@@ -11,11 +11,11 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should work")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should work")]
         public async Task ShouldWork()
             => Assert.NotNull(await Page.EvaluateFunctionHandleAsync("() => window"));
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle as an argument")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle as an argument")]
         public async Task ShouldAcceptObjectHandleAsAnArgument()
         {
             var navigatorHandle = await Page.EvaluateFunctionHandleAsync("() => navigator");
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             StringAssert.Contains("Mozilla", text);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle to primitive types")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle to primitive types")]
         public async Task ShouldAcceptObjectHandleToPrimitiveTypes()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 5");
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.True(isFive);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should warn on nested object handles")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should warn on nested object handles")]
         public async Task ShouldWarnOnNestedObjectHandles()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => document.body");
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             StringAssert.Contains("Are you passing a nested JSHandle?", exception.Message);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle to unserializable value")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle to unserializable value")]
         public async Task ShouldAcceptObjectHandleToUnserializableValue()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => Infinity");
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
                 aHandle));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should use the same JS wrappers")]
+        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should use the same JS wrappers")]
         public async Task ShouldUseTheSameJSWrappers()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {

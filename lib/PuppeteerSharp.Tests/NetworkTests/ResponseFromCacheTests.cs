@@ -14,14 +14,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Response.fromCache", "should return |false| for non-cached content")]
+        [Test,  Retry(2), PuppeteerTest("network.spec", "network Response.fromCache", "should return |false| for non-cached content")]
         public async Task ShouldReturnFalseForNonCachedContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromCache);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Response.fromCache", "should work")]
+        [Test,  Retry(2), PuppeteerTest("network.spec", "network Response.fromCache", "should work")]
         public async Task ShouldWork()
         {
             var responses = new Dictionary<string, IResponse>();

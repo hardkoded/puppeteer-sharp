@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
+        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;

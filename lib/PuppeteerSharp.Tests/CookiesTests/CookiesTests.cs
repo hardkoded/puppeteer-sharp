@@ -12,14 +12,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should return no cookies in pristine browser context")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should return no cookies in pristine browser context")]
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.IsEmpty(await Page.GetCookiesAsync());
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get a cookie")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get a cookie")]
         public async Task ShouldGetACookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.True(cookie.Session);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report httpOnly cookie")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report httpOnly cookie")]
         public async Task ShouldProperlyReportHttpOnlyCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.True(cookies[0].HttpOnly);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Strict\" sameSite cookie")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Strict\" sameSite cookie")]
         public async Task ShouldProperlyReportSStrictSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.AreEqual(SameSite.Strict, cookies[0].SameSite);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Lax\" sameSite cookie")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Lax\" sameSite cookie")]
         public async Task ShouldProperlyReportLaxSameSiteCookie()
         {
             Server.SetRoute("/empty.html", context =>
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.AreEqual(SameSite.Lax, cookies[0].SameSite);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get multiple cookies")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get multiple cookies")]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.True(cookie.Session);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from multiple urls")]
+        [Test,  Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from multiple urls")]
         public async Task ShouldGetCookiesFromMultipleUrls()
         {
             await Page.SetCookieAsync(

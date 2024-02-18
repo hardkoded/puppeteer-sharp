@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should succeed with listed device")]
+    [Test,  Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should succeed with listed device")]
     public async Task ShouldSucceedWithListedDevice()
     {
         var client = new MockCDPSession();
@@ -42,7 +42,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         await prompt.SelectAsync(device);
     }
 
-    [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should error for device not listed in devices")]
+    [Test,  Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should error for device not listed in devices")]
     public void ShouldErrorForDeviceNotListedInDevices()
     {
         var client = new MockCDPSession();
@@ -58,7 +58,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         Assert.AreEqual("Cannot select unknown device!", exception!.Message);
     }
 
-    [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
+    [Test,  Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
     public async Task ShouldFailWhenSelectingPromptTwice()
     {
         var client = new MockCDPSession();

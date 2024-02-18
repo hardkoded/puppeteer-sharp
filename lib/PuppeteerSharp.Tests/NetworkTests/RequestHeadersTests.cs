@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Request.Headers", "should work")]
+        [Test,  Retry(2), PuppeteerTest("network.spec", "network Request.Headers", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);

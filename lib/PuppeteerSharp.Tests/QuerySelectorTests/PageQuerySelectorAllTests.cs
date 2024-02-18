@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$", "should query existing elements")]
+        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "Page.$$", "should query existing elements")]
         public async Task ShouldQueryExistingElements()
         {
             await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$", "should return empty array if nothing is found")]
+        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "Page.$$", "should return empty array if nothing is found")]
         public async Task ShouldReturnEmptyArrayIfNothingIsFound()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

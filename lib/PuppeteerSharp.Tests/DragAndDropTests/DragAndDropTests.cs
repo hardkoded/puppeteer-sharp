@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drop")]
+        [Test,  Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drop")]
         public async Task ShouldDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.AreEqual(1234, await GetDragStateAsync());
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drop using mouse")]
+        [Test,  Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drop using mouse")]
         public async Task ShouldDropUsingMouse()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.AreEqual(1234, await GetDragStateAsync());
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drag and drop")]
+        [Test,  Retry(2), PuppeteerTest("drag-and-drop.spec", "Drag n' Drop", "should drag and drop")]
         public async Task ShouldDragAndDrop()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");

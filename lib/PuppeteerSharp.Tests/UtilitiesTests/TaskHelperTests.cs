@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
     public class TaskHelperTests
     {
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public void ShouldExecuteActionOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public async Task ShouldNotExecuteActionOnCompletion()
         {
             var task = Task.FromResult(true);
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public void ShouldThrowOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public async Task ShouldNotThrowOnCompletion()
         {
             var task = Task.FromResult(true);
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public async Task ShouldNotExecuteActionOnTimeoutWhenCanceled()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public void ShouldExecuteActionOnTimeoutWhenNotCanceled()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public async Task ShouldNotExecuteAsyncActionOnCompletion()
         {
             var task = Task.CompletedTask;
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [PuppeteerTimeout, Retry(2)]
+        [ Retry(2)]
         public async Task ShouldStopExecutionWhenTokenIsCanceled()
         {
             using var tokenSource = new CancellationTokenSource();

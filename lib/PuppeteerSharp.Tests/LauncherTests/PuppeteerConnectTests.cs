@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect multiple times to the same browser")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect multiple times to the same browser")]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
             var options = new ConnectOptions()
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to close remote browser")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to close remote browser")]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {
             var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
               remoteBrowser.CloseAsync());
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
             await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
         public async Task ShouldSupportTargetFilter()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
             var options = new ConnectOptions()
@@ -156,7 +156,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.AreEqual(56, response);
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to the same page simultaneously")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to the same page simultaneously")]
         public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
         {
             var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
@@ -182,7 +182,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browserOne.CloseAsync();
         }
 
-        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect")]
+        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect")]
         public async Task ShouldBeAbleToReconnect()
         {
             var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
