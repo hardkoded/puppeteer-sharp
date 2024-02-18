@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TargetManagerTests
 {
@@ -23,7 +22,7 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
             };
         }
 
-        [Test,  Retry(2), PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
+        [Test, Retry(2), PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
         public async Task ShouldHandleTargets()
         {
             var targetManager = (Browser as Browser).TargetManager;

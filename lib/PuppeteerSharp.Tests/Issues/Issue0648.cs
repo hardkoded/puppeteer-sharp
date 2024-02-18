@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {

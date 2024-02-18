@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
@@ -15,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
         public async Task ShouldWork()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());

@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
@@ -12,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work")]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -26,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(new BoundingBox(100, 50, 50, 50), box);
         }
 
-        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should handle nested frames")]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should handle nested frames")]
         public async Task ShouldHandleNestedFrames()
         {
             await Page.SetViewportAsync(new ViewPortOptions
@@ -50,7 +49,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             }
         }
 
-        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should return null for invisible elements")]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should return null for invisible elements")]
         public async Task ShouldReturnNullForInvisibleElements()
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
@@ -58,7 +57,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.Null(await elementHandle.BoundingBoxAsync());
         }
 
-        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should force a layout")]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should force a layout")]
         public async Task ShouldForceALayout()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
@@ -69,7 +68,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(new BoundingBox(8, 8, 100, 200), box);
         }
 
-        [Test,  Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work with SVG nodes")]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work with SVG nodes")]
         public async Task ShouldWorkWithSVGNodes()
         {
             await Page.SetContentAsync(@"

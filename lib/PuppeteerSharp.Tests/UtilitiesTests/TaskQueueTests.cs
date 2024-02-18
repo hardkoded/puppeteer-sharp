@@ -4,14 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.UtilitiesTests
 {
     public class TaskQueueTests
     {
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public void ShouldDisposeSemaphoreWhenDisposing()
         {
             var taskQueue = new TaskQueue();
@@ -25,7 +24,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public void ShouldNotThrowWhenDisposingMultipleTimes()
         {
             var taskQueue = new TaskQueue();
@@ -36,7 +35,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public async Task ShouldDisposeSemaphoreWhenDisposingAsync()
         {
             var taskQueue = new TaskQueue();
@@ -50,7 +49,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public async Task ShouldNotThrowWhenDisposingMultipleTimesAsync()
         {
             var taskQueue = new TaskQueue();
@@ -61,7 +60,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public async Task CanDisposeWhileSemaphoreIsHeld()
         {
             var taskQueue = new TaskQueue();
@@ -82,7 +81,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
-        [ Retry(2)]
+        [Retry(2)]
         public async Task CanDisposeWhileSemaphoreIsHeldAsync()
         {
             var taskQueue = new TaskQueue();

@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
             var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];

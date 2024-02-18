@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should work")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should work")]
         public async Task ShouldWork()
         {
             await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
@@ -34,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }, geolocation);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
         public void ShouldThrowWhenInvalidLongitude()
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(() =>

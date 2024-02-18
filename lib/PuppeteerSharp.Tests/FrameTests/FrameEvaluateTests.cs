@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
@@ -12,7 +11,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("frame.spec", "Frame.evaluate", "should throw for detached frames")]
+        [Test, Retry(2), PuppeteerTest("frame.spec", "Frame.evaluate", "should throw for detached frames")]
         public async Task ShouldThrowForDetachedFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

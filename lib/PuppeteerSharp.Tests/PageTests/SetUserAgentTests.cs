@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -12,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
             StringAssert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
@@ -26,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("foobar", userAgentTask.Result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
             StringAssert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
@@ -38,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should emulate device user-agent")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should emulate device user-agent")]
         public async Task ShouldSimulateDeviceUserAgent()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -47,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
         public async Task ShouldWorkWithAdditionalUserAgentMetdata()
         {
             await Page.SetUserAgentAsync(

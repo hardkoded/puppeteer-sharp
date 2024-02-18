@@ -5,7 +5,6 @@ using System.Security.Policy;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
@@ -15,7 +14,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '0';
@@ -40,7 +39,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(30 + 15, clickablePoint.Y);
         }
 
-        [Test,  Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
         public async Task ShouldWorkForIFrames()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '10px';

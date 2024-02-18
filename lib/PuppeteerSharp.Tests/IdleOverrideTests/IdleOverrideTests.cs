@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.IdleOverrideTests
 {
@@ -29,7 +28,7 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
             Assert.AreEqual(expectedState, actualState);
         }
 
-        [Test,  Retry(2), PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
+        [Test, Retry(2), PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]
         public async Task ChangingIdleStateEmulationCausesChangeOfTheIdleDetectorState()
         {
             await Context.OverridePermissionsAsync(

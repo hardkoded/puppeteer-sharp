@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -12,7 +11,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should work")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>

@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
 {
-    [Test,  Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should succeed on first call")]
+    [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should succeed on first call")]
     public async Task ShouldSucceedOnFirstCall()
     {
         var client = new MockCDPSession();
@@ -22,7 +21,7 @@ public class DeviceRequestPromptCancelTests : PuppeteerPageBaseTest
         await prompt.CancelAsync();
     }
 
-    [Test,  Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should fail when canceling prompt twice")]
+    [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.cancel", "should fail when canceling prompt twice")]
     public async Task ShouldFailWhenCancelingPromptTwice()
     {
         var client = new MockCDPSession();

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
@@ -23,7 +22,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
         public async Task ShouldFindButton()
         {
             async Task ExpectFound(IElementHandle button)

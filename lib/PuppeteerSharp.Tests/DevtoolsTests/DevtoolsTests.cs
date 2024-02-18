@@ -6,7 +6,6 @@ using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DevtoolsTests
 {
@@ -16,7 +15,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should open devtools when \"devtools: true\" option is given")]
+        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should open devtools when \"devtools: true\" option is given")]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -28,7 +27,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
                 browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
         }
 
-        [Test,  Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should expose DevTools as a page")]
+        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should expose DevTools as a page")]
         public async Task ShouldExposeDevToolsAsAPage()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();

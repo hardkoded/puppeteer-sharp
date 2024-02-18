@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateVisionDeficiency", "should work")]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateVisionDeficiency", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });

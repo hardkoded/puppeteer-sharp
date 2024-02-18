@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work")]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -21,7 +20,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
-        [Test,  Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
         public async Task ShouldSupportClicking()
         {
             await Page.EmulateAsync(TestConstants.IPhone);

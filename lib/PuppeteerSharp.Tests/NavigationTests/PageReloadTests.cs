@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

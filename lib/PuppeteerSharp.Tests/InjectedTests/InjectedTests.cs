@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InjectedTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
+        [Test, Retry(2), PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
         public async Task ShouldWork()
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;
@@ -25,7 +24,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
             Assert.True(result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("injected.spec", "createFunction tests", "should work")]
+        [Test, Retry(2), PuppeteerTest("injected.spec", "createFunction tests", "should work")]
         public async Task CreateFunctionShouldWork()
         {
             var world = (Page.MainFrame as Frame).IsolatedRealm;

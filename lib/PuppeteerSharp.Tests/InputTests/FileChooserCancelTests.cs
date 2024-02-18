@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("input.spec", "FileChooser.cancel", "should cancel dialog")]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.cancel", "should cancel dialog")]
         public async Task ShouldCancelDialog()
         {
             // Consider file chooser canceled if we can summon another one.
@@ -34,7 +33,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.ClickAsync("input"));
         }
 
-        [Test,  Retry(2), PuppeteerTest("input.spec", "FileChooser.cancel", "should fail when canceling file chooser twice")]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.cancel", "should fail when canceling file chooser twice")]
         public async Task ShouldFailWhenCancelingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

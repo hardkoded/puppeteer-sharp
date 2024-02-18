@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Response.headers", "should work")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.headers", "should work")]
         public async Task ShouldWork()
         {
             Server.SetRoute("/empty.html", (context) =>

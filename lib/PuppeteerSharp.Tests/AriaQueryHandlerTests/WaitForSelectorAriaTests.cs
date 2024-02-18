@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
     {
         private const string AddElement = @"(tag) => document.body.appendChild(document.createElement(tag))";
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should immediately resolve promise if node exists")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should immediately resolve promise if node exists")]
         public async Task ShouldImmediatelyResolvePromiseIfNodeExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -19,7 +18,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work for ElementHandle.waitForSelector")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work for ElementHandle.waitForSelector")]
         public async Task ShouldWorkForElementHandleWaitForSelector()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,7 +30,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await element.WaitForSelectorAsync("aria/test");
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should persist query handler bindings across reloads")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should persist query handler bindings across reloads")]
         public async Task ShouldPersistQueryHandlerBindingsAcrossReloads()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -42,7 +41,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should persist query handler bindings across navigations")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should persist query handler bindings across navigations")]
         public async Task ShouldPersistQueryHandlerBindingsAcrossNavigations()
         {
             await Page.GoToAsync("data:text/html,");
@@ -53,7 +52,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work independently of `exposeFunction")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work independently of `exposeFunction")]
         public async Task ShouldWorkIndependentlyOfExposeFunction()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +63,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.AreEqual(10, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work with removed MutationObserver")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work with removed MutationObserver")]
         public async Task ShouldWorkWithRemovedMutationObserver()
         {
             await Page.EvaluateFunctionAsync(@"() => delete window.MutationObserver");
@@ -76,7 +75,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", handleTask.Result));
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should resolve promise when node is added")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should resolve promise when node is added")]
         public async Task ShouldResolvePromiseWhenNodeIsAdded()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -91,7 +90,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.AreEqual("H1", tagName);
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work when node is added through innerHTML")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work when node is added through innerHTML")]
         public async Task ShouldWorkWhenNodeIsAddedThroughInnerHtml()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -104,7 +103,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await watchdog;
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "Page.waitForSelector is shortcut for main frame")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "Page.waitForSelector is shortcut for main frame")]
         public async Task PageWaitForSelectorIsShortcutForMainFrame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -117,7 +116,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.AreSame(elementHandle.Frame, Page.MainFrame);
         }
 
-        [Test,  Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should run in specified frame")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should run in specified frame")]
         public async Task ShouldRunInSpecifiedFrame()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

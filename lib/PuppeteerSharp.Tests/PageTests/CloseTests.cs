@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -27,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             */
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
         public async Task ShouldNotBeVisibleInBrowserPages()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -46,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should run beforeunload if asked for")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should run beforeunload if asked for")]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -84,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should *not* run beforeunload by default")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should *not* run beforeunload by default")]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -92,7 +91,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should set the page close state")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should set the page close state")]
         public async Task ShouldSetThePageCloseState()
         {
             var page = await Context.NewPageAsync();
@@ -101,7 +100,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(page.IsClosed);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should terminate network waiters")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should terminate network waiters")]
         public async Task ShouldTerminateNetworkWaiters()
         {
             var newPage = await Context.NewPageAsync();

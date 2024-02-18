@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("queryhandler.spec", "in ElementHandles", "should query existing element")]
+        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in ElementHandles", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"><span>a</span></div>");
@@ -22,7 +21,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
             Assert.That(await elementHandle.QuerySelectorAllAsync("text/a"), Has.Exactly(1).Items);
         }
 
-        [Test,  Retry(2), PuppeteerTest("queryhandler.spec", "in Page", "should return null for non-existing element")]
+        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in ElementHandles", "should return null for non-existing element")]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"></div>");

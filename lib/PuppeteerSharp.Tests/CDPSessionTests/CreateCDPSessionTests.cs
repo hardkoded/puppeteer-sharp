@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CDPSessionTests
 {
@@ -15,7 +14,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should work")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should work")]
         public async Task ShouldWork()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -28,7 +27,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.AreEqual("bar", foo);
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
         public async Task ShouldSendEvents()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -47,7 +46,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(events, Has.Exactly(1).Items);
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -66,7 +65,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.AreEqual("foo.js", eventTask.Result["url"].Value<string>());
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
         public async Task ShouldBeAbleToDetachSession()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -88,7 +87,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             StringAssert.Contains("Session closed.", exception.Message);
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
         public async Task ShouldNotReportCreatedTArgetsForCustomCDPSessions()
         {
             var called = 0;
@@ -107,7 +106,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Page.BrowserContext.TargetCreated -= EventHandler;
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should throw nice errors")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should throw nice errors")]
         public async Task ShouldThrowNiceErrors()
         {
             var client = await Page.Target.CreateCDPSessionAsync();
@@ -121,7 +120,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             StringAssert.Contains("ThisCommand.DoesNotExist", exception.Message);
         }
 
-        [Test,  Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
             => Assert.NotNull(await Page.Target.CreateCDPSessionAsync());
     }

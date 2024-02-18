@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -40,7 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [Test,  Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -58,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Test,  Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and stream the result")]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and stream the result")]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
             // We test this differently compared to puppeteer.
@@ -78,7 +77,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [Test,  Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.

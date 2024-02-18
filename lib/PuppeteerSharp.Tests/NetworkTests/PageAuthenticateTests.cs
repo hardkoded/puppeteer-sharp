@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -14,7 +13,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
@@ -32,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
@@ -47,7 +46,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
@@ -67,7 +66,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
         }
 
-        [Test,  Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");

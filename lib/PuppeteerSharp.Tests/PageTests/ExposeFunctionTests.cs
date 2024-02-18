@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldWork()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -21,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(36, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
         public async Task ShouldThrowExceptionInPageContext()
         {
             await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
@@ -39,7 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
         public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
         {
             var called = false;
@@ -49,7 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldSurviveNavigation()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -58,7 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(36, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned promise")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned promise")]
         public async Task ShouldAwaitReturnedValueTask()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -66,7 +65,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames")]
         public async Task ShouldWorkOnFrames()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -76,7 +75,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
         public async Task ShouldWorkOnFramesBeforeNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -87,7 +86,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
         public async Task ShouldWorkWithComplexObjects()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");

@@ -2,13 +2,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        [Test,  Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have different execution contexts")]
+        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have different execution contexts")]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -25,7 +24,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.AreEqual("bar", await frame2.EvaluateExpressionAsync<string>("window.FOO"));
         }
 
-        [Test,  Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have correct execution contexts")]
+        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have correct execution contexts")]
         public async Task ShouldHaveCorrectExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -38,7 +37,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.AreEqual("Hi, I'm frame", await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"));
         }
 
-        [Test,  Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should execute after cross-site navigation")]
+        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should execute after cross-site navigation")]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

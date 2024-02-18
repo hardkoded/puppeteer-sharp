@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should work")]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -31,7 +30,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             StringAssert.Contains("/frames/one-frame.html", Page.Url);
         }
 
-        [Test,  Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should fail when frame detaches")]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should fail when frame detaches")]
         public async Task ShouldFailWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");

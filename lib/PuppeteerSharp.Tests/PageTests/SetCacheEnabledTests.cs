@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -13,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
@@ -35,7 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
         public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
         {
             await Page.SetCacheEnabledAsync(false);

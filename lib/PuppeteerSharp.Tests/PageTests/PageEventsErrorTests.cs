@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -14,7 +13,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;

@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
@@ -12,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should query existing elements")]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should query existing elements")]
         public async Task ShouldQueryExistingElements()
         {
             await Page.SetContentAsync("<html><body><div>A</div><br/><div>B</div></body></html>");
@@ -23,7 +22,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
         }
 
-        [Test,  Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should return empty array for non-existing elements")]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should return empty array for non-existing elements")]
         public async Task ShouldReturnEmptyArrayForNonExistingElements()
         {
             await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");

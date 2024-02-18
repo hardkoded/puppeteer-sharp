@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.FixturesTests
 {
@@ -14,7 +13,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
     {
         public FixturesTests() : base() { }
 
-        [Test,  Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
+        [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
@@ -61,7 +60,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.True(browser.IsClosed);
         }
 
-        [Test,  Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
+        [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextTests : PuppeteerBrowserBaseTest
     {
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -20,7 +19,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             StringAssert.Contains("cannot be closed", exception!.Message);
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new incognito context")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new incognito context")]
         public async Task ShouldCreateNewIncognitoContext()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -32,7 +31,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should close all belonging targets once closing context")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should close all belonging targets once closing context")]
         public async Task ShouldCloseAllBelongingTargetsOnceClosingContext()
         {
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
@@ -45,7 +44,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
         public async Task WindowOpenShouldUseParentTabContext()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -64,7 +63,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should fire target events")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should fire target events")]
         public async Task ShouldFireTargetEvents()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -83,7 +82,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Create two incognito contexts.
@@ -127,7 +126,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")]
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -144,7 +143,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
         public async Task ShouldProvideAContextId()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
@@ -156,7 +155,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]
         public async Task ShouldWaitForTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();
@@ -169,7 +168,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await context.CloseAsync();
         }
 
-        [Test,  Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
         public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
             var context = await Browser.CreateIncognitoBrowserContextAsync();

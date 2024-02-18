@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -11,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test,  Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Load", "should fire when expected")]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Load", "should fire when expected")]
         public async Task ShouldFireWhenExpected()
         {
             var _ = Page.GoToAsync(TestConstants.AboutBlank);
