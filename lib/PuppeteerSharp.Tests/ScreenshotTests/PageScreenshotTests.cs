@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
         }
 
-        [PuppeteerTimeout, Retry(2)(-1)]
+        [Test, Retry(2)]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.png");

@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTimeout, Retry(2)(-1)]
+        [Test]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");

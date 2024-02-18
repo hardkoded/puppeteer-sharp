@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.DoesNotContain("Timeout", exception.Message);
         }
 
-        [PuppeteerTimeout, Retry(2)(10000)]
+        [PuppeteerTimeout(10000), Retry(2)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Disconnect();
