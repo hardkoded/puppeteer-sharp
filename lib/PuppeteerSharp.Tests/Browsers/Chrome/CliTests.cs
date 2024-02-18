@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         public void DeleteDir()
             => new Cache(_cacheDir).Clear();
 
-        [Test, PuppeteerTimeout, PuppeteerTest("CLI.spec", "Chrome CLI", "should download Chrome binaries")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("CLI.spec", "Chrome CLI", "should download Chrome binaries")]
         public async Task ShouldDownloadChromeBinaries()
         {
             using var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)

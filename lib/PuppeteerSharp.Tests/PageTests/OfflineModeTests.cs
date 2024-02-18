@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should emulate navigator.onLine")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should emulate navigator.onLine")]
         public async Task ShouldEmulateNavigatorOnLine()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));

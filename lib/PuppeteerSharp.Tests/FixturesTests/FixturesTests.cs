@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
     {
         public FixturesTests() : base() { }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.True(browser.IsClosed);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

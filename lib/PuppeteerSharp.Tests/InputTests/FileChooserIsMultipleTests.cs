@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for single file pick")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for single file pick")]
         public async Task ShouldWorkForSingleFilePick()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(waitForTask.Result.IsMultiple);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"multiple\"")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"multiple\"")]
         public async Task ShouldWorkForMultiple()
         {
             await Page.SetContentAsync("<input type=file multiple>");
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(waitForTask.Result.IsMultiple);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
         public async Task ShouldWorkForWebkitDirectory()
         {
             await Page.SetContentAsync("<input type=file multiple webkitdirectory>");

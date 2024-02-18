@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Request.postData", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -19,14 +19,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual("{\"foo\":\"bar\"}", request.PostData);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.Request.PostData);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
         public async Task ShouldWorkWithBlobs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

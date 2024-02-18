@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
             var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];

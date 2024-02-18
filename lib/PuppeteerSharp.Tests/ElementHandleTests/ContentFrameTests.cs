@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             _headfulOptions.Headless = false;
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.contentFrame", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.contentFrame", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

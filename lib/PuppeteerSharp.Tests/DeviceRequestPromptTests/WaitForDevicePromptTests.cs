@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             #endregion
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return prompt")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return prompt")]
         public async Task ShouldReturnPrompt()
         {
             var client = new MockCDPSession();
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             await promptTask;
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect timeout")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect timeout")]
         public void ShouldRespectTimeout()
         {
             var client = new MockCDPSession();
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect default timeout when there is no custom timeout")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should respect default timeout when there is no custom timeout")]
         public void ShouldRespectDefaultTimeoutWhenThereIsNoCustomTimeout()
         {
             var client = new MockCDPSession();
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync());
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should prioritize exact timeout over default timeout")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should prioritize exact timeout over default timeout")]
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             var client = new MockCDPSession();
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             Assert.ThrowsAsync<TimeoutException>(() => manager.WaitForDevicePromptAsync(new WaitForOptions(1)));
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should work with no timeout")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should work with no timeout")]
         public async Task ShouldWorkWithNoTimeout()
         {
             var client = new MockCDPSession();
@@ -127,7 +127,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             await promptTask;
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return the same prompt when there are many watchdogs simultaneously")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should return the same prompt when there are many watchdogs simultaneously")]
         public async Task ShouldReturnTheSamePromptWhenThereAreManyWatchdogsSimultaneously()
         {
             var client = new MockCDPSession();

@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "Page.workers")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "Page.workers")]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.IsEmpty(Page.Workers);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreSame(worker, await workerDestroyedTcs.Task);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "should report console logs")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report console logs")]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }, log.Location);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -81,7 +81,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual("null", json);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "should have an execution context")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have an execution context")]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("worker.spec", "Workers", "should report errors")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report errors")]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();

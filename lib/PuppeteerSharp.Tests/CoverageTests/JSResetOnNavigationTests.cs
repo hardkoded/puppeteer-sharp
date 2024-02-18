@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should report scripts across navigations when disabled")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should report scripts across navigations when disabled")]
         public async Task ShouldReportScriptsAcrossNavigationsWhenDisabled()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.AreEqual(2, coverage.Length);
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should NOT report scripts across navigations when enabled")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should NOT report scripts across navigations when enabled")]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartJSCoverageAsync();

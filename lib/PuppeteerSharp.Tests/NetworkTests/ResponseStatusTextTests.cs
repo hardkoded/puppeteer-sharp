@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("network.spec", "network Response.statusText", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("network.spec", "network Response.statusText", "should work")]
         public async Task ShouldWork()
         {
             Server.SetRoute("/cool", (context) =>

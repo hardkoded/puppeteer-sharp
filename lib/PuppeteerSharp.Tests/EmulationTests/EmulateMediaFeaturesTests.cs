@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaFeatures", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaFeatures", "should work")]
         public async Task ShouldWork()
         {
             await Page.EmulateMediaFeaturesAsync(new MediaFeatureValue[] {

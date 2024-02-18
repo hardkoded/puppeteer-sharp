@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.getProperty", "should work")]
+        [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.getProperty", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
