@@ -39,8 +39,8 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
-        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls")]
-        public async Task ShouldWorkForDifferentConsoleApiCalls()
+        [Test, PuppeteerTimeout, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
+        public async Task ShouldWorkForDifferentConsoleApiCallsWithLoggingFunctions()
         {
             var messages = new List<ConsoleMessage>();
 
