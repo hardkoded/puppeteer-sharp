@@ -66,6 +66,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldResolveBuildIdFromPlatform()
             => Assert.True(int.TryParse(await BrowserData.Chromium.ResolveBuildIdAsync(Platform.MacOSArm64), out var _));
     }

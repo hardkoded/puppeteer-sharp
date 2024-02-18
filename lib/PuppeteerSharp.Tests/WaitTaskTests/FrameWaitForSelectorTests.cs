@@ -183,6 +183,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         [PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be hidden (visibility)")]
         [PuppeteerTest("waittask.spec", "Frame.waitForSelector", "should wait for element to be hidden (display)")]
         [TestCase("visibility", "hidden")]

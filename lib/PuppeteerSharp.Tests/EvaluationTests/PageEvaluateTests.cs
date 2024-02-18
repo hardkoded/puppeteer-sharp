@@ -17,6 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should await promise")]
         [TestCase("() => 7 * 3", 21)] //ShouldWork
@@ -35,6 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer NaN")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer -0")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer Infinity")]
@@ -172,6 +174,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return NaN")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return -0")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return Infinity")]
@@ -228,6 +231,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept a string")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept a string with semi colons")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept a string with comments")]

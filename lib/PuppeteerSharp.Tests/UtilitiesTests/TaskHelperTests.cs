@@ -3,12 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.UtilitiesTests
 {
     public class TaskHelperTests
     {
         [Test]
+        [PuppeteerTimeout]
         public void ShouldExecuteActionOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -16,6 +18,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldNotExecuteActionOnCompletion()
         {
             var task = Task.FromResult(true);
@@ -24,6 +27,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public void ShouldThrowOnTimeout()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -31,6 +35,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldNotThrowOnCompletion()
         {
             var task = Task.FromResult(true);
@@ -39,6 +44,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldNotExecuteActionOnTimeoutWhenCanceled()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -48,6 +54,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public void ShouldExecuteActionOnTimeoutWhenNotCanceled()
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -56,6 +63,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldNotExecuteAsyncActionOnCompletion()
         {
             var task = Task.CompletedTask;
@@ -65,6 +73,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldStopExecutionWhenTokenIsCanceled()
         {
             using var tokenSource = new CancellationTokenSource();

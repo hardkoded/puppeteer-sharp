@@ -137,6 +137,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         [Test]
+        [PuppeteerTimeout]
         public async Task ShouldReturnLatestVersion()
             => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
     }
