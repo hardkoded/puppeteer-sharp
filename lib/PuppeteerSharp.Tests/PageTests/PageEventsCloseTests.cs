@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Tests.Attributes;
 
@@ -18,12 +19,12 @@ namespace PuppeteerSharp.Tests.PageTests
             Context.TargetCreated += async (_, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
-            var newPage = await newPageTaskSource.Task;
+            var newPage = await newPageTaskSource.Task.WithTimeout();
 
             var closeTaskSource = new TaskCompletionSource<bool>();
             newPage.Close += (_, _) => closeTaskSource.SetResult(true);
             await Page.EvaluateExpressionAsync("window['newPage'].close();");
-            await closeTaskSource.Task;
+            await closeTaskSource.Task.WithTimeout();
         }
 
         [Test, PuppeteerTimeout, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Close", "should work with page.close")]
