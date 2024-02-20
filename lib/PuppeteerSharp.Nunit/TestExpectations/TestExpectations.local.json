@@ -42,8 +42,8 @@
     "expectations": ["FAIL"]
   },
   {
-    "description": "TODO Review after fixing https://github.com/hardkoded/puppeteer-sharp/issues/2450",
-    "testIdPattern": "* should fail to screenshot a detached element",
+    "description": "TODO Review screenshots in firefox",
+    "testIdPattern": "[screenshot.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
