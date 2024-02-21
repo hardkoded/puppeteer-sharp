@@ -1,0 +1,39 @@
+const axios = require("axios");
+require("dotenv").config();
+
+const puppeteerRepo =
+    "https://api.github.com/repos/puppeteer/puppeteer/issues/{issueId}";
+const puppeteerSharpRepo =
+    "https://api.github.com/repos/hardkoded/puppeteer-sharp/issues";
+
+// Gets the issue from the command line arguments
+const issueId = process.argv[2];
+// Gets the token from the environment variables
+const token = process.env.GITHUB_TOKEN;
+
+axios
+    .get(puppeteerRepo.replace("{issueId}", issueId))
+    .then((response) => {
+        const issueData = response.data;
+        const title = issueData.title;
+        const body = `[Original issue](https://www.github.com/puppeteer/puppeteer/issues/${issueId})`;
+
+        return axios.post(
+            puppeteerSharpRepo,
+            {
+                title: title,
+                body: body,
+            },
+            {
+                headers: {
+                    Authorization: `token ${token}`,
+                },
+            }
+        );
+    })
+    .then((response) => {
+        console.log("Issue created successfully");
+    })
+    .catch((error) => {
+        console.error("Error creating issue", error);
+    });
