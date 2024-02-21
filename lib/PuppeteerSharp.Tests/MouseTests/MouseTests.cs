@@ -73,11 +73,11 @@ namespace PuppeteerSharp.Tests.MouseTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
+            const string text = "This is the text that we are going to try to select.";
             await Page.Keyboard.TypeAsync(text);
             // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
             await Page.EvaluateExpressionAsync("new Promise(requestAnimationFrame)");
-            await Page.EvaluateExpressionAsync("document.querySelector('textarea').scrollTop = 0");
+
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.DownAsync();
