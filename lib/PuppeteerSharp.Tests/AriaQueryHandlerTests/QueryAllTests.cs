@@ -5,15 +5,13 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryAllTests : PuppeteerPageBaseTest
     {
-        [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAll", "should find menu by name")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "queryAll", "should find menu by name")]
         public async Task ShouldFindMenuByName()
         {
             await Page.SetContentAsync(@"

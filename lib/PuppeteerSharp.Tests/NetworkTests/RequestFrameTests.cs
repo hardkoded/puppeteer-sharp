@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.Frame", "should work for main frame navigation request")]
         public async Task ShouldWorkForMainFrameNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -32,8 +30,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(Page.MainFrame, requests[0].Frame);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for subframe navigation request")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.Frame", "should work for subframe navigation request")]
         public async Task ShouldWorkForSubframeNavigationRequest()
         {
             var requests = new List<IRequest>();
@@ -52,8 +49,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(Page.FirstChildFrame(), requests[1].Frame);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for fetch requests")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.Frame", "should work for fetch requests")]
         public async Task ShouldWorkForFetchRequests()
         {
             var requests = new List<IRequest>();

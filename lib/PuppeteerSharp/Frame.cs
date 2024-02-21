@@ -85,7 +85,7 @@ namespace PuppeteerSharp
 
         internal FrameManager FrameManager { get; }
 
-        internal string LoaderId { get; private set; }
+        internal string LoaderId { get; private set; } = string.Empty;
 
         internal List<string> LifecycleEvents { get; } = new();
 

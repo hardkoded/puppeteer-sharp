@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
@@ -10,7 +9,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -27,7 +25,6 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();

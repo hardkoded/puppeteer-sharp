@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaType", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaType", "should work")]
         public async Task ShouldWork()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"));

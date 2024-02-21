@@ -38,4 +38,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="TestExpectations\TestExpectations.json" />
+	</ItemGroup>
 </Project>

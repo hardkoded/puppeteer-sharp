@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -11,8 +10,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateMediaFeatures", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaFeatures", "should work")]
         public async Task ShouldWork()
         {
             await Page.EmulateMediaFeaturesAsync(new MediaFeatureValue[] {

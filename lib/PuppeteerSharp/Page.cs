@@ -78,8 +78,8 @@ namespace PuppeteerSharp
             PrimaryTarget = target;
             _targetManager = target.TargetManager;
             Keyboard = new Keyboard(client);
-            Mouse = new Mouse(client, (Keyboard)Keyboard);
-            Touchscreen = new Touchscreen(client, (Keyboard)Keyboard);
+            Mouse = new Mouse(client, Keyboard);
+            Touchscreen = new Touchscreen(client, Keyboard);
             Tracing = new Tracing(client);
             Coverage = new Coverage(client);
 
@@ -1278,118 +1278,121 @@ namespace PuppeteerSharp
 
         private async Task<string> PerformScreenshot(ScreenshotType type, ScreenshotOptions options)
         {
-            if (!_screenshotBurstModeOn)
+            var stack = new DisposableTasksStack();
+            await using (stack.ConfigureAwait(false))
             {
-                await BringToFrontAsync().ConfigureAwait(false);
-            }
-
-            // FromSurface is not supported on Firefox.
-            // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
-            if (Browser.BrowserType == SupportedBrowser.Firefox)
-            {
-                if (options.FromSurface != null)
+                if (!_screenshotBurstModeOn)
                 {
-                    throw new ArgumentException("Screenshots from surface are not supported on Firefox.", nameof(options.FromSurface));
+                    await BringToFrontAsync().ConfigureAwait(false);
                 }
-            }
-            else
-            {
-                options.FromSurface ??= true;
-            }
 
-            var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
-            var captureBeyondViewport = options.CaptureBeyondViewport;
-
-            if (!_screenshotBurstModeOn)
-            {
-                if (options.FullPage)
+                // FromSurface is not supported on Firefox.
+                // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
+                if (Browser.BrowserType == SupportedBrowser.Firefox)
                 {
-                    // Overwrite clip for full page at all times.
-                    clip = null;
-
-                    if (!captureBeyondViewport)
+                    if (options.FromSurface != null)
                     {
-                        var metrics = _screenshotBurstModeOn
-                            ? _burstModeMetrics :
-                            await PrimaryTargetClient.SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics").ConfigureAwait(false);
+                        throw new ArgumentException(
+                            "Screenshots from surface are not supported on Firefox.",
+                            nameof(options.FromSurface));
+                    }
+                }
+                else
+                {
+                    options.FromSurface ??= true;
+                }
 
-                        if (options.BurstMode)
+                var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
+                var captureBeyondViewport = options.CaptureBeyondViewport;
+
+                if (!_screenshotBurstModeOn)
+                {
+                    if (options.FullPage)
+                    {
+                        // Overwrite clip for full page at all times.
+                        clip = null;
+
+                        if (!captureBeyondViewport)
                         {
-                            _burstModeMetrics = metrics;
-                        }
+                            var metrics = _screenshotBurstModeOn
+                                ? _burstModeMetrics
+                                : await PrimaryTargetClient
+                                    .SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics")
+                                    .ConfigureAwait(false);
 
-                        var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
-
-                        var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                        var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
-                        var isMobile = Viewport?.IsMobile ?? false;
-                        var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                        var isLandscape = Viewport?.IsLandscape ?? false;
-                        var screenOrientation = isLandscape
-                            ? new ScreenOrientation
+                            if (options.BurstMode)
                             {
-                                Angle = 90,
-                                Type = ScreenOrientationType.LandscapePrimary,
+                                _burstModeMetrics = metrics;
                             }
-                            : new ScreenOrientation
-                            {
-                                Angle = 0,
-                                Type = ScreenOrientationType.PortraitPrimary,
-                            };
 
-                        await PrimaryTargetClient.SendAsync("Emulation.setDeviceMetricsOverride", new EmulationSetDeviceMetricsOverrideRequest
-                        {
-                            Mobile = isMobile,
-                            Width = width,
-                            Height = height,
-                            DeviceScaleFactor = deviceScaleFactor,
-                            ScreenOrientation = screenOrientation,
-                        }).ConfigureAwait(false);
+                            var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
+
+                            var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
+                            var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
+                            var isMobile = Viewport?.IsMobile ?? false;
+                            var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
+                            var isLandscape = Viewport?.IsLandscape ?? false;
+                            var screenOrientation = isLandscape
+                                ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
+                                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
+
+                            await PrimaryTargetClient.SendAsync(
+                                "Emulation.setDeviceMetricsOverride",
+                                new EmulationSetDeviceMetricsOverrideRequest
+                                {
+                                    Mobile = isMobile,
+                                    Width = width,
+                                    Height = height,
+                                    DeviceScaleFactor = deviceScaleFactor,
+                                    ScreenOrientation = screenOrientation,
+                                }).ConfigureAwait(false);
+                        }
+                    }
+
+                    if (Browser.BrowserType != SupportedBrowser.Firefox &&
+                        options.OmitBackground &&
+                        (type == ScreenshotType.Png || type == ScreenshotType.Webp))
+                    {
+                        await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+                        stack.Defer(() => _emulationManager.ResetDefaultBackgroundColorAsync());
                     }
                 }
 
-                if (options.OmitBackground && type == ScreenshotType.Png)
+                if (options.FullPage == false && clip == null)
                 {
-                    await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+                    captureBeyondViewport = false;
                 }
+
+                var screenMessage = new PageCaptureScreenshotRequest
+                {
+                    Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
+                    CaptureBeyondViewport = captureBeyondViewport,
+                    FromSurface = options.FromSurface,
+                    OptimizeForSpeed = options.OptimizeForSpeed,
+                };
+
+                if (options.Quality.HasValue)
+                {
+                    screenMessage.Quality = options.Quality.Value;
+                }
+
+                if (clip != null)
+                {
+                    screenMessage.Clip = clip;
+                }
+
+                var result = await PrimaryTargetClient
+                    .SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage)
+                    .ConfigureAwait(false);
+
+                if (options.BurstMode)
+                {
+                    _screenshotBurstModeOptions = options;
+                    _screenshotBurstModeOn = true;
+                }
+
+                return result.Data;
             }
-
-            if (options.FullPage == false && clip == null)
-            {
-                captureBeyondViewport = false;
-            }
-
-            var screenMessage = new PageCaptureScreenshotRequest
-            {
-                Format = type.ToString().ToLower(CultureInfo.CurrentCulture),
-                CaptureBeyondViewport = captureBeyondViewport,
-                FromSurface = options.FromSurface,
-                OptimizeForSpeed = options.OptimizeForSpeed,
-            };
-
-            if (options.Quality.HasValue)
-            {
-                screenMessage.Quality = options.Quality.Value;
-            }
-
-            if (clip != null)
-            {
-                screenMessage.Clip = clip;
-            }
-
-            var result = await PrimaryTargetClient.SendAsync<PageCaptureScreenshotResponse>("Page.captureScreenshot", screenMessage).ConfigureAwait(false);
-
-            if (options.BurstMode)
-            {
-                _screenshotBurstModeOptions = options;
-                _screenshotBurstModeOn = true;
-            }
-            else
-            {
-                await ResetBackgroundColorAndViewportAsync(options).ConfigureAwait(false);
-            }
-
-            return result.Data;
         }
 
         private Clip ProcessClip(Clip clip)

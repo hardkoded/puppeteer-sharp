@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
@@ -19,16 +18,14 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             DefaultOptions.IgnoreHTTPSErrors = true;
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "ignoreHTTPSErrors", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync($"{TestConstants.HttpsPrefix}/empty.html");
             Assert.True(response.Ok);
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "ignoreHTTPSErrors", "should work with request interception")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -37,8 +34,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "ignoreHTTPSErrors", "should work with mixed content")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with mixed content")]
         public async Task ShouldWorkWithMixedContent()
         {
             HttpsServer.SetRoute("/mixedcontent.html", async (context) =>

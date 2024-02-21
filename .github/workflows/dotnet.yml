@@ -54,6 +54,7 @@ jobs:
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Check formatting
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' }}
       run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes
     - name: Build
       working-directory: lib
@@ -66,12 +67,12 @@ jobs:
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
-          dotnet test -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml"
+          dotnet test -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
     - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       env:
         PRODUCT: ${{ matrix.browser }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
-        dotnet test -s test.runsettings
+        dotnet test -s test.runsettings --blame-hang-timeout 300000
 

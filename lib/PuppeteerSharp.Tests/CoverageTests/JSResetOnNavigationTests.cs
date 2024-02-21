@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CoverageTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
         }
 
-        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should report scripts across navigations when disabled")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should report scripts across navigations when disabled")]
         public async Task ShouldReportScriptsAcrossNavigationsWhenDisabled()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -26,8 +24,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.AreEqual(2, coverage.Length);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should NOT report scripts across navigations when enabled")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should NOT report scripts across navigations when enabled")]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartJSCoverageAsync();

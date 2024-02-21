@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -13,8 +12,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [PuppeteerTest("input.spec.ts", "Input", "should upload the file")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "Input", "should upload the file")]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");

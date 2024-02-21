@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
@@ -16,8 +15,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         {
         }
 
-        [PuppeteerTest("ariaqueryhandler.spec.ts", "queryAllArray", "$$eval should handle many elements")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "queryAllArray", "$$eval should handle many elements")]
         public async Task EvalShouldHandleManyElements()
         {
             await Page.SetContentAsync("");

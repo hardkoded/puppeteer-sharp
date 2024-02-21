@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -13,8 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.buffer", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.buffer", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
@@ -22,8 +20,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(imageBuffer, await response.BufferAsync());
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.buffer", "should work with compression")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.buffer", "should work with compression")]
         public async Task ShouldWorkWithCompression()
         {
             Server.EnableGzip("/pptr.png");

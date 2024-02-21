@@ -4,14 +4,12 @@ using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionExperimentalTests;
 
 public class RequestRespondTests : PuppeteerPageBaseTest
 {
-    [PuppeteerTest("requestinterception-experimental.spec.ts", "Request.respond", "should work")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should work")]
     public async Task ShouldWork()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -33,8 +31,7 @@ public class RequestRespondTests : PuppeteerPageBaseTest
     /// I found that status 422 is not available in all .NET runtimes (see https://github.com/dotnet/core/blob/4c4642d548074b3fbfd425541a968aadd75fea99/release-notes/2.1/Preview/api-diff/preview2/2.1-preview2_System.Net.md)
     /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
     /// </summary>
-    [PuppeteerTest("requestinterception-experimental.spec.ts", "Request.respond", "should work with status code 422")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should work with status code 422")]
     public async Task ShouldWorkReturnStatusPhrases()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -50,8 +47,7 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
     }
 
-    [PuppeteerTest("requestinterception-experimental.spec.ts", "Request.respond", "should redirect")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should redirect")]
     public async Task ShouldRedirect()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -77,8 +73,7 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.AreEqual(TestConstants.EmptyPage, response.Url);
     }
 
-    [PuppeteerTest("requestinterception-experimental.spec.ts", "Request.respond", "should allow mocking binary responses")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should allow mocking binary responses")]
     public async Task ShouldAllowMockingBinaryResponses()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -99,9 +94,8 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
     }
 
-    [PuppeteerTest("requestinterception-experimental.spec.ts", "Request.respond",
+    [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.respond",
         "should stringify intercepted request response headers")]
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task ShouldStringifyInterceptedRequestResponseHeaders()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -118,7 +112,6 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
     }
 
-    [Skip(SkipAttribute.Targets.Firefox)]
     public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
     {
         await Page.SetRequestInterceptionAsync(true);

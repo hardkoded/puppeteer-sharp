@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.KeyboardTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should type into a textarea")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should type into a textarea")]
         public async Task ShouldTypeIntoTheTextarea()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -25,8 +23,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("Type in this text!", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should move with the arrow keys")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should move with the arrow keys")]
         public async Task ShouldMoveWithTheArrowKeys()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -50,8 +47,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("Hello World!", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with ElementHandle.press")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with ElementHandle.press")]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -65,7 +61,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "ElementHandle.press should not contentFramesupport |text| option")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "ElementHandle.press should not support |text| option")]
         public async Task ElementHandlePressShouldSupportTextOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -74,7 +70,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with sendCharacter")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with sendCharacter")]
         public async Task ShouldSendACharacterWithSendCharacter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -114,8 +110,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             }
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should report multiple modifiers")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should report multiple modifiers")]
         public async Task ShouldReportMultipleModifiers()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -134,8 +129,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("Keyup: Alt AltLeft 18 []", await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing")]
         public async Task ShouldSendProperCodesWhileTyping()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -151,8 +145,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 "Keyup: ^ Digit6 54 []" }), await Page.EvaluateExpressionAsync<string>("getResult()"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing with shift")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing with shift")]
         public async Task ShouldSendProperCodesWhileTypingWithShift()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
@@ -167,8 +160,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             await keyboard.UpAsync("Shift");
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should not type canceled events")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should not type canceled events")]
         public async Task ShouldNotTypeCanceledEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -187,7 +179,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("He Wrd!", await Page.EvaluateExpressionAsync<string>("textarea.value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should specify repeat property")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should specify repeat property")]
         public async Task ShouldSpecifyRepeatProperty()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -208,7 +200,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.False(await Page.EvaluateExpressionAsync<bool>("window.lastEvent.repeat"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should type all kinds of characters")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should type all kinds of characters")]
         public async Task ShouldTypeAllKindsOfCharacters()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -218,7 +210,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual(text, await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should specify location")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should specify location")]
         public async Task ShouldSpecifyLocation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -240,8 +232,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual(3, await Page.EvaluateExpressionAsync<int>("keyLocation"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should throw on unknown keys")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should throw on unknown keys")]
         public void ShouldThrowOnUnknownKeys()
         {
             Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("NotARealKey"));
@@ -251,7 +242,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.ThrowsAsync<KeyNotFoundException>(() => Page.Keyboard.PressAsync("😊"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should type emoji")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should type emoji")]
         public async Task ShouldTypeEmoji()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
@@ -261,7 +252,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 await Page.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should type emoji into an iframe")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should type emoji into an iframe")]
         public async Task ShouldTypeEmojiIntoAniframe()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -274,7 +265,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should press the metaKey")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should press the metaKey")]
         public async Task ShouldPressTheMetaKey()
         {
             await Page.EvaluateFunctionAsync(@"() =>

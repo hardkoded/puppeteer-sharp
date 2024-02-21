@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.CoverageTests
 {
@@ -16,8 +15,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should work")]
         public async Task ShouldWork()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -40,8 +38,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             }, coverage[0].Ranges);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report sourceURLs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report sourceURLs")]
         public async Task ShouldReportSourceUrls()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -53,8 +50,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.AreEqual("nicename.js", coverage[0].Url);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should ignore eval() scripts by default")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should ignore eval() scripts by default")]
         public async Task ShouldIgnoreEvalScriptsByDefault()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -65,8 +61,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.That(coverage, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should not ignore eval() scripts if reportAnonymousScripts is true")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should not ignore eval() scripts if reportAnonymousScripts is true")]
         public async Task ShouldNotIgnoreEvalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -81,8 +76,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.AreEqual(2, coverage.Length);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should ignore pptr internal scripts if reportAnonymousScripts is true")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should ignore pptr internal scripts if reportAnonymousScripts is true")]
         public async Task ShouldIgnorePptrInternalScriptsIfReportAnonymousScriptsIsTrue()
         {
             await Page.Coverage.StartJSCoverageAsync(new CoverageStartOptions
@@ -96,8 +90,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.IsEmpty(coverage);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report multiple scripts")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report multiple scripts")]
         public async Task ShouldReportMultipleScripts()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -111,8 +104,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             StringAssert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report right ranges")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report right ranges")]
         public async Task ShouldReportRightRanges()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -127,8 +119,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.AreEqual("console.log('used!');", entry.Text.Substring(range.Start, range.End - range.Start));
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report scripts that have no coverage")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report scripts that have no coverage")]
         public async Task ShouldReportScriptsThatHaveNoCoverage()
         {
             await Page.Coverage.StartJSCoverageAsync();
@@ -142,8 +133,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             Assert.IsEmpty(entry.Ranges);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should work with conditionals")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should work with conditionals")]
         public async Task ShouldWorkWithConditionals()
         {
             const string involved = @"[
@@ -184,7 +174,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
         }
 
-        [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should not hang when there is a debugger statement")]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should not hang when there is a debugger statement")]
         [Ignore("Skipped in puppeteer")]
         public async Task ShouldNotHangWhenThereIsADebuggerStatement()
         {

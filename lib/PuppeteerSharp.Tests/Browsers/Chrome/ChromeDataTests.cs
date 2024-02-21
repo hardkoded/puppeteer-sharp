@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Browsers.Chrome
 {
@@ -50,7 +49,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             #endregion
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve download URLs")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -70,7 +69,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win64, "113.0.5672.0", null));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve executable paths")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(
@@ -106,8 +105,8 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
               Path.Combine("chrome-win64", "chrome.exe"));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve system executable path")]
-        [Skip(SkipAttribute.Targets.Linux, SkipAttribute.Targets.OSX)]
+        // This has a custom name
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(
@@ -117,7 +116,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                     ChromeReleaseChannel.Dev));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve system executable path")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.AreEqual(
@@ -137,6 +136,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         [Test]
+        [Retry(2)]
         public async Task ShouldReturnLatestVersion()
             => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
     }

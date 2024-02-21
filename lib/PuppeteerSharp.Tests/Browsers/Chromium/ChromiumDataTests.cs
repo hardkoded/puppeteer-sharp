@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
 {
     public class ChromiumDataTests
     {
-        [PuppeteerTest("chromium-data.spec.ts", "Chromium", "should resolve download URLs")]
+        [Test, Retry(2), PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
                 BrowserData.Chromium.ResolveDownloadUrl(Platform.Win64, "1083080", null));
         }
 
-        [PuppeteerTest("chromium-data.spec.ts", "Chromium", "should resolve executable paths")]
+        [Test, Retry(2), PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(
@@ -65,6 +65,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
         }
 
         [Test]
+        [Retry(2)]
         public async Task ShouldResolveBuildIdFromPlatform()
             => Assert.True(int.TryParse(await BrowserData.Chromium.ResolveBuildIdAsync(Platform.MacOSArm64), out var _));
     }

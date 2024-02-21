@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
         }
 
-        [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should wait for a target")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
         public async Task ShouldWaitForATarget()
         {
             var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
@@ -28,8 +26,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await page.CloseAsync();
         }
 
-        [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should timeout waiting for a non-existent target")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should timeout waiting for a non-existent target")]
         public void ShouldTimeoutWaitingForANonExistentTarget()
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
