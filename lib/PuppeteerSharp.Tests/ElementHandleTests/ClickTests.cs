@@ -83,7 +83,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
         }
 
-
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should return Point data")]
         public async Task ShouldReturnPointData()
         {
