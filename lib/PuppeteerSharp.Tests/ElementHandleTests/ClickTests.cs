@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
+            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for hidden nodes")]
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
+            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for recursively hidden nodes")]
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
+            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for <br> elements")]
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("hello<br>goodbye");
             var br = await Page.QuerySelectorAsync("br");
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
-            Assert.AreEqual("Node is either not visible or not an HTMLElement", exception.Message);
+            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
         }
 
 
