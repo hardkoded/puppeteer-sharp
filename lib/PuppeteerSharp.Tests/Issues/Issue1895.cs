@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
@@ -9,7 +8,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [PuppeteerTimeout]
         public async Task ItNavigatesToSannySoft()
         {
             await Page.GoToAsync("https://bot.sannysoft.com/");

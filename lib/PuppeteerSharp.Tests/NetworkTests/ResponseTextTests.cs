@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -15,16 +14,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.text", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
             Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.text", "should return uncompressed text")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should return uncompressed text")]
         public async Task ShouldReturnUncompressedText()
         {
             Server.EnableGzip("/simple.json");
@@ -33,8 +30,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.text", "should throw when requesting body of redirected response")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should throw when requesting body of redirected response")]
         public async Task ShouldThrowWhenRequestingBodyOfRedirectedResponse()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
@@ -48,8 +44,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             StringAssert.Contains("Response body is unavailable for redirect responses", exception.Message);
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.text", "should wait until response completes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should wait until response completes")]
         public async Task ShouldWaitUntilResponseCompletes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

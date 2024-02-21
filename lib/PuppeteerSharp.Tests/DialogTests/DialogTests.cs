@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DialogTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.DialogTests
         {
         }
 
-        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should fire")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should fire")]
         public async Task ShouldFire()
         {
             Page.Dialog += async (_, e) =>
@@ -30,8 +28,7 @@ namespace PuppeteerSharp.Tests.DialogTests
             await Page.EvaluateExpressionAsync("alert('yo');");
         }
 
-        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should allow accepting prompts")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should allow accepting prompts")]
         public async Task ShouldAllowAcceptingPrompts()
         {
             Page.Dialog += async (_, e) =>
@@ -47,8 +44,7 @@ namespace PuppeteerSharp.Tests.DialogTests
             Assert.AreEqual("answer!", result);
         }
 
-        [PuppeteerTest("dialog.spec.ts", "Page.Events.Dialog", "should dismiss the prompt")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should dismiss the prompt")]
         public async Task ShouldDismissThePrompt()
         {
             Page.Dialog += async (_, e) =>

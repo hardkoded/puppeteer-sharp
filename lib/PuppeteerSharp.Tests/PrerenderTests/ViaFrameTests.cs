@@ -1,14 +1,12 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class ViaFrameTests : PuppeteerPageBaseTest
 {
-    [PuppeteerTest("prerender.spec.ts", "via frame", "can navigate to a prerendered page via input")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via input")]
     public async Task CanNavigateToAPrerenderedPageViaInput()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");
@@ -28,8 +26,7 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         Assert.AreSame(mainFrame, Page.MainFrame);
     }
 
-    [PuppeteerTest("prerender.spec.ts", "via frame", "can navigate to a prerendered page via Puppeteer")]
-    [Skip(SkipAttribute.Targets.Firefox)]
+    [Test, Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via Puppeteer")]
     public async Task CanNavigateToAPrerenderedPageViaPuppeteer()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/index.html");

@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
@@ -17,8 +10,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Page.reload", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

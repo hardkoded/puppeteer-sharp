@@ -9,15 +9,13 @@ using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkManagerTests;
 
 public class NetworkManagerTests : PuppeteerPageBaseTest
 {
     // There are some missing calls in this function, but this is enough.
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
-    [PuppeteerTimeout]
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
     public async Task ShouldProcessExtraInfoOnMultipleRedirects()
     {
         var client = Substitute.For<ICDPSession>();
@@ -99,9 +97,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             });
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
         "should handle \"double pause\" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event")]
-    [PuppeteerTimeout]
     public async Task ShouldHandleDoublePause()
     {
         var client = Substitute.For<ICDPSession>();
@@ -184,9 +181,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.AreEqual(2, requests.Count);
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
         "should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)")]
-    [PuppeteerTimeout]
     public async Task ShouldHandleResponseReceivedExtraInfo()
     {
         var client = Substitute.For<ICDPSession>();
@@ -280,9 +276,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.AreEqual(1, requests.Count);
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
         "should resolve the response once the late responseReceivedExtraInfo event arrives")]
-    [PuppeteerTimeout]
     public async Task ShouldResolveTheResponseOnceTheLateResponseReceivedExtraInfoEventArrives()
     {
         var client = Substitute.For<ICDPSession>();
@@ -391,9 +386,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.NotNull(pendingRequests[0].Response);
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
         "should send responses for iframe that don't receive loadingFinished event")]
-    [PuppeteerTimeout]
     public async Task ShouldSendResponsesForIframeThatDontReceiveLoadingFinishedEvent()
     {
         var client = Substitute.For<ICDPSession>();
@@ -479,9 +473,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.NotNull(requests[0].Response);
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
         "should send responses for iframe that don't receive loadingFinished event")]
-    [PuppeteerTimeout]
     public async Task ShouldSendResponsesForIframeThatDontReceiveLoadingFinishedEvent2()
     {
         var client = Substitute.For<ICDPSession>();
@@ -579,8 +572,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.NotNull(requests[0].Response);
     }
 
-    [PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should handle cached redirects")]
-    [PuppeteerTimeout]
+    [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should handle cached redirects")]
     public async Task ShouldHandleCachedRedirects()
     {
         var client = Substitute.For<ICDPSession>();

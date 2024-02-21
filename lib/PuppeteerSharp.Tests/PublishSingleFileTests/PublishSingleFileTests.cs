@@ -2,13 +2,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.SingleFileDeployment
 {
     public class PublishSingleFileTests
     {
-        [Skip(SkipAttribute.Targets.OSX | SkipAttribute.Targets.Linux)]
         public void ShouldWork()
         {
             var tempPath = Path.GetTempPath();

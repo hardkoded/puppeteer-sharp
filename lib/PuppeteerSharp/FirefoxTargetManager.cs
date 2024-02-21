@@ -128,7 +128,7 @@ namespace PuppeteerSharp
             _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
             FinishInitializationIfReady(e.TargetId);
 
-            if (_availableTargetsByTargetId.TryGetValue(e.TargetId, out var target))
+            if (_availableTargetsByTargetId.TryRemove(e.TargetId, out var target))
             {
                 TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
             }

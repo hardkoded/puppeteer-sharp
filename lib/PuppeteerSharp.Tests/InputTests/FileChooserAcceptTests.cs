@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
@@ -13,8 +12,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should accept single file")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should accept single file")]
         public async Task ShouldAcceptSingleFile()
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
@@ -37,8 +35,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<string>("input => input.files[0].name"));
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to read selected file")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should be able to read selected file")]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -57,8 +54,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 }"));
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should be able to reset selected files with empty file list")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should be able to reset selected files with empty file list")]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -85,8 +81,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }"));
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should not accept multiple files for single-file input")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should not accept multiple files for single-file input")]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -101,8 +96,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 "./assets/pptr.png"));
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail for non-existent files")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should fail for non-existent files")]
         public async Task ShouldFailForNonExistentFiles()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -115,8 +109,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.accept", "should fail when accepting file chooser twice")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.accept", "should fail when accepting file chooser twice")]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

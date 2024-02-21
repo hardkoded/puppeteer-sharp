@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextOverridePermissionsTests : PuppeteerPageBaseTest
     {
@@ -18,16 +17,14 @@ namespace PuppeteerSharp.Tests.PageTests
                 "name => navigator.permissions.query({ name }).then(result => result.state)",
                 name);
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should be prompt by default")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should be prompt by default")]
         public async Task ShouldBePromptByDefault()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should deny permission when not listed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should deny permission when not listed")]
         public async Task ShouldDenyPermissionWhenNotListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -35,8 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("denied", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should grant permission when listed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should grant permission when listed")]
         public async Task ShouldGrantPermissionWhenListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -47,8 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("granted", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should reset permissions")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should reset permissions")]
         public async Task ShouldResetPermissions()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -61,8 +56,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
         }
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should trigger permission onchange")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should trigger permission onchange")]
         public async Task ShouldTriggerPermissionOnchange()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -91,8 +85,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 await Page.EvaluateExpressionAsync<string[]>("window.events"));
         }
 
-        [PuppeteerTest("page.spec.ts", "BrowserContext.overridePermissions", "should isolate permissions between browser contexts")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should isolate permissions between browser contexts")]
         public async Task ShouldIsolatePermissionsBetweenBrowserContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -114,7 +107,6 @@ namespace PuppeteerSharp.Tests.PageTests
             await otherContext.CloseAsync();
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task AllEnumsdAreValid()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -10,24 +11,22 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with window.close")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Close", "should work with window.close")]
         public async Task ShouldWorkWithWindowClose()
         {
             var newPageTaskSource = new TaskCompletionSource<IPage>();
             Context.TargetCreated += async (_, e) => newPageTaskSource.TrySetResult(await e.Target.PageAsync());
 
             await Page.EvaluateExpressionAsync("window['newPage'] = window.open('about:blank');");
-            var newPage = await newPageTaskSource.Task;
+            var newPage = await newPageTaskSource.Task.WithTimeout();
 
             var closeTaskSource = new TaskCompletionSource<bool>();
             newPage.Close += (_, _) => closeTaskSource.SetResult(true);
             await Page.EvaluateExpressionAsync("window['newPage'].close();");
-            await closeTaskSource.Task;
+            await closeTaskSource.Task.WithTimeout();
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Close", "should work with page.close")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Close", "should work with page.close")]
         public async Task ShouldWorkWithPageClose()
         {
             var newPage = await Context.NewPageAsync();

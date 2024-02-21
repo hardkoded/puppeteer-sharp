@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateTimezone", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateTimezone", "should work")]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync("globalThis.date = new Date(1479579154987);");
@@ -38,8 +36,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
                 await Page.EvaluateExpressionAsync<string>("date.toString()"));
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateTimezone", "should throw for invalid timezone IDs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateTimezone", "should throw for invalid timezone IDs")]
         public void ShouldThrowForInvalidTimezoneId()
         {
             var exception = Assert.ThrowsAsync<PuppeteerException>(

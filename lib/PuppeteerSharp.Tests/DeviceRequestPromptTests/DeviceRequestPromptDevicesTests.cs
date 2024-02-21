@@ -1,14 +1,12 @@
 using NUnit.Framework;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
 
 public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
 {
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
-    [PuppeteerTimeout]
+    [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "lists devices as they arrive")]
     public void ShouldListDevicesAsTheyArrive()
     {
         var client = new MockCDPSession();
@@ -67,8 +65,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         Assert.AreEqual(2, prompt.Devices.Count);
     }
 
-    [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
-    [PuppeteerTimeout]
+    [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
     public void ShouldNotListDevicesFromEventsOfAnotherPrompt()
     {
         var client = new MockCDPSession();

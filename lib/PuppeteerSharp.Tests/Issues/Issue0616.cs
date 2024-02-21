@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
@@ -14,7 +13,6 @@ namespace PuppeteerSharp.Tests.Issues
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);

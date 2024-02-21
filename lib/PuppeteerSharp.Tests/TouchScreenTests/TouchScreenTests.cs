@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.TouchScreenTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
         {
         }
 
-        [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should tap the button")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("touchscreen.spec", "Touchscreen", "should tap the button")]
         public async Task ShouldTapTheButton()
         {
             await Page.EmulateAsync(_iPhone);
@@ -24,8 +22,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
             Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
 
-        [PuppeteerTest("touchscreen.spec.ts", "Touchscreen", "should report touches")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("touchscreen.spec", "Touchscreen", "should report touches")]
         public async Task ShouldReportTouches()
         {
             await Page.EmulateAsync(_iPhone);

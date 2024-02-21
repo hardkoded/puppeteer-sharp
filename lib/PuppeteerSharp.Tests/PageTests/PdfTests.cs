@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
@@ -15,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [PuppeteerTimeout(-1)]
+        [Test]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
@@ -40,8 +39,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -59,8 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and stream the result")]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
             // We test this differently compared to puppeteer.
@@ -80,8 +77,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.
@@ -106,7 +102,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
         }
 
-        [PuppeteerTimeout]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions

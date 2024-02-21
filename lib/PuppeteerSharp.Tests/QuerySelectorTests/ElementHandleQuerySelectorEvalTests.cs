@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -22,8 +21,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             #endregion
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should work")]
         public async Task QuerySelectorShouldWork()
         {
             await Page.SetContentAsync("<html><body><div class='tweet'><div class='like'>100</div><div class='retweets'>10</div></div></body></html>");
@@ -33,8 +31,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("100", content);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should retrieve content from subtree")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should retrieve content from subtree")]
         public async Task QuerySelectorShouldRetrieveContentFromSubtree()
         {
             var htmlContent = "<div class='a'>not-a-child-div</div><div id='myId'><div class='a'>a-child-div</div></div>";
@@ -45,8 +42,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.AreEqual("a-child-div", content);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "ElementHandle.$eval", "should throw in case of missing selector")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should throw in case of missing selector")]
         public async Task QuerySelectorShouldThrowInCaseOfMissingSelector()
         {
             var htmlContent = "<div class=\"a\">not-a-child-div</div><div id=\"myId\"></div>";

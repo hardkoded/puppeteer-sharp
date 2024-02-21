@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.statusText", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.statusText", "should work")]
         public async Task ShouldWork()
         {
             Server.SetRoute("/cool", (context) =>

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -14,8 +13,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for navigation requests")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.Events.Request", "should fire for navigation requests")]
         public async Task ShouldFireForNavigationRequests()
         {
             var requests = new List<IRequest>();
@@ -31,8 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for iframes")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.Events.Request", "should fire for iframes")]
         public async Task ShouldFireForIframes()
         {
             var requests = new List<IRequest>();
@@ -50,8 +47,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(2, requests.Count);
         }
 
-        [PuppeteerTest("network.spec.ts", "Page.Events.Request", "should fire for fetches")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.Events.Request", "should fire for fetches")]
         public async Task ShouldFireForFetches()
         {
             var requests = new List<IRequest>();

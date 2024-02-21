@@ -1,11 +1,9 @@
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests
 {
     public class LaunchOptionsTests
     {
-        [PuppeteerTimeout]
         public void DisableHeadlessWhenDevtoolsEnabled()
         {
             var options = new LaunchOptions

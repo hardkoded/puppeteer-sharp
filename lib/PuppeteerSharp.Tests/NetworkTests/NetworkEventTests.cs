@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -15,8 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Request")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.Request")]
         public async Task PageEventsRequest()
         {
             var requests = new List<IRequest>();
@@ -31,8 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestServedFromCache")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
         public async Task PageEventsRequestServedFromCache()
         {
             var cached = new List<string>();
@@ -43,8 +40,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(new[] { "one-style.css" }, cached);
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.Response")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.Response")]
         public async Task PageEventsResponse()
         {
             var responses = new List<IResponse>();
@@ -63,8 +59,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(TestConstants.Port, remoteAddress.Port);
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFailed")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFailed")]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -100,8 +95,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.NotNull(failedRequests[0].Frame);
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "Page.Events.RequestFinished")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFinished")]
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<IRequest>();
@@ -115,8 +109,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(TestConstants.EmptyPage, requests[0].Frame.Url);
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "should fire events in proper order")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should fire events in proper order")]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
@@ -127,8 +120,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual(new[] { "request", "response", "requestfinished" }, events.ToArray());
         }
 
-        [PuppeteerTest("network.spec.ts", "Network Events", "should support redirects")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should support redirects")]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();

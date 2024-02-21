@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.WaitForTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         {
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForTimeout", "waits for the given timeout before resolving")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForTimeout", "waits for the given timeout before resolving")]
         public async Task WaitsForTheGivenTimeoutBeforeResolving()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

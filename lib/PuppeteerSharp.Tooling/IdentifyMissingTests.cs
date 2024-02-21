@@ -60,8 +60,8 @@ namespace PuppeteerSharp.Tooling
             var noMatches = 0;
             var totalTests = 0;
 
-            List<PuppeteerTestAttribute> missingTests = new();
-            List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = new();
+            List<PuppeteerTestAttribute> missingTests = [];
+            List<KeyValuePair<PuppeteerTestAttribute, List<PuppeteerTestAttribute>>> invalidMaps = [];
 
             var attributes = new ScreenshotHelper().GetType().Assembly.DefinedTypes.SelectMany(
                 type => type.GetMethods().SelectMany(method => method.GetCustomAttributes<PuppeteerTestAttribute>()));
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tooling
                         fileInfo.FullName,
                         (testDescribe, testName) =>
                         {
-                            _testPairs.Add(new PuppeteerTestAttribute(basePath + fileInfo.Name, testDescribe, testName));
+                            _testPairs.Add(new PuppeteerTestAttribute(Path.GetFileNameWithoutExtension(fileInfo.FullName), testDescribe, testName));
                         });
                 }
             }

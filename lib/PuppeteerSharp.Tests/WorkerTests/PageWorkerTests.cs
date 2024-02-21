@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
@@ -12,8 +11,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
         {
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "Page.workers")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "Page.workers")]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -34,8 +32,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.IsEmpty(Page.Workers);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -49,8 +46,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreSame(worker, await workerDestroyedTcs.Task);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report console logs")]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -68,8 +64,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }, log.Location);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should have JSHandles for console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -85,8 +80,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual("null", json);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have an execution context")]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -97,8 +91,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report errors")]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();

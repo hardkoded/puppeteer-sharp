@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
@@ -34,8 +33,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             _pollerInterceptor.Dispose();
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should work when resolved right before execution context disposal")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should work when resolved right before execution context disposal")]
         public async Task ShouldWorkWhenResolvedRightBeforeExecutionContextDisposal()
         {
             await Page.EvaluateFunctionOnNewDocumentAsync("() => window.__RELOADED = true");
@@ -47,8 +45,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             }");
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on interval")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on interval")]
         public async Task ShouldPollOnInterval()
         {
             var startTime = DateTime.UtcNow;
@@ -62,8 +59,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on interval async")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on interval async")]
         public async Task ShouldPollOnIntervalAsync()
         {
             var startTime = DateTime.UtcNow;
@@ -76,8 +72,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True((DateTime.UtcNow - startTime).TotalMilliseconds > polling / 2);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on mutation")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on mutation")]
         public async Task ShouldPollOnMutation()
         {
             var success = false;
@@ -92,8 +87,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on mutation async")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on mutation async")]
         public async Task ShouldPollOnMutationAsync()
         {
             var success = false;
@@ -108,8 +102,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on raf")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on raf")]
         public async Task ShouldPollOnRaf()
         {
             var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'",
@@ -118,8 +111,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should poll on raf async")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should poll on raf async")]
         public async Task ShouldPollOnRafAsync()
         {
             var watchdog = Page.WaitForFunctionAsync("async () => window.__FOO === 'hit'",
@@ -128,8 +120,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should work with strict CSP policy")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should work with strict CSP policy")]
         public async Task ShouldWorkWithStrictCSPPolicy()
         {
             Server.SetCSP("/empty.html", "script-src " + TestConstants.ServerUrl);
@@ -142,8 +133,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 Page.EvaluateExpressionAsync("window.__FOO = 'hit'"));
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should throw negative polling interval")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should throw negative polling interval")]
         public void ShouldThrowNegativePollingInterval()
         {
             var exception = Assert.ThrowsAsync<ArgumentOutOfRangeException>(()
@@ -152,18 +142,15 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("Cannot poll with non-positive interval", exception.Message);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should return the success value as a JSHandle")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should return the success value as a JSHandle")]
         public async Task ShouldReturnTheSuccessValueAsAJSHandle()
             => Assert.AreEqual(5, await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>());
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should return the window as a success value")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should return the window as a success value")]
         public async Task ShouldReturnTheWindowAsASuccessValue()
             => Assert.NotNull(await Page.WaitForFunctionAsync("() => window"));
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should accept ElementHandle arguments")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should accept ElementHandle arguments")]
         public async Task ShouldAcceptElementHandleArguments()
         {
             await Page.SetContentAsync("<div></div>");
@@ -176,8 +163,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await waitForFunction;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should respect timeout")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should respect timeout")]
         public void ShouldRespectTimeout()
         {
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
@@ -186,8 +172,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("Waiting failed: 10ms exceeded", exception.Message);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should respect default timeout")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should respect default timeout")]
         public void ShouldRespectDefaultTimeout()
         {
             Page.DefaultTimeout = 1;
@@ -197,8 +182,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("Waiting failed: 1ms exceeded", exception.Message);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should disable timeout when its set to 0")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should disable timeout when its set to 0")]
         public async Task ShouldDisableTimeoutWhenItsSetTo0()
         {
             var watchdog = Page.WaitForFunctionAsync(@"() => {
@@ -210,8 +194,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should survive cross-process navigation")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should survive cross-process navigation")]
         public async Task ShouldSurviveCrossProcessNavigation()
         {
             var fooFound = false;
@@ -228,8 +211,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.True(fooFound);
         }
 
-        [PuppeteerTest("waittask.spec.ts", "Frame.waitForFunction", "should survive navigations")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should survive navigations")]
         public async Task ShouldSurviveNavigations()
         {
             var watchdog = Page.WaitForFunctionAsync("() => window.__done");
