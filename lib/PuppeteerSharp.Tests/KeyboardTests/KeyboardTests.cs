@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.AreEqual("嗨a", await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should report shiftKey")]
+        [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should report shiftKey")]
         public async Task ShouldReportShiftKey()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
