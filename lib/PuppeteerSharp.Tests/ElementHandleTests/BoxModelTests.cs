@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -7,10 +6,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class BoxModelTests : PuppeteerPageBaseTest
     {
-        public BoxModelTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should work")]
         public async Task ShouldWork()
         {

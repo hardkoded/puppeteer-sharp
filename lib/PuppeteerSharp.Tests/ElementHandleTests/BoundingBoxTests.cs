@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class BoundingBoxTests : PuppeteerPageBaseTest
     {
-        public BoundingBoxTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work")]
         public async Task ShouldWork()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
@@ -13,6 +14,7 @@ namespace PuppeteerSharp
     {
         private const string RefererHeaderName = "referer";
 
+        private readonly ILogger _logger;
         private Task<ElementHandle> _documentTask;
 
         internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
@@ -30,6 +32,8 @@ namespace PuppeteerSharp
                 OnLoadingStarted();
                 OnLoadingStopped();
             };
+
+            _logger = client.Connection.LoggerFactory.CreateLogger<Frame>();
         }
 
         /// <inheritdoc />
@@ -95,7 +99,7 @@ namespace PuppeteerSharp
 
         internal bool HasStartedLoading { get; private set; }
 
-        private Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+        internal Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
         /// <inheritdoc/>
         public async Task<IResponse> GoToAsync(string url, NavigationOptions options)
@@ -595,6 +599,39 @@ namespace PuppeteerSharp
 
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
+
+        internal async Task<ElementHandle> FrameElementAsync()
+        {
+            var parentFrame = ParentFrame;
+            if (parentFrame == null)
+            {
+                return null;
+            }
+
+            var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
+                return document.querySelectorAll('iframe');
+            }").ConfigureAwait(false);
+
+            await foreach (var iframe in list.TransposeIterableHandleAsync())
+            {
+                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
+                if (frame.Id == Id)
+                {
+                    return iframe as ElementHandle;
+                }
+
+                try
+                {
+                    await iframe.DisposeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    _logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                }
+            }
+
+            return null;
+        }
 
         private DeviceRequestPromptManager GetDeviceRequestPromptManager()
         {

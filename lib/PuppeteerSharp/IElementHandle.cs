@@ -46,9 +46,9 @@ namespace PuppeteerSharp
         Task ClickAsync(ClickOptions options = null);
 
         /// <summary>
-        /// Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// Resolves the frame associated with the element..
         /// </summary>
-        /// <returns>Resolves to the content frame.</returns>
+        /// <returns>Task which resolves to the frame associated with the element.</returns>
         Task<IFrame> ContentFrameAsync();
 
         /// <summary>
