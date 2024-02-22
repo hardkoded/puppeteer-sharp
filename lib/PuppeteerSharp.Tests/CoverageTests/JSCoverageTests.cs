@@ -11,10 +11,6 @@ namespace PuppeteerSharp.Tests.CoverageTests
 {
     public class JSCoverageTests : PuppeteerPageBaseTest
     {
-        public JSCoverageTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should work")]
         public async Task ShouldWork()
         {
@@ -72,8 +68,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.NotNull(coverage.FirstOrDefault(entry => entry.Url.StartsWith("debugger://", StringComparison.Ordinal)));
-            Assert.AreEqual(2, coverage.Length);
+            var filtered = coverage.Where(entry => !entry.Url.StartsWith("debugger://"));
+            Assert.AreEqual(1, filtered.Count());
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should ignore pptr internal scripts if reportAnonymousScripts is true")]
