@@ -13,7 +13,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var defaultContext = Browser.BrowserContexts()[0];
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.False(defaultContext.IsIncognito);
+#pragma warning restore CS0618 // Type or member is obsolete
             var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
             Assert.AreSame(defaultContext, Browser.DefaultContext);
             StringAssert.Contains("cannot be closed", exception!.Message);
@@ -24,7 +26,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var context = await Browser.CreateIncognitoBrowserContextAsync();
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.True(context.IsIncognito);
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
             Assert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
