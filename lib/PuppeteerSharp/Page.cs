@@ -1338,16 +1338,16 @@ namespace PuppeteerSharp
 
                             try
                             {
-                            await PrimaryTargetClient.SendAsync(
-                                "Emulation.setDeviceMetricsOverride",
-                                new EmulationSetDeviceMetricsOverrideRequest
-                                {
-                                    Mobile = isMobile,
-                                    Width = width,
-                                    Height = height,
-                                    DeviceScaleFactor = deviceScaleFactor,
-                                    ScreenOrientation = screenOrientation,
-                                }).ConfigureAwait(false);
+                                await PrimaryTargetClient.SendAsync(
+                                    "Emulation.setDeviceMetricsOverride",
+                                    new EmulationSetDeviceMetricsOverrideRequest
+                                    {
+                                        Mobile = isMobile,
+                                        Width = width,
+                                        Height = height,
+                                        DeviceScaleFactor = deviceScaleFactor,
+                                        ScreenOrientation = screenOrientation,
+                                    }).ConfigureAwait(false);
                             }
                             catch (Exception e)
                             {
