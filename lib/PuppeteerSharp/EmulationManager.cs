@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Messaging;
@@ -11,6 +12,7 @@ namespace PuppeteerSharp
     internal class EmulationManager
     {
         private readonly ConcurrentSet<CDPSession> _secondaryClients = [];
+        private readonly ILogger _logger;
         private CDPSession _client;
         private bool _emulatingMobile;
         private bool _hasTouch;
@@ -19,6 +21,7 @@ namespace PuppeteerSharp
         public EmulationManager(CDPSession client)
         {
             _client = client;
+            _logger = client.Connection.LoggerFactory.CreateLogger<EmulationManager>();
         }
 
         public bool JavascriptEnabled { get; private set; } = true;
@@ -196,7 +199,15 @@ namespace PuppeteerSharp
                     Height = height,
                     DeviceScaleFactor = deviceScaleFactor,
                     ScreenOrientation = screenOrientation,
-                }),
+                }).ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            _logger.LogError(task.Exception!.Message);
+                        }
+                    },
+                    TaskScheduler.Default),
                 client.SendAsync(
                     "Emulation.setTouchEmulationEnabled",
                     new EmulationSetTouchEmulationEnabledRequest { Enabled = hasTouch, }),
