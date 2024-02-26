@@ -212,6 +212,35 @@ namespace PuppeteerSharp
             });
 
         /// <inheritdoc/>
+        public Task TouchStartAsync()
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+                var clickablePoint = await handle.ClickablePointAsync().ConfigureAwait(false);
+                await Page.Touchscreen.TouchStartAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
+                return handle;
+            });
+
+        /// <inheritdoc/>
+        public Task TouchMoveAsync()
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+                var clickablePoint = await handle.ClickablePointAsync().ConfigureAwait(false);
+                await Page.Touchscreen.TouchMoveAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
+                return handle;
+            });
+
+        /// <inheritdoc/>
+        public Task TouchEndAsync()
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+                await Page.Touchscreen.TouchEndAsync().ConfigureAwait(false);
+                return handle;
+            });
+
+        /// <inheritdoc/>
         public Task FocusAsync() =>
             BindIsolatedHandleAsync(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
 

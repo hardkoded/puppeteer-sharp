@@ -17,31 +17,52 @@ namespace PuppeteerSharp.Input
             _keyboard = keyboard;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public async Task TapAsync(decimal x, decimal y)
         {
-            // Touches appear to be lost during the first frame after navigation.
-            // This waits a frame before sending the tap.
-            // @see https://crbug.com/613219
-            await _client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
-            {
-                Expression = "new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))",
-                AwaitPromise = true,
-            }).ConfigureAwait(false);
+            await TouchStartAsync(x, y).ConfigureAwait(false);
+            await TouchEndAsync().ConfigureAwait(false);
+        }
 
+        /// <inheritdoc />
+        public Task TouchStartAsync(decimal x, decimal y)
+        {
             var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
-            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
-            {
-                Type = "touchStart",
-                TouchPoints = touchPoints,
-                Modifiers = _keyboard.Modifiers,
-            }).ConfigureAwait(false);
-            await _client.SendAsync("Input.dispatchTouchEvent", new InputDispatchTouchEventRequest
-            {
-                Type = "touchEnd",
-                TouchPoints = Array.Empty<TouchPoint>(),
-                Modifiers = _keyboard.Modifiers,
-            }).ConfigureAwait(false);
+            return _client.SendAsync(
+                "Input.dispatchTouchEvent",
+                new InputDispatchTouchEventRequest
+                {
+                    Type = "touchStart",
+                    TouchPoints = touchPoints,
+                    Modifiers = _keyboard.Modifiers,
+                });
+        }
+
+        /// <inheritdoc />
+        public Task TouchMoveAsync(decimal x, decimal y)
+        {
+            var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
+            return _client.SendAsync(
+                "Input.dispatchTouchEvent",
+                new InputDispatchTouchEventRequest
+                {
+                    Type = "touchStart",
+                    TouchPoints = touchPoints,
+                    Modifiers = _keyboard.Modifiers,
+                });
+        }
+
+        /// <inheritdoc />
+        public Task TouchEndAsync()
+        {
+            return _client.SendAsync(
+                "Input.dispatchTouchEvent",
+                new InputDispatchTouchEventRequest
+                {
+                    Type = "touchEnd",
+                    TouchPoints = [],
+                    Modifiers = _keyboard.Modifiers,
+                });
         }
 
         internal void UpdateClient(CDPSession newSession) => _client = newSession;
