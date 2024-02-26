@@ -1336,16 +1336,23 @@ namespace PuppeteerSharp
                                 ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
                                 : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
 
-                            await PrimaryTargetClient.SendAsync(
-                                "Emulation.setDeviceMetricsOverride",
-                                new EmulationSetDeviceMetricsOverrideRequest
-                                {
-                                    Mobile = isMobile,
-                                    Width = width,
-                                    Height = height,
-                                    DeviceScaleFactor = deviceScaleFactor,
-                                    ScreenOrientation = screenOrientation,
-                                }).ConfigureAwait(false);
+                            try
+                            {
+                                await PrimaryTargetClient.SendAsync(
+                                    "Emulation.setDeviceMetricsOverride",
+                                    new EmulationSetDeviceMetricsOverrideRequest
+                                    {
+                                        Mobile = isMobile,
+                                        Width = width,
+                                        Height = height,
+                                        DeviceScaleFactor = deviceScaleFactor,
+                                        ScreenOrientation = screenOrientation,
+                                    }).ConfigureAwait(false);
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogError(e, "Failed to set device metrics override");
+                            }
                         }
                     }
 
