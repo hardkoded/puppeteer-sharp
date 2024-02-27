@@ -158,7 +158,7 @@ namespace PuppeteerSharp
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <see cref="IPage.ScreenshotAsync(string)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task.</returns>

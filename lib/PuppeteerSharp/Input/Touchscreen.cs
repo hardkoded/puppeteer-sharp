@@ -27,7 +27,18 @@ namespace PuppeteerSharp.Input
         /// <inheritdoc />
         public Task TouchStartAsync(decimal x, decimal y)
         {
-            var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
+            var touchPoints = new[]
+            {
+                new TouchPoint
+                {
+                    X = Math.Round(x, MidpointRounding.AwayFromZero),
+                    Y = Math.Round(y, MidpointRounding.AwayFromZero),
+                    RadiusX = 0.5m,
+                    RadiusY = 0.5m,
+                    Force = 0.5m,
+                },
+            };
+
             return _client.SendAsync(
                 "Input.dispatchTouchEvent",
                 new InputDispatchTouchEventRequest
@@ -41,7 +52,18 @@ namespace PuppeteerSharp.Input
         /// <inheritdoc />
         public Task TouchMoveAsync(decimal x, decimal y)
         {
-            var touchPoints = new[] { new TouchPoint { X = Math.Round(x), Y = Math.Round(y) } };
+            var touchPoints = new[]
+            {
+                new TouchPoint
+                {
+                    X = Math.Round(x, MidpointRounding.AwayFromZero),
+                    Y = Math.Round(y, MidpointRounding.AwayFromZero),
+                    RadiusX = 0.5m,
+                    RadiusY = 0.5m,
+                    Force = 0.5m,
+                },
+            };
+
             return _client.SendAsync(
                 "Input.dispatchTouchEvent",
                 new InputDispatchTouchEventRequest
