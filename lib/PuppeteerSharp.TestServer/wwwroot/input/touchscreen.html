@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Touch test</title>
+</head>
+
+<body style="touch-action: none">
+<style>
+    button {
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<button>Click target</button>
+<script>
+    var allEvents = [];
+    for (const name of ["touchstart", "touchmove", "touchend"]) {
+        globalThis.addEventListener(
+            name,
+            (event) => {
+                allEvents.push({
+                    type: name,
+                    changedTouches: [...event.changedTouches].map((touch) => ({
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                        radiusX: touch.radiusX,
+                        radiusY: touch.radiusY,
+                        force: touch.force,
+                    })),
+                    activeTouches: [...event.touches].map((touch) => ({
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                        radiusX: touch.radiusX,
+                        radiusY: touch.radiusY,
+                        force: touch.force,
+                    })),
+                });
+            },
+            true,
+        );
+    }
+    for (const name of ['pointerdown', 'pointermove', 'pointerup', 'click']) {
+        globalThis.addEventListener(
+            name,
+            (event) => {
+                allEvents.push({
+                    type: name,
+                    x: event.x,
+                    y: event.y,
+                    width: event.width,
+                    height: event.height,
+                    altitudeAngle: event.altitudeAngle,
+                    azimuthAngle: event.azimuthAngle,
+                    pressure: event.pressure,
+                    pointerType: event.pointerType,
+                    twist: event.twist,
+                    tiltX: event.tiltX,
+                    tiltY: event.tiltY,
+                });
+            },
+            true,
+        );
+    }
+</script>
+</body>
+</html>

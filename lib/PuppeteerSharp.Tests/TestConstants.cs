@@ -11,7 +11,6 @@ namespace PuppeteerSharp.Tests
     public static class TestConstants
     {
         public const int DebuggerAttachedTestTimeout = 300_000;
-        public const int DefaultTestTimeout = 60_000;
         public const int DefaultPuppeteerTimeout = 10_000;
         public const int Port = 8081;
         public const int HttpsPort = Port + 1;
