@@ -1311,36 +1311,39 @@ namespace PuppeteerSharp
 
                 if (!_screenshotBurstModeOn)
                 {
-                    if (options.FullPage)
+                    if (options.Clip == null)
                     {
-                        // Overwrite clip for full page at all times.
-                        clip = null;
-
-                        if (!captureBeyondViewport)
+                        if (options.FullPage)
                         {
-                            var scrollDimensions = await FrameManager.MainFrame.IsolatedRealm
-                                .EvaluateFunctionAsync<BoundingBox>(@"() => {
-                                    const element = document.documentElement;
-                                    return {
-                                        width: element.scrollWidth,
-                                        height: element.scrollHeight,
-                                    };
-                                }").ConfigureAwait(false);
+                            // Overwrite clip for full page at all times.
+                            clip = null;
 
-                            var viewport = Viewport with { };
-
-                            await SetViewportAsync(viewport with
+                            if (!captureBeyondViewport)
                             {
-                                Width = Convert.ToInt32(scrollDimensions.Width),
-                                Height = Convert.ToInt32(scrollDimensions.Height),
-                            }).ConfigureAwait(false);
+                                var scrollDimensions = await FrameManager.MainFrame.IsolatedRealm
+                                    .EvaluateFunctionAsync<BoundingBox>(@"() => {
+                                        const element = document.documentElement;
+                                        return {
+                                            width: element.scrollWidth,
+                                            height: element.scrollHeight,
+                                        };
+                                    }").ConfigureAwait(false);
 
-                            stack.Defer(() => SetViewportAsync(viewport));
+                                var viewport = Viewport with { };
+
+                                await SetViewportAsync(viewport with
+                                {
+                                    Width = Convert.ToInt32(scrollDimensions.Width),
+                                    Height = Convert.ToInt32(scrollDimensions.Height),
+                                }).ConfigureAwait(false);
+
+                                stack.Defer(() => SetViewportAsync(viewport));
+                            }
                         }
-                    }
-                    else
-                    {
-                        captureBeyondViewport = false;
+                        else
+                        {
+                            captureBeyondViewport = false;
+                        }
                     }
 
                     if (Browser.BrowserType != SupportedBrowser.Firefox &&
