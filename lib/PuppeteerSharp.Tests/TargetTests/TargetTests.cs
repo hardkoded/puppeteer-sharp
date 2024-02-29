@@ -224,8 +224,10 @@ namespace PuppeteerSharp.Tests.TargetTests
             var createdTarget = await targetCreatedCompletion.Task;
 
             Assert.AreEqual(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
+#pragma warning disable CS0618 // Type or member is obsolete
             Assert.AreSame(Page.Target, createdTarget.Opener);
             Assert.Null(Page.Target.Opener);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }
