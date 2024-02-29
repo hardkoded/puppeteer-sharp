@@ -61,7 +61,6 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private readonly ITargetManager _targetManager;
-        private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
         private TaskCompletionSource<bool> _sessionClosedTcs;
@@ -1302,57 +1301,48 @@ namespace PuppeteerSharp
                     options.FromSurface ??= true;
                 }
 
-                var clip = options.Clip != null ? ProcessClip(options.Clip) : null;
+                if (options.Clip != null && options.FullPage)
+                {
+                    throw new ArgumentException("Clip and FullPage are exclusive");
+                }
+
+                var clip = options.Clip != null ? RoundRectangle(NormalizeRectangle(options.Clip)) : null;
                 var captureBeyondViewport = options.CaptureBeyondViewport;
 
                 if (!_screenshotBurstModeOn)
                 {
-                    if (options.FullPage)
+                    if (options.Clip == null)
                     {
-                        // Overwrite clip for full page at all times.
-                        clip = null;
-
-                        if (!captureBeyondViewport)
+                        if (options.FullPage)
                         {
-                            var metrics = _screenshotBurstModeOn
-                                ? _burstModeMetrics
-                                : await PrimaryTargetClient
-                                    .SendAsync<PageGetLayoutMetricsResponse>("Page.getLayoutMetrics")
-                                    .ConfigureAwait(false);
+                            // Overwrite clip for full page at all times.
+                            clip = null;
 
-                            if (options.BurstMode)
+                            if (!captureBeyondViewport)
                             {
-                                _burstModeMetrics = metrics;
-                            }
+                                var scrollDimensions = await FrameManager.MainFrame.IsolatedRealm
+                                    .EvaluateFunctionAsync<BoundingBox>(@"() => {
+                                        const element = document.documentElement;
+                                        return {
+                                            width: element.scrollWidth,
+                                            height: element.scrollHeight,
+                                        };
+                                    }").ConfigureAwait(false);
 
-                            var contentSize = metrics.CssContentSize ?? metrics.ContentSize;
+                                var viewport = Viewport with { };
 
-                            var width = Convert.ToInt32(Math.Ceiling(contentSize.Width));
-                            var height = Convert.ToInt32(Math.Ceiling(contentSize.Height));
-                            var isMobile = Viewport?.IsMobile ?? false;
-                            var deviceScaleFactor = Viewport?.DeviceScaleFactor ?? 1;
-                            var isLandscape = Viewport?.IsLandscape ?? false;
-                            var screenOrientation = isLandscape
-                                ? new ScreenOrientation { Angle = 90, Type = ScreenOrientationType.LandscapePrimary, }
-                                : new ScreenOrientation { Angle = 0, Type = ScreenOrientationType.PortraitPrimary, };
+                                await SetViewportAsync(viewport with
+                                {
+                                    Width = Convert.ToInt32(scrollDimensions.Width),
+                                    Height = Convert.ToInt32(scrollDimensions.Height),
+                                }).ConfigureAwait(false);
 
-                            try
-                            {
-                                await PrimaryTargetClient.SendAsync(
-                                    "Emulation.setDeviceMetricsOverride",
-                                    new EmulationSetDeviceMetricsOverrideRequest
-                                    {
-                                        Mobile = isMobile,
-                                        Width = width,
-                                        Height = height,
-                                        DeviceScaleFactor = deviceScaleFactor,
-                                        ScreenOrientation = screenOrientation,
-                                    }).ConfigureAwait(false);
+                                stack.Defer(() => SetViewportAsync(viewport));
                             }
-                            catch (Exception e)
-                            {
-                                _logger.LogError(e, "Failed to set device metrics override");
-                            }
+                        }
+                        else
+                        {
+                            captureBeyondViewport = false;
                         }
                     }
 
@@ -1365,9 +1355,19 @@ namespace PuppeteerSharp
                     }
                 }
 
-                if (options.FullPage == false && clip == null)
+                if (clip != null && !captureBeyondViewport)
                 {
-                    captureBeyondViewport = false;
+                    var viewport = await FrameManager.MainFrame.IsolatedRealm.EvaluateFunctionAsync<BoundingBox>(@"() => {
+                        const {
+                            height,
+                            pageLeft: x,
+                            pageTop: y,
+                            width,
+                        } = window.visualViewport;
+                        return {x, y, height, width};
+                    }").ConfigureAwait(false);
+
+                    clip = GetIntersectionRect(clip, viewport);
                 }
 
                 var screenMessage = new PageCaptureScreenshotRequest
@@ -1402,7 +1402,21 @@ namespace PuppeteerSharp
             }
         }
 
-        private Clip ProcessClip(Clip clip)
+        private Clip GetIntersectionRect(Clip clip, BoundingBox viewport)
+        {
+            var x = Math.Max(clip.X, viewport.X);
+            var y = Math.Max(clip.Y, viewport.Y);
+
+            return new Clip()
+            {
+                X = x,
+                Y = y,
+                Width = Math.Min(clip.X + clip.Width, viewport.X + viewport.Width) - x,
+                Height = Math.Min(clip.Y + clip.Height, viewport.Y + viewport.Height) - y,
+            };
+        }
+
+        private Clip RoundRectangle(Clip clip)
         {
             var x = Math.Round(clip.X);
             var y = Math.Round(clip.Y);
@@ -1414,6 +1428,18 @@ namespace PuppeteerSharp
                 Width = Math.Round(clip.Width + clip.X - x, MidpointRounding.AwayFromZero),
                 Height = Math.Round(clip.Height + clip.Y - y, MidpointRounding.AwayFromZero),
                 Scale = clip.Scale,
+            };
+        }
+
+        private Clip NormalizeRectangle(Clip clip)
+        {
+            return new Clip()
+            {
+                Scale = clip.Scale,
+                X = clip.Width < 0 ? clip.X + clip.Width : clip.X,
+                Y = clip.Height < 0 ? clip.Y + clip.Height : clip.Y,
+                Width = Math.Abs(clip.Width),
+                Height = Math.Abs(clip.Height),
             };
         }
 
