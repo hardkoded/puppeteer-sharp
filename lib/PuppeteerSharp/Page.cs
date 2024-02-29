@@ -1338,6 +1338,10 @@ namespace PuppeteerSharp
                             stack.Defer(() => SetViewportAsync(viewport));
                         }
                     }
+                    else
+                    {
+                        captureBeyondViewport = false;
+                    }
 
                     if (Browser.BrowserType != SupportedBrowser.Firefox &&
                         options.OmitBackground &&
