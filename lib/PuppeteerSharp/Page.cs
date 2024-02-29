@@ -61,7 +61,6 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private readonly ITargetManager _targetManager;
-        private PageGetLayoutMetricsResponse _burstModeMetrics;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
         private TaskCompletionSource<bool> _sessionClosedTcs;
