@@ -1360,7 +1360,7 @@ namespace PuppeteerSharp
                             pageLeft: x,
                             pageTop: y,
                             width,
-                        } = window.visualViewport!;
+                        } = window.visualViewport;
                         return {x, y, height, width};
                     }").ConfigureAwait(false);
 
