@@ -89,7 +89,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldIsolatePermissionsBetweenBrowserContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var otherContext = await Browser.CreateIncognitoBrowserContextAsync();
+            var otherContext = await Browser.CreateBrowserContextAsync();
             var otherPage = await otherContext.NewPageAsync();
             await otherPage.GoToAsync(TestConstants.EmptyPage);
             Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));
