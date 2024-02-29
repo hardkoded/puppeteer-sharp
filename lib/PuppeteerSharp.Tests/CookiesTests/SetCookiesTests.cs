@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should isolate cookies in browser contexts")]
         public async Task ShouldIsolateCookiesInBrowserContexts()
         {
-            var anotherContext = await Browser.CreateIncognitoBrowserContextAsync();
+            var anotherContext = await Browser.CreateBrowserContextAsync();
             var anotherPage = await anotherContext.NewPageAsync();
 
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Devtools = true;
             await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
-            var context = await browser.CreateIncognitoBrowserContextAsync();
+            var context = await browser.CreateBrowserContextAsync();
             await Task.WhenAll(
                 context.NewPageAsync(),
                 browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Devtools = true;
             await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
-            var context = await browser.CreateIncognitoBrowserContextAsync();
+            var context = await browser.CreateBrowserContextAsync();
             var targetTask = browser.WaitForTargetAsync(target => target.Url.Contains("devtools://"));
             await Task.WhenAll(
                 context.NewPageAsync(),
