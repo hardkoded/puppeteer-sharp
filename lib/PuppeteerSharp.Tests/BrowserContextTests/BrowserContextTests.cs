@@ -115,9 +115,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page1.Target, context1.Targets()[0]);
+            Assert.AreEqual(page1, await context1.Targets()[0].PageAsync());
             Assert.That(context2.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page2.Target, context2.Targets()[0]);
+            Assert.AreEqual(page2, await context2.Targets()[0].PageAsync());
 
             // Make sure pages don't share localstorage or cookies.
             Assert.AreEqual("page1", await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
