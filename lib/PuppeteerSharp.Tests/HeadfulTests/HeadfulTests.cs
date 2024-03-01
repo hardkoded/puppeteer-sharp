@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             await using var browser = await Puppeteer.LaunchAsync(_forcedOopifOptions);
             await using var page = await browser.NewPageAsync();
             // Setup our session listeners to observe OOPIF activity.
-            var session = await page.Target.CreateCDPSessionAsync();
+            var session = await page.CreateCDPSessionAsync();
             var networkEvents = new List<string>();
             var otherSessions = new List<ICDPSession>();
 

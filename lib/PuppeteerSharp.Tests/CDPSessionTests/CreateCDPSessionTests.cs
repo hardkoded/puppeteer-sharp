@@ -10,14 +10,10 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
 {
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
-        public CreateCDPSessionTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should work")]
         public async Task ShouldWork()
         {
-            var client = await Page.Target.CreateCDPSessionAsync();
+            var client = await Page.CreateCDPSessionAsync();
 
             await Task.WhenAll(
               client.SendAsync("Runtime.enable"),
@@ -30,7 +26,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
         public async Task ShouldSendEvents()
         {
-            var client = await Page.Target.CreateCDPSessionAsync();
+            var client = await Page.CreateCDPSessionAsync();
             await client.SendAsync("Network.enable");
             var events = new List<object>();
 
@@ -49,7 +45,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
-            var client = await Page.Target.CreateCDPSessionAsync();
+            var client = await Page.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
             await client.SendAsync("Debugger.enable");
             // JS coverage enables and then disables Debugger domain.
@@ -68,7 +64,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
         public async Task ShouldBeAbleToDetachSession()
         {
-            var client = await Page.Target.CreateCDPSessionAsync();
+            var client = await Page.CreateCDPSessionAsync();
             await client.SendAsync("Runtime.enable");
             var evalResponse = await client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
             {
@@ -88,7 +84,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
-        public async Task ShouldNotReportCreatedTArgetsForCustomCDPSessions()
+        public async Task ShouldNotReportCreatedTargetsForCustomCDPSessions()
         {
             var called = 0;
             async void EventHandler(object sender, TargetChangedArgs e)
@@ -109,7 +105,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should throw nice errors")]
         public async Task ShouldThrowNiceErrors()
         {
-            var client = await Page.Target.CreateCDPSessionAsync();
+            var client = await Page.CreateCDPSessionAsync();
             async Task TheSourceOfTheProblems() => await client.SendAsync("ThisCommand.DoesNotExist");
 
             var exception = Assert.ThrowsAsync<MessageException>(async () =>
@@ -122,6 +118,6 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
-            => Assert.NotNull(await Page.Target.CreateCDPSessionAsync());
+            => Assert.NotNull(await Page.CreateCDPSessionAsync());
     }
 }

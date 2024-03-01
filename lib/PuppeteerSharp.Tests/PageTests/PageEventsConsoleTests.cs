@@ -4,14 +4,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public PageEventsConsoleTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
         public async Task ShouldWork()
         {
@@ -184,7 +180,9 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 // 3. After that, remove the iframe.
                 frame.remove();
             }");
+#pragma warning disable CS0618 // Type or member is obsolete
             var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
+#pragma warning restore CS0618 // Type or member is obsolete
             // 4. Connect to the popup and make sure it doesn't throw.
             await popupTarget.PageAsync();
         }

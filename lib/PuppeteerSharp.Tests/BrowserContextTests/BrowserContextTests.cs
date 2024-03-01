@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldCreateNewIncognitoContext()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
 #pragma warning disable CS0618 // Type or member is obsolete
             Assert.True(context.IsIncognito);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
 
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             await context.NewPageAsync();
             Assert.AreEqual(2, (await Browser.PagesAsync()).Length);
             Assert.That((await context.PagesAsync()), Has.Exactly(1).Items);
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
         public async Task WindowOpenShouldUseParentTabContext()
         {
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<ITarget>();
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should fire target events")]
         public async Task ShouldFireTargetEvents()
         {
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             var events = new List<string>();
             context.TargetCreated += (_, e) => events.Add("CREATED: " + e.Target.Url);
             context.TargetChanged += (_, e) => events.Add("CHANGED: " + e.Target.Url);
@@ -90,8 +90,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
             // Create two incognito contexts.
-            var context1 = await Browser.CreateIncognitoBrowserContextAsync();
-            var context2 = await Browser.CreateIncognitoBrowserContextAsync();
+            var context1 = await Browser.CreateBrowserContextAsync();
+            var context2 = await Browser.CreateBrowserContextAsync();
             Assert.IsEmpty(context1.Targets());
             Assert.IsEmpty(context2.Targets());
 
@@ -115,9 +115,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page1.Target, context1.Targets()[0]);
+            Assert.AreEqual(page1, await context1.Targets()[0].PageAsync());
             Assert.That(context2.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page2.Target, context2.Targets()[0]);
+            Assert.AreEqual(page2, await context2.Targets()[0].PageAsync());
 
             // Make sure pages don't share localstorage or cookies.
             Assert.AreEqual("page1", await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             Assert.Null(Browser.BrowserContexts()[0].Id);
 
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
             Assert.NotNull(Browser.BrowserContexts()[1].Id);
             await context.CloseAsync();
@@ -162,7 +162,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]
         public async Task ShouldWaitForTarget()
         {
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             var targetPromise = context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
         public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
-            var context = await Browser.CreateIncognitoBrowserContextAsync();
+            var context = await Browser.CreateBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
             await context.CloseAsync();

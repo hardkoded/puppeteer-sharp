@@ -1113,6 +1113,9 @@ namespace PuppeteerSharp
         public void RemoveRequestInterceptor(Func<IRequest, Task> interceptionTask)
             => _requestInterceptionTask.Remove(interceptionTask);
 
+        /// <inheritdoc />
+        public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
+
         internal static async Task<Page> CreateAsync(
             CDPSession client,
             Target target,

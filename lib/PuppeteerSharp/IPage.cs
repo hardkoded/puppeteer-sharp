@@ -250,6 +250,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
+        [Obsolete("All the functionality provided by the Target should be already exposed by the page itself.")]
         ITarget Target { get; }
 
         /// <summary>
@@ -1457,5 +1458,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="interceptionTask">Interception task.</param>
         void RemoveRequestInterceptor(Func<IRequest, Task> interceptionTask);
+
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the page.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
+        Task<ICDPSession> CreateCDPSessionAsync();
     }
 }

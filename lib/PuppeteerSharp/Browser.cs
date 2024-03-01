@@ -149,7 +149,7 @@ namespace PuppeteerSharp
             => TargetManager.GetAvailableTargets().Values.ToArray();
 
         /// <inheritdoc/>
-        public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync(BrowserContextOptions options = null)
+        public async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>(
                 "Target.createBrowserContext",
