@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameManagementTests : PuppeteerPageBaseTest
     {
-        public FrameManagementTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame Management", "should handle nested frames")]
         public async Task ShouldHandleNestedFrames()
         {
@@ -117,6 +113,16 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.IsEmpty(attachedFrames);
             Assert.AreEqual(4, detachedFrames.Count);
             Assert.That(navigatedFrames, Has.Exactly(1).Items);
+        }
+
+        [Test, Retry(2), PuppeteerTest("frame.spec", "Frame Management", "should click elements in a frameset")]
+        public async Task ShouldClickElementsInAFrameset()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
+            var frame = await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/frames/frame.html"));
+            var div = await frame.WaitForSelectorAsync("div");
+            Assert.NotNull(div);
+            await div.ClickAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame Management", "should report frame from-inside shadow DOM")]
