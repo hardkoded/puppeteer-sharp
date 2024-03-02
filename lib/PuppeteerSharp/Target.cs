@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         internal TargetInfo TargetInfo { get; private set; }
 
         /// <inheritdoc/>
-        public Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
+        public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
 
         /// <inheritdoc/>
         public virtual Task<WebWorker> WorkerAsync() => Task.FromResult<WebWorker>(null);
@@ -95,7 +95,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes the target.
         /// </summary>
-        internal void Initialize()
+        internal virtual void Initialize()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
@@ -104,7 +104,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Check is the target is not initialized.
         /// </summary>
-        private void CheckIfInitialized()
+        protected internal virtual void CheckIfInitialized()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
