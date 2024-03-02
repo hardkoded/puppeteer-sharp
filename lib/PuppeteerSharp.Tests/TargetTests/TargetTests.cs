@@ -2,8 +2,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Nunit.TestExpectations;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
@@ -125,6 +127,20 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.AreEqual("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
         }
 
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should close a service worker")]
+        public async Task ShouldCloseAServiceWorker()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+            var target = await Context.WaitForTargetAsync(
+                t => t.Type == TargetType.ServiceWorker,
+                new WaitForOptions(3_000));
+            var worker = await target.WorkerAsync();
+            var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
+            Context.TargetDestroyed += (sender, e) => workerDestroyed.SetResult(e);
+            await worker.CloseAsync();
+            Assert.AreSame(target, (await workerDestroyed.Task).Target);
+        }
+
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should create a worker from a shared worker")]
         public async Task ShouldCreateAWorkerFromASharedWorker()
         {
@@ -136,6 +152,23 @@ namespace PuppeteerSharp.Tests.TargetTests
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
             var worker = await target.WorkerAsync();
             Assert.AreEqual("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
+        }
+
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should close a shared worker")]
+        public async Task ShouldCloseASharedWorker()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var target = await Context.WaitForTargetAsync(
+                t => t.Type == TargetType.SharedWorker,
+                new WaitForOptions(3_000));
+            await Page.EvaluateFunctionAsync(@"() => {
+                new SharedWorker('data:text/javascript,console.log(""hi2"")');
+            }");
+            var worker = await target.WorkerAsync();
+            var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
+            Context.TargetDestroyed += (sender, e) => workerDestroyed.SetResult(e);
+            await worker.CloseAsync();
+            Assert.AreSame(target, (await workerDestroyed.Task).Target);
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should report when a target url changes")]

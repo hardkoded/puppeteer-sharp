@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -72,10 +70,10 @@ namespace PuppeteerSharp
 
         internal CDPSession Session { get; }
 
-        internal TargetInfo TargetInfo { get; set; }
+        internal TargetInfo TargetInfo { get; private set; }
 
         /// <inheritdoc/>
-        public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
+        public Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
 
         /// <inheritdoc/>
         public virtual Task<WebWorker> WorkerAsync() => Task.FromResult<WebWorker>(null);
@@ -97,7 +95,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Initializes the target.
         /// </summary>
-        internal virtual void Initialize()
+        internal void Initialize()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
@@ -106,7 +104,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Check is the target is not initialized.
         /// </summary>
-        protected internal virtual void CheckIfInitialized()
+        private void CheckIfInitialized()
         {
             IsInitialized = true;
             InitializedTaskWrapper.TrySetResult(InitializationStatus.Success);
