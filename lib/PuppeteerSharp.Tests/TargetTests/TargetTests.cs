@@ -136,7 +136,7 @@ namespace PuppeteerSharp.Tests.TargetTests
                 new WaitForOptions(3_000));
             var worker = await target.WorkerAsync();
             var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
-            Context.TargetDestroyed += (sender, e) => workerDestroyed.SetResult(e);
+            Context.TargetDestroyed += (sender, e) => workerDestroyed.TrySetResult(e);
             await worker.CloseAsync();
             Assert.AreSame(target, (await workerDestroyed.Task).Target);
         }
