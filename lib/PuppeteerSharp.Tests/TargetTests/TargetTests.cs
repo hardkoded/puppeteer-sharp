@@ -158,13 +158,13 @@ namespace PuppeteerSharp.Tests.TargetTests
         public async Task ShouldCloseASharedWorker()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var target = await Context.WaitForTargetAsync(
+            var target = Context.WaitForTargetAsync(
                 t => t.Type == TargetType.SharedWorker,
                 new WaitForOptions(3_000));
             await Page.EvaluateFunctionAsync(@"() => {
                 new SharedWorker('data:text/javascript,console.log(""hi2"")');
             }");
-            var worker = await target.WorkerAsync();
+            var worker = await target.Task.WorkerAsync();
             var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
             Context.TargetDestroyed += (sender, e) => workerDestroyed.SetResult(e);
             await worker.CloseAsync();
