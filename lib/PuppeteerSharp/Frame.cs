@@ -609,13 +609,13 @@ namespace PuppeteerSharp
             }
 
             var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
-                return document.querySelectorAll('iframe');
+                return document.querySelectorAll('iframe, frame');
             }").ConfigureAwait(false);
 
             await foreach (var iframe in list.TransposeIterableHandleAsync())
             {
                 var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
-                if (frame.Id == Id)
+                if (frame?.Id == Id)
                 {
                     return iframe as ElementHandle;
                 }
