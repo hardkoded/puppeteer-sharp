@@ -10,10 +10,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PdfTests : PuppeteerPageBaseTest
     {
-        public PdfTests() : base()
-        {
-        }
-
         [Test]
         public async Task Usage()
         {
@@ -102,6 +98,31 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
         }
 
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
+        public async Task CanPrintToPdfWithOutline()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var outputFileOutlined = Path.Combine(BaseDirectory, "output-outlined.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            fileInfo = new FileInfo(outputFileOutlined);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
+
+            Assert.Greater(new FileInfo(outputFileOutlined).Length, new FileInfo(outputFile).Length);
+        }
+
+        [Test]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions

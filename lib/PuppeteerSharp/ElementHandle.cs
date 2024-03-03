@@ -340,7 +340,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<BoundingBox> BoundingBoxAsync()
-            => BindIsolatedHandleAsync<BoundingBox>(async handle =>
+            => BindIsolatedHandleAsync(async handle =>
             {
                 var box = await handle.EvaluateFunctionAsync<BoundingBox>(@"element => {
                     if (!(element instanceof Element)) {
@@ -377,7 +377,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<BoxModel> BoxModelAsync()
-            => BindIsolatedHandleAsync<BoxModel>(async handle =>
+            => BindIsolatedHandleAsync(async handle =>
             {
                 var model = await handle.EvaluateFunctionAsync<BoxModel>(@"element => {
                     if (!(element instanceof Element)) {
@@ -683,11 +683,7 @@ namespace PuppeteerSharp
         public Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null)
             => BindIsolatedHandleAsync(async handle =>
             {
-                var box = await handle.ClickableBoxAsync().ConfigureAwait(false);
-                if (box == null)
-                {
-                    throw new PuppeteerException("Node is either not clickable or not an Element");
-                }
+                var box = await handle.ClickableBoxAsync().ConfigureAwait(false) ?? throw new PuppeteerException("Node is either not clickable or not an Element");
 
                 if (offset != null)
                 {
