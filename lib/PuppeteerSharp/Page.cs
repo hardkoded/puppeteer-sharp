@@ -1610,7 +1610,13 @@ namespace PuppeteerSharp
 
             if (session.Target.TargetInfo.Type == TargetType.Worker)
             {
-                var worker = new WebWorker(session, session.Target.Url, AddConsoleMessageAsync, HandleException);
+                var worker = new WebWorker(
+                    session,
+                    session.Target.Url,
+                    session.Target.TargetId,
+                    session.TargetType,
+                    AddConsoleMessageAsync,
+                    HandleException);
                 _workers[session.Id] = worker;
                 WorkerCreated?.Invoke(this, new WorkerEventArgs(worker));
             }
