@@ -22,6 +22,7 @@ namespace PuppeteerSharp
         private readonly List<string> _frameNavigatedReceived = [];
         private readonly TaskQueue _eventsQueue = new();
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
+        private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
         {
@@ -114,6 +115,8 @@ namespace PuppeteerSharp
         {
             try
             {
+                _frameTreeHandled.TrySetResult(true);
+                _frameTreeHandled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var networkInitTask = NetworkManager.AddClientAsync(client);
                 var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 var autoAttachTask = client != Client
@@ -130,6 +133,7 @@ namespace PuppeteerSharp
                     getFrameTreeTask,
                     autoAttachTask).ConfigureAwait(false);
 
+                _frameTreeHandled.TrySetResult(true);
                 await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
 
                 await Task.WhenAll(
@@ -141,6 +145,8 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                _frameTreeHandled.TrySetResult(true);
+
                 // The target might have been closed before the initialization finished.
                 if (
                     ex.Message.Contains("Target closed") ||
@@ -197,6 +203,7 @@ namespace PuppeteerSharp
             {
                 try
                 {
+                    await _frameTreeHandled.Task.WithTimeout().ConfigureAwait(false);
                     switch (e.MessageID)
                     {
                         case "Page.frameAttached":
