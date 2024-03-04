@@ -101,5 +101,22 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var errorLog = await errorTcs.Task;
             StringAssert.Contains("this is my error", errorLog);
         }
+
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "scan be closed")]
+        public async Task CanBeClosed()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            await workerCreatedTcs.Task;
+            var worker = Page.Workers[0];
+            var workerClosedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerDestroyed += (_, e) => workerClosedTcs.TrySetResult(e.Worker);
+
+            StringAssert.Contains("worker.js", worker.Url);
+            await worker.CloseAsync();
+            Assert.AreSame(worker, await workerClosedTcs.Task);
+        }
     }
 }

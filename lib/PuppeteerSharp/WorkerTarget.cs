@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -34,6 +33,8 @@ namespace PuppeteerSharp
             return new WebWorker(
                 client,
                 TargetInfo.Url,
+                TargetInfo.TargetId,
+                TargetInfo.Type,
                 (_, _, _) => Task.CompletedTask,
                 _ => { });
         }

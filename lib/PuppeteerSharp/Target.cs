@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -72,7 +70,7 @@ namespace PuppeteerSharp
 
         internal CDPSession Session { get; }
 
-        internal TargetInfo TargetInfo { get; set; }
+        internal TargetInfo TargetInfo { get; private set; }
 
         /// <inheritdoc/>
         public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
