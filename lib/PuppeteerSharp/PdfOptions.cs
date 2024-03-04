@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Options to be used in <see cref="IPage.PdfAsync(string, PdfOptions)"/>, <see cref="IPage.PdfStreamAsync(PdfOptions)"/> and <see cref="IPage.PdfDataAsync(PdfOptions)"/>.
     /// </summary>
-    public class PdfOptions : IEquatable<PdfOptions>
+    public record PdfOptions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PuppeteerSharp.PdfOptions"/> class.
@@ -97,62 +97,13 @@ namespace PuppeteerSharp
         /// </summary>
         public bool Tagged { get; set; }
 
-        /// <summary>Overriding == operator for <see cref="PdfOptions"/>.</summary>
-        /// <param name="left">the value to compare against <paramref name="right" />.</param>
-        /// <param name="right">the value to compare against <paramref name="left" />.</param>
-        /// <returns><c>true</c> if the two instances are equal to the same value.</returns>
-        public static bool operator ==(PdfOptions left, PdfOptions right)
-            => EqualityComparer<PdfOptions>.Default.Equals(left, right);
-
-        /// <summary>Overriding != operator for <see cref="PdfOptions"/>.</summary>
-        /// <param name="left">the value to compare against <paramref name="right" />.</param>
-        /// <param name="right">the value to compare against <paramref name="left" />.</param>
-        /// <returns><c>true</c> if the two instances are not equal to the same value.</returns>
-        public static bool operator !=(PdfOptions left, PdfOptions right) => !(left == right);
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            return Equals((PdfOptions)obj);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(PdfOptions options)
-            => options != null &&
-                   Scale == options.Scale &&
-                   DisplayHeaderFooter == options.DisplayHeaderFooter &&
-                   HeaderTemplate == options.HeaderTemplate &&
-                   FooterTemplate == options.FooterTemplate &&
-                   PrintBackground == options.PrintBackground &&
-                   Landscape == options.Landscape &&
-                   PageRanges == options.PageRanges &&
-                   EqualityComparer<PaperFormat>.Default.Equals(Format, options.Format) &&
-                   EqualityComparer<object>.Default.Equals(Width, options.Width) &&
-                   EqualityComparer<object>.Default.Equals(Height, options.Height) &&
-                   EqualityComparer<MarginOptions>.Default.Equals(MarginOptions, options.MarginOptions) &&
-                   PreferCSSPageSize == options.PreferCSSPageSize &&
-                   OmitBackground == options.OmitBackground;
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-            => -711844102
-                ^ Scale.GetHashCode()
-                ^ DisplayHeaderFooter.GetHashCode()
-                ^ EqualityComparer<string>.Default.GetHashCode(HeaderTemplate)
-                ^ EqualityComparer<string>.Default.GetHashCode(FooterTemplate)
-                ^ PrintBackground.GetHashCode()
-                ^ OmitBackground.GetHashCode()
-                ^ Landscape.GetHashCode()
-                ^ EqualityComparer<string>.Default.GetHashCode(PageRanges)
-                ^ EqualityComparer<PaperFormat>.Default.GetHashCode(Format)
-                ^ EqualityComparer<object>.Default.GetHashCode(Width)
-                ^ EqualityComparer<object>.Default.GetHashCode(Height)
-                ^ EqualityComparer<MarginOptions>.Default.GetHashCode(MarginOptions)
-                ^ PreferCSSPageSize.GetHashCode();
+        /// <summary>
+        /// Generate document outline.
+        /// </summary>
+        /// <remarks>
+        /// If this is enabled the PDF will also be tagged (accessible)
+        /// Currently only works in old Headless (headless = true).
+        /// </remarks>
+        public bool Outline { get; set; } = false;
     }
 }

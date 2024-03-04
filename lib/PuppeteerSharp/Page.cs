@@ -1183,6 +1183,11 @@ namespace PuppeteerSharp
             var marginBottom = ConvertPrintParameterToInches(options.MarginOptions.Bottom);
             var marginRight = ConvertPrintParameterToInches(options.MarginOptions.Right);
 
+            if (options.Outline)
+            {
+                options.Tagged = true;
+            }
+
             if (options.OmitBackground)
             {
                 await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
@@ -1206,6 +1211,7 @@ namespace PuppeteerSharp
                 PageRanges = options.PageRanges,
                 PreferCSSPageSize = options.PreferCSSPageSize,
                 GenerateTaggedPDF = options.Tagged,
+                GenerateDocumentOutline = options.Outline,
             }).ConfigureAwait(false);
 
             if (options.OmitBackground)

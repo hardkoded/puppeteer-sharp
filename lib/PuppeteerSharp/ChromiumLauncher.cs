@@ -96,6 +96,7 @@ namespace PuppeteerSharp
                     "--enable-automation",
                     "--enable-blink-features=IdleDetection",
                     "--export-tagged-pdf",
+                    "--generate-pdf-document-outline",
                     "--force-color-profile=srgb",
                     "--metrics-recording-only",
                     "--no-first-run",
