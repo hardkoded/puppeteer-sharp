@@ -68,17 +68,17 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")).ConfigureAwait(false);
 
-            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
+            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
             {
                 styleSheetIdToCoverage.TryGetValue(entry.StyleSheetId, out var ranges);
                 if (ranges == null)
                 {
-                    ranges = new List<CoverageResponseRange>();
+                    ranges = new List<CoverageRange>();
                     styleSheetIdToCoverage[entry.StyleSheetId] = ranges;
                 }
 
-                ranges.Add(new CoverageResponseRange
+                ranges.Add(new CoverageRange
                 {
                     StartOffset = entry.StartOffset,
                     EndOffset = entry.EndOffset,
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
                 var url = kv.Value.Url;
                 var text = kv.Value.Source;
                 styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
+                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageRange>());
                 coverage.Add(new CoverageEntry
                 {
                     Url = url,
