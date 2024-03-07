@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         private readonly ViewPortOptions _defaultViewport;
 
         internal PageTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, screenshotTaskQueue)
+            : base(targetInfo, session, context, targetManager, sessionFactory)
         {
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _defaultViewport = defaultViewport;
@@ -33,8 +33,7 @@ namespace PuppeteerSharp
                     session,
                     this,
                     _ignoreHTTPSErrors,
-                    _defaultViewport,
-                    ScreenshotTaskQueue);
+                    _defaultViewport);
             }
 
             return await PageTask.ConfigureAwait(false);
