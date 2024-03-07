@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
@@ -223,7 +222,7 @@ namespace PuppeteerSharp
             => browser switch
             {
                 SupportedBrowser.Chrome => Chrome.ResolveSystemExecutablePath(BrowserFetcher.GetCurrentPlatform(), channel),
-                _ => throw new PuppeteerException($"System browser detection is not suppoted for {browser} yet."),
+                _ => throw new PuppeteerException($"System browser detection is not supported for {browser} yet."),
             };
     }
 }

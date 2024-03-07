@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -15,13 +16,15 @@ namespace PuppeteerSharp
             CDPSession session,
             BrowserContext context,
             ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory)
+            Func<bool, Task<CDPSession>> sessionFactory,
+            TaskQueue screenshotTaskQueue)
         {
             Session = session;
             TargetInfo = targetInfo;
             SessionFactory = sessionFactory;
             BrowserContext = context;
             TargetManager = targetManager;
+            ScreenshotTaskQueue = screenshotTaskQueue;
 
             if (session != null)
             {
@@ -49,6 +52,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         IBrowserContext ITarget.BrowserContext => BrowserContext;
+
+        internal TaskQueue ScreenshotTaskQueue { get; }
 
         internal BrowserContext BrowserContext { get; }
 
@@ -84,10 +89,10 @@ namespace PuppeteerSharp
             if (Session == null)
             {
                 var session = await CreateCDPSessionAsync().ConfigureAwait(false) as CDPSession;
-                return await Page.CreateAsync(session, this, false, null).ConfigureAwait(false);
+                return await Page.CreateAsync(session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
             }
 
-            return await Page.CreateAsync(Session, this, false, null).ConfigureAwait(false);
+            return await Page.CreateAsync(Session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

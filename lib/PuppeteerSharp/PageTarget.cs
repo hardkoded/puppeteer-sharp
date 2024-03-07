@@ -13,8 +13,16 @@ namespace PuppeteerSharp
         private readonly ViewPortOptions _defaultViewport;
         private readonly TaskQueue _screenshotTaskQueue;
 
-        internal PageTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory)
+        internal PageTarget(
+            TargetInfo targetInfo,
+            CDPSession session,
+            BrowserContext context,
+            ITargetManager targetManager,
+            Func<bool, Task<CDPSession>> sessionFactory,
+            bool ignoreHTTPSErrors,
+            ViewPortOptions defaultViewport,
+            TaskQueue screenshotTaskQueue)
+            : base(targetInfo, session, context, targetManager, sessionFactory, screenshotTaskQueue)
         {
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _defaultViewport = defaultViewport;
@@ -61,7 +69,7 @@ namespace PuppeteerSharp
                         return;
                     }
 
-                    var openerPage = (Page)await openerPageTask.ConfigureAwait(false);
+                    var openerPage = await openerPageTask.ConfigureAwait(false);
                     if (!openerPage.HasPopupEventListeners)
                     {
                         return;
