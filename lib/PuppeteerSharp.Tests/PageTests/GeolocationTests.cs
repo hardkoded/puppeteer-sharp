@@ -1,20 +1,18 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class GeolocationTests : PuppeteerPageBaseTest
     {
-        public GeolocationTests(): base()
+        public GeolocationTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should work")]
         public async Task ShouldWork()
         {
             await Context.OverridePermissionsAsync(TestConstants.ServerUrl, new[] { OverridePermission.Geolocation });
@@ -35,8 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }, geolocation);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setGeolocation", "should throw when invalid longitude")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
         public void ShouldThrowWhenInvalidLongitude()
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(() =>

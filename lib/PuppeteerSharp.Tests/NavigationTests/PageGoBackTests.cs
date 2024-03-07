@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageGoBackTests : PuppeteerPageBaseTest
     {
-        public PageGoBackTests(): base()
+        public PageGoBackTests() : base()
         {
         }
 
         //TODO: This is working in puppeteer. I don't know why is hanging here.
-        [PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,8 +29,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.Null(response);
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Page.goBack", "should work with HistoryAPI")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work with HistoryAPI")]
         public async Task ShouldWorkWithHistoryAPI()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

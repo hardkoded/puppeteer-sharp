@@ -1,14 +1,12 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class PageBringToFrontTests : PuppeteerBaseTest
     {
-        [PuppeteerTest("headful.spec.ts", "Page.bringToFront", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("headful.spec", "Page.bringToFront", "should work")]
         public async Task ShouldWork()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(

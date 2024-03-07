@@ -1,24 +1,16 @@
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageReloadTests : PuppeteerPageBaseTest
     {
-        public PageReloadTests(): base()
+        public PageReloadTests() : base()
         {
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Page.reload", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

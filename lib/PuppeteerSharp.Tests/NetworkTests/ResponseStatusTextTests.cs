@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseStatusTextTests : PuppeteerPageBaseTest
     {
-        public ResponseStatusTextTests(): base()
+        public ResponseStatusTextTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.statusText", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.statusText", "should work")]
         public async Task ShouldWork()
         {
             Server.SetRoute("/cool", (context) =>

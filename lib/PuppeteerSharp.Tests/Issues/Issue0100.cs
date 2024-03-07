@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0100 : PuppeteerBrowserContextBaseTest
     {
-        public Issue0100(): base()
+        public Issue0100() : base()
         {
         }
 
-        [PuppeteerTimeout]
         public async Task PdfDarkskyShouldWork()
         {
             await using (var page = await Context.NewPageAsync())

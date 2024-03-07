@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class AsElementTests : PuppeteerPageBaseTest
     {
-        public AsElementTests(): base()
+        public AsElementTests() : base()
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.body");
@@ -20,8 +18,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.NotNull(element);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return null for non-elements")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return null for non-elements")]
         public async Task ShouldReturnNullForNonElements()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -29,8 +26,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.Null(element);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.asElement", "should return ElementHandle for TextNodes")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return ElementHandle for TextNodes")]
         public async Task ShouldReturnElementHandleForTextNodes()
         {
             await Page.SetContentAsync("<div>ee!</div>");

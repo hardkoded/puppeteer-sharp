@@ -29,15 +29,21 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
         private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
+        private readonly string _id;
+        private readonly TargetType _targetType;
 
         internal WebWorker(
             CDPSession client,
             string url,
+            string targetId,
+            TargetType targetType,
             Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
             Action<EvaluateExceptionResponseDetails> exceptionThrown)
         {
             _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
+            _id = targetId;
             Client = client;
+            _targetType = targetType;
             World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
             Url = url;
             _consoleAPICalled = consoleAPICalled;
@@ -49,7 +55,7 @@ namespace PuppeteerSharp
                 {
                     if (task.IsFaulted)
                     {
-                        _logger.LogError(task.Exception.Message);
+                        _logger.LogError(task.Exception!.Message);
                     }
                 },
                 TaskScheduler.Default);
@@ -59,7 +65,7 @@ namespace PuppeteerSharp
                 {
                     if (task.IsFaulted)
                     {
-                        _logger.LogError(task.Exception.Message);
+                        _logger.LogError(task.Exception!.Message);
                     }
                 },
                 TaskScheduler.Default);
@@ -79,7 +85,7 @@ namespace PuppeteerSharp
 
         internal CDPSession Client { get; }
 
-        internal IsolatedWorld World { get; }
+        private IsolatedWorld World { get; }
 
         /// <summary>
         /// Executes a script in browser context.
@@ -133,7 +139,41 @@ namespace PuppeteerSharp
         public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
-        internal async void OnMessageReceived(object sender, MessageEventArgs e)
+        /// <summary>
+        /// Closes the worker.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
+        public async Task CloseAsync()
+        {
+            switch (_targetType)
+            {
+                case TargetType.ServiceWorker:
+                case TargetType.SharedWorker:
+                    // For service and shared workers we need to close the target and detach to allow
+                    // the worker to stop.
+                    await Client.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
+
+                    await Client.Connection.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest()
+                        {
+                            SessionId = Client.Id,
+                        }).ConfigureAwait(false);
+                    break;
+                default:
+                    await EvaluateFunctionAsync(@"() => {
+                        self.close();
+                    }").ConfigureAwait(false);
+                    break;
+            }
+        }
+
+        private async void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
             {

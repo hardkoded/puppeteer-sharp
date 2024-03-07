@@ -1,21 +1,19 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class MetricsTests : PuppeteerPageBaseTest
     {
-        public MetricsTests(): base()
+        public MetricsTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.metrics", "should get metrics from a page")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.metrics", "should get metrics from a page")]
         public async Task ShouldGetMetricsFromPage()
         {
             await Page.GoToAsync("about:blank");
@@ -23,8 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             CheckMetrics(metrics);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.metrics", "metrics event fired on console.timeStamp")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.metrics", "metrics event fired on console.timeStamp")]
         public async Task MetricsEventFiredOnConsoleTimespan()
         {
             var metricsTaskWrapper = new TaskCompletionSource<MetricEventArgs>();

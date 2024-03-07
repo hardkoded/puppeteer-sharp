@@ -2,20 +2,18 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class FrameGoToTests : PuppeteerPageBaseTest
     {
-        public FrameGoToTests(): base()
+        public FrameGoToTests() : base()
         {
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should navigate subframes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should navigate subframes")]
         public async Task ShouldNavigateSubFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -27,8 +25,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreSame(response.Frame, childFrame);
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should reject when frame detaches")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should reject when frame detaches")]
         public async Task ShouldRejectWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -47,8 +44,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 }.Any(error => exception.Message.Contains(error)));
         }
 
-        [PuppeteerTest("navigation.spec.ts", "Frame.goto", "should return matching responses")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should return matching responses")]
         public async Task ShouldReturnMatchingResponses()
         {
             // Disable cache: otherwise, chromium will cache similar requests.

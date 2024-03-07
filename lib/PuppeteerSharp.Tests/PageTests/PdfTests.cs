@@ -2,20 +2,15 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PuppeteerSharp.Media;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Media;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class PdfTests : PuppeteerPageBaseTest
     {
-        public PdfTests(): base()
-        {
-        }
-
-        [PuppeteerTimeout(-1)]
+        [Test]
         public async Task Usage()
         {
             var outputFile = Path.Combine(BaseDirectory, "Usage.pdf");
@@ -29,7 +24,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             using var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
-            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
             await using var page = await browser.NewPageAsync();
             await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded from a CDN, use WaitUntilNavigation.Networkidle0 as a second param.
             await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
@@ -40,8 +35,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(File.Exists(outputFile));
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and save to file")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
         public async Task ShouldBeAbleToSaveFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.pdf");
@@ -59,8 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF and stream the result")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and stream the result")]
         public async Task CanPrintToPDFAndStreamTheResult()
         {
             // We test this differently compared to puppeteer.
@@ -80,8 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
         }
 
-        [PuppeteerTest("page.spec.ts", "printing to PDF", "can print to PDF with accessible")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
         public async Task CanPrintToPdfWithAccessible()
         {
             // We test this differently compared to puppeteer.
@@ -106,7 +98,31 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
         }
 
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
+        public async Task CanPrintToPdfWithOutline()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var outputFileOutlined = Path.Combine(BaseDirectory, "output-outlined.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            fileInfo = new FileInfo(outputFileOutlined);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
+
+            Assert.Greater(new FileInfo(outputFileOutlined).Length, new FileInfo(outputFile).Length);
+        }
+
+        [Test]
         public void PdfOptionsShouldBeSerializable()
         {
             var pdfOptions = new PdfOptions

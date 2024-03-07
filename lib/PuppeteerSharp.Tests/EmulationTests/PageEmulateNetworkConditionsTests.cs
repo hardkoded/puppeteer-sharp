@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageEmulateNetworkConditionsTests : PuppeteerPageBaseTest
     {
-        public PageEmulateNetworkConditionsTests(): base()
+        public PageEmulateNetworkConditionsTests() : base()
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
             var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];

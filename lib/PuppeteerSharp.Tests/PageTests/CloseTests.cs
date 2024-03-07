@@ -1,17 +1,15 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class CloseTests : PuppeteerPageBaseTest
     {
-        public CloseTests(): base() { }
+        public CloseTests() : base() { }
 
-        // [PuppeteerTest("page.spec.ts", "Page.close", "should reject all promises when page is closed")]
-        // [Skip(SkipAttribute.Targets.Firefox)]
-        [Ignore("TODO: See how to refactor this on nunit")]
+        // [Test,  Retry(2),  PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
+        // [Ignore("TODO: See how to refactor this on nunit")]
         public void ShouldRejectAllPromisesWhenPageIsClosed()
         {
             /*
@@ -28,8 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             */
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should not be visible in browser.pages")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
         public async Task ShouldNotBeVisibleInBrowserPages()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -39,7 +36,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -49,8 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should run beforeunload if asked for")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should run beforeunload if asked for")]
         public async Task ShouldRunBeforeunloadIfAskedFor()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -88,8 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
             );
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should *not* run beforeunload by default")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should *not* run beforeunload by default")]
         public async Task ShouldNotRunBeforeunloadByDefault()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
@@ -97,8 +91,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.CloseAsync();
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should set the page close state")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should set the page close state")]
         public async Task ShouldSetThePageCloseState()
         {
             var page = await Context.NewPageAsync();
@@ -107,8 +100,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(page.IsClosed);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.close", "should terminate network waiters")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should terminate network waiters")]
         public async Task ShouldTerminateNetworkWaiters()
         {
             var newPage = await Context.NewPageAsync();
@@ -126,7 +118,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.DoesNotContain("Timeout", exception.Message);
         }
 
-        [PuppeteerTimeout(10000)]
+        [Test, Retry(2)]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Disconnect();

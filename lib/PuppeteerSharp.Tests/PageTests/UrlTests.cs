@@ -1,19 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class UrlTests : PuppeteerPageBaseTest
     {
-        public UrlTests(): base()
+        public UrlTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.url", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.url", "should work")]
         public async Task ShouldWork()
         {
             Assert.AreEqual(TestConstants.AboutBlank, Page.Url);

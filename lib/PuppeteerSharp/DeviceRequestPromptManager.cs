@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) Microsoft Corporation.
+//  * Copyright (c) Darío Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ internal class DeviceRequestPromptManager
         _client.MessageReceived += OnMessageReceived;
     }
 
-    public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = default)
+    public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
     {
         if (_client == null)
         {

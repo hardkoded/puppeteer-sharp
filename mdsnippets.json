@@ -1,3 +1,4 @@
 {
-  "Convention": "InPlaceOverwrite"
+  "Convention": "InPlaceOverwrite",
+  "UrlPrefix": "https://github.com/hardkoded/puppeteer-sharp/blob/master"
 }

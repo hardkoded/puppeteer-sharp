@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
     public class BrowserWaitForTargetTests : PuppeteerPageBaseTest
     {
-        public BrowserWaitForTargetTests(): base()
+        public BrowserWaitForTargetTests() : base()
         {
         }
 
-        [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should wait for a target")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
         public async Task ShouldWaitForATarget()
         {
             var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
@@ -24,15 +22,14 @@ namespace PuppeteerSharp.Tests.TargetTests
             await page.GoToAsync(TestConstants.EmptyPage);
             Assert.True(targetTask.IsCompleted);
             Assert.AreSame(await targetTask.Result.PageAsync(), page);
-            
+
             await page.CloseAsync();
         }
 
-        [PuppeteerTest("target.spec.ts", "Browser.waitForTarget", "should timeout waiting for a non-existent target")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should timeout waiting for a non-existent target")]
         public void ShouldTimeoutWaitingForANonExistentTarget()
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
-                new() { Timeout = 1}));
+                new() { Timeout = 1 }));
     }
 }

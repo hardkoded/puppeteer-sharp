@@ -4,6 +4,6 @@ namespace PuppeteerSharp.Messaging
     {
         public string Url { get; set; }
 
-        public string BrowserContextId { get; set; }
+        public object BrowserContextId { get; set; }
     }
 }

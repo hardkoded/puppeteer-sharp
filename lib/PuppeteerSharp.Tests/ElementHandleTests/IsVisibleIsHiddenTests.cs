@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
@@ -11,8 +10,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div style='display: none'>text</div>");

@@ -47,6 +47,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// The default browser context cannot be closed.
         /// </remarks>
+        [Obsolete("In Chrome, the default browser context can also be \"icognito\" if configured via the arguments and in such cases this getter returns wrong results. Also, the term \"incognito\" is not applicable to other browsers. To migrate, check the default browser context instead: in Chrome all non-default contexts are incognito, and the default context might be incognito if you provide the `--incognito` argument when launching the browser.")]
         bool IsIncognito { get; }
 
         /// <summary>
@@ -112,6 +113,6 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target.</param>
         /// <param name="options">options.</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null);
+        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
     }
 }

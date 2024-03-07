@@ -1,20 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
     public class InputTests : PuppeteerPageBaseTest
     {
-        public InputTests(): base()
+        public InputTests() : base()
         {
         }
 
-        [PuppeteerTest("input.spec.ts", "Input", "should upload the file")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "Input", "should upload the file")]
         public async Task ShouldUploadTheFile()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/fileupload.html");

@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue1354 : PuppeteerPageBaseTest
     {
-        public Issue1354(): base()
+        public Issue1354() : base()
         {
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldAllowSyncClose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -27,7 +25,6 @@ namespace PuppeteerSharp.Tests.Issues
             }
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldAllowSyncPageMethod()
         {
             var options = TestConstants.DefaultBrowserOptions();

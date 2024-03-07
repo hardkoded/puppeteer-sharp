@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
     public class PageTests : PuppeteerPageBaseTest
     {
-        public PageTests(): base()
+        public PageTests() : base()
         {
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("chromiumonly.spec", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
         public async Task ShouldWorkWithInterventionHeaders()
         {
             Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"

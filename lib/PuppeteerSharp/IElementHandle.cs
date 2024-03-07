@@ -46,9 +46,9 @@ namespace PuppeteerSharp
         Task ClickAsync(ClickOptions options = null);
 
         /// <summary>
-        /// Content frame for element handles referencing iframe nodes, or null otherwise.
+        /// Resolves the frame associated with the element..
         /// </summary>
-        /// <returns>Resolves to the content frame.</returns>
+        /// <returns>Task which resolves to the frame associated with the element.</returns>
         Task<IFrame> ContentFrameAsync();
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace PuppeteerSharp
         Task<IElementHandle> QuerySelectorAsync(string selector);
 
         /// <summary>
-        /// This method scrolls element into view if needed, and then uses to take a screenshot of the element.
+        /// This method scrolls element into view if needed, and then uses <see cref="IPage.ScreenshotAsync(string)"/> to take a screenshot of the element.
         /// If the element is detached from DOM, the method throws an error.
         /// </summary>
         /// <returns>The task.</returns>
@@ -312,5 +312,23 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to true if the element is hidden.</returns>
         Task<bool> IsHiddenAsync();
+
+        /// <summary>
+        /// Dispatches a <c>touchstart</c> event.
+        /// </summary>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        Task TouchStartAsync();
+
+        /// <summary>
+        /// Dispatches a <c>touchmove</c> event.
+        /// </summary>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        Task TouchMoveAsync();
+
+        /// <summary>
+        /// /// Dispatches a <c>touchendt</c> event.
+        /// </summary>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        Task TouchEndAsync();
     }
 }

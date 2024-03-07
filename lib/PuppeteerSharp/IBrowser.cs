@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Provides methods to interact with a browser in Chromium.
+    /// Provides methods to interact with a browser.
     /// </summary>
     /// <example>
     /// An example of using a <see cref="IBrowser"/> to create a <see cref="IPage"/>:
@@ -129,7 +129,7 @@ namespace PuppeteerSharp
         Task CloseAsync();
 
         /// <summary>
-        /// Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
+        /// Creates a new browser context. This won't share cookies/cache with other browser contexts.
         /// </summary>
         /// <param name="options">Options.</param>
         /// <returns>Task which resolves to a new <see cref="IBrowserContext"/> object.</returns>
@@ -138,8 +138,8 @@ namespace PuppeteerSharp
         /// <![CDATA[
         /// using(var browser = await Puppeteer.LaunchAsync(new LaunchOptions()))
         /// {
-        ///     // Create a new incognito browser context.
-        ///     var context = await browser.CreateIncognitoBrowserContextAsync();
+        ///     // Create a new browser context.
+        ///     var context = await browser.CreateBrowserContextAsync();
         ///     // Create a new page in a pristine context.
         ///     var page = await context.NewPageAsync();
         ///     // Do stuff
@@ -148,7 +148,7 @@ namespace PuppeteerSharp
         /// ]]>
         /// </code>
         /// </example>
-        Task<IBrowserContext> CreateIncognitoBrowserContextAsync(BrowserContextOptions options = null);
+        Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null);
 
         /// <summary>
         /// Disconnects Puppeteer from the browser, but leaves the process running. After calling <see cref="Disconnect"/>, the browser object is considered disposed and cannot be used anymore.
@@ -208,7 +208,7 @@ namespace PuppeteerSharp
         /// <param name="predicate">A function to be run for every target.</param>
         /// <param name="options">options.</param>
         /// <returns>Resolves to the first target found that matches the predicate function.</returns>
-        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null);
+        Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Registers a custom query handler.

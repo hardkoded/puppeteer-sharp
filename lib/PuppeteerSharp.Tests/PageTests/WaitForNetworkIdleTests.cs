@@ -1,19 +1,17 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class WaitForNetworkIdleTests : PuppeteerPageBaseTest
     {
-        public WaitForNetworkIdleTests(): base()
+        public WaitForNetworkIdleTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work")]
         public async Task ShouldWork()
         {
             var t1 = DateTime.UtcNow;
@@ -49,8 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True((t1 - t2).TotalMilliseconds >= 400);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect timeout")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect timeout")]
         public async Task ShouldRespectTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -62,8 +59,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         // This should work on Firefox, this ignore should be temporal
         // PRs are welcome :)
-        [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should respect idleTime")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect idleTime")]
         public async Task ShouldRespectIdleTimeout()
         {
             var t1 = DateTime.UtcNow;
@@ -95,8 +91,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(t2 > t1);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.waitForNetworkIdle", "should work with no timeout")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]
         public async Task ShouldWorkWithNoTimeout()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

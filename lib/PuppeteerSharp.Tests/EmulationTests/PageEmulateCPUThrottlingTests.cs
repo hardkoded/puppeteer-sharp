@@ -1,17 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageEmulateCPUThrottlingTests : PuppeteerPageBaseTest
     {
-        public PageEmulateCPUThrottlingTests(): base()
+        public PageEmulateCPUThrottlingTests() : base()
         {
         }
 
-        [PuppeteerTest("emulation.spec.ts", "Page.emulateCPUThrottling", "should change the CPU throttling rate successfully")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateCPUThrottling", "should change the CPU throttling rate successfully")]
         public async Task ShouldChangeTheCPUThrottlingRateSuccessfully()
         {
             await Page.EmulateCPUThrottlingAsync(100);

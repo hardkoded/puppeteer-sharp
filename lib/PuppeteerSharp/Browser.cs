@@ -43,9 +43,13 @@ namespace PuppeteerSharp
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             IsPageTargetFunc =
                 isPageTargetFunc ??
-                (target => target.Type == TargetType.Page ||
-                           target.Type == TargetType.BackgroundPage ||
-                           target.Type == TargetType.Webview);
+                new Func<Target, bool>((Target target) =>
+                {
+                    return
+                        target.Type == TargetType.Page ||
+                        target.Type == TargetType.BackgroundPage ||
+                        target.Type == TargetType.Webview;
+                });
 
             _defaultContext = new BrowserContext(Connection, this, null);
             _contexts = new ConcurrentDictionary<string, BrowserContext>(
@@ -65,7 +69,6 @@ namespace PuppeteerSharp
                     connection,
                     CreateTarget,
                     _targetFilterCallback,
-                    this,
                     launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
             }
         }
@@ -146,7 +149,7 @@ namespace PuppeteerSharp
             => TargetManager.GetAvailableTargets().Values.ToArray();
 
         /// <inheritdoc/>
-        public async Task<IBrowserContext> CreateIncognitoBrowserContextAsync(BrowserContextOptions options = null)
+        public async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
         {
             var response = await Connection.SendAsync<CreateBrowserContextResponse>(
                 "Target.createBrowserContext",
@@ -193,10 +196,10 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task CloseAsync() => _closeTask ??= CloseCoreAsync();
+        public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
 
         /// <inheritdoc/>
-        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitTimeoutOptions options = null)
+        public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
         {
             if (predicate == null)
             {
@@ -324,13 +327,18 @@ namespace PuppeteerSharp
 
             if (contextId != null)
             {
-                createTargetRequest.BrowserContextId = contextId;
+                // We don't have this code in upstream.
+                // Puppeteer sends a number if the contextId is a number, even if the typing says that it should be a string.
+                // It seems that firefox ignores the contextId if it's not a number. Which is what Firefox sent back.
+                createTargetRequest.BrowserContextId = int.TryParse(contextId, out var contextIdAsNumber)
+                    ? contextIdAsNumber
+                    : contextId;
             }
 
             var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
                 .ConfigureAwait(false)).TargetId;
-            var target = await TargetManager.GetAvailableTargets().GetItemAsync(targetId).ConfigureAwait(false);
-            await target.InitializedTask.ConfigureAwait(false);
+            var target = await WaitForTargetAsync(t => t.TargetId == targetId).ConfigureAwait(false) as Target;
+            await target!.InitializedTask.ConfigureAwait(false);
             return await target.PageAsync().ConfigureAwait(false);
         }
 
@@ -389,7 +397,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
+                if (await e.Target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
                 {
                     var args = new TargetChangedArgs { Target = e.Target };
                     TargetCreated?.Invoke(this, args);
@@ -479,7 +487,7 @@ namespace PuppeteerSharp
             TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
         }
 
-        private Target CreateTarget(TargetInfo targetInfo, CDPSession session)
+        private Target CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
         {
             var browserContextId = targetInfo.BrowserContextId;
 
@@ -488,15 +496,14 @@ namespace PuppeteerSharp
                 context = _defaultContext;
             }
 
-            Func<bool, Task<CDPSession>> createSession = (bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
+            Task<CDPSession> CreateSession(bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
 
             var otherTarget = new OtherTarget(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
-                createSession,
-                this.ScreenshotTaskQueue);
+                CreateSession);
 
             if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -505,7 +512,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession,
+                    CreateSession,
                     IgnoreHTTPSErrors,
                     DefaultViewport,
                     ScreenshotTaskQueue);
@@ -518,7 +525,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession,
+                    CreateSession,
                     IgnoreHTTPSErrors,
                     DefaultViewport,
                     ScreenshotTaskQueue);
@@ -531,8 +538,7 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    createSession,
-                    this.ScreenshotTaskQueue);
+                    CreateSession);
             }
 
             return otherTarget;

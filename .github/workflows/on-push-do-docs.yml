@@ -9,7 +9,7 @@ jobs:
     - name: Run MarkdownSnippets
       run: |
         dotnet tool install --global MarkdownSnippets.Tool
-        mdsnippets ${GITHUB_WORKSPACE} --url-prefix https://github.com/hardkoded/puppeteer-sharp/blob/master
+        mdsnippets ${GITHUB_WORKSPACE}
       shell: bash
     - name: Push changes
       run: |

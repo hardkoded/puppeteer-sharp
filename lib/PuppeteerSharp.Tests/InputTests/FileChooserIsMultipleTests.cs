@@ -1,20 +1,18 @@
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Mobile;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Mobile;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.InputTests
 {
     public class FileChooserIsMultipleTests : PuppeteerPageBaseTest
     {
-        public FileChooserIsMultipleTests(): base()
+        public FileChooserIsMultipleTests() : base()
         {
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for single file pick")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for single file pick")]
         public async Task ShouldWorkForSingleFilePick()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -27,8 +25,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.False(waitForTask.Result.IsMultiple);
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for \"multiple\"")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"multiple\"")]
         public async Task ShouldWorkForMultiple()
         {
             await Page.SetContentAsync("<input type=file multiple>");
@@ -41,8 +38,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.True(waitForTask.Result.IsMultiple);
         }
 
-        [PuppeteerTest("input.spec.ts", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
         public async Task ShouldWorkForWebkitDirectory()
         {
             await Page.SetContentAsync("<input type=file multiple webkitdirectory>");

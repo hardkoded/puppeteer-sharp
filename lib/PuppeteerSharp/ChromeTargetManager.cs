@@ -13,26 +13,23 @@ namespace PuppeteerSharp
     {
         private readonly List<string> _ignoredTargets = new();
         private readonly Connection _connection;
-        private readonly Func<TargetInfo, CDPSession, Target> _targetFactoryFunc;
+        private readonly Func<TargetInfo, CDPSession, CDPSession, Target> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
         private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
-        private readonly ConcurrentDictionary<ICDPConnection, List<TargetInterceptor>> _targetInterceptors = new();
-        private readonly List<string> _targetsIdsForInit = new();
+        private readonly ConcurrentSet<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
 
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
         private readonly int _targetDiscoveryTimeout;
         private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
-        private readonly Browser _browser;
 
         public ChromeTargetManager(
             Connection connection,
-            Func<TargetInfo, CDPSession, Target> targetFactoryFunc,
+            Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
-            Browser browser,
             int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
@@ -42,40 +39,6 @@ namespace PuppeteerSharp
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
             _targetDiscoveryTimeout = targetDiscoveryTimeout;
-            _browser = browser;
-
-            _ = _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-            {
-                Discover = true,
-                Filter =
-                [
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                    {
-                        Type = "tab",
-                        Exclude = true,
-                    },
-                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                ],
-            }).ContinueWith(
-                t =>
-                {
-                    try
-                    {
-                        if (t.IsFaulted)
-                        {
-                            _logger.LogError(t.Exception, "Target.setDiscoverTargets failed");
-                        }
-                        else
-                        {
-                            StoreExistingTargetsForInit();
-                        }
-                    }
-                    finally
-                    {
-                        _targetDiscoveryCompletionSource.SetResult(true);
-                    }
-                },
-                TaskScheduler.Default);
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -90,29 +53,37 @@ namespace PuppeteerSharp
 
         public async Task InitializeAsync()
         {
-            await _connection.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest()
+            try
             {
-                WaitForDebuggerOnStart = true,
-                Flatten = true,
-                AutoAttach = true,
-            }).ConfigureAwait(false);
+                await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
+                {
+                    Discover = true,
+                    Filter =
+                    [
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                    ],
+                }).ConfigureAwait(false);
+            }
+            finally
+            {
+                _targetDiscoveryCompletionSource.SetResult(true);
+            }
 
-            await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
+            StoreExistingTargetsForInit();
+
+            await _connection.SendAsync(
+                "Target.setAutoAttach",
+                new TargetSetAutoAttachRequest()
+                {
+                    WaitForDebuggerOnStart = true,
+                    Flatten = true,
+                    AutoAttach = true,
+                }).ConfigureAwait(false);
+
             FinishInitializationIfReady();
 
             await _initializeCompletionSource.Task.ConfigureAwait(false);
-        }
-
-        public void AddTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            var interceptors = _targetInterceptors.GetOrAdd(session, static _ => new());
-            interceptors.Add(interceptor);
-        }
-
-        public void RemoveTargetInterceptor(CDPSession session, TargetInterceptor interceptor)
-        {
-            _targetInterceptors.TryGetValue(session, out var interceptors);
-            interceptors?.Remove(interceptor);
         }
 
         private void StoreExistingTargetsForInit()
@@ -124,8 +95,7 @@ namespace PuppeteerSharp
                     null,
                     null,
                     this,
-                    null,
-                    _browser.ScreenshotTaskQueue);
+                    null);
 
                 if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) &&
                     kv.Value.Type != TargetType.Browser)
@@ -183,7 +153,6 @@ namespace PuppeteerSharp
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
         {
             e.Session.MessageReceived -= OnMessageReceived;
-            _targetInterceptors.TryRemove(e.Session, out var _);
         }
 
         private void OnTargetCreated(TargetCreatedResponse e)
@@ -199,7 +168,7 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                var target = _targetFactoryFunc(e.TargetInfo, null);
+                var target = _targetFactoryFunc(e.TargetInfo, null, null);
                 target.Initialize();
                 _attachedTargetsByTargetId.AddItem(e.TargetInfo.TargetId, target);
             }
@@ -237,6 +206,13 @@ namespace PuppeteerSharp
 
             var previousURL = target.Url;
             var wasInitialized = target.IsInitialized;
+
+            if (IsPageTargetBecomingPrimary(target, e.TargetInfo))
+            {
+                var session = target.Session;
+                session.ParentSession?.OnSwapped(session);
+            }
+
             target.TargetInfoChanged(e.TargetInfo);
 
             if (wasInitialized && previousURL != target.Url)
@@ -249,37 +225,23 @@ namespace PuppeteerSharp
             }
         }
 
+        private bool IsPageTargetBecomingPrimary(Target target, TargetInfo newTargetInfo)
+            => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
+
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
-            var parent = sender as ICDPConnection;
+            var parentConnection = sender as ICDPConnection;
+            var parentSession = sender as CDPSession;
+
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
-
-            async Task SilentDetach()
-            {
-                try
-                {
-                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
-                    await parent.SendAsync(
-                        "Target.detachFromTarget",
-                        new TargetDetachFromTargetRequest
-                        {
-                            SessionId = session.Id,
-                        }).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "silentDetach failed.");
-                }
-            }
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
                 return;
             }
 
-            if (targetInfo.Type == TargetType.ServiceWorker &&
-                _connection.IsAutoAttached(targetInfo.TargetId))
+            if (targetInfo.Type == TargetType.ServiceWorker)
             {
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
@@ -289,17 +251,17 @@ namespace PuppeteerSharp
                     return;
                 }
 
-                var workerTarget = _targetFactoryFunc(targetInfo, null);
+                var workerTarget = _targetFactoryFunc(targetInfo, null, null);
                 workerTarget.Initialize();
                 _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, workerTarget);
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = workerTarget });
                 return;
             }
 
-            var existingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
-            if (!existingTarget)
+            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            if (!isExistingTarget)
             {
-                target = _targetFactoryFunc(targetInfo, session);
+                target = _targetFactoryFunc(targetInfo, session, parentSession);
             }
 
             if (_targetFilterFunc?.Invoke(target) == false)
@@ -313,8 +275,9 @@ namespace PuppeteerSharp
 
             session.MessageReceived += OnMessageReceived;
 
-            if (existingTarget)
+            if (isExistingTarget)
             {
+                session.Target = target;
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
             else
@@ -325,24 +288,12 @@ namespace PuppeteerSharp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            if (_targetInterceptors.TryGetValue(parent, out var interceptors))
-            {
-                foreach (var interceptor in interceptors)
-                {
-                    Target parentTarget = null;
-                    if (parent is CDPSession parentSession && !_attachedTargetsBySessionId.TryGetValue(parentSession.Id, out parentTarget))
-                    {
-                        throw new PuppeteerException("Parent session not found in attached targets");
-                    }
-
-                    interceptor(target, parentTarget);
-                }
-            }
+            (parentSession ?? parentConnection as CDPSession)?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
             _targetsIdsForInit.Remove(target.TargetId);
 
-            if (!existingTarget)
+            if (!isExistingTarget)
             {
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = target });
             }
@@ -363,6 +314,26 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to call setAutoAttach and runIfWaitingForDebugger");
+            }
+
+            return;
+
+            async Task SilentDetach()
+            {
+                try
+                {
+                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                    await parentConnection!.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest
+                        {
+                            SessionId = session.Id,
+                        }).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "silentDetach failed.");
+                }
             }
         }
 

@@ -1,19 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.PageAccessibility;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.PageAccessibility;
 
 namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class RootOptionTests : PuppeteerPageBaseTest
     {
-        public RootOptionTests(): base()
-        {
-        }
-
-        [PuppeteerTest("accessibility.spec.ts", "root option", "should work a button")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work a button")]
         public async Task ShouldWorkAButton()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -28,8 +22,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
-        [PuppeteerTest("accessibility.spec.ts", "root option", "should work an input")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work an input")]
         public async Task ShouldWorkAnInput()
         {
             await Page.SetContentAsync("<input title='My Input' value='My Value'>");
@@ -45,8 +38,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }));
         }
 
-        [PuppeteerTest("accessibility.spec.ts", "root option", "should work a menu")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work a menu")]
         public async Task ShouldWorkAMenu()
         {
             await Page.SetContentAsync(@"
@@ -87,8 +79,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.AreEqual(nodeToCheck, snapshot);
         }
 
-        [PuppeteerTest("accessibility.spec.ts", "root option", "should return null when the element is no longer in DOM")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should return null when the element is no longer in DOM")]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -97,8 +88,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.Null(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
         }
 
-        [PuppeteerTest("accessibility.spec.ts", "root option", "should support the interestingOnly option")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {
             await Page.SetContentAsync("<div><button>My Button</button></div>");
@@ -124,6 +114,13 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                                 {
                                     Role = "StaticText",
                                     Name = "My Button",
+                                    Children = new SerializedAXNode[]
+                                    {
+                                        new()
+                                        {
+                                            Role = "InlineTextBox",
+                                        }
+                                    }
                                 }
                             }
                         }

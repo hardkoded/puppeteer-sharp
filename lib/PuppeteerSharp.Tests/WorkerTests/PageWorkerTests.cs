@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.WorkerTests
 {
     public class PageWorkerTests : PuppeteerPageBaseTest
     {
-        public PageWorkerTests(): base()
+        public PageWorkerTests() : base()
         {
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "Page.workers")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "Page.workers")]
         public async Task PageWorkers()
         {
             var workerCreatedTcs = new TaskCompletionSource<bool>();
@@ -34,8 +32,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.IsEmpty(Page.Workers);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should emit created and destroyed events")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -49,8 +46,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreSame(worker, await workerDestroyedTcs.Task);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should report console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report console logs")]
         public async Task ShouldReportConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -68,8 +64,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             }, log.Location);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should have JSHandles for console logs")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]
         public async Task ShouldHaveJSHandlesForConsoleLogs()
         {
             var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
@@ -85,8 +80,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual("null", json);
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should have an execution context")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have an execution context")]
         public async Task ShouldHaveAnExecutionContext()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -97,8 +91,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.AreEqual(2, await worker.EvaluateExpressionAsync<int>("1+1"));
         }
 
-        [PuppeteerTest("worker.spec.ts", "Workers", "should report errors")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report errors")]
         public async Task ShouldReportErrors()
         {
             var errorTcs = new TaskCompletionSource<string>();
@@ -107,6 +100,23 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
             var errorLog = await errorTcs.Task;
             StringAssert.Contains("this is my error", errorLog);
+        }
+
+        [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "scan be closed")]
+        public async Task CanBeClosed()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            await workerCreatedTcs.Task;
+            var worker = Page.Workers[0];
+            var workerClosedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerDestroyed += (_, e) => workerClosedTcs.TrySetResult(e.Worker);
+
+            StringAssert.Contains("worker.js", worker.Url);
+            await worker.CloseAsync();
+            Assert.AreSame(worker, await workerClosedTcs.Task);
         }
     }
 }

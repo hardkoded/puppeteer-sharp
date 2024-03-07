@@ -9,7 +9,7 @@ namespace PuppeteerSharp.PageCoverage
 
         public int Type { get; internal set; }
 
-        public CoverageResponseRange Range { get; internal set; }
+        public CoverageRange Range { get; internal set; }
 
         public int CompareTo(CoverageEntryPoint other)
         {

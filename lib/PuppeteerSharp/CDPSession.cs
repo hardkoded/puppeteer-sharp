@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -14,12 +15,15 @@ namespace PuppeteerSharp
     public class CDPSession : ICDPSession
     {
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
+        private readonly string _parentSessionId;
+        private int _lastId;
 
-        internal CDPSession(Connection connection, TargetType targetType, string sessionId)
+        internal CDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
         {
             Connection = connection;
             TargetType = targetType;
             Id = sessionId;
+            _parentSessionId = parentSessionId;
         }
 
         /// <inheritdoc/>
@@ -33,6 +37,10 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event EventHandler<SessionEventArgs> SessionDetached;
+
+        internal event EventHandler<SessionEventArgs> Ready;
+
+        internal event EventHandler<SessionEventArgs> Swapped;
 
         /// <inheritdoc/>
         public TargetType TargetType { get; }
@@ -49,8 +57,12 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
-        /// <inheritdoc cref="Connection"/>
         internal Connection Connection { get; private set; }
+
+        internal Target Target { get; set; }
+
+        internal CDPSession ParentSession
+            => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
 
         /// <inheritdoc/>
         public async Task<T> SendAsync<T>(string method, object args = null)
@@ -71,7 +83,7 @@ namespace PuppeteerSharp
                     CloseReason);
             }
 
-            var id = Connection.GetMessageID();
+            var id = GetMessageID();
             var message = Connection.GetMessage(id, method, args, Id);
 
             MessageTask callback = null;
@@ -117,6 +129,8 @@ namespace PuppeteerSharp
 
         internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+        internal void OnSessionReady(CDPSession session) => Ready?.Invoke(this, new SessionEventArgs(session));
+
         internal void OnMessage(ConnectionResponse obj)
         {
             var id = obj.Id;
@@ -135,6 +149,8 @@ namespace PuppeteerSharp
                 });
             }
         }
+
+        internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
         internal void Close(string closeReason)
         {
@@ -159,11 +175,13 @@ namespace PuppeteerSharp
         }
 
         internal void OnSessionAttached(CDPSession session)
-            => SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
+            => SessionAttached?.Invoke(this, new SessionEventArgs(session));
 
         internal void OnSessionDetached(CDPSession session)
-            => SessionDetached?.Invoke(this, new SessionEventArgs { Session = session });
+            => SessionDetached?.Invoke(this, new SessionEventArgs(session));
 
-        internal ICollection<MessageTask> GetPendingMessages() => _callbacks.Values;
+        internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
+
+        internal void OnSwapped(CDPSession session) => Swapped?.Invoke(this, new SessionEventArgs(session));
     }
 }

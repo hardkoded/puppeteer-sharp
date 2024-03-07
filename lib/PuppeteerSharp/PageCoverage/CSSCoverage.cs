@@ -11,11 +11,11 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly CDPSession _client;
         private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets = new();
         private readonly DeferredTaskQueue _callbackQueue = new();
         private readonly ILogger _logger;
 
+        private CDPSession _client;
         private bool _enabled;
         private bool _resetOnNavigation;
 
@@ -26,6 +26,8 @@ namespace PuppeteerSharp.PageCoverage
             _logger = _client.Connection.LoggerFactory.CreateLogger<CSSCoverage>();
             _resetOnNavigation = false;
         }
+
+        internal void UpdateClient(CDPSession client) => _client = client;
 
         internal Task StartAsync(CoverageStartOptions options)
         {
@@ -66,17 +68,17 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("CSS.disable"),
                 _client.SendAsync("DOM.disable")).ConfigureAwait(false);
 
-            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
+            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
             {
                 styleSheetIdToCoverage.TryGetValue(entry.StyleSheetId, out var ranges);
                 if (ranges == null)
                 {
-                    ranges = new List<CoverageResponseRange>();
+                    ranges = new List<CoverageRange>();
                     styleSheetIdToCoverage[entry.StyleSheetId] = ranges;
                 }
 
-                ranges.Add(new CoverageResponseRange
+                ranges.Add(new CoverageRange
                 {
                     StartOffset = entry.StartOffset,
                     EndOffset = entry.EndOffset,
@@ -91,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
                 var url = kv.Value.Url;
                 var text = kv.Value.Source;
                 styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
+                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageRange>());
                 coverage.Add(new CoverageEntry
                 {
                     Url = url,

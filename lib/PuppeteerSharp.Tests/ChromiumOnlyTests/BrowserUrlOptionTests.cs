@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ChromiumSpecificTests
 {
     public class BrowserUrlOptionTests : PuppeteerPageBaseTest
     {
-        public BrowserUrlOptionTests(): base()
+        public BrowserUrlOptionTests() : base()
         {
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
         public async Task ShouldBeAbleToConnectUsingBrowserURLWithAndWithoutTrailingSlash()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -32,8 +30,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
         public async Task ShouldThrowWhenUsingBothBrowserWSEndpointAndBrowserURL()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -50,8 +47,7 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [PuppeteerTest("chromiumonly.spec.ts", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
         public async Task ShouldThrowWhenTryingToConnectToNonExistingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();

@@ -1,15 +1,13 @@
-using PuppeteerSharp.Tests.Attributes;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0648 : PuppeteerPageBaseTest
     {
-        public Issue0648(): base()
+        public Issue0648() : base()
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);

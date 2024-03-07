@@ -2,28 +2,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseFromServiceWorkerTests : PuppeteerPageBaseTest
     {
-        public ResponseFromServiceWorkerTests(): base()
+        public ResponseFromServiceWorkerTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "should return |false| for non-service-worker content")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.fromServiceWorker", "should return |false| for non-service-worker content")]
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.False(response.FromServiceWorker);
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.fromServiceWorker", "Response.fromServiceWorker")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.fromServiceWorker", "Response.fromServiceWorker")]
         public async Task ResponseFromServiceWorker()
         {
             var responses = new Dictionary<string, IResponse>();

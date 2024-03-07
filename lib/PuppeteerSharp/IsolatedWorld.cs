@@ -39,7 +39,7 @@ namespace PuppeteerSharp
             _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
-            Client.MessageReceived += Client_MessageReceived;
+            FrameUpdated();
         }
 
         /// <summary>
@@ -73,6 +73,8 @@ namespace PuppeteerSharp
                 await _context.DisposeAsync().ConfigureAwait(false);
             }
         }
+
+        internal void FrameUpdated() => Client.MessageReceived += Client_MessageReceived;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {

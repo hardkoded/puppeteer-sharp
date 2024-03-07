@@ -1,27 +1,27 @@
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
-using System.Linq;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.FixturesTests
 {
     public class FixturesTests : PuppeteerBaseTest
     {
-        public FixturesTests(): base() { }
+        public FixturesTests() : base() { }
 
-        [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should dump browser process stderr")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
         public void ShouldDumpBrowserProcessStderr()
         {
             var success = false;
+            var browser = TestConstants.IsChrome ? "chrome" : "firefox";
             using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             using var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
-                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\"");
+                $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\" \"${browser}\"");
 
             process.ErrorDataReceived += (_, e) =>
             {
@@ -34,7 +34,6 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.True(success);
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
@@ -61,12 +60,17 @@ namespace PuppeteerSharp.Tests.FixturesTests
             Assert.True(browser.IsClosed);
         }
 
-        [PuppeteerTest("fixtures.spec.ts", "Fixtures", "should close the browser when the node process closes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
         public async Task ShouldCloseTheBrowserWhenTheLaunchedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
-            var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }, TestConstants.LoggerFactory);
+            var browser = await Puppeteer.LaunchAsync(
+                new LaunchOptions
+                {
+                    Headless = true,
+                    Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
+                },
+                TestConstants.LoggerFactory);
 
             browser.Disconnected += (_, _) =>
             {

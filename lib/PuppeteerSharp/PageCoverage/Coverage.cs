@@ -22,7 +22,7 @@ namespace PuppeteerSharp.PageCoverage
             => _jsCoverage.StartAsync(options ?? new CoverageStartOptions());
 
         /// <inheritdoc/>
-        public Task<CoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
+        public Task<JSCoverageEntry[]> StopJSCoverageAsync() => _jsCoverage.StopAsync();
 
         /// <inheritdoc/>
         public Task StartCSSCoverageAsync(CoverageStartOptions options = null)
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.PageCoverage
         /// <inheritdoc/>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
-        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageResponseRange> nestedRanges)
+        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageRange> nestedRanges)
         {
             var points = new List<CoverageEntryPoint>();
             foreach (var range in nestedRanges)
@@ -90,6 +90,12 @@ namespace PuppeteerSharp.PageCoverage
 
             // Filter out empty ranges.
             return results.Where(range => range.End - range.Start > 1).ToArray();
+        }
+
+        internal void UpdateClient(CDPSession client)
+        {
+            _jsCoverage.UpdateClient(client);
+            _cssCoverage.UpdateClient(client);
         }
     }
 }

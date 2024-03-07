@@ -1,15 +1,13 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue1878 : PuppeteerBrowserContextBaseTest
     {
-        public Issue1878(): base()
+        public Issue1878() : base()
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task MultiplePagesShouldNotShareSameScreenshotTaskQueue()
         {
             // 1st page

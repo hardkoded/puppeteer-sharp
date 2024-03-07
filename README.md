@@ -60,7 +60,7 @@ await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L55-L63' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L53-L61' title='Snippet source file'>snippet source</a> | <a href='#snippet-screenshotasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also change the view port before generating the screenshot
@@ -74,7 +74,7 @@ await Page.SetViewportAsync(new ViewPortOptions
     Height = 500
 });
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L15-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L13-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Generate PDF files
@@ -84,13 +84,13 @@ await Page.SetViewportAsync(new ViewPortOptions
 ```cs
 using var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
-await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions {Headless = true});
+await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
 await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com"); // In case of fonts being loaded from a CDN, use WaitUntilNavigation.Networkidle0 as a second param.
 await page.EvaluateExpressionHandleAsync("document.fonts.ready"); // Wait for fonts to be loaded. Omitting this might result in no text rendered in pdf.
 await page.PdfAsync(outputFile);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L28-L38' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/PdfTests.cs#L23-L33' title='Snippet source file'>snippet source</a> | <a href='#snippet-pdfasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Inject HTML
@@ -102,7 +102,7 @@ await using var page = await browser.NewPageAsync();
 await page.SetContentAsync("<div>My Receipt</div>");
 var result = await page.GetContentAsync();
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L19-L25' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L14-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Evaluate Javascript
@@ -115,7 +115,7 @@ var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
 var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
 Console.WriteLine(someObject.a);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L17-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L16-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Wait For Selector
@@ -172,6 +172,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/mrdo23"><img src="https://github.com/mrdo23.png" width="60px" alt="" /></a><!-- sponsors -->
 
 

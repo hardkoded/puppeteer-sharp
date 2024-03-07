@@ -1,24 +1,22 @@
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestIsNavigationRequestTests : PuppeteerPageBaseTest
     {
-        public RequestIsNavigationRequestTests(): base()
+        public RequestIsNavigationRequestTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.isNavigationRequest", "should work")]
         public async Task ShouldWork()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -32,8 +30,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work with request interception")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.isNavigationRequest", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             var requests = new Dictionary<string, IRequest>();
@@ -53,8 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.False(requests["style.css"].IsNavigationRequest);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.isNavigationRequest", "should work when navigating to image")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.isNavigationRequest", "should work when navigating to image")]
         public async Task ShouldWorkWhenNavigatingToImage()
         {
             var requests = new List<IRequest>();

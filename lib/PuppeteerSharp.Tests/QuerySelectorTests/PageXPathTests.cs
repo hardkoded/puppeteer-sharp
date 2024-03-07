@@ -1,19 +1,17 @@
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete but we test the funcionatlity anyway
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class PageXPathTests : PuppeteerPageBaseTest
     {
-        public PageXPathTests(): base()
+        public PageXPathTests() : base()
         {
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should query existing element")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
@@ -22,16 +20,14 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(elements, Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return empty array for non-existing element")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return empty array for non-existing element")]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.XPathAsync("/html/body/non-existing-element");
             Assert.IsEmpty(elements);
         }
 
-        [PuppeteerTest("queryselector.spec.ts", "Page.$x", "should return multiple elements")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$x", "should return multiple elements")]
         public async Task ShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div></div><div></div>");

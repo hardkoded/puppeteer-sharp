@@ -303,10 +303,10 @@ namespace PuppeteerSharp
             if (method == "Target.attachedToTarget")
             {
                 var sessionId = param.SessionId;
-                var session = new CDPSession(this, param.TargetInfo.Type, sessionId);
+                var session = new CDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
                 _sessions.AddItem(sessionId, session);
 
-                SessionAttached?.Invoke(this, new SessionEventArgs { Session = session });
+                SessionAttached?.Invoke(this, new SessionEventArgs(session));
 
                 if (obj.SessionId != null && _sessions.TryGetValue(obj.SessionId, out var parentSession))
                 {
@@ -319,7 +319,7 @@ namespace PuppeteerSharp
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {
                     session.Close("Target.detachedFromTarget");
-                    SessionDetached?.Invoke(this, new SessionEventArgs() { Session = session });
+                    SessionDetached?.Invoke(this, new SessionEventArgs(session));
 
                     if (_sessions.TryGetValue(sessionId, out var parentSession))
                     {

@@ -1,19 +1,17 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        public FrameEvaluateTests(): base()
+        public FrameEvaluateTests() : base()
         {
         }
 
-        [PuppeteerTest("frame.spec.ts", "Frame.evaluate", "should throw for detached frames")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("frame.spec", "Frame.evaluate", "should throw for detached frames")]
         public async Task ShouldThrowForDetachedFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

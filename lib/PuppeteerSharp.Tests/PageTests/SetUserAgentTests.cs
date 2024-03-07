@@ -1,19 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        public SetUserAgentTests(): base()
+        public SetUserAgentTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
             StringAssert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
@@ -27,8 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("foobar", userAgentTask.Result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work for subframes")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
             StringAssert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
@@ -40,8 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should emulate device user-agent")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should emulate device user-agent")]
         public async Task ShouldSimulateDeviceUserAgent()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -50,17 +46,16 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setUserAgent", "should work with additional userAgentMetdata")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
         public async Task ShouldWorkWithAdditionalUserAgentMetdata()
         {
             await Page.SetUserAgentAsync(
                 "MockBrowser",
                 new UserAgentMetadata
                 {
-                    Architecture= "Mock1",
-                    Mobile= false,
-                    Model= "Mockbook",
+                    Architecture = "Mock1",
+                    Mobile = false,
+                    Model = "Mockbook",
                     Platform = "MockOS",
                     PlatformVersion = "3.1",
                 });

@@ -33,5 +33,7 @@ namespace PuppeteerSharp.Messaging
         public string TransferMode { get; set; }
 
         public bool GenerateTaggedPDF { get; set; }
+
+        public bool GenerateDocumentOutline { get; set; }
     }
 }

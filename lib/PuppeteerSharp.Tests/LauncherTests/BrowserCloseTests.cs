@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserTests.Events
 {
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
-        public BrowserCloseTests(): base()
+        public BrowserCloseTests() : base()
         {
         }
 
-        [PuppeteerTest("launcher.spec.ts", "Browser.close", "should terminate network waiters")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should terminate network waiters")]
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using (var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))

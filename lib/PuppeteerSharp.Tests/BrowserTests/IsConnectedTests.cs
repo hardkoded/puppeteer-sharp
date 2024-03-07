@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class IsConnectedTests : PuppeteerBrowserBaseTest
     {
-        public IsConnectedTests(): base()
+        public IsConnectedTests() : base()
         {
         }
 
-        [PuppeteerTest("browser.spec.ts", "Browser.isConnected", "should set the browser connected state")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.isConnected", "should set the browser connected state")]
         public async Task ShouldSetTheBrowserConnectedState()
         {
             var newBrowser = await Puppeteer.ConnectAsync(new ConnectOptions

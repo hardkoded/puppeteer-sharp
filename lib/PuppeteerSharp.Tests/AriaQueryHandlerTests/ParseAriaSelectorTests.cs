@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PuppeteerSharp.Tests.Attributes;
+using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using static System.Net.Mime.MediaTypeNames;
-using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
-        public ParseAriaSelectorTests(): base()
+        public ParseAriaSelectorTests() : base()
         {
         }
 
@@ -23,8 +22,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             ");
         }
 
-        [PuppeteerTest("ariaqueryhandler.spec.ts", "parseAriaSelector", "should find button")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
         public async Task ShouldFindButton()
         {
             async Task ExpectFound(IElementHandle button)
@@ -36,7 +34,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 Assert.AreEqual("btn", id);
             }
 
-            var button= await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
+            var button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role='button']");
             await ExpectFound(button);

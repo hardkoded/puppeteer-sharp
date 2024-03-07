@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class BrowserTargetEventsTests : PuppeteerBrowserBaseTest
     {
-        public BrowserTargetEventsTests(): base()
+        public BrowserTargetEventsTests() : base()
         {
         }
 
-        [PuppeteerTest("launcher.spec.ts", "Browser target events", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser target events", "should work")]
         public async Task ShouldWork()
         {
-            using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var events = new List<string>();
 
             Browser.TargetCreated += (_, _) => events.Add("CREATED");

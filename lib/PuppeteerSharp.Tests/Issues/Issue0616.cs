@@ -1,20 +1,18 @@
-using Microsoft.AspNetCore.Http;
-using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue0616 : PuppeteerPageBaseTest
     {
-        public Issue0616(): base()
+        public Issue0616() : base()
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldBeAbleToChangeToPost()
         {
             await Page.SetRequestInterceptionAsync(true);

@@ -39,6 +39,11 @@ namespace PuppeteerSharp
     public interface IFrame
     {
         /// <summary>
+        /// Raised when the frame is swapped.
+        /// </summary>
+        event EventHandler FrameSwappedByActivation;
+
+        /// <summary>
         /// Gets the child frames of the this frame.
         /// </summary>
         IReadOnlyCollection<IFrame> ChildFrames { get; }
@@ -445,6 +450,6 @@ namespace PuppeteerSharp
         /// </example>
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after the page gets the prompt.</returns>
-        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = null);
+        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
     }
 }

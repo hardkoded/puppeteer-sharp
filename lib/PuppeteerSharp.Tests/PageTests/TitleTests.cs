@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class TitleTests : PuppeteerPageBaseTest
     {
-        public TitleTests(): base()
+        public TitleTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.title", "should return the page title")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.title", "should return the page title")]
         public async Task ShouldReturnThePageTitle()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/title.html");

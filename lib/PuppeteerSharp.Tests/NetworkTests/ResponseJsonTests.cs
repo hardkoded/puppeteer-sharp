@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class ResponseJsonTests : PuppeteerPageBaseTest
     {
-        public ResponseJsonTests(): base()
+        public ResponseJsonTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Response.json", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Response.json", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");

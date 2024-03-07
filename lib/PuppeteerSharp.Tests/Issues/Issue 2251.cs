@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Issues
 {
     public class Issue2251 : PuppeteerPageBaseTest
     {
-        public Issue2251(): base()
+        public Issue2251() : base()
         {
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldEvaluateXPathsCorrectly()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");

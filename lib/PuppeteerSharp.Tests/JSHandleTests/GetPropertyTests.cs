@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class GetPropertyTests : PuppeteerPageBaseTest
     {
-        public GetPropertyTests(): base()
+        public GetPropertyTests() : base()
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperty", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.getProperty", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({

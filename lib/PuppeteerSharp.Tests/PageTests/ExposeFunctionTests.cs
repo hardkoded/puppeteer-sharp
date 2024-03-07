@@ -1,20 +1,18 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class ExposeFunctionTests : PuppeteerPageBaseTest
     {
-        public ExposeFunctionTests(): base()
+        public ExposeFunctionTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldWork()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -22,8 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(36, result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should throw exception in page context")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
         public async Task ShouldThrowExceptionInPageContext()
         {
             await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
@@ -41,8 +38,7 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
         public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
         {
             var called = false;
@@ -52,8 +48,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldSurviveNavigation()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -62,8 +57,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(36, result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should await returned promise")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned promise")]
         public async Task ShouldAwaitReturnedValueTask()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -71,8 +65,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work on frames")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames")]
         public async Task ShouldWorkOnFrames()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -82,8 +75,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work on frames before navigation")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
         public async Task ShouldWorkOnFramesBeforeNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -94,8 +86,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.exposeFunction", "should work with complex objects")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
         public async Task ShouldWorkWithComplexObjects()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -105,7 +96,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(7, result.SelectToken("x").ToObject<int>());
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldAwaitReturnedTask()
         {
             var called = false;
@@ -118,7 +108,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldWorkWithAction()
         {
             var called = false;
@@ -130,7 +119,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldKeepTheCallbackClean()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -145,7 +133,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             if (session.HasPendingCallbacks())
             {
-                foreach(var pendingMessage in session.GetPendingMessages())
+                foreach (var pendingMessage in session.GetPendingMessages())
                 {
                     message += $" - {pendingMessage.Message}\n";
                 }

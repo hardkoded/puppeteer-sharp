@@ -1,19 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageSetExtraHttpHeadersTests : PuppeteerPageBaseTest
     {
-        public PageSetExtraHttpHeadersTests(): base()
+        public PageSetExtraHttpHeadersTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Page.setExtraHTTPHeaders", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string>

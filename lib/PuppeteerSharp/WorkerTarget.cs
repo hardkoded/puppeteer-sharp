@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -17,9 +16,8 @@ namespace PuppeteerSharp
             CDPSession session,
             BrowserContext context,
             ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory,
-            TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, screenshotTaskQueue)
+            Func<bool, Task<CDPSession>> sessionFactory)
+            : base(targetInfo, session, context, targetManager, sessionFactory)
         {
         }
 
@@ -36,6 +34,8 @@ namespace PuppeteerSharp
             return new WebWorker(
                 client,
                 TargetInfo.Url,
+                TargetInfo.TargetId,
+                TargetInfo.Type,
                 (_, _, _) => Task.CompletedTask,
                 _ => { });
         }

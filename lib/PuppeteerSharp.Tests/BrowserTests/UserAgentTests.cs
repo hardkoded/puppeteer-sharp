@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class UserAgentTests : PuppeteerBrowserBaseTest
     {
-        public UserAgentTests(): base()
+        public UserAgentTests() : base()
         {
         }
 
-        [PuppeteerTest("browser.spec.ts", "Browser.userAgent", "should include WebKit")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.userAgent", "should include WebKit")]
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();

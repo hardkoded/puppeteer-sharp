@@ -1,20 +1,14 @@
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests.Events
+namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        public PageEventsConsoleTests(): base()
-        {
-        }
-
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
         public async Task ShouldWork()
         {
             ConsoleMessage message = null;
@@ -40,9 +34,8 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should work for different console API calls")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldWorkForDifferentConsoleApiCalls()
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
+        public async Task ShouldWorkForDifferentConsoleApiCallsWithLoggingFunctions()
         {
             var messages = new List<ConsoleMessage>();
 
@@ -86,8 +79,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 .ToArray());
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not fail for window object")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
         public async Task ShouldNotFailForWindowObject()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -108,8 +100,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             Assert.AreEqual("JSHandle@object", await consoleTcs.Task);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should trigger correct Log")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -131,8 +122,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location when fetch fails")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location when fetch fails")]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -152,8 +142,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should have location and stack trace for console API calls")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location and stack trace for console API calls")]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -175,8 +164,7 @@ namespace PuppeteerSharp.Tests.PageTests.Events
             }, args.Message.Location);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Console", "should not throw when there are console messages in detached iframes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -192,12 +180,13 @@ namespace PuppeteerSharp.Tests.PageTests.Events
                 // 3. After that, remove the iframe.
                 frame.remove();
             }");
+#pragma warning disable CS0618 // Type or member is obsolete
             var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
+#pragma warning restore CS0618 // Type or member is obsolete
             // 4. Connect to the popup and make sure it doesn't throw.
             await popupTarget.PageAsync();
         }
 
-        [Skip(SkipAttribute.Targets.Firefox)]
         public async Task ShouldNotFailForNullArgument()
         {
             var consoleTcs = new TaskCompletionSource<string>();

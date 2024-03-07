@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class GetPropertiesTests : PuppeteerPageBaseTest
     {
-        public GetPropertiesTests(): base()
+        public GetPropertiesTests() : base()
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.getProperties", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync(@"({
@@ -24,8 +22,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual("bar", await foo.JsonValueAsync<string>());
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.getProperties", "should return even non-own properties")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.getProperties", "should return even non-own properties")]
         public async Task ShouldReturnEvenNonOwnProperties()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync(@"() => {

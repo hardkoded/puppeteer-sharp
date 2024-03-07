@@ -1,19 +1,18 @@
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
+using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class JsonValueTests : PuppeteerPageBaseTest
     {
-        public JsonValueTests(): base()
+        public JsonValueTests() : base()
         {
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
@@ -21,17 +20,17 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual(JObject.Parse("{ foo: 'bar' }"), json);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are not objects")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2),
+         PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "works with jsonValues that are not objects")]
         public async Task WorksWithJsonValuesThatAreNotObjects()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => ['a', 'b']");
             var json = await aHandle.JsonValueAsync<string[]>();
-            Assert.AreEqual(new[] {"a","b" }, json);
+            Assert.AreEqual(new[] { "a", "b" }, json);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "works with jsonValues that are primitives")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2),
+         PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "works with jsonValues that are primitives")]
         public async Task WorksWithJsonValuesThatArePrimitives()
         {
             var aHandle = await Page.EvaluateFunctionHandleAsync("() => 'foo'");
@@ -39,24 +38,23 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.AreEqual("foo", json);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should not work with dates")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-        public async Task ShouldNotWorkWithDates()
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work with dates")]
+        public async Task ShouldWorkWithDates()
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
-            var json = await dateHandle.JsonValueAsync();
-            Assert.AreEqual(JObject.Parse("{}"), json);
+            var date = await dateHandle.JsonValueAsync<DateTime>();
+            Assert.AreEqual(new DateTime(2017, 9, 26), date);
         }
 
-        [PuppeteerTest("jshandle.spec.ts", "JSHandle.jsonValue", "should throw for circular objects")]
-        [PuppeteerTimeout]
-        public async Task ShouldThrowForCircularObjects()
+        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should not throw for circular objects")]
+        public async Task ShouldNotThrowForCircularObjects()
         {
-            var windowHandle = await Page.EvaluateExpressionHandleAsync("window");
-            var exception = Assert.ThrowsAsync<PuppeteerException>(()
-                => windowHandle.JsonValueAsync());
-
-            StringAssert.Contains("Could not serialize referenced object", exception.Message);
+            var windowHandle = await Page.EvaluateFunctionHandleAsync(@"() => {
+                const t = {g: 1};
+                t.t = t;
+                return t;
+              }");
+            await windowHandle.JsonValueAsync();
         }
     }
 }

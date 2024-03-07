@@ -1,8 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ElementHandleTests
 {
@@ -10,14 +9,13 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
     {
         private readonly LaunchOptions _headfulOptions;
 
-        public ContentFrameTests(): base()
+        public ContentFrameTests() : base()
         {
             _headfulOptions = TestConstants.DefaultBrowserOptions();
-            _headfulOptions.Headless =  false;
+            _headfulOptions.Headless = false;
         }
 
-        [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.contentFrame", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.contentFrame", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -27,7 +25,6 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.AreEqual(Page.FirstChildFrame(), frame);
         }
 
-        [PuppeteerTimeout]
         public async Task ShouldWorkHeadful()
         {
             await using var Browser = await Puppeteer.LaunchAsync(_headfulOptions);

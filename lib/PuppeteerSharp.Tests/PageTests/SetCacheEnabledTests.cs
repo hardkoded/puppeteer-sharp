@@ -1,20 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetCacheEnabledTests : PuppeteerPageBaseTest
     {
-        public SetCacheEnabledTests(): base()
+        public SetCacheEnabledTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should enable or disable the cache based on the state passed")]
         public async Task ShouldEnableOrDisableTheCacheBasedOnTheStatePassed()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
@@ -36,8 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
         public async Task ShouldStayDisabledWhenTogglingRequestInterceptionOnOff()
         {
             await Page.SetCacheEnabledAsync(false);

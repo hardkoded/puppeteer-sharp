@@ -5,12 +5,12 @@ namespace PuppeteerSharp
     /// <summary>
     /// <see cref="IPage.Response"/> arguments.
     /// </summary>
-    public class ResponseCreatedEventArgs : EventArgs
+    public class ResponseCreatedEventArgs(IResponse response) : EventArgs
     {
         /// <summary>
         /// Gets the response.
         /// </summary>
         /// <value>The response.</value>
-        public IResponse Response { get; internal set; }
+        public IResponse Response { get; } = response;
     }
 }

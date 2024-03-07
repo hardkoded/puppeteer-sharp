@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -17,15 +15,18 @@ namespace PuppeteerSharp
             CDPSession session,
             BrowserContext context,
             ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory,
-            TaskQueue screenshotTaskQueue)
+            Func<bool, Task<CDPSession>> sessionFactory)
         {
             Session = session;
             TargetInfo = targetInfo;
             SessionFactory = sessionFactory;
             BrowserContext = context;
             TargetManager = targetManager;
-            ScreenshotTaskQueue = screenshotTaskQueue;
+
+            if (session != null)
+            {
+                session.Target = this;
+            }
 
             Initialize();
         }
@@ -49,8 +50,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         IBrowserContext ITarget.BrowserContext => BrowserContext;
 
-        internal TaskQueue ScreenshotTaskQueue { get; }
-
         internal BrowserContext BrowserContext { get; }
 
         internal Browser Browser => BrowserContext.Browser;
@@ -71,7 +70,7 @@ namespace PuppeteerSharp
 
         internal CDPSession Session { get; }
 
-        internal TargetInfo TargetInfo { get; set; }
+        internal TargetInfo TargetInfo { get; private set; }
 
         /// <inheritdoc/>
         public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);
@@ -85,14 +84,19 @@ namespace PuppeteerSharp
             if (Session == null)
             {
                 var session = await CreateCDPSessionAsync().ConfigureAwait(false) as CDPSession;
-                return await Page.CreateAsync(session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+                return await Page.CreateAsync(session, this, false, null).ConfigureAwait(false);
             }
 
-            return await Page.CreateAsync(Session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+            return await Page.CreateAsync(Session, this, false, null).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task<ICDPSession> CreateCDPSessionAsync() => await SessionFactory(false).ConfigureAwait(false);
+        public async Task<ICDPSession> CreateCDPSessionAsync()
+        {
+            var session = await SessionFactory(false).ConfigureAwait(false);
+            session.Target = this;
+            return session;
+        }
 
         internal void TargetInfoChanged(TargetInfo targetInfo)
         {

@@ -1,21 +1,19 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsErrorTests : PuppeteerPageBaseTest
     {
-        public PageEventsErrorTests(): base()
+        public PageEventsErrorTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.Events.Error", "should throw when page crashes")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
         public async Task ShouldThrowWhenPageCrashes()
         {
             string error = null;

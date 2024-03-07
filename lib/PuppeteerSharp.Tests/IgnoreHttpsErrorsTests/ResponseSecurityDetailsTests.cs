@@ -1,26 +1,24 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
     public class ResponseSecurityDetailsTests : PuppeteerPageBaseTest
     {
-        public ResponseSecurityDetailsTests(): base()
+        public ResponseSecurityDetailsTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.IgnoreHTTPSErrors = true;
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Should Work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Should Work")]
         public async Task ShouldWork()
         {
             // Checking for the TLS socket is it is in upstreams proves to be flacky in .net framework.
@@ -32,15 +30,14 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             StringAssert.Contains("TLS", response.SecurityDetails.Protocol);
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "should be |null| for non-secure requests")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
         public async Task ShouldBeNullForNonSecureRequests()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.SecurityDetails);
         }
 
-        [PuppeteerTest("ignorehttpserrors.spec.ts", "Response.securityDetails", "Network redirects should report SecurityDetails")]
+        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
         [Ignore("This is super flaky")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {

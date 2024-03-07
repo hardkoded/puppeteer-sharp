@@ -1,19 +1,17 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.PageCoverage;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
+using PuppeteerSharp.PageCoverage;
 
 namespace PuppeteerSharp.Tests.CSSCoverageTests
 {
     public class CSSResetOnNavigationTests : PuppeteerPageBaseTest
     {
-        public CSSResetOnNavigationTests(): base()
+        public CSSResetOnNavigationTests() : base()
         {
         }
 
-        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should report stylesheets across navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should report stylesheets across navigations")]
         public async Task ShouldReportStylesheetsAcrossNavigationsWhenDisabled()
         {
             await Page.Coverage.StartCSSCoverageAsync(new CoverageStartOptions
@@ -26,8 +24,7 @@ namespace PuppeteerSharp.Tests.CSSCoverageTests
             Assert.AreEqual(2, coverage.Length);
         }
 
-        [PuppeteerTest("coverage.spec.ts", "resetOnNavigation", "should NOT report scripts across navigations")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs resetOnNavigation", "should NOT report scripts across navigations")]
         public async Task ShouldNotReportScriptsAcrossNavigationsWhenEnabled()
         {
             await Page.Coverage.StartCSSCoverageAsync();

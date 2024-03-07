@@ -1,19 +1,17 @@
 using System.Net;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
     public class OfflineModeTests : PuppeteerPageBaseTest
     {
-        public OfflineModeTests(): base()
+        public OfflineModeTests() : base()
         {
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
@@ -24,8 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
-        [PuppeteerTest("page.spec.ts", "Page.setOfflineMode", "should emulate navigator.onLine")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should emulate navigator.onLine")]
         public async Task ShouldEmulateNavigatorOnLine()
         {
             Assert.True(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"));

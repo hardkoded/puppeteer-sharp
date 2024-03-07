@@ -1,18 +1,17 @@
 
-using Microsoft.AspNetCore.Http;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TargetManagerTests
 {
     public class TargetManagerTests : PuppeteerBrowserContextBaseTest
     {
-        public TargetManagerTests(): base()
+        public TargetManagerTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
             DefaultOptions.Args = new[]
@@ -23,9 +22,7 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
             };
         }
 
-        [PuppeteerTest("TargetManager.spec.ts", "TargetManager", "should handle targets")]
-        [Skip(SkipAttribute.Targets.Firefox)]
-
+        [Test, Retry(2), PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
         public async Task ShouldHandleTargets()
         {
             var targetManager = (Browser as Browser).TargetManager;

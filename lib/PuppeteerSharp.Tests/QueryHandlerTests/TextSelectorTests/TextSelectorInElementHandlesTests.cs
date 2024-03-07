@@ -1,20 +1,18 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
 {
     public class TextSelectorInElementHandlesTests : PuppeteerPageBaseTest
     {
-        public TextSelectorInElementHandlesTests(): base()
+        public TextSelectorInElementHandlesTests() : base()
         {
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "in ElementHandles", "should query existing element")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in ElementHandles", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"><span>a</span></div>");
@@ -23,8 +21,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
             Assert.That(await elementHandle.QuerySelectorAllAsync("text/a"), Has.Exactly(1).Items);
         }
 
-        [PuppeteerTest("queryhandler.spec.ts", "in Page", "should return null for non-existing element")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in ElementHandles", "should return null for non-existing element")]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<div class=\"a\"></div>");

@@ -205,8 +205,8 @@ namespace PuppeteerSharp
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForFunctionAsync(string, object[])"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
-        /// - <see cref="WaitForRequestAsync(string, WaitTimeoutOptions)"/>
-        /// - <see cref="WaitForResponseAsync(string, WaitTimeoutOptions)"/>
+        /// - <see cref="WaitForRequestAsync(string, WaitForOptions)"/>
+        /// - <see cref="WaitForResponseAsync(string, WaitForOptions)"/>
         /// - <see cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// - <see cref="WaitForExpressionAsync(string, WaitForFunctionOptions)"/>.
         /// </summary>
@@ -250,6 +250,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets that target this page was created from.
         /// </summary>
+        [Obsolete("All the functionality provided by the Target should be already exposed by the page itself.")]
         ITarget Target { get; }
 
         /// <summary>
@@ -276,6 +277,11 @@ namespace PuppeteerSharp
         /// Gets all workers in the page.
         /// </summary>
         WebWorker[] Workers { get; }
+
+        /// <summary>
+        /// If the page has JavaScript enabled.
+        /// </summary>
+        bool IsJavaScriptEnabled { get; }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
@@ -1098,8 +1104,8 @@ namespace PuppeteerSharp
         Task SetOfflineModeAsync(bool value);
 
         /// <summary>
-        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode)">request.AbortAsync</see>,
-        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData)">request.RespondAsync</see> methods.
+        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode, int?)">request.AbortAsync</see>,
+        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload, int?)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData, int?)">request.RespondAsync</see> methods.
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>
@@ -1185,7 +1191,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
         /// <param name="url">Frame url.</param>
         /// <param name="options">Options.</param>
-        public Task<IFrame> WaitForFrameAsync(string url, WaitTimeoutOptions options = null);
+        public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a frame.
@@ -1200,7 +1206,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching frame was attached to the page.</returns>
         /// <param name="predicate">Function which looks for a matching frame.</param>
         /// <param name="options">Options.</param>
-        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitTimeoutOptions options = null);
+        public Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a page to open a file picker.
@@ -1227,7 +1233,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after a page requests a file picker.</returns>
-        Task<FileChooser> WaitForFileChooserAsync(WaitTimeoutOptions options = null);
+        Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a function to be evaluated to a truthy value.
@@ -1299,7 +1305,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="predicate">Function which looks for a matching request.</param>
         /// <param name="options">Options.</param>
-        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitTimeoutOptions options = null);
+        Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a request.
@@ -1315,7 +1321,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching request was made.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<IRequest> WaitForRequestAsync(string url, WaitTimeoutOptions options = null);
+        Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1331,7 +1337,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitTimeoutOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, bool> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1347,7 +1353,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="predicate">Function which looks for a matching response.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitTimeoutOptions options = null);
+        Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a response.
@@ -1363,7 +1369,7 @@ namespace PuppeteerSharp
         /// <returns>A task which resolves when a matching response is received.</returns>
         /// <param name="url">URL to wait for.</param>
         /// <param name="options">Options.</param>
-        Task<IResponse> WaitForResponseAsync(string url, WaitTimeoutOptions options = null);
+        Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM.
@@ -1437,6 +1443,26 @@ namespace PuppeteerSharp
         /// </example>
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after the page gets the prompt.</returns>
-        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitTimeoutOptions options = null);
+        Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
+
+        /// <summary>
+        /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
+        /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
+        /// The interception is resolved to the highest-priority resolution.
+        /// </summary>
+        /// <param name="interceptionTask">Interception task.</param>
+        void AddRequestInterceptor(Func<IRequest, Task> interceptionTask);
+
+        /// <summary>
+        /// Removes a previously added request interceptor.
+        /// </summary>
+        /// <param name="interceptionTask">Interception task.</param>
+        void RemoveRequestInterceptor(Func<IRequest, Task> interceptionTask);
+
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the page.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
+        Task<ICDPSession> CreateCDPSessionAsync();
     }
 }

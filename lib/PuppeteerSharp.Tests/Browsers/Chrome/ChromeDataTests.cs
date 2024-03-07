@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Tests.Attributes;
 
 namespace PuppeteerSharp.Tests.Browsers.Chrome
 {
@@ -21,9 +20,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
 
             Console.WriteLine("Navigating");
             await using (var browser = await Puppeteer.LaunchAsync(new()
-                         {
-                             ExecutablePath = chrome118.GetExecutablePath(),
-                         }))
+            {
+                ExecutablePath = chrome118.GetExecutablePath(),
+            }))
             {
                 await using var page = await browser.NewPageAsync();
                 await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -35,9 +34,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             }
 
             await using (var browser = await Puppeteer.LaunchAsync(new()
-                         {
-                             ExecutablePath = chrome119.GetExecutablePath(),
-                         }))
+            {
+                ExecutablePath = chrome119.GetExecutablePath(),
+            }))
             {
                 await using var page = await browser.NewPageAsync();
                 await page.GoToAsync("https://www.whatismybrowser.com/");
@@ -50,27 +49,27 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             #endregion
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve download URLs")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/linux64/chrome-linux64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Linux, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/mac-x64/chrome-mac-x64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-x64/chrome-mac-x64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.MacOS, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/mac-arm64/chrome-mac-arm64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-arm64/chrome-mac-arm64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.MacOSArm64, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/win32/chrome-win32.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win32/chrome-win32.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win32, "113.0.5672.0", null));
             Assert.AreEqual(
-                "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/win64/chrome-win64.zip",
+                "https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win64/chrome-win64.zip",
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Win64, "113.0.5672.0", null));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve executable paths")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.AreEqual(
@@ -106,8 +105,8 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
               Path.Combine("chrome-win64", "chrome.exe"));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve system executable path")]
-        [Skip(SkipAttribute.Targets.Linux, SkipAttribute.Targets.OSX)]
+        // This has a custom name
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.AreEqual(
@@ -117,7 +116,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                     ChromeReleaseChannel.Dev));
         }
 
-        [PuppeteerTest("chrome-data.spec.ts", "Chrome", "should resolve system executable path")]
+        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.AreEqual(
@@ -126,7 +125,8 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                     Platform.MacOS,
                     ChromeReleaseChannel.Beta));
 
-            var ex = Assert.Throws<PuppeteerException>(() => {
+            var ex = Assert.Throws<PuppeteerException>(() =>
+            {
                 BrowserData.Chrome.ResolveSystemExecutablePath(
                     Platform.Linux,
                     ChromeReleaseChannel.Canary);
@@ -136,6 +136,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         [Test]
+        [Retry(2)]
         public async Task ShouldReturnLatestVersion()
             => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
     }

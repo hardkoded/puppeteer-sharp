@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-
 namespace PuppeteerSharp.PageCoverage
 {
     /// <summary>
     /// Coverage report for all non-anonymous scripts.
     /// </summary>
-    public class CoverageEntry
+    public record CoverageEntry
     {
         /// <summary>
         /// Script URL.

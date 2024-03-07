@@ -1,21 +1,12 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
-        public RequestPostDataTests(): base()
-        {
-        }
-
-        [PuppeteerTest("network.spec.ts", "Request.postData", "should work")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -27,12 +18,30 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.AreEqual("{\"foo\":\"bar\"}", request.PostData);
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.postData", "should be |undefined| when there is no post data")]
-        [Skip(SkipAttribute.Targets.Firefox)]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.Null(response.Request.PostData);
+        }
+
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
+        public async Task ShouldWorkWithBlobs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            IRequest request = null;
+            Page.Request += (_, e) => request = e.Request;
+            await Page.EvaluateExpressionHandleAsync(@"fetch('./post', {
+                method: 'POST',
+                body:new Blob([JSON.stringify({foo: 'bar'})], {
+                  type: 'application/json',
+                }),
+            })");
+            Assert.NotNull(request);
+            Assert.Null(request.PostData);
+            Assert.True(request.HasPostData);
+            Assert.AreEqual("{\"foo\":\"bar\"}", await request.FetchPostDataAsync());
         }
     }
 }

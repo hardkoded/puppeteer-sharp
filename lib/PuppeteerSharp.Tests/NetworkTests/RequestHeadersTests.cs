@@ -1,18 +1,16 @@
 using System.Threading.Tasks;
-using PuppeteerSharp.Tests.Attributes;
-using PuppeteerSharp.Nunit;
 using NUnit.Framework;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestHeadersTests : PuppeteerPageBaseTest
     {
-        public RequestHeadersTests(): base()
+        public RequestHeadersTests() : base()
         {
         }
 
-        [PuppeteerTest("network.spec.ts", "Request.Headers", "should work")]
-        [PuppeteerTimeout]
+        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.Headers", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
