@@ -51,8 +51,7 @@ namespace PuppeteerSharp
             ["cm"] = 37.8m,
             ["mm"] = 3.78m,
         };
-
-        private readonly TaskQueue _screenshotTaskQueue;
+        
         private readonly EmulationManager _emulationManager;
         private readonly ConcurrentDictionary<string, Binding> _bindings = new();
         private readonly ConcurrentDictionary<string, WebWorker> _workers = new();
