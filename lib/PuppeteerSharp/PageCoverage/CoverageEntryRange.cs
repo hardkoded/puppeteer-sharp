@@ -3,7 +3,7 @@ namespace PuppeteerSharp.PageCoverage
     /// <summary>
     /// Script range.
     /// </summary>
-    public class CoverageEntryRange
+    public record CoverageEntryRange
     {
         /// <summary>
         /// A start offset in text, inclusive.
@@ -16,23 +16,5 @@ namespace PuppeteerSharp.PageCoverage
         /// </summary>
         /// <value>End offset.</value>
         public int End { get; internal set; }
-
-        /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
-        public override bool Equals(object obj)
-        {
-            if (obj == null && GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var range = obj as CoverageEntryRange;
-
-            return range.Start == Start &&
-               range.End == End;
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => Start.GetHashCode() * 397 ^ End.GetHashCode() * 397;
     }
 }

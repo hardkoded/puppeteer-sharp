@@ -18,6 +18,7 @@ namespace PuppeteerSharp.PageCoverage
         private bool _enabled;
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
+        private bool _includeRawScriptCoverage;
 
         public JSCoverage(CDPSession client)
         {
@@ -39,6 +40,7 @@ namespace PuppeteerSharp.PageCoverage
 
             _resetOnNavigation = options.ResetOnNavigation;
             _reportAnonymousScripts = options.ReportAnonymousScripts;
+            _includeRawScriptCoverage = options.IncludeRawScriptCoverage;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
@@ -49,14 +51,14 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("Profiler.enable"),
                 _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
                 {
-                    CallCount = false,
+                    CallCount = _includeRawScriptCoverage,
                     Detailed = true,
                 }),
                 _client.SendAsync("Debugger.enable"),
                 _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
         }
 
-        internal async Task<CoverageEntry[]> StopAsync()
+        internal async Task<JSCoverageEntry[]> StopAsync()
         {
             if (!_enabled)
             {
@@ -73,7 +75,7 @@ namespace PuppeteerSharp.PageCoverage
                _client.SendAsync("Debugger.disable")).ConfigureAwait(false);
             _client.MessageReceived -= Client_MessageReceived;
 
-            var coverage = new List<CoverageEntry>();
+            var coverage = new List<JSCoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
                 _scriptURLs.TryGetValue(entry.ScriptId, out var url);
@@ -90,11 +92,12 @@ namespace PuppeteerSharp.PageCoverage
 
                 var flattenRanges = entry.Functions.SelectMany(f => f.Ranges).ToList();
                 var ranges = Coverage.ConvertToDisjointRanges(flattenRanges);
-                coverage.Add(new CoverageEntry
+                coverage.Add(new JSCoverageEntry
                 {
                     Url = url,
                     Ranges = ranges,
                     Text = text,
+                    RawScriptCoverage = _includeRawScriptCoverage ? entry : null,
                 });
             }
 
