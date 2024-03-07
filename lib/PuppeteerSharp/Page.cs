@@ -51,7 +51,8 @@ namespace PuppeteerSharp
             ["cm"] = 37.8m,
             ["mm"] = 3.78m,
         };
-        
+
+        private readonly TaskQueue _screenshotTaskQueue;
         private readonly EmulationManager _emulationManager;
         private readonly ConcurrentDictionary<string, Binding> _bindings = new();
         private readonly ConcurrentDictionary<string, WebWorker> _workers = new();
@@ -67,6 +68,7 @@ namespace PuppeteerSharp
         private Page(
             CDPSession client,
             Target target,
+            TaskQueue screenshotTaskQueue,
             bool ignoreHTTPSErrors)
         {
             PrimaryTargetClient = client;
@@ -84,6 +86,8 @@ namespace PuppeteerSharp
             _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
             FrameManager = new FrameManager(client, this, ignoreHTTPSErrors, _timeoutSettings);
             Accessibility = new Accessibility(client);
+
+            _screenshotTaskQueue = screenshotTaskQueue;
 
             FrameManager.FrameAttached += (_, e) => FrameAttached?.Invoke(this, e);
             FrameManager.FrameDetached += (_, e) => FrameDetached?.Invoke(this, e);
@@ -1116,9 +1120,10 @@ namespace PuppeteerSharp
             CDPSession client,
             Target target,
             bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort)
+            ViewPortOptions defaultViewPort,
+            TaskQueue screenshotTaskQueue)
         {
-            var page = new Page(client, target, ignoreHTTPSErrors);
+            var page = new Page(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
 
             try
             {

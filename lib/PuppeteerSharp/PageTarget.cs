@@ -11,16 +11,18 @@ namespace PuppeteerSharp
     {
         private readonly bool _ignoreHTTPSErrors;
         private readonly ViewPortOptions _defaultViewport;
+        private readonly TaskQueue _screenshotTaskQueue;
 
         internal PageTarget(TargetInfo targetInfo, CDPSession session, BrowserContext context, ITargetManager targetManager, Func<bool, Task<CDPSession>> sessionFactory, bool ignoreHTTPSErrors, ViewPortOptions defaultViewport, TaskQueue screenshotTaskQueue)
             : base(targetInfo, session, context, targetManager, sessionFactory)
         {
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _defaultViewport = defaultViewport;
+            _screenshotTaskQueue = screenshotTaskQueue;
             PageTask = null;
         }
 
-        private Task<Page> PageTask { get; set; }
+        internal Task<Page> PageTask { get; set; }
 
         /// <inheritdoc/>
         public override async Task<IPage> PageAsync()
@@ -33,7 +35,8 @@ namespace PuppeteerSharp
                     session,
                     this,
                     _ignoreHTTPSErrors,
-                    _defaultViewport);
+                    _defaultViewport,
+                    _screenshotTaskQueue);
             }
 
             return await PageTask.ConfigureAwait(false);
