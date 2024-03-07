@@ -134,6 +134,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         {
             const string involved = @"[
               {
+                ""RawScriptCoverage"": null,
                 ""Url"": ""http://localhost:<PORT>/jscoverage/involved.html"",
                 ""Ranges"": [
                   {
