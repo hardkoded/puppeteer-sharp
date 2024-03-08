@@ -39,17 +39,11 @@ namespace PuppeteerSharp
             DefaultViewport = defaultViewport;
             Launcher = launcher;
             Connection = connection;
-            _targetFilterCallback = targetFilter ?? ((Target _) => true);
+            _targetFilterCallback = targetFilter ?? (_ => true);
             _logger = Connection.LoggerFactory.CreateLogger<Browser>();
             IsPageTargetFunc =
                 isPageTargetFunc ??
-                new Func<Target, bool>((Target target) =>
-                {
-                    return
-                        target.Type == TargetType.Page ||
-                        target.Type == TargetType.BackgroundPage ||
-                        target.Type == TargetType.Webview;
-                });
+                (target => target.Type is TargetType.Page or TargetType.BackgroundPage or TargetType.Webview);
 
             _defaultContext = new BrowserContext(Connection, this, null);
             _contexts = new ConcurrentDictionary<string, BrowserContext>(
@@ -69,6 +63,7 @@ namespace PuppeteerSharp
                     connection,
                     CreateTarget,
                     _targetFilterCallback,
+                    this,
                     launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
             }
         }
@@ -113,7 +108,7 @@ namespace PuppeteerSharp
                     return Connection.IsClosed;
                 }
 
-                return _closeTask != null && _closeTask.IsCompleted;
+                return _closeTask is { IsCompleted: true };
             }
         }
 
@@ -196,7 +191,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task CloseAsync() => _closeTask ?? (_closeTask = CloseCoreAsync());
+        public Task CloseAsync() => _closeTask ??= CloseCoreAsync();
 
         /// <inheritdoc/>
         public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
@@ -421,7 +416,7 @@ namespace PuppeteerSharp
                     // because we want to ensure process shutdown first.
                     var browserCloseTask = Connection.IsClosed
                         ? Task.CompletedTask
-                        : Connection.SendAsync("Browser.close", null);
+                        : Connection.SendAsync("Browser.close");
 
                     if (Launcher != null)
                     {
@@ -450,7 +445,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            Closed?.Invoke(this, new EventArgs());
+            Closed?.Invoke(this, EventArgs.Empty);
         }
 
         private async void Connection_Disconnected(object sender, EventArgs e)
@@ -458,7 +453,7 @@ namespace PuppeteerSharp
             try
             {
                 await CloseAsync().ConfigureAwait(false);
-                Disconnected?.Invoke(this, new EventArgs());
+                Disconnected?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
@@ -503,7 +498,8 @@ namespace PuppeteerSharp
                 session,
                 context,
                 TargetManager,
-                CreateSession);
+                CreateSession,
+                this.ScreenshotTaskQueue);
 
             if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
             {
@@ -538,7 +534,8 @@ namespace PuppeteerSharp
                     session,
                     context,
                     TargetManager,
-                    CreateSession);
+                    CreateSession,
+                    this.ScreenshotTaskQueue);
             }
 
             return otherTarget;

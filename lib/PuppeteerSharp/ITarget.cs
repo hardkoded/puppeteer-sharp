@@ -61,5 +61,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="WebWorker"/>.</returns>
         Task<WebWorker> WorkerAsync();
+
+        /// <summary>
+        /// Forcefully creates a page for a target of any type. It is useful if you
+        /// want to handle a CDP target of type `other` as a page. If you deal with a
+        /// regular page target, use <see cref="ITarget.PageAsync"/>.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="IPage"/>.</returns>
+        Task<IPage> AsPageAsync();
     }
 }

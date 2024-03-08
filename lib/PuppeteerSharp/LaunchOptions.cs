@@ -187,5 +187,10 @@ namespace PuppeteerSharp
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         public Func<Target, bool> TargetFilter { get; set; }
+
+        /// <summary>
+        /// Callback to decide if Puppeteer should connect to a given target or not.
+        /// </summary>
+        internal Func<Target, bool> IsPageTarget { get; set; }
     }
 }

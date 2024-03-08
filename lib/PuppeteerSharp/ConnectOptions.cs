@@ -95,5 +95,10 @@ namespace PuppeteerSharp
         /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
+
+        /// <summary>
+        /// Callback to decide if Puppeteer should connect to a given target or not.
+        /// </summary>
+        internal Func<Target, bool> IsPageTarget { get; set; }
     }
 }

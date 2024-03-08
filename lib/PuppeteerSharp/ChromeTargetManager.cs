@@ -21,6 +21,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
+        private readonly Browser _browser;
 
         // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
         private readonly int _targetDiscoveryTimeout;
@@ -30,6 +31,7 @@ namespace PuppeteerSharp
             Connection connection,
             Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
+            Browser browser,
             int targetDiscoveryTimeout = 0)
         {
             _connection = connection;
@@ -39,6 +41,7 @@ namespace PuppeteerSharp
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
             _targetDiscoveryTimeout = targetDiscoveryTimeout;
+            _browser = browser;
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -95,7 +98,8 @@ namespace PuppeteerSharp
                     null,
                     null,
                     this,
-                    null);
+                    null,
+                    _browser.ScreenshotTaskQueue);
 
                 if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) &&
                     kv.Value.Type != TargetType.Browser)
