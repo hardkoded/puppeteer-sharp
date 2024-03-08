@@ -51,10 +51,9 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = browserWSEndpoint,
-                TargetFilter = target => target.Type == TargetType.Other && target.Url.StartsWith("devtools://")
+                IsPageTarget = target => target.Type == TargetType.Other && target.Url.StartsWith("devtools://")
             }, TestConstants.LoggerFactory);
             var devtoolsTargetTask = browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
-            await browser.NewPageAsync();
             var devtoolsTarget = await devtoolsTargetTask;
             await using var page = await devtoolsTarget.PageAsync();
             Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));

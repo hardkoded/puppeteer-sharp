@@ -1608,7 +1608,7 @@ namespace PuppeteerSharp
             Debug.Assert(session != null, nameof(session) + " != null");
             FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
 
-            if (session.Target.TargetInfo.Type == TargetType.Worker)
+            if (session.Target.Type == TargetType.Worker)
             {
                 var worker = new WebWorker(
                     session,

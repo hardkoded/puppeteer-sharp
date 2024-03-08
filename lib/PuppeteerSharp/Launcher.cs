@@ -79,8 +79,8 @@ namespace PuppeteerSharp
                             options.IgnoreHTTPSErrors,
                             options.DefaultViewport,
                             Process,
-                            null,
-                            options.TargetFilter)
+                            options.TargetFilter,
+                            options.IsPageTarget)
                         .ConfigureAwait(false);
 
                     await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
@@ -143,7 +143,7 @@ namespace PuppeteerSharp
                         options.DefaultViewport,
                         null,
                         options.TargetFilter,
-                        null,
+                        options.IsPageTarget,
                         options.InitAction)
                     .ConfigureAwait(false);
             }
