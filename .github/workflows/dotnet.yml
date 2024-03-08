@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    name: build-${{ matrix.browser }}/${{ matrix.os }}
+    name: build-${{ matrix.suite.browser }}-${{ matrix.suite.mode }}-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
