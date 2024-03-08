@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.True(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"));
         }
 
-        [Test, Retry(2), PuppeteerTest("devtools.spec.ts", "DevTools", "target.page() should return a DevTools page if asPage is used")]
+        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "target.page() should return a DevTools page if asPage is used")]
         public async Task TargetPageShouldReturnADevToolsPageIfAsPageIsUsed()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
