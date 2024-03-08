@@ -336,7 +336,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if asPage is used",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -3396,7 +3396,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if asPage is used",
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"]

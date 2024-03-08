@@ -21,5 +21,8 @@ namespace PuppeteerSharp
             : base(targetInfo, session, context, targetManager, sessionFactory, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue)
         {
         }
+
+        /// <inheritdoc/>
+        public override TargetType Type => TargetType.Other;
     }
 }

@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         public string Url => TargetInfo.Url;
 
         /// <inheritdoc/>
-        public TargetType Type => TargetInfo.Type;
+        public virtual TargetType Type => TargetInfo.Type;
 
         /// <inheritdoc/>
         public string TargetId => TargetInfo.TargetId;
