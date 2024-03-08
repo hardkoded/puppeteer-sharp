@@ -26,8 +26,18 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Whether to run browser in headless mode. Defaults to true unless the devtools option is true.
+        /// If you need to run using the old headless mode, set <see cref="LaunchOptions.HeadlessMode"/> this to <see cref="HeadlessMode.Shell"/>.
         /// </summary>
-        public bool Headless { get; set; } = true;
+        public bool Headless
+        {
+            get => HeadlessMode != HeadlessMode.False;
+            set => HeadlessMode = value ? HeadlessMode.True : HeadlessMode.False;
+        }
+
+        /// <summary>
+        /// Whether to run browser in headless mode. Defaults to true unless the devtools option is true.
+        /// </summary>
+        public HeadlessMode HeadlessMode { get; set; } = HeadlessMode.True;
 
         /// <summary>
         /// Path to a Chromium or Chrome executable to run instead of bundled Chromium. If executablePath is a relative path, then it is resolved relative to current working directory.
@@ -75,7 +85,7 @@ namespace PuppeteerSharp
                 _devtools = value;
                 if (value)
                 {
-                    Headless = false;
+                    HeadlessMode = HeadlessMode.False;
                 }
             }
         }

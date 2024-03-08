@@ -26,7 +26,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        browser: [FIREFOX,CHROME]
+        suites: [
+            suite: {browser: "FIREFOX", mode: "headless"},
+            suite: {browser: "FIREFOX", mode: "headful"},
+            suite: { browser: "CHROME", mode: "headless" },
+            suite: { browser: "CHROME", mode: "headful" },
+            suite: { browser: "CHROME", mode: "headless-shell" },
+        ]
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -54,7 +60,7 @@ jobs:
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Check formatting
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.suite.browser == 'CHROME' && matrix.suite.mode == 'headless' }}
       run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes
     - name: Build
       working-directory: lib
@@ -62,7 +68,8 @@ jobs:
     - name: Test (Linux)
       if: matrix.os == 'ubuntu-latest'
       env:
-        PRODUCT: ${{ matrix.browser }}
+        PRODUCT: ${{ matrix.suite.browser }}
+        HEADLESS_MODE: ${{ matrix.suite.mode }}
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
@@ -71,7 +78,8 @@ jobs:
     - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       env:
-        PRODUCT: ${{ matrix.browser }}
+        PRODUCT: ${{ matrix.suite.browser }}
+        HEADLESS_MODE: ${{ matrix.suite.mode }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet test -s test.runsettings --blame-hang-timeout 300000

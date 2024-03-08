@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -62,7 +61,7 @@ namespace PuppeteerSharp
                 firefoxArguments.Add($"{options.UserDataDir.Quote()}");
             }
 
-            if (options.Headless)
+            if (options.HeadlessMode == HeadlessMode.True)
             {
                 firefoxArguments.Add("--headless");
             }
