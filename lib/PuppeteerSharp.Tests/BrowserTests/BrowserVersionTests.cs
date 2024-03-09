@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
             var version = await Browser.GetVersionAsync();
             Assert.IsNotEmpty(version);
-            StringAssert.Contains(version.ToLower(), PuppeteerTestAttribute.IsChrome ? "chrome" : "firefox");
+            StringAssert.Contains(PuppeteerTestAttribute.IsChrome ? "chrome" : "firefox", version.ToLower());
         }
     }
 }
