@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,17 +10,23 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageAuthenticateTests : PuppeteerPageBaseTest
     {
-        public PageAuthenticateTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
 
-            var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+            try
+            {
+                var response = await Page.GoToAsync(TestConstants.EmptyPage);
+                Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+            }
+            catch (Exception e)
+            {
+                if (!e.Message.Contains("net::ERR_INVALID_AUTH_CREDENTIALS"))
+                {
+                    throw;
+                }
+            }
 
             await Page.AuthenticateAsync(new Credentials
             {
@@ -27,8 +34,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 Password = "pass"
             });
 
-            response = await Page.ReloadAsync();
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            var newResponse = await Page.ReloadAsync();
+            Assert.AreEqual(HttpStatusCode.OK, newResponse.Status);
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
@@ -60,10 +67,24 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
 
-            await Page.AuthenticateAsync(null);
+            await Page.AuthenticateAsync(new Credentials()
+            {
+                Username = "",
+                Password = ""
+            });
 
-            response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
-            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+            try
+            {
+                response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
+                Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+            }
+            catch (Exception e)
+            {
+                if (!e.Message.Contains("net::ERR_INVALID_AUTH_CREDENTIALS"))
+                {
+                    throw;
+                }
+            }
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]

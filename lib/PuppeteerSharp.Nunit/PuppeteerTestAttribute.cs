@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Nunit
         public static readonly bool IsCdp = true;
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
-            (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
+            (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.True : HeadlessMode.True) :
             GetHeadlessModeFromEnvVar(Environment.GetEnvironmentVariable("HEADLESS_MODE"));
 
         private static HeadlessMode GetHeadlessModeFromEnvVar(string getEnvironmentVariable)
