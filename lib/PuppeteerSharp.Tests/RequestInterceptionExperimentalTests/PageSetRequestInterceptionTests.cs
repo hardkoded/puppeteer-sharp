@@ -574,7 +574,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var requests = new List<IRequest>();
         Page.AddRequestInterceptor(request =>
         {
-            if(!TestUtils.IsFavicon(request))
+            if (!TestUtils.IsFavicon(request))
             {
                 requests.Add(request);
             }
