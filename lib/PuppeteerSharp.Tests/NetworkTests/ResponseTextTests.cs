@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             IResponse pageResponse = null;
             var requestFinished = false;
             Page.Response += (_, e) => pageResponse = e.Response;
-            Page.RequestFinished += (_, _) => requestFinished = true;
+            Page.RequestFinished += (_, _) => requestFinished = requestFinished || pageResponse.Url.Contains("/get");
             // send request and wait for server response
             Task WaitForPageResponseEvent()
             {
