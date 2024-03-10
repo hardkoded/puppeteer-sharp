@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should return the default arguments")]
         public void ShouldReturnTheDefaultArguments()
         {
-            Assert.Contains("--headless", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+            Assert.Contains("--headless=new", Puppeteer.GetDefaultArgs(new LaunchOptions(){ Headless = true}));
             Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
