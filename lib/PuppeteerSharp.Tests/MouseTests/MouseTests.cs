@@ -79,9 +79,10 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.EvaluateExpressionAsync("new Promise(requestAnimationFrame)");
 
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
+            await Page.Mouse.MoveAsync(dimensions.X + 20, dimensions.Y + 20);
             await Page.Mouse.DownAsync();
-            await Page.Mouse.MoveAsync(100, 100);
+            // The following line is flaky on windows. This is 100/100 upstream. It won't hurt if we do 200/200
+            await Page.Mouse.MoveAsync(200, 200);
             await Page.Mouse.UpAsync();
             Assert.AreEqual(text, await Page.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
