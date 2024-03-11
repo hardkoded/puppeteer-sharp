@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responses = new Dictionary<string, IResponse>();
             Page.Response += (_, e) =>
             {
-                if (TestUtils.IsFavicon(e.Response.Request))
+                if (!TestUtils.IsFavicon(e.Response.Request))
                 {
                     responses[e.Response.Url.Split('/').Last()] = e.Response;
                 }
