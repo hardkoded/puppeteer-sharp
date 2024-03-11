@@ -12,9 +12,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
-            IRequest request = null;
-            Page.Request += (_, e) => request = e.Request;
+            var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
+            var request = await requestTask.WithTimeout();
             Assert.NotNull(request);
             Assert.AreEqual("{\"foo\":\"bar\"}", request.PostData);
         }
