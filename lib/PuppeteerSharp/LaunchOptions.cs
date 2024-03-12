@@ -102,13 +102,13 @@ namespace PuppeteerSharp
         public bool LogProcess { get; set; }
 
         /// <summary>
-        /// If <c>true</c>, then do not use <see cref="ChromiumLauncher.GetDefaultArgs"/>.
+        /// If <c>true</c>, then do not use <see cref="ChromeLauncher.GetDefaultArgs"/>.
         /// Dangerous option; use with care. Defaults to <c>false</c>.
         /// </summary>
         public bool IgnoreDefaultArgs { get; set; }
 
         /// <summary>
-        /// if <see cref="IgnoreDefaultArgs"/> is set to <c>false</c> this list will be used to filter <see cref="ChromiumLauncher.GetDefaultArgs"/>.
+        /// if <see cref="IgnoreDefaultArgs"/> is set to <c>false</c> this list will be used to filter <see cref="ChromeLauncher.GetDefaultArgs"/>.
         /// </summary>
         public string[] IgnoredDefaultArgs
         {

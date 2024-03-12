@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,8 +10,6 @@ namespace PuppeteerSharp.Tests.FixturesTests
 {
     public class FixturesTests : PuppeteerBaseTest
     {
-        public FixturesTests() : base() { }
-
         [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should dump browser process stderr")]
         public void ShouldDumpBrowserProcessStderr()
         {
@@ -38,15 +35,15 @@ namespace PuppeteerSharp.Tests.FixturesTests
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
             using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
-            var ChromiumLauncher = new ChromiumLauncher(
+            var chromiumLauncher = new ChromeLauncher(
                 browserFetcher.GetInstalledBrowsers().First().GetExecutablePath(),
                 new LaunchOptions { Headless = true });
 
-            await ChromiumLauncher.StartAsync().ConfigureAwait(false);
+            await chromiumLauncher.StartAsync().ConfigureAwait(false);
 
             var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = ChromiumLauncher.EndPoint
+                BrowserWSEndpoint = chromiumLauncher.EndPoint
             });
 
             browser.Disconnected += (_, _) =>
@@ -54,7 +51,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
                 browserClosedTaskWrapper.SetResult(true);
             };
 
-            KillProcess(ChromiumLauncher.Process.Id);
+            KillProcess(chromiumLauncher.Process.Id);
 
             await browserClosedTaskWrapper.Task;
             Assert.True(browser.IsClosed);

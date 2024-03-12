@@ -55,7 +55,7 @@ namespace PuppeteerSharp
 
             Process = options.Browser switch
             {
-                SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromiumLauncher(executable, options),
+                SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
                 _ => throw new ArgumentException("Invalid product"),
             };
@@ -187,7 +187,7 @@ namespace PuppeteerSharp
             _processLaunched = true;
         }
 
-        private string ResolveExecutablePath(string buildId)
+        private string ResolveExecutablePath(HeadlessMode headlessMode, string buildId)
         {
             var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
 
@@ -203,7 +203,7 @@ namespace PuppeteerSharp
 
             return new InstalledBrowser(
                 new Cache(),
-                _browser,
+                headlessMode == HeadlessMode.Shell ? SupportedBrowser.ChromeHeadlessShell : _browser,
                 buildId,
                 BrowserFetcher.GetCurrentPlatform()).GetExecutablePath();
         }
@@ -215,7 +215,7 @@ namespace PuppeteerSharp
                 return ComputeSystemExecutablePath(_browser, options.Channel.Value);
             }
 
-            return ResolveExecutablePath(buildId);
+            return ResolveExecutablePath(options.HeadlessMode, buildId);
         }
 
         private string ComputeSystemExecutablePath(SupportedBrowser browser, ChromeReleaseChannel channel)

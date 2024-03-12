@@ -64,7 +64,7 @@ namespace PuppeteerSharp
         public static string[] GetDefaultArgs(LaunchOptions options = null)
             => (options?.Browser ?? SupportedBrowser.Firefox) == SupportedBrowser.Firefox
                 ? FirefoxLauncher.GetDefaultArgs(options ?? new LaunchOptions())
-                : ChromiumLauncher.GetDefaultArgs(options ?? new LaunchOptions());
+                : ChromeLauncher.GetDefaultArgs(options ?? new LaunchOptions());
 
         /// <summary>
         /// The method launches a browser instance with given arguments. The browser will be closed when the Browser is disposed.

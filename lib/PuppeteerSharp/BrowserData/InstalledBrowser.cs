@@ -9,9 +9,10 @@ namespace PuppeteerSharp.BrowserData
     /// </summary>
     public class InstalledBrowser
     {
-        internal static readonly Dictionary<SupportedBrowser, Func<Platform, string, string>> _executablePathByBrowser = new()
+        private static readonly Dictionary<SupportedBrowser, Func<Platform, string, string>> _executablePathByBrowser = new()
         {
             [SupportedBrowser.Chrome] = Chrome.RelativeExecutablePath,
+            [SupportedBrowser.ChromeHeadlessShell] = ChromeHeadlessShell.RelativeExecutablePath,
             [SupportedBrowser.Chromium] = Chromium.RelativeExecutablePath,
             [SupportedBrowser.Firefox] = Firefox.RelativeExecutablePath,
         };
