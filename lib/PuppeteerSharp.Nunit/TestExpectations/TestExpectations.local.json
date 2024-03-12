@@ -47,5 +47,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "This is passing on my machine but failing on CI/CD",
+    "testIdPattern": "[click.spec] Page.click should fire aux event on middle click",
+    "platforms": ["win32"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["FAIL"]
   }
 ]
