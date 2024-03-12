@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
@@ -24,7 +25,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var responses = new Dictionary<string, IResponse>();
-            Page.Response += (_, e) => responses[e.Response.Url.Split('/').Last()] = e.Response;
+            Page.Response += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Response.Request))
+                {
+                    responses[e.Response.Url.Split('/').Last()] = e.Response;
+                }
+            };
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 

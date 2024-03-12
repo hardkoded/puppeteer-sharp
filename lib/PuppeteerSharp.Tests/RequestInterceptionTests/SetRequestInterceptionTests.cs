@@ -460,7 +460,10 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
-                requests.Add(e.Request);
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
                 await e.Request.ContinueAsync();
             };
             var dataURL = "data:text/html,<div>yo</div>";

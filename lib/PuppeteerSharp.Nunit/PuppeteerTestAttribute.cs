@@ -23,10 +23,21 @@ namespace PuppeteerSharp.Nunit
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("PRODUCT") != "FIREFOX";
         // TODO: Change implementation when we implement Webdriver Bidi
         public static readonly bool IsCdp = true;
-        public static readonly bool Headless = Convert.ToBoolean(
-            Environment.GetEnvironmentVariable("HEADLESS") ??
-            (System.Diagnostics.Debugger.IsAttached ? "false" : "true"),
-            System.Globalization.CultureInfo.InvariantCulture);
+        public static readonly HeadlessMode Headless =
+            string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
+            (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
+            GetHeadlessModeFromEnvVar(Environment.GetEnvironmentVariable("HEADLESS_MODE"));
+
+        private static HeadlessMode GetHeadlessModeFromEnvVar(string getEnvironmentVariable)
+        {
+            return getEnvironmentVariable switch
+            {
+                "headless" => HeadlessMode.True,
+                "headful" => HeadlessMode.False,
+                "headless-shell" => HeadlessMode.Shell,
+                _ => throw new ArgumentException("Invalid value for HEADLESS_MODE environment variable"),
+            };
+        }
 
         /// <summary>
         /// Creates a new instance of the attribute.
@@ -92,7 +103,6 @@ namespace PuppeteerSharp.Nunit
             var currentExpectationPlatform = GetCurrentExpectationPlatform();
             List<TestExpectation.TestExpectationsParameter> parameters =
             [
-
                 IsChrome
                     ? TestExpectation.TestExpectationsParameter.Chrome
                     : TestExpectation.TestExpectationsParameter.Firefox,
@@ -100,9 +110,11 @@ namespace PuppeteerSharp.Nunit
                 IsCdp
                     ? TestExpectation.TestExpectationsParameter.Cdp
                     : TestExpectation.TestExpectationsParameter.WebDriverBiDi,
-                Headless
+                Headless.Equals(HeadlessMode.True)
                     ? TestExpectation.TestExpectationsParameter.Headless
-                    : TestExpectation.TestExpectationsParameter.Headful,
+                    : Headless.Equals(HeadlessMode.False)
+                        ? TestExpectation.TestExpectationsParameter.Headful
+                        : TestExpectation.TestExpectationsParameter.ChromeHeadlessShell
             ];
 
             var localExpectations = GetLocalExpectations();

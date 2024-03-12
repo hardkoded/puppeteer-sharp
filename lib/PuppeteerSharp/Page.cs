@@ -61,6 +61,7 @@ namespace PuppeteerSharp
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private readonly ITargetManager _targetManager;
+        private readonly Task _closedFinishedTask;
         private bool _screenshotBurstModeOn;
         private ScreenshotOptions _screenshotBurstModeOptions;
         private TaskCompletionSource<bool> _sessionClosedTcs;
@@ -103,7 +104,7 @@ namespace PuppeteerSharp
             TabTargetClient.Ready += (sender, args) => _ = OnSecondaryTargetAsync(args.Session as CDPSession);
             _targetManager.TargetGone += OnDetachedFromTarget;
 
-            _ = TabTarget.CloseTask.ContinueWith(
+            _closedFinishedTask = TabTarget.CloseTask.ContinueWith(
                 _ =>
                 {
                     try
@@ -731,7 +732,9 @@ namespace PuppeteerSharp
                     TargetId = Target.TargetId,
                 }).ConfigureAwait(false);
 
-                await Target.CloseTask.ConfigureAwait(false);
+                // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
+                // So I'm waiting for the task that set IsClose to true.
+                await _closedFinishedTask.ConfigureAwait(false);
             }
         }
 

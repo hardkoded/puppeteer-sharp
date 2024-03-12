@@ -187,6 +187,21 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should provide access to elements")]
         public async Task ShouldProvideAccessToElements()
         {
+            if (PuppeteerTestAttribute.Headless is HeadlessMode.False or HeadlessMode.True)
+            {
+                // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
+                // the upstream is fixed.
+                // TLDR: when we dispatch events ot the frame the compositor might
+                // not be up-to-date yet resulting in a misclick (the iframe element
+                // becomes the event target instead of the content inside the iframe).
+                // The solution is to use InsertVisualCallback on the backend but that causes
+                // another issue that events cannot be dispatched to inactive tabs as the
+                // visual callback is never invoked.
+                // The old headless mode does not have this issue since it operates with
+                // special scheduling settings that keep even inactive tabs updating.
+                return;
+            }
+
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(

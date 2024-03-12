@@ -72,7 +72,8 @@ public class TestExpectation
         Chrome,
         WebDriverBiDi,
         Cdp,
-        [EnumMember(Value = "chrome-headless-shell")] ChromeHeadlessShell,
+        [EnumMember(Value = "chrome-headless-shell")]
+        ChromeHeadlessShell,
         Headless,
         Headful,
     }

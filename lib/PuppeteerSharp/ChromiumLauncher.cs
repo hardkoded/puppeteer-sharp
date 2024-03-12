@@ -121,7 +121,7 @@ namespace PuppeteerSharp
             {
                 chromiumArguments.AddRange(new[]
                 {
-                    "--headless",
+                    options.HeadlessMode == HeadlessMode.True ? "--headless=new" : "--headless",
                     "--hide-scrollbars",
                     "--mute-audio",
                 });

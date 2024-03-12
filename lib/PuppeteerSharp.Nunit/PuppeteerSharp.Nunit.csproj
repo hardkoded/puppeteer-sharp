@@ -12,5 +12,8 @@
 	  <EmbeddedResource Include="TestExpectations\TestExpectations.local.json" />
 	  <EmbeddedResource Include="TestExpectations\TestExpectations.upstream.json" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+	</ItemGroup>
 	<Import Project="../Common/CommonProps.props" />
 </Project>

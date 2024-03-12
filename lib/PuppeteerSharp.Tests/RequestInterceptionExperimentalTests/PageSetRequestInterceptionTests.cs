@@ -29,6 +29,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
@@ -573,7 +574,10 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var requests = new List<IRequest>();
         Page.AddRequestInterceptor(request =>
         {
-            requests.Add(request);
+            if (!TestUtils.IsFavicon(request))
+            {
+                requests.Add(request);
+            }
             return request.ContinueAsync(new Payload(), 0);
         });
         var dataURL = "data:text/html,<div>yo</div>";
