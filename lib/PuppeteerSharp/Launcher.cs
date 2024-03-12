@@ -203,7 +203,7 @@ namespace PuppeteerSharp
 
             return new InstalledBrowser(
                 new Cache(),
-                headlessMode == HeadlessMode.Shell ? SupportedBrowser.ChromeHeadlessShell : _browser,
+                headlessMode == HeadlessMode.Shell && _browser == SupportedBrowser.Chrome ? SupportedBrowser.ChromeHeadlessShell : _browser,
                 buildId,
                 BrowserFetcher.GetCurrentPlatform()).GetExecutablePath();
         }

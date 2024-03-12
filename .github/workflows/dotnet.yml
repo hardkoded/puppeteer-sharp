@@ -25,9 +25,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        browser: [CHROME, FIREFOX]
-        mode: [headless, headful, headless-shell]
         include:
           - os: ubuntu-latest
             browser: CHROME
