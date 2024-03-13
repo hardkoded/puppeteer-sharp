@@ -8,6 +8,6 @@ namespace PuppeteerSharp.Messaging
 
         public StackTrace Parent { get; set; }
 
-        public string ParentId { get; set; }
+        public StackTraceId ParentId { get; set; }
     }
 }
