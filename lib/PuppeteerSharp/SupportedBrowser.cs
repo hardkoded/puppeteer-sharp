@@ -19,5 +19,10 @@ namespace PuppeteerSharp
         /// Chromium.
         /// </summary>
         Chromium,
+
+        /// <summary>
+        /// Chrome headless shell.
+        /// </summary>
+        ChromeHeadlessShell,
     }
 }

@@ -23,6 +23,7 @@ namespace PuppeteerSharp
         private static readonly Dictionary<SupportedBrowser, Func<Platform, string, string, string>> _downloadsUrl = new()
         {
             [SupportedBrowser.Chrome] = Chrome.ResolveDownloadUrl,
+            [SupportedBrowser.ChromeHeadlessShell] = ChromeHeadlessShell.ResolveDownloadUrl,
             [SupportedBrowser.Chromium] = Chromium.ResolveDownloadUrl,
             [SupportedBrowser.Firefox] = Firefox.ResolveDownloadUrl,
         };
@@ -128,42 +129,14 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<InstalledBrowser> DownloadAsync(string buildId)
         {
-            var url = _downloadsUrl[Browser](Platform, buildId, BaseUrl);
-            var fileName = url.Split('/').Last();
-            var cache = new Cache(CacheDir);
-            var archivePath = Path.Combine(CacheDir, fileName);
-            var downloadFolder = new DirectoryInfo(CacheDir);
+            var installedBrowser = await DownloadAsync(Browser, buildId).ConfigureAwait(false);
 
-            if (!downloadFolder.Exists)
+            if (Browser == SupportedBrowser.Chrome)
             {
-                downloadFolder.Create();
+                await DownloadAsync(SupportedBrowser.ChromeHeadlessShell, buildId).ConfigureAwait(false);
             }
 
-            if (DownloadProgressChanged != null)
-            {
-                _webClient.DownloadProgressChanged += DownloadProgressChanged;
-            }
-
-            var outputPath = cache.GetInstallationDir(Browser, Platform, buildId);
-
-            if (new DirectoryInfo(outputPath).Exists)
-            {
-                return new InstalledBrowser(cache, Browser, buildId, Platform);
-            }
-
-            try
-            {
-                await _customFileDownload(url, archivePath).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new PuppeteerException($"Failed to download {Browser} for {Platform} from {url}", ex);
-            }
-
-            await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
-            new FileInfo(archivePath).Delete();
-
-            return new InstalledBrowser(cache, Browser, buildId, Platform);
+            return installedBrowser;
         }
 
         /// <inheritdoc/>
@@ -265,6 +238,46 @@ namespace PuppeteerSharp
             process.StartInfo.UseShellExecute = false;
             process.Start();
             process.WaitForExit();
+        }
+
+        private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
+        {
+            var url = _downloadsUrl[browser](Platform, buildId, BaseUrl);
+            var fileName = url.Split('/').Last();
+            var cache = new Cache(CacheDir);
+            var archivePath = Path.Combine(CacheDir, fileName);
+            var downloadFolder = new DirectoryInfo(CacheDir);
+
+            if (!downloadFolder.Exists)
+            {
+                downloadFolder.Create();
+            }
+
+            if (DownloadProgressChanged != null)
+            {
+                _webClient.DownloadProgressChanged += DownloadProgressChanged;
+            }
+
+            var outputPath = cache.GetInstallationDir(browser, Platform, buildId);
+
+            if (new DirectoryInfo(outputPath).Exists)
+            {
+                return new InstalledBrowser(cache, browser, buildId, Platform);
+            }
+
+            try
+            {
+                await _customFileDownload(url, archivePath).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+            }
+
+            await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
+            new FileInfo(archivePath).Delete();
+
+            return new InstalledBrowser(cache, browser, buildId, Platform);
         }
 
         private Task InstallDMGAsync(string dmgPath, string folderPath)

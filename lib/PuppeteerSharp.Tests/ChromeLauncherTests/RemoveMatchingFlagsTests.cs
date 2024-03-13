@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
         public void Empty()
         {
             var a = Array.Empty<string>();
-            var result = ChromiumLauncher.RemoveMatchingFlags(a, "--foo");
+            var result = ChromeLauncher.RemoveMatchingFlags(a, "--foo");
             Assert.IsEmpty(result);
         }
 
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
         public void WithOneMatch()
         {
             var a = new[] { "--foo=1", "--bar=baz" };
-            var result = ChromiumLauncher.RemoveMatchingFlags(a, "--foo");
+            var result = ChromeLauncher.RemoveMatchingFlags(a, "--foo");
             Assert.AreEqual(new[] { "--bar=baz" }, result);
         }
 
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
         public void WithMultipleMatches()
         {
             var a = new[] { "--foo=1", "--bar=baz", "--foo=2" };
-            var result = ChromiumLauncher.RemoveMatchingFlags(a, "--foo");
+            var result = ChromeLauncher.RemoveMatchingFlags(a, "--foo");
             Assert.AreEqual(new[] { "--bar=baz" }, result);
         }
 
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
         public void WithNoMatches()
         {
             var a = new[] { "--foo=1", "--bar=baz" };
-            var result = ChromiumLauncher.RemoveMatchingFlags(a, "--baz");
+            var result = ChromeLauncher.RemoveMatchingFlags(a, "--baz");
             Assert.AreEqual(new[] { "--foo=1", "--bar=baz" }, result);
         }
     }
