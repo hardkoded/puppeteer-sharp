@@ -32,10 +32,10 @@ public class MockCDPSession : ICDPSession
 {
     public event EventHandler<MessageEventArgs> MessageReceived;
 
-    public Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
-        => SendAsync<JObject>(method, args);
+    public Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        => SendAsync<JObject>(method, args, options);
 
-    public Task<T> SendAsync<T>(string method, object args = null)
+    public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
     {
         Console.WriteLine($"Mock Session send: {method} {args?.ToString() ?? string.Empty}");
         return Task.FromResult<T>(default);

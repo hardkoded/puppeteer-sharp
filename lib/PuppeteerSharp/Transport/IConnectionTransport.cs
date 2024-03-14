@@ -31,8 +31,8 @@ namespace PuppeteerSharp.Transport
         /// <summary>
         /// Sends a message using the transport.
         /// </summary>
-        /// <returns>The task.</returns>
         /// <param name="message">Message to send.</param>
+        /// <returns>The task.</returns>
         Task SendAsync(string message);
     }
 }

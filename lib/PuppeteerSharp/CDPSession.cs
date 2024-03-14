@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -65,14 +66,14 @@ namespace PuppeteerSharp
             => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
 
         /// <inheritdoc/>
-        public async Task<T> SendAsync<T>(string method, object args = null)
+        public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
         {
-            var content = await SendAsync(method, args).ConfigureAwait(false);
+            var content = await SendAsync(method, args, true, options).ConfigureAwait(false);
             return content.ToObject<T>(true);
         }
 
         /// <inheritdoc/>
-        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
         {
             if (Connection == null)
             {
@@ -100,7 +101,7 @@ namespace PuppeteerSharp
 
             try
             {
-                await Connection.RawSendAsync(message).ConfigureAwait(false);
+                await Connection.RawSendAsync(message, options).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -110,7 +111,7 @@ namespace PuppeteerSharp
                 }
             }
 
-            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
+            return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(options?.Timeout ?? Connection.ProtocolTimeout).ConfigureAwait(false) : null;
         }
 
         /// <inheritdoc/>

@@ -18,17 +18,18 @@ namespace PuppeteerSharp
     /// <summary>
     /// A connection handles the communication with a Chromium browser.
     /// </summary>
-    public class Connection : IDisposable, ICDPConnection
+    public sealed class Connection : IDisposable, ICDPConnection
     {
+        internal const int DefaultCommandTimeout = 180_000;
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new();
 
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
         private readonly AsyncDictionaryHelper<string, CDPSession> _sessions = new("Session {0} not found");
-        private readonly List<string> _manuallyAttached = new();
+        private readonly List<string> _manuallyAttached = [];
         private int _lastId;
 
-        internal Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null)
+        private Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null, int protocolTimeout = DefaultCommandTimeout)
         {
             LoggerFactory = loggerFactory ?? new LoggerFactory();
             Url = url;
@@ -36,7 +37,7 @@ namespace PuppeteerSharp
             Transport = transport;
 
             _logger = LoggerFactory.CreateLogger<Connection>();
-
+            ProtocolTimeout = protocolTimeout;
             MessageQueue = new AsyncMessageQueue(enqueueAsyncMessages, _logger);
 
             Transport.MessageReceived += Transport_MessageReceived;
@@ -101,6 +102,8 @@ namespace PuppeteerSharp
 
         internal ScriptInjector ScriptInjector { get; } = new();
 
+        internal int ProtocolTimeout { get; }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -109,7 +112,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true)
+        public async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
         {
             if (IsClosed)
             {
@@ -131,36 +134,30 @@ namespace PuppeteerSharp
                 _callbacks[id] = callback;
             }
 
-            await RawSendAsync(message).ConfigureAwait(false);
-            return waitForCallback ? await callback.TaskWrapper.Task.ConfigureAwait(false) : null;
+            await RawSendAsync(message, options).ConfigureAwait(false);
+            return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(ProtocolTimeout).ConfigureAwait(false) : null;
         }
 
         /// <inheritdoc/>
-        public async Task<T> SendAsync<T>(string method, object args = null)
+        public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
         {
-            var response = await SendAsync(method, args).ConfigureAwait(false);
+            var response = await SendAsync(method, args, true, options).ConfigureAwait(false);
             return response.ToObject<T>(true);
         }
 
         internal static async Task<Connection> Create(string url, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null, CancellationToken cancellationToken = default)
         {
-#pragma warning disable 618
-            var transport = connectionOptions.Transport;
-#pragma warning restore 618
-            if (transport == null)
-            {
-                var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
-                transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
-            }
+            var transportFactory = connectionOptions.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
+            var transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
 
-            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory);
+            return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
         }
 
         internal static Connection FromSession(CDPSession session) => session.Connection;
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
-        internal Task RawSendAsync(string message)
+        internal Task RawSendAsync(string message, CommandOptions options = null)
         {
             _logger.LogTrace("Send ► {Message}", message);
             return Transport.SendAsync(message);
@@ -205,7 +202,7 @@ namespace PuppeteerSharp
             CloseReason = closeReason;
 
             Transport.StopReading();
-            Disconnected?.Invoke(this, new EventArgs());
+            Disconnected?.Invoke(this, EventArgs.Empty);
 
             foreach (var session in _sessions.Values.ToArray())
             {
@@ -237,7 +234,7 @@ namespace PuppeteerSharp
         /// <see cref="Connection"/> so the garbage collector can reclaim the memory that the
         /// <see cref="Connection"/> was occupying.</remarks>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             Close("Connection disposed");
             Transport.MessageReceived -= Transport_MessageReceived;

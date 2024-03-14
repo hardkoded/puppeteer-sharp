@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.AreEqual("foo.js", eventTask.Result["url"].Value<string>());
+            Assert.AreEqual("foo.js", eventTask.Result["url"]!.Value<string>());
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Expression = "1 + 2",
                 ReturnByValue = true
             });
-            Assert.AreEqual(3, evalResponse["result"]["value"].ToObject<int>());
+            Assert.AreEqual(3, evalResponse["result"]!["value"]!.ToObject<int>());
             await client.DetachAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(()
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                     Expression = "3 + 1",
                     ReturnByValue = true
                 }));
-            StringAssert.Contains("Session closed.", exception.Message);
+            StringAssert.Contains("Session closed.", exception!.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
@@ -112,8 +112,30 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             {
                 await TheSourceOfTheProblems();
             });
-            StringAssert.Contains("TheSourceOfTheProblems", exception.StackTrace);
+            StringAssert.Contains("TheSourceOfTheProblems", exception!.StackTrace);
             StringAssert.Contains("ThisCommand.DoesNotExist", exception.Message);
+        }
+
+        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should respect custom timeout")]
+        public async Task ShouldRespectCustomTimeout()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
+            {
+                await client.SendAsync(
+                    "Runtime.evaluate",
+                    new RuntimeEvaluateRequest()
+                    {
+                        Expression = "new Promise(x => {})",
+                        AwaitPromise = true,
+                    },
+                    true,
+                    new CommandOptions
+                    {
+                        Timeout = 50
+                    });
+            });
+            StringAssert.Contains("Timeout of 50 ms exceeded", exception!.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
