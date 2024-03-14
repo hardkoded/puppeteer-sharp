@@ -5,7 +5,7 @@ using PuppeteerSharp.Messaging;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Exception thrown by. <seealso cref="CDPSession.SendAsync{T}(string, object)"/>
+    /// Exception thrown by. <seealso cref="CDPSession.SendAsync{T}(string, object, CommandOptions)"/>
     /// </summary>
     [Serializable]
     public class MessageException : PuppeteerException

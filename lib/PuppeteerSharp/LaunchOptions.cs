@@ -198,6 +198,9 @@ namespace PuppeteerSharp
         /// </summary>
         public Func<Target, bool> TargetFilter { get; set; }
 
+        /// <inheritdoc />
+        public int ProtocolTimeout { get; set; } = Connection.DefaultCommandTimeout;
+
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>

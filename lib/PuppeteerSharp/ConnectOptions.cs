@@ -91,6 +91,9 @@ namespace PuppeteerSharp
         /// </summary>
         public Func<Target, bool> TargetFilter { get; set; }
 
+        /// <inheritdoc />
+        public int ProtocolTimeout { get; set; } = Connection.DefaultCommandTimeout;
+
         /// <summary>
         /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>

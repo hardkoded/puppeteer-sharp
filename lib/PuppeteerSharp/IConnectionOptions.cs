@@ -15,22 +15,10 @@ namespace PuppeteerSharp
         int SlowMo { get; set; }
 
         /// <summary>
-        /// Keep alive value (in milliseconds).
-        /// </summary>
-        [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
-        int KeepAliveInterval { get; set; }
-
-        /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         WebSocketFactory WebSocketFactory { get; set; }
-
-        /// <summary>
-        /// Optional connection transport factory.
-        /// </summary>
-        [Obsolete("Use " + nameof(TransportFactory) + " instead")]
-        IConnectionTransport Transport { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
@@ -51,5 +39,11 @@ namespace PuppeteerSharp
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         public Func<Target, bool> TargetFilter { get; set; }
+
+        /// <summary>
+        /// Timeout setting for individual protocol (CDP) calls.
+        /// Defaults to 180_000.
+        /// </summary>
+        public int ProtocolTimeout { get; set; }
     }
 }

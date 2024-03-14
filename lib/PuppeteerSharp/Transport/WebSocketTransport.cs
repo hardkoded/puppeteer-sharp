@@ -30,9 +30,10 @@ namespace PuppeteerSharp.Transport
 
         private readonly WebSocket _client;
         private readonly bool _queueRequests;
-        private readonly TaskQueue _socketQueue = new TaskQueue();
+        private readonly TaskQueue _socketQueue = new();
+
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False positive, as it is disposed in StopReading() method.")]
-        private CancellationTokenSource _readerCancellationSource = new CancellationTokenSource();
+        private CancellationTokenSource _readerCancellationSource = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketTransport"/> class.
@@ -40,19 +41,14 @@ namespace PuppeteerSharp.Transport
         /// <param name="client">The web socket.</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
         /// <param name="queueRequests">Indicates whether requests should be queued.</param>
-        public WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
+        private WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
             if (scheduler == null)
             {
                 throw new ArgumentNullException(nameof(scheduler));
             }
 
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _queueRequests = queueRequests;
             scheduler(GetResponseAsync, _readerCancellationSource.Token);
         }
@@ -72,11 +68,7 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         public bool IsClosed { get; private set; }
 
-        /// <summary>
-        /// Sends a message using the transport.
-        /// </summary>
-        /// <returns>The task.</returns>
-        /// <param name="message">Message to send.</param>
+        /// <inheritdoc />
         public Task SendAsync(string message)
         {
             var encoded = Encoding.UTF8.GetBytes(message);
