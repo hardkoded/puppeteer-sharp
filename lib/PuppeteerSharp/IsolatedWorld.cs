@@ -221,10 +221,11 @@ namespace PuppeteerSharp
 
         internal void ClearContext()
         {
+            _contextResolveTaskWrapper.TrySetException(new PuppeteerException("Execution Context was destroyed"));
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             _context?.Dispose();
             _context = null;
-            Frame?.ClearContext();
+            Frame?.ClearDocumentHandle();
         }
 
         internal void SetNewContext(

@@ -525,7 +525,7 @@ namespace PuppeteerSharp
             await handle.TypeAsync(text, options).ConfigureAwait(false);
         }
 
-        internal void ClearContext() => _documentTask = null;
+        internal void ClearDocumentHandle() => _documentTask = null;
 
         internal void OnLoadingStarted() => HasStartedLoading = true;
 
@@ -578,6 +578,9 @@ namespace PuppeteerSharp
 
             if (!keepWorlds)
             {
+                MainWorld?.ClearConext();
+                PuppeteerWorld?.ClearConext();
+
                 MainRealm = new IsolatedWorld(
                   this,
                   null,
