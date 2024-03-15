@@ -281,6 +281,9 @@ namespace PuppeteerSharp
                 // Disable download and usage of OpenH264: and Widevine plugins
                 ["media.gmp-manager.updateEnabled"] = false,
 
+                // Disable the GFX sanity window
+                ["media.sanity-test.disabled"] = true,
+
                 // Prevent various error message on the console
                 // jest-puppeteer asserts that no error message is emitted by the console
                 ["network.cookie.cookieBehavior"] = 0,
