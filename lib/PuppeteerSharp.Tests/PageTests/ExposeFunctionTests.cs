@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class ExposeFunctionTests : PuppeteerPageBaseTest
     {
-        public ExposeFunctionTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldWork()
         {
