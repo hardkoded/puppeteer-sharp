@@ -268,6 +268,21 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.AreEqual(new[] { TestConstants.AboutBlank }, pages);
         }
 
+
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should close browser with beforeunload page")]
+        public async Task ShouldCloseBrowserWithBeforeunloadPage()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Headless = false;
+            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            await using (var page = await browser.NewPageAsync())
+            {
+                await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
+                // We have to interact with a page so that 'beforeunload' handlers fire.
+                await page.ClickAsync("body");
+            }
+        }
+
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have custom URL when launching browser")]
         public async Task ShouldHaveCustomUrlWhenLaunchingBrowser()
         {

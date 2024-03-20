@@ -11,8 +11,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class HeadfulTests : PuppeteerBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("headful.spec", "HEADFUL", "headless should be able to read cookies written by headful")]
-        [Ignore("Puppeteer ignores this in windows we do not have a platform filter yet")]
+        [Test, Retry(2), PuppeteerTest("headful.spec", "headful tests HEADFUL", "headless should be able to read cookies written by headful")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using var userDataDir = new TempDirectory();
@@ -39,8 +38,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("headful.spec", "HEADFUL", "OOPIF: should report google.com frame")]
-        [Ignore("TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548")]
+        [Test, Retry(2), PuppeteerTest("headful.spec", "headful tests HEADFUL", "OOPIF: should report google.com frame")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {
             // https://google.com is isolated by default in Chromium embedder.
@@ -62,20 +60,6 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             var urls = Array.ConvertAll(page.Frames, frame => frame.Url);
             Array.Sort((Array)urls);
             Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
-        }
-
-        [Test, Retry(2), PuppeteerTest("headful.spec", "HEADFUL", "should close browser with beforeunload page")]
-        public async Task ShouldCloseBrowserWithBeforeunloadPage()
-        {
-            var headfulOptions = TestConstants.DefaultBrowserOptions();
-            headfulOptions.Headless = false;
-            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
-            await using (var page = await browser.NewPageAsync())
-            {
-                await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
-                // We have to interact with a page so that 'beforeunload' handlers fire.
-                await page.ClickAsync("body");
-            }
         }
     }
 }
