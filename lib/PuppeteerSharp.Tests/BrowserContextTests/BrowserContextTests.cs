@@ -78,6 +78,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
+            // Just for half a second to get the last event
+            await Task.Delay(500);
+
             Assert.AreEqual(new[] {
                 $"CREATED: {TestConstants.AboutBlank}",
                 $"CHANGED: {TestConstants.EmptyPage}",
