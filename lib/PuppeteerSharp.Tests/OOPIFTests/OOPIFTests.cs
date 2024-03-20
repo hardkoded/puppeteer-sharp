@@ -1,25 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.OOPIFTests
 {
     public class OOPIFTests : PuppeteerPageBaseTest
     {
-        static int _port = 21221;
+        private static int _port = 21221;
 
-        public OOPIFTests() : base()
+        public OOPIFTests()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.Args = new[]
-            {
+            DefaultOptions.Args =
+            [
                 "--site-per-process",
                 $"--remote-debugging-port={++_port}",
-                "--host-rules=\"MAP * 127.0.0.1\"",
-            };
+                "--host-rules=\"MAP * 127.0.0.1\""
+            ];
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
@@ -38,7 +40,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should track navigations within OOP iframes")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldTrackNavigationsWithinOopIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -61,7 +62,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support OOP iframes becoming normal iframes again")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportOopIframesBecomingNormalIframesAgain()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
@@ -85,8 +85,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support frames within OOP frames")]
-        [Ignore("See why this is so brittle")]
-        public async Task ShouldSupportFramesWithinOopframes()
+        public async Task ShouldSupportFramesWithinOopFrames()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var frame1Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame == Page.MainFrame);
@@ -106,7 +105,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support OOP iframes getting detached")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportOopIframesGettingDetached()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -128,7 +126,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support wait for navigation for transitions from local to OOPIF")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportWaitForNavigationForTransitionsFromLocalToOopif()
         {
             await Page.GoToAsync(TestConstants.EmptyPage).WithTimeout();
@@ -152,7 +149,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should keep track of a frames OOP state")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldKeepTrackOfAFramesOopState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -231,26 +227,23 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should report oopif frames")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldReportOopifFrames()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("oopif.html"));
-            await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/dunamic-oopif.html");
+            await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/dynamic-oopif.html");
             var frame = await frameTask.WithTimeout();
-            Assert.AreEqual(2, Oopifs.Count());
-            Assert.AreEqual(2, Page.Frames.Count(frame => frame.IsOopFrame));
-            Assert.AreEqual(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
+            Assert.AreEqual(1, (await GetIframesAsync()).Length);
+            Assert.AreEqual(2, Page.Frames.Length);
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should wait for inner OOPIFs")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldWaitForInnerOopifs()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("inner-frame2.html"));
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
             var frame = await frameTask.WithTimeout();
-            Assert.AreEqual(2, Oopifs.Count());
-            Assert.AreEqual(2, Page.Frames.Count(frame => frame.IsOopFrame));
+            Assert.AreEqual(2, (await GetIframesAsync()).Length);
+            Assert.AreEqual(2, Page.Frames.Count(frameElement => frameElement.IsOopFrame));
             Assert.AreEqual(1, await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"));
         }
 
@@ -264,12 +257,11 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
             await requestTask.WithTimeout();
-            Assert.That(Oopifs, Has.Exactly(1).Items);
+            Assert.That(GetIframesAsync, Has.Exactly(1).Items);
             Assert.AreEqual(requestTask.Result.Frame, frameTask.Result);
         }
 
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support frames within OOP iframes")]
-        [Ignore("See why this is so brittle")]
         public async Task ShouldSupportFramesWithinOopIframes()
         {
             var oopifFrameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
@@ -350,7 +342,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("/oopif.html"));
             await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             await frameTask.WithTimeout();
-            Assert.That(Oopifs, Has.Exactly(1).Items);
+            Assert.That(GetIframesAsync, Has.Exactly(1).Items);
             Assert.AreEqual(2, Page.Frames.Length);
 
             var browserURL = $"http://127.0.0.1:{_port}";
@@ -378,6 +370,69 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/empty.html"));
         }
 
-        private IEnumerable<ITarget> Oopifs => Context.Targets().Where(target => ((Target)target).TargetInfo.Type == TargetType.IFrame);
+
+        [Test, Retry(2), PuppeteerTest("oopif.spec", "waitForFrame", "OOPIF: should expose events within OOPIFs")]
+        public async Task OOPIFShouldExposeEventsWithinOOPIFs()
+        {
+            // Setup our session listeners to observe OOPIF activity.
+            var session = await Page.CreateCDPSessionAsync();
+            var networkEvents = new List<string>();
+            var otherSessions = new List<ICDPSession>();
+
+            await session.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
+            {
+                AutoAttach = true,
+                Flatten = true,
+                WaitForDebuggerOnStart = true,
+            });
+
+            ((CDPSession)session).SessionAttached += async (_, e) =>
+            {
+                otherSessions.Add(e.Session);
+
+                await e.Session.SendAsync("Network.enable");
+                await e.Session.SendAsync("Runtime.runIfWaitingForDebugger");
+
+                e.Session.MessageReceived += (_, e) =>
+                {
+                    if (e.MessageID.Equals("Network.requestWillBeSent", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        networkEvents.Add(e.MessageData.SelectToken("request").SelectToken("url").ToObject<string>());
+                    }
+                };
+            };
+
+            // Navigate to the empty page and add an OOPIF iframe with at least one request.
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"(frameUrl) => {
+                    const frame = document.createElement('iframe');
+                    frame.setAttribute('src', frameUrl);
+                    document.body.appendChild(frame);
+                    return new Promise((x, y) => {
+                        frame.onload = x;
+                        frame.onerror = y;
+                    });
+                }", TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/one-style.html");
+            await Page.WaitForSelectorAsync("iframe");
+
+            // Ensure we found the iframe session.
+            Assert.That(otherSessions, Has.Exactly(1).Items);
+
+            // Resume the iframe and trigger another request.
+            var iframeSession = otherSessions[0];
+            await iframeSession.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest
+            {
+                Expression = "fetch('/fetch')",
+                AwaitPromise = true,
+            });
+
+            Assert.Contains($"http://oopifdomain:{TestConstants.Port}/fetch", networkEvents);
+        }
+
+        private async Task<ElementHandle[]> GetIframesAsync()
+        {
+            var frameElements = await Task.WhenAll(Page.Frames.Select(frame => ((Frame)frame).FrameElementAsync()).ToArray());
+            return frameElements.Where(element => element != null).ToArray();
+        }
     }
 }
