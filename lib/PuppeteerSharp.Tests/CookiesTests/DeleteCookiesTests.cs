@@ -6,8 +6,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class DeleteCookiesTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should work")]
-        public async Task ShouldWork()
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.deleteCookie", "should delete cookie")]
+        public async Task ShouldDeleteCookie()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.SetCookieAsync(new CookieParam
