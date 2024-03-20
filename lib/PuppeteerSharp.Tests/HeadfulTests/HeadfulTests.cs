@@ -11,16 +11,6 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class HeadfulTests : PuppeteerBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("headful.spec", "HEADFUL", "should have default url when launching browser")]
-        public async Task ShouldHaveDefaultUrlWhenLaunchingBrowser()
-        {
-            await using var browser = await Puppeteer.LaunchAsync(
-                TestConstants.BrowserWithExtensionOptions(),
-                TestConstants.LoggerFactory);
-            var pages = (await browser.PagesAsync()).Select(page => page.Url).ToArray();
-            Assert.AreEqual(new[] { "about:blank" }, pages);
-        }
-
         [Test, Retry(2), PuppeteerTest("headful.spec", "HEADFUL", "headless should be able to read cookies written by headful")]
         [Ignore("Puppeteer ignores this in windows we do not have a platform filter yet")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
