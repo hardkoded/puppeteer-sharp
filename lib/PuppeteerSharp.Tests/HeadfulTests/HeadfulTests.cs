@@ -17,24 +17,24 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             using var userDataDir = new TempDirectory();
             var launcher = new Launcher(TestConstants.LoggerFactory);
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDir}\"" }).ToArray();
+            options.UserDataDir = userDataDir.Path;
             options.Headless = false;
-            await using (var browser = await launcher.LaunchAsync(options))
-            await using (var page = await browser.NewPageAsync())
+            await using (var headfulBrowser = await launcher.LaunchAsync(options))
+            await using (var headfulPage = await headfulBrowser.NewPageAsync())
             {
-                await page.GoToAsync(TestConstants.EmptyPage);
-                await page.EvaluateExpressionAsync(
+                await headfulPage.GoToAsync(TestConstants.EmptyPage);
+                await headfulPage.EvaluateExpressionAsync(
                     "document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'");
             }
 
             await TestUtils.WaitForCookieInChromiumFileAsync(userDataDir.Path, "foo");
 
             options.Headless = true;
-            await using (var browser2 = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
+            await using (var headlessBrowser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
-                var page2 = await browser2.NewPageAsync();
-                await page2.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual("foo=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+                var headlessPage = await headlessBrowser.NewPageAsync();
+                await headlessPage.GoToAsync(TestConstants.EmptyPage);
+                Assert.AreEqual("foo=true", await headlessPage.EvaluateExpressionAsync<string>("document.cookie"));
             }
         }
 

@@ -274,7 +274,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
             headfulOptions.Headless = false;
-            await using (var browser = await Puppeteer.LaunchAsync(headfulOptions))
+            await using var browser = await Puppeteer.LaunchAsync(headfulOptions);
             await using (var page = await browser.NewPageAsync())
             {
                 await page.GoToAsync(TestConstants.ServerUrl + "/beforeunload.html");
