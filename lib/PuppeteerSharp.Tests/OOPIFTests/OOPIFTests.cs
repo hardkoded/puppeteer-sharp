@@ -452,7 +452,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Array.Sort((Array)urls);
             Assert.AreEqual(new[] { TestConstants.EmptyPage, "https://google.com/" }, urls);
         }
-        
+
         private async Task<ElementHandle[]> GetIframesAsync()
         {
             var frameElements = await Task.WhenAll(Page.Frames.Select(frame => ((Frame)frame).FrameElementAsync()).ToArray());
