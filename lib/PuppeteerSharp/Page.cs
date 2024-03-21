@@ -564,7 +564,17 @@ namespace PuppeteerSharp
             await RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun).ConfigureAwait(false);
 
             await Task.WhenAll(
-                Frames.Select(frame => frame.EvaluateFunctionAsync("name => globalThis[name] = undefined", name))
+                Frames.Select(frame =>
+                    {
+                        // If a frame has not started loading, it might never start. Rely on
+                        // addScriptToEvaluateOnNewDocument in that case.
+                        if (frame != MainFrame && !((Frame)frame).HasStartedLoading)
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        return frame.EvaluateFunctionAsync("name => globalThis[name] = undefined", name);
+                    })
                     .ToArray()).ConfigureAwait(false);
         }
 
@@ -1815,17 +1825,27 @@ namespace PuppeteerSharp
             _exposedFunctions.TryAdd(name, functionInfo.Identifier);
 
             await Task.WhenAll(Frames.Select(
-                    frame => frame
-                        .EvaluateExpressionAsync(expression)
-                        .ContinueWith(
-                            task =>
-                            {
-                                if (task.IsFaulted && task.Exception != null)
+                    frame =>
+                    {
+                        // If a frame has not started loading, it might never start. Rely on
+                        // addScriptToEvaluateOnNewDocument in that case.
+                        if (frame != MainFrame && !((Frame)frame).HasStartedLoading)
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        return frame
+                            .EvaluateExpressionAsync(expression)
+                            .ContinueWith(
+                                task =>
                                 {
-                                    _logger.LogError(task.Exception.ToString());
-                                }
-                            },
-                            TaskScheduler.Default)))
+                                    if (task.IsFaulted && task.Exception != null)
+                                    {
+                                        _logger.LogError(task.Exception.ToString());
+                                    }
+                                },
+                                TaskScheduler.Default);
+                    }))
                 .ConfigureAwait(false);
         }
 

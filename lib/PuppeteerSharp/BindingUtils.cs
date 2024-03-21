@@ -15,7 +15,14 @@ namespace PuppeteerSharp
             => EvaluationString(
                 @"function addPageBinding(type, name) {
                     // This is the CDP binding.
-                    const callCDP = globalThis[name];
+                    const callCdp = globalThis[name];
+
+                    // Depending on the frame loading state either Runtime.evaluate or
+                    // Page.addScriptToEvaluateOnNewDocument might succeed. Let's check that we
+                    // don't re-wrap Puppeteer's binding.
+                    if (callCdp[Symbol.toStringTag] === 'PuppeteerBinding') {
+                      return;
+                    }
 
                     // We replace the CDP binding with a Puppeteer binding.
                     Object.assign(globalThis, {
@@ -29,7 +36,7 @@ namespace PuppeteerSharp
                       callPuppeteer.lastSeq = seq;
                       callPuppeteer.args.set(seq, args);
 
-                      callCDP(
+                      callCdp(
                         JSON.stringify({
                             type,
                             name,
@@ -55,6 +62,7 @@ namespace PuppeteerSharp
                       });
                     },
                   });
+                  globalThis[name][Symbol.toStringTag] = 'PuppeteerBinding';
                 }",
                 type,
                 name);

@@ -26,6 +26,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var page = await Browser.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             await page.CloseAsync();
+            // Wait for half a second to ensure that all events have been processed
+            await Task.Delay(500);
             Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
         }
     }

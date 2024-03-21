@@ -71,6 +71,38 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(15, result);
         }
 
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with loading frames")]
+        public async Task ShouldWorkWithLoadingFrames()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+
+            var requestTcs = new TaskCompletionSource<IRequest>();
+            Page.Request += (sender, e) =>
+            {
+                if (e.Request.Url.EndsWith("/frames/frame.html"))
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+                else
+                {
+                    e.Request.ContinueAsync();
+                }
+            };
+
+            var navTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html",
+                WaitUntilNavigation.Networkidle0);
+
+            var request = await requestTcs.Task;
+
+            var exposeTask = Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
+
+            await Task.WhenAll(request.ContinueAsync(), exposeTask);
+            await navTask;
+            var frame = Page.FirstChildFrame();
+            var result = await frame.EvaluateFunctionAsync<int>("() => globalThis.compute(3, 5)");
+            Assert.AreEqual(15, result);
+        }
+
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
         public async Task ShouldWorkOnFramesBeforeNavigation()
         {
