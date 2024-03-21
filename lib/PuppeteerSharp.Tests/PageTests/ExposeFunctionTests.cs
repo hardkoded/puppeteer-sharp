@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class ExposeFunctionTests : PuppeteerPageBaseTest
     {
-        public ExposeFunctionTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldWork()
         {
@@ -72,6 +68,38 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             var frame = Page.FirstChildFrame();
             var result = await frame.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
+            Assert.AreEqual(15, result);
+        }
+
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with loading frames")]
+        public async Task ShouldWorkWithLoadingFrames()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+
+            var requestTcs = new TaskCompletionSource<IRequest>();
+            Page.Request += (sender, e) =>
+            {
+                if (e.Request.Url.EndsWith("/frames/frame.html"))
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+                else
+                {
+                    e.Request.ContinueAsync();
+                }
+            };
+
+            var navTask = Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html",
+                WaitUntilNavigation.Networkidle0);
+
+            var request = await requestTcs.Task;
+
+            var exposeTask = Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
+
+            await Task.WhenAll(request.ContinueAsync(), exposeTask);
+            await navTask;
+            var frame = Page.FirstChildFrame();
+            var result = await frame.EvaluateFunctionAsync<int>("() => globalThis.compute(3, 5)");
             Assert.AreEqual(15, result);
         }
 

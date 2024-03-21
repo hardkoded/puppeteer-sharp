@@ -574,7 +574,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task.</returns>
-        Task EvaluateExpressionOnNewDocumentAsync(string expression);
+        Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -632,7 +632,7 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         /// <returns>Task.</returns>
-        Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args);
+        Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -646,6 +646,13 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task.</returns>
         Task ExposeFunctionAsync(string name, Action puppeteerFunction);
+
+        /// <summary>
+        /// Removes a previously added function via <see cref="IPage.ExposeFunctionAsync(string, Action)"/>.
+        /// </summary>
+        /// <param name="name">Name of the function to remove.</param>
+        /// <returns>Task.</returns>
+        Task RemoveExposedFunctionAsync(string name);
 
         /// <summary>
         /// Adds a function called <c>name</c> on the page's <c>window</c> object.
@@ -1464,5 +1471,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
         Task<ICDPSession> CreateCDPSessionAsync();
+
+        /// <summary>
+        /// Removes script that injected into page by <see cref="IPage.EvaluateExpressionOnNewDocumentAsync(string)"/> or <see cref="IPage.EvaluateExpressionOnNewDocumentAsync(string)"/>.
+        /// </summary>
+        /// <param name="identifier">Function identifier.</param>
+        /// <returns>A task that resolves when the script is removed.</returns>
+        public Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier);
     }
 }

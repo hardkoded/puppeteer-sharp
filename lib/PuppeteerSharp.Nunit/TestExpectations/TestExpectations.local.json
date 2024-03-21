@@ -36,6 +36,20 @@
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
+    "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["FIREFOX"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "TODO Review why is failing on Ci/CD",
+    "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["CHROME"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

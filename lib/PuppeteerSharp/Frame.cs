@@ -578,8 +578,8 @@ namespace PuppeteerSharp
 
             if (!keepWorlds)
             {
-                MainWorld?.ClearConext();
-                PuppeteerWorld?.ClearConext();
+                MainWorld?.ClearContext();
+                PuppeteerWorld?.ClearContext();
 
                 MainRealm = new IsolatedWorld(
                   this,

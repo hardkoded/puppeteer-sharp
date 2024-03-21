@@ -59,6 +59,7 @@ namespace PuppeteerSharp
         private readonly ILogger _logger;
         private readonly TimeoutSettings _timeoutSettings = new();
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
+        private readonly ConcurrentDictionary<string, string> _exposedFunctions = new();
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private readonly ITargetManager _targetManager;
         private readonly Task _closedFinishedTask;
@@ -291,7 +292,8 @@ namespace PuppeteerSharp
             {
                 if (_sessionClosedTcs == null)
                 {
-                    _sessionClosedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    _sessionClosedTcs =
+                        new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                     Client.Disconnected += ClientDisconnected;
 
                     void ClientDisconnected(object sender, EventArgs e)
@@ -313,13 +315,16 @@ namespace PuppeteerSharp
         public Task SetDragInterceptionAsync(bool enabled)
         {
             IsDragInterceptionEnabled = enabled;
-            return PrimaryTargetClient.SendAsync("Input.setInterceptDrags", new InputSetInterceptDragsRequest { Enabled = enabled });
+            return PrimaryTargetClient.SendAsync(
+                "Input.setInterceptDrags",
+                new InputSetInterceptDragsRequest { Enabled = enabled });
         }
 
         /// <inheritdoc/>
         public async Task<Dictionary<string, decimal>> MetricsAsync()
         {
-            var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics").ConfigureAwait(false);
+            var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics")
+                .ConfigureAwait(false);
             return BuildMetricsObject(response.Metrics);
         }
 
@@ -367,21 +372,36 @@ namespace PuppeteerSharp
             => MainFrame.EvaluateFunctionHandleAsync(pageFunction, args);
 
         /// <inheritdoc/>
-        public Task EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
+        public async Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(
+            string pageFunction,
+            params object[] args)
         {
             var source = BindingUtils.EvaluationString(pageFunction, args);
-            return Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
-            {
-                Source = source,
-            });
+            var documentIdentifier = await Client
+                .SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
+                    "Page.addScriptToEvaluateOnNewDocument",
+                    new PageAddScriptToEvaluateOnNewDocumentRequest { Source = source, }).ConfigureAwait(false);
+
+            return new NewDocumentScriptEvaluation(documentIdentifier.Identifier);
         }
 
         /// <inheritdoc/>
-        public Task EvaluateExpressionOnNewDocumentAsync(string expression)
-            => Client.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
+        public Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
+            => Client.SendAsync("Page.removeScriptToEvaluateOnNewDocument", new PageRemoveScriptToEvaluateOnNewDocumentRequest
             {
-                Source = expression,
+                Identifier = identifier,
             });
+
+        /// <inheritdoc/>
+        public async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
+        {
+            var documentIdentifier = await
+                Client.SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
+                    "Page.addScriptToEvaluateOnNewDocument",
+                    new PageAddScriptToEvaluateOnNewDocumentRequest { Source = expression, }).ConfigureAwait(false);
+
+            return new NewDocumentScriptEvaluation(documentIdentifier.Identifier);
+        }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
@@ -401,10 +421,10 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
             }
 
-            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>("Runtime.queryObjects", new RuntimeQueryObjectsRequest
-            {
-                PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId,
-            }).ConfigureAwait(false);
+            var response = await Client.SendAsync<RuntimeQueryObjectsResponse>(
+                "Runtime.queryObjects",
+                new RuntimeQueryObjectsRequest { PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId, })
+                .ConfigureAwait(false);
 
             var context = await FrameManager.MainFrame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
             return context.CreateJSHandle(response.Objects);
@@ -418,7 +438,8 @@ namespace PuppeteerSharp
         public Task SetOfflineModeAsync(bool value) => FrameManager.NetworkManager.SetOfflineModeAsync(value);
 
         /// <inheritdoc/>
-        public Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
+        public Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) =>
+            FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
 
         /// <inheritdoc/>
         public async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
@@ -459,10 +480,9 @@ namespace PuppeteerSharp
 
             if (cookies.Length > 0)
             {
-                await PrimaryTargetClient.SendAsync("Network.setCookies", new NetworkSetCookiesRequest
-                {
-                    Cookies = cookies,
-                }).ConfigureAwait(false);
+                await PrimaryTargetClient
+                    .SendAsync("Network.setCookies", new NetworkSetCookiesRequest { Cookies = cookies, })
+                    .ConfigureAwait(false);
             }
         }
 
@@ -519,17 +539,55 @@ namespace PuppeteerSharp
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
 
         /// <inheritdoc/>
-        public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(string name, Func<T1, T2, T3, T4, TResult> puppeteerFunction)
+        public Task ExposeFunctionAsync<T1, T2, T3, T4, TResult>(
+            string name,
+            Func<T1, T2, T3, T4, TResult> puppeteerFunction)
             => ExposeFunctionAsync(name, (Delegate)puppeteerFunction);
+
+        /// <inheritdoc/>
+        public async Task RemoveExposedFunctionAsync(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (!_exposedFunctions.TryRemove(name, out var exposedFun) && !_bindings.TryRemove(name, out _))
+            {
+                throw new PuppeteerException(
+                    $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
+            }
+
+            await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = name, })
+                .ConfigureAwait(false);
+
+            await RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun).ConfigureAwait(false);
+
+            await Task.WhenAll(
+                Frames.Select(frame =>
+                    {
+                        // If a frame has not started loading, it might never start. Rely on
+                        // addScriptToEvaluateOnNewDocument in that case.
+                        if (frame != MainFrame && !((Frame)frame).HasStartedLoading)
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        return frame.EvaluateFunctionAsync("name => globalThis[name] = undefined", name);
+                    })
+                    .ToArray()).ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync() => FrameManager.MainFrame.GetContentAsync();
 
         /// <inheritdoc/>
-        public Task SetContentAsync(string html, NavigationOptions options = null) => FrameManager.MainFrame.SetContentAsync(html, options);
+        public Task SetContentAsync(string html, NavigationOptions options = null) =>
+            FrameManager.MainFrame.SetContentAsync(html, options);
 
         /// <inheritdoc/>
-        public Task<IResponse> GoToAsync(string url, NavigationOptions options) => FrameManager.MainFrame.GoToAsync(url, options);
+        public Task<IResponse> GoToAsync(string url, NavigationOptions options) =>
+            FrameManager.MainFrame.GoToAsync(url, options);
 
         /// <inheritdoc/>
         public Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
@@ -579,10 +637,9 @@ namespace PuppeteerSharp
             => _emulationManager.SetJavaScriptEnabledAsync(enabled);
 
         /// <inheritdoc/>
-        public Task SetBypassCSPAsync(bool enabled) => PrimaryTargetClient.SendAsync("Page.setBypassCSP", new PageSetBypassCSPRequest
-        {
-            Enabled = enabled,
-        });
+        public Task SetBypassCSPAsync(bool enabled) => PrimaryTargetClient.SendAsync(
+            "Page.setBypassCSP",
+            new PageSetBypassCSPRequest { Enabled = enabled, });
 
         /// <inheritdoc/>
         public Task EmulateMediaTypeAsync(MediaType type)
@@ -678,7 +735,8 @@ namespace PuppeteerSharp
 
                 if (options.Quality < 0 || options.Quality > 100)
                 {
-                    throw new ArgumentException($"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
+                    throw new ArgumentException(
+                        $"Expected options.quality to be between 0 and 100 (inclusive), got {options.Quality}");
                 }
             }
 
@@ -727,10 +785,9 @@ namespace PuppeteerSharp
             }
             else
             {
-                await PrimaryTargetClient.Connection.SendAsync("Target.closeTarget", new TargetCloseTargetRequest
-                {
-                    TargetId = Target.TargetId,
-                }).ConfigureAwait(false);
+                await PrimaryTargetClient.Connection
+                    .SendAsync("Target.closeTarget", new TargetCloseTargetRequest { TargetId = Target.TargetId, })
+                    .ConfigureAwait(false);
 
                 // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
                 // So I'm waiting for the task that set IsClose to true.
@@ -743,7 +800,8 @@ namespace PuppeteerSharp
             => FrameManager.NetworkManager.SetCacheEnabledAsync(enabled);
 
         /// <inheritdoc/>
-        public Task ClickAsync(string selector, ClickOptions options = null) => FrameManager.MainFrame.ClickAsync(selector, options);
+        public Task ClickAsync(string selector, ClickOptions options = null) =>
+            FrameManager.MainFrame.ClickAsync(selector, options);
 
         /// <inheritdoc/>
         public Task HoverAsync(string selector) => FrameManager.MainFrame.HoverAsync(selector);
@@ -787,7 +845,8 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task AuthenticateAsync(Credentials credentials) => FrameManager.NetworkManager.AuthenticateAsync(credentials);
+        public Task AuthenticateAsync(Credentials credentials) =>
+            FrameManager.NetworkManager.AuthenticateAsync(credentials);
 
         /// <inheritdoc/>
         public async Task<IResponse> ReloadAsync(NavigationOptions options)
@@ -795,8 +854,9 @@ namespace PuppeteerSharp
             var navigationTask = WaitForNavigationAsync(options);
 
             await Task.WhenAll(
-              navigationTask,
-              PrimaryTargetClient.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id })).ConfigureAwait(false);
+                    navigationTask,
+                    PrimaryTargetClient.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id }))
+                .ConfigureAwait(false);
 
             return navigationTask.Result;
         }
@@ -818,7 +878,8 @@ namespace PuppeteerSharp
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
         /// <inheritdoc/>
-        public Task<IJSHandle> WaitForFunctionAsync(string script, params object[] args) => WaitForFunctionAsync(script, null, args);
+        public Task<IJSHandle> WaitForFunctionAsync(string script, params object[] args) =>
+            WaitForFunctionAsync(script, null, args);
 
         /// <inheritdoc/>
         public Task<IJSHandle> WaitForExpressionAsync(string script, WaitForFunctionOptions options = null)
@@ -846,15 +907,9 @@ namespace PuppeteerSharp
 
             var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            var idleTimer = new Timer
-            {
-                Interval = idleTime,
-            };
+            var idleTimer = new Timer { Interval = idleTime, };
 
-            idleTimer.Elapsed += (_, _) =>
-            {
-                networkIdleTcs.TrySetResult(true);
-            };
+            idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
 
             var networkManager = FrameManager.NetworkManager;
 
@@ -997,7 +1052,9 @@ namespace PuppeteerSharp
             => WaitForResponseAsync((response) => Task.FromResult(predicate(response)), options);
 
         /// <inheritdoc/>
-        public async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
+        public async Task<IResponse> WaitForResponseAsync(
+            Func<IResponse, Task<bool>> predicate,
+            WaitForOptions options = null)
         {
             var timeout = options?.Timeout ?? DefaultTimeout;
             var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -1035,10 +1092,9 @@ namespace PuppeteerSharp
         {
             if (_fileChooserInterceptors.IsEmpty)
             {
-                await PrimaryTargetClient.SendAsync("Page.setInterceptFileChooserDialog", new PageSetInterceptFileChooserDialog
-                {
-                    Enabled = true,
-                }).ConfigureAwait(false);
+                await PrimaryTargetClient.SendAsync(
+                    "Page.setInterceptFileChooserDialog",
+                    new PageSetInterceptFileChooserDialog { Enabled = true, }).ConfigureAwait(false);
             }
 
             var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
@@ -1196,33 +1252,36 @@ namespace PuppeteerSharp
                 await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
             }
 
-            var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>("Page.printToPDF", new PagePrintToPDFRequest
-            {
-                TransferMode = "ReturnAsStream",
-                Landscape = options.Landscape,
-                DisplayHeaderFooter = options.DisplayHeaderFooter,
-                HeaderTemplate = options.HeaderTemplate,
-                FooterTemplate = options.FooterTemplate,
-                PrintBackground = options.PrintBackground,
-                Scale = options.Scale,
-                PaperWidth = paperWidth,
-                PaperHeight = paperHeight,
-                MarginTop = marginTop,
-                MarginBottom = marginBottom,
-                MarginLeft = marginLeft,
-                MarginRight = marginRight,
-                PageRanges = options.PageRanges,
-                PreferCSSPageSize = options.PreferCSSPageSize,
-                GenerateTaggedPDF = options.Tagged,
-                GenerateDocumentOutline = options.Outline,
-            }).ConfigureAwait(false);
+            var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>(
+                "Page.printToPDF",
+                new PagePrintToPDFRequest
+                {
+                    TransferMode = "ReturnAsStream",
+                    Landscape = options.Landscape,
+                    DisplayHeaderFooter = options.DisplayHeaderFooter,
+                    HeaderTemplate = options.HeaderTemplate,
+                    FooterTemplate = options.FooterTemplate,
+                    PrintBackground = options.PrintBackground,
+                    Scale = options.Scale,
+                    PaperWidth = paperWidth,
+                    PaperHeight = paperHeight,
+                    MarginTop = marginTop,
+                    MarginBottom = marginBottom,
+                    MarginLeft = marginLeft,
+                    MarginRight = marginRight,
+                    PageRanges = options.PageRanges,
+                    PreferCSSPageSize = options.PreferCSSPageSize,
+                    GenerateTaggedPDF = options.Tagged,
+                    GenerateDocumentOutline = options.Outline,
+                }).ConfigureAwait(false);
 
             if (options.OmitBackground)
             {
                 await _emulationManager.ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
             }
 
-            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file).ConfigureAwait(false);
+            return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file)
+                .ConfigureAwait(false);
         }
 
         private async Task InitializeAsync()
@@ -1230,8 +1289,8 @@ namespace PuppeteerSharp
             await FrameManager.InitializeAsync(PrimaryTargetClient).ConfigureAwait(false);
 
             await Task.WhenAll(
-               PrimaryTargetClient.SendAsync("Performance.enable"),
-               PrimaryTargetClient.SendAsync("Log.enable")).ConfigureAwait(false);
+                PrimaryTargetClient.SendAsync("Performance.enable"),
+                PrimaryTargetClient.SendAsync("Log.enable")).ConfigureAwait(false);
         }
 
         private void OnRequest(IRequest request)
@@ -1252,7 +1311,8 @@ namespace PuppeteerSharp
 
         private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
         {
-            var history = await PrimaryTargetClient.SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
+            var history = await PrimaryTargetClient
+                .SendAsync<PageGetNavigationHistoryResponse>("Page.getNavigationHistory").ConfigureAwait(false);
 
             if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
             {
@@ -1264,10 +1324,9 @@ namespace PuppeteerSharp
 
             await Task.WhenAll(
                 waitTask,
-                PrimaryTargetClient.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
-                {
-                    EntryId = entry.Id,
-                })).ConfigureAwait(false);
+                PrimaryTargetClient.SendAsync(
+                    "Page.navigateToHistoryEntry",
+                    new PageNavigateToHistoryEntryRequest { EntryId = entry.Id, })).ConfigureAwait(false);
 
             return waitTask.Result;
         }
@@ -1369,7 +1428,8 @@ namespace PuppeteerSharp
 
                 if (clip != null && !captureBeyondViewport)
                 {
-                    var viewport = await FrameManager.MainFrame.IsolatedRealm.EvaluateFunctionAsync<BoundingBox>(@"() => {
+                    var viewport = await FrameManager.MainFrame.IsolatedRealm.EvaluateFunctionAsync<BoundingBox>(
+                        @"() => {
                         const {
                             height,
                             pageLeft: x,
@@ -1457,10 +1517,12 @@ namespace PuppeteerSharp
 
         private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
         {
-            var omitBackgroundTask = options is { OmitBackground: true, Type: ScreenshotType.Png } ?
-                _emulationManager.ResetDefaultBackgroundColorAsync() : Task.CompletedTask;
-            var setViewPortTask = (options?.FullPage == true && Viewport != null) ?
-                SetViewportAsync(Viewport) : Task.CompletedTask;
+            var omitBackgroundTask = options is { OmitBackground: true, Type: ScreenshotType.Png }
+                ? _emulationManager.ResetDefaultBackgroundColorAsync()
+                : Task.CompletedTask;
+            var setViewPortTask = (options?.FullPage == true && Viewport != null)
+                ? SetViewportAsync(Viewport)
+                : Task.CompletedTask;
             return Task.WhenAll(omitBackgroundTask, setViewPortTask);
         }
 
@@ -1519,7 +1581,8 @@ namespace PuppeteerSharp
                         Load?.Invoke(this, EventArgs.Empty);
                         break;
                     case "Runtime.consoleAPICalled":
-                        await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true)).ConfigureAwait(false);
+                        await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true))
+                            .ConfigureAwait(false);
                         break;
                     case "Page.javascriptDialogOpening":
                         OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
@@ -1534,13 +1597,16 @@ namespace PuppeteerSharp
                         EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
                         break;
                     case "Log.entryAdded":
-                        await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true)).ConfigureAwait(false);
+                        await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true))
+                            .ConfigureAwait(false);
                         break;
                     case "Runtime.bindingCalled":
-                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true))
+                            .ConfigureAwait(false);
                         break;
                     case "Page.fileChooserOpened":
-                        await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true)).ConfigureAwait(false);
+                        await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true))
+                            .ConfigureAwait(false);
                         break;
                 }
             }
@@ -1558,10 +1624,10 @@ namespace PuppeteerSharp
             {
                 try
                 {
-                    await PrimaryTargetClient.SendAsync("Page.handleFileChooser", new PageHandleFileChooserRequest
-                    {
-                        Action = FileChooserAction.Fallback,
-                    }).ConfigureAwait(false);
+                    await PrimaryTargetClient.SendAsync(
+                        "Page.handleFileChooser",
+                        new PageHandleFileChooserRequest { Action = FileChooserAction.Fallback, })
+                        .ConfigureAwait(false);
                     return;
                 }
                 catch (Exception ex)
@@ -1633,7 +1699,8 @@ namespace PuppeteerSharp
             {
                 foreach (var arg in e.Entry.Args)
                 {
-                    await RemoteObjectHelper.ReleaseObjectAsync(PrimaryTargetClient, arg, _logger).ConfigureAwait(false);
+                    await RemoteObjectHelper.ReleaseObjectAsync(PrimaryTargetClient, arg, _logger)
+                        .ConfigureAwait(false);
                 }
             }
 
@@ -1643,11 +1710,7 @@ namespace PuppeteerSharp
                     e.Entry.Level,
                     e.Entry.Text,
                     null,
-                    new ConsoleMessageLocation
-                    {
-                        URL = e.Entry.URL,
-                        LineNumber = e.Entry.LineNumber,
-                    })));
+                    new ConsoleMessageLocation { URL = e.Entry.URL, LineNumber = e.Entry.LineNumber, })));
             }
         }
 
@@ -1720,13 +1783,15 @@ namespace PuppeteerSharp
         {
             if (Console?.GetInvocationList().Length == 0)
             {
-                await Task.WhenAll(values.Select(v => RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
+                await Task.WhenAll(values.Select(v =>
+                    RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
                 return;
             }
 
-            var tokens = values.Select(i => i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
-                ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
+            var tokens = values.Select(i =>
+                i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
+                    ? i.ToString()
+                    : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
 
             var location = new ConsoleMessageLocation();
             if (stackTrace?.CallFrames?.Length > 0)
@@ -1745,15 +1810,19 @@ namespace PuppeteerSharp
         {
             if (!_bindings.TryAdd(name, new Binding(name, puppeteerFunction)))
             {
-                throw new PuppeteerException($"Failed to add page binding with name {name}: window['{name}'] already exists!");
+                throw new PuppeteerException(
+                    $"Failed to add page binding with name {name}: window['{name}'] already exists!");
             }
 
             var expression = BindingUtils.PageBindingInitString("exposedFun", name);
-            await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name }).ConfigureAwait(false);
-            await PrimaryTargetClient.SendAsync("Page.addScriptToEvaluateOnNewDocument", new PageAddScriptToEvaluateOnNewDocumentRequest
-            {
-                Source = expression,
-            }).ConfigureAwait(false);
+            await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name })
+                .ConfigureAwait(false);
+            var functionInfo = await PrimaryTargetClient
+                .SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
+                    "Page.addScriptToEvaluateOnNewDocument",
+                    new PageAddScriptToEvaluateOnNewDocumentRequest { Source = expression, }).ConfigureAwait(false);
+
+            _exposedFunctions.TryAdd(name, functionInfo.Identifier);
 
             await Task.WhenAll(Frames.Select(
                     frame =>
