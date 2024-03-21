@@ -77,13 +77,16 @@ namespace PuppeteerSharp
         /// <value>Worker URL.</value>
         public string Url { get; }
 
+        /// <summary>
+        /// The CDP session client the WebWorker belongs to.
+        /// </summary>
+        public CDPSession Client { get; }
+
         /// <inheritdoc/>
         CDPSession IEnvironment.Client => Client;
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => World;
-
-        internal CDPSession Client { get; }
 
         private IsolatedWorld World { get; }
 
