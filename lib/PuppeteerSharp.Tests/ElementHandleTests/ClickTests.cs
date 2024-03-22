@@ -32,16 +32,9 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var buttonTextNode = (IElementHandle)await Page.EvaluateExpressionHandleAsync(
                 "document.querySelector('button').firstChild");
-            var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () => await buttonTextNode.ClickAsync());
+            var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await buttonTextNode.ClickAsync());
 
-            if (TestConstants.IsChrome)
-            {
-                Assert.That(exception.Message, Does.Contain("is not of type 'Element'"));
-            }
-            else
-            {
-                Assert.That(exception.Message, Does.Contain("implement interface Element"));
-            }
+            Assert.That(exception.Message, Does.Contain("is not of type HTMLElement"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for detached nodes")]
@@ -51,7 +44,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
+            Assert.AreEqual("Node is detached from document", exception.Message);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for hidden nodes")]
