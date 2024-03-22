@@ -330,5 +330,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task TouchEndAsync();
+
+        /// <summary>
+        /// Scrolls the element into view using either the automation protocol client or by calling element.scrollIntoView.
+        /// </summary>
+        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
+        Task ScrollIntoViewAsync();
     }
 }

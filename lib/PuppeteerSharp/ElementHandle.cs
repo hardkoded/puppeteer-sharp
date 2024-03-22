@@ -505,8 +505,10 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<bool> IsIntersectingViewportAsync(int threshold)
-            => BindIsolatedHandleAsync(handle =>
-                handle.Realm.EvaluateFunctionAsync<bool>(
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                await handle.AssertConnectedElementAsync().ConfigureAwait(false);
+                return await handle.Realm.EvaluateFunctionAsync<bool>(
                     @"async (element, threshold) => {
                         const visibleRatio = await new Promise(resolve => {
                             const observer = new IntersectionObserver(entries => {
@@ -518,7 +520,8 @@ namespace PuppeteerSharp
                         return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
                     }",
                     handle,
-                    threshold));
+                    threshold).ConfigureAwait(false);
+            });
 
         /// <inheritdoc/>
         public Task<string[]> SelectAsync(params string[] values)
@@ -711,6 +714,35 @@ namespace PuppeteerSharp
         public override Task<T> JsonValueAsync<T>()
             => BindIsolatedHandleAsync(element => element.Handle.JsonValueAsync<T>());
 
+        /// <inheritdoc/>
+        public Task ScrollIntoViewAsync()
+            => BindIsolatedHandleAsync(async handle =>
+            {
+                await handle.AssertConnectedElementAsync().ConfigureAwait(false);
+                try
+                {
+                    await handle.Client
+                        .SendAsync(
+                            "DOM.scrollIntoViewIfNeeded",
+                            new DomScrollIntoViewIfNeededRequest { ObjectId = Id, })
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "DOM.scrollIntoViewIfNeeded is not supported");
+                    await handle.EvaluateFunctionAsync(
+                        @"element => {
+                            element.scrollIntoView({
+                                block: 'center',
+                                inline: 'center',
+                                behavior: 'instant',
+                            });
+                        }").ConfigureAwait(false);
+                }
+
+                return handle;
+            });
+
         private async Task<BoundingBox> NonEmptyVisibleBoundingBoxAsync()
         {
             var box = await BoundingBoxAsync().ConfigureAwait(false) ??
@@ -738,33 +770,6 @@ namespace PuppeteerSharp
 
             await ScrollIntoViewAsync().ConfigureAwait(false);
         }
-
-        private Task ScrollIntoViewAsync()
-            => BindIsolatedHandleAsync(async handle =>
-            {
-                try
-                {
-                    await handle.Client
-                        .SendAsync(
-                            "DOM.scrollIntoViewIfNeeded",
-                            new DomScrollIntoViewIfNeededRequest { ObjectId = Id, })
-                        .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "DOM.scrollIntoViewIfNeeded is not supported");
-                    await handle.EvaluateFunctionAsync(
-                        @"element => {
-                            element.scrollIntoView({
-                                block: 'center',
-                                inline: 'center',
-                                behavior: 'instant',
-                            });
-                        }").ConfigureAwait(false);
-                }
-
-                return handle;
-            });
 
         private Task<bool> CheckVisibilityAsync(IElementHandle handle, bool visibility)
             => handle.EvaluateFunctionAsync<bool>(
@@ -1007,6 +1012,25 @@ namespace PuppeteerSharp
                     ? Math.Min(height - box.Y, box.Height)
                     : Math.Min(height, box.Height + box.Y),
                 0);
+        }
+
+        private async Task AssertConnectedElementAsync()
+        {
+            var error = await EvaluateFunctionAsync<string>(@"element => {
+                if (!element.isConnected) {
+                    return 'Node is detached from document';
+                }
+
+                if (element.nodeType !== Node.ELEMENT_NODE) {
+                  return 'Node is not of type HTMLElement';
+                }
+                return;
+            }").ConfigureAwait(false);
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                throw new PuppeteerException(error);
+            }
         }
     }
 }
