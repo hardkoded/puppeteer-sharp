@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.That(exception.Message, Does.Contain("is not of type 'Element'"));
+                Assert.That(exception.Message, Does.Contain("is not of type HTMLElement"));
             }
             else
             {
