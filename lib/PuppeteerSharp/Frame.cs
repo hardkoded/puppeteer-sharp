@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Messaging;

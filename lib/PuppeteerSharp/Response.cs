@@ -8,7 +8,9 @@ using PuppeteerSharp.Helpers.Json;
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    public abstract class Response : IResponse
+    public abstract class Response<TRequest>
+        : IResponse
+        where TRequest : IRequest
     {
         internal Response()
         {
@@ -48,7 +50,7 @@ namespace PuppeteerSharp
         public IFrame Frame => Request.Frame;
 
         /// <inheritdoc cref="Request"/>
-        protected Request Request { get; init; }
+        protected TRequest Request { get; init; }
 
         /// <summary>
         /// Returns a Task which resolves to a buffer with response body.

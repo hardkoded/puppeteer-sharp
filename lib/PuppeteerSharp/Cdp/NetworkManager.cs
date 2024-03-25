@@ -5,12 +5,11 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class NetworkManager
     {
@@ -264,7 +263,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            request.Failure = e.ErrorText;
+            request.FailureText = e.ErrorText;
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
@@ -300,9 +299,9 @@ namespace PuppeteerSharp
             RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private void ForgetRequest(Request request, bool events)
+        private void ForgetRequest(CdpHttpRequest request, bool events)
         {
-            _networkEventManager.ForgetRequest(request.RequestId);
+            _networkEventManager.ForgetRequest(request.Id);
 
             if (request.InterceptionId != null)
             {
@@ -311,7 +310,7 @@ namespace PuppeteerSharp
 
             if (events)
             {
-                _networkEventManager.Forget(request.RequestId);
+                _networkEventManager.Forget(request.Id);
             }
         }
 
@@ -450,7 +449,7 @@ namespace PuppeteerSharp
                 ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false)
                 : null;
 
-            var request = new Request(
+            var request = new CdpHttpRequest(
                     client,
                     frame,
                     e.RequestId,
@@ -465,7 +464,7 @@ namespace PuppeteerSharp
 
         private async Task OnRequestAsync(CDPSession client, RequestWillBeSentPayload e, string fetchRequestId)
         {
-            Request request;
+            CdpHttpRequest request;
             var redirectChain = new List<IRequest>();
             if (e.RedirectResponse != null)
             {
@@ -496,7 +495,7 @@ namespace PuppeteerSharp
 
             var frame = !string.IsNullOrEmpty(e.FrameId) ? await _frameManager.GetFrameAsync(e.FrameId).ConfigureAwait(false) : null;
 
-            request = new Request(
+            request = new CdpHttpRequest(
                 client,
                 frame,
                 fetchRequestId,
@@ -531,9 +530,9 @@ namespace PuppeteerSharp
             RequestServedFromCache?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private void HandleRequestRedirect(CDPSession client, Request request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
+        private void HandleRequestRedirect(CDPSession client, CdpHttpRequest request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
         {
-            var response = new Response(
+            var response = new CdpHttpResponse(
                 client,
                 request,
                 responseMessage,

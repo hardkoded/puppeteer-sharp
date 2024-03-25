@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// <see cref="Response"/> class represents responses which are received by page.
+    /// <see cref="IResponse"/> class represents responses which are received by page.
     /// </summary>
     /// <seealso cref="Page.GoAsync(int, NavigationOptions)"/>
     /// <seealso cref="IPage.GoForwardAsync(NavigationOptions)"/>
@@ -57,9 +57,9 @@ namespace PuppeteerSharp
         SecurityDetails SecurityDetails { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="Response"/> was served by a service worker.
+        /// Gets a value indicating whether the <see cref="IResponse"/> was served by a service worker.
         /// </summary>
-        /// <value><c>true</c> if the <see cref="Response"/> was served by a service worker; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the <see cref="IResponse"/> was served by a service worker; otherwise, <c>false</c>.</value>
         bool FromServiceWorker { get; }
 
         /// <summary>

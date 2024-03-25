@@ -85,11 +85,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.AreEqual("net::ERR_FAILED", failedRequests[0].Failure);
+                Assert.AreEqual("net::ERR_FAILED", failedRequests[0].FailureText);
             }
             else
             {
-                Assert.AreEqual("NS_ERROR_FAILURE", failedRequests[0].Failure);
+                Assert.AreEqual("NS_ERROR_FAILURE", failedRequests[0].FailureText);
             }
 
             Assert.NotNull(failedRequests[0].Frame);

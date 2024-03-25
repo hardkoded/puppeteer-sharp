@@ -229,7 +229,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Page.RequestFailed += (_, _) => failedRequests++;
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             Assert.True(response.Ok);
-            Assert.Null(response.Request.Failure);
+            Assert.Null(response.Request.FailureText);
             Assert.AreEqual(1, failedRequests);
         }
 
@@ -249,7 +249,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             StringAssert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
             Assert.NotNull(failedRequest);
-            Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.Failure);
+            Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.FailureText);
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Page.setRequestInterception", "should send referer")]

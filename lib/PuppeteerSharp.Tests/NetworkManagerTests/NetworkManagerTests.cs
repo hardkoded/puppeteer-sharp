@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
 

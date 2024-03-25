@@ -7,7 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Resource type.
     /// </summary>
-    /// <seealso cref="Request.ResourceType"/>
+    /// <seealso cref="IRequest.ResourceType"/>
     [JsonConverter(typeof(FlexibleStringEnumConverter), Unknown)]
     public enum ResourceType
     {
