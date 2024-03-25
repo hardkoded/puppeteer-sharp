@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -19,20 +18,18 @@ namespace PuppeteerSharp
     /// ]]>
     /// </code>
     /// </example>
-    public class Dialog
+    public abstract class Dialog
     {
-        private readonly CDPSession _client;
+        private bool _handled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
         /// </summary>
-        /// <param name="client">Client.</param>
         /// <param name="type">Type.</param>
         /// <param name="message">Message.</param>
         /// <param name="defaultValue">Default value.</param>
-        public Dialog(CDPSession client, DialogType type, string message, string defaultValue)
+        public Dialog(DialogType type, string message, string defaultValue)
         {
-            _client = client;
             DialogType = type;
             Message = message;
             DefaultValue = defaultValue;
@@ -62,20 +59,31 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the dialog has been accepted.</returns>
         /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
         public Task Accept(string promptText = "")
-            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
+        {
+            if (_handled)
             {
-                Accept = true,
-                PromptText = promptText,
-            });
+                throw new InvalidOperationException("Cannot accept dialog which is already handled!");
+            }
+
+            _handled = true;
+            return HandleAsync(true, promptText);
+        }
 
         /// <summary>
         /// Dismiss the dialog.
         /// </summary>
         /// <returns>Task which resolves when the dialog has been dismissed.</returns>
         public Task Dismiss()
-            => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
+        {
+            if (_handled)
             {
-                Accept = false,
-            });
+                throw new InvalidOperationException("Cannot dismiss dialog which is already handled!");
+            }
+
+            _handled = true;
+            return HandleAsync(false, null);
+        }
+
+        internal abstract Task HandleAsync(bool accept, string text);
     }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
@@ -1755,7 +1756,7 @@ namespace PuppeteerSharp
 
         private void OnDialog(PageJavascriptDialogOpeningResponse message)
         {
-            var dialog = new Dialog(Client, message.Type, message.Message, message.DefaultPrompt);
+            var dialog = new CdpDialog(Client, message.Type, message.Message, message.DefaultPrompt);
             Dialog?.Invoke(this, new DialogEventArgs(dialog));
         }
 
