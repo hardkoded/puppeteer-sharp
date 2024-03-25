@@ -1680,7 +1680,7 @@ namespace PuppeteerSharp
 
             if (session.Target.Type == TargetType.Worker)
             {
-                var worker = new WebWorker(
+                var worker = new CdpWebWorker(
                     session,
                     session.Target.Url,
                     session.Target.TargetId,
