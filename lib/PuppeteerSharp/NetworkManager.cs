@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
@@ -351,7 +352,7 @@ namespace PuppeteerSharp
                 extraInfo = null;
             }
 
-            var response = new Response(
+            var response = new CdpHttpResponse(
                 client,
                 request,
                 e.Response,
