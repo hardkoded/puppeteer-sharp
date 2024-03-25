@@ -1,0 +1,11 @@
+{
+  "name": "upstream-ops",
+  "version": "1.0.0",
+  "description": "Scripts to work on puppeteer code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dario Kondratiuk",
+  "license": "ISC"
+}
