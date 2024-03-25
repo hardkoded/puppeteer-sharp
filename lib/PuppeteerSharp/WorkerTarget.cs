@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -32,7 +33,7 @@ namespace PuppeteerSharp
         private async Task<WebWorker> WorkerInternalAsync()
         {
             var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
-            return new WebWorker(
+            return new CdpWebWorker(
                 client,
                 TargetInfo.Url,
                 TargetInfo.TargetId,

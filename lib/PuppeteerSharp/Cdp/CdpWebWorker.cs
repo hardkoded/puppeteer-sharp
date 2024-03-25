@@ -32,131 +32,131 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpWebWorker : WebWorker
 {
-        private readonly ILogger _logger;
-        private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
-        private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
-        private readonly string _id;
-        private readonly TargetType _targetType;
+    private readonly ILogger _logger;
+    private readonly Func<ConsoleType, IJSHandle[], StackTrace, Task> _consoleAPICalled;
+    private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
+    private readonly string _id;
+    private readonly TargetType _targetType;
 
-        internal CdpWebWorker(
-            CDPSession client,
-            string url,
-            string targetId,
-            TargetType targetType,
-            Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
-            Action<EvaluateExceptionResponseDetails> exceptionThrown) : base(url)
-        {
-            _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
-            _id = targetId;
-            Client = client;
-            _targetType = targetType;
-            World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
-            _consoleAPICalled = consoleAPICalled;
-            _exceptionThrown = exceptionThrown;
-            client.MessageReceived += OnMessageReceived;
+    internal CdpWebWorker(
+        CDPSession client,
+        string url,
+        string targetId,
+        TargetType targetType,
+        Func<ConsoleType, IJSHandle[], StackTrace, Task> consoleAPICalled,
+        Action<EvaluateExceptionResponseDetails> exceptionThrown) : base(url)
+    {
+        _logger = client.Connection.LoggerFactory.CreateLogger<WebWorker>();
+        _id = targetId;
+        Client = client;
+        _targetType = targetType;
+        World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
+        _consoleAPICalled = consoleAPICalled;
+        _exceptionThrown = exceptionThrown;
+        client.MessageReceived += OnMessageReceived;
 
-            _ = client.SendAsync("Runtime.enable").ContinueWith(
-                task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError(task.Exception!.Message);
-                    }
-                },
-                TaskScheduler.Default);
-
-            _ = client.SendAsync("Log.enable").ContinueWith(
-                task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        _logger.LogError(task.Exception!.Message);
-                    }
-                },
-                TaskScheduler.Default);
-        }
-
-        /// <inheritdoc/>
-        public override CDPSession Client { get; }
-
-        private IsolatedWorld World { get; }
-
-        /// <summary>
-        /// Closes the worker.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
-        public override async Task CloseAsync()
-        {
-            switch (_targetType)
+        _ = client.SendAsync("Runtime.enable").ContinueWith(
+            task =>
             {
-                case TargetType.ServiceWorker:
-                case TargetType.SharedWorker:
-                    // For service and shared workers we need to close the target and detach to allow
-                    // the worker to stop.
-                    await Client.Connection.SendAsync(
-                        "Target.closeTarget",
-                        new TargetCloseTargetRequest()
-                        {
-                            TargetId = _id,
-                        }).ConfigureAwait(false);
+                if (task.IsFaulted)
+                {
+                    _logger.LogError(task.Exception!.Message);
+                }
+            },
+            TaskScheduler.Default);
 
-                    await Client.Connection.SendAsync(
-                        "Target.detachFromTarget",
-                        new TargetDetachFromTargetRequest()
-                        {
-                            SessionId = Client.Id,
-                        }).ConfigureAwait(false);
-                    break;
-                default:
-                    await EvaluateFunctionAsync(@"() => {
+        _ = client.SendAsync("Log.enable").ContinueWith(
+            task =>
+            {
+                if (task.IsFaulted)
+                {
+                    _logger.LogError(task.Exception!.Message);
+                }
+            },
+            TaskScheduler.Default);
+    }
+
+    /// <inheritdoc/>
+    public override CDPSession Client { get; }
+
+    private IsolatedWorld World { get; }
+
+    /// <summary>
+    /// Closes the worker.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
+    public override async Task CloseAsync()
+    {
+        switch (_targetType)
+        {
+            case TargetType.ServiceWorker:
+            case TargetType.SharedWorker:
+                // For service and shared workers we need to close the target and detach to allow
+                // the worker to stop.
+                await Client.Connection.SendAsync(
+                    "Target.closeTarget",
+                    new TargetCloseTargetRequest()
+                    {
+                        TargetId = _id,
+                    }).ConfigureAwait(false);
+
+                await Client.Connection.SendAsync(
+                    "Target.detachFromTarget",
+                    new TargetDetachFromTargetRequest()
+                    {
+                        SessionId = Client.Id,
+                    }).ConfigureAwait(false);
+                break;
+            default:
+                await EvaluateFunctionAsync(@"() => {
                         self.close();
                     }").ConfigureAwait(false);
+                break;
+        }
+    }
+
+    private async void OnMessageReceived(object sender, MessageEventArgs e)
+    {
+        try
+        {
+            switch (e.MessageID)
+            {
+                case "Runtime.executionContextCreated":
+                    OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
+                    break;
+                case "Runtime.consoleAPICalled":
+                    await OnConsoleAPICalledAsync(e).ConfigureAwait(false);
+                    break;
+                case "Runtime.exceptionThrown":
+                    OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
                     break;
             }
         }
-
-        private async void OnMessageReceived(object sender, MessageEventArgs e)
+        catch (Exception ex)
         {
-            try
-            {
-                switch (e.MessageID)
-                {
-                    case "Runtime.executionContextCreated":
-                        OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
-                        break;
-                    case "Runtime.consoleAPICalled":
-                        await OnConsoleAPICalledAsync(e).ConfigureAwait(false);
-                        break;
-                    case "Runtime.exceptionThrown":
-                        OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                Client.Close(message);
-            }
+            var message = $"Worker failed to process {e.MessageID}. {ex.Message}. {ex.StackTrace}";
+            _logger.LogError(ex, message);
+            Client.Close(message);
         }
+    }
 
-        private void OnExceptionThrown(RuntimeExceptionThrownResponse e) => _exceptionThrown(e.ExceptionDetails);
+    private void OnExceptionThrown(RuntimeExceptionThrownResponse e) => _exceptionThrown(e.ExceptionDetails);
 
-        private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
+    private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
+    {
+        var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
+        await _consoleAPICalled(
+            consoleData.Type,
+            consoleData.Args.Select(i => new JSHandle(World, i)).ToArray(),
+            consoleData.StackTrace)
+                .ConfigureAwait(false);
+    }
+
+    private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
+    {
+        if (!World.HasContext)
         {
-            var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
-            await _consoleAPICalled(
-                consoleData.Type,
-                consoleData.Args.Select(i => new JSHandle(World, i)).ToArray(),
-                consoleData.StackTrace)
-                    .ConfigureAwait(false);
+            World.SetNewContext(Client, e.Context, World);
         }
-
-        private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
-        {
-            if (!World.HasContext)
-            {
-                World.SetNewContext(Client, e.Context, World);
-            }
-        }
+    }
 }
