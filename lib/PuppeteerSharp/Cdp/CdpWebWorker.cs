@@ -79,7 +79,7 @@ public class CdpWebWorker : WebWorker
     /// <inheritdoc/>
     public override CDPSession Client { get; }
 
-    private IsolatedWorld World { get; }
+    internal override IsolatedWorld World { get; }
 
     /// <summary>
     /// Closes the worker.

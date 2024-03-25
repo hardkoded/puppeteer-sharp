@@ -47,7 +47,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => World;
 
-        private IsolatedWorld World { get; }
+        internal abstract IsolatedWorld World { get; }
 
         /// <summary>
         /// Executes a script in browser context.
