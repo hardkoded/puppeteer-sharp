@@ -2,14 +2,14 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// Other target.
     /// </summary>
-    public class OtherTarget : Target
+    public class CdpOtherTarget : CdpTarget
     {
-        internal OtherTarget(
+        internal CdpOtherTarget(
             TargetInfo targetInfo,
             CDPSession session,
             BrowserContext context,

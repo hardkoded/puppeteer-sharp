@@ -2,18 +2,18 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// Page target.
     /// </summary>
-    public class PageTarget : Target
+    public class CdpPageTarget : CdpTarget
     {
         private readonly bool _ignoreHTTPSErrors;
         private readonly ViewPortOptions _defaultViewport;
         private readonly TaskQueue _screenshotTaskQueue;
 
-        internal PageTarget(
+        internal CdpPageTarget(
             TargetInfo targetInfo,
             CDPSession session,
             BrowserContext context,
@@ -61,7 +61,7 @@ namespace PuppeteerSharp
                         return;
                     }
 
-                    var opener = Opener as PageTarget;
+                    var opener = Opener as CdpPageTarget;
 
                     var openerPageTask = opener?.PageTask;
                     if (openerPageTask == null || Type != TargetType.Page)

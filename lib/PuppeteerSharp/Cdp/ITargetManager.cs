@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -33,7 +34,7 @@ namespace PuppeteerSharp
         /// All the available targets.
         /// </summary>
         /// <returns>A dictionary with the available targets.</returns>
-        AsyncDictionaryHelper<string, Target> GetAvailableTargets();
+        AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets();
 
         /// <summary>
         /// Async tasks to be performed after calling the target manager constructor.

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -482,7 +483,7 @@ namespace PuppeteerSharp
             TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
         }
 
-        private Target CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
+        private CdpTarget CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
         {
             var browserContextId = targetInfo.BrowserContextId;
 
@@ -493,17 +494,17 @@ namespace PuppeteerSharp
 
             Task<CDPSession> CreateSession(bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
 
-            var otherTarget = new OtherTarget(
+            var otherTarget = new CdpOtherTarget(
                 targetInfo,
                 session,
                 context,
                 TargetManager,
                 CreateSession,
-                this.ScreenshotTaskQueue);
+                ScreenshotTaskQueue);
 
             if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
             {
-                return new DevToolsTarget(
+                return new CdpDevToolsTarget(
                     targetInfo,
                     session,
                     context,
@@ -516,7 +517,7 @@ namespace PuppeteerSharp
 
             if (IsPageTargetFunc(otherTarget))
             {
-                return new PageTarget(
+                return new CdpPageTarget(
                     targetInfo,
                     session,
                     context,
@@ -529,7 +530,7 @@ namespace PuppeteerSharp
 
             if (targetInfo.Type == TargetType.ServiceWorker || targetInfo.Type == TargetType.SharedWorker)
             {
-                return new WorkerTarget(
+                return new CdpWorkerTarget(
                     targetInfo,
                     session,
                     context,
