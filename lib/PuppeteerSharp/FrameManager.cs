@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
@@ -528,7 +529,7 @@ namespace PuppeteerSharp
 
                 var swappedTcs = new TaskCompletionSource<bool>();
 
-                mainFrame.FrameSwappedByActivation += (sender, args) => swappedTcs.TrySetResult(true);
+                mainFrame.FrameSwappedByActivation += (_, _) => swappedTcs.TrySetResult(true);
 
                 try
                 {

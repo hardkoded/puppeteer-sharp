@@ -26,13 +26,13 @@ namespace PuppeteerSharp
         /// Gets the failure.
         /// </summary>
         /// <value>The failure.</value>
-        public string Failure { get; }
+        public string FailureText { get; }
 
         /// <summary>
         /// Gets the request identifier.
         /// </summary>
         /// <value>The request identifier.</value>
-        string RequestId { get; }
+        string Id { get; }
 
         /// <summary>
         /// Gets the interception identifier.
