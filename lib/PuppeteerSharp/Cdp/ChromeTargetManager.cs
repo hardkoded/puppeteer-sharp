@@ -7,17 +7,17 @@ using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class ChromeTargetManager : ITargetManager
     {
         private readonly List<string> _ignoredTargets = new();
         private readonly Connection _connection;
-        private readonly Func<TargetInfo, CDPSession, CDPSession, Target> _targetFactoryFunc;
+        private readonly Func<TargetInfo, CDPSession, CDPSession, CdpTarget> _targetFactoryFunc;
         private readonly Func<Target, bool> _targetFilterFunc;
         private readonly ILogger<ChromeTargetManager> _logger;
-        private readonly AsyncDictionaryHelper<string, Target> _attachedTargetsByTargetId = new("Target {0} not found");
-        private readonly ConcurrentDictionary<string, Target> _attachedTargetsBySessionId = new();
+        private readonly AsyncDictionaryHelper<string, CdpTarget> _attachedTargetsByTargetId = new("Target {0} not found");
+        private readonly ConcurrentDictionary<string, CdpTarget> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
@@ -29,7 +29,7 @@ namespace PuppeteerSharp
 
         public ChromeTargetManager(
             Connection connection,
-            Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
+            Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
             Browser browser,
             int targetDiscoveryTimeout = 0)
@@ -52,7 +52,7 @@ namespace PuppeteerSharp
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
-        public AsyncDictionaryHelper<string, Target> GetAvailableTargets() => _attachedTargetsByTargetId;
+        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() => _attachedTargetsByTargetId;
 
         public async Task InitializeAsync()
         {
@@ -93,7 +93,7 @@ namespace PuppeteerSharp
         {
             foreach (var kv in _discoveredTargetsByTargetId)
             {
-                var targetForFilter = new Target(
+                var targetForFilter = new CdpTarget(
                     kv.Value,
                     null,
                     null,

@@ -8,23 +8,23 @@ using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class FirefoxTargetManager : ITargetManager
     {
         private readonly Connection _connection;
-        private readonly Func<TargetInfo, CDPSession, CDPSession, Target> _targetFactoryFunc;
-        private readonly Func<Target, bool> _targetFilterFunc;
+        private readonly Func<TargetInfo, CDPSession, CDPSession, CdpTarget> _targetFactoryFunc;
+        private readonly Func<CdpTarget, bool> _targetFilterFunc;
         private readonly ILogger<FirefoxTargetManager> _logger;
-        private readonly AsyncDictionaryHelper<string, Target> _availableTargetsByTargetId = new("Target {0} not found");
-        private readonly ConcurrentDictionary<string, Target> _availableTargetsBySessionId = new();
+        private readonly AsyncDictionaryHelper<string, CdpTarget> _availableTargetsByTargetId = new("Target {0} not found");
+        private readonly ConcurrentDictionary<string, CdpTarget> _availableTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
         private List<string> _targetsIdsForInit = [];
 
         public FirefoxTargetManager(
             Connection connection,
-            Func<TargetInfo, CDPSession, CDPSession, Target> targetFactoryFunc,
+            Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc)
         {
             _connection = connection;
@@ -58,7 +58,7 @@ namespace PuppeteerSharp
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
-        public AsyncDictionaryHelper<string, Target> GetAvailableTargets() => _availableTargetsByTargetId;
+        public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() => _availableTargetsByTargetId;
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {

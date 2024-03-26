@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// Worker target.
     /// </summary>
-    public class WorkerTarget : Target
+    public class CdpWorkerTarget : CdpTarget
     {
         private Task<WebWorker> _workerTask;
 
-        internal WorkerTarget(
+        internal CdpWorkerTarget(
             TargetInfo targetInfo,
             CDPSession session,
             BrowserContext context,

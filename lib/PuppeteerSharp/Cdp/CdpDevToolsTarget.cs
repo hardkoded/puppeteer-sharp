@@ -2,14 +2,14 @@ using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// DevTools target.
     /// </summary>
-    public class DevToolsTarget : PageTarget
+    public class CdpDevToolsTarget : CdpPageTarget
     {
-        internal DevToolsTarget(
+        internal CdpDevToolsTarget(
             TargetInfo targetInfo,
             CDPSession session,
             BrowserContext context,
