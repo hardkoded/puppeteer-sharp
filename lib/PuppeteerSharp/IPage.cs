@@ -318,7 +318,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Adds a <c><![CDATA[<link rel="stylesheet">]]></c> tag into the page with the desired url or a <c><![CDATA[<link rel="stylesheet">]]></c> tag with the content.
         /// </summary>
-        /// <param name="url">stylesheel url.</param>
+        /// <param name="url">stylesheet url.</param>
         /// <remarks>
         /// Shortcut for <c>page.MainFrame.AddStyleTagAsync(new AddTagOptions { Url = url })</c>.
         /// </remarks>
@@ -805,7 +805,7 @@ namespace PuppeteerSharp
         /// - the main resource failed to load.
         ///
         /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server,
-        /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="PuppeteerSharp.Response.Status"/>
+        /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="PuppeteerSharp.IResponse.Status"/>
         ///
         /// > **NOTE** <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> either throws an error or returns a main resource response.
         /// The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
@@ -1111,8 +1111,8 @@ namespace PuppeteerSharp
         Task SetOfflineModeAsync(bool value);
 
         /// <summary>
-        /// Activating request interception enables <see cref="PuppeteerSharp.Request.AbortAsync(RequestAbortErrorCode, int?)">request.AbortAsync</see>,
-        /// <see cref="PuppeteerSharp.Request.ContinueAsync(Payload, int?)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.Request.RespondAsync(ResponseData, int?)">request.RespondAsync</see> methods.
+        /// Activating request interception enables <see cref="PuppeteerSharp.IRequest.AbortAsync(RequestAbortErrorCode, int?)">request.AbortAsync</see>,
+        /// <see cref="PuppeteerSharp.IRequest.ContinueAsync(Payload, int?)">request.ContinueAsync</see> and <see cref="PuppeteerSharp.IRequest.RespondAsync(ResponseData, int?)">request.RespondAsync</see> methods.
         /// </summary>
         /// <returns>The request interception task.</returns>
         /// <param name="value">Whether to enable request interception..</param>

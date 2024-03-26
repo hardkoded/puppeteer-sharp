@@ -1304,7 +1304,7 @@ namespace PuppeteerSharp
             // Run tasks one after the other
             foreach (var subscriber in _requestInterceptionTask)
             {
-                (request as Request)?.EnqueueInterceptionAction(subscriber);
+                (request as CdpHttpRequest)?.EnqueueInterceptionAction(subscriber);
             }
 
             Request?.Invoke(this, new RequestEventArgs(request));

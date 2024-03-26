@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using PuppeteerSharp.Messaging;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class NetworkEventManager
     {
         private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestWillBeSentMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
-        private readonly ConcurrentDictionary<string, Request> _httpRequestsMap = new();
+        private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
         private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
         private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap = new();
         private readonly ConcurrentDictionary<string, List<ResponseReceivedExtraInfoResponse>> _responseReceivedExtraInfoMap = new();
@@ -60,7 +60,7 @@ namespace PuppeteerSharp
         }
 
         internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentPayload e)
-            => _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, __) => e);
+            => _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
 
         internal RequestWillBeSentPayload GetRequestWillBeSent(string networkRequestId)
         {
@@ -81,22 +81,22 @@ namespace PuppeteerSharp
             => _requestPausedMap.TryRemove(networkRequestId, out _);
 
         internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e)
-            => _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, __) => e);
+            => _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
 
-        internal Request GetRequest(string networkRequestId)
+        internal CdpHttpRequest GetRequest(string networkRequestId)
         {
             _httpRequestsMap.TryGetValue(networkRequestId, out var result);
             return result;
         }
 
-        internal void StoreRequest(string networkRequestId, Request request)
-            => _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, __) => request);
+        internal void StoreRequest(string networkRequestId, CdpHttpRequest request)
+            => _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, _) => request);
 
         internal void ForgetRequest(string requestId)
             => _requestWillBeSentMap.TryRemove(requestId, out _);
 
         internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group)
-            => _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, __) => group);
+            => _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, _) => group);
 
         internal QueuedEventGroup GetQueuedEventGroup(string networkRequestId)
         {

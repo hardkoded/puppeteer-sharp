@@ -1,7 +1,7 @@
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Abort error codes. used by <see cref="Request.AbortAsync(RequestAbortErrorCode, int?)"/>.
+    /// Abort error codes. used by <see cref="IRequest.AbortAsync(RequestAbortErrorCode, int?)"/>.
     /// </summary>
     public enum RequestAbortErrorCode
     {

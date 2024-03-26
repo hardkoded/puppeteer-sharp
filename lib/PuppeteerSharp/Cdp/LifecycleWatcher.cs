@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal sealed class LifecycleWatcher : IDisposable
     {
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
 
-        public Response NavigationResponse => (Response)_navigationRequest?.Response;
+        public CdpHttpResponse NavigationResponse => (CdpHttpResponse)_navigationRequest?.Response;
 
         public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
 

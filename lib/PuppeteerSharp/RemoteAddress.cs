@@ -3,7 +3,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Remote server address.
     /// </summary>
-    /// <seealso cref="Response.RemoteAddress"/>
+    /// <seealso cref="IResponse.RemoteAddress"/>
     public class RemoteAddress
     {
         /// <summary>
