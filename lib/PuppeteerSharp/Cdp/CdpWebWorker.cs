@@ -147,7 +147,7 @@ public class CdpWebWorker : WebWorker
         var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
         await _consoleAPICalled(
             consoleData.Type,
-            consoleData.Args.Select(i => new JSHandle(World, i)).ToArray(),
+            consoleData.Args.Select(i => new CdpJSHandle(World, i)).ToArray(),
             consoleData.StackTrace)
                 .ConfigureAwait(false);
     }

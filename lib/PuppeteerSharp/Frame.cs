@@ -27,7 +27,7 @@ namespace PuppeteerSharp
 
             UpdateClient(client);
 
-            FrameSwappedByActivation += (sender, args) =>
+            FrameSwappedByActivation += (_, _) =>
             {
                 // Emulate loading process for swapped frames.
                 OnLoadingStarted();
