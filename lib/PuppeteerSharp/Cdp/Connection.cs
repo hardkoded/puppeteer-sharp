@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.QueryHandlers;
 using PuppeteerSharp.Transport;
 
@@ -222,7 +223,7 @@ namespace PuppeteerSharp.Cdp
             MessageQueue.Dispose();
         }
 
-        internal CDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
+        internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
@@ -243,7 +244,7 @@ namespace PuppeteerSharp.Cdp
             _callbackQueue.Dispose();
         }
 
-        private Task<CDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
+        private Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
@@ -300,7 +301,7 @@ namespace PuppeteerSharp.Cdp
             if (method == "Target.attachedToTarget")
             {
                 var sessionId = param.SessionId;
-                var session = new CDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
+                var session = new CdpCDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
                 _sessions.AddItem(sessionId, session);
 
                 SessionAttached?.Invoke(this, new SessionEventArgs(session));

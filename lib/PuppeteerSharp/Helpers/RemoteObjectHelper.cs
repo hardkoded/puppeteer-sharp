@@ -3,8 +3,8 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.Helpers
 {

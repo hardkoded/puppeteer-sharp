@@ -1,5 +1,4 @@
 using System;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp.PageCoverage
 {
