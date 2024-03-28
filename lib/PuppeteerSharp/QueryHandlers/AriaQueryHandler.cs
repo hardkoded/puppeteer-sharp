@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
-using static PuppeteerSharp.Messaging.AccessibilityGetFullAXTreeResponse;
+using PuppeteerSharp.Cdp.Messaging;
+using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
 
 namespace PuppeteerSharp.QueryHandlers
 {
