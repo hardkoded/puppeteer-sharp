@@ -155,6 +155,9 @@ public class CdpElementHandle : ElementHandle
         return default;
     }
 
+    /// <inheritdoc />
+    public override string ToString() => Handle.ToString();
+
     private void CheckForFileAccess(string[] files)
     {
         foreach (var file in files)
