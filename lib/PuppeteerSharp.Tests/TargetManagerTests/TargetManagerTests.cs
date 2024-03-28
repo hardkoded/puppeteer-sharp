@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
@@ -25,7 +26,7 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
         [Test, Retry(2), PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
         public async Task ShouldHandleTargets()
         {
-            var targetManager = (Browser as Browser).TargetManager;
+            var targetManager = (Browser as CdpBrowser)!.TargetManager;
             Assert.AreEqual(2, targetManager.GetAvailableTargets().Values.Count);
 
             Assert.IsEmpty(await Context.PagesAsync());

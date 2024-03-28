@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Cdp
             bool ignoreHTTPSErrors,
             ViewPortOptions defaultViewport,
             TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, screenshotTaskQueue)
+            : base(targetInfo, (CdpCDPSession)session, (CdpBrowserContext)context, targetManager, sessionFactory, screenshotTaskQueue)
         {
             _ignoreHTTPSErrors = ignoreHTTPSErrors;
             _defaultViewport = defaultViewport;
