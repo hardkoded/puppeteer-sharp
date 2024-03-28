@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.QueryHandlers;
 using PuppeteerSharp.Transport;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// A connection handles the communication with a Chromium browser.
@@ -154,7 +153,7 @@ namespace PuppeteerSharp
             return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
         }
 
-        internal static Connection FromSession(CDPSession session) => session.Connection;
+        internal static Connection FromSession(CdpCDPSession session) => session.Connection;
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 

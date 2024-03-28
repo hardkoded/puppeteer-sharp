@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Cdp
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
             TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, screenshotTaskQueue)
+            : base(targetInfo, (CdpCDPSession)session, (CdpBrowserContext)context, targetManager, sessionFactory, screenshotTaskQueue)
         {
         }
     }

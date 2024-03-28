@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PuppeteerSharp.BrowserData;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
@@ -71,7 +72,7 @@ namespace PuppeteerSharp
                         .Create(Process.EndPoint, options, _loggerFactory)
                         .ConfigureAwait(false);
 
-                    var browser = await Browser
+                    var browser = await CdpBrowser
                         .CreateAsync(
                             options.Browser,
                             connection,
@@ -134,7 +135,7 @@ namespace PuppeteerSharp
                   : SupportedBrowser.Chromium;
 
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
-                return await Browser
+                return await CdpBrowser
                     .CreateAsync(
                         product,
                         connection,

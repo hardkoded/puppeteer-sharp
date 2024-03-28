@@ -31,8 +31,8 @@ public class CdpTarget : Target
 {
     internal CdpTarget(
         TargetInfo targetInfo,
-        CDPSession session,
-        BrowserContext context,
+        CdpCDPSession session,
+        CdpBrowserContext context,
         ITargetManager targetManager,
         Func<bool, Task<CDPSession>> sessionFactory,
         TaskQueue screenshotTaskQueue) : base(targetInfo, session, context, targetManager, sessionFactory)
@@ -43,7 +43,9 @@ public class CdpTarget : Target
 
     /// <inheritdoc/>
     public override ITarget Opener => TargetInfo.OpenerId != null ?
-        Browser.TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
+        CdpBrowser.TargetManager.GetAvailableTargets().GetValueOrDefault(TargetInfo.OpenerId) : null;
+
+    internal CdpBrowser CdpBrowser => Browser as CdpBrowser;
 
     internal TaskQueue ScreenshotTaskQueue { get; }
 

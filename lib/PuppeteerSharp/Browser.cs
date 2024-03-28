@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -12,63 +10,8 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    public class Browser : IBrowser
+    public abstract class Browser : IBrowser
     {
-        /// <summary>
-        /// Time in milliseconds for process to exit gracefully.
-        /// </summary>
-        private const int CloseTimeout = 5000;
-
-        private readonly ConcurrentDictionary<string, BrowserContext> _contexts;
-        private readonly ILogger<Browser> _logger;
-        private readonly Func<Target, bool> _targetFilterCallback;
-        private readonly BrowserContext _defaultContext;
-        private Task _closeTask;
-
-        internal Browser(
-            SupportedBrowser browser,
-            Connection connection,
-            string[] contextIds,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewport,
-            LauncherBase launcher,
-            Func<Target, bool> targetFilter = null,
-            Func<Target, bool> isPageTargetFunc = null)
-        {
-            BrowserType = browser;
-            IgnoreHTTPSErrors = ignoreHTTPSErrors;
-            DefaultViewport = defaultViewport;
-            Launcher = launcher;
-            Connection = connection;
-            _targetFilterCallback = targetFilter ?? (_ => true);
-            _logger = Connection.LoggerFactory.CreateLogger<Browser>();
-            IsPageTargetFunc =
-                isPageTargetFunc ??
-                (target => target.Type is TargetType.Page or TargetType.BackgroundPage or TargetType.Webview);
-
-            _defaultContext = new BrowserContext(Connection, this, null);
-            _contexts = new ConcurrentDictionary<string, BrowserContext>(
-                contextIds.Select(contextId =>
-                    new KeyValuePair<string, BrowserContext>(contextId, new(Connection, this, contextId))));
-
-            if (browser == SupportedBrowser.Firefox)
-            {
-                TargetManager = new FirefoxTargetManager(
-                        connection,
-                        CreateTarget,
-                        _targetFilterCallback);
-            }
-            else
-            {
-                TargetManager = new ChromeTargetManager(
-                    connection,
-                    CreateTarget,
-                    _targetFilterCallback,
-                    this,
-                    launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
-            }
-        }
-
         /// <inheritdoc/>
         public event EventHandler Closed;
 
@@ -91,7 +34,7 @@ namespace PuppeteerSharp
         public string WebSocketEndpoint => Connection.Url;
 
         /// <inheritdoc/>
-        public SupportedBrowser BrowserType { get; }
+        public SupportedBrowser BrowserType { get; protected init; }
 
         /// <inheritdoc/>
         public Process Process => Launcher?.Process;
@@ -100,21 +43,10 @@ namespace PuppeteerSharp
         public bool IgnoreHTTPSErrors { get; set; }
 
         /// <inheritdoc/>
-        public bool IsClosed
-        {
-            get
-            {
-                if (Launcher == null)
-                {
-                    return Connection.IsClosed;
-                }
-
-                return _closeTask is { IsCompleted: true };
-            }
-        }
+        public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext => _defaultContext;
+        public IBrowserContext DefaultContext { get; protected set; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
@@ -127,48 +59,25 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
-        internal Connection Connection { get; }
+        internal Connection Connection { get; set; }
 
-        internal ViewPortOptions DefaultViewport { get; }
+        internal ViewPortOptions DefaultViewport { get; set; }
 
         internal LauncherBase Launcher { get; set; }
-
-        internal ITargetManager TargetManager { get; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; set; }
 
         /// <inheritdoc/>
-        public Task<IPage> NewPageAsync() => _defaultContext.NewPageAsync();
+        public abstract Task<IPage> NewPageAsync();
 
         /// <inheritdoc/>
-        public ITarget[] Targets()
-            => TargetManager.GetAvailableTargets().Values.ToArray();
+        public abstract ITarget[] Targets();
 
         /// <inheritdoc/>
-        public async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
-        {
-            var response = await Connection.SendAsync<CreateBrowserContextResponse>(
-                "Target.createBrowserContext",
-                new TargetCreateBrowserContextRequest
-                {
-                    ProxyServer = options?.ProxyServer ?? string.Empty,
-                    ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
-                }).ConfigureAwait(false);
-            var context = new BrowserContext(Connection, this, response.BrowserContextId);
-            _contexts.TryAdd(response.BrowserContextId, context);
-            return context;
-        }
+        public abstract Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null);
 
         /// <inheritdoc/>
-        public IBrowserContext[] BrowserContexts()
-        {
-            var contexts = _contexts.Values.ToArray<IBrowserContext>();
-
-            var allContexts = new IBrowserContext[contexts.Length + 1];
-            allContexts[0] = _defaultContext;
-            contexts.CopyTo(allContexts, 1);
-            return allContexts;
-        }
+        public abstract IBrowserContext[] BrowserContexts();
 
         /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync()
@@ -177,22 +86,16 @@ namespace PuppeteerSharp
                 .SelectMany(p => p).ToArray();
 
         /// <inheritdoc/>
-        public async Task<string> GetVersionAsync()
-            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).Product;
+        public abstract Task<string> GetVersionAsync();
 
         /// <inheritdoc/>
-        public async Task<string> GetUserAgentAsync()
-            => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
+        public abstract Task<string> GetUserAgentAsync();
 
         /// <inheritdoc/>
-        public void Disconnect()
-        {
-            Connection.Dispose();
-            Detach();
-        }
+        public abstract void Disconnect();
 
         /// <inheritdoc/>
-        public Task CloseAsync() => _closeTask ??= CloseCoreAsync();
+        public abstract Task CloseAsync();
 
         /// <inheritdoc/>
         public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
@@ -276,76 +179,8 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
-        internal static async Task<Browser> CreateAsync(
-            SupportedBrowser browserToCreate,
-            Connection connection,
-            string[] contextIds,
-            bool ignoreHTTPSErrors,
-            ViewPortOptions defaultViewPort,
-            LauncherBase launcher,
-            Func<Target, bool> targetFilter = null,
-            Func<Target, bool> isPageTargetCallback = null,
-            Action<IBrowser> initAction = null)
-        {
-            var browser = new Browser(
-                browserToCreate,
-                connection,
-                contextIds,
-                ignoreHTTPSErrors,
-                defaultViewPort,
-                launcher,
-                targetFilter,
-                isPageTargetCallback);
-
-            try
-            {
-                initAction?.Invoke(browser);
-
-                await browser.AttachAsync().ConfigureAwait(false);
-                return browser;
-            }
-            catch
-            {
-                await browser.DisposeAsync().ConfigureAwait(false);
-                throw;
-            }
-        }
-
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => Connection.CustomQuerySelectorRegistry.GetCustomQueryHandlerNames();
-
-        internal async Task<IPage> CreatePageInContextAsync(string contextId)
-        {
-            var createTargetRequest = new TargetCreateTargetRequest
-            {
-                Url = "about:blank",
-            };
-
-            if (contextId != null)
-            {
-                // We don't have this code in upstream.
-                // Puppeteer sends a number if the contextId is a number, even if the typing says that it should be a string.
-                // It seems that firefox ignores the contextId if it's not a number. Which is what Firefox sent back.
-                createTargetRequest.BrowserContextId = int.TryParse(contextId, out var contextIdAsNumber)
-                    ? contextIdAsNumber
-                    : contextId;
-            }
-
-            var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
-                .ConfigureAwait(false)).TargetId;
-            var target = await WaitForTargetAsync(t => t.TargetId == targetId).ConfigureAwait(false) as Target;
-            await target!.InitializedTask.ConfigureAwait(false);
-            return await target.PageAsync().ConfigureAwait(false);
-        }
-
-        internal async Task DisposeContextAsync(string contextId)
-        {
-            await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
-            {
-                BrowserContextId = contextId,
-            }).ConfigureAwait(false);
-            _contexts.TryRemove(contextId, out var _);
-        }
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
@@ -357,189 +192,38 @@ namespace PuppeteerSharp
                 _ => ScreenshotTaskQueue.DisposeAsync(),
                 TaskScheduler.Default);
 
-        private void TargetManager_TargetDiscovered(object sender, TargetChangedArgs e)
-            => TargetDiscovered?.Invoke(this, e);
+        /// <summary>
+        /// Emits <see cref="Closed"/> event.
+        /// </summary>
+        protected void OnClosed() => Closed?.Invoke(this, EventArgs.Empty);
 
-        private void OnTargetChanged(object sender, TargetChangedArgs e)
-        {
-            var args = new TargetChangedArgs { Target = e.Target };
-            TargetChanged?.Invoke(this, args);
-            e.Target.BrowserContext.OnTargetChanged(this, args);
-        }
+        /// <summary>
+        /// Emits <see cref="Disconnected"/> event.
+        /// </summary>
+        protected void OnDisconnected() => Disconnected?.Invoke(this, EventArgs.Empty);
 
-        private async void OnDetachedFromTargetAsync(object sender, TargetChangedArgs e)
-        {
-            try
-            {
-                e.Target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
-                e.Target.CloseTaskWrapper.TrySetResult(true);
+        /// <summary>
+        /// Emits <see cref="TargetChanged"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected void OnTargetChanged(TargetChangedArgs e) => TargetChanged?.Invoke(this, e);
 
-                if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
-                {
-                    var args = new TargetChangedArgs { Target = e.Target };
-                    TargetDestroyed?.Invoke(this, args);
-                    e.Target.BrowserContext.OnTargetDestroyed(this, args);
-                }
-            }
-            catch (Exception ex)
-            {
-                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                Connection.Close(message);
-            }
-        }
+        /// <summary>
+        /// Emits <see cref="TargetCreated"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected void OnTargetCreated(TargetChangedArgs e) => TargetCreated?.Invoke(this, e);
 
-        private async void OnAttachedToTargetAsync(object sender, TargetChangedArgs e)
-        {
-            try
-            {
-                if (await e.Target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
-                {
-                    var args = new TargetChangedArgs { Target = e.Target };
-                    TargetCreated?.Invoke(this, args);
-                    e.Target.BrowserContext.OnTargetCreated(this, args);
-                }
-            }
-            catch (Exception ex)
-            {
-                var message = $"Browser failed to process Target Available. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-            }
-        }
+        /// <summary>
+        /// Emits <see cref="TargetDestroyed"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected void OnTargetDestroyed(TargetChangedArgs e) => TargetDestroyed?.Invoke(this, e);
 
-        private async Task CloseCoreAsync()
-        {
-            try
-            {
-                try
-                {
-                    // Initiate graceful browser close operation but don't await it just yet,
-                    // because we want to ensure process shutdown first.
-                    var browserCloseTask = Connection.IsClosed
-                        ? Task.CompletedTask
-                        : Connection.SendAsync("Browser.close");
-
-                    if (Launcher != null)
-                    {
-                        // Notify process that exit is expected, but should be enforced if it
-                        // doesn't occur withing the close timeout.
-                        var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                        await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
-                    }
-
-                    // Now we can safely await the browser close operation without risking keeping chromium
-                    // process running for indeterminate period.
-                    await browserCloseTask.ConfigureAwait(false);
-                }
-                finally
-                {
-                    Disconnect();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-
-                if (Launcher != null)
-                {
-                    await Launcher.KillAsync().ConfigureAwait(false);
-                }
-            }
-
-            Closed?.Invoke(this, EventArgs.Empty);
-        }
-
-        private async void Connection_Disconnected(object sender, EventArgs e)
-        {
-            try
-            {
-                await CloseAsync().ConfigureAwait(false);
-                Disconnected?.Invoke(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                var message = $"Browser failed to process Connection Close. {ex.Message}. {ex.StackTrace}";
-                _logger.LogError(ex, message);
-                Connection.Close(message);
-            }
-        }
-
-        private Task AttachAsync()
-        {
-            Connection.Disconnected += Connection_Disconnected;
-            TargetManager.TargetAvailable += OnAttachedToTargetAsync;
-            TargetManager.TargetGone += OnDetachedFromTargetAsync;
-            TargetManager.TargetChanged += OnTargetChanged;
-            TargetManager.TargetDiscovered += TargetManager_TargetDiscovered;
-            return TargetManager.InitializeAsync();
-        }
-
-        private void Detach()
-        {
-            Connection.Disconnected -= Connection_Disconnected;
-            TargetManager.TargetAvailable -= OnAttachedToTargetAsync;
-            TargetManager.TargetGone -= OnDetachedFromTargetAsync;
-            TargetManager.TargetChanged -= OnTargetChanged;
-            TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
-        }
-
-        private CdpTarget CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
-        {
-            var browserContextId = targetInfo.BrowserContextId;
-
-            if (!(browserContextId != null && _contexts.TryGetValue(browserContextId, out var context)))
-            {
-                context = _defaultContext;
-            }
-
-            Task<CDPSession> CreateSession(bool isAutoAttachEmulated) => Connection.CreateSessionAsync(targetInfo, isAutoAttachEmulated);
-
-            var otherTarget = new CdpOtherTarget(
-                targetInfo,
-                session,
-                context,
-                TargetManager,
-                CreateSession,
-                ScreenshotTaskQueue);
-
-            if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                return new CdpDevToolsTarget(
-                    targetInfo,
-                    session,
-                    context,
-                    TargetManager,
-                    CreateSession,
-                    IgnoreHTTPSErrors,
-                    DefaultViewport,
-                    ScreenshotTaskQueue);
-            }
-
-            if (IsPageTargetFunc(otherTarget))
-            {
-                return new CdpPageTarget(
-                    targetInfo,
-                    session,
-                    context,
-                    TargetManager,
-                    CreateSession,
-                    IgnoreHTTPSErrors,
-                    DefaultViewport,
-                    ScreenshotTaskQueue);
-            }
-
-            if (targetInfo.Type == TargetType.ServiceWorker || targetInfo.Type == TargetType.SharedWorker)
-            {
-                return new CdpWorkerTarget(
-                    targetInfo,
-                    session,
-                    context,
-                    TargetManager,
-                    CreateSession,
-                    this.ScreenshotTaskQueue);
-            }
-
-            return otherTarget;
-        }
+        /// <summary>
+        /// Emits <see cref="TargetDiscovered"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected void OnTargetDiscovered(TargetChangedArgs e) => TargetDiscovered?.Invoke(this, e);
     }
 }

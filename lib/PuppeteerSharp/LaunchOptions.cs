@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using PuppeteerSharp.BrowserData;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
