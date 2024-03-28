@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -19,7 +18,7 @@ namespace PuppeteerSharp.Cdp
     /// <summary>
     /// A connection handles the communication with a Chromium browser.
     /// </summary>
-    public class Connection : IDisposable, ICDPConnection
+    public sealed class Connection : IDisposable, ICDPConnection
     {
         internal const int DefaultCommandTimeout = 180_000;
         private readonly ILogger _logger;
