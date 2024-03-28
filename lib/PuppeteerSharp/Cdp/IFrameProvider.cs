@@ -22,7 +22,7 @@
 
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp;
+namespace PuppeteerSharp.Cdp;
 
 /// <summary>
 /// Provides a way to get a frame.
@@ -34,5 +34,5 @@ internal interface IFrameProvider
     /// </summary>
     /// <param name="frameId">The frame ID.</param>
     /// <returns>A <see cref="Task"/> that completes when the frame is retrieved.</returns>
-    Task<Frame> GetFrameAsync(string frameId);
+    Task<CdpFrame> GetFrameAsync(string frameId);
 }

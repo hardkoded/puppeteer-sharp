@@ -33,12 +33,15 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpElementHandle : ElementHandle
 {
+    private readonly CdpFrame _cdpFrame;
+
     internal CdpElementHandle(
         IsolatedWorld world,
         RemoteObject remoteObject) : base(world, remoteObject)
     {
         Handle = new CdpJSHandle(world, remoteObject);
         Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
+        _cdpFrame = Realm.Frame as CdpFrame;
     }
 
     /// <summary>
@@ -50,11 +53,11 @@ public class CdpElementHandle : ElementHandle
         Client.Connection.CustomQuerySelectorRegistry;
 
     /// <inheritdoc/>
-    protected override Page Page => Frame.FrameManager.Page;
+    protected override Page Page => _cdpFrame.FrameManager.Page;
 
     private CDPSession Client => Handle.Realm.Environment.Client;
 
-    private FrameManager FrameManager => Frame.FrameManager;
+    private FrameManager FrameManager => _cdpFrame.FrameManager;
 
     /// <inheritdoc/>
     public override async Task<IFrame> ContentFrameAsync()
