@@ -13,19 +13,19 @@ using PuppeteerSharp.Messaging;
 using PuppeteerSharp.QueryHandlers;
 using PuppeteerSharp.Transport;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     /// <summary>
     /// A connection handles the communication with a Chromium browser.
     /// </summary>
-    public sealed class Connection : IDisposable, ICDPConnection
+    public class Connection : IDisposable, ICDPConnection
     {
         internal const int DefaultCommandTimeout = 180_000;
         private readonly ILogger _logger;
         private readonly TaskQueue _callbackQueue = new();
 
         private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
-        private readonly AsyncDictionaryHelper<string, CDPSession> _sessions = new("Session {0} not found");
+        private readonly AsyncDictionaryHelper<string, CdpCDPSession> _sessions = new("Session {0} not found");
         private readonly List<string> _manuallyAttached = [];
         private int _lastId;
 
@@ -153,7 +153,7 @@ namespace PuppeteerSharp
             return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
         }
 
-        internal static Connection FromSession(CDPSession session) => session.Connection;
+        internal static Connection FromSession(CdpCDPSession session) => session.Connection;
 
         internal int GetMessageID() => Interlocked.Increment(ref _lastId);
 
