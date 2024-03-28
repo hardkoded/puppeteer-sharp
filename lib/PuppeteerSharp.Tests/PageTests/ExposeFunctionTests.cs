@@ -125,6 +125,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual(7, result.SelectToken("x").ToObject<int>());
         }
 
+        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should await returned task")]
         public async Task ShouldAwaitReturnedTask()
         {
             var called = false;
@@ -137,6 +138,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
+        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should work with action")]
         public async Task ShouldWorkWithAction()
         {
             var called = false;
@@ -148,7 +150,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
-        [Test]
+        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should keel the callback clean")]
         public async Task ShouldKeepTheCallbackClean()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
