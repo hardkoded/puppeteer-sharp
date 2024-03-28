@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {

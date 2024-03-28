@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
+using StackTrace = PuppeteerSharp.Cdp.Messaging.StackTrace;
 using Timer = System.Timers.Timer;
 
 namespace PuppeteerSharp
@@ -1684,7 +1685,7 @@ namespace PuppeteerSharp
                     session,
                     session.Target.Url,
                     session.Target.TargetId,
-                    session.TargetType,
+                    session.Target.TargetInfo.Type,
                     AddConsoleMessageAsync,
                     HandleException);
                 _workers[session.Id] = worker;
@@ -1780,7 +1781,7 @@ namespace PuppeteerSharp
             return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
         }
 
-        private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, Messaging.StackTrace stackTrace)
+        private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace)
         {
             if (Console?.GetInvocationList().Length == 0)
             {

@@ -48,17 +48,6 @@ namespace PuppeteerSharp
         event EventHandler<SessionEventArgs> SessionDetached;
 
         /// <summary>
-        /// Connection close reason.
-        /// </summary>
-        string CloseReason { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="ICDPSession"/> is closed.
-        /// </summary>
-        /// <value><c>true</c> if is closed; otherwise, <c>false</c>.</value>
-        bool IsClosed { get; }
-
-        /// <summary>
         /// Gets the logger factory.
         /// </summary>
         /// <value>The logger factory.</value>
@@ -69,12 +58,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The session identifier.</value>
         string Id { get; }
-
-        /// <summary>
-        /// Gets the target type.
-        /// </summary>
-        /// <value>The target type.</value>
-        TargetType TargetType { get; }
 
         /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.

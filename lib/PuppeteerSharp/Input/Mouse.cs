@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
 /*
     The implementation of transactions is not the same as in the original Puppeteer

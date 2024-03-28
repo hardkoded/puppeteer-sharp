@@ -1,0 +1,42 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Helpers.Json;
+
+namespace PuppeteerSharp.Cdp.Messaging
+{
+    internal class BindingCalledResponse
+    {
+        private string _payloadJson;
+
+        public int ExecutionContextId { get; set; }
+
+        public BindingCalledResponsePayload BindingPayload { get; set; }
+
+        public string Payload
+        {
+            get => _payloadJson;
+            set
+            {
+                _payloadJson = value;
+                var json = JsonConvert.DeserializeObject(_payloadJson, JsonHelper.DefaultJsonSerializerSettings) as JObject;
+                BindingPayload = json.ToObject<BindingCalledResponsePayload>(true);
+                BindingPayload.JsonObject = json;
+            }
+        }
+
+        internal class BindingCalledResponsePayload
+        {
+            public string Type { get; set; }
+
+            public string Name { get; set; }
+
+            public JToken[] Args { get; set; }
+
+            public int Seq { get; set; }
+
+            public JObject JsonObject { get; set; }
+
+            public bool IsTrivial { get; set; }
+        }
+    }
+}

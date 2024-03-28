@@ -1,4 +1,4 @@
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {

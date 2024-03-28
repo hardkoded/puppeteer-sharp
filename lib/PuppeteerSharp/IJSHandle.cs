@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {

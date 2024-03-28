@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp
 {

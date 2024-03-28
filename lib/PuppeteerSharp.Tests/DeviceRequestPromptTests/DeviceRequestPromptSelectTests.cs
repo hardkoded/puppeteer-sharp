@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;

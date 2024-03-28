@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.OOPIFTests

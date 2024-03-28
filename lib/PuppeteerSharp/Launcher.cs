@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PuppeteerSharp.BrowserData;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {

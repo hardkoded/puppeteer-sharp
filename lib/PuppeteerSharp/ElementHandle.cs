@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp

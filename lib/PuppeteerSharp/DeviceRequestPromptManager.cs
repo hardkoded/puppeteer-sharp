@@ -22,8 +22,8 @@
 
 using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 
 namespace PuppeteerSharp;
 

@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Messaging;
-using PuppeteerSharp.Messaging.Protocol.Network;
+using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Cdp.Messaging.Protocol.Network;
 
 namespace PuppeteerSharp.Cdp;
 

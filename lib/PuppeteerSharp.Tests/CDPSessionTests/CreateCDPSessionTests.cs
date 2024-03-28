@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.CDPSessionTests

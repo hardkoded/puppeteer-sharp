@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.HeadfulTests

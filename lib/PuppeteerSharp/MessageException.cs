@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.Serialization;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {

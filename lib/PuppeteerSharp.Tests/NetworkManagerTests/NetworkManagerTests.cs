@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Messaging;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkManagerTests;

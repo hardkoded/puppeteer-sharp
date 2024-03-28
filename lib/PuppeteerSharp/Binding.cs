@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -52,7 +53,7 @@ namespace PuppeteerSharp
                             {
                                 switch (handle.RemoteObject.Subtype)
                                 {
-                                    case Messaging.RemoteObjectSubtype.Node:
+                                    case RemoteObjectSubtype.Node:
                                         args[index] = handle;
                                         break;
 
