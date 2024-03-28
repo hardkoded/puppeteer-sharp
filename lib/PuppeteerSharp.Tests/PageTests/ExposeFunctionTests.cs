@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
@@ -147,6 +148,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.True(called);
         }
 
+        [Test]
         public async Task ShouldKeepTheCallbackClean()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -156,7 +158,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Task.Delay(300);
 
             // For CI/CD debugging purposes
-            var session = (CDPSession)Page.Client;
+            var session = (CdpCDPSession)Page.Client;
             var message = "Expected an empty callback list. Found: \n";
 
             if (session.HasPendingCallbacks())
@@ -167,7 +169,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             }
 
-            Assert.False(((CDPSession)Page.Client).HasPendingCallbacks(), message);
+            Assert.False(((CdpCDPSession)Page.Client).HasPendingCallbacks(), message);
         }
     }
 }
