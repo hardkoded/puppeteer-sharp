@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Messaging;
 
@@ -123,8 +124,8 @@ namespace PuppeteerSharp
 
         internal IJSHandle CreateJSHandle(RemoteObject remoteObject)
             => remoteObject.Subtype == RemoteObjectSubtype.Node && Frame != null
-                ? new ElementHandle(World, remoteObject)
-                : new JSHandle(World, remoteObject);
+                ? new CdpElementHandle(World, remoteObject)
+                : new CdpJSHandle(World, remoteObject);
 
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {

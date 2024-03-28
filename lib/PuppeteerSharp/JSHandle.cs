@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Messaging;
 
@@ -12,22 +10,19 @@ namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     [JsonConverter(typeof(JSHandleMethodConverter))]
-    public class JSHandle : IJSHandle
+    public abstract class JSHandle : IJSHandle
     {
         internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
         {
             Realm = world;
             RemoteObject = remoteObject;
-            Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
         }
 
         /// <inheritdoc/>
-        public bool Disposed { get; private set; }
+        public bool Disposed { get; protected set; }
 
         /// <inheritdoc/>
         public RemoteObject RemoteObject { get; }
-
-        internal CDPSession Client => Realm.Environment.Client;
 
         internal Func<Task> DisposeAction { get; set; }
 
@@ -36,11 +31,6 @@ namespace PuppeteerSharp
         internal Frame Frame => Realm.Environment as Frame;
 
         internal string Id => RemoteObject.ObjectId;
-
-        /// <summary>
-        /// Logger.
-        /// </summary>
-        protected ILogger Logger { get; }
 
         /// <inheritdoc/>
         public virtual Task<IJSHandle> GetPropertyAsync(string propertyName)
@@ -83,52 +73,10 @@ namespace PuppeteerSharp
         public async Task<object> JsonValueAsync() => await JsonValueAsync<object>().ConfigureAwait(false);
 
         /// <inheritdoc/>
-        public virtual async Task<T> JsonValueAsync<T>()
-        {
-            var objectId = RemoteObject.ObjectId;
-
-            if (objectId == null)
-            {
-                return (T)RemoteObjectHelper.ValueFromRemoteObject<T>(RemoteObject);
-            }
-
-            var value = await EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
-
-            return value == null ? throw new PuppeteerException("Could not serialize referenced object") : value;
-        }
+        public abstract Task<T> JsonValueAsync<T>();
 
         /// <inheritdoc/>
-        public async ValueTask DisposeAsync()
-        {
-            if (Disposed)
-            {
-                return;
-            }
-
-            Disposed = true;
-
-            if (DisposeAction != null)
-            {
-                await DisposeAction().ConfigureAwait(false);
-            }
-
-            await RemoteObjectHelper.ReleaseObjectAsync(Client, RemoteObject, Logger).ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
-            if (RemoteObject.ObjectId == null)
-            {
-                return "JSHandle:" + RemoteObjectHelper.ValueFromRemoteObject<object>(RemoteObject, true);
-            }
-
-            var type = RemoteObject.Subtype != RemoteObjectSubtype.Other
-                ? RemoteObject.Subtype.ToString()
-                : RemoteObject.Type.ToString();
-            return "JSHandle@" + type.ToLower(System.Globalization.CultureInfo.CurrentCulture);
-        }
+        public abstract ValueTask DisposeAsync();
 
         /// <inheritdoc/>
         public Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
