@@ -37,9 +37,9 @@ namespace PuppeteerSharp.Cdp
         {
             if (PageTask == null)
             {
-                var session = Session ?? await SessionFactory(false).ConfigureAwait(false);
+                var session = (CdpCDPSession)(Session ?? await SessionFactory(false).ConfigureAwait(false));
 
-                PageTask = Page.CreateAsync(
+                PageTask = CdpPage.CreateAsync(
                     session,
                     this,
                     _ignoreHTTPSErrors,
