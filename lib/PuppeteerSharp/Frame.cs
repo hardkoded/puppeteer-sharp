@@ -3,39 +3,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="PuppeteerSharp.IFrame" />
-    public class Frame : IFrame, IEnvironment
+    public abstract class Frame : IFrame, IEnvironment
     {
-        private const string RefererHeaderName = "referer";
-
-        private readonly ILogger _logger;
         private Task<ElementHandle> _documentTask;
-
-        internal Frame(FrameManager frameManager, string frameId, string parentFrameId, CDPSession client)
-        {
-            FrameManager = frameManager;
-            Id = frameId;
-            Client = client;
-            ParentId = parentFrameId;
-
-            UpdateClient(client);
-
-            FrameSwappedByActivation += (_, _) =>
-            {
-                // Emulate loading process for swapped frames.
-                OnLoadingStarted();
-                OnLoadingStopped();
-            };
-
-            _logger = client.Connection.LoggerFactory.CreateLogger<Frame>();
-        }
 
         /// <inheritdoc />
         public event EventHandler FrameSwappedByActivation;
@@ -51,7 +27,7 @@ namespace PuppeteerSharp
         internal event EventHandler FrameSwapped;
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
+        public abstract IReadOnlyCollection<IFrame> ChildFrames { get; }
 
         /// <inheritdoc/>
         public string Name { get; private set; }
@@ -63,36 +39,32 @@ namespace PuppeteerSharp
         public bool Detached { get; private set; }
 
         /// <inheritdoc/>
-        public IPage Page => FrameManager.Page;
+        public abstract IPage Page { get; }
 
         /// <inheritdoc/>
         IFrame IFrame.ParentFrame => ParentFrame;
 
         /// <inheritdoc/>
-        public bool IsOopFrame => Client != FrameManager.Client;
+        public abstract bool IsOopFrame { get; }
 
         /// <inheritdoc/>
         public string Id { get; internal set; }
 
         /// <inheritdoc/>
-        CDPSession IEnvironment.Client => Client;
+        public abstract CDPSession Client { get; protected set; }
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => MainRealm;
 
-        internal CDPSession Client { get; private set; }
-
-        internal string ParentId { get; }
-
-        internal FrameManager FrameManager { get; }
+        internal string ParentId { get; init; }
 
         internal string LoaderId { get; private set; } = string.Empty;
 
         internal List<string> LifecycleEvents { get; } = new();
 
-        internal Realm MainRealm { get; private set; }
+        internal Realm MainRealm { get; set; }
 
-        internal Realm IsolatedRealm { get; private set; }
+        internal Realm IsolatedRealm { get; set; }
 
         internal IsolatedWorld MainWorld => MainRealm as IsolatedWorld;
 
@@ -100,86 +72,22 @@ namespace PuppeteerSharp
 
         internal bool HasStartedLoading { get; private set; }
 
-        internal Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+        internal abstract Frame ParentFrame { get; }
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        protected ILogger Logger { get; init; }
 
         /// <inheritdoc/>
-        public async Task<IResponse> GoToAsync(string url, NavigationOptions options)
-        {
-            var ensureNewDocumentNavigation = false;
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            var referrer = string.IsNullOrEmpty(options.Referer)
-                ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
-                : options.Referer;
-            var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
-                ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
-                : options.ReferrerPolicy;
-            var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
-
-            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout);
-            try
-            {
-                var navigateTask = NavigateAsync();
-                var task = await Task.WhenAny(
-                    watcher.TerminationTask,
-                    navigateTask).ConfigureAwait(false);
-
-                await task.ConfigureAwait(false);
-
-                task = await Task.WhenAny(
-                    watcher.TerminationTask,
-                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
-
-                await task.ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                throw new NavigationException(ex.Message, ex);
-            }
-
-            return watcher.NavigationResponse;
-
-            async Task NavigateAsync()
-            {
-                var response = await Client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
-                {
-                    Url = url,
-                    Referrer = referrer ?? string.Empty,
-                    ReferrerPolicy = referrerPolicy ?? string.Empty,
-                    FrameId = Id,
-                }).ConfigureAwait(false);
-
-                ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
-
-                if (!string.IsNullOrEmpty(response.ErrorText) && response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
-                {
-                    throw new NavigationException(response.ErrorText, url);
-                }
-            }
-        }
+        public abstract Task<IResponse> GoToAsync(string url, NavigationOptions options);
 
         /// <inheritdoc/>
         public Task<IResponse> GoToAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
             => GoToAsync(url, new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <inheritdoc/>
-        public async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
-        {
-            var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
-            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options?.WaitUntil, timeout);
-            var raceTask = await Task.WhenAny(
-                watcher.NewDocumentNavigationTask,
-                watcher.SameDocumentNavigationTask,
-                watcher.TerminationTask).ConfigureAwait(false);
-
-            await raceTask.ConfigureAwait(false);
-
-            return watcher.NavigationResponse;
-        }
+        public abstract Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <inheritdoc/>
         public Task<JToken> EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
@@ -298,135 +206,10 @@ namespace PuppeteerSharp
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
-        public async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
-            {
-                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-            }
-
-            var content = options.Content;
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-            }
-
-            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-                @"async (puppeteerUtil, url, id, type, content) => {
-                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
-                  const promise = createDeferredPromise();
-                  let element;
-                  if (!url) {
-                    element = document.createElement('style');
-                    element.appendChild(document.createTextNode(content));
-                  } else {
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = url;
-                    element = link;
-                  }
-                  element.addEventListener(
-                    'load',
-                    () => {
-                      promise.resolve();
-                    },
-                    {once: true}
-                  );
-                  element.addEventListener(
-                    'error',
-                    event => {
-                      promise.reject(
-                        new Error(
-                          event.message ?? 'Could not load style'
-                        )
-                      );
-                    },
-                    {once: true}
-                  );
-                  document.head.appendChild(element);
-                  await promise;
-                  return element;
-                }",
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                options.Url,
-                options.Id,
-                options.Type,
-                content).ConfigureAwait(false);
-
-            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
-        }
+        public abstract Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
-            {
-                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-            }
-
-            var content = options.Content;
-
-            if (!string.IsNullOrEmpty(options.Path))
-            {
-                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-            }
-
-            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-                @"async (puppeteerUtil, url, id, type, content) => {
-                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
-                  const promise = createDeferredPromise();
-                  const script = document.createElement('script');
-                  script.type = type;
-                  script.text = content;
-                  if (url) {
-                    script.src = url;
-                    script.addEventListener(
-                      'load',
-                      () => {
-                        return promise.resolve();
-                      },
-                      {once: true}
-                    );
-                    script.addEventListener(
-                      'error',
-                      event => {
-                        promise.reject(
-                          new Error(event.message ?? 'Could not load script')
-                        );
-                      },
-                      {once: true}
-                    );
-                  } else {
-                    promise.resolve();
-                  }
-                  if (id) {
-                    script.id = id;
-                  }
-                  document.head.appendChild(script);
-                  await promise;
-                  return script;
-                }",
-                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-                options.Url,
-                options.Id,
-                options.Type,
-                content).ConfigureAwait(false);
-
-            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
-        }
+        public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync()
@@ -447,28 +230,7 @@ namespace PuppeteerSharp
             }");
 
         /// <inheritdoc/>
-        public async Task SetContentAsync(string html, NavigationOptions options = null)
-        {
-            var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
-            var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
-
-            // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-            // lifecycle event. @see https://crrev.com/608658
-            await IsolatedRealm.EvaluateFunctionAsync(
-                @"html => {
-                    document.open();
-                    document.write(html);
-                    document.close();
-                }",
-                html).ConfigureAwait(false);
-
-            using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout);
-            var watcherTask = await Task.WhenAny(
-                watcher.TerminationTask,
-                watcher.LifecycleTask).ConfigureAwait(false);
-
-            await watcherTask.ConfigureAwait(false);
-        }
+        public abstract Task SetContentAsync(string html, NavigationOptions options = null);
 
         /// <inheritdoc/>
         public Task<string> GetTitleAsync() => IsolatedRealm.EvaluateExpressionAsync<string>("document.title");
@@ -573,34 +335,6 @@ namespace PuppeteerSharp
             FrameDetached?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void UpdateClient(CDPSession client, bool keepWorlds = false)
-        {
-            Client = client;
-
-            if (!keepWorlds)
-            {
-                MainWorld?.ClearContext();
-                PuppeteerWorld?.ClearContext();
-
-                MainRealm = new IsolatedWorld(
-                  this,
-                  null,
-                  FrameManager.TimeoutSettings,
-                  true);
-
-                IsolatedRealm = new IsolatedWorld(
-                  this,
-                  null,
-                  FrameManager.TimeoutSettings,
-                  false);
-            }
-            else
-            {
-                MainWorld.FrameUpdated();
-                PuppeteerWorld.FrameUpdated();
-            }
-        }
-
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
 
@@ -630,27 +364,18 @@ namespace PuppeteerSharp
                 }
                 catch
                 {
-                    _logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                    Logger.LogWarning("FrameElementAsync: Error disposing iframe");
                 }
             }
 
             return null;
         }
 
-        private DeviceRequestPromptManager GetDeviceRequestPromptManager()
-        {
-            if (IsOopFrame)
-            {
-                return FrameManager.GetDeviceRequestPromptManager(Client);
-            }
-
-            if (ParentFrame == null)
-            {
-                throw new PuppeteerException("Unable to find parent frame");
-            }
-
-            return ParentFrame.GetDeviceRequestPromptManager();
-        }
+        /// <summary>
+        /// Gets the prompts manager for the current client.
+        /// </summary>
+        /// <returns>The <see cref="DeviceRequestPromptManager"/>.</returns>
+        protected internal abstract DeviceRequestPromptManager GetDeviceRequestPromptManager();
 
         private Task<ElementHandle> GetDocumentAsync()
         {

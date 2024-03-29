@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Cdp
         private static readonly WaitUntilNavigation[] _defaultWaitUntil = [WaitUntilNavigation.Load];
 
         private readonly NetworkManager _networkManager;
-        private readonly Frame _frame;
+        private readonly CdpFrame _frame;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
         private readonly string _initialLoaderId;
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Cdp
 
         public LifecycleWatcher(
             NetworkManager networkManager,
-            Frame frame,
+            CdpFrame frame,
             WaitUntilNavigation[] waitUntil,
             int timeout)
         {

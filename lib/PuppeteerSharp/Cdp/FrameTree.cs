@@ -3,33 +3,32 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp;
 using PuppeteerSharp.Helpers;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class FrameTree
     {
-        private readonly AsyncDictionaryHelper<string, Frame> _frames = new("Frame {0} not found");
+        private readonly AsyncDictionaryHelper<string, CdpFrame> _frames = new("Frame {0} not found");
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
-        private readonly ConcurrentDictionary<string, List<TaskCompletionSource<Frame>>> _waitRequests = new();
+        private readonly ConcurrentDictionary<string, List<TaskCompletionSource<CdpFrame>>> _waitRequests = new();
 
-        public Frame MainFrame { get; set; }
+        public CdpFrame MainFrame { get; set; }
 
-        public Frame[] Frames => _frames.Values.ToArray();
+        public CdpFrame[] Frames => _frames.Values.ToArray();
 
-        internal Task<Frame> GetFrameAsync(string frameId) => _frames.GetItemAsync(frameId);
+        internal Task<CdpFrame> GetFrameAsync(string frameId) => _frames.GetItemAsync(frameId);
 
-        internal Task<Frame> TryGetFrameAsync(string frameId) => _frames.TryGetItemAsync(frameId);
+        internal Task<CdpFrame> TryGetFrameAsync(string frameId) => _frames.TryGetItemAsync(frameId);
 
-        internal Frame GetById(string id)
+        internal CdpFrame GetById(string id)
         {
             _frames.TryGetValue(id, out var result);
             return result;
         }
 
-        internal Task<Frame> WaitForFrameAsync(string frameId)
+        internal Task<CdpFrame> WaitForFrameAsync(string frameId)
         {
             var frame = GetById(frameId);
             if (frame != null)
@@ -37,14 +36,14 @@ namespace PuppeteerSharp
                 return Task.FromResult(frame);
             }
 
-            var deferred = new TaskCompletionSource<Frame>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var deferred = new TaskCompletionSource<CdpFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
             var callbacks = _waitRequests.GetOrAdd(frameId, static _ => new());
             callbacks.Add(deferred);
 
             return deferred.Task;
         }
 
-        internal void AddFrame(Frame frame)
+        internal void AddFrame(CdpFrame frame)
         {
             _frames.AddItem(frame.Id, frame);
             if (frame.ParentId != null)
@@ -86,12 +85,12 @@ namespace PuppeteerSharp
             }
         }
 
-        internal Frame[] GetChildFrames(string frameId)
+        internal CdpFrame[] GetChildFrames(string frameId)
         {
             _childIds.TryGetValue(frameId, out var childIds);
             if (childIds == null)
             {
-                return Array.Empty<Frame>();
+                return Array.Empty<CdpFrame>();
             }
 
             return childIds

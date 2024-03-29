@@ -27,7 +27,10 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp;
 
-internal class DeviceRequestPromptManager
+/// <summary>
+/// Prompt manager.
+/// </summary>
+public class DeviceRequestPromptManager
 {
     private readonly TimeoutSettings _timeoutSettings;
     private ICDPSession _client;
@@ -40,7 +43,7 @@ internal class DeviceRequestPromptManager
         _client.MessageReceived += OnMessageReceived;
     }
 
-    public async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+    internal async Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
     {
         if (_client == null)
         {

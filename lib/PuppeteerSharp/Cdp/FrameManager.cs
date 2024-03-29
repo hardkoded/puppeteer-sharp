@@ -10,7 +10,7 @@ using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 
-namespace PuppeteerSharp
+namespace PuppeteerSharp.Cdp
 {
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
@@ -71,7 +71,7 @@ namespace PuppeteerSharp
             }
         }
 
-        public Task<Frame> GetFrameAsync(string frameId) => FrameTree.TryGetFrameAsync(frameId);
+        public Task<CdpFrame> GetFrameAsync(string frameId) => FrameTree.TryGetFrameAsync(frameId);
 
         internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
         {
@@ -196,7 +196,7 @@ namespace PuppeteerSharp
         internal Task RegisterSpeculativeSessionAsync(CDPSession client)
             => NetworkManager.AddClientAsync(client);
 
-        private Frame GetFrame(string frameId) => FrameTree.GetById(frameId);
+        private CdpFrame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
         {
@@ -397,10 +397,10 @@ namespace PuppeteerSharp
                 else
                 {
                     // Initial main frame navigation.
-                    frame = new Frame(this, framePayload.Id, null, Client);
+                    frame = new CdpFrame(this, framePayload.Id, null, Client);
                 }
 
-                FrameTree.AddFrame(frame);
+                FrameTree.AddFrame((CdpFrame)frame);
             }
 
             // Update frame payload.
@@ -450,7 +450,7 @@ namespace PuppeteerSharp
                 return;
             }
 
-            frame = new Frame(this, frameId, parentFrameId, session);
+            frame = new CdpFrame(this, frameId, parentFrameId, session);
             FrameTree.AddFrame(frame);
             FrameAttached?.Invoke(this, new FrameEventArgs(frame));
         }
