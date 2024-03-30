@@ -9,7 +9,6 @@ namespace PuppeteerSharp
     /// <summary>
     /// <see cref="IResponse"/> class represents responses which are received by page.
     /// </summary>
-    /// <seealso cref="Page.GoAsync(int, NavigationOptions)"/>
     /// <seealso cref="IPage.GoForwardAsync(NavigationOptions)"/>
     /// <seealso cref="IPage.ReloadAsync(int?, WaitUntilNavigation[])"/>
     /// <seealso cref="IPage.Response"/>

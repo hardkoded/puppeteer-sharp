@@ -451,5 +451,13 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after the page gets the prompt.</returns>
         Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
+
+        /// <summary>
+        /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Touchscreen"/> to tap in the center of the element.
+        /// </summary>
+        /// <param name="selector">A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked.</param>
+        /// <exception cref="SelectorException">If there's no element matching <paramref name="selector"/>.</exception>
+        /// <returns>Task which resolves when the element matching <paramref name="selector"/> is successfully tapped.</returns>
+        Task TapAsync(string selector);
     }
 }

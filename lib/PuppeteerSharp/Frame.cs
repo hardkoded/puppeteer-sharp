@@ -276,6 +276,19 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public async Task TapAsync(string selector)
+        {
+            var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);
+            if (handle == null)
+            {
+                throw new SelectorException($"No node found for selector: {selector}", selector);
+            }
+
+            await handle.TapAsync().ConfigureAwait(false);
+            await handle.DisposeAsync().ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
         public async Task TypeAsync(string selector, string text, TypeOptions options = null)
         {
             var handle = await QuerySelectorAsync(selector).ConfigureAwait(false);

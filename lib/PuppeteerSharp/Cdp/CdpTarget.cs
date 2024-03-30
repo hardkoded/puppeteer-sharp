@@ -54,11 +54,11 @@ public class CdpTarget : Target
     {
         if (Session == null)
         {
-            var session = await CreateCDPSessionAsync().ConfigureAwait(false) as CDPSession;
-            return await Page.CreateAsync(session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+            var session = (CdpCDPSession)await CreateCDPSessionAsync().ConfigureAwait(false);
+            return await CdpPage.CreateAsync(session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
-        return await Page.CreateAsync(Session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+        return await CdpPage.CreateAsync((CdpCDPSession)Session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
