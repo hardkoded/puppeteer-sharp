@@ -31,7 +31,6 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
-using PuppeteerSharp.Input;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
@@ -72,9 +71,9 @@ public class CdpPage : Page
         TabTarget = (CdpTarget)TabTargetClient.Target;
         PrimaryTarget = target;
         _targetManager = target.TargetManager;
-        Keyboard = new Keyboard(client);
-        Mouse = new Mouse(client, Keyboard);
-        Touchscreen = new Touchscreen(client, Keyboard);
+        Keyboard = new CdpKeyboard(client);
+        Mouse = new CdpMouse(client, Keyboard);
+        Touchscreen = new CdpTouchscreen(client, Keyboard);
         Tracing = new Tracing(client);
         Coverage = new Coverage(client);
 
@@ -906,7 +905,7 @@ public class CdpPage : Page
     private void OnAttachedToTarget(object sender, SessionEventArgs e)
     {
         var session = e.Session as CDPSession;
-        System.Diagnostics.Debug.Assert(session != null, nameof(session) + " != null");
+        Debug.Assert(session != null, nameof(session) + " != null");
         FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
 
         if (session.Target.Type == TargetType.Worker)
@@ -981,9 +980,9 @@ public class CdpPage : Page
         {
             PrimaryTargetClient = newSession;
             PrimaryTarget = (CdpTarget)PrimaryTargetClient.Target;
-            Keyboard.UpdateClient(Client);
-            Mouse.UpdateClient(Client);
-            Touchscreen.UpdateClient(Client);
+            ((CdpKeyboard)Keyboard).UpdateClient(Client);
+            ((CdpMouse)Mouse).UpdateClient(Client);
+            ((CdpTouchscreen)Touchscreen).UpdateClient(Client);
             Accessibility.UpdateClient(Client);
             _emulationManager.UpdateClient(Client);
             Tracing.UpdateClient(Client);
