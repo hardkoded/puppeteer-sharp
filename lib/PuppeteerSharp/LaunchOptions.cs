@@ -156,7 +156,6 @@ namespace PuppeteerSharp
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
-
         /// <inheritdoc />
         public ProtocolType Protocol { get; set; }
 
