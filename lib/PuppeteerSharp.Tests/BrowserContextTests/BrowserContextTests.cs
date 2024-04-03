@@ -142,7 +142,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             });
             var contexts = remoteBrowser.BrowserContexts();
             Assert.AreEqual(2, contexts.Length);
