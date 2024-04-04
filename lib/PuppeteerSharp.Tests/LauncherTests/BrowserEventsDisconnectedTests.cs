@@ -14,11 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public async Task ShouldEmittedWhenBrowserGetsClosedDisconnectedOrUnderlyingWebsocketGetsClosed()
         {
             var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
-            var connectOptions = new ConnectOptions
-            {
-                BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
-            };
+            var connectOptions = new ConnectOptions { BrowserWSEndpoint = originalBrowser.WebSocketEndpoint };
             var remoteBrowser1 = await Puppeteer.ConnectAsync(connectOptions, TestConstants.LoggerFactory);
             var remoteBrowser2 = await Puppeteer.ConnectAsync(connectOptions, TestConstants.LoggerFactory);
 
