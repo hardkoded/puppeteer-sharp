@@ -450,11 +450,14 @@ namespace PuppeteerSharp
         public abstract Task<IFrame> ContentFrameAsync();
 
         /// <inheritdoc/>
-        public Task<bool> IsIntersectingViewportAsync(int threshold)
+        public Task<bool> IsIntersectingViewportAsync(decimal threshold)
             => BindIsolatedHandleAsync<bool, ElementHandle>(async handle =>
             {
                 await handle.AssertConnectedElementAsync().ConfigureAwait(false);
-                return await handle.Realm.EvaluateFunctionAsync<bool>(
+                var svgHandle = await AsSVGElementHandleAsync(this).ConfigureAwait(false);
+                var target = svgHandle == null ? handle : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+
+                return await target.Realm.EvaluateFunctionAsync<bool>(
                     @"async (element, threshold) => {
                         const visibleRatio = await new Promise(resolve => {
                             const observer = new IntersectionObserver(entries => {
@@ -465,7 +468,7 @@ namespace PuppeteerSharp
                         });
                         return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
                     }",
-                    handle,
+                    target,
                     threshold).ConfigureAwait(false);
             });
 
@@ -796,6 +799,25 @@ namespace PuppeteerSharp
 
             return box;
         }
+
+        private async Task<ElementHandle> AsSVGElementHandleAsync(ElementHandle elementHandle)
+        {
+            if (await elementHandle.EvaluateFunctionAsync<bool>(@"element => element instanceof SVGElement").ConfigureAwait(false))
+            {
+                return elementHandle;
+            }
+
+            return null;
+        }
+
+        private async Task<ElementHandle> GetOwnerSVGElementAsync()
+            => await EvaluateFunctionHandleAsync(@"element => {
+                if (element instanceof SVGSVGElement) {
+                    return element;
+                }
+
+                return element.ownerSVGElement;
+            }").ConfigureAwait(false) as ElementHandle;
 
         private async Task ScrollIntoViewIfNeededAsync()
         {
