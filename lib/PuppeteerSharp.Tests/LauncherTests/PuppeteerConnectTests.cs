@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
@@ -10,13 +11,16 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
+        public PuppeteerConnectTests() : base()
+        {
+        }
+
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect multiple times to the same browser")]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
+                BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
             var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             await using (var page = await browser.NewPageAsync())
@@ -51,29 +55,30 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
-            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
+            await using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                IgnoreHTTPSErrors = true,
-                Protocol = ((Browser)Browser).Protocol,
-            });
-            await using var page = await browser.NewPageAsync();
-            var requestTask = HttpsServer.WaitForRequest(
-                "/empty.html",
-                request => request?.HttpContext.Features.Get<ITlsHandshakeFeature>()?.Protocol);
-            var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+                IgnoreHTTPSErrors = true
+            }))
+            await using (var page = await browser.NewPageAsync())
+            {
+                var requestTask = HttpsServer.WaitForRequest(
+                    "/empty.html",
+                    request => request?.HttpContext?.Features?.Get<ITlsHandshakeFeature>()?.Protocol);
+                var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
-            await Task.WhenAll(
-                requestTask,
-                responseTask).WithTimeout(Puppeteer.DefaultTimeout);
+                await Task.WhenAll(
+                    requestTask,
+                    responseTask).WithTimeout(Puppeteer.DefaultTimeout);
 
-            var response = responseTask.Result;
-            Assert.True(response.Ok);
-            Assert.NotNull(response.SecurityDetails);
-            Assert.AreEqual(
-                TestUtils.CurateProtocol(requestTask.Result.ToString()),
-                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
+                var response = responseTask.Result;
+                Assert.True(response.Ok);
+                Assert.NotNull(response.SecurityDetails);
+                Assert.AreEqual(
+                    TestUtils.CurateProtocol(requestTask.Result.ToString()),
+                    TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
+            }
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
@@ -89,8 +94,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = browser.WebSocketEndpoint,
-                TargetFilter = target => !target.Url.Contains("should-be-ignored"),
-                Protocol = ((Browser)browser).Protocol,
+                TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
             }, TestConstants.LoggerFactory);
 
             var pages = await remoteBrowser.PagesAsync();
@@ -101,7 +105,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                     "about:blank",
                     TestConstants.EmptyPage
                 },
-                pages.Select(p => p.Url).OrderBy(t => t));
+                pages.Select((IPage p) => p.Url).OrderBy(t => t));
 
             await page2.CloseAsync();
             await page1.CloseAsync();
@@ -132,8 +136,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
+                BrowserWSEndpoint = Browser.WebSocketEndpoint
             };
 
             var url = TestConstants.ServerUrl + "/frames/nested-frames.html";
@@ -158,8 +161,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
             var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserOne.WebSocketEndpoint,
-                Protocol = ((Browser)browserOne).Protocol,
+                BrowserWSEndpoint = browserOne.WebSocketEndpoint
             });
             var tcs = new TaskCompletionSource<IPage>();
             async void TargetCreated(object sender, TargetChangedArgs e)
@@ -190,8 +192,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserWSEndpoint,
-                Protocol = ((Browser)browserOne).Protocol,
+                BrowserWSEndpoint = browserWSEndpoint
             });
 
             var pages = await browserTwo.PagesAsync();

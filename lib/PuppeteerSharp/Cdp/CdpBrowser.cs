@@ -24,7 +24,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -103,8 +102,6 @@ public class CdpBrowser : Browser
     }
 
     internal ITargetManager TargetManager { get; }
-
-    internal override ProtocolType Protocol => ProtocolType.Cdp;
 
     /// <inheritdoc/>
     public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();

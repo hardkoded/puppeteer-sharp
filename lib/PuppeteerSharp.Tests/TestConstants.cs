@@ -48,7 +48,6 @@ namespace PuppeteerSharp.Tests
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,
-            Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
 #if NETCOREAPP
             EnqueueTransportMessages = false
 #else
@@ -59,7 +58,6 @@ namespace PuppeteerSharp.Tests
         public static LaunchOptions BrowserWithExtensionOptions() => new()
         {
             Headless = false,
-            Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
             Args = new[]
             {
                 $"--disable-extensions-except={ExtensionPath.Quote()}",
