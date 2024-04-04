@@ -15,10 +15,5 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The default Viewport.</value>
         ViewPortOptions DefaultViewport { get; set; }
-
-        /// <summary>
-        /// Protocol type..
-        /// </summary>
-        ProtocolType Protocol { get; set; }
     }
 }

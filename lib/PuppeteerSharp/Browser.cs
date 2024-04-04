@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -66,8 +66,6 @@ namespace PuppeteerSharp
         internal LauncherBase Launcher { get; set; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; set; }
-
-        internal abstract ProtocolType Protocol { get; }
 
         /// <inheritdoc/>
         public abstract Task<IPage> NewPageAsync();

@@ -15,8 +15,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var remote = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browser.WebSocketEndpoint,
-                Protocol = ((Browser)Browser).Protocol,
+                BrowserWSEndpoint = browser.WebSocketEndpoint
             });
             var page = await remote.NewPageAsync();
             var navigationTask = page.GoToAsync(TestConstants.ServerUrl + "/one-style.html", new NavigationOptions
@@ -42,8 +41,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var remote = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browser.WebSocketEndpoint,
-                Protocol = ((Browser)browser).Protocol,
+                BrowserWSEndpoint = browser.WebSocketEndpoint
             });
             var page = await remote.NewPageAsync();
             var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });

@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    name: build-${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}
+    name: build-${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -29,63 +29,33 @@ jobs:
           - os: ubuntu-latest
             browser: CHROME
             mode: headless
-            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headful
-            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headless-shell
-            protocol: cdp
           - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
-            protocol: cdp
           - os: ubuntu-latest
             browser: FIREFOX
             mode: headful
-            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless
-            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headful
-            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless-shell
-            protocol: cdp
           - os: windows-latest
             browser: FIREFOX
             mode: headless
-            protocol: cdp
           - os: windows-latest
             browser: FIREFOX
             mode: headful
-            protocol: cdp
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headless
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headful
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headless-shell
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headless
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headful
-            protocol: webdriverbidi
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -113,7 +83,7 @@ jobs:
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Check formatting
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' && matrix.protocol == 'cdp' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' }}
       run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes
     - name: Build
       working-directory: lib
@@ -123,7 +93,6 @@ jobs:
       env:
         PRODUCT: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
-        PROTOCOL: ${{ matrix.protocol }}
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
@@ -134,7 +103,6 @@ jobs:
       env:
         PRODUCT: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
-        PROTOCOL: ${{ matrix.protocol }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet test -s test.runsettings --blame-hang-timeout 300000
