@@ -135,6 +135,9 @@ namespace PuppeteerSharp
         public abstract WebWorker[] Workers { get; }
 
         /// <inheritdoc/>
+        public bool IsServiceWorkerBypassed { get; protected set; }
+
+        /// <inheritdoc/>
         public string Url => MainFrame.Url;
 
         /// <inheritdoc/>
@@ -767,6 +770,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc />
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
+
+        /// <inheritdoc />
+        public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 

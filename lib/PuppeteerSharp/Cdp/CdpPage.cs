@@ -29,6 +29,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Cdp.Messaging.Protocol.Network;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Media;
@@ -309,6 +310,16 @@ public class CdpPage : Page
         {
             Identifier = identifier,
         });
+
+    /// <inheritdoc />
+    public override Task SetBypassServiceWorkerAsync(bool bypass)
+    {
+        IsServiceWorkerBypassed = bypass;
+        return Client.SendAsync("Network.setBypassServiceWorker", new SetBypassServiceWorkerRequest
+        {
+            Bypass = bypass,
+        });
+    }
 
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
