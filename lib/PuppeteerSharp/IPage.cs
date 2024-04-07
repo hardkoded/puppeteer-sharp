@@ -284,6 +284,11 @@ namespace PuppeteerSharp
         bool IsJavaScriptEnabled { get; }
 
         /// <summary>
+        /// `true` if the service worker are being bypassed.
+        /// </summary>
+        bool IsServiceWorkerBypassed { get; }
+
+        /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
         /// </summary>
         /// <param name="options">add script tag options.</param>
@@ -1477,6 +1482,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="identifier">Function identifier.</param>
         /// <returns>A task that resolves when the script is removed.</returns>
-        public Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier);
+        Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier);
+
+        /// <summary>
+        /// Toggles ignoring of service worker for each request.
+        /// </summary>
+        /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
+        /// <returns>A task that resolves when the message is sent to the browser.</returns>
+        Task SetBypassServiceWorkerAsync(bool bypass);
     }
 }
