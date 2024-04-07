@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameDetached;
 
         /// <inheritdoc/>
-        public event EventHandler<FrameEventArgs> FrameNavigated;
+        public event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <inheritdoc/>
         public event EventHandler<ResponseCreatedEventArgs> Response;
@@ -806,7 +806,7 @@ namespace PuppeteerSharp
         /// Raises the <see cref="FrameNavigated"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameNavigated(FrameEventArgs e) => FrameNavigated?.Invoke(this, e);
+        protected void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="FrameDetached"/> event.

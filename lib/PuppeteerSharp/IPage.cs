@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a frame is navigated to a new url.
         /// </summary>
-        event EventHandler<FrameEventArgs> FrameNavigated;
+        event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.

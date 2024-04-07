@@ -136,16 +136,16 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override bool IsJavaScriptEnabled => _emulationManager.JavascriptEnabled;
 
-    internal CdpCDPSession PrimaryTargetClient { get; private set; }
-
-    internal CdpTarget PrimaryTarget { get; private set; }
-
-    internal CdpCDPSession TabTargetClient { get; }
-
-    internal CdpTarget TabTarget { get; }
-
     /// <inheritdoc />
     protected override Browser Browser => PrimaryTarget.Browser;
+
+    private CdpCDPSession PrimaryTargetClient { get; set; }
+
+    private CdpTarget PrimaryTarget { get; set; }
+
+    private CdpCDPSession TabTargetClient { get; }
+
+    private CdpTarget TabTarget { get; }
 
     private Task SessionClosedTask
     {
@@ -523,23 +523,31 @@ public class CdpPage : Page
         var timeout = options?.Timeout ?? DefaultTimeout;
         var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        void FrameEventListener(object sender, FrameEventArgs e)
+        void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
         {
             if (predicate(e.Frame))
             {
                 frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameAttached -= FrameEventListener;
-                FrameManager.FrameNavigated -= FrameEventListener;
+                FrameManager.FrameNavigated -= FrameNavigatedEventListener;
             }
         }
 
-        FrameManager.FrameAttached += FrameEventListener;
-        FrameManager.FrameNavigated += FrameEventListener;
+        void FrameAttachedEventListener(object sender, FrameEventArgs e)
+        {
+            if (predicate(e.Frame))
+            {
+                frameTcs.TrySetResult(e.Frame);
+                FrameManager.FrameAttached -= FrameAttachedEventListener;
+            }
+        }
+
+        FrameManager.FrameAttached += FrameAttachedEventListener;
+        FrameManager.FrameNavigated += FrameNavigatedEventListener;
 
         var eventRace = Task.WhenAny(frameTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
         {
-            FrameManager.FrameAttached -= FrameEventListener;
-            FrameManager.FrameNavigated -= FrameEventListener;
+            FrameManager.FrameAttached -= FrameAttachedEventListener;
+            FrameManager.FrameNavigated -= FrameNavigatedEventListener;
             return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
         });
 
