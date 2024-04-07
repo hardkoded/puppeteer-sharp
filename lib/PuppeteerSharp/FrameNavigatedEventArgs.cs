@@ -29,4 +29,3 @@ public record FrameNavigatedEventArgs
     /// </summary>
     public NavigationType Type { get; }
 }
-
