@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fileInfo.Delete();
             }
             await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
-            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
 
             Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
