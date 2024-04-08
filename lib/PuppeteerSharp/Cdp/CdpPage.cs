@@ -193,7 +193,7 @@ public class CdpPage : Page
 
         return (await PrimaryTargetClient.SendAsync<NetworkGetCookiesResponse>(
                 "Network.getCookies",
-                new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : new[] { Url }, })
+                new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : [Url], })
             .ConfigureAwait(false)).Cookies;
     }
 

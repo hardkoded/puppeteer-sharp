@@ -186,17 +186,17 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
-        internal Accessibility Accessibility { get; set; }
+        internal Accessibility Accessibility { get; init; }
 
-        internal Keyboard Keyboard { get; set; }
+        internal Keyboard Keyboard { get; init; }
 
-        internal Touchscreen Touchscreen { get; set; }
+        internal Touchscreen Touchscreen { get; init; }
 
-        internal Coverage Coverage { get; set; }
+        internal Coverage Coverage { get; init; }
 
-        internal Tracing Tracing { get; set; }
+        internal Tracing Tracing { get; init; }
 
-        internal Mouse Mouse { get; set; }
+        internal Mouse Mouse { get; init; }
 
         internal bool IsDragging { get; set; }
 

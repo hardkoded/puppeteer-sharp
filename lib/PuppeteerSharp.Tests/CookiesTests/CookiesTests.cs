@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class CookiesTests : PuppeteerPageBaseTest
     {
-        public CookiesTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should return no cookies in pristine browser context")]
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
@@ -165,6 +161,48 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.False(cookie.HttpOnly);
             Assert.True(cookie.Secure);
             Assert.True(cookie.Session);
+        }
+
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain")]
+        public async Task ShouldNotGetCookiesFromSubdomain()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://base_domain.com",
+                Name = "doggo",
+                Value = "woofs"
+            });
+            Assert.IsEmpty(await Page.GetCookiesAsync("https://sub_domain.base_domain.com"));
+        }
+
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from nested path")]
+        public async Task ShouldGetCookiesFromNestedPath()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://foo.com",
+                Path = "/some_path",
+                Name = "doggo",
+                Value = "woofs"
+            });
+
+            var cookies = await Page.GetCookiesAsync("https://foo.com/some_path/nested_path");
+
+            Assert.That(cookies, Has.Exactly(1).Items);
+        }
+
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from not nested path")]
+        public async Task ShouldNotGetCookiesFromNotNestedPath()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://foo.com",
+                Path = "/some_path",
+                Name = "doggo",
+                Value = "woofs"
+            });
+
+            Assert.IsEmpty(await Page.GetCookiesAsync("https://foo.com/some_path_looks_like_nested"));
         }
     }
 }
