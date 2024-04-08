@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
-            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
 
             Assert.Greater(new FileInfo(outputFileOutlined).Length, new FileInfo(outputFile).Length);
