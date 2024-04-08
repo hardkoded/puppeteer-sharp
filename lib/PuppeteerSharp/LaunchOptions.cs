@@ -203,6 +203,11 @@ namespace PuppeteerSharp
         public int ProtocolTimeout { get; set; } = Connection.DefaultCommandTimeout;
 
         /// <summary>
+        /// Additional preferences that can be passed when launching with Firefox. <see fref="https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js">See</see>.
+        /// </summary>
+        public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
+
+        /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         internal Func<Target, bool> IsPageTarget { get; set; }
