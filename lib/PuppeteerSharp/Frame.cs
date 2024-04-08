@@ -18,7 +18,7 @@ namespace PuppeteerSharp
 
         internal event EventHandler FrameDetached;
 
-        internal event EventHandler FrameNavigated;
+        internal event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         internal event EventHandler FrameNavigatedWithinDocument;
 
@@ -328,8 +328,9 @@ namespace PuppeteerSharp
         {
             Name = framePayload.Name ?? string.Empty;
             Url = framePayload.Url + framePayload.UrlFragment;
-            FrameNavigated?.Invoke(this, EventArgs.Empty);
         }
+
+        internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
 
         internal void OnSwapped() => FrameSwapped?.Invoke(this, EventArgs.Empty);
 
@@ -337,7 +338,6 @@ namespace PuppeteerSharp
         {
             Url = url;
             FrameNavigatedWithinDocument?.Invoke(this, EventArgs.Empty);
-            FrameNavigated?.Invoke(this, EventArgs.Empty);
         }
 
         internal void Detach()

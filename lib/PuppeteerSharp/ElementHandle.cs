@@ -888,7 +888,7 @@ namespace PuppeteerSharp
 
         private async Task<BoundingBox> ClickableBoxAsync()
         {
-            var boxes = await this.EvaluateFunctionAsync<BoundingBox[]>(@"element => {
+            var boxes = await EvaluateFunctionAsync<BoundingBox[]>(@"element => {
                 if (!(element instanceof Element)) {
                     return null;
                 }
@@ -908,11 +908,8 @@ namespace PuppeteerSharp
             var parentFrame = frame.ParentFrame;
             while (parentFrame != null)
             {
-                var handle = await frame.FrameElementAsync().ConfigureAwait(false);
-                if (handle == null)
-                {
-                    throw new PuppeteerException("Unsupported frame type");
-                }
+                var handle = await frame.FrameElementAsync().ConfigureAwait(false)
+                    ?? throw new PuppeteerException("Unsupported frame type");
 
                 var parentBox = await handle.EvaluateFunctionAsync<BoundingBox>(@"element => {
                     // Element is not visible.
