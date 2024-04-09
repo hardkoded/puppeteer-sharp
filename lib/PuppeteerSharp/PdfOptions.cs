@@ -95,7 +95,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Generate tagged (accessible) PDF.
         /// </summary>
-        public bool Tagged { get; set; }
+        public bool Tagged { get; set; } = true;
 
         /// <summary>
         /// Generate document outline.
