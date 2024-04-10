@@ -660,10 +660,6 @@ namespace PuppeteerSharp
             => MainFrame.SelectAsync(selector, values);
 
         /// <inheritdoc/>
-        public Task WaitForTimeoutAsync(int milliseconds)
-            => MainFrame.WaitForTimeoutAsync(milliseconds);
-
-        /// <inheritdoc/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
