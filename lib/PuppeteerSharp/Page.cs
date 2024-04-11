@@ -255,11 +255,6 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
         /// <inheritdoc/>
-#pragma warning disable CS0618 // Using obsolete
-        public Task<IElementHandle[]> XPathAsync(string expression) => MainFrame.XPathAsync(expression);
-#pragma warning restore CS0618
-
-        /// <inheritdoc/>
         public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(
             WaitForOptions options = default(WaitForOptions))
             => MainFrame.WaitForDevicePromptAsync(options);
@@ -674,12 +669,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
-
-        /// <inheritdoc/>
-#pragma warning disable CS0618 // WaitForXPathAsync is obsolete
-        public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-            => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
-#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)

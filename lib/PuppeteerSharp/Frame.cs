@@ -120,22 +120,6 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
-        {
-            if (string.IsNullOrEmpty(xpath))
-            {
-                throw new ArgumentNullException(nameof(xpath));
-            }
-
-            if (xpath.StartsWith("//", StringComparison.OrdinalIgnoreCase))
-            {
-                xpath = $".{xpath}";
-            }
-
-            return WaitForSelectorAsync($"xpath/{xpath}", options);
-        }
-
-        /// <inheritdoc/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
             if (options == null)
@@ -189,13 +173,6 @@ namespace PuppeteerSharp
         {
             var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc/>
-        public async Task<IElementHandle[]> XPathAsync(string expression)
-        {
-            var document = await GetDocumentAsync().ConfigureAwait(false);
-            return await document.XPathAsync(expression).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
