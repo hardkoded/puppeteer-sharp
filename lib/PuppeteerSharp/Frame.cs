@@ -136,9 +136,6 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
-
-        /// <inheritdoc/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
             if (options == null)

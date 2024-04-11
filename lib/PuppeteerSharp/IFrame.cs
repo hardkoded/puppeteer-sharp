@@ -390,15 +390,6 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
-        /// Waits for a timeout.
-        /// </summary>
-        /// <param name="milliseconds">The amount of time to wait.</param>
-        /// <returns>A task that resolves when after the timeout.</returns>
-        /// <seealso cref="IPage.WaitForTimeoutAsync(int)"/>
-        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
-        Task WaitForTimeoutAsync(int milliseconds);
-
-        /// <summary>
         /// Waits for a selector to be added to the DOM.
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for.</param>
