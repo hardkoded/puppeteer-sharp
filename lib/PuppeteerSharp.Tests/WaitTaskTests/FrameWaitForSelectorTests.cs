@@ -292,7 +292,6 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             StringAssert.Contains("WaitForSelectorTests", exception.StackTrace);
         }
 
-
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should support some fancy xpath")]
         public async Task ShouldSupportSomeFancyXpath()
         {

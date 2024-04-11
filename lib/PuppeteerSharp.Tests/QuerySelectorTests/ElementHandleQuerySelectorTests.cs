@@ -27,7 +27,6 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.Null(second);
         }
 
-
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should query existing element")]
         public async Task XPathShouldQueryExistingElement()
         {
