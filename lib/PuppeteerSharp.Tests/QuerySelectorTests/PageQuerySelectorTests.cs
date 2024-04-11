@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task XpathShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div></div><div></div>");
-            var elements = await Page.QuerySelectorAllAsync("/html/body/div");
+            var elements = await Page.QuerySelectorAllAsync("xpath/html/body/div");
             Assert.AreEqual(2, elements.Length);
         }
     }
