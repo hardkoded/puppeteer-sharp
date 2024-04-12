@@ -127,8 +127,8 @@ namespace PuppeteerSharp.Tests.ClickTests
             const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
             await Page.ClickAsync("textarea");
-            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 2 });
-            await Page.ClickAsync("textarea", new ClickOptions { ClickCount = 3 });
+            await Page.ClickAsync("textarea", new ClickOptions { Count = 2 });
+            await Page.ClickAsync("textarea", new ClickOptions { Count = 3 });
             Assert.AreEqual(text, await Page.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(
@@ -258,7 +258,7 @@ namespace PuppeteerSharp.Tests.ClickTests
                });
             }");
             var button = await Page.QuerySelectorAsync("button");
-            await button.ClickAsync(new ClickOptions { ClickCount = 2 });
+            await button.ClickAsync(new ClickOptions { Count = 2 });
             Assert.True(await Page.EvaluateExpressionAsync<bool>("double"));
             Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
         }
