@@ -132,7 +132,7 @@ public class CdpMouse : Mouse
             {
                 Type = MouseEventType.MousePressed,
                 Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount,
+                ClickCount = options.Count,
                 Buttons = (int)state.Buttons,
                 Button = options.Button,
                 X = state.Position.X,
@@ -163,7 +163,7 @@ public class CdpMouse : Mouse
             {
                 Type = MouseEventType.MouseReleased,
                 Modifiers = _keyboard.Modifiers,
-                ClickCount = options.ClickCount,
+                ClickCount = options.Count,
                 Buttons = (int)state.Buttons,
                 Button = options.Button,
                 X = state.Position.X,

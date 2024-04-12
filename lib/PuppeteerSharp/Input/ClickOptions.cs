@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Input
         /// <summary>
         /// Defaults to 1. See https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail.
         /// </summary>
-        public int ClickCount { get; set; } = 1;
+        public int Count { get; set; } = 1;
 
         /// <summary>
         /// The button to use for the click. Defaults to <see cref="MouseButton.Left"/>.
