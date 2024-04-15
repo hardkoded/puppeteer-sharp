@@ -23,8 +23,7 @@ namespace PuppeteerSharp
         public ChromeLauncher(string executable, LaunchOptions options)
             : base(executable, options)
         {
-            List<string> chromiumArgs;
-            (chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
+            (var chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
 
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
@@ -38,7 +37,7 @@ namespace PuppeteerSharp
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
             var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
-            var args = options.Args;
+            var args = options.Args ?? [];
             if (args is not null && userDisabledFeatures.Length > 0)
             {
                 args = RemoveMatchingFlags(options.Args, "--disable-features");
@@ -62,50 +61,42 @@ namespace PuppeteerSharp
                 args = RemoveMatchingFlags(options.Args, "--enable-features");
             }
 
-            // Merge default enabled features with user-provided ones, if any.
-            var enabledFeatures = new List<string>
-            {
-                "NetworkServiceInProcess2",
-            };
-
-            disabledFeatures.AddRange(userEnabledFeatures);
-
             var chromiumArguments = new List<string>(
-                new string[]
-                {
+            [
                     "--allow-pre-commit-input",
-                    "--disable-background-networking",
-                    "--disable-background-timer-throttling",
-                    "--disable-backgrounding-occluded-windows",
-                    "--disable-breakpad",
-                    "--disable-client-side-phishing-detection",
-                    "--disable-component-extensions-with-background-pages",
-                    "--disable-component-update",
-                    "--disable-default-apps",
-                    "--disable-dev-shm-usage",
-                    "--disable-extensions",
-                    "--disable-field-trial-config",
-                    "--disable-hang-monitor",
-                    "--disable-infobars",
-                    "--disable-ipc-flooding-protection",
-                    "--disable-popup-blocking",
-                    "--disable-prompt-on-repost",
-                    "--disable-renderer-backgrounding",
-                    "--disable-search-engine-choice-screen",
-                    "--disable-sync",
-                    "--enable-automation",
-                    "--enable-blink-features=IdleDetection",
-                    "--export-tagged-pdf",
-                    "--generate-pdf-document-outline",
-                    "--force-color-profile=srgb",
-                    "--metrics-recording-only",
-                    "--no-first-run",
-                    "--password-store=basic",
-                    "--use-mock-keychain",
-                });
-
-            chromiumArguments.Add($"--disable-features={string.Join(",", disabledFeatures)}");
-            chromiumArguments.Add($"--enable-features={string.Join(",", enabledFeatures)}");
+                "--disable-background-networking",
+                "--disable-background-timer-throttling",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-breakpad",
+                "--disable-client-side-phishing-detection",
+                "--disable-component-extensions-with-background-pages",
+                "--disable-component-update",
+                "--disable-default-apps",
+                "--disable-dev-shm-usage",
+                "--disable-extensions",
+                "--disable-field-trial-config",
+                "--disable-hang-monitor",
+                "--disable-infobars",
+                "--disable-ipc-flooding-protection",
+                "--disable-popup-blocking",
+                "--disable-prompt-on-repost",
+                "--disable-renderer-backgrounding",
+                "--disable-search-engine-choice-screen",
+                "--disable-sync",
+                "--enable-automation",
+                "--enable-blink-features=IdleDetection",
+                "--export-tagged-pdf",
+                "--generate-pdf-document-outline",
+                "--force-color-profile=srgb",
+                "--metrics-recording-only",
+                "--no-first-run",
+                "--password-store=basic",
+                "--use-mock-keychain",
+            ])
+            {
+                $"--disable-features={string.Join(",", disabledFeatures)}",
+                $"--enable-features={string.Join(",", userEnabledFeatures)}",
+            };
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
