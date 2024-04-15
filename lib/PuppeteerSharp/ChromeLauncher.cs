@@ -23,8 +23,7 @@ namespace PuppeteerSharp
         public ChromeLauncher(string executable, LaunchOptions options)
             : base(executable, options)
         {
-            List<string> chromiumArgs;
-            (chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
+            (var chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
 
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
@@ -38,7 +37,7 @@ namespace PuppeteerSharp
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
             var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
-            var args = options.Args;
+            var args = options.Args ?? [];
             if (args is not null && userDisabledFeatures.Length > 0)
             {
                 args = RemoveMatchingFlags(options.Args, "--disable-features");
@@ -62,17 +61,8 @@ namespace PuppeteerSharp
                 args = RemoveMatchingFlags(options.Args, "--enable-features");
             }
 
-            // Merge default enabled features with user-provided ones, if any.
-            var enabledFeatures = new List<string>
-            {
-                "NetworkServiceInProcess2",
-            };
-
-            disabledFeatures.AddRange(userEnabledFeatures);
-
             var chromiumArguments = new List<string>(
-                new string[]
-                {
+            [
                     "--allow-pre-commit-input",
                     "--disable-background-networking",
                     "--disable-background-timer-throttling",
@@ -102,10 +92,11 @@ namespace PuppeteerSharp
                     "--no-first-run",
                     "--password-store=basic",
                     "--use-mock-keychain",
-                });
-
-            chromiumArguments.Add($"--disable-features={string.Join(",", disabledFeatures)}");
-            chromiumArguments.Add($"--enable-features={string.Join(",", enabledFeatures)}");
+                ])
+            {
+                $"--disable-features={string.Join(",", disabledFeatures)}",
+                $"--enable-features={string.Join(",", userEnabledFeatures)}",
+            };
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
