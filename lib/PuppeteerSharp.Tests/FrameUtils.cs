@@ -31,17 +31,21 @@ namespace PuppeteerSharp.Tests
                   frame.remove();
                 }", frameId);
 
-        public static IEnumerable<string> DumpFrames(IFrame frame, string indentation = "")
+        public static async Task<IEnumerable<string>> DumpFramesAsync(IFrame frame, string indentation = "")
         {
             var description = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
-            if (!string.IsNullOrEmpty(frame.Name))
+            await using var frameElement = await frame.FrameElementAsync();
+            if (frameElement != null)
             {
-                description += $" ({frame.Name})";
+                var nameOrId = await frameElement.EvaluateFunctionAsync<string>(@"frame => {
+                    return frame.name || frame.id;
+                }");
+                description += $" ({nameOrId})";
             }
             var result = new List<string>() { description };
-            foreach (Frame child in frame.ChildFrames)
+            foreach (var child in frame.ChildFrames)
             {
-                result.AddRange(DumpFrames(child, "    " + indentation));
+                result.AddRange(await DumpFramesAsync(child, "    " + indentation));
             }
 
             return result;
