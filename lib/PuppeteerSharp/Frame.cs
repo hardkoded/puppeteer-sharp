@@ -275,6 +275,40 @@ namespace PuppeteerSharp
             await handle.TypeAsync(text, options).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
+        public async Task<ElementHandle> FrameElementAsync()
+        {
+            var parentFrame = ParentFrame;
+            if (parentFrame == null)
+            {
+                return null;
+            }
+
+            var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
+                return document.querySelectorAll('iframe, frame');
+            }").ConfigureAwait(false);
+
+            await foreach (var iframe in list.TransposeIterableHandleAsync())
+            {
+                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
+                if (frame?.Id == Id)
+                {
+                    return iframe as ElementHandle;
+                }
+
+                try
+                {
+                    await iframe.DisposeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    Logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                }
+            }
+
+            return null;
+        }
+
         internal void ClearDocumentHandle() => _documentTask = null;
 
         internal void OnLoadingStarted() => HasStartedLoading = true;
@@ -324,39 +358,6 @@ namespace PuppeteerSharp
 
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
-
-        internal async Task<ElementHandle> FrameElementAsync()
-        {
-            var parentFrame = ParentFrame;
-            if (parentFrame == null)
-            {
-                return null;
-            }
-
-            var list = await parentFrame.IsolatedRealm.EvaluateFunctionHandleAsync(@"() => {
-                return document.querySelectorAll('iframe, frame');
-            }").ConfigureAwait(false);
-
-            await foreach (var iframe in list.TransposeIterableHandleAsync())
-            {
-                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
-                if (frame?.Id == Id)
-                {
-                    return iframe as ElementHandle;
-                }
-
-                try
-                {
-                    await iframe.DisposeAsync().ConfigureAwait(false);
-                }
-                catch
-                {
-                    Logger.LogWarning("FrameElementAsync: Error disposing iframe");
-                }
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Gets the prompts manager for the current client.

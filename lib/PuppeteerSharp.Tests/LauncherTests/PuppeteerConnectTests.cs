@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
@@ -11,10 +10,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerConnectTests : PuppeteerBrowserBaseTest
     {
-        public PuppeteerConnectTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect multiple times to the same browser")]
         public async Task ShouldBeAbleToConnectMultipleTimesToSameBrowser()
         {
@@ -55,30 +50,28 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
         public async Task ShouldSupportIgnoreHTTPSErrorsOption()
         {
-            await using (var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions()))
-            await using (var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
                 IgnoreHTTPSErrors = true
-            }))
-            await using (var page = await browser.NewPageAsync())
-            {
-                var requestTask = HttpsServer.WaitForRequest(
-                    "/empty.html",
-                    request => request?.HttpContext?.Features?.Get<ITlsHandshakeFeature>()?.Protocol);
-                var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+            });
+            await using var page = await browser.NewPageAsync();
+            var requestTask = HttpsServer.WaitForRequest(
+                "/empty.html",
+                request => request?.HttpContext.Features.Get<ITlsHandshakeFeature>()?.Protocol);
+            var responseTask = page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
 
-                await Task.WhenAll(
-                    requestTask,
-                    responseTask).WithTimeout(Puppeteer.DefaultTimeout);
+            await Task.WhenAll(
+                requestTask,
+                responseTask).WithTimeout(Puppeteer.DefaultTimeout);
 
-                var response = responseTask.Result;
-                Assert.True(response.Ok);
-                Assert.NotNull(response.SecurityDetails);
-                Assert.AreEqual(
-                    TestUtils.CurateProtocol(requestTask.Result.ToString()),
-                    TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
-            }
+            var response = responseTask.Result;
+            Assert.True(response.Ok);
+            Assert.NotNull(response.SecurityDetails);
+            Assert.AreEqual(
+                TestUtils.CurateProtocol(requestTask.Result.ToString()),
+                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
@@ -94,18 +87,18 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = browser.WebSocketEndpoint,
-                TargetFilter = (Target target) => !target.Url.Contains("should-be-ignored"),
+                TargetFilter = target => !target.Url.Contains("should-be-ignored"),
             }, TestConstants.LoggerFactory);
 
             var pages = await remoteBrowser.PagesAsync();
 
             Assert.AreEqual(
-                new string[]
+                new[]
                 {
                     "about:blank",
                     TestConstants.EmptyPage
                 },
-                pages.Select((IPage p) => p.Url).OrderBy(t => t));
+                pages.Select(p => p.Url).OrderBy(t => t));
 
             await page2.CloseAsync();
             await page1.CloseAsync();
@@ -119,7 +112,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = new ConnectOptions
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                InitAction = brw =>
+                InitAction = _ =>
                 {
                     initActionExecuted = true;
                 }
@@ -149,7 +142,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var pages = (await browser.PagesAsync()).ToList();
             var restoredPage = pages.FirstOrDefault(x => x.Url == url);
             Assert.NotNull(restoredPage);
-            var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
+            var frameDump = await FrameUtils.DumpFramesAsync(restoredPage.MainFrame);
             Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
             var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
             Assert.AreEqual(56, response);

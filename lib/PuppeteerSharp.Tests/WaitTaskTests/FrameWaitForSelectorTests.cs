@@ -305,8 +305,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.Frames.First(f => f.Name == "frame1");
-            var frame2 = Page.Frames.First(f => f.Name == "frame2");
+            var frame1 = Page.ChildFrames().ElementAt(0);
+            var frame2 = Page.ChildFrames().ElementAt(1);
             var waitForXPathPromise = frame2.WaitForSelectorAsync("xpath/.//div");
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
