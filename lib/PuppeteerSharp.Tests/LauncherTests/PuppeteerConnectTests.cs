@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var pages = await remoteBrowser.PagesAsync();
 
             Assert.AreEqual(
-                new []
+                new[]
                 {
                     "about:blank",
                     TestConstants.EmptyPage
