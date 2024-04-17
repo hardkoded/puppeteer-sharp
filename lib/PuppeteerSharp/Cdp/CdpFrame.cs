@@ -137,7 +137,7 @@ public class CdpFrame : Frame
         var raceTask = await Task.WhenAny(
         [
             watcher.NewDocumentNavigationTask,
-            ..options?.IgnoreSameDocumentNavigation == true ? Array.Empty<Task>() : [watcher.SameDocumentNavigationTask],
+            .. options?.IgnoreSameDocumentNavigation == true ? Array.Empty<Task>() : [watcher.SameDocumentNavigationTask],
             watcher.TerminationTask,
         ]).ConfigureAwait(false);
 
