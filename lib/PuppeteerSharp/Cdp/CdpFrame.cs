@@ -136,7 +136,7 @@ public class CdpFrame : Frame
         using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options?.WaitUntil, timeout);
         var raceTask = await Task.WhenAny(
             watcher.NewDocumentNavigationTask,
-            watcher.SameDocumentNavigationTask,
+            options?.IgnoreSameDocumentNavigation == true ? Task.CompletedTask : watcher.SameDocumentNavigationTask,
             watcher.TerminationTask).ConfigureAwait(false);
 
         await raceTask.ConfigureAwait(false);

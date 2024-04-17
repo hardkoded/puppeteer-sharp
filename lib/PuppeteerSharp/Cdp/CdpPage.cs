@@ -415,7 +415,8 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var navigationTask = WaitForNavigationAsync(options);
+        Debug.Assert(options != null, nameof(options) + " != null");
+        var navigationTask = WaitForNavigationAsync(options with { IgnoreSameDocumentNavigation = true });
 
         await Task.WhenAll(
                 navigationTask,
