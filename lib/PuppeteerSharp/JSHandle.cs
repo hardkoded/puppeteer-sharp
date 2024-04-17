@@ -81,27 +81,21 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
-            var list = new List<object>(args);
-            list.Insert(0, this);
-            return Realm.EvaluateFunctionHandleAsync(pageFunction, list.ToArray());
+            return Realm.EvaluateFunctionHandleAsync(pageFunction, [this, .. args]);
         }
 
         /// <inheritdoc/>
         public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
         {
-            var list = new List<object>(args);
             var adoptedThis = await Realm.AdoptHandleAsync(this).ConfigureAwait(false);
-            list.Insert(0, adoptedThis);
-            return await Realm.EvaluateFunctionAsync<JToken>(script, list.ToArray())
+            return await Realm.EvaluateFunctionAsync<JToken>(script, [adoptedThis, .. args])
                 .ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
-            var list = new List<object>(args);
-            list.Insert(0, this);
-            return Realm.EvaluateFunctionAsync<T>(script, list.ToArray());
+            return Realm.EvaluateFunctionAsync<T>(script, [this, .. args]);
         }
     }
 }
