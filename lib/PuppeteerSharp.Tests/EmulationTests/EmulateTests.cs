@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class EmulateTests : PuppeteerPageBaseTest
     {
-        public EmulateTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work")]
         public async Task ShouldWork()
         {
