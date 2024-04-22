@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -59,8 +58,19 @@ namespace PuppeteerSharp.QueryHandlers
                 }).ConfigureAwait(false);
 
             return nodes.Nodes.Where(node =>
-                node?.Role?.Value?.ToObject<string>() is not null &&
-                !_nonElementNodeRoles.Contains(node.Role.Value.ToObject<string>()));
+            {
+                if (node.Ignored)
+                {
+                    return false;
+                }
+
+                if (node.Role == null)
+                {
+                    return false;
+                }
+
+                return !_nonElementNodeRoles.Contains(node.Role.Value.ToObject<string>());
+            });
         }
 
         private static AriaQueryOption ParseAriaSelector(string selector)
