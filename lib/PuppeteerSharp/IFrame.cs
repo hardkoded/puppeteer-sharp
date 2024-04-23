@@ -391,6 +391,44 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
+        /// Waits for a selector to be added to the DOM.
+        /// </summary>
+        /// <param name="xpath">A xpath selector of an element to wait for.</param>
+        /// <param name="options">Optional waiting parameters.</param>
+        /// <returns>A task which resolves when element specified by xpath string is added to DOM.
+        /// Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions());
+        /// var page = await browser.NewPageAsync();
+        /// string currentURL = null;
+        /// page.MainFrame
+        ///     .WaitForXPathAsync("//img")
+        ///     .ContinueWith(_ => Console.WriteLine("First URL with image: " + currentURL));
+        /// foreach (var current in new[] { "https://example.com", "https://google.com", "https://bbc.com" })
+        /// {
+        ///     currentURL = current;
+        ///     await page.GoToAsync(currentURL);
+        /// }
+        /// await browser.CloseAsync();
+        /// ]]>
+        /// </code>
+        /// </example>
+        /// <seealso cref="WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
+        /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
+        [Obsolete("Use " + nameof(WaitForSelectorAsync) + " instead")]
+        Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null);
+
+        /// <summary>
+        /// Evaluates the XPath expression.
+        /// </summary>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/>.</param>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
+        [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
+        Task<IElementHandle[]> XPathAsync(string expression);
+
+        /// <summary>
         /// This method is typically coupled with an action that triggers a device
         /// request from an api such as WebBluetooth.
         ///

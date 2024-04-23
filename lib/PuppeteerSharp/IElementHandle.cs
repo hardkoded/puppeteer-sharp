@@ -294,6 +294,14 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
+        /// Evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to <c>null</c>.
+        /// </summary>
+        /// <param name="expression">Expression to evaluate <see href="https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate"/>.</param>
+        /// <returns>Task which resolves to an array of <see cref="IElementHandle"/>.</returns>
+        [Obsolete("Use " + nameof(QuerySelectorAsync) + " instead")]
+        Task<IElementHandle[]> XPathAsync(string expression);
+
+        /// <summary>
         /// Checks if an element is visible using the same mechanism as <see cref="WaitForSelectorAsync"/>.
         /// </summary>
         /// <returns>Task which resolves to true if the element is visible.</returns>
