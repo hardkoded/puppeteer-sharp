@@ -87,17 +87,18 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                             Name= "",
                             Value= "First Option",
                             HasPopup = "menu",
-                            Children= new SerializedAXNode[]{
+                            Children=
+                            [
                                 new() {
-                                    Role = "menuitem",
+                                    Role = "option",
                                     Name = "First Option",
                                     Selected= true
                                 },
                                 new() {
-                                    Role = "menuitem",
+                                    Role = "option",
                                     Name = "Second Option"
                                 }
-                            }
+                            ]
                         }
                     }
             };
@@ -188,7 +189,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 
             var button = await Page.QuerySelectorAsync("button");
             Assert.AreEqual("Show", await GetAccessibleNameAsync(Page, button));
-            await button?.ClickAsync();
+            await button!.ClickAsync();
             await Page.WaitForSelectorAsync("aria/Hide");
         }
 
