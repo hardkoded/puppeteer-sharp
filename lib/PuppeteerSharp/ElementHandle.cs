@@ -278,6 +278,22 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public Task<IElementHandle[]> XPathAsync(string expression)
+        {
+            if (expression is null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            if (expression.StartsWith("//", StringComparison.Ordinal))
+            {
+                expression = $".{expression}";
+            }
+
+            return BindIsolatedHandleAsync<IElementHandle[], ElementHandle>(handle => handle.QuerySelectorAllAsync($"xpath/{expression}"));
+        }
+
+        /// <inheritdoc/>
         public Task<BoundingBox> BoundingBoxAsync()
             => BindIsolatedHandleAsync<BoundingBox, ElementHandle>(async handle =>
             {
