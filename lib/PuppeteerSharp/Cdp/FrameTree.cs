@@ -13,6 +13,7 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
         private readonly ConcurrentDictionary<string, List<TaskCompletionSource<CdpFrame>>> _waitRequests = new();
+        private bool _isMainFrameStale = false;
 
         public CdpFrame MainFrame { get; set; }
 
@@ -53,8 +54,9 @@ namespace PuppeteerSharp.Cdp
                 var childIds = _childIds.GetOrAdd(frame.ParentId, static _ => new());
                 childIds.Add(frame.Id);
             }
-            else
+            else if (MainFrame == null || _isMainFrameStale)
             {
+                _isMainFrameStale = false;
                 MainFrame = frame;
             }
 
@@ -81,7 +83,7 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
-                MainFrame = null;
+                _isMainFrameStale = true;
             }
         }
 
