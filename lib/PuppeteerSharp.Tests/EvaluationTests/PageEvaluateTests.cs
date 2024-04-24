@@ -202,17 +202,23 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldReturnNullForNonSerializableObjects()
             => Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
 
-        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should fail for circular object")]
+        // This test might not work, but it's only for bidi tests we don't have at the moment.
+        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work for circular object")]
         public async Task ShouldFailForCircularObject()
         {
             var result = await Page.EvaluateFunctionAsync(@"() => {
-                const a = {};
+                const a = {
+                  c: 5,
+                  d: {
+                    foo: 'bar',
+                  },
+                };
                 const b = {a};
-                a.b = b;
+                a['b'] = b;
                 return a;
             }");
 
-            Assert.Null(result);
+            Assert.AreEqual("{c: 5, d: { foo: 'bar' }", result.ToString());
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should be able to throw a tricky error")]

@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
         private readonly ConcurrentDictionary<string, List<TaskCompletionSource<CdpFrame>>> _waitRequests = new();
-        private bool _isMainFrameStale = false;
+        private bool _isMainFrameStale;
 
         public CdpFrame MainFrame { get; set; }
 
