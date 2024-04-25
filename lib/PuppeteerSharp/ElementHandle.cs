@@ -17,6 +17,8 @@ namespace PuppeteerSharp
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class ElementHandle : JSHandle, IElementHandle
     {
+        private ElementHandle _isolatedHandle;
+
         internal ElementHandle(
             IsolatedWorld world,
             RemoteObject remoteObject) : base(world, remoteObject)
@@ -722,7 +724,17 @@ namespace PuppeteerSharp
                 return await action((TElementHandle)this).ConfigureAwait(false);
             }
 
-            var adoptedThis = await Frame.IsolatedRealm.AdoptHandleAsync(this).ConfigureAwait(false) as ElementHandle;
+            ElementHandle adoptedThis;
+
+            if (_isolatedHandle == null)
+            {
+                _isolatedHandle = adoptedThis = await Frame.IsolatedRealm.AdoptHandleAsync(this).ConfigureAwait(false) as ElementHandle;
+            }
+            else
+            {
+                adoptedThis = _isolatedHandle;
+            }
+
             var result = await action((TElementHandle)adoptedThis).ConfigureAwait(false);
 
             if (result is IJSHandle jsHandleResult)
