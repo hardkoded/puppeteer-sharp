@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Cdp
         }
 
         internal DeviceRequestPromptManager GetDeviceRequestPromptManager(CDPSession client)
-            => _deviceRequestPromptManagerMap.GetOrAdd(client, _ => new DeviceRequestPromptManager(client, TimeoutSettings));
+            => _deviceRequestPromptManagerMap.GetOrAdd(client, client => new DeviceRequestPromptManager(client, TimeoutSettings));
 
         internal Frame[] GetFrames() => FrameTree.Frames;
 
