@@ -58,7 +58,7 @@ public class CdpJSHandle : JSHandle
 
         var value = await EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
 
-        return value == null ? throw new PuppeteerException("Could not serialize referenced object") : value;
+        return value ?? throw new PuppeteerException("Could not serialize referenced object");
     }
 
     /// <inheritdoc/>
