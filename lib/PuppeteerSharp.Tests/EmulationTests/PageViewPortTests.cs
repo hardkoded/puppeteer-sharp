@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageViewPortTests : PuppeteerPageBaseTest
     {
-        public PageViewPortTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should get the proper viewport size")]
         public async Task ShouldGetTheProperViewPortSize()
         {
@@ -99,5 +95,42 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
             Assert.AreEqual("portrait-primary", await Page.EvaluateExpressionAsync<string>("screen.orientation.type"));
         }
+
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should update media queries when resoltion changes")]
+        public async Task ShouldUpdateMediaQueriesWhenResolutionChanges()
+        {
+            foreach (var dpr in new[] { 1, 2, 3 })
+            {
+                await Page.SetViewportAsync(new ViewPortOptions { Width = 800, Height = 600, DeviceScaleFactor = dpr });
+
+                await Page.GoToAsync(TestConstants.ServerUrl + "/resolution.html");
+                Assert.AreEqual(dpr, await GetFontSizeAsync());
+                var screenshot = await Page.ScreenshotDataAsync(new ScreenshotOptions() { FullPage = false });
+                Assert.True(ScreenshotHelper.PixelMatch($"device-pixel-ratio{dpr}.png", screenshot));
+            }
+        }
+
+        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should load correct pictures when emulation dpr")]
+        public async Task ShouldLoadCorrectPicturesWhenEmulationDpr()
+        {
+            foreach (var dpr in new[] { 1, 2, 3 })
+            {
+                await Page.SetViewportAsync(new ViewPortOptions { Width = 800, Height = 600, DeviceScaleFactor = dpr });
+
+                await Page.GoToAsync(TestConstants.ServerUrl + "/picture.html");
+                StringAssert.EndsWith($"logo-{dpr}x.png", await GetCurrentSrc());
+
+            }
+        }
+
+        private Task<int> GetFontSizeAsync()
+            => Page.EvaluateFunctionAsync<int>(@"() => {
+                return parseInt(window.getComputedStyle(document.querySelector('p')).fontSize, 10);
+            }");
+
+        private Task<string> GetCurrentSrc()
+            => Page.EvaluateFunctionAsync<string>(@"() => {
+                return document.querySelector('img').currentSrc;
+            }");
     }
 }
