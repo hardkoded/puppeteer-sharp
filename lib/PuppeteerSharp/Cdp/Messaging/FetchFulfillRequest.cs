@@ -79,9 +79,9 @@ namespace PuppeteerSharp.Cdp.Messaging
         {
             get
             {
-                if (StatusTexts.ContainsKey(ResponseCode))
+                if (StatusTexts.TryGetValue(ResponseCode, out var statusText))
                 {
-                    return StatusTexts[ResponseCode];
+                    return statusText;
                 }
 
                 return "Unknown Status Code";
