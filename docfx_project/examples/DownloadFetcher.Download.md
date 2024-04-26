@@ -18,7 +18,7 @@ Once you have the version you want, you can download it using the `BrowserFetche
 ```cs
 Console.WriteLine("Downloading browsers");
 
-using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
+var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
 var chrome118 = await browserFetcher.DownloadAsync("118.0.5993.70");
 var chrome119 = await browserFetcher.DownloadAsync("119.0.5997.0");
 
