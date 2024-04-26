@@ -52,7 +52,7 @@ See [this document](https://github.com/hardkoded/puppeteer-sharp/blob/master/CON
 <!-- snippet: ScreenshotAsync -->
 <a id='snippet-ScreenshotAsync'></a>
 ```cs
-using var browserFetcher = new BrowserFetcher();
+var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
 await using var browser = await Puppeteer.LaunchAsync(
     new LaunchOptions { Headless = true });
@@ -82,7 +82,7 @@ await Page.SetViewportAsync(new ViewPortOptions
 <!-- snippet: PdfAsync -->
 <a id='snippet-PdfAsync'></a>
 ```cs
-using var browserFetcher = new BrowserFetcher();
+var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
 await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
 await using var page = await browser.NewPageAsync();
