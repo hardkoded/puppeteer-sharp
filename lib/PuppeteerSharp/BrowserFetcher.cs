@@ -418,11 +418,12 @@ namespace PuppeteerSharp
 
             using var client = new HttpClient(handler);
 
-            // Send the GET request and retrieve the response as a byte array
-            var fileBytes = await client.GetByteArrayAsync(address).ConfigureAwait(false);
+            // Send the GET request and retrieve the response as a stream
+            using var downloadStream = await client.GetStreamAsync(address).ConfigureAwait(false);
 
-            // Write the byte array to a file
-            File.WriteAllBytes(filename, fileBytes);
+            // Write the stream to a file
+            using var fileStream = File.Create(filename);
+            await downloadStream.CopyToAsync(fileStream).ConfigureAwait(false);
         }
     }
 }
