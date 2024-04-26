@@ -280,7 +280,7 @@ namespace PuppeteerSharp
             return new InstalledBrowser(cache, browser, buildId, Platform);
         }
 
-        private Task InstallDMGAsync(string dmgPath, string folderPath)
+        private async Task InstallDMGAsync(string dmgPath, string folderPath)
         {
             try
             {
@@ -334,7 +334,7 @@ namespace PuppeteerSharp
                 process.BeginOutputReadLine();
                 process.WaitForExit();
 
-                return mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout);
+                await mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout).ConfigureAwait(false);
             }
             finally
             {
