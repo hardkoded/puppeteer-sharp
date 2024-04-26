@@ -90,7 +90,7 @@ namespace PuppeteerSharp.BrowserData
 
         private static Dictionary<string, object> GetDefaultPreferences(Dictionary<string, object> preferences)
         {
-            var server = "dummy.test";
+            const string server = "dummy.test";
             var prefs = new Dictionary<string, object>()
             {
                 // Make sure Shield doesn't hit the network.
