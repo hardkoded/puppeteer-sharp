@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,16 +13,11 @@ namespace PuppeteerSharp
     /// <code>
     /// var browserFetcher = Puppeteer.CreateBrowserFetcher();
     /// var revisionInfo = await browserFetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
-    /// var browser = await await Puppeteer.LaunchAsync(new LaunchOptions { ExecutablePath = revisionInfo.ExecutablePath});
+    /// var browser = await Puppeteer.LaunchAsync(new LaunchOptions { ExecutablePath = revisionInfo.ExecutablePath});
     /// </code>
     /// </example>
-    public interface IBrowserFetcher : IDisposable
+    public interface IBrowserFetcher
     {
-        /// <summary>
-        /// Occurs when download progress in <see cref="DownloadAsync()"/>/<see cref="DownloadAsync(string)"/> changes.
-        /// </summary>
-        event DownloadProgressChangedEventHandler DownloadProgressChanged;
-
         /// <summary>
         /// A download host to be used.
         /// </summary>
@@ -45,7 +39,7 @@ namespace PuppeteerSharp
         SupportedBrowser Browser { get; set; }
 
         /// <summary>
-        /// Proxy used by the WebClient in <see cref="DownloadAsync()"/>, <see cref="DownloadAsync(string)"/> and <see cref="CanDownloadAsync"/>.
+        /// Proxy used by the HttpClient in <see cref="DownloadAsync()"/>, <see cref="DownloadAsync(string)"/> and <see cref="CanDownloadAsync"/>.
         /// </summary>
         IWebProxy WebProxy { get; set; }
 
