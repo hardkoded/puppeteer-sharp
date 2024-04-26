@@ -19,7 +19,7 @@ namespace PuppeteerSharp
 
         public string Get()
         {
-            var amendments = string.Join(string.Empty, _amendments.Select(statement => $"({statement})(module.exports.default);"));
+            var amendments = string.Concat(_amendments.Select(statement => $"({statement})(module.exports.default);"));
 
             return $@"(() => {{
                 const module = {{}};
