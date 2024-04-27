@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Helpers
             task.ContinueWith(
                 t =>
                 {
-                    _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {callback}", callback.Method);
+                    _logger.LogError(t.Exception, "Failed to complete async handling of SendAsync for {Method}", callback.Method);
                     callback.TaskWrapper.TrySetException(t.Exception!); // t.Exception is available since this runs only on faulted
                 },
                 CancellationToken.None,

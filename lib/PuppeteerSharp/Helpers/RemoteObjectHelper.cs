@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Helpers
                 case "-Infinity":
                     return double.NegativeInfinity;
                 default:
-                    throw new Exception("Unsupported unserializable value: " + unserializableValue);
+                    throw new PuppeteerException("Unsupported unserializable value: " + unserializableValue);
             }
         }
     }

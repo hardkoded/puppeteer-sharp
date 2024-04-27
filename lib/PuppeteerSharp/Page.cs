@@ -467,7 +467,6 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
-        /// <exception cref="ArgumentException"></exception>
         /// <inheritdoc/>
         public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
             => _screenshotTaskQueue.Enqueue(async () =>
@@ -735,7 +734,7 @@ namespace PuppeteerSharp
         public abstract Task EmulateTimezoneAsync(string timezoneId);
 
         /// <inheritdoc/>
-        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null);
+        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <inheritdoc/>
         public abstract Task EmulateCPUThrottlingAsync(decimal? factor = null);
