@@ -261,6 +261,9 @@ dotnet_diagnostic.CA1805.severity = none
 dotnet_diagnostic.CA1819.severity = suggestion
 # should override equality and inequality.
 dotnet_diagnostic.CA1815.severity = suggestion
+# CA1848: Use the LoggerMessage delegates
+# TODO: REMOVE
+dotnet_diagnostic.CA1848.severity = none
 # Change '...' to be read-only by removing the property setter.
 dotnet_diagnostic.CA2227.severity = suggestion
 # Avoid using cref tags with a prefix
