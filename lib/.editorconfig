@@ -266,6 +266,9 @@ dotnet_diagnostic.CA1815.severity = suggestion
 dotnet_diagnostic.CA1848.severity = none
 # Change '...' to be read-only by removing the property setter.
 dotnet_diagnostic.CA2227.severity = suggestion
+# CA2254: Template should be a static expression
+# TODO: REMOVE
+dotnet_diagnostic.CA2254.severity = none
 # Avoid using cref tags with a prefix
 dotnet_diagnostic.CA1200.severity = suggestion
 # Marshaling for P/Invoke
