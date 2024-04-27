@@ -249,6 +249,12 @@ dotnet_diagnostic.CA1056.severity = none
 dotnet_diagnostic.CA1040.severity = none
 # Use ConfigureAwait
 dotnet_diagnostic.CA2007.severity = error
+# CA1711: Identifiers should not have incorrect suffix
+# We need many suffix coming from Puppeteer.
+dotnet_diagnostic.CA1711.severity = none
+# CA1725: Parameter names should match base declaration
+# I found that in some places it doesn't detect overloads.
+dotnet_diagnostic.CA1725.severity = suggestion
 # Do not initialize unnecessarily.
 dotnet_diagnostic.CA1805.severity = none
 # Properties should not return arrays.
