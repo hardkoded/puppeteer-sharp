@@ -400,7 +400,7 @@ namespace PuppeteerSharp
 
                         if (code != 0)
                         {
-                            throw new Exception("Chmod operation failed");
+                            throw new PuppeteerException("Chmod operation failed");
                         }
                     }
                 }

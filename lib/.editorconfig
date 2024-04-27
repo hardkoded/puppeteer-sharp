@@ -264,6 +264,9 @@ dotnet_diagnostic.CA1815.severity = suggestion
 # CA1848: Use the LoggerMessage delegates
 # TODO: REMOVE
 dotnet_diagnostic.CA1848.severity = none
+# CA1859: Use concrete types when possible for improved performance
+# It collides with https://www.jetbrains.com/help/rider/ReturnTypeCanBeEnumerable.Local.html
+dotnet_diagnostic.CA1859.severity = none
 # Change '...' to be read-only by removing the property setter.
 dotnet_diagnostic.CA2227.severity = suggestion
 # CA2254: Template should be a static expression

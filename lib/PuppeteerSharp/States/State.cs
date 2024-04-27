@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
@@ -105,7 +104,7 @@ namespace PuppeteerSharp.States
             }
         }
 
-        private Exception InvalidOperation(string operationName)
+        private InvalidOperationException InvalidOperation(string operationName)
             => new InvalidOperationException($"Cannot {operationName} in state {this}");
     }
 }

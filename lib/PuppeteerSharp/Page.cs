@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
@@ -200,9 +199,9 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length != 0 == true;
 
-        internal bool HasErrorEventListeners => Error?.GetInvocationList().Any() == true;
+        internal bool HasErrorEventListeners => Error?.GetInvocationList().Length != 0 == true;
 
         /// <summary>
         /// Timeout settings.
@@ -468,6 +467,7 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
+        /// <exception cref="ArgumentException"></exception>
         /// <inheritdoc/>
         public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
             => _screenshotTaskQueue.Enqueue(async () =>
@@ -506,7 +506,7 @@ namespace PuppeteerSharp
 
                 if (options.Clip != null && options.FullPage)
                 {
-                    throw new ArgumentException("options.clip and options.fullPage are exclusive");
+                    throw new NotSupportedException("options.clip and options.fullPage are exclusive");
                 }
 
                 var stack = new DisposableTasksStack();
@@ -523,9 +523,7 @@ namespace PuppeteerSharp
                     {
                         if (options.FromSurface != null)
                         {
-                            throw new ArgumentException(
-                                "Screenshots from surface are not supported on Firefox.",
-                                nameof(options.FromSurface));
+                            throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
                     }
                     else
