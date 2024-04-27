@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
         {
             var success = false;
             var browser = TestConstants.IsChrome ? "chrome" : "firefox";
-            using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
+            var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             using var process = GetTestAppProcess(
                 "PuppeteerSharp.Tests.DumpIO",
                 $"\"{browserFetcher.GetInstalledBrowsers().First().GetExecutablePath()}\" \"${browser}\"");
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
-            using var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
+            var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);
             var chromiumLauncher = new ChromeLauncher(
                 browserFetcher.GetInstalledBrowsers().First().GetExecutablePath(),
                 new LaunchOptions { Headless = true });
