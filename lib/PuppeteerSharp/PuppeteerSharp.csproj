@@ -25,6 +25,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
+    <AnalysisLevel>latest-Recommended</AnalysisLevel>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
