@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
@@ -199,9 +200,9 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length != 0 == true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
 
-        internal bool HasErrorEventListeners => Error?.GetInvocationList().Length != 0 == true;
+        internal bool HasErrorEventListeners => Error?.GetInvocationList().Any() == true;
 
         /// <summary>
         /// Timeout settings.
