@@ -25,7 +25,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
-    <AnalysisLevel>latest-Recommended</AnalysisLevel>
+    <AnalysisLevel>net8.0-Recommended</AnalysisLevel>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
