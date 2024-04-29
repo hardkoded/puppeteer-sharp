@@ -170,7 +170,7 @@ namespace PuppeteerSharp
         {
             _detached = true;
             Client.MessageReceived -= Client_MessageReceived;
-            TaskManager.TerminateAll(new Exception("waitForFunction failed: frame got detached."));
+            TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
         internal Task<ExecutionContext> GetExecutionContextAsync()

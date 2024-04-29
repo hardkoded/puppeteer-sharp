@@ -36,13 +36,13 @@ namespace PuppeteerSharp.BrowserData
                 .GetAsync<Dictionary<string, string>>("https://product-details.mozilla.org/1.0/firefox_versions.json")
                 .ConfigureAwait(false);
 
-            if (!version.ContainsKey(channel))
+            if (!version.TryGetValue(channel, out var buildId))
             {
                 throw new PuppeteerException($"Channel {channel} not found.");
             }
 
-            _cachedBuildIds[channel] = version[channel];
-            return version[channel];
+            _cachedBuildIds[channel] = buildId;
+            return buildId;
         }
 
         internal static string RelativeExecutablePath(Platform platform, string buildId)
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.BrowserData
 
         private static Dictionary<string, object> GetDefaultPreferences(Dictionary<string, object> preferences)
         {
-            var server = "dummy.test";
+            const string server = "dummy.test";
             var prefs = new Dictionary<string, object>()
             {
                 // Make sure Shield doesn't hit the network.

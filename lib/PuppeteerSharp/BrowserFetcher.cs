@@ -247,7 +247,7 @@ namespace PuppeteerSharp
             return new InstalledBrowser(cache, browser, buildId, Platform);
         }
 
-        private Task InstallDmgAsync(string dmgPath, string folderPath)
+        private async Task InstallDmgAsync(string dmgPath, string folderPath)
         {
             try
             {
@@ -301,7 +301,7 @@ namespace PuppeteerSharp
                 process.BeginOutputReadLine();
                 process.WaitForExit();
 
-                return mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout);
+                await mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout).ConfigureAwait(false);
             }
             finally
             {
@@ -400,7 +400,7 @@ namespace PuppeteerSharp
 
                         if (code != 0)
                         {
-                            throw new Exception("Chmod operation failed");
+                            throw new PuppeteerException("Chmod operation failed");
                         }
                     }
                 }

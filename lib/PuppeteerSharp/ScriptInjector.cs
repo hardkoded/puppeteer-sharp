@@ -19,7 +19,7 @@ namespace PuppeteerSharp
 
         public string Get()
         {
-            var amendments = string.Join(string.Empty, _amendments.Select(statement => $"({statement})(module.exports.default);"));
+            var amendments = string.Concat(_amendments.Select(statement => $"({statement})(module.exports.default);"));
 
             return $@"(() => {{
                 const module = {{}};
@@ -44,7 +44,7 @@ namespace PuppeteerSharp
             if (string.IsNullOrEmpty(_injectedSource))
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "PuppeteerSharp.Injected.injected.js";
+                const string resourceName = "PuppeteerSharp.Injected.injected.js";
 
                 using var stream = assembly.GetManifestResourceStream(resourceName);
                 using var reader = new StreamReader(stream);

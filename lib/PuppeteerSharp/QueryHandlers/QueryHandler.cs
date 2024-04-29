@@ -18,7 +18,7 @@ namespace PuppeteerSharp.QueryHandlers
                     return _querySelectorAll;
                 }
 
-                var querySelectorAll = @"async (node, selector, PuppeteerUtil) => {
+                const string querySelectorAll = @"async (node, selector, PuppeteerUtil) => {
                     const querySelectorAll = 'FUNCTION_DEFINITION';
                     const result = await querySelector(node, selector, PuppeteerUtil);
                     if (result) {
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.QueryHandlers
                     throw new PuppeteerException("Cannot create default query selector");
                 }
 
-                var querySelector = @"async (node, selector, PuppeteerUtil) => {
+                const string querySelector = @"async (node, selector, PuppeteerUtil) => {
                     const querySelectorAll = 'FUNCTION_DEFINITION';
                     const results = querySelectorAll(node, selector, PuppeteerUtil);
                     for await (const result of results) {

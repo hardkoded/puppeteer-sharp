@@ -200,9 +200,9 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
-        internal bool HasErrorEventListeners => Error?.GetInvocationList().Any() == true;
+        internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
 
         /// <summary>
         /// Timeout settings.
@@ -506,7 +506,7 @@ namespace PuppeteerSharp
 
                 if (options.Clip != null && options.FullPage)
                 {
-                    throw new ArgumentException("options.clip and options.fullPage are exclusive");
+                    throw new NotSupportedException("options.clip and options.fullPage are exclusive");
                 }
 
                 var stack = new DisposableTasksStack();
@@ -523,9 +523,7 @@ namespace PuppeteerSharp
                     {
                         if (options.FromSurface != null)
                         {
-                            throw new ArgumentException(
-                                "Screenshots from surface are not supported on Firefox.",
-                                nameof(options.FromSurface));
+                            throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
                     }
                     else
@@ -737,7 +735,7 @@ namespace PuppeteerSharp
         public abstract Task EmulateTimezoneAsync(string timezoneId);
 
         /// <inheritdoc/>
-        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null);
+        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <inheritdoc/>
         public abstract Task EmulateCPUThrottlingAsync(decimal? factor = null);

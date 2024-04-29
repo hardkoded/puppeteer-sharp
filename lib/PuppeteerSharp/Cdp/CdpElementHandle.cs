@@ -107,7 +107,7 @@ public class CdpElementHandle : ElementHandle
                 // The zero-length array is a special case, it seems that
                 // DOM.setFileInputFiles does not actually update the files in that case, so
                 // the solution is to eval the element value to a new FileList directly.
-                if (!filePaths.Any())
+                if (filePaths.Length == 0)
                 {
                     await handle.EvaluateFunctionAsync(@"(element) => {
                         element.files = new DataTransfer().files;

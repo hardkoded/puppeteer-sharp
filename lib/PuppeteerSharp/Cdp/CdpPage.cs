@@ -615,7 +615,7 @@ public class CdpPage : Page
             }
             catch (Exception ex)
             {
-                responseTcs.TrySetException(new Exception("Predicated failed", ex));
+                responseTcs.TrySetException(new PuppeteerException("Predicated failed", ex));
             }
         }
 
