@@ -200,9 +200,9 @@ namespace PuppeteerSharp
 
         internal bool IsDragging { get; set; }
 
-        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
-        internal bool HasErrorEventListeners => Error?.GetInvocationList().Any() == true;
+        internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
 
         /// <summary>
         /// Timeout settings.

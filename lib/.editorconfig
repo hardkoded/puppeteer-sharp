@@ -316,8 +316,7 @@ dotnet_diagnostic.CA1816.severity = error
 # CA1836: Prefer IsEmpty over Count when available.
 dotnet_diagnostic.CA1836.severity = error
 # CA1860: Avoid using 'Enumerable.Any()' extension method
-# TODO FIX Page.HasPopupEventListeners and Page.HasErrorEventListeners fail due to this
-dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1860.severity = error
 # CA2000: Call System.IDisposable.Dispose on object created by 'new Process()' before all references to it are out of scope.
 dotnet_diagnostic.CA2000.severity = error
 # CA2008: Pass TaskScheduler
