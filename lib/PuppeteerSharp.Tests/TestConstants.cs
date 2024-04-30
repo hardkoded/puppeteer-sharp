@@ -22,7 +22,6 @@ namespace PuppeteerSharp.Tests
         public static readonly string CrossProcessHttpsPrefix = "https://127.0.0.1:8082";
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
-        public static readonly string ExtensionPath = Path.Combine(AppContext.BaseDirectory, "Assets", "simple-extension");
         public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
 
         public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
@@ -53,16 +52,6 @@ namespace PuppeteerSharp.Tests
 #else
             EnqueueTransportMessages = true
 #endif
-        };
-
-        public static LaunchOptions BrowserWithExtensionOptions() => new()
-        {
-            Headless = false,
-            Args = new[]
-            {
-                $"--disable-extensions-except={ExtensionPath.Quote()}",
-                $"--load-extension={ExtensionPath.Quote()}"
-            }
         };
     }
 }
