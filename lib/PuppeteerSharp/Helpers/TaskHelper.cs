@@ -160,8 +160,8 @@ namespace PuppeteerSharp.Helpers
         /// <param name="milliseconds">Milliseconds timeout.</param>
         /// <param name="exceptionFactory">Optional timeout exception factory.</param>
         /// <typeparam name="T">Task return type.</typeparam>
-        public static Task<T> WithTimeout<T>(this Task<T> task, int milliseconds = 1_000, Func<TimeSpan, Exception> exceptionFactory = null)
-            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds), exceptionFactory);
+        public static Task<T> WithTimeout<T>(this Task<T> task, int? milliseconds = null, Func<TimeSpan, Exception> exceptionFactory = null)
+            => WithTimeout(task, TimeSpan.FromMilliseconds(milliseconds ?? DefaultTimeout), exceptionFactory);
 
         // Recipe from https://blogs.msdn.microsoft.com/pfxteam/2012/10/05/how-do-i-cancel-non-cancelable-async-operations/
 
