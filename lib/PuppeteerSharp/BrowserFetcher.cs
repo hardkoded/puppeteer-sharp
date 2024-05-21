@@ -405,6 +405,32 @@ namespace PuppeteerSharp
                     }
                 }
             }
+
+            if (GetCurrentPlatform() == Platform.Win64 || GetCurrentPlatform() == Platform.Win32)
+            {
+                TrySetWindowsPermissions(outputPath);
+            }
+        }
+
+        private void TrySetWindowsPermissions(string outputPath)
+        {
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "icacls.exe",
+                    Arguments = $"\"{outputPath}\" /grant \"ALL APPLICATION PACKAGES:(OI)(CI)(RX)\"",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                };
+                var process = Process.Start(startInfo);
+                process?.WaitForExit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unable to fix permissions: " + e.Message);
+                Console.WriteLine($"Visit https://pptr.dev/troubleshooting#chrome-reports-sandbox-errors-on-windows for more information");
+                throw;
+            }
         }
 
         private async Task DownloadFileUsingHttpClientTaskAsync(string address, string filename)
