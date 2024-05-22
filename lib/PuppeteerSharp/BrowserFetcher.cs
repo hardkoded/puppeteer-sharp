@@ -409,7 +409,7 @@ namespace PuppeteerSharp
             if (browser == SupportedBrowser.Chrome && (GetCurrentPlatform() == Platform.Win64 || GetCurrentPlatform() == Platform.Win32))
             {
                 if (int.TryParse(buildId.Split('.').First(), out var majorVersion) &&
-                    majorVersion > Chrome.ChromeVersionRequiringPermissionsFix)
+                    majorVersion >= Chrome.ChromeVersionRequiringPermissionsFix)
                 {
                     TrySetWindowsPermissions(outputPath);
                 }
