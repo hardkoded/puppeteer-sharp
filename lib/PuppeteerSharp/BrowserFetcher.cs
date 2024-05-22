@@ -423,7 +423,7 @@ namespace PuppeteerSharp
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = "icacls.exe",
-                    Arguments = $"\"{outputPath}\" /grant \"ALL APPLICATION PACKAGES:(OI)(CI)(RX)\"",
+                    Arguments = $"\"{outputPath}\" /grant *S-1-15-2-2:(OI)(CI)(RX)",
                     WindowStyle = ProcessWindowStyle.Hidden,
                 };
                 var process = Process.Start(startInfo);
