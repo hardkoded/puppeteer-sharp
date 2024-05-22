@@ -10,6 +10,8 @@ namespace PuppeteerSharp.BrowserData
     /// </summary>
     public static class Chrome
     {
+        internal static int ChromeVersionRequiringPermissionsFix = 125;
+
         /// <summary>
         /// Default chrome build.
         /// </summary>

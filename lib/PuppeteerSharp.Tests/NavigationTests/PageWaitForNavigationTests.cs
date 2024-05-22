@@ -30,26 +30,23 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
-            Server.SetRoute("/one-style.css", _ =>
-            {
-                return responseCompleted.Task;
-            });
+            Server.SetRoute("/one-style.css", _ => responseCompleted.Task);
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             var domContentLoadedTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
-                WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded }
+                WaitUntil = [WaitUntilNavigation.DOMContentLoaded]
             });
 
             var bothFired = false;
             var bothFiredTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
-                WaitUntil = new[]
-                {
+                WaitUntil =
+                [
                     WaitUntilNavigation.Load,
                     WaitUntilNavigation.DOMContentLoaded
-                }
+                ]
             }).ContinueWith(_ => bothFired = true);
 
             await waitForRequestTask.WithTimeout();
