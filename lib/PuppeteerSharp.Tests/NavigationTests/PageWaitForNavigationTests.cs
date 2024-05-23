@@ -49,12 +49,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 ]
             }).ContinueWith(_ => bothFired = true);
 
-            await waitForRequestTask.WithTimeout();
-            await domContentLoadedTask.WithTimeout();
+            await waitForRequestTask.WithTimeout(5_000);
+            await domContentLoadedTask.WithTimeout(5_000);
             Assert.False(bothFired);
             responseCompleted.SetResult(true);
-            await bothFiredTask.WithTimeout();
-            await navigationTask.WithTimeout();
+            await bothFiredTask.WithTimeout(5_000);
+            await navigationTask.WithTimeout(5_000);
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with clicking on anchor links")]
