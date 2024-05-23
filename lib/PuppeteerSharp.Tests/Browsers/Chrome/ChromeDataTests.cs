@@ -9,6 +9,16 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
 {
     public class ChromeDataTests
     {
+        public async Task ReuseChromeExample()
+        {
+            #region ReuseChromeExample
+            var downloadPath = "/Users/dario/chrome";
+            var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
+            var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+            var installedBrowser = await browserFetcher.DownloadAsync();
+            #endregion
+        }
+
         public async Task Usage()
         {
             #region CustomVersionsExample
