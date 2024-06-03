@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         [Test, Retry(2), PuppeteerTest("CLI.spec", "Chrome CLI", "should download Chrome binaries")]
         public async Task ShouldDownloadChromeBinaries()
         {
-            using var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)
+            var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)
             {
                 CacheDir = _cacheDir,
                 Platform = Platform.Linux

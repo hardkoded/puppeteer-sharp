@@ -109,6 +109,18 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.AreEqual(HttpStatusCode.OK, response.Status);
         }
 
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when reload causes history API in beforeunload")]
+        public async Task ShouldWorkWhenReloadCausesHistoryAPIInBeforeunload()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"() =>
+            {
+                window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+            }");
+            var response = await Page.ReloadAsync();
+            Assert.AreEqual(1, await Page.EvaluateFunctionAsync<int>("() => 1"));
+        }
+
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate to empty page with networkidle0")]
         public async Task ShouldNavigateToEmptyPageWithNetworkidle0()
         {

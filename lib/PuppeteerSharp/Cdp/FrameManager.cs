@@ -5,7 +5,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -43,7 +42,7 @@ namespace PuppeteerSharp.Cdp
 
         internal event EventHandler<FrameEventArgs> FrameSwapped;
 
-        internal event EventHandler<FrameEventArgs> FrameNavigated;
+        internal event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         internal event EventHandler<FrameEventArgs> FrameNavigatedWithinDocument;
 
@@ -108,7 +107,7 @@ namespace PuppeteerSharp.Cdp
         }
 
         internal DeviceRequestPromptManager GetDeviceRequestPromptManager(CDPSession client)
-            => _deviceRequestPromptManagerMap.GetOrAdd(client, _ => new DeviceRequestPromptManager(client, TimeoutSettings));
+            => _deviceRequestPromptManagerMap.GetOrAdd(client, client => new DeviceRequestPromptManager(client, TimeoutSettings));
 
         internal Frame[] GetFrames() => FrameTree.Frames;
 
@@ -212,7 +211,8 @@ namespace PuppeteerSharp.Cdp
                             break;
 
                         case "Page.frameNavigated":
-                            await OnFrameNavigatedAsync(e.MessageData.ToObject<PageFrameNavigatedResponse>(true).Frame).ConfigureAwait(false);
+                            var response = e.MessageData.ToObject<PageFrameNavigatedResponse>(true);
+                            await OnFrameNavigatedAsync(response.Frame, response.Type).ConfigureAwait(false);
                             break;
 
                         case "Page.navigatedWithinDocument":
@@ -366,7 +366,7 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private async Task OnFrameNavigatedAsync(FramePayload framePayload)
+        private async Task OnFrameNavigatedAsync(FramePayload framePayload, NavigationType type)
         {
             // This is in the event handler upstream.
             // It's more consistent having this here.
@@ -405,8 +405,8 @@ namespace PuppeteerSharp.Cdp
 
             // Update frame payload.
             frame.Navigated(framePayload);
-
-            FrameNavigated?.Invoke(this, new FrameEventArgs(frame));
+            frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, type));
+            FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, type));
         }
 
         private void OnFrameNavigatedWithinDocument(NavigatedWithinDocumentResponse e)
@@ -418,13 +418,14 @@ namespace PuppeteerSharp.Cdp
 
                 var eventArgs = new FrameEventArgs(frame);
                 FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
-                FrameNavigated?.Invoke(this, eventArgs);
+                frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
+                FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
             }
         }
 
         private void RemoveFramesRecursively(Frame frame)
         {
-            while (frame.ChildFrames.Any())
+            while (frame.ChildFrames.Count != 0)
             {
                 RemoveFramesRecursively(frame.ChildFrames.First() as Frame);
             }
@@ -464,7 +465,7 @@ namespace PuppeteerSharp.Cdp
 
             if (!_frameNavigatedReceived.Contains(frameTree.Frame.Id))
             {
-                await OnFrameNavigatedAsync(frameTree.Frame).ConfigureAwait(false);
+                await OnFrameNavigatedAsync(frameTree.Frame, NavigationType.Navigation).ConfigureAwait(false);
             }
             else
             {

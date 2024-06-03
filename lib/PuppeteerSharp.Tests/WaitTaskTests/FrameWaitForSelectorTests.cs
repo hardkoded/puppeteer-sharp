@@ -1,14 +1,39 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
     public class FrameWaitForSelectorTests : PuppeteerPageBaseTest
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+        private PollerInterceptor _pollerInterceptor;
+
+        public FrameWaitForSelectorTests()
+        {
+            DefaultOptions = TestConstants.DefaultBrowserOptions();
+
+            // Set up a custom TransportFactory to intercept sent messages
+            // Some of the tests require making assertions after a WaitForFunction has
+            // started, but before it has resolved. We detect that reliably by
+            // listening to the message that is sent to start polling.
+            // This might not be an issue in upstream puppeteer.js, or may be highly unlikely,
+            // due to differences between node.js's task scheduler and .net's.
+            DefaultOptions.TransportFactory = async (url, options, cancellationToken) =>
+            {
+                _pollerInterceptor = new PollerInterceptor(await WebSocketTransport.DefaultTransportFactory(url, options, cancellationToken));
+                return _pollerInterceptor;
+            };
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            _pollerInterceptor.Dispose();
+        }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should immediately resolve promise if node exists")]
         public async Task ShouldImmediatelyResolveTaskIfNodeExists()
@@ -222,7 +247,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should respect timeout")]
-        public void ShouldRespectTimeout()
+        public void XpathShouldRespectTimeout()
         {
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
@@ -265,6 +290,89 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync(".zombo", new WaitForSelectorOptions { Timeout = 10 }));
             StringAssert.Contains("WaitForSelectorTests", exception.StackTrace);
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should support some fancy xpath")]
+        public async Task ShouldSupportSomeFancyXpath()
+        {
+            await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
+            var waitForXPath = Page.WaitForSelectorAsync("xpath/.//p[normalize-space(.)=\"hello world\"]");
+            Assert.AreEqual("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should run in specified frame")]
+        public async Task XpathShouldRunInSpecifiedFrame()
+        {
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
+            var frame1 = Page.ChildFrames().ElementAt(0);
+            var frame2 = Page.ChildFrames().ElementAt(1);
+            var waitForXPathPromise = frame2.WaitForSelectorAsync("xpath/.//div");
+            await frame1.EvaluateFunctionAsync(AddElement, "div");
+            await frame2.EvaluateFunctionAsync(AddElement, "div");
+            var eHandle = await waitForXPathPromise;
+            Assert.AreEqual(frame2, eHandle.Frame);
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should throw when frame is detached")]
+        public async Task XpathShouldThrowWhenFrameIsDetached()
+        {
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            var frame = Page.FirstChildFrame();
+            var waitPromise = frame.WaitForSelectorAsync("xpath/.//*[@class=\"box\"]");
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitPromise);
+            StringAssert.Contains("waitForFunction failed: frame got detached.", exception.Message);
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should wait for display: none")]
+        public async Task HiddenShouldWaitForDisplayNone()
+        {
+            var divHidden = false;
+            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
+            await Page.SetContentAsync("<div style='display: block;'></div>");
+            var waitForXPath = Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await startedPolling;
+            Assert.False(divHidden);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
+            Assert.True(await waitForXPath.WithTimeout());
+            Assert.True(divHidden);
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should return the element handle")]
+        public async Task XpathShouldReturnTheElementHandle()
+        {
+            var waitForXPath = Page.WaitForSelectorAsync("xpath/.//*[@class=\"zombo\"]");
+            await Page.SetContentAsync("<div class='zombo'>anything</div>");
+            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should allow you to select a text node")]
+        public async Task ShouldAllowYouToSelectATextNode()
+        {
+            await Page.SetContentAsync("<div>some text</div>");
+            var text = await Page.WaitForSelectorAsync("xpath/.//div/text()");
+            Assert.AreEqual(3 /* Node.TEXT_NODE */, await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>());
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should allow you to select an element with single slash")]
+        public async Task ShouldAllowYouToSelectAnElementWithSingleSlash()
+        {
+            await Page.SetContentAsync("<div>some text</div>");
+            var waitForXPath = Page.WaitForSelectorAsync("xpath/html/body/div");
+            Assert.AreEqual("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+        }
+
+        [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should respect timeout")]
+        public void ShouldRespectTimeout()
+        {
+            const int timeout = 10;
+
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
+                    => Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Timeout = timeout }));
+
+            StringAssert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);
         }
     }
 }

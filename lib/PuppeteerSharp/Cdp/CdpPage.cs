@@ -29,6 +29,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Cdp.Messaging.Protocol.Network;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Media;
@@ -135,16 +136,16 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override bool IsJavaScriptEnabled => _emulationManager.JavascriptEnabled;
 
-    internal CdpCDPSession PrimaryTargetClient { get; private set; }
-
-    internal CdpTarget PrimaryTarget { get; private set; }
-
-    internal CdpCDPSession TabTargetClient { get; }
-
-    internal CdpTarget TabTarget { get; }
-
     /// <inheritdoc />
     protected override Browser Browser => PrimaryTarget.Browser;
+
+    private CdpCDPSession PrimaryTargetClient { get; set; }
+
+    private CdpTarget PrimaryTarget { get; set; }
+
+    private CdpCDPSession TabTargetClient { get; }
+
+    private CdpTarget TabTarget { get; }
 
     private Task SessionClosedTask
     {
@@ -192,7 +193,7 @@ public class CdpPage : Page
 
         return (await PrimaryTargetClient.SendAsync<NetworkGetCookiesResponse>(
                 "Network.getCookies",
-                new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : new[] { Url }, })
+                new NetworkGetCookiesRequest { Urls = urls.Length > 0 ? urls : [Url], })
             .ConfigureAwait(false)).Cookies;
     }
 
@@ -310,6 +311,16 @@ public class CdpPage : Page
             Identifier = identifier,
         });
 
+    /// <inheritdoc />
+    public override Task SetBypassServiceWorkerAsync(bool bypass)
+    {
+        IsServiceWorkerBypassed = bypass;
+        return Client.SendAsync("Network.setBypassServiceWorker", new SetBypassServiceWorkerRequest
+        {
+            Bypass = bypass,
+        });
+    }
+
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
@@ -404,7 +415,8 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var navigationTask = WaitForNavigationAsync(options);
+        Debug.Assert(options != null, nameof(options) + " != null");
+        var navigationTask = WaitForNavigationAsync(options with { IgnoreSameDocumentNavigation = true });
 
         await Task.WhenAll(
                 navigationTask,
@@ -512,23 +524,31 @@ public class CdpPage : Page
         var timeout = options?.Timeout ?? DefaultTimeout;
         var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        void FrameEventListener(object sender, FrameEventArgs e)
+        void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
         {
             if (predicate(e.Frame))
             {
                 frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameAttached -= FrameEventListener;
-                FrameManager.FrameNavigated -= FrameEventListener;
+                FrameManager.FrameNavigated -= FrameNavigatedEventListener;
             }
         }
 
-        FrameManager.FrameAttached += FrameEventListener;
-        FrameManager.FrameNavigated += FrameEventListener;
+        void FrameAttachedEventListener(object sender, FrameEventArgs e)
+        {
+            if (predicate(e.Frame))
+            {
+                frameTcs.TrySetResult(e.Frame);
+                FrameManager.FrameAttached -= FrameAttachedEventListener;
+            }
+        }
+
+        FrameManager.FrameAttached += FrameAttachedEventListener;
+        FrameManager.FrameNavigated += FrameNavigatedEventListener;
 
         var eventRace = Task.WhenAny(frameTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
         {
-            FrameManager.FrameAttached -= FrameEventListener;
-            FrameManager.FrameNavigated -= FrameEventListener;
+            FrameManager.FrameAttached -= FrameAttachedEventListener;
+            FrameManager.FrameNavigated -= FrameNavigatedEventListener;
             return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
         });
 
@@ -595,7 +615,7 @@ public class CdpPage : Page
             }
             catch (Exception ex)
             {
-                responseTcs.TrySetException(new Exception("Predicated failed", ex));
+                responseTcs.TrySetException(new PuppeteerException("Predicated failed", ex));
             }
         }
 
@@ -802,6 +822,9 @@ public class CdpPage : Page
         {
             await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
         }
+
+        await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("() => documents.fonts.ready")
+            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
 
         var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>(
             "Page.printToPDF",

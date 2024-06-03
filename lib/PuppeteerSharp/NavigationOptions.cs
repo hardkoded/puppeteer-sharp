@@ -3,7 +3,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Navigation options used by <see cref="IPage.WaitForNavigationAsync(NavigationOptions)"/> and <see cref="IPage.SetContentAsync(string, NavigationOptions)"/>.
     /// </summary>
-    public class NavigationOptions
+    public record NavigationOptions
     {
         /// <summary>
         /// Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout.
@@ -28,5 +28,7 @@ namespace PuppeteerSharp
         /// Referrer policy. If provided it will take preference over the referer-policy header value set by <see cref="IPage.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>.
         /// </summary>
         public string ReferrerPolicy { get; set; }
+
+        internal bool IgnoreSameDocumentNavigation { get; set; }
     }
 }

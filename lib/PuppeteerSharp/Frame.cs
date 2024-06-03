@@ -18,7 +18,7 @@ namespace PuppeteerSharp
 
         internal event EventHandler FrameDetached;
 
-        internal event EventHandler FrameNavigated;
+        internal event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         internal event EventHandler FrameNavigatedWithinDocument;
 
@@ -134,9 +134,6 @@ namespace PuppeteerSharp
 
             return WaitForSelectorAsync($"xpath/{xpath}", options);
         }
-
-        /// <inheritdoc/>
-        public Task WaitForTimeoutAsync(int milliseconds) => Task.Delay(milliseconds);
 
         /// <inheritdoc/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
@@ -301,57 +298,8 @@ namespace PuppeteerSharp
             await handle.TypeAsync(text, options).ConfigureAwait(false);
         }
 
-        internal void ClearDocumentHandle() => _documentTask = null;
-
-        internal void OnLoadingStarted() => HasStartedLoading = true;
-
-        internal void OnLoadingStopped()
-        {
-            LifecycleEvents.Add("DOMContentLoaded");
-            LifecycleEvents.Add("load");
-            LifecycleEvent?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void OnLifecycleEvent(string loaderId, string name)
-        {
-            if (name == "init")
-            {
-                LoaderId = loaderId;
-                LifecycleEvents.Clear();
-            }
-
-            LifecycleEvents.Add(name);
-            LifecycleEvent?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void Navigated(FramePayload framePayload)
-        {
-            Name = framePayload.Name ?? string.Empty;
-            Url = framePayload.Url + framePayload.UrlFragment;
-            FrameNavigated?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void OnSwapped() => FrameSwapped?.Invoke(this, EventArgs.Empty);
-
-        internal void NavigatedWithinDocument(string url)
-        {
-            Url = url;
-            FrameNavigatedWithinDocument?.Invoke(this, EventArgs.Empty);
-            FrameNavigated?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void Detach()
-        {
-            Detached = true;
-            MainWorld.Detach();
-            PuppeteerWorld.Detach();
-            FrameDetached?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void OnFrameSwappedByActivation()
-            => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
-
-        internal async Task<ElementHandle> FrameElementAsync()
+        /// <inheritdoc />
+        public async Task<ElementHandle> FrameElementAsync()
         {
             var parentFrame = ParentFrame;
             if (parentFrame == null)
@@ -383,6 +331,56 @@ namespace PuppeteerSharp
 
             return null;
         }
+
+        internal void ClearDocumentHandle() => _documentTask = null;
+
+        internal void OnLoadingStarted() => HasStartedLoading = true;
+
+        internal void OnLoadingStopped()
+        {
+            LifecycleEvents.Add("DOMContentLoaded");
+            LifecycleEvents.Add("load");
+            LifecycleEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnLifecycleEvent(string loaderId, string name)
+        {
+            if (name == "init")
+            {
+                LoaderId = loaderId;
+                LifecycleEvents.Clear();
+            }
+
+            LifecycleEvents.Add(name);
+            LifecycleEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void Navigated(FramePayload framePayload)
+        {
+            Name = framePayload.Name ?? string.Empty;
+            Url = framePayload.Url + framePayload.UrlFragment;
+        }
+
+        internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+
+        internal void OnSwapped() => FrameSwapped?.Invoke(this, EventArgs.Empty);
+
+        internal void NavigatedWithinDocument(string url)
+        {
+            Url = url;
+            FrameNavigatedWithinDocument?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void Detach()
+        {
+            Detached = true;
+            MainWorld.Detach();
+            PuppeteerWorld.Detach();
+            FrameDetached?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnFrameSwappedByActivation()
+            => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Gets the prompts manager for the current client.

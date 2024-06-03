@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             #region PdfAsync
 
-            using var browserFetcher = new BrowserFetcher();
+            var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
             await using var page = await browser.NewPageAsync();
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fileInfo.Delete();
             }
             await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
-            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
 
             Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
-            await Page.PdfAsync(outputFile);
+            await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
 
             Assert.Greater(new FileInfo(outputFileOutlined).Length, new FileInfo(outputFile).Length);

@@ -1,7 +1,8 @@
-namespace PuppeteerSharp.Cdp.Messaging
+namespace PuppeteerSharp.Cdp.Messaging;
+
+internal class PageFrameNavigatedResponse
 {
-    internal class PageFrameNavigatedResponse
-    {
-        public FramePayload Frame { get; set; }
-    }
+    public FramePayload Frame { get; set; }
+
+    public NavigationType Type { get; set; }
 }

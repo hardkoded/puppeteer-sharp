@@ -81,7 +81,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raised when a frame is navigated to a new url.
         /// </summary>
-        event EventHandler<FrameEventArgs> FrameNavigated;
+        event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <summary>
         /// Raised when the JavaScript <c>load</c> <see href="https://developer.mozilla.org/en-US/docs/Web/Events/load"/> event is dispatched.
@@ -282,6 +282,11 @@ namespace PuppeteerSharp
         /// If the page has JavaScript enabled.
         /// </summary>
         bool IsJavaScriptEnabled { get; }
+
+        /// <summary>
+        /// `true` if the service worker are being bypassed.
+        /// </summary>
+        bool IsServiceWorkerBypassed { get; }
 
         /// <summary>
         /// Adds a <c><![CDATA[<script>]]></c> tag into the page with the desired url or content.
@@ -1389,14 +1394,6 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
-        /// Waits for a timeout.
-        /// </summary>
-        /// <param name="milliseconds">The amount of time to wait.</param>
-        /// <returns>A task that resolves when after the timeout.</returns>
-        /// <seealso cref="IFrame.WaitForTimeoutAsync(int)"/>
-        Task WaitForTimeoutAsync(int milliseconds);
-
-        /// <summary>
         /// Waits for a xpath selector to be added to the DOM.
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for.</param>
@@ -1477,6 +1474,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="identifier">Function identifier.</param>
         /// <returns>A task that resolves when the script is removed.</returns>
-        public Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier);
+        Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier);
+
+        /// <summary>
+        /// Toggles ignoring of service worker for each request.
+        /// </summary>
+        /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
+        /// <returns>A task that resolves when the message is sent to the browser.</returns>
+        Task SetBypassServiceWorkerAsync(bool bypass);
     }
 }

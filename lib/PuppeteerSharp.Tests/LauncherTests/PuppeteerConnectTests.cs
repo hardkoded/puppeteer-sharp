@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var pages = await remoteBrowser.PagesAsync();
 
             Assert.AreEqual(
-                new string[]
+                new[]
                 {
                     "about:blank",
                     TestConstants.EmptyPage
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = new ConnectOptions
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint,
-                InitAction = brw =>
+                InitAction = _ =>
                 {
                     initActionExecuted = true;
                 }
@@ -146,7 +146,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var pages = (await browser.PagesAsync()).ToList();
             var restoredPage = pages.FirstOrDefault(x => x.Url == url);
             Assert.NotNull(restoredPage);
-            var frameDump = FrameUtils.DumpFrames(restoredPage.MainFrame);
+            var frameDump = await FrameUtils.DumpFramesAsync(restoredPage.MainFrame);
             Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
             var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
             Assert.AreEqual(56, response);

@@ -52,7 +52,7 @@ See [this document](https://github.com/hardkoded/puppeteer-sharp/blob/master/CON
 <!-- snippet: ScreenshotAsync -->
 <a id='snippet-ScreenshotAsync'></a>
 ```cs
-using var browserFetcher = new BrowserFetcher();
+var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
 await using var browser = await Puppeteer.LaunchAsync(
     new LaunchOptions { Headless = true });
@@ -82,7 +82,7 @@ await Page.SetViewportAsync(new ViewPortOptions
 <!-- snippet: PdfAsync -->
 <a id='snippet-PdfAsync'></a>
 ```cs
-using var browserFetcher = new BrowserFetcher();
+var browserFetcher = new BrowserFetcher();
 await browserFetcher.DownloadAsync();
 await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
 await using var page = await browser.NewPageAsync();
@@ -172,6 +172,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/skalahonza"><img src="https://github.com/skalahonza.png" width="60px" alt="Jan Skála" /></a><!-- sponsors -->
 
 

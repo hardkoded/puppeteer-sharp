@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         public event EventHandler<FrameEventArgs> FrameDetached;
 
         /// <inheritdoc/>
-        public event EventHandler<FrameEventArgs> FrameNavigated;
+        public event EventHandler<FrameNavigatedEventArgs> FrameNavigated;
 
         /// <inheritdoc/>
         public event EventHandler<ResponseCreatedEventArgs> Response;
@@ -135,6 +135,9 @@ namespace PuppeteerSharp
         public abstract WebWorker[] Workers { get; }
 
         /// <inheritdoc/>
+        public bool IsServiceWorkerBypassed { get; protected set; }
+
+        /// <inheritdoc/>
         public string Url => MainFrame.Url;
 
         /// <inheritdoc/>
@@ -183,23 +186,23 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
-        internal Accessibility Accessibility { get; set; }
+        internal Accessibility Accessibility { get; init; }
 
-        internal Keyboard Keyboard { get; set; }
+        internal Keyboard Keyboard { get; init; }
 
-        internal Touchscreen Touchscreen { get; set; }
+        internal Touchscreen Touchscreen { get; init; }
 
-        internal Coverage Coverage { get; set; }
+        internal Coverage Coverage { get; init; }
 
-        internal Tracing Tracing { get; set; }
+        internal Tracing Tracing { get; init; }
 
-        internal Mouse Mouse { get; set; }
+        internal Mouse Mouse { get; init; }
 
         internal bool IsDragging { get; set; }
 
-        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Any() == true;
+        internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
-        internal bool HasErrorEventListeners => Error?.GetInvocationList().Any() == true;
+        internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
 
         /// <summary>
         /// Timeout settings.
@@ -503,7 +506,7 @@ namespace PuppeteerSharp
 
                 if (options.Clip != null && options.FullPage)
                 {
-                    throw new ArgumentException("options.clip and options.fullPage are exclusive");
+                    throw new NotSupportedException("options.clip and options.fullPage are exclusive");
                 }
 
                 var stack = new DisposableTasksStack();
@@ -520,9 +523,7 @@ namespace PuppeteerSharp
                     {
                         if (options.FromSurface != null)
                         {
-                            throw new ArgumentException(
-                                "Screenshots from surface are not supported on Firefox.",
-                                nameof(options.FromSurface));
+                            throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
                     }
                     else
@@ -657,10 +658,6 @@ namespace PuppeteerSharp
             => MainFrame.SelectAsync(selector, values);
 
         /// <inheritdoc/>
-        public Task WaitForTimeoutAsync(int milliseconds)
-            => MainFrame.WaitForTimeoutAsync(milliseconds);
-
-        /// <inheritdoc/>
         public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
             => MainFrame.WaitForFunctionAsync(script, options ?? new WaitForFunctionOptions(), args);
 
@@ -738,7 +735,7 @@ namespace PuppeteerSharp
         public abstract Task EmulateTimezoneAsync(string timezoneId);
 
         /// <inheritdoc/>
-        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null);
+        public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <inheritdoc/>
         public abstract Task EmulateCPUThrottlingAsync(decimal? factor = null);
@@ -767,6 +764,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc />
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
+
+        /// <inheritdoc />
+        public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
@@ -800,7 +800,7 @@ namespace PuppeteerSharp
         /// Raises the <see cref="FrameNavigated"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameNavigated(FrameEventArgs e) => FrameNavigated?.Invoke(this, e);
+        protected void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="FrameDetached"/> event.

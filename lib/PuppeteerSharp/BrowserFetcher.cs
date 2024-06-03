@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ using static PuppeteerSharp.BrowserFetcherOptions;
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    public class BrowserFetcher : IBrowserFetcher
+    public sealed class BrowserFetcher : IBrowserFetcher
     {
         private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
 
@@ -28,9 +29,7 @@ namespace PuppeteerSharp
             [SupportedBrowser.Firefox] = Firefox.ResolveDownloadUrl,
         };
 
-        private readonly WebClient _webClient = new();
         private readonly CustomFileDownloadAction _customFileDownload;
-        private bool _isDisposed;
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
@@ -38,7 +37,7 @@ namespace PuppeteerSharp
             CacheDir = GetBrowsersLocation();
             Platform = GetCurrentPlatform();
             Browser = SupportedBrowser.Chrome;
-            _customFileDownload = _webClient.DownloadFileTaskAsync;
+            _customFileDownload = DownloadFileUsingHttpClientTaskAsync;
         }
 
         /// <inheritdoc cref="BrowserFetcher"/>
@@ -57,11 +56,8 @@ namespace PuppeteerSharp
             Browser = options.Browser;
             CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
-            _customFileDownload = options.CustomFileDownload ?? _webClient.DownloadFileTaskAsync;
+            _customFileDownload = options.CustomFileDownload ?? DownloadFileUsingHttpClientTaskAsync;
         }
-
-        /// <inheritdoc/>
-        public event DownloadProgressChangedEventHandler DownloadProgressChanged;
 
         /// <inheritdoc/>
         public string CacheDir { get; set; }
@@ -76,11 +72,7 @@ namespace PuppeteerSharp
         public SupportedBrowser Browser { get; set; }
 
         /// <inheritdoc/>
-        public IWebProxy WebProxy
-        {
-            get => _webClient.Proxy;
-            set => _webClient.Proxy = value;
-        }
+        public IWebProxy WebProxy { get; set; }
 
         /// <inheritdoc/>
         public async Task<bool> CanDownloadAsync(string revision)
@@ -89,10 +81,16 @@ namespace PuppeteerSharp
             {
                 var url = GetDownloadURL(Browser, Platform, BaseUrl, revision);
 
-                var client = WebRequest.Create(url);
-                client.Proxy = _webClient.Proxy;
-                client.Method = "HEAD";
-                using var response = (HttpWebResponse)await client.GetResponseAsync().ConfigureAwait(false);
+                using var handler = new HttpClientHandler();
+                if (WebProxy != null)
+                {
+                    handler.Proxy = WebProxy;
+                    handler.UseProxy = true;
+                }
+
+                using var client = new HttpClient(handler);
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Head, url);
+                using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK;
             }
             catch (WebException)
@@ -147,13 +145,6 @@ namespace PuppeteerSharp
                 buildId,
                 Platform).GetExecutablePath();
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         internal static Platform GetCurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -198,31 +189,12 @@ namespace PuppeteerSharp
                 assemblyDirectory = new FileInfo(assemblyLocation).Directory;
             }
 
-            if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
+            if (!assemblyDirectory!.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
                 assemblyDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
             }
 
             return assemblyDirectory.FullName;
-        }
-
-        /// <summary>
-        /// Dispose <see cref="WebClient"/>.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                _webClient.Dispose();
-            }
-
-            _isDisposed = true;
         }
 
         private static string GetDownloadURL(SupportedBrowser product, Platform platform, string baseUrl, string buildId)
@@ -253,11 +225,6 @@ namespace PuppeteerSharp
                 downloadFolder.Create();
             }
 
-            if (DownloadProgressChanged != null)
-            {
-                _webClient.DownloadProgressChanged += DownloadProgressChanged;
-            }
-
             var outputPath = cache.GetInstallationDir(browser, Platform, buildId);
 
             if (new DirectoryInfo(outputPath).Exists)
@@ -274,13 +241,13 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
             }
 
-            await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
+            await UnpackArchiveAsync(archivePath, outputPath, fileName, browser, buildId).ConfigureAwait(false);
             new FileInfo(archivePath).Delete();
 
             return new InstalledBrowser(cache, browser, buildId, Platform);
         }
 
-        private Task InstallDMGAsync(string dmgPath, string folderPath)
+        private async Task InstallDmgAsync(string dmgPath, string folderPath)
         {
             try
             {
@@ -334,7 +301,7 @@ namespace PuppeteerSharp
                 process.BeginOutputReadLine();
                 process.WaitForExit();
 
-                return mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout);
+                await mountAndCopyTcs.Task.WithTimeout(Puppeteer.DefaultTimeout).ConfigureAwait(false);
             }
             finally
             {
@@ -390,7 +357,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName)
+        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName, SupportedBrowser browser, string buildId)
         {
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
@@ -402,7 +369,7 @@ namespace PuppeteerSharp
             }
             else
             {
-                await InstallDMGAsync(archivePath, outputPath).ConfigureAwait(false);
+                await InstallDmgAsync(archivePath, outputPath).ConfigureAwait(false);
             }
 
             if (GetCurrentPlatform() == Platform.Linux)
@@ -433,11 +400,60 @@ namespace PuppeteerSharp
 
                         if (code != 0)
                         {
-                            throw new Exception("Chmod operation failed");
+                            throw new PuppeteerException("Chmod operation failed");
                         }
                     }
                 }
             }
+
+            if (browser == SupportedBrowser.Chrome && (GetCurrentPlatform() == Platform.Win64 || GetCurrentPlatform() == Platform.Win32))
+            {
+                if (int.TryParse(buildId.Split('.').First(), out var majorVersion) &&
+                    majorVersion >= Chrome.ChromeVersionRequiringPermissionsFix)
+                {
+                    TrySetWindowsPermissions(outputPath);
+                }
+            }
+        }
+
+        private void TrySetWindowsPermissions(string outputPath)
+        {
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "icacls.exe",
+                    Arguments = $"\"{outputPath}\" /grant *S-1-15-2-2:(OI)(CI)(RX)",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                };
+                var process = Process.Start(startInfo);
+                process?.WaitForExit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unable to fix permissions: " + e.Message);
+                Console.WriteLine($"Visit https://pptr.dev/troubleshooting#chrome-reports-sandbox-errors-on-windows for more information");
+                throw;
+            }
+        }
+
+        private async Task DownloadFileUsingHttpClientTaskAsync(string address, string filename)
+        {
+            using var handler = new HttpClientHandler();
+            if (WebProxy != null)
+            {
+                handler.Proxy = WebProxy;
+                handler.UseProxy = true;
+            }
+
+            using var client = new HttpClient(handler);
+
+            // Send the GET request and retrieve the response as a stream
+            using var downloadStream = await client.GetStreamAsync(address).ConfigureAwait(false);
+
+            // Write the stream to a file
+            using var fileStream = File.Create(filename);
+            await downloadStream.CopyToAsync(fileStream).ConfigureAwait(false);
         }
     }
 }

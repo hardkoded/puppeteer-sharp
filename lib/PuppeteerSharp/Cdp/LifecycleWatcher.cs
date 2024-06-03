@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp
@@ -57,8 +58,8 @@ namespace PuppeteerSharp.Cdp
             frame.FrameManager.LifecycleEvent += FrameManager_LifecycleEvent;
             frame.FrameNavigatedWithinDocument += NavigatedWithinDocument;
             frame.FrameNavigated += Navigated;
-            frame.FrameSwapped += FrameManager_FrameSwapped;
-            frame.FrameSwappedByActivation += FrameManager_FrameSwapped;
+            frame.FrameSwapped += FrameSwapped;
+            frame.FrameSwappedByActivation += FrameSwapped;
             frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
             CheckLifecycleComplete();
@@ -80,17 +81,25 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameNavigatedWithinDocument -= NavigatedWithinDocument;
             _frame.FrameNavigated -= Navigated;
             _frame.FrameDetached -= OnFrameDetached;
-            _frame.FrameSwapped -= FrameManager_FrameSwapped;
+            _frame.FrameSwapped -= FrameSwapped;
             _networkManager.Request -= OnRequest;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
 
-        private void Navigated(object sender, EventArgs e) => CheckLifecycleComplete();
+        private void Navigated(object sender, FrameNavigatedEventArgs e)
+        {
+            if (e.Type == NavigationType.BackForwardCacheRestore)
+            {
+                FrameSwapped(sender, EventArgs.Empty);
+            }
+
+            CheckLifecycleComplete();
+        }
 
         private void FrameManager_LifecycleEvent(object sender, FrameEventArgs e) => CheckLifecycleComplete();
 
-        private void FrameManager_FrameSwapped(object sender, EventArgs e)
+        private void FrameSwapped(object sender, EventArgs e)
         {
             _swapped = true;
             CheckLifecycleComplete();

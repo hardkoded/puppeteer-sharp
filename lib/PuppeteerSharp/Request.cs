@@ -75,7 +75,7 @@ namespace PuppeteerSharp
         internal bool FromMemoryCache { get; set; }
 
         /// <inheritdoc/>
-        public abstract Task ContinueAsync(Payload overrides = null, int? priority = null);
+        public abstract Task ContinueAsync(Payload payloadOverrides = null, int? priority = null);
 
         /// <inheritdoc/>
         public abstract Task RespondAsync(ResponseData response, int? priority = null);
