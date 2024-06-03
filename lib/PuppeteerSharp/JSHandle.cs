@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
+
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp.Messaging;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    [JsonConverter(typeof(JSHandleMethodConverter))]
     public abstract class JSHandle : IJSHandle
     {
         internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)

@@ -1,6 +1,5 @@
 using System.IO;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.TestServer;
 

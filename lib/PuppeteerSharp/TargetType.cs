@@ -1,5 +1,5 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
+using System.Text.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
@@ -7,7 +7,6 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target type.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
     public enum TargetType
     {
         /// <summary>
@@ -18,13 +17,11 @@ namespace PuppeteerSharp
         /// <summary>
         /// Target type page.
         /// </summary>
-        [EnumMember(Value = "page")]
         Page,
 
         /// <summary>
         /// Target type service worker.
         /// </summary>
-        [EnumMember(Value = "service_worker")]
         ServiceWorker,
 
         /// <summary>

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace PuppeteerSharp.BrowserData
 {
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.BrowserData
                 string.Join(
                     "\n",
                     defaultPreferences.Select(i =>
-                            $"user_pref({JsonConvert.SerializeObject(i.Key)}, {JsonConvert.SerializeObject(i.Value)});")
+                            $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});")
                         .ToArray()));
 
             File.WriteAllText(Path.Combine(tempUserDataDirectory, "prefs.js"), string.Empty);

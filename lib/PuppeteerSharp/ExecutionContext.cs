@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -46,7 +46,7 @@ namespace PuppeteerSharp
         private Frame Frame => World?.Frame;
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
+        public Task<JsonElement?> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
@@ -61,8 +61,8 @@ namespace PuppeteerSharp
             => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync<JToken>(script, args);
+        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateFunctionAsync<JsonElement?>(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)

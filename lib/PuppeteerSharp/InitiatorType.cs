@@ -1,13 +1,11 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json;
 
 namespace PuppeteerSharp;
 
 /// <summary>
 /// Type of the <see cref="Initiator"/>.
 /// </summary>
-[JsonConverter(typeof(StringEnumConverter))]
 public enum InitiatorType
 {
     /// <summary>
