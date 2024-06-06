@@ -20,13 +20,42 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Bidi;
+using System;
+using System.Threading.Tasks;
 
-internal class BidiCommand
+namespace PuppeteerSharp.Bidi.Core;
+
+internal class Browser(Session session) : IDisposable
 {
-    public int Id { get; set; }
+    public Session Session { get; } = session;
 
-    public string Method { get; set; }
+    public async Task<Browser> From(Session session)
+    {
+        var browser = new Browser(session);
+        await browser.InitializeAsync().ConfigureAwait(false);
+        return browser;
+    }
 
-    public object Params { get; set; }
+    private async Task InitializeAsync()
+    {
+        var sessionEmitter = this.#disposables.use(
+            new EventEmitter(this.session)
+        );
+        sessionEmitter.once('ended', ({reason}) => {
+            this.dispose(reason);
+        });
+
+        sessionEmitter.on('script.realmCreated', info => {
+            if (info.type !== 'shared-worker') {
+                return;
+            }
+            this.#sharedWorkers.set(
+                info.realm,
+                SharedWorkerRealm.from(this, info.realm, info.origin)
+            );
+        });
+
+        await this.#syncUserContexts();
+        await this.#syncBrowsingContexts();
+    }
 }

@@ -9,6 +9,7 @@ using PuppeteerSharp.Bidi;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using WebDriverBiDi;
 
 namespace PuppeteerSharp
 {
@@ -76,17 +77,11 @@ namespace PuppeteerSharp
                         Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
                     }
 
-                    if (options.Browser == SupportedBrowser.Firefox && options.Protocol == ProtocolType.WebdriverBiDi)
+                    if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
-                        browser = await BidiBrowser
-                            .CreateAsync(
-                                Process,
-                                options.Timeout,
-                                options.ProtocolTimeout,
-                                options.SlowMo,
-                                options.DefaultViewport,
-                                options.IgnoreHTTPSErrors)
-                            .ConfigureAwait(false);
+                        var driver = new BiDiDriver(options.ProtocolTimeout);
+                        await driver.StartAsync(Process.EndPoint).ConfigureAwait(false);
+
                     }
                     else
                     {

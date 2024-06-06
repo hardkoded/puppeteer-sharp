@@ -25,6 +25,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Transport;
+using WebDriverBiDi;
+using WebDriverBiDi.Session;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -45,44 +47,21 @@ public class BidiBrowser : Browser
     public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
 
     internal static async Task<BidiBrowser> CreateAsync(
-        LauncherBase process,
+        BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory)
     {
-        var transportFactory = options.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
-        var transport = await transportFactory(new Uri(process.EndPoint), options, default).ConfigureAwait(false);
-        var bidiConnection = new BidiConnection(
-            process.EndPoint,
-            transport,
-            options.SlowMo,
-            options.ProtocolTimeout,
-            loggerFactory);
-
-        // TODO: use other options too.
-        return await CreateAsync(
-            bidiConnection,
-            process.Process,
-            options.DefaultViewport,
-            options.IgnoreHTTPSErrors,
-            loggerFactory,
-        ).ConfigureAwait(false);
-    }
-
-    private static async Task<BidiBrowser> CreateAsync(
-        BidiConnection connection,
-        Process process,
-        ViewPortOptions viewport,
-        bool ignoreHTTPSErrors,
-        ILoggerFactory loggerFactory)
-    {
-        var session = await BidiSession.From(connection, {
-            alwaysMatch: {
-                acceptInsecureCerts: opts.ignoreHTTPSErrors,
-                webSocketUrl: true,
+        var session = await Session.FromAsync(driver,
+            new NewCommandParameters
+            {
+                AlwaysMatch = new CapabilitiesRequest()
+                {
+                    AcceptInsecureCertificates = options.IgnoreHTTPSErrors, WebSocketUrl = true,
+                }
             },
-        });
+            loggerFactory).ConfigureAwait(false);
 
-        await session.subscribe(
+        await session.SubscribeAsync(
             session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
                 ? BidiBrowser.subscribeModules
                 : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
@@ -110,4 +89,5 @@ public class BidiBrowser : Browser
 
     /// <inheritdoc />
     public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
+
 }
