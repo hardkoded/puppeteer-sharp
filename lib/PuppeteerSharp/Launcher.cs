@@ -68,23 +68,50 @@ namespace PuppeteerSharp
                 Connection connection = null;
                 try
                 {
-                    connection = await Connection
-                        .Create(Process.EndPoint, options, _loggerFactory)
-                        .ConfigureAwait(false);
+                    IBrowser browser;
 
-                    var browser = await CdpBrowser
-                        .CreateAsync(
-                            options.Browser,
-                            connection,
-                            [],
-                            options.IgnoreHTTPSErrors,
-                            options.DefaultViewport,
-                            Process,
-                            options.TargetFilter,
-                            options.IsPageTarget)
-                        .ConfigureAwait(false);
+                    if (options.Browser == SupportedBrowser.Firefox && options.Protocol == ProtocolType.WebdriverBiDi)
+                    {
+                        connection = await Connection
+                            .Create(Process.EndPoint, options, _loggerFactory)
+                            .ConfigureAwait(false);
 
-                    await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
+                        browser = await BidiBrowser
+                            .CreateAsync(
+                                options.Browser,
+                                connection,
+                                [],
+                                options.IgnoreHTTPSErrors,
+                                options.DefaultViewport,
+                                Process,
+                                options.TargetFilter,
+                                options.IsPageTarget)
+                            .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        connection = await Connection
+                            .Create(Process.EndPoint, options, _loggerFactory)
+                            .ConfigureAwait(false);
+
+                        browser = await CdpBrowser
+                            .CreateAsync(
+                                options.Browser,
+                                connection,
+                                [],
+                                options.IgnoreHTTPSErrors,
+                                options.DefaultViewport,
+                                Process,
+                                options.TargetFilter,
+                                options.IsPageTarget)
+                            .ConfigureAwait(false);
+                    }
+
+                    if (options.WaitForInitialPage)
+                    {
+                        await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
+                    }
+
                     return browser;
                 }
                 catch (Exception ex)
