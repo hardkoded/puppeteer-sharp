@@ -93,7 +93,7 @@ namespace PuppeteerSharp
                 using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK;
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
                 return false;
             }
