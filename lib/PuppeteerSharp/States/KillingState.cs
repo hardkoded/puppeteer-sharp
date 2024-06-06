@@ -3,12 +3,8 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class KillingState : State
+    internal class KillingState(StateManager stateManager) : State(stateManager)
     {
-        public KillingState(StateManager stateManager) : base(stateManager)
-        {
-        }
-
         public override async Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
         {
             if (!StateManager.TryEnter(p, fromState, this))

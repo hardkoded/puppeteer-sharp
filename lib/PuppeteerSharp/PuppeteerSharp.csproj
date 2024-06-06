@@ -52,4 +52,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\webdriverbidi-net\webdriverbidi-net\src\WebDriverBiDi\WebDriverBiDi.csproj" />
+  </ItemGroup>
 </Project>

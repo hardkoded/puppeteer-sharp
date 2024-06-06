@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PuppeteerSharp.Bidi;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
@@ -66,26 +67,25 @@ namespace PuppeteerSharp
                 await Process.StartAsync().ConfigureAwait(false);
 
                 Connection connection = null;
+                IBrowser browser = null;
+
                 try
                 {
-                    IBrowser browser;
+                    if (options.Protocol == ProtocolType.WebdriverBiDi)
+                    {
+                        Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
+                    }
 
                     if (options.Browser == SupportedBrowser.Firefox && options.Protocol == ProtocolType.WebdriverBiDi)
                     {
-                        connection = await Connection
-                            .Create(Process.EndPoint, options, _loggerFactory)
-                            .ConfigureAwait(false);
-
                         browser = await BidiBrowser
                             .CreateAsync(
-                                options.Browser,
-                                connection,
-                                [],
-                                options.IgnoreHTTPSErrors,
-                                options.DefaultViewport,
                                 Process,
-                                options.TargetFilter,
-                                options.IsPageTarget)
+                                options.Timeout,
+                                options.ProtocolTimeout,
+                                options.SlowMo,
+                                options.DefaultViewport,
+                                options.IgnoreHTTPSErrors)
                             .ConfigureAwait(false);
                     }
                     else
@@ -117,6 +117,7 @@ namespace PuppeteerSharp
                 catch (Exception ex)
                 {
                     connection?.Dispose();
+                    browser?.Dispose();
                     throw new ProcessException("Failed to create connection", ex);
                 }
             }

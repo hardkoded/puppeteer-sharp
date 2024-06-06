@@ -3,12 +3,8 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class DisposedState : State
+    internal class DisposedState(StateManager stateManager) : State(stateManager)
     {
-        public DisposedState(StateManager stateManager) : base(stateManager)
-        {
-        }
-
         public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
         {
             if (fromState == StateManager.Exited)

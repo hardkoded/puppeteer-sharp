@@ -23,6 +23,8 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -43,34 +45,52 @@ public class BidiBrowser : Browser
     public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
 
     internal static async Task<BidiBrowser> CreateAsync(
-        int timeout,
-        int protocolTimeout,
-        bool slowMo,
-        ViewPortOptions defaultViewPort,
-        bool ignoreHTTPSErrors)
+        LauncherBase process,
+        LaunchOptions options,
+        ILoggerFactory loggerFactory)
     {
-        var browser = new BidiBrowser(
-            browserToCreate,
-            connection,
-            contextIds,
-            ignoreHTTPSErrors,
-            defaultViewPort,
-            launcher,
-            targetFilter,
-            isPageTargetCallback);
+        var transportFactory = options.TransportFactory ?? WebSocketTransport.DefaultTransportFactory;
+        var transport = await transportFactory(new Uri(process.EndPoint), options, default).ConfigureAwait(false);
+        var bidiConnection = new BidiConnection(
+            process.EndPoint,
+            transport,
+            options.SlowMo,
+            options.ProtocolTimeout,
+            loggerFactory);
 
-        try
-        {
-            initAction?.Invoke(browser);
+        // TODO: use other options too.
+        return await CreateAsync(
+            bidiConnection,
+            process.Process,
+            options.DefaultViewport,
+            options.IgnoreHTTPSErrors,
+            loggerFactory,
+        ).ConfigureAwait(false);
+    }
 
-            await browser.AttachAsync().ConfigureAwait(false);
-            return browser;
-        }
-        catch
-        {
-            await browser.DisposeAsync().ConfigureAwait(false);
-            throw;
-        }
+    private static async Task<BidiBrowser> CreateAsync(
+        BidiConnection connection,
+        Process process,
+        ViewPortOptions viewport,
+        bool ignoreHTTPSErrors,
+        ILoggerFactory loggerFactory)
+    {
+        var session = await BidiSession.From(connection, {
+            alwaysMatch: {
+                acceptInsecureCerts: opts.ignoreHTTPSErrors,
+                webSocketUrl: true,
+            },
+        });
+
+        await session.subscribe(
+            session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
+                ? BidiBrowser.subscribeModules
+                : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+        );
+
+        const browser = new BidiBrowser(session.browser, opts);
+        browser.#initialize();
+        return browser;
     }
 
     /// <inheritdoc />

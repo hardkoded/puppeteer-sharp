@@ -3,12 +3,8 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class ExitedState : State
+    internal class ExitedState(StateManager stateManager) : State(stateManager)
     {
-        public ExitedState(StateManager stateManager) : base(stateManager)
-        {
-        }
-
         public void EnterFrom(LauncherBase p, State fromState)
         {
             while (!StateManager.TryEnter(p, fromState, this))

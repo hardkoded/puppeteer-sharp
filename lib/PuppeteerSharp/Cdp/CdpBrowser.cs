@@ -24,7 +24,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -139,10 +138,10 @@ public class CdpBrowser : Browser
             new TargetCreateBrowserContextRequest
             {
                 ProxyServer = options?.ProxyServer ?? string.Empty,
-                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
+                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? []),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
-        _contexts.TryAdd(response.BrowserContextId, (CdpBrowserContext)context);
+        _contexts.TryAdd(response.BrowserContextId, context);
         return context;
     }
 

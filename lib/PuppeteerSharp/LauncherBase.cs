@@ -14,17 +14,15 @@ namespace PuppeteerSharp
     /// </summary>
     public abstract class LauncherBase : IDisposable
     {
-        private readonly StateManager _stateManager;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LauncherBase"/> class.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Base.</param>
-        public LauncherBase(string executable, LaunchOptions options)
+        protected LauncherBase(string executable, LaunchOptions options)
         {
-            _stateManager = new StateManager();
-            _stateManager.Starting = new ProcessStartingState(_stateManager);
+            StateManager = new StateManager();
+            StateManager.Starting = new ProcessStartingState(StateManager);
 
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
@@ -67,12 +65,14 @@ namespace PuppeteerSharp
         /// <summary>
         /// Indicates whether Base process is exiting.
         /// </summary>
-        public bool IsExiting => _stateManager.CurrentState.IsExiting;
+        public bool IsExiting => StateManager.CurrentState.IsExiting;
 
         /// <summary>
         /// Indicates whether Base process has exited.
         /// </summary>
-        public bool HasExited => _stateManager.CurrentState.IsExited;
+        public bool HasExited => StateManager.CurrentState.IsExited;
+
+        internal StateManager StateManager { get; }
 
         internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -85,13 +85,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets Base process current state.
         /// </summary>
-        internal State CurrentState => _stateManager.CurrentState;
-
-        /// <summary>
-        /// Default build.
-        /// </summary>
-        /// <returns>A tasks that resolves when the build is obtained.</returns>
-        public abstract Task<string> GetDefaultBuildIdAsync();
+        internal State CurrentState => StateManager.CurrentState;
 
         /// <inheritdoc />
         public void Dispose()
@@ -104,7 +98,7 @@ namespace PuppeteerSharp
         /// Asynchronously starts Base process.
         /// </summary>
         /// <returns>Task which resolves when after start process begins.</returns>
-        public Task StartAsync() => _stateManager.CurrentState.StartAsync(this);
+        public Task StartAsync() => StateManager.CurrentState.StartAsync(this);
 
         /// <summary>
         /// Asynchronously waits for graceful Base process exit within a given timeout period.
@@ -113,14 +107,14 @@ namespace PuppeteerSharp
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
         /// <returns>Task which resolves when the process is exited or killed.</returns>
         public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
-            ? _stateManager.CurrentState.ExitAsync(this, timeout.Value)
-            : _stateManager.CurrentState.KillAsync(this);
+            ? StateManager.CurrentState.ExitAsync(this, timeout.Value)
+            : StateManager.CurrentState.KillAsync(this);
 
         /// <summary>
         /// Asynchronously kills Base process.
         /// </summary>
         /// <returns>Task which resolves when the process is killed.</returns>
-        public Task KillAsync() => _stateManager.CurrentState.KillAsync(this);
+        public Task KillAsync() => StateManager.CurrentState.KillAsync(this);
 
         /// <summary>
         /// Waits for Base process exit within a given timeout.
@@ -182,6 +176,6 @@ namespace PuppeteerSharp
         /// Disposes Base process and any temporary user directory.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
+        protected virtual void Dispose(bool disposing) => StateManager.CurrentState.Dispose(this);
     }
 }

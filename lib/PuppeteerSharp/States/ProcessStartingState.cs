@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class ProcessStartingState : State
+    internal class ProcessStartingState(StateManager stateManager) : State(stateManager)
     {
-        public ProcessStartingState(StateManager stateManager) : base(stateManager)
-        {
-        }
+        public string LineOutputExpression { get; set; } = "^DevTools listening on (ws:\\/\\/.*)";
 
         public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
         {
@@ -46,7 +44,7 @@ namespace PuppeteerSharp.States
                 if (e.Data != null)
                 {
                     output.AppendLine(e.Data);
-                    var match = Regex.Match(e.Data, "^DevTools listening on (ws:\\/\\/.*)");
+                    var match = Regex.Match(e.Data, LineOutputExpression);
                     if (match.Success)
                     {
                         p.StartCompletionSource.TrySetResult(match.Groups[1].Value);

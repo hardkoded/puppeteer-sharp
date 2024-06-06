@@ -5,12 +5,8 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.States
 {
-    internal class ExitingState : State
+    internal class ExitingState(StateManager stateManager) : State(stateManager)
     {
-        public ExitingState(StateManager stateManager) : base(stateManager)
-        {
-        }
-
         public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
             => !StateManager.TryEnter(p, fromState, this) ? StateManager.CurrentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
 
