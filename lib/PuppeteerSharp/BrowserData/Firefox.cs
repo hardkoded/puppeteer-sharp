@@ -74,9 +74,17 @@ namespace PuppeteerSharp.BrowserData
         }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            => platform == Platform.MacOSArm64 || platform == Platform.MacOS
-                ? [buildId, "mac", "en-US", GetArchive(platform, buildId)]
-                : [buildId, platform.ToString().ToLowerInvariant(), "en-US", GetArchive(platform, buildId)];
+            => [buildId, GetFirefoxPlatform(platform), "en-US", GetArchive(platform, buildId)];
+
+        private static string GetFirefoxPlatform(Platform platform)
+            => platform switch
+            {
+                Platform.Linux => "linux-x86_64",
+                Platform.MacOS or Platform.MacOSArm64 => "mac",
+                Platform.Win32 => "win32",
+                Platform.Win64 => "win64",
+                _ => throw new PuppeteerException($"Unknown platform: {platform}"),
+            };
 
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
