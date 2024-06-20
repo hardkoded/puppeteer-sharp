@@ -221,7 +221,8 @@ namespace PuppeteerSharp
             new DirectoryInfo(folderPath).Create();
             using var process = new Process();
             process.StartInfo.FileName = exePath;
-            process.StartInfo.Arguments = $"/ExtractDir=\"{folderPath}\"";
+            process.StartInfo.Arguments = $"/ExtractDir={folderPath}";
+            process.StartInfo.EnvironmentVariables.Add("__compat_layer", "RuAsInvoker");
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.Start();

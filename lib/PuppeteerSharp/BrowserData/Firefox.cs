@@ -54,7 +54,7 @@ namespace PuppeteerSharp.BrowserData
                     "MacOS",
                     "firefox"),
                 Platform.Linux => Path.Combine("firefox", "firefox"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
+                Platform.Win32 or Platform.Win64 => Path.Combine("core", "firefox.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 

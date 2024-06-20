@@ -52,12 +52,12 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
               BrowserData.Firefox.RelativeExecutablePath(Platform.MacOSArm64, "111.0a1"));
 
             Assert.AreEqual(
-              Path.Combine("firefox", "firefox.exe"),
+              Path.Combine("core", "firefox.exe"),
               BrowserData.Firefox.RelativeExecutablePath(Platform.Win32, "111.0a1"));
 
             Assert.AreEqual(
               BrowserData.Firefox.RelativeExecutablePath(Platform.Win64, "111.0a1"),
-              Path.Combine("firefox", "firefox.exe"));
+              Path.Combine("core", "firefox.exe"));
         }
     }
 }
