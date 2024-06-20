@@ -216,6 +216,19 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
+        private static void ExecuteSetup(string exePath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = exePath;
+            process.StartInfo.Arguments = $"/ExtractDir={folderPath}";
+            process.StartInfo.EnvironmentVariables.Add("__compat_layer", "RuAsInvoker");
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
         private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
         {
             var url = _downloadsUrl[browser](Platform, buildId, BaseUrl);
@@ -366,6 +379,10 @@ namespace PuppeteerSharp
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
                 ZipFile.ExtractToDirectory(archivePath, outputPath);
+            }
+            else if (archivePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                ExecuteSetup(archivePath, outputPath);
             }
             else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
             {
