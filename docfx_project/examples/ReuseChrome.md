@@ -11,12 +11,16 @@ from a location where it was previously downloaded instead of from the default l
 
 Use `BrowserFetcherOptions` to specify the full path for where to download Chrome.
 
-```
+<!-- snippet: ReuseChromeExample -->
+<a id='snippet-ReuseChromeExample'></a>
+```cs
 var downloadPath = "/Users/dario/chrome";
 var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
-using var browserFetcher = new BrowserFetcher(browserFetcherOptions);
+var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 var installedBrowser = await browserFetcher.DownloadAsync();
 ```
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/Browsers/Chrome/ChromeDataTests.cs#L14-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-ReuseChromeExample' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 Use `Puppeteer.LaunchAsync()` with `LaunchOptions` with the `LaunchOptions.ExecutablePath` property set to the
 fully qualified path to the Chrome executable.
