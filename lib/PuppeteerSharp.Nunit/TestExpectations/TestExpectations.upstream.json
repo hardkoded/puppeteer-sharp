@@ -314,6 +314,13 @@
     "comment": "The test relies on the default page partition key do not contain the source origin. This is not the case for Firefox."
   },
   {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"],
+    "comment": "Failes with fieldtrial testing config in Chrome"
+  },
+  {
     "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1312,6 +1319,12 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
