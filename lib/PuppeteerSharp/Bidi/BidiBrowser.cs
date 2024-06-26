@@ -24,6 +24,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Transport;
 using WebDriverBiDi;
 using WebDriverBiDi.Session;

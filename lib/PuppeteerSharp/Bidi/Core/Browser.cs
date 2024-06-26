@@ -21,13 +21,26 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
+using PuppeteerSharp.States;
+using WebDriverBiDi.Protocol;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class Browser(Session session) : IDisposable
 {
+    private bool _disposed;
+
+    private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
+
     public Session Session { get; } = session;
+
+    public bool Closed { get; set; }
+
+    public string Reason { get; set; }
 
     public async Task<Browser> From(Session session)
     {
@@ -36,14 +49,20 @@ internal class Browser(Session session) : IDisposable
         return browser;
     }
 
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            Session?.Dispose();
+        }
+
+        _disposed = true;
+    }
+
     private async Task InitializeAsync()
     {
-        var sessionEmitter = this.#disposables.use(
-            new EventEmitter(this.session)
-        );
-        sessionEmitter.once('ended', ({reason}) => {
-            this.dispose(reason);
-        });
+        Session.Ended += OnSessionEnded;
+        Session.Driver.EventReceived += OnEventReceived;
 
         sessionEmitter.on('script.realmCreated', info => {
             if (info.type !== 'shared-worker') {
@@ -58,4 +77,38 @@ internal class Browser(Session session) : IDisposable
         await this.#syncUserContexts();
         await this.#syncBrowsingContexts();
     }
+
+    private void OnEventReceived(object sender, EventReceivedEventArgs e)
+    {
+        switch (e.EventName)
+        {
+            case "script.realmCreated":
+                var realInfo = e.EventData as RealmInfo;
+
+                if (realInfo.Type != RealmType.SharedWorker)
+                {
+                    return;
+                }
+
+                _
+        }
+    }
+
+    private void OnSessionEnded(object sender, SessionEndedArgs e)
+    {
+        Dispose(e.Reason);
+    }
+
+    private void Dispose(string reason = null, bool closed = false)
+    {
+        Reason = reason;
+        Closed = closed;
+        Dispose(true);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        Dispose();
+    }
+
 }

@@ -28,31 +28,23 @@ using WebDriverBiDi.Session;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Session(BiDiDriver driver, NewCommandResult newCommandResult)
+internal class Session(BiDiDriver driver, NewCommandResult newCommandResult) : IDisposable
 {
+    public event EventHandler<SessionEndedArgs> Ended;
+
     public BiDiDriver Driver { get; } = driver;
 
     public NewCommandResult NewCommandResult { get; } = newCommandResult;
 
     public Browser Browser { get; private set; }
 
+    public void Dispose()
+    {
+    }
+
     internal static async Task<Session> FromAsync(BiDiDriver driver, NewCommandParameters capabilities, ILoggerFactory loggerFactory)
     {
-        NewCommandResult result = null;
-        try
-        {
-            result = await driver.Session.NewSessionAsync(capabilities).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            loggerFactory.CreateLogger<Session>().LogError(ex, "Unable to create session");
-            result = new NewCommandResult()
-            {
-                SessionId = string.Empty,
-                Capabilities = new CapabilitiesResult(),
-            };
-        }
-
+        var result = await driver.Session.NewSessionAsync(capabilities).ConfigureAwait(false);
         var session = new Session(driver, result);
         await session.InitializeAsync().ConfigureAwait(false);
         return session;
