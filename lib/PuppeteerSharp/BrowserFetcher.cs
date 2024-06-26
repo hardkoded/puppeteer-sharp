@@ -102,9 +102,13 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<InstalledBrowser> DownloadAsync()
         {
-            var buildId = Browser == SupportedBrowser.Firefox
-                ? await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false)
-                : Chrome.DefaultBuildId;
+            var buildId = Browser switch
+            {
+                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
+                SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
+                SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(Platform).ConfigureAwait(false),
+                _ => throw new PuppeteerException($"{Browser} not supported."),
+            };
 
             return await DownloadAsync(buildId).ConfigureAwait(false);
         }
