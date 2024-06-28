@@ -32,6 +32,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.AreEqual(2, Browser.BrowserContexts().Length);
             Assert.Contains(context, Browser.BrowserContexts());
             await context.CloseAsync();
+            Assert.True(context.IsClosed);
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
@@ -45,6 +46,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.AreEqual(2, (await Browser.PagesAsync()).Length);
             Assert.That((await context.PagesAsync()), Has.Exactly(1).Items);
             await context.CloseAsync();
+            Assert.True(context.IsClosed);
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
         }
 
