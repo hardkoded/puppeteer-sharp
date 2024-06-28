@@ -132,6 +132,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             // Cleanup contexts.
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
+            Assert.True(context1.IsClosed);
+            Assert.True(context2.IsClosed);
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
