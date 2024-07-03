@@ -9,12 +9,15 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.removeExposedFunction", "should work")]
         public async Task ShouldWork()
         {
-            await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
-            var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
-            Assert.AreEqual(36, result);
+            // Run twice to verify function can be added again after remove
+            for (var i = 0; i < 2; i++)
+            {
+                await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
+                var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
+                Assert.AreEqual(36, result);
 
-            await Page.RemoveExposedFunctionAsync("compute");
-
+                await Page.RemoveExposedFunctionAsync("compute");
+            }
             Assert.ThrowsAsync<EvaluationFailedException>(() => Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)"));
         }
     }
