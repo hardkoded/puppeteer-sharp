@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -18,7 +17,13 @@ namespace PuppeteerSharp.Tests
                 TestConstants.LoggerFactory);
 
         [TearDown]
-        public virtual async Task DisposeAsync() => await Browser.CloseAsync();
+        public virtual async Task DisposeAsync()
+        {
+            if (Browser is not null)
+            {
+                await Browser.CloseAsync();
+            }
+        }
 
         public void Dispose()
         {
