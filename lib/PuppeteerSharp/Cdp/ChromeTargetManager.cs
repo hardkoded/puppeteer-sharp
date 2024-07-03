@@ -106,8 +106,8 @@ namespace PuppeteerSharp.Cdp
                 // Targets from extensions and the browser that will not be
                 // auto-attached. Therefore, we should not add them to
                 // #targetsIdsForInit.
-                var skipTarget = kv.Value.Type == TargetType.Browser || kv.Value.Url.StartsWith("chrome-extension://", StringComparison.InvariantCultureIgnoreCase);
-                if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) && !skipTarget)
+                var skipTarget = kv.Value.Type == TargetType.Browser || kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
+                if (!skipTarget && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
                 {
                     _targetsIdsForInit.Add(kv.Key);
                 }

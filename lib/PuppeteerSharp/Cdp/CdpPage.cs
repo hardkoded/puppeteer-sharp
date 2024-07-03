@@ -1319,9 +1319,8 @@ public class CdpPage : Page
         var idx = 0;
         while (idx < queue.Count)
         {
-            var next = queue[idx] as CdpTarget;
-            idx++;
-            var session = next!.Session;
+            var next = (CdpTarget)queue[idx];
+            var session = next.Session;
 
             if (session != null)
             {

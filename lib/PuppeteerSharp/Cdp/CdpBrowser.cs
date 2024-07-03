@@ -40,7 +40,6 @@ public class CdpBrowser : Browser
 
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
-    private readonly Func<Target, bool> _targetFilterCallback;
     private Task _closeTask;
 
     internal CdpBrowser(
@@ -58,7 +57,7 @@ public class CdpBrowser : Browser
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
-        _targetFilterCallback = targetFilter ?? (_ => true);
+        var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         IsPageTargetFunc =
             isPageTargetFunc ??
@@ -74,14 +73,14 @@ public class CdpBrowser : Browser
             TargetManager = new FirefoxTargetManager(
                     connection,
                     CreateTarget,
-                    _targetFilterCallback);
+                    targetFilterCallback);
         }
         else
         {
             TargetManager = new ChromeTargetManager(
                 connection,
                 CreateTarget,
-                _targetFilterCallback,
+                targetFilterCallback,
                 this,
                 launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
         }
@@ -306,14 +305,14 @@ public class CdpBrowser : Browser
         {
             try
             {
+                // Initiate graceful browser close operation but don't await it just yet,
+                // because we want to ensure process shutdown first.
+                var browserCloseTask = Connection.IsClosed
+                    ? Task.CompletedTask
+                    : Connection.SendAsync("Browser.close");
+
                 if (Launcher != null)
                 {
-                    // Initiate graceful browser close operation but don't await it just yet,
-                    // because we want to ensure process shutdown first.
-                    var browserCloseTask = Connection.IsClosed
-                        ? Task.CompletedTask
-                        : Connection.SendAsync("Browser.close");
-
                     // Notify process that exit is expected, but should be enforced if it
                     // doesn't occur withing the close timeout.
                     var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
