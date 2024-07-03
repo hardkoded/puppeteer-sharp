@@ -1316,8 +1316,7 @@ public class CdpPage : Page
         List<ITarget> queue = [];
         queue.AddRange(_targetManager.GetChildTargets(PrimaryTarget));
 
-        var idx = 0;
-        while (idx < queue.Count)
+        for (var idx = 0; idx < queue.Count; idx++)
         {
             var next = (CdpTarget)queue[idx];
             var session = next.Session;
