@@ -750,7 +750,16 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
-            await CloseAsync().ConfigureAwait(false);
+            try
+            {
+                await CloseAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Closing on dispose might not be bulletproof.
+                // If the user didn't close the page explicitly, we won't fail.
+            }
+
             GC.SuppressFinalize(this);
         }
 
