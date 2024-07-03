@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
@@ -11,11 +12,17 @@ namespace PuppeteerSharp.Tests
         public async Task CreatePageAsync()
         {
             Page = await Context.NewPageAsync();
-            Page.DefaultTimeout = System.Diagnostics.Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
+            Page.DefaultTimeout = Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
         [TearDown]
-        public Task ClosePageAsync() => Page.CloseAsync();
+        public async Task ClosePageAsync()
+        {
+            if (Page is not null)
+            {
+                await Page.CloseAsync();
+            }
+        }
 
         protected Task WaitForError()
         {
