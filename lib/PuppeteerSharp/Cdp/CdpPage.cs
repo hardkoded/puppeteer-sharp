@@ -237,7 +237,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(name));
         }
 
-        if (!_exposedFunctions.TryRemove(name, out var exposedFun) && !_bindings.TryRemove(name, out _))
+        if (!_exposedFunctions.TryRemove(name, out var exposedFun) || !_bindings.TryRemove(name, out _))
         {
             throw new PuppeteerException(
                 $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
