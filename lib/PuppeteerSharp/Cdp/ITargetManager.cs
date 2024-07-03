@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
@@ -41,5 +43,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that resolves when all the tasks are completed.</returns>
         Task InitializeAsync();
+
+        /// <summary>
+        /// Returns the target's child.
+        /// </summary>
+        /// <param name="target">Target to evaluate.</param>
+        /// <returns>A list of targets.</returns>
+        IEnumerable<ITarget> GetChildTargets(ITarget target);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -43,6 +44,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The URL.</value>
         string Url { get; }
+
+        /// <summary>
+        /// Gets the target's child targets.
+        /// </summary>
+        IEnumerable<ITarget> ChildTargets { get; }
 
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the target.

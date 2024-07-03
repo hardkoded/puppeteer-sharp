@@ -113,6 +113,7 @@ public class CdpPage : Page
             TaskScheduler.Default);
 
         SetupPrimaryTargetListeners();
+        AttachExistingTargets();
     }
 
     /// <inheritdoc cref="CDPSession"/>
@@ -1308,5 +1309,26 @@ public class CdpPage : Page
             ? SetViewportAsync(Viewport)
             : Task.CompletedTask;
         return Task.WhenAll(omitBackgroundTask, setViewPortTask);
+    }
+
+    private void AttachExistingTargets()
+    {
+        List<ITarget> queue = [];
+        queue.AddRange(_targetManager.GetChildTargets(PrimaryTarget));
+
+        var idx = 0;
+        while (idx < queue.Count)
+        {
+            var next = queue[idx] as CdpTarget;
+            idx++;
+            var session = next!.Session;
+
+            if (session != null)
+            {
+                OnAttachedToTarget(this, new SessionEventArgs(session));
+            }
+
+            queue.AddRange(_targetManager.GetChildTargets(next));
+        }
     }
 }

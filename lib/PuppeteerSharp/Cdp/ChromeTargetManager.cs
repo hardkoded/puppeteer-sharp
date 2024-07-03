@@ -89,6 +89,8 @@ namespace PuppeteerSharp.Cdp
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
+        public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
+
         private void StoreExistingTargetsForInit()
         {
             foreach (var kv in _discoveredTargetsByTargetId)
@@ -101,8 +103,11 @@ namespace PuppeteerSharp.Cdp
                     null,
                     _browser.ScreenshotTaskQueue);
 
-                if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) &&
-                    kv.Value.Type != TargetType.Browser)
+                // Targets from extensions and the browser that will not be
+                // auto-attached. Therefore, we should not add them to
+                // #targetsIdsForInit.
+                var skipTarget = kv.Value.Type == TargetType.Browser || kv.Value.Url.StartsWith("chrome-extension://", StringComparison.InvariantCultureIgnoreCase);
+                if ((_targetFilterFunc == null || _targetFilterFunc(targetForFilter)) && !skipTarget)
                 {
                     _targetsIdsForInit.Add(kv.Key);
                 }
@@ -292,6 +297,8 @@ namespace PuppeteerSharp.Cdp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
+            var parentTarget = parentSession?.Target;
+            parentTarget?.AddChildTarget(target);
             (parentSession ?? parentConnection as CDPSession)?.OnSessionReady(session);
 
             await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
@@ -380,6 +387,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            (sender as CdpCDPSession)?.Target.RemoveChildTarget(target);
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
         }
