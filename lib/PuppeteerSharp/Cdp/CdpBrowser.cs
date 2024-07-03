@@ -318,6 +318,7 @@ public class CdpBrowser : Browser
                     var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
                     await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
                 }
+
                 // Now we can safely await the browser close operation without risking keeping chromium
                 // process running for indeterminate period.
                 await browserCloseTask.ConfigureAwait(false);
