@@ -174,7 +174,7 @@ namespace PuppeteerSharp
         /// <returns>ValueTask.</returns>
         public async ValueTask DisposeAsync()
         {
-            // On dispose the browser doesn't get closed it gets disconneted.
+            // On disposal, the browser doesn't get closed. It gets disconnected.
             if (Launcher == null)
             {
                 Disconnect();
