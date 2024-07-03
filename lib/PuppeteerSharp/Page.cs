@@ -752,6 +752,12 @@ namespace PuppeteerSharp
         {
             try
             {
+                // We don't want to close the page if we're connected to the browser using `Connect`.
+                if (Browser.Launcher == null)
+                {
+                    return;
+                }
+
                 await CloseAsync().ConfigureAwait(false);
             }
             catch
