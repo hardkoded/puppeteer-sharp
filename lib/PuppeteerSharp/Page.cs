@@ -750,7 +750,22 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
-            await CloseAsync().ConfigureAwait(false);
+            try
+            {
+                // We don't want to close the page if we're connected to the browser using `Connect`.
+                if (Browser.Launcher == null)
+                {
+                    return;
+                }
+
+                await CloseAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                // Closing on dispose might not be bulletproof.
+                // If the user didn't close the page explicitly, we won't fail.
+            }
+
             GC.SuppressFinalize(this);
         }
 
