@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using NUnit.Framework;
-using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.Browsers.Firefox
@@ -12,19 +10,19 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
         public void ShouldResolveDownloadUrls()
         {
             Assert.AreEqual(
-                "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.linux-x86_64.tar.bz2",
+                "https://archive.mozilla.org/pub/firefox/releases/111.0a1/linux-x86_64/en-US/firefox-111.0a1.tar.bz2",
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.Linux, "111.0a1", null));
             Assert.AreEqual(
-                "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg",
+                "https://archive.mozilla.org/pub/firefox/releases/111.0a1/mac/en-US/Firefox 111.0a1.dmg",
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOS, "111.0a1", null));
             Assert.AreEqual(
-                "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg",
+                "https://archive.mozilla.org/pub/firefox/releases/111.0a1/mac/en-US/Firefox 111.0a1.dmg",
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOSArm64, "111.0a1", null));
             Assert.AreEqual(
-                "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win32.zip",
+                "https://archive.mozilla.org/pub/firefox/releases/111.0a1/win32/en-US/Firefox Setup 111.0a1.exe",
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.Win32, "111.0a1", null));
             Assert.AreEqual(
-                "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win64.zip",
+                "https://archive.mozilla.org/pub/firefox/releases/111.0a1/win64/en-US/Firefox Setup 111.0a1.exe",
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.Win64, "111.0a1", null));
         }
 
@@ -37,7 +35,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 
             Assert.AreEqual(
                 Path.Combine(
-                    "Firefox Nightly.app",
+                    "Firefox.app",
                     "Contents",
                     "MacOS",
                     "firefox"
@@ -46,7 +44,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 
             Assert.AreEqual(
                 Path.Combine(
-                    "Firefox Nightly.app",
+                    "Firefox.app",
                     "Contents",
                     "MacOS",
                     "firefox"
@@ -54,12 +52,12 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
               BrowserData.Firefox.RelativeExecutablePath(Platform.MacOSArm64, "111.0a1"));
 
             Assert.AreEqual(
-              Path.Combine("firefox", "firefox.exe"),
+              Path.Combine("core", "firefox.exe"),
               BrowserData.Firefox.RelativeExecutablePath(Platform.Win32, "111.0a1"));
 
             Assert.AreEqual(
               BrowserData.Firefox.RelativeExecutablePath(Platform.Win64, "111.0a1"),
-              Path.Combine("firefox", "firefox.exe"));
+              Path.Combine("core", "firefox.exe"));
         }
     }
 }

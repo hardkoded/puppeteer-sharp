@@ -15,15 +15,15 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "FIREFOX_NIGHTLY";
+        public const string DefaultBuildId = "128.0b5";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
-        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(DefaultBuildId);
+        internal static Task<string> GetDefaultBuildIdAsync() => Task.FromResult(DefaultBuildId);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             =>
-                $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
+                $"{baseUrl ?? "https://archive.mozilla.org/pub/firefox/releases"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
         internal static async Task<string> ResolveBuildIdAsync(string channel)
         {
@@ -49,12 +49,12 @@ namespace PuppeteerSharp.BrowserData
             => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                    "Firefox Nightly.app",
+                    "Firefox.app",
                     "Contents",
                     "MacOS",
                     "firefox"),
                 Platform.Linux => Path.Combine("firefox", "firefox"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
+                Platform.Win32 or Platform.Win64 => Path.Combine("core", "firefox.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
@@ -74,17 +74,27 @@ namespace PuppeteerSharp.BrowserData
         }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            => new string[] { GetArchive(platform, buildId), };
+            => [buildId, GetFirefoxPlatform(platform), "en-US", GetArchive(platform, buildId)];
+
+        private static string GetFirefoxPlatform(Platform platform)
+            => platform switch
+            {
+                Platform.Linux => "linux-x86_64",
+                Platform.MacOS or Platform.MacOSArm64 => "mac",
+                Platform.Win32 => "win32",
+                Platform.Win64 => "win64",
+                _ => throw new PuppeteerException($"Unknown platform: {platform}"),
+            };
 
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux => $"firefox-{buildId}.en-US.{platform.ToString().ToLowerInvariant()}-x86_64.tar.bz2",
-                Platform.MacOS or Platform.MacOSArm64 => $"firefox-{buildId}.en-US.mac.dmg",
+                Platform.Linux => $"firefox-{buildId}.tar.bz2",
+                Platform.MacOS or Platform.MacOSArm64 => $"Firefox {buildId}.dmg",
 
                 // Windows archive name changed at r591479.
                 Platform.Win32 or Platform.Win64 =>
-                    $"firefox-{buildId}.en-US.{platform.ToString().ToLowerInvariant()}.zip",
+                    $"Firefox Setup {buildId}.exe",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
 

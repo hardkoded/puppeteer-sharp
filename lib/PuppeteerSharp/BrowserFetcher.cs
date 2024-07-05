@@ -93,7 +93,7 @@ namespace PuppeteerSharp
                 using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK;
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
                 return false;
             }
@@ -210,6 +210,19 @@ namespace PuppeteerSharp
             using var process = new Process();
             process.StartInfo.FileName = "tar";
             process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
+        private static void ExecuteSetup(string exePath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = exePath;
+            process.StartInfo.Arguments = $"/ExtractDir={folderPath}";
+            process.StartInfo.EnvironmentVariables.Add("__compat_layer", "RuAsInvoker");
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.Start();
@@ -366,6 +379,10 @@ namespace PuppeteerSharp
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
                 ZipFile.ExtractToDirectory(archivePath, outputPath);
+            }
+            else if (archivePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                ExecuteSetup(archivePath, outputPath);
             }
             else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
             {
