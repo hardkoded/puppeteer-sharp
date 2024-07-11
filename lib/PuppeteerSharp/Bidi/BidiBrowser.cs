@@ -21,11 +21,10 @@
 //  * SOFTWARE.
 
 using System;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
-using PuppeteerSharp.Transport;
 using WebDriverBiDi;
 using WebDriverBiDi.Session;
 
@@ -36,8 +35,36 @@ namespace PuppeteerSharp.Bidi;
 /// </summary>
 public class BidiBrowser : Browser
 {
+    private readonly LaunchOptions _options;
+
+    private BidiBrowser(Core.Browser browserCore, LaunchOptions options)
+    {
+        _options = options;
+        BrowserCore = browserCore;
+    }
+
     /// <inheritdoc />
     public override bool IsClosed { get; }
+
+    internal Core.Browser BrowserCore { get; }
+
+    internal static string[] SubscribeModules { get; } = [
+        "browsingContext",
+        "network",
+        "log",
+        "script",
+    ];
+
+    internal static string[] SubscribeCdpEvents { get; } =
+    [
+        "cdp.Debugger.scriptParsed",
+        "cdp.CSS.styleSheetAdded",
+        "cdp.Runtime.executionContextsCleared",
+        "cdp.Tracing.tracingComplete",
+        "cdp.Network.requestWillBeSent",
+        "cdp.Debugger.scriptParsed",
+        "cdp.Page.screencastFrame",
+    ];
 
     internal override ProtocolType Protocol => ProtocolType.WebdriverBiDi;
 
@@ -47,30 +74,87 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
 
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "We return the session, the browser needs to dispose the session")]
     internal static async Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory)
     {
-        var session = await Session.FromAsync(driver,
+        var session = await Session.FromAsync(
+            driver,
             new NewCommandParameters
             {
                 AlwaysMatch = new CapabilitiesRequest()
                 {
-                    AcceptInsecureCertificates = options.IgnoreHTTPSErrors, WebSocketUrl = true,
-                }
+                    AcceptInsecureCertificates = options.IgnoreHTTPSErrors,
+                    AdditionalCapabilities =
+                    {
+                        ["webSocketUrl"] = true,
+                    },
+                },
             },
             loggerFactory).ConfigureAwait(false);
 
         await session.SubscribeAsync(
-            session.capabilities.browserName.toLocaleLowerCase().includes('firefox')
-                ? BidiBrowser.subscribeModules
-                : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents]
+            session.Info.Capabilities.BrowserName.ToLowerInvariant().Contains("firefox")
+                ? SubscribeModules
+                : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
+
+        var browser = new BidiBrowser(session.Browser, options);
+        browser.InitializeAsync();
+        return browser;
+    }
+
+    private void InitializeAsync()
+    {
+        // Initializing existing contexts.
+        foreach (var userContext in BrowserCore.UserContexts)
+        {
+            CreateBrowserContext(userContext);
+        }
+
+        this.#browserCore.once('disconnected', () => {
+            this.#trustedEmitter.emit(BrowserEvent.Disconnected, undefined);
+            this.#trustedEmitter.removeAllListeners();
+        });
+        this.#process?.once('close', () => {
+            this.#browserCore.dispose('Browser process exited.', true);
+            this.connection.dispose();
+        });
+    }
+
+    private BidiBrowserContext CreateBrowserContext(UserContext userContext)
+    {
+        const browserContext = BidiBrowserContext.From(
+            this,
+            userContext,
+            new LaunchOptions()
+            {
+                DefaultViewport: _options.DefaultViewport,
+            });
+
+        this.#browserContexts.set(userContext, browserContext);
+
+        browserContext.trustedEmitter.on(
+            BrowserContextEvent.TargetCreated,
+            target => {
+                this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
+            }
+        );
+        browserContext.trustedEmitter.on(
+            BrowserContextEvent.TargetChanged,
+            target => {
+                this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
+            }
+        );
+        browserContext.trustedEmitter.on(
+            BrowserContextEvent.TargetDestroyed,
+            target => {
+                this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
+            }
         );
 
-        const browser = new BidiBrowser(session.browser, opts);
-        browser.#initialize();
-        return browser;
+        return browserContext;
     }
 
     /// <inheritdoc />

@@ -22,7 +22,7 @@
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal record SessionEndedArgs
+internal record SessionEndArgs
 {
     public string Reason { get; set; }
 }

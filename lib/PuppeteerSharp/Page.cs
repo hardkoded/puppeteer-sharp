@@ -781,6 +781,12 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Raises the <see cref="FrameAttached"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
+
+        /// <summary>
         /// Dispose resources.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
@@ -789,12 +795,6 @@ namespace PuppeteerSharp
             Mouse.Dispose();
             _ = DisposeAsync();
         }
-
-        /// <summary>
-        /// Raises the <see cref="FrameAttached"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="FrameNavigated"/> event.

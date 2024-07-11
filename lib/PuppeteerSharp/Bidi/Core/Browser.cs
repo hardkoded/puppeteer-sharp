@@ -22,9 +22,9 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
-using PuppeteerSharp.States;
 using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
 
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Bidi.Core;
 internal class Browser(Session session) : IDisposable
 {
     private bool _disposed;
-
+    private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
 
     public Session Session { get; } = session;
@@ -41,6 +41,8 @@ internal class Browser(Session session) : IDisposable
     public bool Closed { get; set; }
 
     public string Reason { get; set; }
+
+    internal ICollection<UserContext> UserContexts => _userContexts.Values;
 
     public async Task<Browser> From(Session session)
     {
@@ -94,7 +96,7 @@ internal class Browser(Session session) : IDisposable
         }
     }
 
-    private void OnSessionEnded(object sender, SessionEndedArgs e)
+    private void OnSessionEnded(object sender, SessionEndArgs e)
     {
         Dispose(e.Reason);
     }

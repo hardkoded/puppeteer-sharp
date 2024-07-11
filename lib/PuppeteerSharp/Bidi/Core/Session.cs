@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebDriverBiDi;
@@ -28,21 +29,17 @@ using WebDriverBiDi.Session;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Session(BiDiDriver driver, NewCommandResult newCommandResult) : IDisposable
+internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 {
-    public event EventHandler<SessionEndedArgs> Ended;
+    public event EventHandler<SessionEndArgs> Ended;
 
     public BiDiDriver Driver { get; } = driver;
 
-    public NewCommandResult NewCommandResult { get; } = newCommandResult;
+    public NewCommandResult Info { get; } = info;
 
     public Browser Browser { get; private set; }
 
-    public void Dispose()
-    {
-    }
-
-    internal static async Task<Session> FromAsync(BiDiDriver driver, NewCommandParameters capabilities, ILoggerFactory loggerFactory)
+    public static async Task<Session> FromAsync(BiDiDriver driver, NewCommandParameters capabilities, ILoggerFactory loggerFactory)
     {
         var result = await driver.Session.NewSessionAsync(capabilities).ConfigureAwait(false);
         var session = new Session(driver, result);
@@ -50,12 +47,19 @@ internal class Session(BiDiDriver driver, NewCommandResult newCommandResult) : I
         return session;
     }
 
+    public void Dispose()
+    {
+    }
+
+    public Task SubscribeAsync(string[] events, string[] contexts = null)
+        => Driver.Session.SubscribeAsync(new SubscribeCommandParameters(events, contexts ?? []);
+
     private async Task InitializeAsync()
     {
         Browser = await Browser.From(this).ConfigureAwait(false);
 
-        const browserEmitter = this.#disposables.use(this.browser);
-        browserEmitter.once('closed', ({reason}) => {
+        Browser.Closed += () => Dispose()
+        Browser.once('closed', ({reason}) => {
             this.dispose(reason);
         });
 
