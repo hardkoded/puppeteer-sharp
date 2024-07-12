@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
@@ -10,6 +13,8 @@ namespace PuppeteerSharp
     [DebuggerDisplay("Target {Type} - {Url}")]
     public abstract class Target : ITarget
     {
+        private readonly ConcurrentSet<ITarget> _childTargets = [];
+
         internal Target(
             TargetInfo targetInfo,
             CDPSession session,
@@ -47,6 +52,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         IBrowserContext ITarget.BrowserContext => BrowserContext;
 
+        /// <inheritdoc/>
+        IEnumerable<ITarget> ITarget.ChildTargets => _childTargets;
+
         internal BrowserContext BrowserContext { get; }
 
         internal Browser Browser => BrowserContext.Browser;
@@ -80,5 +88,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public abstract Task<ICDPSession> CreateCDPSessionAsync();
+
+        internal void AddChildTarget(CdpTarget target) => _childTargets.Add(target);
+
+        internal void RemoveChildTarget(CdpTarget target) => _childTargets.Remove(target);
     }
 }

@@ -175,9 +175,18 @@ namespace PuppeteerSharp
         {
             await CloseAsync().ConfigureAwait(false);
 
-            if (Launcher.TempUserDataDir != null)
+            // On disposal, the browser doesn't get closed. It gets disconnected.
+            if (Launcher == null)
             {
-                await Launcher.TempUserDataDir.DisposeAsync().ConfigureAwait(false);
+                Disconnect();
+                if (Launcher.TempUserDataDir != null)
+                {
+                    await Launcher.TempUserDataDir.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await CloseAsync().ConfigureAwait(false);
             }
 
             await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);

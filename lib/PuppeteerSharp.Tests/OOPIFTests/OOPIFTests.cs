@@ -104,6 +104,34 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             StringAssert.Contains("frame.html", await frame2.EvaluateExpressionAsync<string>("document.location.href"));
         }
 
+        [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should recover cross-origin frames on reconnect")]
+        public async Task ShouldRecoverCrossOriginFramesOnReconnect()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame1Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame == Page.MainFrame);
+            var frame2Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame != Page.MainFrame);
+
+            await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/frames/one-frame.html"
+            );
+
+            await Task.WhenAll(frame1Task, frame2Task);
+            var dump1 = await FrameUtils.DumpFramesAsync(Page.MainFrame);
+
+            await using var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+            });
+
+            var pages = await browserTwo.PagesAsync();
+            var emptyPages = pages.Where(page => page.Url == TestConstants.EmptyPage).ToArray();
+            Assert.AreEqual(1, emptyPages.Length);
+            var dump2 = await FrameUtils.DumpFramesAsync(emptyPages[0].MainFrame);
+            Assert.AreEqual(dump1, dump2);
+        }
+
         [Test, Retry(2), PuppeteerTest("oopif.spec", "OOPIF", "should support OOP iframes getting detached")]
         public async Task ShouldSupportOopIframesGettingDetached()
         {
