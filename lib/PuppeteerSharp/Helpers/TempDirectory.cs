@@ -9,9 +9,10 @@ namespace PuppeteerSharp.Helpers
     /// <summary>
     /// Represents a directory that is deleted on disposal.
     /// </summary>
-    internal sealed class TempDirectory : IDisposable
+    internal sealed class TempDirectory : IDisposable, IAsyncDisposable
     {
         private int _disposed;
+        private Task _deleteTask;
 
         public TempDirectory()
             : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
@@ -29,37 +30,45 @@ namespace PuppeteerSharp.Helpers
             Path = path;
         }
 
-        ~TempDirectory()
-        {
-            DisposeCore();
-        }
+        ~TempDirectory() => Dispose();
 
         public string Path { get; }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            DisposeCore();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _ = DisposeAsync();
+#pragma warning restore CA1816
 
         public override string ToString() => Path;
 
-        private static async Task DeleteAsync(string path)
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync()
         {
+            GC.SuppressFinalize(this);
+            _deleteTask ??= DeleteAsync();
+            await _deleteTask.ConfigureAwait(false);
+        }
+
+        private async Task DeleteAsync()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            {
+                return;
+            }
+
             const int minDelayInMillis = 200;
             const int maxDelayInMillis = 8000;
 
             var retryDelay = minDelayInMillis;
             while (true)
             {
-                if (!Directory.Exists(path))
+                if (!Directory.Exists(Path))
                 {
                     return;
                 }
 
                 try
                 {
-                    Directory.Delete(path, true);
+                    Directory.Delete(Path, true);
                     return;
                 }
                 catch
@@ -71,16 +80,6 @@ namespace PuppeteerSharp.Helpers
                     }
                 }
             }
-        }
-
-        private void DisposeCore()
-        {
-            if (Interlocked.Exchange(ref _disposed, 1) != 0)
-            {
-                return;
-            }
-
-            _ = DeleteAsync(Path);
         }
     }
 }

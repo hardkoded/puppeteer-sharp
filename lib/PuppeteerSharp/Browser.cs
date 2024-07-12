@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -46,7 +45,7 @@ namespace PuppeteerSharp
         public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext { get; protected set; }
+        public IBrowserContext DefaultContext { get; protected init; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
@@ -59,13 +58,13 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
-        internal Connection Connection { get; set; }
+        internal Connection Connection { get; init; }
 
-        internal ViewPortOptions DefaultViewport { get; set; }
+        internal ViewPortOptions DefaultViewport { get; init; }
 
-        internal LauncherBase Launcher { get; set; }
+        internal LauncherBase Launcher { get; init; }
 
-        internal Func<Target, bool> IsPageTargetFunc { get; set; }
+        internal Func<Target, bool> IsPageTargetFunc { get; init; }
 
         /// <inheritdoc/>
         public abstract Task<IPage> NewPageAsync();
@@ -175,6 +174,12 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             await CloseAsync().ConfigureAwait(false);
+
+            if (Launcher.TempUserDataDir != null)
+            {
+                await Launcher.TempUserDataDir.DisposeAsync().ConfigureAwait(false);
+            }
+
             await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
