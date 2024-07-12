@@ -53,7 +53,6 @@ namespace PuppeteerSharp.Helpers
 
         private async Task DeleteAsync()
         {
-
             const int minDelayInMillis = 200;
             const int maxDelayInMillis = 8000;
 
