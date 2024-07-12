@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using PathHelper = System.IO.Path;
 
@@ -54,10 +53,6 @@ namespace PuppeteerSharp.Helpers
 
         private async Task DeleteAsync()
         {
-            if (Interlocked.Exchange(ref _disposed, 1) != 0)
-            {
-                return;
-            }
 
             const int minDelayInMillis = 200;
             const int maxDelayInMillis = 8000;
