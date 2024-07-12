@@ -173,8 +173,6 @@ namespace PuppeteerSharp
         /// <returns>ValueTask.</returns>
         public async ValueTask DisposeAsync()
         {
-            await CloseAsync().ConfigureAwait(false);
-
             // On disposal, the browser doesn't get closed. It gets disconnected.
             if (Launcher == null)
             {
@@ -183,6 +181,11 @@ namespace PuppeteerSharp
             else
             {
                 await CloseAsync().ConfigureAwait(false);
+
+                if (Launcher.TempUserDataDir != null)
+                {
+                    await Launcher.TempUserDataDir.DisposeAsync().ConfigureAwait(false);
+                }
             }
 
             await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
