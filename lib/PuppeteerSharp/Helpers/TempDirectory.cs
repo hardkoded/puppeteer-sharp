@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Helpers
     /// </summary>
     internal sealed class TempDirectory : IDisposable, IAsyncDisposable
     {
-        private int _disposed;
+        private readonly object _disposingLock = new();
         private Task _deleteTask;
 
         public TempDirectory()
@@ -43,9 +43,13 @@ namespace PuppeteerSharp.Helpers
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
-            GC.SuppressFinalize(this);
-            _deleteTask ??= DeleteAsync();
+            lock (_disposingLock)
+            {
+                _deleteTask ??= DeleteAsync();
+            }
+
             await _deleteTask.ConfigureAwait(false);
+            GC.SuppressFinalize(this);
         }
 
         private async Task DeleteAsync()
