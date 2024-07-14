@@ -5,9 +5,9 @@ namespace PuppeteerSharp.States
 {
     internal class ExitedState(StateManager stateManager) : State(stateManager)
     {
-        public void EnterFrom(LauncherBase p, State fromState)
+        public void EnterFrom(LauncherBase launcher, State fromState)
         {
-            while (!StateManager.TryEnter(p, fromState, this))
+            while (!StateManager.TryEnter(launcher, fromState, this))
             {
                 // Current state has changed since transition to this state was requested.
                 // Therefore, retry transition to this state from the current state. This ensures
@@ -19,8 +19,7 @@ namespace PuppeteerSharp.States
                 }
             }
 
-            p.ExitCompletionSource.TrySetResult(true);
-            p.TempUserDataDir?.Dispose();
+            launcher.Exit();
         }
 
         public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.CompletedTask;

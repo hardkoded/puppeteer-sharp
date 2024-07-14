@@ -146,6 +146,23 @@ namespace PuppeteerSharp
             return true;
         }
 
+        internal void Exit()
+        {
+            if (TempUserDataDir is { } tempUserDataDir)
+            {
+                tempUserDataDir
+                    .DisposeAsync()
+                    .AsTask()
+                    .ContinueWith(
+                        t => ExitCompletionSource.TrySetResult(true),
+                        TaskScheduler.Default);
+            }
+            else
+            {
+                ExitCompletionSource.TrySetResult(true);
+            }
+        }
+
         /// <summary>
         /// Disposes Base process and any temporary user directory.
         /// </summary>

@@ -11,8 +11,8 @@ namespace PuppeteerSharp.States
         {
         }
 
-        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
-            => !StateManager.TryEnter(p, fromState, this) ? StateManager.CurrentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
+        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+            => !StateManager.TryEnter(launcher, fromState, this) ? StateManager.CurrentState.ExitAsync(launcher, timeout) : ExitAsync(launcher, timeout);
 
         public override async Task ExitAsync(LauncherBase p, TimeSpan timeout)
         {

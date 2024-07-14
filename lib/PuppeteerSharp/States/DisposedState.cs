@@ -3,24 +3,18 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class DisposedState : State
+    internal class DisposedState(StateManager stateManager) : State(stateManager)
     {
-        public DisposedState(StateManager stateManager) : base(stateManager)
-        {
-        }
-
-        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
+        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
         {
             if (fromState == StateManager.Exited)
             {
                 return Task.CompletedTask;
             }
 
-            Kill(p);
+            Kill(launcher);
 
-            p.ExitCompletionSource.TrySetException(new ObjectDisposedException(p.ToString()));
-            p.TempUserDataDir?.Dispose();
-
+            launcher.Exit();
             return Task.CompletedTask;
         }
 

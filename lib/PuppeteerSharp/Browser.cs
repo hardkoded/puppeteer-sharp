@@ -181,11 +181,6 @@ namespace PuppeteerSharp
             else
             {
                 await CloseAsync().ConfigureAwait(false);
-
-                if (Launcher.TempUserDataDir != null)
-                {
-                    await Launcher.TempUserDataDir.DisposeAsync().ConfigureAwait(false);
-                }
             }
 
             await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
