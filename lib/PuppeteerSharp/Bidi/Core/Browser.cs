@@ -24,7 +24,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp;
 using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
 
@@ -34,7 +33,6 @@ internal class Browser(Session session) : IDisposable
 {
     private bool _disposed;
     private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
-    private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
 
     public Session Session { get; } = session;
 
@@ -61,23 +59,26 @@ internal class Browser(Session session) : IDisposable
         _disposed = true;
     }
 
-    private async Task InitializeAsync()
+    private Task InitializeAsync()
     {
         Session.Ended += OnSessionEnded;
         Session.Driver.EventReceived += OnEventReceived;
 
-        sessionEmitter.on('script.realmCreated', info => {
-            if (info.type !== 'shared-worker') {
+        sessionEmitter.on('script.realmCreated', info =>
+        {
+            if (info.type != = 'shared-worker')
+            {
                 return;
             }
+
             this.#sharedWorkers.set(
                 info.realm,
-                SharedWorkerRealm.from(this, info.realm, info.origin)
-            );
-        });
+            SharedWorkerRealm.from(this, info.realm, info.origin));
+        return Task.CompletedTask;
+    }
 
-        await this.#syncUserContexts();
-        await this.#syncBrowsingContexts();
+    private await this.#syncUserContexts(); 
+        await this.#syncBrowsingContexts(); 
     }
 
     private void OnEventReceived(object sender, EventReceivedEventArgs e)
@@ -112,5 +113,4 @@ internal class Browser(Session session) : IDisposable
     {
         Dispose();
     }
-
 }

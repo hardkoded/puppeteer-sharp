@@ -123,56 +123,56 @@ public class BidiBrowser : Browser
         });
     }
 
-    private BidiBrowserContext CreateBrowserContext(UserContext userContext)
-    {
-        const browserContext = BidiBrowserContext.From(
-            this,
-            userContext,
-            new LaunchOptions()
-            {
-                DefaultViewport: _options.DefaultViewport,
-            });
+private void CreateBrowserContext(UserContext userContext)
+{
+    var browserContext = BidiBrowserContext.From(
+        this,
+        userContext,
+        new BidiBrowserContextOptions
+        {
+            DefaultViewport: _options.DefaultViewport,
+        });
+    this.#browserContexts.set(userContext, browserContext);
 
-        this.#browserContexts.set(userContext, browserContext);
+    browserContext.trustedEmitter.on(
+        BrowserContextEvent.TargetCreated,
+        target => {
+            this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
+        }
+    );
+    browserContext.trustedEmitter.on(
+        BrowserContextEvent.TargetChanged,
+        target => {
+            this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
+        }
+    );
+    browserContext.trustedEmitter.on(
+        BrowserContextEvent.TargetDestroyed,
+        target => {
+            this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
+        }
+    );
 
-        browserContext.trustedEmitter.on(
-            BrowserContextEvent.TargetCreated,
-            target => {
-                this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
-            }
-        );
-        browserContext.trustedEmitter.on(
-            BrowserContextEvent.TargetChanged,
-            target => {
-                this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
-            }
-        );
-        browserContext.trustedEmitter.on(
-            BrowserContextEvent.TargetDestroyed,
-            target => {
-                this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
-            }
-        );
+    return browserContext;
+}
 
-        return browserContext;
-    }
+/// <inheritdoc />
+public override void Disconnect() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public override void Disconnect() => throw new NotImplementedException();
+/// <inheritdoc />
+public override Task CloseAsync() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public override Task CloseAsync() => throw new NotImplementedException();
+/// <inheritdoc />
+public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
+/// <inheritdoc />
+public override ITarget[] Targets() => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public override ITarget[] Targets() => throw new NotImplementedException();
+/// <inheritdoc />
+public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) => throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
+/// <inheritdoc />
+public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
 
 }
+

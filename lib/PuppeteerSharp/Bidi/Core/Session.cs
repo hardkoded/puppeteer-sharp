@@ -59,18 +59,26 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Browser = await Browser.From(this).ConfigureAwait(false);
 
         Browser.Closed += () => Dispose()
-        Browser.once('closed', ({reason}) => {
+        Browser.once(
+            'closed',
+        {
+            reason
+    }) =>
+        {
             this.dispose(reason);
-        });
+        })
 
         // TODO: Currently, some implementations do not emit navigationStarted event
         // for fragment navigations (as per spec) and some do. This could emits a
         // synthetic navigationStarted to work around this inconsistency.
         const seen = new WeakSet();
-        this.on('browsingContext.fragmentNavigated', info => {
-            if (seen.has(info)) {
+        this.on('browsingContext.fragmentNavigated', info =>
+        {
+            if (seen.has(info))
+            {
                 return;
             }
+
             seen.add(info);
             this.emit('browsingContext.navigationStarted', info);
             this.emit('browsingContext.fragmentNavigated', info);

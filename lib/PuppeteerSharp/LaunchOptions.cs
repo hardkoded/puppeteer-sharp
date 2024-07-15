@@ -198,6 +198,7 @@ namespace PuppeteerSharp
         /// </summary>
         public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
 
+        /// <inheritdoc/>
         public bool WaitForInitialPage { get; set; } = true;
 
         /// <summary>
