@@ -22,8 +22,7 @@ namespace PuppeteerSharp.States
             if (launcher.TempUserDataDir is { } tempUserDataDir)
             {
                 tempUserDataDir
-                    .DisposeAsync()
-                    .AsTask()
+                    .DeleteAsync()
                     .ContinueWith(
                         t => launcher.ExitCompletionSource.TrySetResult(true),
                         TaskScheduler.Default);

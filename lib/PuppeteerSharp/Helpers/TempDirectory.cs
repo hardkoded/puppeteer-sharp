@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using PathHelper = System.IO.Path;
 
@@ -8,10 +9,9 @@ namespace PuppeteerSharp.Helpers
     /// <summary>
     /// Represents a directory that is deleted on disposal.
     /// </summary>
-    internal sealed class TempDirectory : IDisposable, IAsyncDisposable
+    internal sealed class TempDirectory : IDisposable
     {
-        private readonly object _disposingLock = new();
-        private Task _deleteTask;
+        private int _disposed;
 
         public TempDirectory()
             : this(PathHelper.Combine(PathHelper.GetTempPath(), PathHelper.GetRandomFileName()))
@@ -29,29 +29,22 @@ namespace PuppeteerSharp.Helpers
             Path = path;
         }
 
-        ~TempDirectory() => Dispose();
+        ~TempDirectory()
+        {
+            DisposeCore();
+        }
 
         public string Path { get; }
 
-#pragma warning disable CA1816
-        public void Dispose() => _ = DisposeAsync();
-#pragma warning restore CA1816
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            DisposeCore();
+        }
 
         public override string ToString() => Path;
 
-        /// <inheritdoc />
-        public async ValueTask DisposeAsync()
-        {
-            lock (_disposingLock)
-            {
-                _deleteTask ??= DeleteAsync();
-            }
-
-            await _deleteTask.ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
-
-        private async Task DeleteAsync()
+        public async Task DeleteAsync()
         {
             const int minDelayInMillis = 200;
             const int maxDelayInMillis = 8000;
@@ -78,6 +71,16 @@ namespace PuppeteerSharp.Helpers
                     }
                 }
             }
+        }
+
+        private void DisposeCore()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            {
+                return;
+            }
+
+            _ = DeleteAsync();
         }
     }
 }
