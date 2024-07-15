@@ -13,16 +13,16 @@ namespace PuppeteerSharp.States
         {
         }
 
-        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
+        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
         {
-            if (!StateManager.TryEnter(p, fromState, this))
+            if (!StateManager.TryEnter(launcher, fromState, this))
             {
                 // Delegate StartAsync to current state, because it has already changed since
                 // transition to this state was initiated.
-                return StateManager.CurrentState.StartAsync(p);
+                return StateManager.CurrentState.StartAsync(launcher);
             }
 
-            return StartCoreAsync(p);
+            return StartCoreAsync(launcher);
         }
 
         public override Task StartAsync(LauncherBase p) => p.StartCompletionSource.Task;
