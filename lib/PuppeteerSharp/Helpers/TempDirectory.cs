@@ -50,13 +50,8 @@ namespace PuppeteerSharp.Helpers
             const int maxDelayInMillis = 8000;
 
             var retryDelay = minDelayInMillis;
-            while (true)
+            while (Directory.Exists(Path))
             {
-                if (!Directory.Exists(Path))
-                {
-                    return;
-                }
-
                 try
                 {
                     Directory.Delete(Path, true);
