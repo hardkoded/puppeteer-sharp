@@ -147,18 +147,12 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Disposes Base process and any temporary user directory.
-        /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
-
-        /// <summary>
         /// Set Env Variables.
         /// </summary>
         /// <param name="environment">The environment.</param>
         /// <param name="customEnv">The customEnv.</param>
         /// <param name="realEnv">The realEnv.</param>
-        private static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
+        protected static void SetEnvVariables(IDictionary<string, string> environment, IDictionary<string, string> customEnv, IDictionary realEnv)
         {
             if (environment == null)
             {
@@ -183,5 +177,11 @@ namespace PuppeteerSharp
                 }
             }
         }
+
+        /// <summary>
+        /// Disposes Base process and any temporary user directory.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
     }
 }
