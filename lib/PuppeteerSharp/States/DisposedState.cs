@@ -14,7 +14,7 @@ namespace PuppeteerSharp.States
 
             Kill(launcher);
 
-            launcher.Exit();
+            launcher.ExecuteExitCleanup();
             return Task.CompletedTask;
         }
 

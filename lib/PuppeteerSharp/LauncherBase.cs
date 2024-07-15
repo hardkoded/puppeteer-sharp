@@ -146,7 +146,7 @@ namespace PuppeteerSharp
             return true;
         }
 
-        internal void Exit()
+        internal void ExecuteExitCleanup()
         {
             if (TempUserDataDir is { } tempUserDataDir)
             {
