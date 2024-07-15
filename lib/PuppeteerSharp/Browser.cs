@@ -45,7 +45,7 @@ namespace PuppeteerSharp
         public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext { get; protected init; }
+        public IBrowserContext DefaultContext { get; protected set; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
