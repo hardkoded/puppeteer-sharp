@@ -33,9 +33,6 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public override Task<string> GetDefaultBuildIdAsync() => Firefox.GetDefaultBuildIdAsync();
-
-        /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
@@ -76,6 +73,8 @@ namespace PuppeteerSharp
             firefoxArguments.AddRange(options.Args);
             return firefoxArguments.ToArray();
         }
+
+        internal Task<string> GetDefaultBuildIdAsync() => Firefox.GetDefaultBuildIdAsync();
 
         private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {

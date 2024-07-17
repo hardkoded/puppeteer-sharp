@@ -156,9 +156,6 @@ namespace PuppeteerSharp
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
-        /// <inheritdoc />
-        public ProtocolType Protocol { get; set; }
-
         /// <summary>
         /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
         /// </summary>
@@ -198,8 +195,13 @@ namespace PuppeteerSharp
         /// </summary>
         public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Wait for the initial page before initializing.
+        /// </summary>
         public bool WaitForInitialPage { get; set; } = true;
+
+        // Internal until is usable
+        internal ProtocolType Protocol { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

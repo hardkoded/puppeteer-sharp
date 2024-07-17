@@ -31,8 +31,8 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class Browser(Session session) : IDisposable
 {
-    private bool _disposed;
     private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
+    private bool _disposed;
 
     public Session Session { get; } = session;
 
@@ -59,29 +59,20 @@ internal class Browser(Session session) : IDisposable
         _disposed = true;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        Dispose();
+    }
+
     private Task InitializeAsync()
     {
         Session.Ended += OnSessionEnded;
-        Session.Driver.EventReceived += OnEventReceived;
+        Session.Driver.OnEventReceived.AddHandler(OnEventReceived);
 
-        sessionEmitter.on('script.realmCreated', info =>
-        {
-            if (info.type != = 'shared-worker')
-            {
-                return;
-            }
-
-            this.#sharedWorkers.set(
-                info.realm,
-            SharedWorkerRealm.from(this, info.realm, info.origin));
         return Task.CompletedTask;
     }
 
-    private await this.#syncUserContexts(); 
-        await this.#syncBrowsingContexts(); 
-    }
-
-    private void OnEventReceived(object sender, EventReceivedEventArgs e)
+    private void OnEventReceived(EventReceivedEventArgs e)
     {
         switch (e.EventName)
         {
@@ -93,7 +84,9 @@ internal class Browser(Session session) : IDisposable
                     return;
                 }
 
-                _
+                break;
+            default:
+                return;
         }
     }
 
@@ -107,10 +100,5 @@ internal class Browser(Session session) : IDisposable
         Reason = reason;
         Closed = closed;
         Dispose(true);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        Dispose();
     }
 }

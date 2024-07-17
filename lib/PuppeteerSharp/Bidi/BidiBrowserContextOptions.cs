@@ -26,5 +26,5 @@ namespace PuppeteerSharp.Bidi;
 
 internal class BidiBrowserContextOptions
 {
-    public Viewport DefaultViewport { get; set; }
+    public ViewPortOptions DefaultViewport { get; set; }
 }

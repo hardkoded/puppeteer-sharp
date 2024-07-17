@@ -32,7 +32,6 @@ namespace PuppeteerSharp.Bidi;
 /// <inheritdoc />
 public class BidiPage : Page
 {
-    /// <inheritdoc />
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
     }
@@ -161,15 +160,6 @@ public class BidiPage : Page
     public override Task SetBypassServiceWorkerAsync(bool bypass) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    protected override Task<string> PerformScreenshotAsync(ScreenshotType type, ScreenshotOptions options) => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public override Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression) => throw new NotImplementedException();
 
     /// <inheritdoc />
@@ -193,6 +183,15 @@ public class BidiPage : Page
         page.Initialize();
         return page;
     }
+
+    /// <inheritdoc />
+    protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    protected override Task<string> PerformScreenshotAsync(ScreenshotType type, ScreenshotOptions options) => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
 
     private void Initialize()
     {

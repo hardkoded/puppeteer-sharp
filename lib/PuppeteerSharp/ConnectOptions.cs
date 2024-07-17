@@ -43,9 +43,6 @@ namespace PuppeteerSharp
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
-        /// <inheritdoc />
-        public ProtocolType Protocol { get; set; } = ProtocolType.Cdp;
-
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
         /// </summary>
@@ -84,6 +81,9 @@ namespace PuppeteerSharp
         /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
+
+        // TODO: Restore when it's usable
+        internal ProtocolType Protocol { get; set; } = ProtocolType.Cdp;
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

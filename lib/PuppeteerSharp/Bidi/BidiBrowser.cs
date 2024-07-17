@@ -25,6 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 using WebDriverBiDi;
 using WebDriverBiDi.Session;
 
@@ -36,6 +37,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiBrowser : Browser
 {
     private readonly LaunchOptions _options;
+    private readonly ConcurrentSet<BidiBrowserContext> _browserContexts = [];
 
     private BidiBrowser(Core.Browser browserCore, LaunchOptions options)
     {
@@ -134,8 +136,15 @@ public class BidiBrowser : Browser
         }
     }
 
-    private void CreateBrowserContext(UserContext userContext)
+    private BidiBrowserContext CreateBrowserContext(UserContext userContext)
     {
-        var browserContext = BidiBrowserContext.From()
+        var browserContext = BidiBrowserContext.From(
+            this,
+            userContext,
+            new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport, });
+
+        _browserContexts.Add(browserContext);
+
+        return browserContext;
     }
 }
