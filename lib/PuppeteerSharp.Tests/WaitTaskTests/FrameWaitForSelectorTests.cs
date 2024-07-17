@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -7,7 +8,7 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    public class FrameWaitForSelectorTests : PuppeteerPageBaseTest
+    public sealed class FrameWaitForSelectorTests : PuppeteerPageBaseTest, IDisposable
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
         private PollerInterceptor _pollerInterceptor;
@@ -29,9 +30,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             };
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            base.Dispose(disposing);
             _pollerInterceptor.Dispose();
         }
 
