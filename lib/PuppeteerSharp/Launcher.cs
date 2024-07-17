@@ -72,6 +72,11 @@ namespace PuppeteerSharp
 
             try
             {
+                if (options.Protocol == ProtocolType.WebdriverBiDi)
+                {
+                    Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
+                }
+
                 await Process.StartAsync().ConfigureAwait(false);
 
                 Connection connection = null;
