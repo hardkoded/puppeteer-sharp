@@ -70,13 +70,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "",
-    "testIdPattern": "[puppeteer-sharp] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[accessibility.spec] *",
     "platforms": [
