@@ -44,22 +44,17 @@ namespace PuppeteerSharp.Helpers
 
         public override string ToString() => Path;
 
-        private static async Task DeleteAsync(string path)
+        public async Task DeleteAsync()
         {
             const int minDelayInMillis = 200;
             const int maxDelayInMillis = 8000;
 
             var retryDelay = minDelayInMillis;
-            while (true)
+            while (Directory.Exists(Path))
             {
-                if (!Directory.Exists(path))
-                {
-                    return;
-                }
-
                 try
                 {
-                    Directory.Delete(path, true);
+                    Directory.Delete(Path, true);
                     return;
                 }
                 catch
@@ -80,7 +75,7 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            _ = DeleteAsync(Path);
+            _ = DeleteAsync();
         }
     }
 }

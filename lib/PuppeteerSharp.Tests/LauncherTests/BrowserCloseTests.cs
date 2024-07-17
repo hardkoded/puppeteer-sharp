@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.BrowserTests.Events
+namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
                 BrowserWSEndpoint = browser.WebSocketEndpoint,
                 Protocol = ((Browser)browser).Protocol,
             });
+
             var newPage = await remote.NewPageAsync();
             var requestTask = newPage.WaitForRequestAsync(TestConstants.EmptyPage);
             var responseTask = newPage.WaitForResponseAsync(TestConstants.EmptyPage);
@@ -28,6 +29,20 @@ namespace PuppeteerSharp.Tests.BrowserTests.Events
             exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
             StringAssert.Contains("Target closed", exception.Message);
             StringAssert.DoesNotContain("Timeout", exception.Message);
+        }
+
+        [Test]
+        public async Task DeleteTempUserDataDirWhenDisposingBrowser()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            await using var browser = await launcher.LaunchAsync(options);
+
+            var tempUserDataDir = ((Browser)browser).Launcher.TempUserDataDir;
+            DirectoryAssert.Exists(tempUserDataDir.Path);
+
+            await browser.DisposeAsync();
+            DirectoryAssert.DoesNotExist(tempUserDataDir.Path);
         }
     }
 }

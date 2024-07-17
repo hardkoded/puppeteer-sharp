@@ -7,16 +7,16 @@ namespace PuppeteerSharp.States
 {
     internal class ExitingState(StateManager stateManager) : State(stateManager)
     {
-        public override Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout)
-            => !StateManager.TryEnter(p, fromState, this) ? StateManager.CurrentState.ExitAsync(p, timeout) : ExitAsync(p, timeout);
+        public override Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout)
+            => !StateManager.TryEnter(launcher, fromState, this) ? StateManager.CurrentState.ExitAsync(launcher, timeout) : ExitAsync(launcher, timeout)
 
-        public override async Task ExitAsync(LauncherBase p, TimeSpan timeout)
+        public override async Task ExitAsync(LauncherBase launcher, TimeSpan timeout)
         {
-            var waitForExitTask = WaitForExitAsync(p);
+            var waitForExitTask = WaitForExitAsync(launcher);
             await waitForExitTask.WithTimeout(
                 async () =>
                 {
-                    await StateManager.Killing.EnterFromAsync(p, this, timeout).ConfigureAwait(false);
+                    await StateManager.Killing.EnterFromAsync(launcher, this, timeout).ConfigureAwait(false);
                     await waitForExitTask.ConfigureAwait(false);
                 },
                 timeout,

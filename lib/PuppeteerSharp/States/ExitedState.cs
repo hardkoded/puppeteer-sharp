@@ -5,12 +5,12 @@ namespace PuppeteerSharp.States
 {
     internal class ExitedState(StateManager stateManager) : State(stateManager)
     {
-        public void EnterFrom(LauncherBase p, State fromState)
+        public void EnterFrom(LauncherBase launcher, State fromState)
         {
-            while (!StateManager.TryEnter(p, fromState, this))
+            while (!StateManager.TryEnter(launcher, fromState, this))
             {
                 // Current state has changed since transition to this state was requested.
-                // Therefore retry transition to this state from the current state. This ensures
+                // Therefore, retry transition to this state from the current state. This ensures
                 // that Leave() operation of current state is properly called.
                 fromState = StateManager.CurrentState;
                 if (fromState == this)
@@ -19,11 +19,21 @@ namespace PuppeteerSharp.States
                 }
             }
 
-            p.ExitCompletionSource.TrySetResult(true);
-            p.TempUserDataDir?.Dispose();
+            if (launcher.TempUserDataDir is { } tempUserDataDir)
+            {
+                tempUserDataDir
+                    .DeleteAsync()
+                    .ContinueWith(
+                        t => launcher.ExitCompletionSource.TrySetResult(true),
+                        TaskScheduler.Default);
+            }
+            else
+            {
+                launcher.ExitCompletionSource.TrySetResult(true);
+            }
         }
 
-        public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => Task.CompletedTask;
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => Task.CompletedTask;
 
         public override Task KillAsync(LauncherBase p) => Task.CompletedTask;
 

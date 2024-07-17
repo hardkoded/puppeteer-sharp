@@ -80,7 +80,7 @@ namespace PuppeteerSharp
 
         internal LaunchOptions Options { get; }
 
-        internal TempDirectory TempUserDataDir { get; set; }
+        internal TempDirectory TempUserDataDir { get; init; }
 
         /// <summary>
         /// Gets Base process current state.

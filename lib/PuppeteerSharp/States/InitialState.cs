@@ -8,9 +8,9 @@ namespace PuppeteerSharp.States
         public override Task StartAsync(LauncherBase p)
             => StateManager.Starting.EnterFromAsync(p, this, TimeSpan.Zero);
 
-        public override Task ExitAsync(LauncherBase p, TimeSpan timeout)
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout)
         {
-            StateManager.Exited.EnterFromAsync(p, this);
+            StateManager.Exited.EnterFromAsync(launcher, this);
             return Task.CompletedTask;
         }
 

@@ -61,13 +61,13 @@ namespace PuppeteerSharp
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
-        internal Connection Connection { get; set; }
+        internal Connection Connection { get; init; }
 
-        internal ViewPortOptions DefaultViewport { get; set; }
+        internal ViewPortOptions DefaultViewport { get; init; }
 
-        internal LauncherBase Launcher { get; set; }
+        internal LauncherBase Launcher { get; init; }
 
-        internal Func<Target, bool> IsPageTargetFunc { get; set; }
+        internal Func<Target, bool> IsPageTargetFunc { get; init; }
 
         internal abstract ProtocolType Protocol { get; }
 
