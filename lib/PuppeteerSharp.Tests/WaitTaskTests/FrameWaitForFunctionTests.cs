@@ -6,7 +6,7 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest
+    public sealed class FrameWaitForFunctionTests : PuppeteerPageBaseTest, IDisposable
     {
         private PollerInterceptor _pollerInterceptor;
 
@@ -27,9 +27,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             };
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            base.Dispose(disposing);
             _pollerInterceptor.Dispose();
         }
 

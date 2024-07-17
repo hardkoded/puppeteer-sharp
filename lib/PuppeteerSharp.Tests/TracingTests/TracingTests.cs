@@ -9,7 +9,7 @@ using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TracingTests
 {
-    public class TracingTests : PuppeteerPageBaseTest
+    public sealed class TracingTests : PuppeteerPageBaseTest, IAsyncDisposable
     {
         private readonly string _file;
 
@@ -18,10 +18,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         }
 
-        public override async Task DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            await base.DisposeAsync();
-
             var attempts = 0;
             const int maxAttempts = 5;
 
