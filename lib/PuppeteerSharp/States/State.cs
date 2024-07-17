@@ -65,9 +65,9 @@ namespace PuppeteerSharp.States
 
         public bool IsExited => this == StateManager.Exited || this == StateManager.Disposed;
 
-        public virtual Task EnterFromAsync(LauncherBase p, State fromState) => EnterFromAsync(p, fromState, TimeSpan.Zero);
+        public virtual Task EnterFromAsync(LauncherBase launcher, State fromState) => EnterFromAsync(launcher, fromState, TimeSpan.Zero);
 
-        public virtual Task EnterFromAsync(LauncherBase p, State fromState, TimeSpan timeout) => Task.FromException(InvalidOperation("enterFrom"));
+        public virtual Task EnterFromAsync(LauncherBase launcher, State fromState, TimeSpan timeout) => Task.FromException(InvalidOperation("enterFrom"));
 
         public virtual Task StartAsync(LauncherBase p) => Task.FromException(InvalidOperation("start"));
 

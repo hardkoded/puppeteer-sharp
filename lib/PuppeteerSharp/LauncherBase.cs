@@ -21,7 +21,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Base.</param>
-        public LauncherBase(string executable, LaunchOptions options)
+        protected LauncherBase(string executable, LaunchOptions options)
         {
             _stateManager = new StateManager();
             _stateManager.Starting = new ProcessStartingState(_stateManager);
@@ -80,7 +80,7 @@ namespace PuppeteerSharp
 
         internal LaunchOptions Options { get; }
 
-        internal TempDirectory TempUserDataDir { get; set; }
+        internal TempDirectory TempUserDataDir { get; init; }
 
         /// <summary>
         /// Gets Base process current state.
