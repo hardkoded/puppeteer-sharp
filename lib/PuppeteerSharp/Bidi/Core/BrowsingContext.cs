@@ -20,11 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System.Collections.Generic;
-
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class UserContext
+internal class BrowsingContext
 {
-    public static IEnumerable<BrowsingContext> BrowsingContexts { get; set; }
 }

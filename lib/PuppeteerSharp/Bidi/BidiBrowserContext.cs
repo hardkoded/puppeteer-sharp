@@ -23,27 +23,38 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
 public class BidiBrowserContext : BrowserContext
 {
+    private readonly ConcurrentSet<BidiPage> _pages = [];
+
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
     {
-        throw new System.NotImplementedException();
+        Browser = browser;
     }
 
+    internal TaskQueue ScreenshotTaskQueue => Browser.ScreenshotTaskQueue;
+
+    /// <inheritdoc />
     public override Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions) => throw new System.NotImplementedException();
 
+    /// <inheritdoc />
     public override Task ClearPermissionOverridesAsync() => throw new System.NotImplementedException();
 
+    /// <inheritdoc />
     public override Task<IPage[]> PagesAsync() => throw new System.NotImplementedException();
 
+    /// <inheritdoc />
     public override Task<IPage> NewPageAsync() => throw new System.NotImplementedException();
 
+    /// <inheritdoc />
     public override Task CloseAsync() => throw new System.NotImplementedException();
 
+    /// <inheritdoc />
     public override ITarget[] Targets() => throw new System.NotImplementedException();
 
     internal static BidiBrowserContext From(
@@ -59,29 +70,16 @@ public class BidiBrowserContext : BrowserContext
     private void Initialize()
     {
         // Create targets for existing browsing contexts.
-        foreach (var browsingContext in UserContext.browsingContexts) {
-            this.#createPage(browsingContext);
+        foreach (var browsingContext in UserContext.BrowsingContexts)
+        {
+            CreatePage(browsingContext);
         }
+    }
 
-        this.userContext.on('browsingcontext', ({browsingContext}) => {
-            const page = this.#createPage(browsingContext);
-
-            // We need to wait for the DOMContentLoaded as the
-            // browsingContext still may be navigating from the about:blank
-            browsingContext.once('DOMContentLoaded', () => {
-                if (browsingContext.originalOpener) {
-                    for (const context of this.userContext.browsingContexts) {
-                        if (context.id === browsingContext.originalOpener) {
-                            this.#pages
-                                .get(context)!
-                                .trustedEmitter.emit(PageEvent.Popup, page);
-                        }
-                    }
-                }
-            });
-        });
-        this.userContext.on('closed', () => {
-            this.trustedEmitter.removeAllListeners();
-        });
+    private void CreatePage(BrowsingContext browsingContext)
+    {
+        var page = BidiPage.From(this, browsingContext);
+        _pages.Add(page);
     }
 }
+

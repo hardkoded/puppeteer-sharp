@@ -46,9 +46,8 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override bool IsClosed { get; }
 
-    internal Core.Browser BrowserCore { get; }
-
-    internal static string[] SubscribeModules { get; } = [
+    internal static string[] SubscribeModules { get; } =
+    [
         "browsingContext",
         "network",
         "log",
@@ -66,6 +65,8 @@ public class BidiBrowser : Browser
         "cdp.Page.screencastFrame",
     ];
 
+    internal Core.Browser BrowserCore { get; }
+
     internal override ProtocolType Protocol => ProtocolType.WebdriverBiDi;
 
     /// <inheritdoc />
@@ -74,7 +75,29 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
 
-    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "We return the session, the browser needs to dispose the session")]
+    /// <inheritdoc />
+    public override void Disconnect() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public override Task CloseAsync() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public override ITarget[] Targets() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) =>
+        throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
+
+    [SuppressMessage(
+        "Reliability",
+        "CA2000:Dispose objects before losing scope",
+        Justification = "We return the session, the browser needs to dispose the session")]
     internal static async Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
@@ -87,10 +110,7 @@ public class BidiBrowser : Browser
                 AlwaysMatch = new CapabilitiesRequest()
                 {
                     AcceptInsecureCertificates = options.IgnoreHTTPSErrors,
-                    AdditionalCapabilities =
-                    {
-                        ["webSocketUrl"] = true,
-                    },
+                    AdditionalCapabilities = { ["webSocketUrl"] = true, },
                 },
             },
             loggerFactory).ConfigureAwait(false);
@@ -112,67 +132,10 @@ public class BidiBrowser : Browser
         {
             CreateBrowserContext(userContext);
         }
-
-        this.#browserCore.once('disconnected', () => {
-            this.#trustedEmitter.emit(BrowserEvent.Disconnected, undefined);
-            this.#trustedEmitter.removeAllListeners();
-        });
-        this.#process?.once('close', () => {
-            this.#browserCore.dispose('Browser process exited.', true);
-            this.connection.dispose();
-        });
     }
 
-private void CreateBrowserContext(UserContext userContext)
-{
-    var browserContext = BidiBrowserContext.From(
-        this,
-        userContext,
-        new BidiBrowserContextOptions
-        {
-            DefaultViewport: _options.DefaultViewport,
-        });
-    this.#browserContexts.set(userContext, browserContext);
-
-    browserContext.trustedEmitter.on(
-        BrowserContextEvent.TargetCreated,
-        target => {
-            this.#trustedEmitter.emit(BrowserEvent.TargetCreated, target);
-        }
-    );
-    browserContext.trustedEmitter.on(
-        BrowserContextEvent.TargetChanged,
-        target => {
-            this.#trustedEmitter.emit(BrowserEvent.TargetChanged, target);
-        }
-    );
-    browserContext.trustedEmitter.on(
-        BrowserContextEvent.TargetDestroyed,
-        target => {
-            this.#trustedEmitter.emit(BrowserEvent.TargetDestroyed, target);
-        }
-    );
-
-    return browserContext;
+    private void CreateBrowserContext(UserContext userContext)
+    {
+        var browserContext = BidiBrowserContext.From()
+    }
 }
-
-/// <inheritdoc />
-public override void Disconnect() => throw new NotImplementedException();
-
-/// <inheritdoc />
-public override Task CloseAsync() => throw new NotImplementedException();
-
-/// <inheritdoc />
-public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
-
-/// <inheritdoc />
-public override ITarget[] Targets() => throw new NotImplementedException();
-
-/// <inheritdoc />
-public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) => throw new NotImplementedException();
-
-/// <inheritdoc />
-public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
-
-}
-
