@@ -30,31 +30,34 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
-            Server.SetRoute("/one-style.css", _ => responseCompleted.Task);
+            Server.SetRoute("/one-style.css", _ =>
+            {
+                return responseCompleted.Task;
+            });
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
             var domContentLoadedTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
-                WaitUntil = [WaitUntilNavigation.DOMContentLoaded]
+                WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded }
             });
 
             var bothFired = false;
             var bothFiredTask = Page.WaitForNavigationAsync(new NavigationOptions
             {
-                WaitUntil =
-                [
+                WaitUntil = new[]
+                {
                     WaitUntilNavigation.Load,
                     WaitUntilNavigation.DOMContentLoaded
-                ]
+                }
             }).ContinueWith(_ => bothFired = true);
 
-            await waitForRequestTask.WithTimeout(5_000);
-            await domContentLoadedTask.WithTimeout(5_000);
+            await waitForRequestTask.WithTimeout();
+            await domContentLoadedTask.WithTimeout();
             Assert.False(bothFired);
             responseCompleted.SetResult(true);
-            await bothFiredTask.WithTimeout(5_000);
-            await navigationTask.WithTimeout(5_000);
+            await bothFiredTask.WithTimeout();
+            await navigationTask.WithTimeout();
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with clicking on anchor links")]

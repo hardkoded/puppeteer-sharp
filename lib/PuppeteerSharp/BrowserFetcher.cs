@@ -258,7 +258,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
             }
 
-            await UnpackArchiveAsync(archivePath, outputPath, fileName, browser, buildId).ConfigureAwait(false);
+            await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
             new FileInfo(archivePath).Delete();
 
             return new InstalledBrowser(cache, browser, buildId, Platform);
@@ -374,7 +374,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName, SupportedBrowser browser, string buildId)
+        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName)
         {
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
@@ -425,36 +425,6 @@ namespace PuppeteerSharp
                         }
                     }
                 }
-            }
-
-            if (browser == SupportedBrowser.Chrome && (GetCurrentPlatform() == Platform.Win64 || GetCurrentPlatform() == Platform.Win32))
-            {
-                if (int.TryParse(buildId.Split('.').First(), out var majorVersion) &&
-                    majorVersion >= Chrome.ChromeVersionRequiringPermissionsFix)
-                {
-                    TrySetWindowsPermissions(outputPath);
-                }
-            }
-        }
-
-        private void TrySetWindowsPermissions(string outputPath)
-        {
-            try
-            {
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "icacls.exe",
-                    Arguments = $"\"{outputPath}\" /grant *S-1-15-2-2:(OI)(CI)(RX)",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                };
-                var process = Process.Start(startInfo);
-                process?.WaitForExit();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unable to fix permissions: " + e.Message);
-                Console.WriteLine($"Visit https://pptr.dev/troubleshooting#chrome-reports-sandbox-errors-on-windows for more information");
-                throw;
             }
         }
 
