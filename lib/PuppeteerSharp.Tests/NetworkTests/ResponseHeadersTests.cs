@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            StringAssert.Contains("bar", response.Headers["foo"]);
+            Assert.That(response.Headers["foo"], Does.Contain("bar"));
         }
     }
 }

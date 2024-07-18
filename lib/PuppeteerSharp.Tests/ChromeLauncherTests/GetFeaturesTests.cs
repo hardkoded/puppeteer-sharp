@@ -11,35 +11,35 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
         public void ReturnsAnEmptyArrayWhenNoOptionsAreProvided()
         {
             var result = ChromeLauncher.GetFeatures("--foo", Array.Empty<string>());
-            Assert.IsEmpty(result);
+            Assert.That(result, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "returns an empty array when no options match the flag")]
         public void ReturnsAnEmptyArrayWhenNoOptionsMatchTheFlag()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--bar", "--baz" });
-            Assert.IsEmpty(result);
+            Assert.That(result, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "returns an array of values when options match the flag")]
         public void ReturnsAnArrayOfValuesWhenOptionsMatchTheFlag()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar", "--foo=baz" });
-            Assert.AreEqual(new[] { "bar", "baz" }, result);
+            Assert.That(result, Is.EqualTo(new[] { "bar", "baz" }));
         }
 
         [Test, Retry(2), PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "does not handle whitespace")]
         public void DoesNotHandleWhitespace()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo bar", "--foo baz " });
-            Assert.IsEmpty(result);
+            Assert.That(result, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "handles equals sign around the flag and value")]
         public void HandlesEqualsSignAroundTheFlagAndValue()
         {
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar", "--foo=baz" });
-            Assert.AreEqual(new[] { "bar", "baz" }, result);
+            Assert.That(result, Is.EqualTo(new[] { "bar", "baz" }));
         }
     }
 }

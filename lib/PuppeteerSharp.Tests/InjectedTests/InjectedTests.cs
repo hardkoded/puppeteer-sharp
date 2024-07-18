@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                         return typeof PuppeteerUtil === 'object';
                       }",
                       new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)));
-            Assert.True(result);
+            Assert.That(result, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("injected.spec", "createFunction tests", "should work")]
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.InjectedTests
                 }",
                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                 "() => 4");
-            Assert.AreEqual(4, result);
+            Assert.That(result, Is.EqualTo(4));
         }
     }
 }

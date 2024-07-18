@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
                 var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
-                Assert.AreEqual(36, result);
+                Assert.That(result, Is.EqualTo(36));
 
                 await Page.RemoveExposedFunctionAsync("compute");
             }

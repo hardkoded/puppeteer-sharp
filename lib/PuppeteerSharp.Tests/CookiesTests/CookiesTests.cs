@@ -11,28 +11,28 @@ namespace PuppeteerSharp.Tests.CookiesTests
         public async Task ShouldReturnNoCookiesInPristineBrowserContext()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.IsEmpty(await Page.GetCookiesAsync());
+            Assert.That(await Page.GetCookiesAsync(), Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get a cookie")]
         public async Task ShouldGetACookie()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.IsEmpty(await Page.GetCookiesAsync());
+            Assert.That(await Page.GetCookiesAsync(), Is.Empty);
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
             var cookie = cookies.First();
-            Assert.AreEqual("username", cookie.Name);
-            Assert.AreEqual("John Doe", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(16, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("username"));
+            Assert.That(cookie.Value, Is.EqualTo("John Doe"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(16));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report httpOnly cookie")]
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
-            Assert.True(cookies[0].HttpOnly);
+            Assert.That(cookies[0].HttpOnly, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Strict\" sameSite cookie")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
-            Assert.AreEqual(SameSite.Strict, cookies[0].SameSite);
+            Assert.That(cookies[0].SameSite, Is.EqualTo(SameSite.Strict));
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should properly report \"Lax\" sameSite cookie")]
@@ -74,14 +74,14 @@ namespace PuppeteerSharp.Tests.CookiesTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
-            Assert.AreEqual(SameSite.Lax, cookies[0].SameSite);
+            Assert.That(cookies[0].SameSite, Is.EqualTo(SameSite.Lax));
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get multiple cookies")]
         public async Task ShouldGetMultipleCookies()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.IsEmpty(await Page.GetCookiesAsync());
+            Assert.That(await Page.GetCookiesAsync(), Is.Empty);
 
             await Page.EvaluateFunctionAsync(@"() => {
                 document.cookie = 'username=John Doe';
@@ -91,26 +91,26 @@ namespace PuppeteerSharp.Tests.CookiesTests
             var cookies = (await Page.GetCookiesAsync()).OrderBy(c => c.Name).ToList();
 
             var cookie = cookies[0];
-            Assert.AreEqual("password", cookie.Name);
-            Assert.AreEqual("1234", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(12, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("password"));
+            Assert.That(cookie.Value, Is.EqualTo("1234"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(12));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
 
             cookie = cookies[1];
-            Assert.AreEqual("username", cookie.Name);
-            Assert.AreEqual("John Doe", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(16, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("username"));
+            Assert.That(cookie.Value, Is.EqualTo("John Doe"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(16));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from multiple urls")]
@@ -138,29 +138,29 @@ namespace PuppeteerSharp.Tests.CookiesTests
             );
             var cookies = (await Page.GetCookiesAsync("https://foo.com", "https://baz.com")).OrderBy(c => c.Name).ToList();
 
-            Assert.AreEqual(2, cookies.Count);
+            Assert.That(cookies, Has.Count.EqualTo(2));
 
             var cookie = cookies[0];
-            Assert.AreEqual("birdo", cookie.Name);
-            Assert.AreEqual("tweets", cookie.Value);
-            Assert.AreEqual("baz.com", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(11, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.True(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("birdo"));
+            Assert.That(cookie.Value, Is.EqualTo("tweets"));
+            Assert.That(cookie.Domain, Is.EqualTo("baz.com"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(11));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.True);
+            Assert.That(cookie.Session, Is.True);
 
             cookie = cookies[1];
-            Assert.AreEqual("doggo", cookie.Name);
-            Assert.AreEqual("woofs", cookie.Value);
-            Assert.AreEqual("foo.com", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(10, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.True(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("doggo"));
+            Assert.That(cookie.Value, Is.EqualTo("woofs"));
+            Assert.That(cookie.Domain, Is.EqualTo("foo.com"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(10));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.True);
+            Assert.That(cookie.Session, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain")]
@@ -172,7 +172,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Name = "doggo",
                 Value = "woofs"
             });
-            Assert.IsEmpty(await Page.GetCookiesAsync("https://sub_domain.base_domain.com"));
+            Assert.That(await Page.GetCookiesAsync("https://sub_domain.base_domain.com"), Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from nested path")]
@@ -202,7 +202,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Value = "woofs"
             });
 
-            Assert.IsEmpty(await Page.GetCookiesAsync("https://foo.com/some_path_looks_like_nested"));
+            Assert.That(await Page.GetCookiesAsync("https://foo.com/some_path_looks_like_nested"), Is.Empty);
         }
     }
 }

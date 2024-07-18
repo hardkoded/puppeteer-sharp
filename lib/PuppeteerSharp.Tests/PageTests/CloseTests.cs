@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            Assert.Contains(page, await browser.PagesAsync());
+            Assert.That(await browser.PagesAsync(), Does.Contain(page));
             await page.CloseAsync();
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var page = await browser.NewPageAsync();
-            Assert.Contains(page, await browser.PagesAsync());
+            Assert.That(await browser.PagesAsync(), Does.Contain(page));
             await page.DisposeAsync();
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
@@ -53,16 +53,16 @@ namespace PuppeteerSharp.Tests.PageTests
             var dialogTask = new TaskCompletionSource<bool>();
             Page.Dialog += async (_, e) =>
             {
-                Assert.AreEqual(DialogType.BeforeUnload, e.Dialog.DialogType);
-                Assert.AreEqual(string.Empty, e.Dialog.DefaultValue);
+                Assert.That(e.Dialog.DialogType, Is.EqualTo(DialogType.BeforeUnload));
+                Assert.That(e.Dialog.DefaultValue, Is.EqualTo(string.Empty));
 
                 if (TestConstants.IsChrome)
                 {
-                    Assert.AreEqual(string.Empty, e.Dialog.Message);
+                    Assert.That(e.Dialog.Message, Is.EqualTo(string.Empty));
                 }
                 else
                 {
-                    Assert.AreEqual("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", e.Dialog.Message);
+                    Assert.That(e.Dialog.Message, Is.EqualTo("This page is asking you to confirm that you want to leave - data you have entered may not be saved."));
                 }
 
                 await e.Dialog.Accept();
@@ -95,9 +95,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSetThePageCloseState()
         {
             var page = await Context.NewPageAsync();
-            Assert.False(page.IsClosed);
+            Assert.That(page.IsClosed, Is.False);
             await page.CloseAsync();
-            Assert.True(page.IsClosed);
+            Assert.That(page.IsClosed, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should terminate network waiters")]
@@ -110,12 +110,12 @@ namespace PuppeteerSharp.Tests.PageTests
             await newPage.CloseAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
-            StringAssert.Contains("Target closed", exception.Message);
-            StringAssert.DoesNotContain("Timeout", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Target closed"));
+            Assert.That(exception.Message, Does.Not.Contain("Timeout"));
 
             exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
-            StringAssert.Contains("Target closed", exception.Message);
-            StringAssert.DoesNotContain("Timeout", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Target closed"));
+            Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
         [Test, Retry(2)]

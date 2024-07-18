@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(()
                 => Page.AddScriptTagAsync(new AddTagOptions()));
-            Assert.AreEqual("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Provide options with a `Url`, `Path` or `Content` property"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with a url")]
@@ -25,8 +25,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js" });
-            Assert.NotNull(scriptHandle);
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("__injected"));
+            Assert.That(scriptHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with a url and type=module")]
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.AddScriptTagAsync(new AddTagOptions { Url = "/es6/es6import.js", Type = "module" });
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__es6injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with a path and type=module")]
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Type = "module"
             });
             await Page.WaitForFunctionAsync("() => window.__es6injected");
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__es6injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with a content and type=module")]
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Type = "module"
             });
             await Page.WaitForFunctionAsync("() => window.__es6injected");
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("__es6injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__es6injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should throw an error if loading from url fail")]
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.AddScriptTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            StringAssert.Contains("Could not load script", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Could not load script"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with a path")]
@@ -80,8 +80,8 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
-            Assert.NotNull(scriptHandle);
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("__injected"));
+            Assert.That(scriptHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should include sourcemap when path is provided")]
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Path = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Assets", "injectedfile.js"))
             });
             var result = await Page.EvaluateExpressionAsync<string>("__injectedError.stack");
-            StringAssert.Contains(Path.Combine("Assets", "injectedfile.js"), result);
+            Assert.That(result, Does.Contain(Path.Combine("Assets", "injectedfile.js")));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should work with content")]
@@ -101,8 +101,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var scriptHandle = await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 35;" });
-            Assert.NotNull(scriptHandle);
-            Assert.AreEqual(35, await Page.EvaluateExpressionAsync<int>("__injected"));
+            Assert.That(scriptHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int>("__injected"), Is.EqualTo(35));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should add id when provided")]
@@ -112,8 +112,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.AddScriptTagAsync(new AddTagOptions { Content = "window.__injected = 1;", Id = "one" });
             await Page.AddScriptTagAsync(new AddTagOptions { Url = "/injectedfile.js", Id = "two" });
 
-            Assert.NotNull(await Page.QuerySelectorAsync("#one"));
-            Assert.NotNull(await Page.QuerySelectorAsync("#two"));
+            Assert.That(await Page.QuerySelectorAsync("#one"), Is.Not.Null);
+            Assert.That(await Page.QuerySelectorAsync("#two"), Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should throw when added with content to the CSP page")]
@@ -126,7 +126,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 {
                     Content = "window.__injected = 35;"
                 }));
-            Assert.NotNull(exception);
+            Assert.That(exception, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addScriptTag", "should throw when added with URL to the CSP page")]
@@ -138,7 +138,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 {
                     Url = TestConstants.CrossProcessUrl + "/injectedfile.js"
                 }));
-            Assert.NotNull(exception);
+            Assert.That(exception, Is.Not.Null);
         }
     }
 }

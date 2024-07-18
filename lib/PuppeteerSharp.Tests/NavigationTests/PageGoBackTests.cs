@@ -18,15 +18,15 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
 
             var response = await Page.GoBackAsync();
-            Assert.True(response.Ok);
-            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
+            Assert.That(response.Ok, Is.True);
+            Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
 
             response = await Page.GoForwardAsync();
-            Assert.True(response.Ok);
-            StringAssert.Contains("grid", response.Url);
+            Assert.That(response.Ok, Is.True);
+            Assert.That(response.Url, Does.Contain("grid"));
 
             response = await Page.GoForwardAsync();
-            Assert.Null(response);
+            Assert.That(response, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work with HistoryAPI")]
@@ -37,14 +37,14 @@ namespace PuppeteerSharp.Tests.NavigationTests
               history.pushState({ }, '', '/first.html');
               history.pushState({ }, '', '/second.html');
             ");
-            Assert.AreEqual(TestConstants.ServerUrl + "/second.html", Page.Url);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
 
             await Page.GoBackAsync();
-            Assert.AreEqual(TestConstants.ServerUrl + "/first.html", Page.Url);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
             await Page.GoBackAsync();
-            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
             await Page.GoForwardAsync();
-            Assert.AreEqual(TestConstants.ServerUrl + "/first.html", Page.Url);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
         }
     }
 }

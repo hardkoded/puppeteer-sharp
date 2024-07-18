@@ -63,7 +63,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         });
 
         var device = await promptTask;
-        Assert.AreEqual("My Device 1", device.Name);
+        Assert.That(device.Name, Is.EqualTo("My Device 1"));
     }
 
     [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should return first matching device from already known devices")]
@@ -124,7 +124,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         });
 
         var device = await promptTask;
-        Assert.Contains(device, prompt.Devices.ToArray());
+        Assert.That(prompt.Devices.ToArray(), Does.Contain(device));
     }
 
     [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should respect timeout")]

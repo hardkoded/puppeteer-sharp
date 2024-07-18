@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.False(waitForTask.Result.IsMultiple);
+            Assert.That(waitForTask.Result.IsMultiple, Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"multiple\"")]
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.True(waitForTask.Result.IsMultiple);
+            Assert.That(waitForTask.Result.IsMultiple, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("input.spec", "FileChooser.isMultiple", "should work for \"webkitdirectory\"")]
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.True(waitForTask.Result.IsMultiple);
+            Assert.That(waitForTask.Result.IsMultiple, Is.True);
         }
     }
 }

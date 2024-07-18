@@ -14,39 +14,39 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldWorkForPrimitives()
         {
             var numberHandle = await Page.EvaluateExpressionHandleAsync("2");
-            Assert.AreEqual("JSHandle:2", numberHandle.ToString());
+            Assert.That(numberHandle.ToString(), Is.EqualTo("JSHandle:2"));
             var stringHandle = await Page.EvaluateExpressionHandleAsync("'a'");
-            Assert.AreEqual("JSHandle:a", stringHandle.ToString());
+            Assert.That(stringHandle.ToString(), Is.EqualTo("JSHandle:a"));
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for complicated objects")]
         public async Task ShouldWorkForComplicatedObjects()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("window");
-            Assert.AreEqual("JSHandle@object", aHandle.ToString());
+            Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@object"));
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with different subtypes")]
         public async Task ShouldWorkWithDifferentSubtypes()
         {
-            Assert.AreEqual("JSHandle@function", (await Page.EvaluateExpressionHandleAsync("(function(){})")).ToString());
-            Assert.AreEqual("JSHandle:12", (await Page.EvaluateExpressionHandleAsync("12")).ToString());
-            Assert.AreEqual("JSHandle:True", (await Page.EvaluateExpressionHandleAsync("true")).ToString());
-            Assert.AreEqual("JSHandle:undefined", (await Page.EvaluateExpressionHandleAsync("undefined")).ToString());
-            Assert.AreEqual("JSHandle:foo", (await Page.EvaluateExpressionHandleAsync("'foo'")).ToString());
-            Assert.AreEqual("JSHandle@symbol", (await Page.EvaluateExpressionHandleAsync("Symbol()")).ToString());
-            Assert.AreEqual("JSHandle@map", (await Page.EvaluateExpressionHandleAsync("new Map()")).ToString());
-            Assert.AreEqual("JSHandle@set", (await Page.EvaluateExpressionHandleAsync("new Set()")).ToString());
-            Assert.AreEqual("JSHandle@array", (await Page.EvaluateExpressionHandleAsync("[]")).ToString());
-            Assert.AreEqual("JSHandle:null", (await Page.EvaluateExpressionHandleAsync("null")).ToString());
-            Assert.AreEqual("JSHandle@regexp", (await Page.EvaluateExpressionHandleAsync("/foo/")).ToString());
-            Assert.AreEqual("JSHandle@node", (await Page.EvaluateExpressionHandleAsync("document.body")).ToString());
-            Assert.AreEqual("JSHandle@date", (await Page.EvaluateExpressionHandleAsync("new Date()")).ToString());
-            Assert.AreEqual("JSHandle@weakmap", (await Page.EvaluateExpressionHandleAsync("new WeakMap()")).ToString());
-            Assert.AreEqual("JSHandle@weakset", (await Page.EvaluateExpressionHandleAsync("new WeakSet()")).ToString());
-            Assert.AreEqual("JSHandle@error", (await Page.EvaluateExpressionHandleAsync("new Error()")).ToString());
-            Assert.AreEqual("JSHandle@typedarray", (await Page.EvaluateExpressionHandleAsync("new Int32Array()")).ToString());
-            Assert.AreEqual("JSHandle@proxy", (await Page.EvaluateExpressionHandleAsync("new Proxy({}, {})")).ToString());
+            Assert.That((await Page.EvaluateExpressionHandleAsync("(function(){})")).ToString(), Is.EqualTo("JSHandle@function"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("12")).ToString(), Is.EqualTo("JSHandle:12"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("true")).ToString(), Is.EqualTo("JSHandle:True"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("undefined")).ToString(), Is.EqualTo("JSHandle:undefined"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("'foo'")).ToString(), Is.EqualTo("JSHandle:foo"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("Symbol()")).ToString(), Is.EqualTo("JSHandle@symbol"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Map()")).ToString(), Is.EqualTo("JSHandle@map"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Set()")).ToString(), Is.EqualTo("JSHandle@set"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("[]")).ToString(), Is.EqualTo("JSHandle@array"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("null")).ToString(), Is.EqualTo("JSHandle:null"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("/foo/")).ToString(), Is.EqualTo("JSHandle@regexp"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("document.body")).ToString(), Is.EqualTo("JSHandle@node"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Date()")).ToString(), Is.EqualTo("JSHandle@date"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new WeakMap()")).ToString(), Is.EqualTo("JSHandle@weakmap"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new WeakSet()")).ToString(), Is.EqualTo("JSHandle@weakset"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Error()")).ToString(), Is.EqualTo("JSHandle@error"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Int32Array()")).ToString(), Is.EqualTo("JSHandle@typedarray"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("new Proxy({}, {})")).ToString(), Is.EqualTo("JSHandle@proxy"));
         }
     }
 }
