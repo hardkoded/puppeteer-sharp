@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
             var idAttribute = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id");
-            Assert.AreEqual("testAttribute", idAttribute);
+            Assert.That(idAttribute, Is.EqualTo("testAttribute"));
         }
 
         public async Task ShouldWorkWithAwaitedElements()
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
             var section = await Page.QuerySelectorAsync("section");
             var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id");
-            Assert.AreEqual("testAttribute", idAttribute);
+            Assert.That(idAttribute, Is.EqualTo("testAttribute"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$eval", "should accept arguments")]
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section>hello</section>");
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
-            Assert.AreEqual("hello world!", text);
+            Assert.That(text, Is.EqualTo("hello world!"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$eval", "should accept ElementHandles as arguments")]
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section>hello</section><div> world</div>");
             var divHandle = await Page.QuerySelectorAsync("div");
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
-            Assert.AreEqual("hello world", text);
+            Assert.That(text, Is.EqualTo("hello world"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$eval", "should throw error if no element is found")]
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             var exception = Assert.ThrowsAsync<SelectorException>(()
                 => Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id"));
-            StringAssert.Contains("failed to find element matching selector", exception.Message);
+            Assert.That(exception.Message, Does.Contain("failed to find element matching selector"));
         }
     }
 }

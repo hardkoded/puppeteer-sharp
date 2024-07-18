@@ -16,7 +16,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             timeoutSettings,
             new DeviceAccessDeviceRequestPromptedResponse() { Id = "00000000000000000000000000000000" });
 
-        Assert.IsEmpty(prompt.Devices);
+        Assert.That(prompt.Devices, Is.Empty);
 
         var promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -36,7 +36,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
-        Assert.AreEqual(1, prompt.Devices.Count);
+        Assert.That(prompt.Devices, Has.Count.EqualTo(1));
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -62,7 +62,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
-        Assert.AreEqual(2, prompt.Devices.Count);
+        Assert.That(prompt.Devices, Has.Count.EqualTo(2));
     }
 
     [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.devices", "does not list devices from events of another prompt")]
@@ -83,7 +83,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
-        Assert.IsEmpty(prompt.Devices);
+        Assert.That(prompt.Devices, Is.Empty);
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
         {
@@ -107,6 +107,6 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
             Params = WaitForDevicePromptTests.ToJToken(promptData),
         });
 
-        Assert.IsEmpty(prompt.Devices);
+        Assert.That(prompt.Devices, Is.Empty);
     }
 }

@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.EvaluateExpressionAsync("console.timeStamp('test42')");
             var result = await metricsTaskWrapper.Task;
 
-            Assert.AreEqual("test42", result.Title);
+            Assert.That(result.Title, Is.EqualTo("test42"));
             CheckMetrics(result.Metrics);
         }
 
@@ -40,11 +40,11 @@ namespace PuppeteerSharp.Tests.PageTests
 
             foreach (var name in metrics.Keys)
             {
-                Assert.Contains(name, metricsToCheck);
-                Assert.True(metrics[name] >= 0);
+                Assert.That(metricsToCheck, Does.Contain(name));
+                Assert.That(metrics[name], Is.GreaterThanOrEqualTo(0));
                 metricsToCheck.Remove(name);
             }
-            Assert.True(metricsToCheck.Count == 0);
+            Assert.That(metricsToCheck, Is.Empty);
         }
     }
 }

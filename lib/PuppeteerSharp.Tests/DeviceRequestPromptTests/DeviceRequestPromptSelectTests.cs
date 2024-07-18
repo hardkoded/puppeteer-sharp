@@ -54,7 +54,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         var exception = Assert.ThrowsAsync<PuppeteerException>(() =>
             prompt.SelectAsync(new DeviceRequestPromptDevice("My Device 2", "0001")));
 
-        Assert.AreEqual("Cannot select unknown device!", exception!.Message);
+        Assert.That(exception!.Message, Is.EqualTo("Cannot select unknown device!"));
     }
 
     [Test, Retry(2), PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.select", "should fail when selecting prompt twice")]
@@ -91,6 +91,6 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         await prompt.SelectAsync(device);
 
         var exception = Assert.ThrowsAsync<PuppeteerException>(() => prompt.SelectAsync(device));
-        Assert.AreEqual("Cannot select DeviceRequestPrompt which is already handled!", exception!.Message);
+        Assert.That(exception!.Message, Is.EqualTo("Cannot select DeviceRequestPrompt which is already handled!"));
     }
 }

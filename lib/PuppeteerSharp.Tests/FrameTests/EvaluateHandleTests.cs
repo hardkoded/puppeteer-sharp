@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var windowHandle = await Page.MainFrame.EvaluateExpressionHandleAsync("window");
-            Assert.NotNull(windowHandle);
+            Assert.That(windowHandle, Is.Not.Null);
         }
     }
 }

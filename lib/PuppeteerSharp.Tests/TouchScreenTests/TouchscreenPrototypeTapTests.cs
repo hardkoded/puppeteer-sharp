@@ -37,8 +37,9 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
         await Page.TapAsync("button");
 
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
-        Assert.AreEqual(
-            JsonConvert.SerializeObject(new[]
+        Assert.That(
+            JsonConvert.SerializeObject(result),
+            Is.EqualTo(JsonConvert.SerializeObject(new[]
             {
                 new TouchEvent()
                 {
@@ -126,6 +127,6 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
                     TiltY = 0,
                     Twist = 0,
                 },
-            }), JsonConvert.SerializeObject(result));
+            })));
     }
 }

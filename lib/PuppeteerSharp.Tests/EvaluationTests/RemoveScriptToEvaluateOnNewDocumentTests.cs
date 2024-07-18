@@ -12,12 +12,12 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var id = await Page.EvaluateFunctionOnNewDocumentAsync("() => globalThis.injected = 123");
             await Page.GoToAsync(TestConstants.ServerUrl + "/tamperable.html");
             var result = await Page.EvaluateFunctionAsync<int>("async () => globalThis.result");
-            Assert.AreEqual(123, result);
+            Assert.That(result, Is.EqualTo(123));
 
             await Page.RemoveScriptToEvaluateOnNewDocumentAsync(id.Identifier);
 
             await Page.ReloadAsync();
-            Assert.IsNull(await Page.EvaluateFunctionAsync("() => globalThis.result ?? null"));
+            Assert.That(await Page.EvaluateFunctionAsync("() => globalThis.result ?? null"), Is.Null);
         }
     }
 }

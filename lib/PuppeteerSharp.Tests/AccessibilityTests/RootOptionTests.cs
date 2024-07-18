@@ -13,13 +13,13 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<button>My Button</button>");
 
             var button = await Page.QuerySelectorAsync("button");
-            Assert.AreEqual(
-                new SerializedAXNode
+            Assert.That(
+                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }),
+                Is.EqualTo(new SerializedAXNode
                 {
                     Role = "button",
                     Name = "My Button"
-                },
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
+                }));
         }
 
         [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work an input")]
@@ -28,14 +28,14 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<input title='My Input' value='My Value'>");
 
             var input = await Page.QuerySelectorAsync("input");
-            Assert.AreEqual(
-                new SerializedAXNode
+            Assert.That(
+                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }),
+                Is.EqualTo(new SerializedAXNode
                 {
                     Role = "textbox",
                     Name = "My Input",
                     Value = "My Value"
-                },
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = input }));
+                }));
         }
 
         [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work a menu")]
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                     }
             };
 
-            Assert.AreEqual(nodeToCheck, snapshot);
+            Assert.That(snapshot, Is.EqualTo(nodeToCheck));
         }
 
         [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should return null when the element is no longer in DOM")]
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<button>My Button</button>");
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
-            Assert.Null(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }));
+            Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }), Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
@@ -93,12 +93,17 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         {
             await Page.SetContentAsync("<div><button>My Button</button></div>");
             var div = await Page.QuerySelectorAsync("div");
-            Assert.Null(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
             {
                 Root = div
-            }));
-            Assert.AreEqual(
-                new SerializedAXNode
+            }), Is.Null);
+            Assert.That(
+                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+                {
+                    Root = div,
+                    InterestingOnly = false
+                }),
+                Is.EqualTo(new SerializedAXNode
                 {
                     Role = "generic",
                     Name = "",
@@ -125,11 +130,6 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                             }
                         }
                     }
-                },
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-                {
-                    Root = div,
-                    InterestingOnly = false
                 }));
         }
     }

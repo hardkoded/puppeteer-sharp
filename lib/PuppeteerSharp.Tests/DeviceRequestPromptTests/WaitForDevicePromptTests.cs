@@ -146,7 +146,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             });
 
             await Task.WhenAll(promptTask, promptTask2);
-            Assert.AreEqual(promptTask.Result, promptTask2.Result);
+            Assert.That(promptTask2.Result, Is.EqualTo(promptTask.Result));
         }
 
         internal static JToken ToJToken(DeviceAccessDeviceRequestPromptedResponse promptData)

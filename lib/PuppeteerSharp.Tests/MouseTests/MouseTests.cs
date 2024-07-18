@@ -45,12 +45,12 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.Mouse.ClickAsync(50, 60);
             var e = await Page.EvaluateFunctionAsync<MouseEvent>("() => globalThis.clickPromise");
 
-            Assert.AreEqual("click", e.Type);
-            Assert.AreEqual(1, e.Detail);
-            Assert.AreEqual(50, e.ClientX);
-            Assert.AreEqual(60, e.ClientY);
-            Assert.True(e.IsTrusted);
-            Assert.AreEqual(0, e.Button);
+            Assert.That(e.Type, Is.EqualTo("click"));
+            Assert.That(e.Detail, Is.EqualTo(1));
+            Assert.That(e.ClientX, Is.EqualTo(50));
+            Assert.That(e.ClientY, Is.EqualTo(60));
+            Assert.That(e.IsTrusted, Is.True);
+            Assert.That(e.Button, Is.EqualTo(0));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should resize the textarea")]
@@ -64,8 +64,8 @@ namespace PuppeteerSharp.Tests.MouseTests
             await mouse.MoveAsync(dimensions.X + dimensions.Width + 100, dimensions.Y + dimensions.Height + 100);
             await mouse.UpAsync();
             var newDimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
-            Assert.AreEqual(Math.Round(dimensions.Width + 104, MidpointRounding.AwayFromZero), newDimensions.Width);
-            Assert.AreEqual(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero), newDimensions.Height);
+            Assert.That(newDimensions.Width, Is.EqualTo(Math.Round(dimensions.Width + 104, MidpointRounding.AwayFromZero)));
+            Assert.That(newDimensions.Height, Is.EqualTo(Math.Round(dimensions.Height + 104, MidpointRounding.AwayFromZero)));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should select the text with mouse")]
@@ -83,10 +83,10 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.Mouse.DownAsync();
             await Page.Mouse.MoveAsync(100, 100);
             await Page.Mouse.UpAsync();
-            Assert.AreEqual(text, await Page.EvaluateFunctionAsync<string>(@"() => {
+            Assert.That(await Page.EvaluateFunctionAsync<string>(@"() => {
                 const textarea = document.querySelector('textarea');
                 return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
-            }"));
+            }"), Is.EqualTo(text));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state")]
@@ -94,11 +94,11 @@ namespace PuppeteerSharp.Tests.MouseTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.HoverAsync("#button-6");
-            Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"), Is.EqualTo("button-6"));
             await Page.HoverAsync("#button-2");
-            Assert.AreEqual("button-2", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"), Is.EqualTo("button-2"));
             await Page.HoverAsync("#button-91");
-            Assert.AreEqual("button-91", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"), Is.EqualTo("button-91"));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state with removed window.Node")]
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             await Page.EvaluateExpressionAsync("delete window.Node");
             await Page.HoverAsync("#button-6");
-            Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('button:hover').id"), Is.EqualTo("button-6"));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should set modifier keys on click")]
@@ -120,20 +120,13 @@ namespace PuppeteerSharp.Tests.MouseTests
             {
                 await Page.Keyboard.DownAsync(modifier.Key);
                 await Page.ClickAsync("#button-3");
-                if (!(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value)))
-                {
-                    Assert.True(false, $"{modifier.Value} should be true");
-                }
-
+                Assert.That(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value), Is.True, $"{modifier.Value} should be true");
                 await Page.Keyboard.UpAsync(modifier.Key);
             }
             await Page.ClickAsync("#button-3");
             foreach (var modifier in modifiers)
             {
-                if (await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value))
-                {
-                    Assert.False(true, $"{modifiers.Values} should be false");
-                }
+                Assert.That(await Page.EvaluateFunctionAsync<bool>("mod => window.lastEvent[mod]", modifier.Value), Is.False, $"{modifiers.Values} should be false");
             }
         }
 
@@ -143,8 +136,8 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
             var elem = await Page.QuerySelectorAsync("div");
             var boundingBoxBefore = await elem.BoundingBoxAsync();
-            Assert.AreEqual(115, boundingBoxBefore.Width);
-            Assert.AreEqual(115, boundingBoxBefore.Height);
+            Assert.That(boundingBoxBefore.Width, Is.EqualTo(115));
+            Assert.That(boundingBoxBefore.Height, Is.EqualTo(115));
 
             await Page.Mouse.MoveAsync(
                 boundingBoxBefore.X + (boundingBoxBefore.Width / 2),
@@ -157,13 +150,13 @@ namespace PuppeteerSharp.Tests.MouseTests
             // We don't have this OS check upstream
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Assert.AreEqual(345, boundingBoxAfter.Width);
-                Assert.AreEqual(345, boundingBoxAfter.Height);
+                Assert.That(boundingBoxAfter.Width, Is.EqualTo(345));
+                Assert.That(boundingBoxAfter.Height, Is.EqualTo(345));
             }
             else
             {
-                Assert.AreEqual(230, boundingBoxAfter.Width);
-                Assert.AreEqual(230, boundingBoxAfter.Height);
+                Assert.That(boundingBoxAfter.Width, Is.EqualTo(230));
+                Assert.That(boundingBoxAfter.Height, Is.EqualTo(230));
             }
         }
 
@@ -178,13 +171,14 @@ namespace PuppeteerSharp.Tests.MouseTests
                 });
             }");
             await Page.Mouse.MoveAsync(200, 300, new MoveOptions { Steps = 5 });
-            Assert.AreEqual(new[] {
-                new[]{ 120, 140 },
-                new[]{ 140, 180 },
-                new[]{ 160, 220 },
-                new[]{ 180, 260 },
-                new[]{ 200, 300 }
-            }, await Page.EvaluateExpressionAsync<int[][]>("result"));
+            Assert.That(await Page.EvaluateExpressionAsync<int[][]>("result"),
+                Is.EqualTo(new[] {
+                    new[]{ 120, 140 },
+                    new[]{ 140, 180 },
+                    new[]{ 160, 220 },
+                    new[]{ 180, 260 },
+                    new[]{ 200, 300 }
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should work with mobile viewports and cross process navigations")]
@@ -206,11 +200,12 @@ namespace PuppeteerSharp.Tests.MouseTests
 
             await Page.Mouse.ClickAsync(30, 40);
 
-            Assert.AreEqual(new DomPointInternal()
-            {
-                X = 30,
-                Y = 40
-            }, await Page.EvaluateExpressionAsync<DomPointInternal>("result"));
+            Assert.That(await Page.EvaluateExpressionAsync<DomPointInternal>("result"),
+                Is.EqualTo(new DomPointInternal()
+                {
+                    X = 30,
+                    Y = 40
+                }));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should throw if buttons are pressed incorrectly")]
@@ -234,8 +229,8 @@ namespace PuppeteerSharp.Tests.MouseTests
 
             var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
 
-            Assert.AreEqual(
-                new ClickData[]
+            Assert.That(
+                data.Take(3), Is.EqualTo(new ClickData[]
                 {
                     new()
                     {
@@ -267,11 +262,10 @@ namespace PuppeteerSharp.Tests.MouseTests
                         IsTrusted = true,
                         Button = 0,
                     },
-                },
-                data.Take(3));
+                }));
 
-            Assert.AreEqual(
-                new ClickData[]
+            Assert.That(
+                data.Skip(3).Take(3), Is.EqualTo(new ClickData[]
                 {
                     new()
                     {
@@ -303,8 +297,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                         IsTrusted = true,
                         Button = 0,
                     },
-                },
-                data.Skip(3).Take(3));
+                }));
         }
 
         [Test, Retry(2), PuppeteerTest("mouse.spec", "Mouse", "should reset properly")]
@@ -323,8 +316,8 @@ namespace PuppeteerSharp.Tests.MouseTests
 
             var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
 
-            Assert.AreEqual(
-                new ClickData[]
+            Assert.That(
+                data, Is.EqualTo(new ClickData[]
                 {
                     new()
                     {
@@ -376,8 +369,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                         IsTrusted = true,
                         Button = 0,
                     },
-                },
-                data);
+                }));
         }
 
         private Task AddMouseDataListenersAsync(IPage page, bool includeMove = false)

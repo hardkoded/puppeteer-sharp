@@ -23,9 +23,9 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Name = "cookie3",
                 Value = "3"
             });
-            Assert.AreEqual("cookie1=1; cookie2=2; cookie3=3", await Page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie2=2; cookie3=3"));
             await Page.DeleteCookieAsync(new CookieParam { Name = "cookie2" });
-            Assert.AreEqual("cookie1=1; cookie3=3", await Page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie3=3"));
         }
     }
 }
