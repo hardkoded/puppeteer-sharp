@@ -14,15 +14,15 @@ namespace PuppeteerSharp.Tests.BrowserTests
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();
-            Assert.IsNotEmpty(userAgent);
+            Assert.That(userAgent, Is.Not.Empty);
 
             if (TestConstants.IsChrome)
             {
-                StringAssert.Contains("WebKit", userAgent);
+                Assert.That(userAgent, Does.Contain("WebKit"));
             }
             else
             {
-                StringAssert.Contains("Gecko", userAgent);
+                Assert.That(userAgent, Does.Contain("Gecko"));
             }
         }
     }

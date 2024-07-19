@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Null(await Page.EvaluateExpressionAsync("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync("window.__injected"), Is.Null);
 
             // By-pass CSP and try one more time.
             await Page.SetBypassCSPAsync(true);
@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP header")]
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Null(await Page.EvaluateExpressionAsync("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync("window.__injected"), Is.Null);
 
             // By-pass CSP and try one more time.
             await Page.SetBypassCSPAsync(true);
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass after cross-process navigation")]
@@ -62,14 +62,14 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
 
             await Page.GoToAsync(TestConstants.CrossProcessUrl + "/csp.html");
             await Page.AddScriptTagAsync(new AddTagOptions
             {
                 Content = "window.__injected = 42;"
             });
-            Assert.AreEqual(42, await Page.EvaluateExpressionAsync<int>("window.__injected"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP in iframes as well")]
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.Null(await frame.EvaluateFunctionAsync<int?>("() => window.__injected"));
+            Assert.That(await frame.EvaluateFunctionAsync<int?>("() => window.__injected"), Is.Null);
 
             // By-pass CSP and try one more time.
             await Page.SetBypassCSPAsync(true);
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.AreEqual(42, await frame.EvaluateFunctionAsync<int?>("() => window.__injected"));
+            Assert.That(await frame.EvaluateFunctionAsync<int?>("() => window.__injected"), Is.EqualTo(42));
         }
     }
 }

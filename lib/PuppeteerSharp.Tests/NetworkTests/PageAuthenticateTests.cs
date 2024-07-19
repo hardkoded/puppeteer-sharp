@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             try
             {
                 var response = await Page.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+                Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
             }
             catch (Exception e)
             {
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var newResponse = await Page.ReloadAsync();
-            Assert.AreEqual(HttpStatusCode.OK, newResponse.Status);
+            Assert.That(newResponse.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             });
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
 
             await Page.AuthenticateAsync(new Credentials()
             {
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             try
             {
                 response = await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
-                Assert.AreEqual(HttpStatusCode.Unauthorized, response.Status);
+                Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
             }
             catch (Exception e)
             {
@@ -105,10 +105,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
-            Assert.False(responses["one-style.html"].FromCache);
-            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
-            Assert.True(responses["one-style.css"].FromCache);
+            Assert.That(responses["one-style.html"].Status, Is.EqualTo(HttpStatusCode.NotModified));
+            Assert.That(responses["one-style.html"].FromCache, Is.False);
+            Assert.That(responses["one-style.css"].Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responses["one-style.css"].FromCache, Is.True);
         }
     }
 }

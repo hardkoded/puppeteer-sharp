@@ -21,12 +21,12 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Request += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(requests, Has.Exactly(1).Items);
-            Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
-            Assert.AreEqual(ResourceType.Document, requests[0].ResourceType);
-            Assert.AreEqual(HttpMethod.Get, requests[0].Method);
-            Assert.NotNull(requests[0].Response);
-            Assert.AreEqual(Page.MainFrame, requests[0].Frame);
-            Assert.AreEqual(TestConstants.EmptyPage, requests[0].Frame.Url);
+            Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(requests[0].ResourceType, Is.EqualTo(ResourceType.Document));
+            Assert.That(requests[0].Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(requests[0].Response, Is.Not.Null);
+            Assert.That(requests[0].Frame, Is.EqualTo(Page.MainFrame));
+            Assert.That(requests[0].Frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
@@ -35,9 +35,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var cached = new List<string>();
             Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
-            Assert.IsEmpty(cached);
+            Assert.That(cached, Is.Empty);
             await Page.ReloadAsync();
-            Assert.AreEqual(new[] { "one-style.css" }, cached);
+            Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.Response")]
@@ -47,16 +47,16 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (_, e) => responses.Add(e.Response);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(responses, Has.Exactly(1).Items);
-            Assert.AreEqual(TestConstants.EmptyPage, responses[0].Url);
-            Assert.AreEqual(HttpStatusCode.OK, responses[0].Status);
-            Assert.False(responses[0].FromCache);
-            Assert.False(responses[0].FromServiceWorker);
-            Assert.NotNull(responses[0].Request);
+            Assert.That(responses[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(responses[0].Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responses[0].FromCache, Is.False);
+            Assert.That(responses[0].FromServiceWorker, Is.False);
+            Assert.That(responses[0].Request, Is.Not.Null);
 
             var remoteAddress = responses[0].RemoteAddress;
             // Either IPv6 or IPv4, depending on environment.
-            Assert.True(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1");
-            Assert.AreEqual(TestConstants.Port, remoteAddress.Port);
+            Assert.That(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1", Is.True);
+            Assert.That(remoteAddress.Port, Is.EqualTo(TestConstants.Port));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFailed")]
@@ -79,20 +79,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
 
             Assert.That(failedRequests, Has.Exactly(1).Items);
-            StringAssert.Contains("one-style.css", failedRequests[0].Url);
-            Assert.Null(failedRequests[0].Response);
-            Assert.AreEqual(ResourceType.StyleSheet, failedRequests[0].ResourceType);
+            Assert.That(failedRequests[0].Url, Does.Contain("one-style.css"));
+            Assert.That(failedRequests[0].Response, Is.Null);
+            Assert.That(failedRequests[0].ResourceType, Is.EqualTo(ResourceType.StyleSheet));
 
             if (TestConstants.IsChrome)
             {
-                Assert.AreEqual("net::ERR_FAILED", failedRequests[0].FailureText);
+                Assert.That(failedRequests[0].FailureText, Is.EqualTo("net::ERR_FAILED"));
             }
             else
             {
-                Assert.AreEqual("NS_ERROR_FAILURE", failedRequests[0].FailureText);
+                Assert.That(failedRequests[0].FailureText, Is.EqualTo("NS_ERROR_FAILURE"));
             }
 
-            Assert.NotNull(failedRequests[0].Frame);
+            Assert.That(failedRequests[0].Frame, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFinished")]
@@ -102,11 +102,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.RequestFinished += (_, e) => requests.Add(e.Request);
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(requests, Has.Exactly(1).Items);
-            Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
-            Assert.NotNull(requests[0].Response);
-            Assert.AreEqual(HttpMethod.Get, requests[0].Method);
-            Assert.AreEqual(Page.MainFrame, requests[0].Frame);
-            Assert.AreEqual(TestConstants.EmptyPage, requests[0].Frame.Url);
+            Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(requests[0].Response, Is.Not.Null);
+            Assert.That(requests[0].Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(requests[0].Frame, Is.EqualTo(Page.MainFrame));
+            Assert.That(requests[0].Frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should fire events in proper order")]
@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (_, _) => events.Add("response");
             Page.RequestFinished += (_, _) => events.Add("requestfinished");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(new[] { "request", "response", "requestfinished" }, events.ToArray());
+            Assert.That(events.ToArray(), Is.EqualTo(new[] { "request", "response", "requestfinished" }));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should support redirects")]
@@ -132,20 +132,20 @@ namespace PuppeteerSharp.Tests.NetworkTests
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
             System.Console.WriteLine(string.Concat(events, ','));
-            Assert.AreEqual(new[] {
+            Assert.That(events.ToArray(), Is.EqualTo(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
                 $"DONE {FOO_URL}",
                 $"GET {TestConstants.EmptyPage}",
                 $"200 {TestConstants.EmptyPage}",
                 $"DONE {TestConstants.EmptyPage}"
-            }, events.ToArray());
+            }));
 
             // Check redirect chain
             var redirectChain = response.Request.RedirectChain;
             Assert.That(redirectChain, Has.Exactly(1).Items);
-            StringAssert.Contains("/foo.html", redirectChain[0].Url);
-            Assert.AreEqual(TestConstants.Port, redirectChain[0].Response.RemoteAddress.Port);
+            Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));
+            Assert.That(redirectChain[0].Response.RemoteAddress.Port, Is.EqualTo(TestConstants.Port));
         }
     }
 }

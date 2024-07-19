@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
@@ -18,12 +19,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(() => requestTask);
-            StringAssert.Contains("Target closed", exception.Message);
-            StringAssert.DoesNotContain("Timeout", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Target closed"));
+            Assert.That(exception.Message, Does.Not.Contain("Timeout"));
 
             exception = Assert.ThrowsAsync<TargetClosedException>(() => responseTask);
-            StringAssert.Contains("Target closed", exception.Message);
-            StringAssert.DoesNotContain("Timeout", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Target closed"));
+            Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
         [Test]
@@ -34,10 +35,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await launcher.LaunchAsync(options);
 
             var tempUserDataDir = ((Browser)browser).Launcher.TempUserDataDir;
-            DirectoryAssert.Exists(tempUserDataDir.Path);
+            Assert.That(tempUserDataDir.Path, Does.Exist);
 
             await browser.DisposeAsync();
-            DirectoryAssert.DoesNotExist(tempUserDataDir.Path);
+            Assert.That(tempUserDataDir.Path, Does.Not.Exist);
         }
     }
 }

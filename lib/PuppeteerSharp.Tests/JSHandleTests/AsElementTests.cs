@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.body");
             var element = aHandle as IElementHandle;
-            Assert.NotNull(element);
+            Assert.That(element, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return null for non-elements")]
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("2");
             var element = aHandle as IElementHandle;
-            Assert.Null(element);
+            Assert.That(element, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.asElement", "should return ElementHandle for TextNodes")]
@@ -32,8 +32,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             await Page.SetContentAsync("<div>ee!</div>");
             var aHandle = await Page.EvaluateExpressionHandleAsync("document.querySelector('div').firstChild");
             var element = aHandle as IElementHandle;
-            Assert.NotNull(element);
-            Assert.True(await Page.EvaluateFunctionAsync<bool>("e => e.nodeType === HTMLElement.TEXT_NODE", element));
+            Assert.That(element, Is.Not.Null);
+            Assert.That(await Page.EvaluateFunctionAsync<bool>("e => e.nodeType === HTMLElement.TEXT_NODE", element), Is.True);
         }
     }
 }

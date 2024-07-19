@@ -43,8 +43,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 })
             );
 
-            Assert.True(t1 > t2);
-            Assert.True((t1 - t2).TotalMilliseconds >= 400);
+            Assert.That(t1, Is.GreaterThan(t2));
+            Assert.That((t1 - t2).TotalMilliseconds, Is.GreaterThanOrEqualTo(400));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should respect timeout")]
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 1 }));
 
-            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
         // This should work on Firefox, this ignore should be temporal
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 })
             );
 
-            Assert.True(t2 > t1);
+            Assert.That(t2, Is.GreaterThan(t1));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]

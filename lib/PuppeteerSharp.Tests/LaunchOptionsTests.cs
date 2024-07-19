@@ -11,8 +11,8 @@ namespace PuppeteerSharp.Tests
                 Devtools = true
             };
 
-            Assert.True(options.Devtools);
-            Assert.False(options.Headless);
+            Assert.That(options.Devtools, Is.True);
+            Assert.That(options.Headless, Is.False);
         }
     }
 }

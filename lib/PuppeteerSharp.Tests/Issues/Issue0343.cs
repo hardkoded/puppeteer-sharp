@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.Issues
                 Expires = longExpiresValue
             });
             var cookies = await Page.GetCookiesAsync();
-            Assert.AreEqual(longExpiresValue, cookies.First(c => c.Name == "password").Expires);
+            Assert.That(cookies.First(c => c.Name == "password").Expires, Is.EqualTo(longExpiresValue));
         }
     }
 }

@@ -12,8 +12,8 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
             await Page.EmulateAsync(TestConstants.IPhone);
 
-            Assert.AreEqual(375, await Page.EvaluateExpressionAsync<int>("window.innerWidth"));
-            StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.innerWidth"), Is.EqualTo(375));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
         }
 
         [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.marginTop = '200px'", button);
             await button.ClickAsync();
-            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("result"), Is.EqualTo("Clicked"));
         }
     }
 }

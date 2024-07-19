@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            Assert.IsNull(coverage[0].RawScriptCoverage);
+            Assert.That(coverage[0].RawScriptCoverage, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage includeRawScriptCoverage", "should include rawScriptCoverage field when enabled")]
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            Assert.IsNotNull(coverage[0].RawScriptCoverage);
+            Assert.That(coverage[0].RawScriptCoverage, Is.Not.Null);
         }
     }
 }

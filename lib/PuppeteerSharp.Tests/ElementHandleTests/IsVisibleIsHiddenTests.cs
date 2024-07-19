@@ -15,12 +15,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div style='display: none'>text</div>");
             var element = await Page.WaitForSelectorAsync("div").ConfigureAwait(false);
-            Assert.False(await element.IsVisibleAsync());
-            Assert.True(await element.IsHiddenAsync());
+            Assert.That(await element.IsVisibleAsync(), Is.False);
+            Assert.That(await element.IsHiddenAsync(), Is.True);
 
             await element.EvaluateFunctionAsync("e => e.style.removeProperty('display')");
-            Assert.True(await element.IsVisibleAsync());
-            Assert.False(await element.IsHiddenAsync());
+            Assert.That(await element.IsVisibleAsync(), Is.True);
+            Assert.That(await element.IsHiddenAsync(), Is.False);
         }
     }
 }

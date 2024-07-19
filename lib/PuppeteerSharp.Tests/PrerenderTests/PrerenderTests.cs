@@ -20,7 +20,7 @@ public class PrerenderTests : PuppeteerPageBaseTest
             link.ClickAsync()
         );
 
-        Assert.AreEqual("target", await Page.EvaluateExpressionAsync<string>("document.body.innerText"));
+        Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
     }
 
     [Test, Retry(2), PuppeteerTest("prerender.spec", "Prerender", "can navigate to a prerendered page via Puppeteer")]
@@ -33,6 +33,6 @@ public class PrerenderTests : PuppeteerPageBaseTest
 
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
-        Assert.AreEqual("target", await Page.EvaluateExpressionAsync<string>("document.body.innerText"));
+        Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
     }
 }

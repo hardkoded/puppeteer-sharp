@@ -20,8 +20,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.EvaluateExpressionAsync("window.open('about:blank')"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with noopener")]
@@ -34,8 +34,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.EvaluateExpressionAsync("window.open('about:blank', null, 'noopener')"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and without rel=opener")]
@@ -51,8 +51,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.ClickAsync("a"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and with rel=opener")]
@@ -68,8 +68,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.QuerySelectorAsync("a").EvaluateFunctionAsync("a => a.click()"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.True(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with fake-clicking target=_blank and rel=noopener")]
@@ -85,8 +85,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.QuerySelectorAsync("a").EvaluateFunctionAsync("a => a.click()"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Popup", "should work with clicking target=_blank and rel=noopener")]
@@ -102,8 +102,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 popupTaskSource.Task,
                 Page.ClickAsync("a"));
 
-            Assert.False(await Page.EvaluateExpressionAsync<bool>("!!window.opener"));
-            Assert.False(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
+            Assert.That(await popupTaskSource.Task.Result.EvaluateExpressionAsync<bool>("!!window.opener"), Is.False);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldReturnFalseForNonServiceWorkerContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.False(response.FromServiceWorker);
+            Assert.That(response.FromServiceWorker, Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.fromServiceWorker", "Response.fromServiceWorker")]
@@ -36,11 +36,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.EvaluateFunctionAsync("async () => await window.activationPromise");
             await Page.ReloadAsync();
 
-            Assert.AreEqual(2, responses.Count);
-            Assert.AreEqual(HttpStatusCode.OK, responses["sw.html"].Status);
-            Assert.True(responses["sw.html"].FromServiceWorker);
-            Assert.AreEqual(HttpStatusCode.OK, responses["style.css"].Status);
-            Assert.True(responses["style.css"].FromServiceWorker);
+            Assert.That(responses, Has.Count.EqualTo(2));
+            Assert.That(responses["sw.html"].Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responses["sw.html"].FromServiceWorker, Is.True);
+            Assert.That(responses["style.css"].Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responses["style.css"].FromServiceWorker, Is.True);
         }
     }
 }

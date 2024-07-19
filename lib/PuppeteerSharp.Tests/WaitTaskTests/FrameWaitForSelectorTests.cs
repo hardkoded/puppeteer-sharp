@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -7,7 +8,7 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.WaitTaskTests
 {
-    public class FrameWaitForSelectorTests : PuppeteerPageBaseTest
+    public sealed class FrameWaitForSelectorTests : PuppeteerPageBaseTest, IDisposable
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
         private PollerInterceptor _pollerInterceptor;
@@ -29,9 +30,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             };
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            base.Dispose(disposing);
             _pollerInterceptor.Dispose();
         }
 
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 waitForSelector,
                 Page.SetContentAsync("<div class='zombo'>anything</div>"));
 
-            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector), Is.EqualTo("anything"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should resolve promise when node is added")]
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var eHandle = await watchdog;
             var property = await eHandle.GetPropertyAsync("tagName");
             var tagName = await property.JsonValueAsync<string>();
-            Assert.AreEqual("DIV", tagName);
+            Assert.That(tagName, Is.EqualTo("DIV"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added through innerHTML")]
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await watchdog;
-            Assert.AreEqual(Page.MainFrame, eHandle.Frame);
+            Assert.That(eHandle.Frame, Is.EqualTo(Page.MainFrame));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should run in specified frame")]
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForSelectorPromise;
-            Assert.AreEqual(frame2, eHandle.Frame);
+            Assert.That(eHandle.Frame, Is.EqualTo(frame2));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should throw when frame is detached")]
@@ -118,8 +118,8 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitTask);
 
-            Assert.NotNull(waitException);
-            StringAssert.Contains("waitForFunction failed: frame got detached.", waitException.Message);
+            Assert.That(waitException, Is.Not.Null);
+            Assert.That(waitException.Message, Does.Contain("waitForFunction failed: frame got detached."));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should survive cross-process navigation")]
@@ -128,12 +128,12 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var boxFound = false;
             var waitForSelector = Page.WaitForSelectorAsync(".box").ContinueWith(_ => boxFound = true);
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.False(boxFound);
+            Assert.That(boxFound, Is.False);
             await Page.ReloadAsync();
-            Assert.False(boxFound);
+            Assert.That(boxFound, Is.False);
             await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/grid.html");
             await waitForSelector;
-            Assert.True(boxFound);
+            Assert.That(boxFound, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible (display)")]
@@ -144,10 +144,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 .ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div style='display: none;'>text</div>");
             await Task.Delay(100);
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
-            Assert.True(await waitForSelector);
-            Assert.True(divFound);
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divFound, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible (visibility)")]
@@ -158,13 +158,13 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 .ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div style='visibility: hidden;'>text</div>");
             await Task.Delay(100);
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('visibility', 'collapse')");
             await Task.Delay(100);
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
-            Assert.True(await waitForSelector);
-            Assert.True(divFound);
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divFound, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible (bounding box)")]
@@ -175,20 +175,20 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
                 .ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div style='width: 0;'>text</div>");
             await Task.Delay(100);
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.setProperty('height', '0');
                 div.style.removeProperty('width');
             }");
             await Task.Delay(100);
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateFunctionAsync(@"() => {
                 const div = document.querySelector('div');
                 div.style.removeProperty('height');
             }");
             await Task.Delay(100);
-            Assert.True(divFound);
+            Assert.That(divFound, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for visible recursively")]
@@ -198,12 +198,12 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitForSelector = Page.WaitForSelectorAsync("div#inner", new WaitForSelectorOptions { Visible = true })
                 .ContinueWith(_ => divVisible = true);
             await Page.SetContentAsync("<div style='display: none; visibility: hidden;'><div id='inner'>hi</div></div>");
-            Assert.False(divVisible);
+            Assert.That(divVisible, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
-            Assert.False(divVisible);
+            Assert.That(divVisible, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('visibility')");
-            Assert.True(await waitForSelector);
-            Assert.True(divVisible);
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divVisible, Is.True);
         }
 
         [Test]
@@ -219,10 +219,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
-            Assert.False(divHidden);
+            Assert.That(divHidden, Is.False);
             await Page.EvaluateExpressionAsync($"document.querySelector('div').style.setProperty('{propertyName}', '{propertyValue}')");
-            Assert.True(await waitForSelector);
-            Assert.True(divHidden);
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divHidden, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
@@ -233,17 +233,17 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divRemoved = true);
             await Page.WaitForSelectorAsync("div"); // do a round trip
-            Assert.False(divRemoved);
+            Assert.That(divRemoved, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').remove()");
-            Assert.True(await waitForSelector);
-            Assert.True(divRemoved);
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divRemoved, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should return null if waiting to hide non-existing element")]
         public async Task ShouldReturnNullIfWaitingToHideNonExistingElement()
         {
             var handle = await Page.WaitForSelectorAsync("non-existing", new WaitForSelectorOptions { Hidden = true });
-            Assert.Null(handle);
+            Assert.That(handle, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should respect timeout")]
@@ -252,7 +252,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 10 }));
 
-            StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Waiting for selector `div` failed: Waiting failed: 10ms exceeded"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should have an error message specifically for awaiting an element to be hidden")]
@@ -262,7 +262,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
 
-            StringAssert.Contains("Waiting for selector `div` failed: Waiting failed: 10ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Waiting for selector `div` failed: Waiting failed: 10ms exceeded"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should respond to node attribute mutation")]
@@ -271,9 +271,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var divFound = false;
             var waitForSelector = Page.WaitForSelectorAsync(".zombo").ContinueWith(_ => divFound = true);
             await Page.SetContentAsync("<div class='notZombo'></div>");
-            Assert.False(divFound);
+            Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').className = 'zombo'");
-            Assert.True(await waitForSelector);
+            Assert.That(await waitForSelector, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should return the element handle")]
@@ -281,7 +281,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var waitForSelector = Page.WaitForSelectorAsync(".zombo");
             await Page.SetContentAsync("<div class='zombo'>anything</div>");
-            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForSelector), Is.EqualTo("anything"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should have correct stack trace for timeout")]
@@ -289,7 +289,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(async ()
                 => await Page.WaitForSelectorAsync(".zombo", new WaitForSelectorOptions { Timeout = 10 }));
-            StringAssert.Contains("WaitForSelectorTests", exception.StackTrace);
+            Assert.That(exception.StackTrace, Does.Contain("WaitForSelectorTests"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should support some fancy xpath")]
@@ -297,7 +297,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/.//p[normalize-space(.)=\"hello world\"]");
-            Assert.AreEqual("hello  world  ", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath), Is.EqualTo("hello  world  "));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should run in specified frame")]
@@ -311,7 +311,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame1.EvaluateFunctionAsync(AddElement, "div");
             await frame2.EvaluateFunctionAsync(AddElement, "div");
             var eHandle = await waitForXPathPromise;
-            Assert.AreEqual(frame2, eHandle.Frame);
+            Assert.That(eHandle.Frame, Is.EqualTo(frame2));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should throw when frame is detached")]
@@ -322,7 +322,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitPromise = frame.WaitForSelectorAsync("xpath/.//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitPromise);
-            StringAssert.Contains("waitForFunction failed: frame got detached.", exception.Message);
+            Assert.That(exception.Message, Does.Contain("waitForFunction failed: frame got detached."));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should wait for display: none")]
@@ -334,10 +334,10 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var waitForXPath = Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
             await startedPolling;
-            Assert.False(divHidden);
+            Assert.That(divHidden, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
-            Assert.True(await waitForXPath.WithTimeout());
-            Assert.True(divHidden);
+            Assert.That(await waitForXPath.WithTimeout(), Is.True);
+            Assert.That(divHidden, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should return the element handle")]
@@ -345,7 +345,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             var waitForXPath = Page.WaitForSelectorAsync("xpath/.//*[@class=\"zombo\"]");
             await Page.SetContentAsync("<div class='zombo'>anything</div>");
-            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath), Is.EqualTo("anything"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should allow you to select a text node")]
@@ -353,7 +353,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<div>some text</div>");
             var text = await Page.WaitForSelectorAsync("xpath/.//div/text()");
-            Assert.AreEqual(3 /* Node.TEXT_NODE */, await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>());
+            Assert.That(await (await text.GetPropertyAsync("nodeType")).JsonValueAsync<int>(), Is.EqualTo(3 /* Node.TEXT_NODE */));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should allow you to select an element with single slash")]
@@ -361,7 +361,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.SetContentAsync("<div>some text</div>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/html/body/div");
-            Assert.AreEqual("some text", await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath), Is.EqualTo("some text"));
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should respect timeout")]
@@ -372,7 +372,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(()
                     => Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Timeout = timeout }));
 
-            StringAssert.Contains($"Waiting failed: {timeout}ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain($"Waiting failed: {timeout}ms exceeded"));
         }
     }
 }

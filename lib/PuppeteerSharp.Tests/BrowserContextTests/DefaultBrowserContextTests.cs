@@ -25,15 +25,15 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             await Page.EvaluateExpressionAsync("document.cookie = 'username=John Doe'");
             var cookie = (await Page.GetCookiesAsync()).First();
-            Assert.AreEqual("username", cookie.Name);
-            Assert.AreEqual("John Doe", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(16, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("username"));
+            Assert.That(cookie.Value, Is.EqualTo("John Doe"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(16));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("defaultbrowsercontext.spec", "DefaultBrowserContext", "page.setCookie() should work")]
@@ -48,15 +48,15 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             });
 
             var cookie = (await Page.GetCookiesAsync()).First();
-            Assert.AreEqual("username", cookie.Name);
-            Assert.AreEqual("John Doe", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(16, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("username"));
+            Assert.That(cookie.Value, Is.EqualTo("John Doe"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(16));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("defaultbrowsercontext.spec", "DefaultBrowserContext", "page.deleteCookie() should work")]
@@ -76,23 +76,23 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                     Value = "2"
                 });
 
-            Assert.AreEqual("cookie1=1; cookie2=2", await Page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1; cookie2=2"));
             await Page.DeleteCookieAsync(new CookieParam
             {
                 Name = "cookie2"
             });
-            Assert.AreEqual("cookie1=1", await Page.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("cookie1=1"));
 
             var cookie = (await Page.GetCookiesAsync()).First();
-            Assert.AreEqual("cookie1", cookie.Name);
-            Assert.AreEqual("1", cookie.Value);
-            Assert.AreEqual("localhost", cookie.Domain);
-            Assert.AreEqual("/", cookie.Path);
-            Assert.AreEqual(-1, cookie.Expires);
-            Assert.AreEqual(8, cookie.Size);
-            Assert.False(cookie.HttpOnly);
-            Assert.False(cookie.Secure);
-            Assert.True(cookie.Session);
+            Assert.That(cookie.Name, Is.EqualTo("cookie1"));
+            Assert.That(cookie.Value, Is.EqualTo("1"));
+            Assert.That(cookie.Domain, Is.EqualTo("localhost"));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(8));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.False);
+            Assert.That(cookie.Session, Is.True);
         }
     }
 }
