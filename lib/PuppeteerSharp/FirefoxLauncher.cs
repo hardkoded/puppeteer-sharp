@@ -111,13 +111,22 @@ namespace PuppeteerSharp
             return (firefoxArgs, tempUserDataDirectory);
         }
 
-        private static Dictionary<string, object> GetPreferences(Dictionary<string, object> optionsExtraPreferencesFirefox)
+        private static Dictionary<string, object> GetPreferences(ProtocolType protocol, Dictionary<string, object> optionsExtraPreferencesFirefox)
         {
             var result = optionsExtraPreferencesFirefox ?? [];
-            result["browser.tabs.closeWindowWithLastTab"] = false;
-            result["network.cookie.cookieBehavior"] = 0;
-            result["fission.bfcacheInParent"] = false;
-            result["remote.active-protocols"] = 2;
+
+            if (protocol == ProtocolType.WebdriverBiDi)
+            {
+                result["remote.active-protocols"] = 1;
+            }
+            else
+            {
+                result["browser.tabs.closeWindowWithLastTab"] = false;
+                result["network.cookie.cookieBehavior"] = 0;
+                result["fission.bfcacheInParent"] = false;
+                result["remote.active-protocols"] = 2;
+            }
+
             result["fission.webContentIsolationStrategy"] = 0;
 
             return result;
