@@ -8,22 +8,31 @@ namespace PuppeteerSharp.Tests.PageTests
     {
         public CloseTests() : base() { }
 
-        // [Test,  Retry(2),  PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
-        // [Ignore("TODO: See how to refactor this on nunit")]
-        public void ShouldRejectAllPromisesWhenPageIsClosed()
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
+        public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
-            /*
-            var exceptionTask = Assert.ThrowsAsync<TargetClosedException>(() => Page.EvaluateFunctionAsync("() => new Promise(r => {})"));
+            TargetClosedException exception = null;
+
+            var exceptionTask = Assert.ThatAsync(async () =>
+            {
+                try
+                {
+                    await Page.EvaluateFunctionAsync("() => new Promise(r => {})");
+                }
+                catch (TargetClosedException e)
+                {
+                    exception = e;
+                    throw;
+                }
+            }, Throws.InstanceOf<TargetClosedException>());
 
             await Task.WhenAll(
                 exceptionTask,
                 Page.CloseAsync()
             );
 
-            var exception = await exceptionTask;
-            StringAssert.Contains("Protocol error", exception.Message);
-            Assert.AreEqual("Target.detachedFromTarget", exception.CloseReason);
-            */
+            Assert.That(exception.Message, Does.Contain("Protocol error"));
+            Assert.That(exception.CloseReason, Is.EqualTo("Target.detachedFromTarget"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
@@ -36,6 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
+        [Test]
         public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());

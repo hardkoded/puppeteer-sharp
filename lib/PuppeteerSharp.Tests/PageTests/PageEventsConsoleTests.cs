@@ -187,6 +187,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await popupTarget.PageAsync();
         }
 
+        [Test]
         public async Task ShouldNotFailForNullArgument()
         {
             var consoleTcs = new TaskCompletionSource<string>();

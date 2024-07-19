@@ -210,6 +210,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(launcher.Process.HasExited, Is.True);
         }
 
+        [Test]
         public async Task ChromeShouldBeClosedOnDispose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -226,6 +227,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(launcher.Process.HasExited, Is.True);
         }
 
+        [Test]
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
             var launcher = new Launcher(TestConstants.LoggerFactory);

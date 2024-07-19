@@ -312,6 +312,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Error in promise"));
         }
 
+        [Test]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
@@ -346,6 +347,9 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(text, Is.EqualTo("42"));
         }
 
+#pragma warning disable NUnit2021 // Incompatible types for EqualTo constraint
+        [Test]
+        [Ignore("I'm not sure how this ever worked?")]
         public async Task ShouldWorkWithoutGenerics()
         {
             Assert.That(await Page.EvaluateExpressionAsync("var obj = {}; obj;"), Is.Not.Null);
@@ -366,6 +370,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync("11111111111111"), Is.EqualTo(11111111111111));
             Assert.That(await Page.EvaluateExpressionAsync("1.1"), Is.EqualTo(1.1));
         }
+#pragma warning restore NUnit2021 // Incompatible types for EqualTo constraint
 
         public class ComplexObjectTestClass
         {

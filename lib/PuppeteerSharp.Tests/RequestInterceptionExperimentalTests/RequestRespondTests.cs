@@ -112,6 +112,7 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
     }
 
+    [Test]
     public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
     {
         await Page.SetRequestInterceptionAsync(true);

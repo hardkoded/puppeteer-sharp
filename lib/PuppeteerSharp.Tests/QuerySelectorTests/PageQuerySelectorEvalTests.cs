@@ -18,6 +18,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(idAttribute, Is.EqualTo("testAttribute"));
         }
 
+        [Test]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
