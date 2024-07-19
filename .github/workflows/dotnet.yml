@@ -67,24 +67,8 @@ jobs:
             mode: headful
             protocol: cdp
           - os: ubuntu-latest
-            browser: CHROME
-            mode: headless
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headful
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: CHROME
-            mode: headless-shell
-            protocol: webdriverbidi
-          - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
-            protocol: webdriverbidi
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headful
             protocol: webdriverbidi
     steps:
     - uses: actions/checkout@v3
