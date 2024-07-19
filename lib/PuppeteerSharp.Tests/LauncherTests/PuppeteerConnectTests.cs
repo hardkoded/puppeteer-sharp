@@ -105,6 +105,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
+        [Test]
         public async Task ShouldBeAbleToSetBrowserPropertiesUsingConnectOptions()
         {
             var initActionExecuted = false;
@@ -195,6 +196,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browserTwo.CloseAsync();
         }
 
+        [Test]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;
@@ -214,6 +216,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
+        [Test]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;
