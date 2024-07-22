@@ -144,18 +144,17 @@ public class CdpElementHandle : ElementHandle
             });
 
     /// <inheritdoc />
-    public override ValueTask DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
         if (Disposed)
         {
-            return default;
+            return;
         }
 
         Disposed = true;
 
-        Handle.DisposeAsync();
+        await Handle.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
-        return default;
     }
 
     /// <inheritdoc />
