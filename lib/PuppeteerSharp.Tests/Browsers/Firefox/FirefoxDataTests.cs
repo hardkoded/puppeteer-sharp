@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 
             Assert.AreEqual(
                 Path.Combine(
-                    "Firefox.app",
+                    "Firefox Nightly.app",
                     "Contents",
                     "MacOS",
                     "firefox"
@@ -104,12 +104,21 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 
             Assert.AreEqual(
                 Path.Combine(
-                    "Firefox.app",
+                    "Firefox Nightly.app",
                     "Contents",
                     "MacOS",
                     "firefox"
                 ),
               BrowserData.Firefox.RelativeExecutablePath(Platform.MacOSArm64, "111.0a1"));
+
+            Assert.AreEqual(
+                Path.Combine(
+                    "Firefox.app",
+                    "Contents",
+                    "MacOS",
+                    "firefox"
+                ),
+                BrowserData.Firefox.RelativeExecutablePath(Platform.MacOSArm64, "stable_111.0a1"));
 
             Assert.AreEqual(
               Path.Combine("firefox", "firefox.exe"),

@@ -84,7 +84,7 @@ namespace PuppeteerSharp.BrowserData
                     return platform switch
                     {
                         Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                            "Firefox.app",
+                            "Firefox Nightly.app",
                             "Contents",
                             "MacOS",
                             "firefox"),
