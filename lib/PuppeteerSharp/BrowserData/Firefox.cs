@@ -20,7 +20,7 @@ namespace PuppeteerSharp.BrowserData
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
-        internal static Task<string> GetDefaultBuildIdAsync() => Task.FromResult(DefaultBuildId);
+        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(FirefoxChannel.Nightly);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
         {

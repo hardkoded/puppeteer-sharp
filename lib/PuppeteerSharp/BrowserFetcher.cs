@@ -104,7 +104,7 @@ namespace PuppeteerSharp
         {
             var buildId = Browser switch
             {
-                SupportedBrowser.Firefox => await Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly).ConfigureAwait(false),
+                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
                 SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
                 SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(Platform).ConfigureAwait(false),
                 _ => throw new PuppeteerException($"{Browser} not supported."),
