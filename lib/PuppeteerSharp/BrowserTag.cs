@@ -31,5 +31,20 @@ namespace PuppeteerSharp
         /// Stable version.
         /// </summary>
         Stable = 4,
+
+        /// <summary>
+        /// Nightly version.
+        /// </summary>
+        Nightly = 5,
+
+        /// <summary>
+        /// Developer Edition.
+        /// </summary>
+        DevEdition = 6,
+
+        /// <summary>
+        /// ESR.
+        /// </summary>
+        Esr = 7,
     }
 }

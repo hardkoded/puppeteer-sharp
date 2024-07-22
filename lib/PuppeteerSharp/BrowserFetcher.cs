@@ -104,7 +104,7 @@ namespace PuppeteerSharp
         {
             var buildId = Browser switch
             {
-                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
+                SupportedBrowser.Firefox => await Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly).ConfigureAwait(false),
                 SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
                 SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(Platform).ConfigureAwait(false),
                 _ => throw new PuppeteerException($"{Browser} not supported."),
@@ -350,7 +350,12 @@ namespace PuppeteerSharp
                 case SupportedBrowser.Firefox:
                     return tag switch
                     {
-                        BrowserTag.Latest => Firefox.ResolveBuildIdAsync("FIREFOX_NIGHTLY"),
+                        BrowserTag.Latest => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
+                        BrowserTag.Beta => Firefox.ResolveBuildIdAsync(FirefoxChannel.Beta),
+                        BrowserTag.Nightly => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
+                        BrowserTag.DevEdition => Firefox.ResolveBuildIdAsync(FirefoxChannel.DevEdition),
+                        BrowserTag.Stable => Firefox.ResolveBuildIdAsync(FirefoxChannel.Stable),
+                        BrowserTag.Esr => Firefox.ResolveBuildIdAsync(FirefoxChannel.Esr),
                         _ => throw new PuppeteerException($"{tag} is not supported for {Browser}. Use 'latest' instead."),
                     };
                 case SupportedBrowser.Chrome:
