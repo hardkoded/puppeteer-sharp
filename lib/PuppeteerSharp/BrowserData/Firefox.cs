@@ -109,6 +109,12 @@ namespace PuppeteerSharp.BrowserData
 
         internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
         {
+            // If the tempUserDataDirectory begins and ends with a quote, remove the quote
+            if (tempUserDataDirectory.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && tempUserDataDirectory.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
+            {
+                tempUserDataDirectory = tempUserDataDirectory.Substring(1, tempUserDataDirectory.Length - 2);
+            }
+
             var defaultPreferences = GetDefaultPreferences(preferences);
 
             File.WriteAllText(
