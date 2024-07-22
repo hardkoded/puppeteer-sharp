@@ -20,6 +20,9 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace PuppeteerSharp;
 
 /// <summary>
@@ -27,6 +30,7 @@ namespace PuppeteerSharp;
 /// "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
 /// This is a temporary ability and it will be removed in the future.
 /// </summary>
+[JsonConverter(typeof(StringEnumConverter))]
 public enum CookieSourceScheme
 {
     /// <summary>
