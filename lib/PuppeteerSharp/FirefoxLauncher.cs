@@ -123,7 +123,7 @@ namespace PuppeteerSharp
                 firefoxArguments.Add($"{userDataDir.Quote()}");
             }
 
-            Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
+            Firefox.CreateProfile(userDataDir, GetPreferences(options.Protocol, options.ExtraPrefsFirefox));
 
             return (firefoxArguments, tempUserDataDirectory);
         }
