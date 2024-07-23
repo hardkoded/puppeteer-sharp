@@ -19,6 +19,8 @@ namespace PuppeteerSharp
             "--no-remote"
         ];
 
+        private static readonly string[] _profileCommandLineArguments = ["-profile", "--profile"];
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FirefoxLauncher"/> class.
         /// </summary>
@@ -79,37 +81,52 @@ namespace PuppeteerSharp
 
         private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
         {
-            var firefoxArgs = new List<string>();
+            var firefoxArguments = new List<string>();
 
             if (!options.IgnoreDefaultArgs)
             {
-                firefoxArgs.AddRange(GetDefaultArgs(options));
+                firefoxArguments.AddRange(GetDefaultArgs(options));
             }
             else if (options.IgnoredDefaultArgs?.Length > 0)
             {
-                firefoxArgs.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
+                firefoxArguments.AddRange(GetDefaultArgs(options).Except(options.IgnoredDefaultArgs));
             }
             else
             {
-                firefoxArgs.AddRange(options.Args);
+                firefoxArguments.AddRange(options.Args);
             }
 
-            if (!firefoxArgs.Any(a => a.StartsWith("-remote-debugging", StringComparison.OrdinalIgnoreCase)))
+            if (!firefoxArguments.Any(a => a.StartsWith("-remote-debugging", StringComparison.OrdinalIgnoreCase)))
             {
-                firefoxArgs.Add("--remote-debugging-port=0");
+                firefoxArguments.Add("--remote-debugging-port=0");
             }
 
+            // Check for the profile argument, which will always be set even
+            // with a custom directory specified via the userDataDir option.
+            var profileArgIndex = firefoxArguments.FindIndex(arg => _profileCommandLineArguments.Contains(arg));
+            string userDataDir;
             TempDirectory tempUserDataDirectory = null;
 
-            if (!firefoxArgs.Contains("-profile") && !firefoxArgs.Contains("--profile"))
+            if (profileArgIndex != -1)
+            {
+                userDataDir = firefoxArguments[profileArgIndex + 1];
+                if (userDataDir == null)
+                {
+                    throw new PuppeteerException("Missing value for profile command line argument");
+                }
+            }
+            else
             {
                 tempUserDataDirectory = new TempDirectory();
-                Firefox.CreateProfile(tempUserDataDirectory.Path, GetPreferences(options.ExtraPrefsFirefox));
-                firefoxArgs.Add("--profile");
-                firefoxArgs.Add($"{tempUserDataDirectory.Path.Quote()}");
+                userDataDir = tempUserDataDirectory.Path;
+
+                firefoxArguments.Add("--profile");
+                firefoxArguments.Add($"{userDataDir.Quote()}");
             }
 
-            return (firefoxArgs, tempUserDataDirectory);
+            Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
+
+            return (firefoxArguments, tempUserDataDirectory);
         }
 
         private static Dictionary<string, object> GetPreferences(Dictionary<string, object> optionsExtraPreferencesFirefox)

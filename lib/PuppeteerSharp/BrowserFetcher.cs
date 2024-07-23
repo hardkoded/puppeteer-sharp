@@ -93,7 +93,7 @@ namespace PuppeteerSharp
                 using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK;
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
                 return false;
             }
@@ -102,9 +102,13 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task<InstalledBrowser> DownloadAsync()
         {
-            var buildId = Browser == SupportedBrowser.Firefox
-                ? await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false)
-                : Chrome.DefaultBuildId;
+            var buildId = Browser switch
+            {
+                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
+                SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
+                SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(Platform).ConfigureAwait(false),
+                _ => throw new PuppeteerException($"{Browser} not supported."),
+            };
 
             return await DownloadAsync(buildId).ConfigureAwait(false);
         }
@@ -212,6 +216,19 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
+        private static void ExecuteSetup(string exePath, string folderPath)
+        {
+            new DirectoryInfo(folderPath).Create();
+            using var process = new Process();
+            process.StartInfo.FileName = exePath;
+            process.StartInfo.Arguments = $"/ExtractDir={folderPath}";
+            process.StartInfo.EnvironmentVariables.Add("__compat_layer", "RuAsInvoker");
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.Start();
+            process.WaitForExit();
+        }
+
         private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
         {
             var url = _downloadsUrl[browser](Platform, buildId, BaseUrl);
@@ -241,7 +258,7 @@ namespace PuppeteerSharp
                 throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
             }
 
-            await UnpackArchiveAsync(archivePath, outputPath, fileName, browser, buildId).ConfigureAwait(false);
+            await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
             new FileInfo(archivePath).Delete();
 
             return new InstalledBrowser(cache, browser, buildId, Platform);
@@ -333,7 +350,12 @@ namespace PuppeteerSharp
                 case SupportedBrowser.Firefox:
                     return tag switch
                     {
-                        BrowserTag.Latest => Firefox.ResolveBuildIdAsync("FIREFOX_NIGHTLY"),
+                        BrowserTag.Latest => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
+                        BrowserTag.Beta => Firefox.ResolveBuildIdAsync(FirefoxChannel.Beta),
+                        BrowserTag.Nightly => Firefox.ResolveBuildIdAsync(FirefoxChannel.Nightly),
+                        BrowserTag.DevEdition => Firefox.ResolveBuildIdAsync(FirefoxChannel.DevEdition),
+                        BrowserTag.Stable => Firefox.ResolveBuildIdAsync(FirefoxChannel.Stable),
+                        BrowserTag.Esr => Firefox.ResolveBuildIdAsync(FirefoxChannel.Esr),
                         _ => throw new PuppeteerException($"{tag} is not supported for {Browser}. Use 'latest' instead."),
                     };
                 case SupportedBrowser.Chrome:
@@ -357,11 +379,15 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName, SupportedBrowser browser, string buildId)
+        private async Task UnpackArchiveAsync(string archivePath, string outputPath, string archiveName)
         {
             if (archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
                 ZipFile.ExtractToDirectory(archivePath, outputPath);
+            }
+            else if (archivePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            {
+                ExecuteSetup(archivePath, outputPath);
             }
             else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
             {
@@ -404,36 +430,6 @@ namespace PuppeteerSharp
                         }
                     }
                 }
-            }
-
-            if (browser == SupportedBrowser.Chrome && (GetCurrentPlatform() == Platform.Win64 || GetCurrentPlatform() == Platform.Win32))
-            {
-                if (int.TryParse(buildId.Split('.').First(), out var majorVersion) &&
-                    majorVersion >= Chrome.ChromeVersionRequiringPermissionsFix)
-                {
-                    TrySetWindowsPermissions(outputPath);
-                }
-            }
-        }
-
-        private void TrySetWindowsPermissions(string outputPath)
-        {
-            try
-            {
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "icacls.exe",
-                    Arguments = $"\"{outputPath}\" /grant *S-1-15-2-2:(OI)(CI)(RX)",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                };
-                var process = Process.Start(startInfo);
-                process?.WaitForExit();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unable to fix permissions: " + e.Message);
-                Console.WriteLine($"Visit https://pptr.dev/troubleshooting#chrome-reports-sandbox-errors-on-windows for more information");
-                throw;
             }
         }
 

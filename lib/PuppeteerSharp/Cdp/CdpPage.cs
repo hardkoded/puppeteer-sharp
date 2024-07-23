@@ -113,6 +113,7 @@ public class CdpPage : Page
             TaskScheduler.Default);
 
         SetupPrimaryTargetListeners();
+        AttachExistingTargets();
     }
 
     /// <inheritdoc cref="CDPSession"/>
@@ -236,7 +237,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(name));
         }
 
-        if (!_exposedFunctions.TryRemove(name, out var exposedFun) && !_bindings.TryRemove(name, out _))
+        if (!_exposedFunctions.TryRemove(name, out var exposedFun) || !_bindings.TryRemove(name, out _))
         {
             throw new PuppeteerException(
                 $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
@@ -1308,5 +1309,24 @@ public class CdpPage : Page
             ? SetViewportAsync(Viewport)
             : Task.CompletedTask;
         return Task.WhenAll(omitBackgroundTask, setViewPortTask);
+    }
+
+    private void AttachExistingTargets()
+    {
+        List<ITarget> queue = [];
+        queue.AddRange(_targetManager.GetChildTargets(PrimaryTarget));
+
+        for (var idx = 0; idx < queue.Count; idx++)
+        {
+            var next = (CdpTarget)queue[idx];
+            var session = next.Session;
+
+            if (session != null)
+            {
+                OnAttachedToTarget(this, new SessionEventArgs(session));
+            }
+
+            queue.AddRange(_targetManager.GetChildTargets(next));
+        }
     }
 }

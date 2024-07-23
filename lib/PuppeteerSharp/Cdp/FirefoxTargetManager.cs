@@ -60,6 +60,8 @@ namespace PuppeteerSharp.Cdp
 
         public AsyncDictionaryHelper<string, CdpTarget> GetAvailableTargets() => _availableTargetsByTargetId;
 
+        public IEnumerable<ITarget> GetChildTargets(ITarget target) => [];
+
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try

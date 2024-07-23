@@ -20,31 +20,42 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization;
 
-namespace PuppeteerSharp;
+namespace PuppeteerSharp.BrowserData;
 
 /// <summary>
-/// Represents the source scheme of the origin that originally set the cookie. A value of
-/// "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
-/// This is a temporary ability and it will be removed in the future.
+/// Firefox channels.
 /// </summary>
-[JsonConverter(typeof(StringEnumConverter))]
-public enum CookieSourceScheme
+public enum FirefoxChannel
 {
     /// <summary>
-    /// Unset.
+    /// Stable.
     /// </summary>
-    Unset,
+    [EnumMember(Value = "stable")]
+    Stable = 0,
 
     /// <summary>
-    /// Non-secure.
+    /// Beta.
     /// </summary>
-    NonSecure,
+    [EnumMember(Value = "beta")]
+    Beta = 1,
 
     /// <summary>
-    /// Secure.
+    /// Nightly.
     /// </summary>
-    Secure,
+    [EnumMember(Value = "nightly")]
+    Nightly = 2,
+
+    /// <summary>
+    /// ESR.
+    /// </summary>
+    [EnumMember(Value = "esr")]
+    Esr = 3,
+
+    /// <summary>
+    /// Developer Edition.
+    /// </summary>
+    [EnumMember(Value = "devedition")]
+    DevEdition = 4,
 }
