@@ -127,6 +127,39 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.True(cookie.Session);
         }
 
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should set cookie with all available properties")]
+        public async Task ShouldSetCookieWithAllAvailableProperties()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Name = "password",
+                Value = "123456",
+                Domain = "localhost",
+                Path = "/",
+                SameParty = false,
+                Expires = -1,
+                HttpOnly = false,
+                Secure = false,
+                SourceScheme = CookieSourceScheme.Unset,
+            });
+
+            var cookies = await Page.GetCookiesAsync();
+            Assert.That(cookies, Has.Exactly(1).Items);
+            var cookie = cookies.First();
+            Assert.AreEqual("password", cookie.Name);
+            Assert.AreEqual("123456", cookie.Value);
+            Assert.AreEqual("localhost", cookie.Domain);
+            Assert.AreEqual("/", cookie.Path);
+            Assert.AreEqual(-1, cookie.Expires);
+            Assert.AreEqual(14, cookie.Size);
+            Assert.False(cookie.HttpOnly);
+            Assert.False(cookie.Secure);
+            Assert.True(cookie.Session);
+            Assert.AreEqual(CookieSourceScheme.Unset, cookie.SourceScheme);
+        }
+
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should set a cookie with a path")]
         public async Task ShouldSetACookieWithAPath()
         {
