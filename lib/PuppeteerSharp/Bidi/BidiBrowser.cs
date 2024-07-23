@@ -109,10 +109,13 @@ public class BidiBrowser : Browser
             driver,
             new NewCommandParameters
             {
-                AlwaysMatch = new CapabilitiesRequest()
+                Capabilities = new CapabilitiesRequest()
                 {
-                    AcceptInsecureCertificates = options.IgnoreHTTPSErrors,
-                    AdditionalCapabilities = { ["webSocketUrl"] = true, },
+                    AlwaysMatch = new CapabilitiesRequestInfo()
+                    {
+                        AcceptInsecureCertificates = options.IgnoreHTTPSErrors,
+                        AdditionalCapabilities = { ["webSocketUrl"] = true, },
+                    },
                 },
             },
             loggerFactory).ConfigureAwait(false);
