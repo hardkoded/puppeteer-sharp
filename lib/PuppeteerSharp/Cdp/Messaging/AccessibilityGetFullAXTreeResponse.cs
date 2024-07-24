@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         {
             public string Type { get; set; }
 
-            public JsonElement? Value { get; set; }
+            public JsonElement Value { get; set; }
         }
     }
 }

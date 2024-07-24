@@ -54,7 +54,7 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    public override CDPSession Client { get; protected set; }
+    public sealed override CDPSession Client { get; protected set; }
 
     /// <inheritdoc/>
     public override IPage Page => FrameManager.Page;
@@ -80,10 +80,10 @@ public class CdpFrame : Frame
         }
 
         var referrer = string.IsNullOrEmpty(options.Referer)
-            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
+            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue(RefererHeaderName)
             : options.Referer;
         var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
-            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
+            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue("referer-policy")
             : options.ReferrerPolicy;
         var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
 

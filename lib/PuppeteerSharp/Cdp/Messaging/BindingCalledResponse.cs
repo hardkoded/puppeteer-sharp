@@ -17,8 +17,8 @@ namespace PuppeteerSharp.Cdp.Messaging
             set
             {
                 _payloadJson = value;
-                var json = JsonSerializer.DeserializeAsync<JsonElement>(_payloadJson, JsonHelper.DefaultJsonSerializerSettings);
-                BindingPayload = json.ToObject<BindingCalledResponsePayload>(true);
+                var json = JsonSerializer.Deserialize<JsonElement>(_payloadJson, JsonHelper.DefaultJsonSerializerSettings);
+                BindingPayload = json.ToObject<BindingCalledResponsePayload>();
                 BindingPayload.JsonObject = json;
             }
         }

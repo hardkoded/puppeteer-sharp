@@ -272,7 +272,7 @@ namespace PuppeteerSharp.Cdp
 
                 try
                 {
-                    obj = JsonConvert.DeserializeObject<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings);
+                    obj = JsonSerializer.Deserialize<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings);
                 }
                 catch (JsonException exc)
                 {

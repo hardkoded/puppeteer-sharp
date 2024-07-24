@@ -77,4 +77,28 @@ internal static class EnumHelper
 
         return enumValues[value];
     }
+
+    public static TEnum FromValueString<TEnum>(string value)
+        where TEnum : struct, Enum
+    {
+        var enumValues = _stringToEnumCache.GetOrAdd(typeof(TEnum), type =>
+        {
+            var names = Enum.GetNames(type);
+            var dictionary = new Dictionary<string, Enum>();
+            foreach (var valueName in names)
+            {
+                var field = type.GetField(valueName);
+                var value = (TEnum)field.GetValue(null);
+                dictionary[valueName] = value;
+                if (field.GetCustomAttribute<EnumMemberAttribute>()?.Value is string enumMember)
+                {
+                    dictionary[enumMember] = value;
+                }
+            }
+
+            return dictionary;
+        });
+
+        return (TEnum)enumValues[value];
+    }
 }

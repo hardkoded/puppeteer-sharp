@@ -46,7 +46,8 @@ namespace PuppeteerSharp
         private Frame Frame => World?.Frame;
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
+        public Task<JsonElement?> EvaluateExpressionAsync(string script)
+            => EvaluateExpressionAsync<JsonElement?>(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)

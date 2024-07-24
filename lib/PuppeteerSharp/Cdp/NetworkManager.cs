@@ -188,7 +188,7 @@ namespace PuppeteerSharp.Cdp
                         OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>());
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
+                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
                         break;
                 }
             }
