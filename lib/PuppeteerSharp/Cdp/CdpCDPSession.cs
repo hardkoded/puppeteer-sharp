@@ -24,9 +24,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
@@ -71,7 +71,7 @@ public class CdpCDPSession : CDPSession
     }
 
     /// <inheritdoc/>
-    public override async Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+    public override async Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
     {
         if (Connection == null)
         {
@@ -90,7 +90,7 @@ public class CdpCDPSession : CDPSession
         {
             callback = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously),
+                TaskWrapper = new TaskCompletionSource<JsonElement?>(TaskCreationOptions.RunContinuationsAsynchronously),
                 Method = method,
                 Message = message,
             };

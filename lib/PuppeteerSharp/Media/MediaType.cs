@@ -6,7 +6,6 @@ namespace PuppeteerSharp.Media
     /// <summary>
     /// Media type.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter), true)]
     public enum MediaType
     {
         /// <summary>

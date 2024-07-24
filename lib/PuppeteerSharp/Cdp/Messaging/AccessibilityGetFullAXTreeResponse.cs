@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
 {
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         {
             public string Type { get; set; }
 
-            public JToken Value { get; set; }
+            public JsonElement? Value { get; set; }
         }
     }
 }

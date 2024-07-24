@@ -6,7 +6,6 @@ namespace PuppeteerSharp
     /// <summary>
     /// SameSite values in cookies.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), None)]
     public enum SameSite
     {
         /// <summary>

@@ -1,12 +1,10 @@
 using System;
-using System.Text.Json;
 
 namespace PuppeteerSharp.Input
 {
     /// <summary>
     /// The type of button click to use with <see cref="IMouse.DownAsync(ClickOptions)"/>, <see cref="IMouse.UpAsync(ClickOptions)"/> and <see cref="IMouse.ClickAsync(decimal, decimal, ClickOptions)"/>.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter), true)]
     [Flags]
 #pragma warning disable CA1714 // Flags enums should have plural names. We don't want to break compatibility for this
     public enum MouseButton

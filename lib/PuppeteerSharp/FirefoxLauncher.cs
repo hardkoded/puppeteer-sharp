@@ -70,7 +70,7 @@ namespace PuppeteerSharp
                 firefoxArguments.Add("--devtools");
             }
 
-            if (options.Args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
+            if (options.Args.All(arg => arg.StartsWith('-')))
             {
                 firefoxArguments.Add("about:blank");
             }

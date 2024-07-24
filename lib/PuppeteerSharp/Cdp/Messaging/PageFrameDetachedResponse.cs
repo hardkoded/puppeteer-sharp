@@ -1,9 +1,5 @@
-using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
-
 namespace PuppeteerSharp.Cdp.Messaging
 {
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Unknown)]
     internal enum FrameDetachedReason
     {
         /// <summary>
