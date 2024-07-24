@@ -132,7 +132,7 @@ public class CdpCDPSession : CDPSession
             OnMessageReceived(new MessageEventArgs
             {
                 MessageID = method,
-                MessageData = obj.Params,
+                MessageData = (JsonElement)obj.Params,
             });
         }
     }

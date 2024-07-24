@@ -94,7 +94,7 @@ namespace PuppeteerSharp
             object result;
             var methodParams = binding.Method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-            var args = rawArgs.Select((arg, i) => arg is JToken token ? token.ToObject(methodParams[i]) : arg).ToArray();
+            var args = rawArgs.Select((arg, i) => arg is JsonElement token ? token.ToObject(methodParams[i]) : arg).ToArray();
 
             result = binding.DynamicInvoke(args);
             if (result is Task taskResult)

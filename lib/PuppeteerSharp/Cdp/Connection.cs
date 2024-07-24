@@ -343,7 +343,7 @@ namespace PuppeteerSharp.Cdp
                 MessageReceived?.Invoke(this, new MessageEventArgs
                 {
                     MessageID = method,
-                    MessageData = obj.Params,
+                    MessageData = (JsonElement)obj.Params,
                 });
             }
         }
