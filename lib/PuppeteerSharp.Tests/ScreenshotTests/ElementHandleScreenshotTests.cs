@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
