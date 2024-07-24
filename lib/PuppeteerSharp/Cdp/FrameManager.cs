@@ -211,38 +211,38 @@ namespace PuppeteerSharp.Cdp
                             break;
 
                         case "Page.frameNavigated":
-                            var response = e.MessageData.ToObject<PageFrameNavigatedResponse>(true);
+                            var response = e.MessageData.ToObject<PageFrameNavigatedResponse>();
                             await OnFrameNavigatedAsync(response.Frame, response.Type).ConfigureAwait(false);
                             break;
 
                         case "Page.navigatedWithinDocument":
-                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
+                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
                             break;
 
                         case "Page.frameDetached":
-                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>(true));
+                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>());
                             break;
 
                         case "Page.frameStartedLoading":
-                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                             break;
 
                         case "Page.frameStoppedLoading":
-                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                             break;
 
                         case "Runtime.executionContextCreated":
-                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context, sender as CDPSession).ConfigureAwait(false);
+                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>().Context, sender as CDPSession).ConfigureAwait(false);
                             break;
 
                         case "Runtime.executionContextDestroyed":
-                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>(true).ExecutionContextId, sender as CDPSession);
+                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>().ExecutionContextId, sender as CDPSession);
                             break;
                         case "Runtime.executionContextsCleared":
                             OnExecutionContextsCleared(sender as CDPSession);
                             break;
                         case "Page.lifecycleEvent":
-                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
+                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
                             break;
                     }
                 }

@@ -1,5 +1,9 @@
 using System;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
@@ -69,7 +73,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = ToJsonElement(promptData),
             });
 
             await promptTask;
@@ -119,7 +123,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = ToJsonElement(promptData),
             });
 
             await promptTask;
@@ -141,24 +145,25 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = ToJsonElement(promptData),
             });
 
             await Task.WhenAll(promptTask, promptTask2);
             Assert.AreEqual(promptTask.Result, promptTask2.Result);
         }
 
-        internal static JToken ToJToken(DeviceAccessDeviceRequestPromptedResponse promptData)
+        internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
         {
-            var jObject = new JObject { { "id", promptData.Id } };
-            var devices = new JArray();
-            foreach (var device in promptData.Devices)
+            var devicesJsonObjects = promptData.Devices.Select(device => new JsonObject()
             {
-                var deviceObject = new JObject { { "name", device.Name }, { "id", device.Id } };
-                devices.Add(deviceObject);
-            }
-            jObject.Add("devices", devices);
-            return jObject;
+                ["id"] = device.Id,
+                ["name"] = device.Name,
+            }).ToArray();
+
+            var devices = new JsonArray(devicesJsonObjects);
+            var jsonObject = new JsonObject() { ["id"] = promptData.Id, ["devices"] = devices, };
+
+            return jsonObject.AsJsonElement();
         }
     }
 }

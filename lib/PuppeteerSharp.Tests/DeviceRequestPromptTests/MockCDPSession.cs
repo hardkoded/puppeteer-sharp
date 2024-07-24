@@ -21,8 +21,10 @@
 //  * SOFTWARE.
 
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests;
@@ -31,8 +33,8 @@ public class MockCDPSession : ICDPSession
 {
     public event EventHandler<MessageEventArgs> MessageReceived;
 
-    public Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
-        => SendAsync<JObject>(method, args, options);
+    public Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        => SendAsync<JsonElement?>(method, args, options);
 
     public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
     {
@@ -57,6 +59,6 @@ public class MockCDPSession : ICDPSession
         => MessageReceived?.Invoke(this, new MessageEventArgs
         {
             MessageID = obj.Method,
-            MessageData = obj.Params,
+            MessageData = (System.Text.Json.JsonElement)obj.Params,
         });
 }

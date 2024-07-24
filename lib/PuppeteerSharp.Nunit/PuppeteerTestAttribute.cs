@@ -177,7 +177,7 @@ namespace PuppeteerSharp.Nunit
             using var stream = assembly.GetManifestResourceStream(resourceName);
             using var reader = new StreamReader(stream);
             var fileContent = reader.ReadToEnd();
-            return JsonConvert.DeserializeObject<TestExpectation[]>(fileContent);
+            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent);
         }
     }
 }

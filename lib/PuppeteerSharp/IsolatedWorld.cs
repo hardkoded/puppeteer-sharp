@@ -260,7 +260,7 @@ namespace PuppeteerSharp
                 switch (e.MessageID)
                 {
                     case "Runtime.bindingCalled":
-                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true)).ConfigureAwait(false);
+                        await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>()).ConfigureAwait(false);
                         break;
                 }
             }

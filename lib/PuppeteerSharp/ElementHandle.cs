@@ -199,7 +199,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task FocusAsync() =>
-            BindIsolatedHandleAsync<JsonElement, ElementHandle>(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
+            BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
 
         /// <inheritdoc/>
         public Task TypeAsync(string text, TypeOptions options = null)
@@ -669,7 +669,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
-            => BindIsolatedHandleAsync<JToken, ElementHandle>(handle
+            => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(
                         @"element => {
                             element.scrollIntoView({

@@ -54,15 +54,6 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected WaitTaskTimeoutException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        /// <summary>
         /// Timeout that caused the exception.
         /// </summary>
         /// <value>The timeout.</value>

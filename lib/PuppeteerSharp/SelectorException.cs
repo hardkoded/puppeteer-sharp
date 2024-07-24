@@ -51,15 +51,6 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SelectorException"/> class.
-        /// </summary>
-        /// <param name="info">Serialization Info.</param>
-        /// <param name="context">Streaming Context.</param>
-        protected SelectorException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        /// <summary>
         /// Gets the selector.
         /// </summary>
         /// <value>The selector.</value>

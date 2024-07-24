@@ -118,7 +118,7 @@ namespace PuppeteerSharp
                 });
             }
 
-            if (args.All(arg => arg.StartsWith('-')))
+            if (args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {
                 chromiumArguments.Add("about:blank");
             }

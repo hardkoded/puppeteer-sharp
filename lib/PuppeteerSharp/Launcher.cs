@@ -172,7 +172,7 @@ namespace PuppeteerSharp
                         data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<WSEndpointResponse>(data).WebSocketDebuggerUrl;
+                    return JsonSerializer.Deserialize<WSEndpointResponse>(data).WebSocketDebuggerUrl;
                 }
 
                 throw new PuppeteerException($"Invalid URL {browserURL}");

@@ -17,9 +17,5 @@ namespace PuppeteerSharp
         public TargetCrashedException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        protected TargetCrashedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

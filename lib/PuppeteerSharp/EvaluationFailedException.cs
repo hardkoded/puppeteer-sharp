@@ -33,14 +33,5 @@ namespace PuppeteerSharp
             : base(RewriteErrorMeesage(message), innerException)
         {
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EvaluationFailedException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected EvaluationFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

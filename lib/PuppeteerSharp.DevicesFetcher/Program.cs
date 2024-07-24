@@ -34,7 +34,7 @@ namespace PuppeteerSharp.DevicesFetcher
             Device[] devices;
             try
             {
-                devices = JsonConvert.DeserializeObject<Device[]>(text);
+                devices = JsonSerializer.Deserialize<Device[]>(text);
             }
             catch (Exception ex)
             {

@@ -33,15 +33,6 @@ namespace PuppeteerSharp
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PuppeteerException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected PuppeteerException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
         internal static string RewriteErrorMeesage(string message)
             => message.Contains("Cannot find context with specified id") || message.Contains("Inspected target navigated or close")
                 ? "Execution context was destroyed, most likely because of a navigation."

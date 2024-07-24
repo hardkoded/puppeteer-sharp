@@ -17,9 +17,5 @@ namespace PuppeteerSharp
         public InvalidTargetException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        protected InvalidTargetException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

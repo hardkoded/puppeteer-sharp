@@ -247,6 +247,18 @@ dotnet_diagnostic.CA1054.severity = none
 dotnet_diagnostic.CA1056.severity = none
 # Avoid empty interfaces
 dotnet_diagnostic.CA1040.severity = none
+# Use 'ArgumentNullException.ThrowIfNull' instead of explicitly throwing a new exception instance
+# This is not netstandard compatible
+dotnet_diagnostic.CA1510.severity = none
+# Use 'string.StartsWith(char)' instead of 'string.StartsWith(string)' when you have a string with a single char
+# This is not .NET 8 compatible
+dotnet_diagnostic.CA1865.severity = none
+# Use 'ObjectDisposedException.ThrowIf' instead of explicitly throwing a new exception instance
+# This is not netstandard compatible
+dotnet_diagnostic.CA1513.severity = none
+# Use Change the 'WriteAsync' method call to use the 'Stream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)' overload
+# This is not netstandard compatible
+dotnet_diagnostic.CA1835.severity = none
 # Use ConfigureAwait
 dotnet_diagnostic.CA2007.severity = error
 # CA1711: Identifiers should not have incorrect suffix

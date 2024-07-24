@@ -17,9 +17,5 @@ namespace PuppeteerSharp
         public BufferException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        protected BufferException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

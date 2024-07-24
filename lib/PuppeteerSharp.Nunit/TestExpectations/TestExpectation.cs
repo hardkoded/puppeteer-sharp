@@ -21,8 +21,8 @@
 //  * SOFTWARE.
 
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp.Nunit.TestExpectations;
 
@@ -55,7 +55,7 @@ public class TestExpectation
 
     public TestExpectationResult[] Expectations { get; set; }
 
-        public enum TestExpectationResult
+    public enum TestExpectationResult
     {
         [EnumMember(Value = "FAIL")] Fail,
         [EnumMember(Value = "PASS")] Pass,
@@ -63,7 +63,7 @@ public class TestExpectation
         [EnumMember(Value = "TIMEOUT")] Timeout,
     }
 
-        public enum TestExpectationsParameter
+    public enum TestExpectationsParameter
     {
         Firefox,
         Chrome,
@@ -75,7 +75,7 @@ public class TestExpectation
         Headful,
     }
 
-        public enum TestExpectationPlatform
+    public enum TestExpectationPlatform
     {
         Darwin,
         Linux,

@@ -961,31 +961,31 @@ public class CdpPage : Page
                     OnLoad();
                     break;
                 case "Runtime.consoleAPICalled":
-                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true))
+                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
+                    HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>().ExceptionDetails);
                     break;
                 case "Inspector.targetCrashed":
                     OnTargetCrashed();
                     break;
                 case "Performance.metrics":
-                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
+                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Log.entryAdded":
-                    await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true))
+                    await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Runtime.bindingCalled":
-                    await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true))
+                    await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Page.fileChooserOpened":
-                    await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true))
+                    await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>())
                         .ConfigureAwait(false);
                     break;
             }
