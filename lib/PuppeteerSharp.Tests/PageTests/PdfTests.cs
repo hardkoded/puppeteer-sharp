@@ -140,7 +140,7 @@ namespace PuppeteerSharp.Tests.PageTests
             };
 
             var serialized = JsonSerializer.Serialize(pdfOptions);
-            var newPdfOptions = JsonConvert.DeserializeObject<PdfOptions>(serialized);
+            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
             Assert.AreEqual(pdfOptions, newPdfOptions);
         }
     }

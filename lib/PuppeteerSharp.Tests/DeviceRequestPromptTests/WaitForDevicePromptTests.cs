@@ -153,17 +153,6 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         }
 
         internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
-        {
-            var devicesJsonObjects = promptData.Devices.Select(device => new JsonObject()
-            {
-                ["id"] = device.Id,
-                ["name"] = device.Name,
-            }).ToArray();
-
-            var devices = new JsonArray(devicesJsonObjects);
-            var jsonObject = new JsonObject() { ["id"] = promptData.Id, ["devices"] = devices, };
-
-            return jsonObject.AsJsonElement();
-        }
+            => JsonSerializer.SerializeToElement(promptData);
     }
 }

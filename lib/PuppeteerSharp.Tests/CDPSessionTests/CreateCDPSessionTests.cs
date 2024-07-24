@@ -57,7 +57,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.AreEqual("foo.js", eventTask.Result["url"]!.Value<string>());
+            Assert.AreEqual("foo.js", eventTask.Result.GetProperty("url")!.GetString());
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Expression = "1 + 2",
                 ReturnByValue = true
             });
-            Assert.AreEqual(3, evalResponse["result"]!["value"]!.ToObject<int>());
+            Assert.AreEqual(3, evalResponse!.Value.GetProperty("result")!.GetProperty("value")!.GetInt32());
             await client.DetachAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(()
