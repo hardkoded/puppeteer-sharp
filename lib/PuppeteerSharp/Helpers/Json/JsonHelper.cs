@@ -12,8 +12,9 @@ namespace PuppeteerSharp.Helpers.Json
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
+                new HttpMethodConverter(),
                 new JSHandleConverter(),
-                new JsonStringEnumMemberConverter(),
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
             },
         };
 

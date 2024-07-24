@@ -12,16 +12,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// The other.
         /// </summary>
+        [EnumMember(Value = "other")]
         Other,
 
         /// <summary>
         /// Target type page.
         /// </summary>
+        [EnumMember(Value = "page")]
         Page,
 
         /// <summary>
         /// Target type service worker.
         /// </summary>
+        [EnumMember(Value = "service_worker")]
         ServiceWorker,
 
         /// <summary>
@@ -93,6 +96,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Webview.
         /// </summary>
+        [EnumMember(Value = "webview")]
         Webview,
 
         /// <summary>

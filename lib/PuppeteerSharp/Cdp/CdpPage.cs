@@ -1159,7 +1159,7 @@ public class CdpPage : Page
             }
         }
 
-        if (e.Entry.Source != TargetType.Worker)
+        if (e.Entry.Source != LogSource.Worker)
         {
             OnConsole(new ConsoleEventArgs(new ConsoleMessage(
                 e.Entry.Level,
