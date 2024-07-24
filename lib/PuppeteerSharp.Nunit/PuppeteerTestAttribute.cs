@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit.TestExpectations;
 
 namespace PuppeteerSharp.Nunit
@@ -177,7 +179,14 @@ namespace PuppeteerSharp.Nunit
             using var stream = assembly.GetManifestResourceStream(resourceName);
             using var reader = new StreamReader(stream);
             var fileContent = reader.ReadToEnd();
-            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent);
+            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent, new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new JsonStringEnumMemberConverter(),
+                },
+            });
         }
     }
 }

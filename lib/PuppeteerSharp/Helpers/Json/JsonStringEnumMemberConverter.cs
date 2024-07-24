@@ -28,11 +28,16 @@ using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Helpers.Json;
 
-internal class JsonStringEnumMemberConverter : JsonConverterFactory
+/// <summary>
+/// Converts an enum value to or from a JSON string.
+/// </summary>
+public class JsonStringEnumMemberConverter : JsonConverterFactory
 {
+    /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-        => typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true;
+        => typeToConvert != null && (typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true);
 
+    /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var nullableType = Nullable.GetUnderlyingType(typeToConvert);

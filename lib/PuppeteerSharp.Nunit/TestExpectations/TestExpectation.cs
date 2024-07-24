@@ -65,20 +65,29 @@ public class TestExpectation
 
     public enum TestExpectationsParameter
     {
+        [EnumMember(Value = "firefox")]
         Firefox,
+        [EnumMember(Value = "chrome")]
         Chrome,
+        [EnumMember(Value = "webDriverBiDi")]
         WebDriverBiDi,
+        [EnumMember(Value = "cdp")]
         Cdp,
         [EnumMember(Value = "chrome-headless-shell")]
         ChromeHeadlessShell,
+        [EnumMember(Value = "headless")]
         Headless,
+        [EnumMember(Value = "headful")]
         Headful,
     }
 
     public enum TestExpectationPlatform
     {
+        [EnumMember(Value = "darwin")]
         Darwin,
+        [EnumMember(Value = "linux")]
         Linux,
+        [EnumMember(Value = "win32")]
         Win32,
     }
 }
