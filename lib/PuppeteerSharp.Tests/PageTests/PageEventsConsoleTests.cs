@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.AreEqual("hello 5 JSHandle@object", message.Text);
             Assert.AreEqual(ConsoleType.Log, message.Type);
 
-            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync());
+            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync<string>());
             Assert.AreEqual(5, await message.Args[1].JsonValueAsync<float>());
             Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
             Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
