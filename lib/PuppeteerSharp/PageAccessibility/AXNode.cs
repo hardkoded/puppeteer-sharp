@@ -219,7 +219,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 Role = _role,
                 Name = properties.GetValue("name")?.ToObject<string>(),
-                Value = properties.GetValue("value")?.ToObject<string>(),
+                Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
                 Description = properties.GetValue("description")?.ToObject<string>(),
                 KeyShortcuts = properties.GetValue("keyshortcuts")?.ToObject<string>(),
                 RoleDescription = properties.GetValue("roledescription")?.ToObject<string>(),
