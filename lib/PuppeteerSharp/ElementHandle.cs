@@ -931,11 +931,11 @@ namespace PuppeteerSharp
                     const rect = element.getBoundingClientRect();
                     const style = window.getComputedStyle(element);
                     return {
-                        X:
+                        x:
                         rect.left +
                             parseInt(style.paddingLeft, 10) +
                             parseInt(style.borderLeftWidth, 10),
-                        Y:
+                        y:
                         rect.top +
                             parseInt(style.paddingTop, 10) +
                             parseInt(style.borderTopWidth, 10),
