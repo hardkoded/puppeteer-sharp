@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
@@ -153,6 +154,6 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         }
 
         internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
-            => JsonSerializer.SerializeToElement(promptData);
+            => JsonSerializer.SerializeToElement(promptData, JsonHelper.DefaultJsonSerializerSettings);
     }
 }

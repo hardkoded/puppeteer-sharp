@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.ScreenshotTests
@@ -74,7 +75,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             var elementHandle = await Page.QuerySelectorAsync("div.to-screenshot");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.True(ScreenshotHelper.PixelMatch("screenshot-element-larger-than-viewport.png", screenshot));
-            Assert.AreEqual(JsonSerializer.SerializeToElement(new { w = 500, h = 500 }),
+            Assert.AreEqual(JsonSerializer.SerializeToElement(new { w = 500, h = 500 }, JsonHelper.DefaultJsonSerializerSettings),
                 await Page.EvaluateExpressionAsync("({ w: window.innerWidth, h: window.innerHeight })"));
         }
 
