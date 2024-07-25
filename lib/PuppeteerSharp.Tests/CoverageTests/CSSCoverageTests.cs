@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -121,9 +122,16 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage,
+                new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                });
             Assert.AreEqual(
                 TestUtils.CompressText(involved),
-                Regex.Replace(TestUtils.CompressText(JsonSerializer.Serialize(coverage)), @":\d{4}\/", ":<PORT>/"));
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4}\/", ":<PORT>/"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should ignore injected stylesheets")]
