@@ -84,15 +84,15 @@ internal static class EnumHelper
         var enumValues = _stringToEnumCache.GetOrAdd(typeof(TEnum), type =>
         {
             var names = Enum.GetNames(type);
-            var dictionary = new Dictionary<string, Enum>();
+            var dictionary = new Dictionary<string, Enum>(StringComparer.OrdinalIgnoreCase);
             foreach (var valueName in names)
             {
                 var field = type.GetField(valueName);
-                var value = (TEnum)field.GetValue(null);
-                dictionary[valueName] = value;
-                if (field.GetCustomAttribute<EnumMemberAttribute>()?.Value is string enumMember)
+                var fieldValue = (TEnum)field.GetValue(null);
+                dictionary[valueName] = fieldValue;
+                if (field.GetCustomAttribute<EnumMemberAttribute>()?.Value is { } enumMember)
                 {
-                    dictionary[enumMember] = value;
+                    dictionary[enumMember] = fieldValue;
                 }
             }
 

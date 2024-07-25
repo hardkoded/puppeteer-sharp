@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace PuppeteerSharp
 {
     /// <summary>
-    /// Meadia Feature. See <see cref="IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>.
+    /// Media Feature. See <see cref="IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>.
     /// </summary>
     public enum MediaFeature
     {

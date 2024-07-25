@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Helpers.Json
             {
                 new HttpMethodConverter(),
                 new JSHandleConverter(),
-                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase),
+                new JsonStringEnumMemberConverter(),
             },
         };
 
