@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
             public IEnumerable<AXTreeProperty> Properties { get; set; }
 
-            public object BackendDOMNodeId { get; set; }
+            public JsonElement BackendDOMNodeId { get; set; }
 
             public bool Ignored { get; set; }
         }
