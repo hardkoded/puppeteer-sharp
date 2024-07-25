@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -172,7 +173,7 @@ namespace PuppeteerSharp
                         data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
                     }
 
-                    return JsonSerializer.Deserialize<WSEndpointResponse>(data).WebSocketDebuggerUrl;
+                    return JsonSerializer.Deserialize<WSEndpointResponse>(data, JsonHelper.DefaultJsonSerializerSettings).WebSocketDebuggerUrl;
                 }
 
                 throw new PuppeteerException($"Invalid URL {browserURL}");
