@@ -39,7 +39,9 @@ namespace PuppeteerSharp.Helpers
                 return default(T);
             }
 
-            return typeof(T) == typeof(JsonElement) ? value : ValueFromType<T>((JsonElement)value, remoteObject.Type, stringify);
+            return typeof(T) == typeof(JsonElement?) || typeof(T) == typeof(JsonElement)
+                ? value
+                : ValueFromType<T>((JsonElement)value, remoteObject.Type, stringify);
         }
 
         internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
