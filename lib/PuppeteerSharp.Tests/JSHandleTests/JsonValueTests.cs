@@ -12,8 +12,8 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
-            var json = await aHandle.JsonValueAsync();
-            Assert.AreEqual(JsonDocument.Parse("""{ "foo": "bar" }"""), json);
+            var json = await aHandle.JsonValueAsync<JsonElement>();
+            Assert.AreEqual("bar", json.GetProperty("foo").GetString());
         }
 
         [Test, Retry(2),
