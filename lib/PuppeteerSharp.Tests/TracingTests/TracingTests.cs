@@ -10,12 +10,7 @@ namespace PuppeteerSharp.Tests.TracingTests
 {
     public class TracingTests : PuppeteerPageBaseTest
     {
-        private readonly string _file;
-
-        public TracingTests() : base()
-        {
-            _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        }
+        private readonly string _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         public override async Task DisposeAsync()
         {
@@ -101,7 +96,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             using var document = JsonDocument.Parse(jsonString);
             var root = document.RootElement;
             var traceEvents = root.GetProperty("traceEvents");
-            var traceConfigString = traceEvents.GetString();
+            var traceConfigString = traceEvents.ToString();
             StringAssert.Contains("toplevel", traceConfigString);
         }
 
