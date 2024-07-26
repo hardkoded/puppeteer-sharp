@@ -1,8 +1,12 @@
+using System.Runtime.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Drag operations available on <see cref="DragData"/>.
     /// </summary>
+    [JsonStringIgnore]
     public enum DragOperation
     {
         /// <summary>

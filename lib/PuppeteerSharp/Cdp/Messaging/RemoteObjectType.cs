@@ -1,8 +1,11 @@
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp.Cdp.Messaging
 {
     /// <summary>
     /// Remote object type.
     /// </summary>
+    [DefaultEnumValue<RemoteObjectType>(Other)]
     public enum RemoteObjectType
     {
         /// <summary>

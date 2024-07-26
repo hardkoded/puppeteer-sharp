@@ -13,6 +13,6 @@ namespace PuppeteerSharp
         /// <summary>
         /// Drag operation.
         /// </summary>
-        public DragOperation DragOperationsMask { get; set; }
+        public DragOperation DragOperationsMask { get; set; } = DragOperation.Copy;
     }
 }
