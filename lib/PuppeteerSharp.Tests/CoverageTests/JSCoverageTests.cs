@@ -1,9 +1,10 @@
-using System;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
 
@@ -166,9 +167,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Give the coverage some time.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage, new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                });
             Assert.AreEqual(
                 TestUtils.CompressText(involved),
-                Regex.Replace(TestUtils.CompressText(JsonSerializer.Serialize(coverage)), @"\d{4}\/", "<PORT>/"));
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @"\d{4}\/", "<PORT>/"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should not hang when there is a debugger statement")]
