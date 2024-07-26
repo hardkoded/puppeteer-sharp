@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -16,8 +17,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             #region Evaluate
             await using var page = await browser.NewPageAsync();
             var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-            var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
-            Console.WriteLine(someObject.a);
+            var someObject = await page.EvaluateFunctionAsync<JsonElement>("(value) => ({a: value})", 5);
+            Console.WriteLine(someObject.GetProperty("a").GetString());
             #endregion
         }
 
