@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Input;
@@ -9,10 +9,6 @@ namespace PuppeteerSharp.Tests.KeyboardTests
 {
     public class KeyboardTests : PuppeteerPageBaseTest
     {
-        public KeyboardTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("keyboard.spec", "Keyboard", "should type into a textarea")]
         public async Task ShouldTypeIntoTheTextarea()
         {
@@ -279,10 +275,10 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             const int key = 0;
             const int code = 1;
             const int metaKey = 2;
-            var result = await Page.EvaluateExpressionAsync<object[]>("result");
-            Assert.AreEqual("Meta", result[key]);
-            Assert.AreEqual("MetaLeft", result[code]);
-            Assert.AreEqual(true, result[metaKey]);
+            var result = await Page.EvaluateExpressionAsync<JsonElement[]>("result");
+            Assert.AreEqual("Meta", result[key].GetString());
+            Assert.AreEqual("MetaLeft", result[code].GetString());
+            Assert.AreEqual(true, result[metaKey].GetBoolean());
         }
     }
 }
