@@ -114,7 +114,7 @@ namespace PuppeteerSharp
                     clip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
                 }
 
-                var points = await EvaluateFunctionAsync<int[]>(@"() => {
+                var points = await EvaluateFunctionAsync<decimal[]>(@"() => {
                     if (!window.visualViewport) {
                         throw new Error('window.visualViewport is not supported.');
                     }
@@ -124,8 +124,8 @@ namespace PuppeteerSharp
                     ];
                 }").ConfigureAwait(false);
 
-                clip.X += points[0];
-                clip.Y += points[1];
+                clip.X += decimal.Floor(points[0]);
+                clip.Y += decimal.Floor(points[1]);
 
                 options.Clip = clip.ToClip();
 
@@ -325,10 +325,10 @@ namespace PuppeteerSharp
 
                 return new BoundingBox()
                 {
-                    X = box.X + offset.Value.X,
-                    Y = box.Y + offset.Value.Y,
-                    Height = box.Height,
-                    Width = box.Width,
+                    X = decimal.Floor(box.X) + decimal.Floor(offset.Value.X),
+                    Y = decimal.Floor(box.Y) + decimal.Floor(offset.Value.Y),
+                    Height = decimal.Floor(box.Height),
+                    Width = decimal.Floor(box.Width),
                 };
             });
 
