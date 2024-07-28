@@ -39,30 +39,30 @@ namespace PuppeteerSharp
         /// Gets the name of the subject.
         /// </summary>
         /// <value>The name of the subject.</value>
-        public string SubjectName { get; internal set; }
+        public string SubjectName { get; set; }
 
         /// <summary>
         /// Gets the issuer.
         /// </summary>
         /// <value>The issuer.</value>
-        public string Issuer { get; internal set; }
+        public string Issuer { get; set; }
 
         /// <summary>
         /// Gets the valid from.
         /// </summary>
         /// <value>The valid from.</value>
-        public long ValidFrom { get; internal set; }
+        public long ValidFrom { get; set; }
 
         /// <summary>
         /// Gets the valid to.
         /// </summary>
         /// <value>The valid to.</value>
-        public long ValidTo { get; internal set; }
+        public long ValidTo { get; set; }
 
         /// <summary>
         /// Gets the protocol.
         /// </summary>
         /// <value>The protocol.</value>
-        public string Protocol { get; internal set; }
+        public string Protocol { get; set; }
     }
 }

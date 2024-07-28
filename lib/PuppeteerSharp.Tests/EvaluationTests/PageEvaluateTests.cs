@@ -7,7 +7,7 @@ using NUnit.Framework;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class EvaluateTests : PuppeteerPageBaseTest
     {

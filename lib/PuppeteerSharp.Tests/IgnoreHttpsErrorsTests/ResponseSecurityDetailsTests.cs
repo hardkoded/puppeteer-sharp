@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -21,7 +19,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Should Work")]
         public async Task ShouldWork()
         {
-            // Checking for the TLS socket is it is in upstreams proves to be flacky in .net framework.
+            // Checking for the TLS socket is it is in upstreams proves to be flaky in .net framework.
             // We don't need to test that here.
 
             var response = await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
