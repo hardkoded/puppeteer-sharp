@@ -100,12 +100,12 @@ internal static class EnumHelper
             return dictionary;
         });
 
-        var defaultEnumAttribute = typeof(TEnum).GetCustomAttribute<DefaultEnumValueAttribute<TEnum>>();
         if (enumValues.TryGetValue(value, out var enumValue))
         {
             return (TEnum)enumValue;
         }
 
+        var defaultEnumAttribute = typeof(TEnum).GetCustomAttribute<DefaultEnumValueAttribute<TEnum>>();
         if (defaultEnumAttribute != null)
         {
             return defaultEnumAttribute.Value;

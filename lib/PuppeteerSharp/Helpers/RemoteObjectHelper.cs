@@ -80,11 +80,11 @@ namespace PuppeteerSharp.Helpers
                     case RemoteObjectType.Undefined:
                         return "undefined";
                     case RemoteObjectType.Number:
-                        return value.GetInt32();
+                        return value.ToObject<T>();
                     case RemoteObjectType.Boolean:
                         return value.GetBoolean();
                     case RemoteObjectType.Bigint:
-                        return value.GetInt64();
+                        return value.GetDouble();
                     default: // string, symbol, function
                         return value.ToObject<T>();
                 }
@@ -98,11 +98,11 @@ namespace PuppeteerSharp.Helpers
                     case RemoteObjectType.Undefined:
                         return null;
                     case RemoteObjectType.Number:
-                        return value.GetInt32();
+                        return value.ToObject<T>();
                     case RemoteObjectType.Boolean:
                         return value.GetBoolean();
                     case RemoteObjectType.Bigint:
-                        return value.GetInt64();
+                        return value.GetDouble();
                     default: // string, symbol, function
                         return value.ToObject<T>();
                 }

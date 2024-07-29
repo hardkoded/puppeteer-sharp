@@ -37,7 +37,7 @@ public class JsonStringEnumMemberConverter : JsonConverterFactory
     public override bool CanConvert(Type typeToConvert)
         => typeToConvert != null &&
            (typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true) &&
-           typeToConvert.GetCustomAttributes(typeof(JsonStringIgnoreAttribute), true).Length == 0;
+           Attribute.IsDefined(typeToConvert, typeof(JsonStringIgnoreAttribute));
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
