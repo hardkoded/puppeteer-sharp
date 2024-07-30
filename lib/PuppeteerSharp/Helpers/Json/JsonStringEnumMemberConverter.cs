@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Helpers.Json;
 /// <summary>
 /// Converts an enum value to or from a JSON string.
 /// </summary>
-public class JsonStringEnumMemberConverter : JsonConverterFactory
+internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)

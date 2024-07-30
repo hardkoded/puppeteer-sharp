@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Helpers.Json
     /// <summary>
     /// JSHandleMethodConverter will throw an exception if a JSHandle object is trying to be serialized.
     /// </summary>
-    public class JSHandleConverter : JsonConverter<IJSHandle>
+    internal sealed class JSHandleConverter : JsonConverter<IJSHandle>
     {
         /// <inheritdoc cref="JsonConverter"/>
         public override IJSHandle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => null;

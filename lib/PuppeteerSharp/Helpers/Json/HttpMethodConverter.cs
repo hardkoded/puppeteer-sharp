@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Helpers.Json;
 /// <summary>
 /// <see cref="HttpMethodConverter"/> will convert a <see cref="HttpMethod"/> to and from a string.
 /// </summary>
-public class HttpMethodConverter : JsonConverter<HttpMethod>
+internal sealed class HttpMethodConverter : JsonConverter<HttpMethod>
 {
     /// <inheritdoc cref="JsonConverter"/>
     public override bool CanConvert(Type objectType) => typeof(HttpMethod).IsAssignableFrom(objectType);
