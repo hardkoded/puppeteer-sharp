@@ -35,9 +35,8 @@ internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-        => typeToConvert != null &&
-           (typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true) &&
-           Attribute.IsDefined(typeToConvert, typeof(JsonStringIgnoreAttribute));
+        => (typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true) &&
+           !Attribute.IsDefined(typeToConvert, typeof(JsonStringIgnoreAttribute));
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -57,11 +56,13 @@ internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
         {
             return null;
         }
-        else if (reader.TokenType == JsonTokenType.String)
+
+        if (reader.TokenType == JsonTokenType.String)
         {
             return EnumHelper.FromValueString<TEnum>(reader.GetString());
         }
-        else if (reader.TokenType == JsonTokenType.Number)
+
+        if (reader.TokenType == JsonTokenType.Number)
         {
             var enumTypeCode = Type.GetTypeCode(typeof(TEnum));
             return enumTypeCode switch
