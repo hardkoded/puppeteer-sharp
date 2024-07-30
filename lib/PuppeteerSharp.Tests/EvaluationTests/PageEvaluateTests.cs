@@ -155,14 +155,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return complex objects")]
-        public async Task SouldReturnComplexObjects()
+        public async Task ShouldReturnComplexObjects()
         {
             dynamic obj = new
             {
                 foo = "bar!"
             };
-            var result = await Page.EvaluateFunctionAsync("a => a", obj);
-            Assert.AreEqual("bar!", result.foo.ToString());
+            var result = await Page.EvaluateFunctionAsync<JsonElement>("a => a", obj);
+            Assert.AreEqual("bar!", result.GetProperty("foo").GetString());
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return BigInt")]
