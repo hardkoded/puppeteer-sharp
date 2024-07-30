@@ -325,10 +325,10 @@ namespace PuppeteerSharp
 
                 return new BoundingBox()
                 {
-                    X = decimal.Floor(box.X) + decimal.Floor(offset.Value.X),
-                    Y = decimal.Floor(box.Y) + decimal.Floor(offset.Value.Y),
-                    Height = decimal.Floor(box.Height),
-                    Width = decimal.Floor(box.Width),
+                    X = box.X + offset.Value.X,
+                    Y = box.Y + offset.Value.Y,
+                    Height = box.Height,
+                    Width = box.Width,
                 };
             });
 

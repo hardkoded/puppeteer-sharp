@@ -944,8 +944,8 @@ namespace PuppeteerSharp
 
         private Clip RoundRectangle(Clip clip)
         {
-            var x = Math.Round(clip.X);
-            var y = Math.Round(clip.Y);
+            var x = Math.Round(clip.X, MidpointRounding.AwayFromZero);
+            var y = Math.Round(clip.Y, MidpointRounding.AwayFromZero);
 
             return new Clip
             {
