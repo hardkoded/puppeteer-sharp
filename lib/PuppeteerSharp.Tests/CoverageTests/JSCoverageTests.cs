@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
 
@@ -20,7 +19,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             StringAssert.Contains("/jscoverage/simple.html", coverage[0].Url);
-            Assert.AreEqual(new CoverageEntryRange[]
+            Assert.AreEqual(new[]
             {
                 new CoverageEntryRange
                 {
@@ -96,9 +95,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.AreEqual(2, coverage.Length);
-            var orderedList = coverage.OrderBy(c => c.Url);
-            StringAssert.Contains("/jscoverage/script1.js", orderedList.ElementAt(0).Url);
-            StringAssert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
+            var orderedList = coverage.OrderBy(c => c.Url).ToArray();
+            StringAssert.Contains("/jscoverage/script1.js", orderedList[0].Url);
+            StringAssert.Contains("/jscoverage/script2.js", orderedList[1].Url);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report right ranges")]
