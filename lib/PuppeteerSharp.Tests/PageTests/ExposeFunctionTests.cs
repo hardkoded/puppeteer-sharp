@@ -119,7 +119,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithComplexObjects()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            await Page.ExposeFunctionAsync("complexObject", (dynamic a, dynamic b) => Task.FromResult(new { X = a.x + b.x }));
+            await Page.ExposeFunctionAsync(
+                "complexObject",
+                (JsonElement a, JsonElement b) => Task.FromResult(new { X = a.GetProperty("x").GetInt32() + b.GetProperty("x").GetInt32() }));
 
             var result = await Page.EvaluateFunctionAsync<JsonElement>("async () => complexObject({x: 5}, {x: 2})");
             Assert.AreEqual(7, result.GetProperty("x").GetInt32());
