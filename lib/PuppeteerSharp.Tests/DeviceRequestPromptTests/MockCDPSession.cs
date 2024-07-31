@@ -38,7 +38,6 @@ public class MockCDPSession : ICDPSession
 
     public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
     {
-        Console.WriteLine($"Mock Session send: {method} {args?.ToString() ?? string.Empty}");
         return Task.FromResult<T>(default);
     }
 
