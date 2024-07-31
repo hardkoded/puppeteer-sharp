@@ -1079,7 +1079,7 @@ public class CdpPage : Page
         var tokens = values.Select(i =>
             i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<object>(i.RemoteObject)?.ToString());
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(i.RemoteObject)?.ToString() ?? "null");
 
         var location = new ConsoleMessageLocation();
         if (stackTrace?.CallFrames?.Length > 0)
