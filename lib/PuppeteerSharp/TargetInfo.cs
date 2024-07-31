@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -36,6 +37,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the target browser contextId.
         /// </summary>
+        [JsonConverter(typeof(AnyTypeToStringConverter))]
         public string BrowserContextId { get; set; }
 
         /// <summary>
