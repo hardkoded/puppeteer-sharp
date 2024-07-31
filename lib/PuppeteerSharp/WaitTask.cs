@@ -45,7 +45,7 @@ namespace PuppeteerSharp
             _fn = isExpression ? $"() => {{return ({fn});}}" : fn;
             _pollingInterval = pollingInterval;
             _polling = _pollingInterval.HasValue ? null : polling;
-            _args = args ?? Array.Empty<object>();
+            _args = args ?? [];
             _root = root;
 
             _realm.TaskManager.Add(this);
@@ -91,15 +91,15 @@ namespace PuppeteerSharp
                             ({IntervalPoller, createFunction}, ms, fn, ...args) => {
                                 const fun = createFunction(fn);
                                 return new IntervalPoller(() => {
-                                return fun(...args);
+                                    return fun(...args);
                                 }, ms);
                             }",
-                            new object[]
-                            {
+                            [
                                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                                 _pollingInterval,
                                 _fn,
-                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                                .. _args,
+                            ]).ConfigureAwait(false);
                 }
                 else if (_polling == WaitForFunctionPollingOption.Raf)
                 {

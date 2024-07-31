@@ -58,6 +58,6 @@ public class MockCDPSession : ICDPSession
         => MessageReceived?.Invoke(this, new MessageEventArgs
         {
             MessageID = obj.Method,
-            MessageData = (System.Text.Json.JsonElement)obj.Params,
+            MessageData = (JsonElement)obj.Params,
         });
 }
