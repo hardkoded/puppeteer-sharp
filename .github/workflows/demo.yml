@@ -35,7 +35,12 @@ jobs:
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
         dotnet restore PuppeteerSharpPdfDemo-Local.csproj
-    - name: Run Project
+    - name: Run Project (.NET)
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net8.0
+    - name: Run Project (.NET Framework)
+      if: matrix.os == 'windows-2022'
+      working-directory: ./demos/PuppeteerSharpPdfDemo
+      run: |
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net471
