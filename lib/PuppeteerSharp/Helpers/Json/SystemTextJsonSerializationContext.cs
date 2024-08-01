@@ -201,11 +201,6 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetInfo))]
 [JsonSerializable(typeof(WaitForFunctionPollingOption))]
 [JsonSerializable(typeof(WaitForOptions))]
-[JsonSerializable(typeof(string))]
-[JsonSerializable(typeof(List<string>))]
-[JsonSerializable(typeof(List<object>))]
-[JsonSerializable(typeof(Dictionary<string, string>))]
-[JsonSerializable(typeof(KeyValuePair<string, string>))]
 internal partial class SystemTextJsonSerializationContext : JsonSerializerContext
 {
 }
