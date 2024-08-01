@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace PuppeteerSharp.Helpers.Json
 {
@@ -10,6 +11,9 @@ namespace PuppeteerSharp.Helpers.Json
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            TypeInfoResolver = JsonSerializer.IsReflectionEnabledByDefault
+                ? new DefaultJsonTypeInfoResolver()
+                : SystemTextJsonSerializationContext.Default,
             Converters =
             {
                 new HttpMethodConverter(),
