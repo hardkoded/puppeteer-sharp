@@ -40,8 +40,8 @@ public class CdpCDPSession : CDPSession
     private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
     private readonly string _parentSessionId;
     private readonly TargetType _targetType;
-    private int _lastId;
     private string _closeReason;
+    private int _lastId;
 
     internal CdpCDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
     {
@@ -56,7 +56,7 @@ public class CdpCDPSession : CDPSession
 
     internal bool IsClosed { get; private set; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public override Task DetachAsync()
     {
         if (Connection == null)
@@ -64,14 +64,12 @@ public class CdpCDPSession : CDPSession
             throw new PuppeteerException($"Session already detached.Most likely the {_targetType} has been closed.");
         }
 
-        return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest
-        {
-            SessionId = Id,
-        });
+        return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest { SessionId = Id });
     }
 
-    /// <inheritdoc/>
-    public override async Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+    /// <inheritdoc />
+    public override async Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true,
+        CommandOptions options = null)
     {
         if (Connection == null)
         {
@@ -90,9 +88,10 @@ public class CdpCDPSession : CDPSession
         {
             callback = new MessageTask
             {
-                TaskWrapper = new TaskCompletionSource<JsonElement?>(TaskCreationOptions.RunContinuationsAsynchronously),
+                TaskWrapper =
+                    new TaskCompletionSource<JsonElement?>(TaskCreationOptions.RunContinuationsAsynchronously),
                 Method = method,
-                Message = message,
+                Message = message
             };
             _callbacks[id] = callback;
         }
@@ -109,7 +108,10 @@ public class CdpCDPSession : CDPSession
             }
         }
 
-        return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(options?.Timeout ?? Connection.ProtocolTimeout).ConfigureAwait(false) : null;
+        return waitForCallback
+            ? await callback.TaskWrapper.Task.WithTimeout(options?.Timeout ?? Connection.ProtocolTimeout)
+                .ConfigureAwait(false)
+            : null;
     }
 
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
@@ -131,11 +133,7 @@ public class CdpCDPSession : CDPSession
             // If the message was set to not wait for callback, the message won't be in the callbacks dictionary
             // And it might have no method set.
             var method = obj.Method;
-            OnMessageReceived(new MessageEventArgs
-            {
-                MessageID = method,
-                MessageData = (JsonElement)obj.Params,
-            });
+            OnMessageReceived(new MessageEventArgs { MessageID = method, MessageData = (JsonElement)obj.Params });
         }
     }
 
