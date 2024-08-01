@@ -1,7 +1,7 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
+
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace PuppeteerSharp.Tests.DragAndDropTests
 {

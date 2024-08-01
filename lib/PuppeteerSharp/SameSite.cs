@@ -1,4 +1,3 @@
-using System.Text.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp

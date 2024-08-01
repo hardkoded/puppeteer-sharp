@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 // https://github.com/dotnet/roslyn/blob/6da1274c9d24c2f90a48290394a951b23617f2a3/src/Compilers/Core/Portable/InternalUtilities/ConcurrentSet.cs#L16
+
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

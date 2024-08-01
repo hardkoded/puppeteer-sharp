@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 

@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Threading.Tasks;
-using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {

@@ -11,7 +11,6 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		<PackageReference Include="System.CodeDom" Version="5.0.0" />
-		<PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />

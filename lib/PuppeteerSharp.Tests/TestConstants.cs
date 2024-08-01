@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
 

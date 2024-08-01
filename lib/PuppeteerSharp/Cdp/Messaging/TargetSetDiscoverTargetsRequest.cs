@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace PuppeteerSharp.Cdp.Messaging
 {
     internal class TargetSetDiscoverTargetsRequest

@@ -21,7 +21,6 @@
 //  * SOFTWARE.
 
 using System.Runtime.Serialization;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace PuppeteerSharp.Nunit.TestExpectations;

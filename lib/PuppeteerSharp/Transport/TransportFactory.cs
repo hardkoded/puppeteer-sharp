@@ -1,9 +1,9 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace PuppeteerSharp.Transport
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Delegate for creation of <see cref="IConnectionTransport"/> instances.
     /// </summary>
