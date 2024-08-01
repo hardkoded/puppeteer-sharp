@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     /// Resource type.
     /// </summary>
     /// <seealso cref="IRequest.ResourceType"/>
-    [DefaultEnumValue<ResourceType>(Unknown)]
+    [DefaultEnumValue((int)Unknown)]
     public enum ResourceType
     {
         /// <summary>

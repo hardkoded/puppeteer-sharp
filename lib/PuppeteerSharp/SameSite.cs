@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// SameSite values in cookies.
     /// </summary>
-    [DefaultEnumValue<SameSite>(None)]
+    [DefaultEnumValue((int)None)]
     public enum SameSite
     {
         /// <summary>

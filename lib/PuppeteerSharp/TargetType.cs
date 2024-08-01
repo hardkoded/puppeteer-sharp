@@ -6,7 +6,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target type.
     /// </summary>
-    [DefaultEnumValue<TargetType>(Other)]
+    [DefaultEnumValue((int)Other)]
     public enum TargetType
     {
         /// <summary>

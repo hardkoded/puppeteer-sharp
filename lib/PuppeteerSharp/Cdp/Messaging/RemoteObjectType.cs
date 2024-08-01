@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Cdp.Messaging
     /// <summary>
     /// Remote object type.
     /// </summary>
-    [DefaultEnumValue<RemoteObjectType>(Other)]
+    [DefaultEnumValue((int)Other)]
     public enum RemoteObjectType
     {
         /// <summary>

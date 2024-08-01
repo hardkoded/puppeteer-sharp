@@ -3,7 +3,7 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
-    [DefaultEnumValue<DOMWorldType>(Other)]
+    [DefaultEnumValue((int)Other)]
     internal enum DOMWorldType
     {
         /// <summary>

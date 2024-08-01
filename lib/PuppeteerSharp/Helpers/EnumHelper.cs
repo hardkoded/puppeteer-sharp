@@ -105,10 +105,10 @@ internal static class EnumHelper
             return (TEnum)enumValue;
         }
 
-        var defaultEnumAttribute = typeof(TEnum).GetCustomAttribute<DefaultEnumValueAttribute<TEnum>>();
+        var defaultEnumAttribute = typeof(TEnum).GetCustomAttribute<DefaultEnumValueAttribute>();
         if (defaultEnumAttribute != null)
         {
-            return defaultEnumAttribute.Value;
+            return (TEnum)(object)defaultEnumAttribute.Value;
         }
 
         throw new ArgumentException($"Unknown value '{value}' for enum {typeof(TEnum).Name}");
