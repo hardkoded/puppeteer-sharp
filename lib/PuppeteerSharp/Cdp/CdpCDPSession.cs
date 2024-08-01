@@ -68,7 +68,10 @@ public class CdpCDPSession : CDPSession
     }
 
     /// <inheritdoc />
-    public override async Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true,
+    public override async Task<JsonElement?> SendAsync(
+        string method,
+        object args = null,
+        bool waitForCallback = true,
         CommandOptions options = null)
     {
         if (Connection == null)
@@ -80,7 +83,7 @@ public class CdpCDPSession : CDPSession
                 _closeReason);
         }
 
-        var id = GetMessageID();
+        var id = GetMessageId();
         var message = Connection.GetMessage(id, method, args, Id);
 
         MessageTask callback = null;
@@ -91,7 +94,7 @@ public class CdpCDPSession : CDPSession
                 TaskWrapper =
                     new TaskCompletionSource<JsonElement?>(TaskCreationOptions.RunContinuationsAsynchronously),
                 Method = method,
-                Message = message
+                Message = message,
             };
             _callbacks[id] = callback;
         }
@@ -116,7 +119,7 @@ public class CdpCDPSession : CDPSession
 
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
-    internal int GetMessageID() => Interlocked.Increment(ref _lastId);
+    internal int GetMessageId() => Interlocked.Increment(ref _lastId);
 
     internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
 

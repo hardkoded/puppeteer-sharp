@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace PuppeteerSharp.TestServer
 {
-    internal class SimpleCompressionMiddleware
+    internal sealed class SimpleCompressionMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly SimpleServer _server;

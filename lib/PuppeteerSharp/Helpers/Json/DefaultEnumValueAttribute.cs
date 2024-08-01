@@ -25,7 +25,7 @@ using System;
 namespace PuppeteerSharp.Helpers.Json;
 
 [AttributeUsage(AttributeTargets.Enum)]
-internal class DefaultEnumValueAttribute(int value) : Attribute
+internal sealed class DefaultEnumValueAttribute(int value) : Attribute
 {
     public int Value { get; } = value;
 }

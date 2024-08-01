@@ -22,7 +22,7 @@
 
 namespace PuppeteerSharp.Tests.TouchScreenTests;
 
-internal record TouchEvent
+internal sealed record TouchEvent
 {
     private decimal _altitudeAngle;
     public string Type { get; set; }
@@ -49,7 +49,7 @@ internal record TouchEvent
 
     public Detail[] ActiveTouches { get; set; } = [];
 
-    internal record Detail
+    internal sealed record Detail
     {
         public int ClientX { get; set; }
         public int ClientY { get; set; }
