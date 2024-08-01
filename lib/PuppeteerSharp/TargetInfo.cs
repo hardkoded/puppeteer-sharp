@@ -9,13 +9,6 @@ namespace PuppeteerSharp
     public class TargetInfo
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TargetInfo"/> class.
-        /// </summary>
-        public TargetInfo()
-        {
-        }
-
-        /// <summary>
         /// Gets the type.
         /// </summary>
         /// <value>The type.</value>
