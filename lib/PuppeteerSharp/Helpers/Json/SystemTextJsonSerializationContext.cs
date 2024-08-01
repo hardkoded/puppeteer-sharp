@@ -1,3 +1,4 @@
+#if NET8_0_OR_GREATER
 // * MIT License
 //  *
 //  * Copyright (c) Darío Kondratiuk
@@ -19,7 +20,6 @@
 //  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
-
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using PuppeteerSharp.Cdp.Messaging;
@@ -204,3 +204,4 @@ namespace PuppeteerSharp.Helpers.Json;
 internal partial class SystemTextJsonSerializationContext : JsonSerializerContext
 {
 }
+#endif
