@@ -536,7 +536,6 @@ namespace PuppeteerSharp
         /// Console.WriteLine(hyperlinkInfo.ToString()); // Displays JSON array of hyperlinkInfo objects
         /// </code>
         /// </example>
-        /// <seealso href="https://www.newtonsoft.com/json/help/html/t_newtonsoft_json_linq_jtoken.htm"/>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value.</returns>
         Task<JsonElement?> EvaluateExpressionAsync(string script);

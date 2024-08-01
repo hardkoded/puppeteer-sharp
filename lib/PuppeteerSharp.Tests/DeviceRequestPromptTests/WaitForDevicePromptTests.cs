@@ -1,9 +1,6 @@
 using System;
-using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
