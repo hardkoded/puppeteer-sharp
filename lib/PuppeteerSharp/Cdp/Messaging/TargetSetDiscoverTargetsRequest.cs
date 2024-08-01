@@ -10,10 +10,8 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         internal class DiscoverFilter
         {
-            [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
             public string Type { get; set; }
 
-            [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
             public bool? Exclude { get; set; }
         }
     }
