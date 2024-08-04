@@ -246,7 +246,9 @@ namespace PuppeteerSharp
 
             if (new DirectoryInfo(outputPath).Exists)
             {
-                return new InstalledBrowser(cache, browser, buildId, Platform);
+                var existingBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
+                RunSetup(existingBrowser);
+                return existingBrowser;
             }
 
             try
@@ -261,7 +263,41 @@ namespace PuppeteerSharp
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
             new FileInfo(archivePath).Delete();
 
-            return new InstalledBrowser(cache, browser, buildId, Platform);
+            var installedBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
+            RunSetup(installedBrowser);
+            return installedBrowser;
+        }
+
+        private void RunSetup(InstalledBrowser installedBrowser)
+        {
+            // On Windows for Chrome invoke setup.exe to configure sandboxes.
+            if (
+                installedBrowser.Platform is Platform.Win32 or Platform.Win64 &&
+                installedBrowser.Browser == SupportedBrowser.Chrome && installedBrowser.Platform == GetCurrentPlatform())
+            {
+                try
+                {
+                    var browserDir = new FileInfo(installedBrowser.GetExecutablePath()).Directory;
+                    var setupExePath = Path.Combine(browserDir!.FullName, "setup.exe");
+
+                    if (!File.Exists(setupExePath))
+                    {
+                        return;
+                    }
+
+                    using var process = new Process();
+                    process.StartInfo.FileName = setupExePath;
+                    process.StartInfo.Arguments = $"--configure-browser-in-directory=\"{browserDir.FullName}\"";
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.UseShellExecute = false;
+                    process.Start();
+                    process.WaitForExit();
+                }
+                finally
+                {
+                    // swallow
+                }
+            }
         }
 
         private async Task InstallDmgAsync(string dmgPath, string folderPath)
