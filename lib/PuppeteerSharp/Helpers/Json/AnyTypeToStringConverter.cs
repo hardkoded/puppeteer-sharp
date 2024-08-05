@@ -43,7 +43,7 @@ internal sealed class AnyTypeToStringConverter : JsonConverter<string>
             return stringValue.ToString(CultureInfo.InvariantCulture.NumberFormat);
         }
 
-        if (reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True)
+        if (reader.TokenType is JsonTokenType.False or JsonTokenType.True)
         {
             return reader.GetBoolean().ToString();
         }
