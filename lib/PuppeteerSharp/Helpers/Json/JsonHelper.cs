@@ -12,9 +12,7 @@ namespace PuppeteerSharp.Helpers.Json
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
 #if NET8_0_OR_GREATER
-            TypeInfoResolver = JsonSerializer.IsReflectionEnabledByDefault
-                ? new DefaultJsonTypeInfoResolver()
-                : SystemTextJsonSerializationContext.Default,
+            TypeInfoResolver = SystemTextJsonSerializationContext.Default,
 #endif
             Converters =
             {
