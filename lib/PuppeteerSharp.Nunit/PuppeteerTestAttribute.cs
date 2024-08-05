@@ -171,6 +171,16 @@ namespace PuppeteerSharp.Nunit
         private static TestExpectation[] GetUpstreamExpectations() =>
             _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
 
+        private static JsonSerializerOptions DefaultJsonSerializerOptions =>
+            new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new JsonStringEnumMemberConverter(),
+                },
+            };
+
         private static TestExpectation[] LoadExpectationsFromResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -178,14 +188,7 @@ namespace PuppeteerSharp.Nunit
             using var stream = assembly.GetManifestResourceStream(resourceName);
             using var reader = new StreamReader(stream);
             var fileContent = reader.ReadToEnd();
-            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent, new JsonSerializerOptions()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters =
-                {
-                    new JsonStringEnumMemberConverter(),
-                },
-            });
+            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent, DefaultJsonSerializerOptions);
         }
     }
 }
