@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Linux;
@@ -30,6 +31,7 @@ namespace PuppeteerSharp
         };
 
         private readonly CustomFileDownloadAction _customFileDownload;
+        private readonly ILogger<BrowserFetcher> _logger;
 
         /// <inheritdoc cref="BrowserFetcher"/>
         public BrowserFetcher()
@@ -41,12 +43,13 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc cref="BrowserFetcher"/>
-        public BrowserFetcher(SupportedBrowser browser) : this(new BrowserFetcherOptions { Browser = browser })
+        public BrowserFetcher(SupportedBrowser browser, ILoggerFactory loggerFactory = null)
+            : this(new BrowserFetcherOptions { Browser = browser }, loggerFactory)
         {
         }
 
         /// <inheritdoc cref="BrowserFetcher"/>
-        public BrowserFetcher(BrowserFetcherOptions options)
+        public BrowserFetcher(BrowserFetcherOptions options, ILoggerFactory loggerFactory = null)
         {
             if (options == null)
             {
@@ -57,6 +60,7 @@ namespace PuppeteerSharp
             CacheDir = string.IsNullOrEmpty(options.Path) ? GetBrowsersLocation() : options.Path;
             Platform = options.Platform ?? GetCurrentPlatform();
             _customFileDownload = options.CustomFileDownload ?? DownloadFileUsingHttpClientTaskAsync;
+            _logger = loggerFactory?.CreateLogger<BrowserFetcher>();
         }
 
         /// <inheritdoc/>
@@ -93,8 +97,9 @@ namespace PuppeteerSharp
                 using var response = await client.SendAsync(requestMessage).ConfigureAwait(false);
                 return response.StatusCode == HttpStatusCode.OK;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
+                _logger?.LogError(ex, $"Failed to check download {Browser} for {Platform} from {BaseUrl}");
                 return false;
             }
         }
@@ -246,7 +251,9 @@ namespace PuppeteerSharp
 
             if (new DirectoryInfo(outputPath).Exists)
             {
-                return new InstalledBrowser(cache, browser, buildId, Platform);
+                var existingBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
+                RunSetup(existingBrowser);
+                return existingBrowser;
             }
 
             try
@@ -261,7 +268,41 @@ namespace PuppeteerSharp
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
             new FileInfo(archivePath).Delete();
 
-            return new InstalledBrowser(cache, browser, buildId, Platform);
+            var installedBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
+            RunSetup(installedBrowser);
+            return installedBrowser;
+        }
+
+        private void RunSetup(InstalledBrowser installedBrowser)
+        {
+            // On Windows for Chrome invoke setup.exe to configure sandboxes.
+            if (
+                installedBrowser.Platform is Platform.Win32 or Platform.Win64 &&
+                installedBrowser.Browser == SupportedBrowser.Chrome && installedBrowser.Platform == GetCurrentPlatform())
+            {
+                try
+                {
+                    var browserDir = new FileInfo(installedBrowser.GetExecutablePath()).Directory;
+                    var setupExePath = Path.Combine(browserDir!.FullName, "setup.exe");
+
+                    if (!File.Exists(setupExePath))
+                    {
+                        return;
+                    }
+
+                    using var process = new Process();
+                    process.StartInfo.FileName = setupExePath;
+                    process.StartInfo.Arguments = $"--configure-browser-in-directory=\"{browserDir.FullName}\"";
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.UseShellExecute = false;
+                    process.Start();
+                    process.WaitForExit();
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Failed to run setup.exe");
+                }
+            }
         }
 
         private async Task InstallDmgAsync(string dmgPath, string folderPath)
@@ -337,9 +378,9 @@ namespace PuppeteerSharp
                 process.Start();
                 process.WaitForExit();
             }
-            catch
+            catch (Exception ex)
             {
-                // swallow
+                _logger?.LogError(ex, "Failed to unmount dmg");
             }
         }
 
