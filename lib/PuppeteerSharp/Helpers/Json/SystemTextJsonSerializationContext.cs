@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(DeviceAccessCancelPrompt))]
 [JsonSerializable(typeof(DeviceAccessDeviceRequestPromptedResponse))]
 [JsonSerializable(typeof(DeviceAccessSelectPrompt))]
-[JsonSerializable(typeof(Dictionary<string,int>))]
+[JsonSerializable(typeof(Dictionary<string, int>))]
 [JsonSerializable(typeof(DispatchKeyEventType))]
 [JsonSerializable(typeof(DomDescribeNodeRequest))]
 [JsonSerializable(typeof(DomDescribeNodeResponse))]
