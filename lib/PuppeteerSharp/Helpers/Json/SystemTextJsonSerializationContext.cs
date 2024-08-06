@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.Helpers.Json;
@@ -62,6 +63,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(DeviceAccessCancelPrompt))]
 [JsonSerializable(typeof(DeviceAccessDeviceRequestPromptedResponse))]
 [JsonSerializable(typeof(DeviceAccessSelectPrompt))]
+[JsonSerializable(typeof(Dictionary<string,int>))]
 [JsonSerializable(typeof(DispatchKeyEventType))]
 [JsonSerializable(typeof(DomDescribeNodeRequest))]
 [JsonSerializable(typeof(DomDescribeNodeResponse))]
@@ -100,6 +102,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(FileChooserAction))]
 [JsonSerializable(typeof(GetBrowserContextsResponse))]
 [JsonSerializable(typeof(GetContentQuadsResponse))]
+[JsonSerializable(typeof(ChromeGoodVersionsResult))]
 [JsonSerializable(typeof(Header))]
 [JsonSerializable(typeof(InputDispatchDragEventRequest))]
 [JsonSerializable(typeof(InputDispatchKeyEventRequest))]
@@ -157,6 +160,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(PerformanceMetricsResponse))]
 [JsonSerializable(typeof(ProfilerStartPreciseCoverageRequest))]
 [JsonSerializable(typeof(ProfilerTakePreciseCoverageResponse))]
+[JsonSerializable(typeof(Point))]
 [JsonSerializable(typeof(RemoteObject))]
 [JsonSerializable(typeof(RemoteObjectSubtype))]
 [JsonSerializable(typeof(RemoteObjectType))]
@@ -219,6 +223,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(short))]
 [JsonSerializable(typeof(ushort))]
 [JsonSerializable(typeof(int))]
+[JsonSerializable(typeof(int[]))]
 [JsonSerializable(typeof(uint))]
 [JsonSerializable(typeof(long))]
 [JsonSerializable(typeof(ulong))]
