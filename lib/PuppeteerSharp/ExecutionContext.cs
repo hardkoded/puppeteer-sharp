@@ -238,20 +238,32 @@ namespace PuppeteerSharp
             switch (arg)
             {
                 case BigInteger big:
-                    return new { unserializableValue = $"{big}n" };
+                    return new RuntimeCallFunctionOnRequestArgumentValue()
+                    {
+                        UnserializableValue = $"{big}n",
+                    };
 
                 case int integer when integer == -0:
-                    return new { unserializableValue = "-0" };
+                    return new RuntimeCallFunctionOnRequestArgumentValue()
+                    {
+                        UnserializableValue = "-0",
+                    };
 
                 case double d:
                     if (double.IsPositiveInfinity(d))
                     {
-                        return new { unserializableValue = "Infinity" };
+                        return new RuntimeCallFunctionOnRequestArgumentValue()
+                        {
+                            UnserializableValue = "Infinity",
+                        };
                     }
 
                     if (double.IsNegativeInfinity(d))
                     {
-                        return new { unserializableValue = "-Infinity" };
+                        return new RuntimeCallFunctionOnRequestArgumentValue()
+                        {
+                            UnserializableValue = "-Infinity",
+                        };
                     }
 
                     if (double.IsNaN(d))

@@ -20,7 +20,10 @@
 //  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using PuppeteerSharp.Cdp.Messaging;
 
@@ -29,7 +32,7 @@ namespace PuppeteerSharp.Helpers.Json;
 /// <summary>
 /// We need this class for AOT.
 /// </summary>
-[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSourceGenerationOptions]
 [JsonSerializable(typeof(AccessibilityGetFullAXTreeResponse))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeRequest))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeResponse))]
@@ -38,6 +41,8 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(BrowserGetVersionResponse))]
 [JsonSerializable(typeof(BrowserGrantPermissionsRequest))]
 [JsonSerializable(typeof(BrowserResetPermissionsRequest))]
+[JsonSerializable(typeof(BoundingBox[]))]
+[JsonSerializable(typeof(BoundingBox))]
 [JsonSerializable(typeof(CertificateErrorResponse))]
 [JsonSerializable(typeof(ConnectionError))]
 [JsonSerializable(typeof(ConnectionRequest))]
@@ -163,6 +168,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(RuntimeAddBindingRequest))]
 [JsonSerializable(typeof(RuntimeCallFunctionOnRequest))]
 [JsonSerializable(typeof(RuntimeCallFunctionOnRequestArgument))]
+[JsonSerializable(typeof(RuntimeCallFunctionOnRequestArgumentValue))]
 [JsonSerializable(typeof(RuntimeCallFunctionOnResponse))]
 [JsonSerializable(typeof(RuntimeEvaluateRequest))]
 [JsonSerializable(typeof(RuntimeExceptionThrownResponse))]
@@ -201,7 +207,41 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetInfo))]
 [JsonSerializable(typeof(WaitForFunctionPollingOption))]
 [JsonSerializable(typeof(WaitForOptions))]
-[JsonSerializable(typeof(object))]
+[JsonSerializable(typeof(GeolocationOption))]
+[JsonSerializable(typeof(JsonElement))]
+[JsonSerializable(typeof(string))]
+[JsonSerializable(typeof(List<object>))]
+
+// Primitive list
+[JsonSerializable(typeof(bool))]
+[JsonSerializable(typeof(byte))]
+[JsonSerializable(typeof(sbyte))]
+[JsonSerializable(typeof(short))]
+[JsonSerializable(typeof(ushort))]
+[JsonSerializable(typeof(int))]
+[JsonSerializable(typeof(uint))]
+[JsonSerializable(typeof(long))]
+[JsonSerializable(typeof(ulong))]
+[JsonSerializable(typeof(float))]
+[JsonSerializable(typeof(double))]
+[JsonSerializable(typeof(decimal))]
+[JsonSerializable(typeof(char))]
+[JsonSerializable(typeof(string))]
+[JsonSerializable(typeof(DateTime))]
+[JsonSerializable(typeof(DateTimeOffset))]
+[JsonSerializable(typeof(TimeSpan))]
+[JsonSerializable(typeof(JsonArray))]
+[JsonSerializable(typeof(JsonObject))]
+[JsonSerializable(typeof(JsonDocument))]
+#if NET7_0_OR_GREATER
+[JsonSerializable(typeof(DateOnly))]
+[JsonSerializable(typeof(TimeOnly))]
+#endif
+#if NET8_0_OR_GREATER
+[JsonSerializable(typeof(Half))]
+[JsonSerializable(typeof(Int128))]
+[JsonSerializable(typeof(UInt128))]
+#endif
 internal partial class SystemTextJsonSerializationContext : JsonSerializerContext
 {
 }
