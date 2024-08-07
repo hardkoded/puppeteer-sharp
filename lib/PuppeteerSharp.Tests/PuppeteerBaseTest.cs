@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Tests
         [SetUp]
         public void SetUp()
         {
-            Puppeteer.ExtraJsonSerializerContext = TestClassesJsonSerializationContext.Default;
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
             var dirInfo = new DirectoryInfo(BaseDirectory);
 

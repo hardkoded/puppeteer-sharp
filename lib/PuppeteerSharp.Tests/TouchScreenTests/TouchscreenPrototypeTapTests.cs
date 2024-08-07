@@ -21,7 +21,6 @@
 //  * SOFTWARE.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -38,13 +37,14 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
         await Page.TapAsync("button");
 
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
-        var expected = JsonSerializer.Serialize(new[]
+        Assert.AreEqual(
+            JsonSerializer.Serialize(new[]
             {
                 new TouchEvent()
                 {
                     Type = "pointerdown",
                     X = 5,
-                    Y = 5,
+                    Y= 5,
                     Width = 1,
                     Height = 1,
                     AltitudeAngle = Convert.ToDecimal(Math.PI / 2),
@@ -57,7 +57,7 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
                 },
                 new TouchEvent()
                 {
-                    Type = "touchstart",
+                    Type ="touchstart",
                     ChangedTouches = new[]
                     {
                         new TouchEvent.Detail()
@@ -98,7 +98,7 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
                 },
                 new TouchEvent()
                 {
-                    Type = "touchend",
+                    Type ="touchend",
                     ChangedTouches = new[]
                     {
                         new TouchEvent.Detail()
@@ -126,11 +126,6 @@ public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
                     TiltY = 0,
                     Twist = 0,
                 },
-            },
-            TestClassesJsonSerializationContext.Default.TouchEventArray);
-
-        Assert.AreEqual(
-            expected,
-            JsonSerializer.Serialize(result, TestClassesJsonSerializationContext.Default.TouchEventArray));
+            }), JsonSerializer.Serialize(result));
     }
 }

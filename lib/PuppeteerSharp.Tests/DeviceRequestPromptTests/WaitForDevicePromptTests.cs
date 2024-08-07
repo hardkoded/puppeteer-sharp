@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -152,6 +151,6 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         }
 
         internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
-            => JsonSerializer.SerializeToElement(promptData, TestClassesJsonSerializationContext.Default.DeviceAccessDeviceRequestPromptedResponse);
+            => JsonSerializer.SerializeToElement(promptData, JsonHelper.DefaultJsonSerializerSettings);
     }
 }

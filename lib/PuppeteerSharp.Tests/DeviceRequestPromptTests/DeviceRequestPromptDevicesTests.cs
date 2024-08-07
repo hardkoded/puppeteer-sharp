@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -42,7 +41,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -69,7 +68,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -96,7 +95,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
     }
 
@@ -138,7 +137,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -158,7 +157,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
                     ResourceType = ResourceType.Document,
                     NetworkId = "11ACE9783588040D644B905E8B55285B",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -178,7 +177,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
                     ResourceType = ResourceType.Document,
                     NetworkId = "11ACE9783588040D644B905E8B55285B",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(2, requests.Count);
@@ -222,7 +221,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Script,
                     FrameId = "60E6C35E7E519F28E646056820095498",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -248,7 +247,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -265,7 +264,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -273,7 +272,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse { RequestId = "1360.2", }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse { RequestId = "1360.2", }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(1, requests.Count);
@@ -321,7 +320,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -352,7 +351,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -360,7 +359,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse() { RequestId = "LOADERID", }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse() { RequestId = "LOADERID", }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(1, pendingRequests.Count);
@@ -381,7 +380,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(1, pendingRequests.Count);
@@ -425,7 +424,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "1",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -442,7 +441,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -468,7 +467,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(1, responses.Count);
@@ -512,7 +511,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "F9C89A517341F1EFFE63310141630189",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -538,7 +537,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -550,7 +549,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                    }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -567,7 +566,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(1, requests.Count);
@@ -613,7 +612,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -630,7 +629,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -661,7 +660,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -673,7 +672,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                    }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -701,7 +700,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -718,7 +717,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.Redirect,
                     HeadersText = "HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -752,7 +751,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         StatusText = "Found",
                     },
                     Type = ResourceType.Document,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -783,7 +782,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -800,7 +799,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.Redirect,
                     HeadersText = "HTTP/1.1 302 Found",
-                }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -812,7 +811,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    }, TestClassesJsonSerializationContext.Default.RequestWillBeSentPayload)
+                    }, JsonHelper.DefaultJsonSerializerSettings)
             });
 
         Assert.AreEqual(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }, responses.Select(response => response.Status));

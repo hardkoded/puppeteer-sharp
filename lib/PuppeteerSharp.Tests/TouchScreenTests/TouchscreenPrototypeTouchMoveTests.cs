@@ -22,7 +22,6 @@
 //  * SOFTWARE.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -282,8 +281,6 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
                         },
                     },
                 },
-            },
-                TestClassesJsonSerializationContext.Default.TouchEventArray),
-            JsonSerializer.Serialize(result, TestClassesJsonSerializationContext.Default.TouchEventArray));
+            }), JsonSerializer.Serialize(result));
     }
 }

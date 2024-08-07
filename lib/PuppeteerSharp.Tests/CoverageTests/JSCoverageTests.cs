@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -168,8 +167,10 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             var coverageAsJsonString = JsonSerializer.Serialize(
-                coverage,
-                TestClassesJsonSerializationContext.Default.JSCoverageEntryArray);
+                coverage, new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                });
             Assert.AreEqual(
                 TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @"\d{4}\/", "<PORT>/"));
