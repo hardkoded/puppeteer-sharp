@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.Json;
 
 namespace PuppeteerSharp.Tests.EvaluationTests
 {
@@ -156,9 +158,9 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return complex objects")]
         public async Task ShouldReturnComplexObjects()
         {
-            dynamic obj = new
+            var obj = new TestSerializableClass
             {
-                foo = "bar!"
+                Foo = "bar!"
             };
             var result = await Page.EvaluateFunctionAsync<JsonElement>("a => a", obj);
             Assert.AreEqual("bar!", result.GetProperty("foo").GetString());

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
@@ -55,6 +57,14 @@ namespace PuppeteerSharp
         /// </code>
         /// </example>
         public static IReadOnlyDictionary<string, NetworkConditions> NetworkConditions => PredefinedNetworkConditions.ToReadOnly();
+
+        /// <summary>
+        /// Extra <see cref="IJsonTypeInfoResolver"/> used to serialize and deserialize objects on AOT environments.
+        /// </summary>
+        /// <remarks>
+        /// This property must be set before using any PuppeteerSharp API.
+        /// </remarks>
+        public static IJsonTypeInfoResolver ExtraJsonSerializerContext { get; set; }
 
         /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running.

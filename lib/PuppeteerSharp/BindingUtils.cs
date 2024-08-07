@@ -74,7 +74,7 @@ namespace PuppeteerSharp
             {
                 return arg == null
                     ? "undefined"
-                    : JsonSerializer.Serialize(arg, JsonHelper.DefaultJsonSerializerSettings);
+                    : JsonSerializer.Serialize(arg, JsonHelper.DefaultJsonSerializerSettings.Value);
             }
         }
 

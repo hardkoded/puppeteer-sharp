@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -96,7 +97,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with complicated usecases")]
-        public async Task ShouldWorkWithComplicatedUsecases()
+        public async Task ShouldWorkWithComplicatedUseCases()
         {
             const string involved = @"[
               {
@@ -121,13 +122,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            var coverageAsJsonString = JsonSerializer.Serialize(
-                coverage,
-                new JsonSerializerOptions()
-                {
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    WriteIndented = true
-                });
+            var coverageAsJsonString = JsonSerializer.Serialize(coverage, TestClassesJsonSerializationContext.Default.CoverageEntryArray);
             Assert.AreEqual(
                 TestUtils.CompressText(involved),
                 Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4}\/", ":<PORT>/"));

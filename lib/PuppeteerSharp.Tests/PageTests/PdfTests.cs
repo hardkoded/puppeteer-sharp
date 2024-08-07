@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -139,8 +140,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
             };
 
-            var serialized = JsonSerializer.Serialize(pdfOptions);
-            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
+            var serialized = JsonSerializer.Serialize(pdfOptions, TestClassesJsonSerializationContext.Default.PdfOptions);
+            var newPdfOptions = JsonSerializer.Deserialize(serialized, TestClassesJsonSerializationContext.Default.PdfOptions);
             Assert.AreEqual(pdfOptions, newPdfOptions);
         }
     }

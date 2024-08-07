@@ -72,7 +72,7 @@ namespace PuppeteerSharp
         public async Task<T> JsonAsync<T>(JsonSerializerOptions options = default)
         {
             var content = await TextAsync().ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(content, options ?? JsonHelper.DefaultJsonSerializerSettings);
+            return JsonSerializer.Deserialize<T>(content, options ?? JsonHelper.DefaultJsonSerializerSettings.Value);
         }
     }
 }

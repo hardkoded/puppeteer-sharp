@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -107,12 +108,13 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await otherContext.CloseAsync();
         }
 
-        public async Task AllEnumsdAreValid()
+        [Test()]
+        public async Task AllEnumsAreValid()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Context.OverridePermissionsAsync(
                 TestConstants.EmptyPage,
-                Enum.GetValues(typeof(OverridePermission)).Cast<OverridePermission>().ToArray());
+                Enum.GetValues<OverridePermission>().ToArray());
             Assert.AreEqual("granted", await GetPermissionAsync(Page, "geolocation"));
             await Context.ClearPermissionOverridesAsync();
             Assert.AreEqual("prompt", await GetPermissionAsync(Page, "geolocation"));

@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Cdp
         internal string GetMessage(int id, string method, object args, string sessionId = null)
             => JsonSerializer.Serialize(
                 new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
-                JsonHelper.DefaultJsonSerializerSettings);
+                JsonHelper.DefaultJsonSerializerSettings.Value);
 
         internal bool IsAutoAttached(string targetId)
             => !_manuallyAttached.Contains(targetId);
@@ -272,7 +272,7 @@ namespace PuppeteerSharp.Cdp
 
                 try
                 {
-                    obj = JsonSerializer.Deserialize<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings);
+                    obj = JsonSerializer.Deserialize<ConnectionResponse>(response, JsonHelper.DefaultJsonSerializerSettings.Value);
                 }
                 catch (JsonException exc)
                 {
