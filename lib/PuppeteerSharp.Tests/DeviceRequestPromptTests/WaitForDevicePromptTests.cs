@@ -151,6 +151,6 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         }
 
         internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
-            => JsonSerializer.SerializeToElement(promptData, JsonHelper.DefaultJsonSerializerSettings);
+            => JsonSerializer.SerializeToElement(promptData, JsonHelper.DefaultJsonSerializerSettings.Value);
     }
 }
