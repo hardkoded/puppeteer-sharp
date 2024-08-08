@@ -27,7 +27,7 @@ namespace PuppeteerSharp.States
 
         internal State Initial { get; set; }
 
-        internal State Starting { get; set; }
+        internal ProcessStartingState Starting { get; set; }
 
         internal StartedState Started { get; set; }
 
@@ -38,6 +38,12 @@ namespace PuppeteerSharp.States
         internal ExitedState Exited { get; set; }
 
         internal State Disposed { get; set; }
+
+        internal string LineOutputExpression
+        {
+            get => Starting.LineOutputExpression;
+            set => Starting.LineOutputExpression = value;
+        }
 
         public bool TryEnter(LauncherBase p, State fromState, State toState)
         {

@@ -8,8 +8,11 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
+    // We won't change the name just because WebDriver has a namespace with the same name.
+#pragma warning disable CA1724
     /// <inheritdoc/>
     public abstract class Browser : IBrowser
+#pragma warning disable CA1724
     {
         /// <inheritdoc/>
         public event EventHandler Closed;
@@ -65,6 +68,8 @@ namespace PuppeteerSharp
         internal LauncherBase Launcher { get; init; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; init; }
+
+        internal abstract ProtocolType Protocol { get; }
 
         /// <inheritdoc/>
         public abstract Task<IPage> NewPageAsync();

@@ -1,13 +1,16 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PuppeteerSharp.Bidi;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using WebDriverBiDi;
 
 namespace PuppeteerSharp
 {
@@ -41,6 +44,7 @@ namespace PuppeteerSharp
         /// for a description of the differences between Chromium and Chrome.
         /// <a href="https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md">This article</a> describes some differences for Linux users.
         /// </remarks>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned object.")]
         public async Task<IBrowser> LaunchAsync(LaunchOptions options)
         {
             if (options == null)
@@ -68,33 +72,56 @@ namespace PuppeteerSharp
 
             try
             {
+                if (options.Protocol == ProtocolType.WebdriverBiDi)
+                {
+                    Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
+                }
+
                 await Process.StartAsync().ConfigureAwait(false);
 
                 Connection connection = null;
+                IBrowser browser = null;
+
                 try
                 {
-                    connection = await Connection
-                        .Create(Process.EndPoint, options, _loggerFactory)
-                        .ConfigureAwait(false);
+                    if (options.Protocol == ProtocolType.WebdriverBiDi)
+                    {
+                        Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
+                        var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+                        await driver.StartAsync(Process.EndPoint).ConfigureAwait(false);
 
-                    var browser = await CdpBrowser
-                        .CreateAsync(
-                            options.Browser,
-                            connection,
-                            [],
-                            options.IgnoreHTTPSErrors,
-                            options.DefaultViewport,
-                            Process,
-                            options.TargetFilter,
-                            options.IsPageTarget)
-                        .ConfigureAwait(false);
+                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        connection = await Connection
+                            .Create(Process.EndPoint, options, _loggerFactory)
+                            .ConfigureAwait(false);
 
-                    await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
+                        browser = await CdpBrowser
+                            .CreateAsync(
+                                options.Browser,
+                                connection,
+                                [],
+                                options.IgnoreHTTPSErrors,
+                                options.DefaultViewport,
+                                Process,
+                                options.TargetFilter,
+                                options.IsPageTarget)
+                            .ConfigureAwait(false);
+                    }
+
+                    if (options.WaitForInitialPage)
+                    {
+                        await browser.WaitForTargetAsync(t => t.Type == TargetType.Page).ConfigureAwait(false);
+                    }
+
                     return browser;
                 }
                 catch (Exception ex)
                 {
                     connection?.Dispose();
+                    browser?.Dispose();
                     throw new ProcessException("Failed to create connection", ex);
                 }
             }

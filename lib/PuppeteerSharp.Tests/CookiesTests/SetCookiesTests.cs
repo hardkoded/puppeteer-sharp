@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
 {
     public class SetCookiesTests : PuppeteerPageBaseTest
     {
-        public SetCookiesTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should work")]
         public async Task ShouldWork()
         {

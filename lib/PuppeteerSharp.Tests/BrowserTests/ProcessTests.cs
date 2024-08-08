@@ -6,8 +6,6 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class ProcessTests : PuppeteerBrowserBaseTest
     {
-        public ProcessTests() : base() { }
-
         [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.process", "should return child_process instance")]
         public void ShouldReturnProcessInstance()
         {
@@ -20,7 +18,12 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
             var browserWSEndpoint = Browser.WebSocketEndpoint;
             var remoteBrowser = await Puppeteer.ConnectAsync(
-                new ConnectOptions { BrowserWSEndpoint = browserWSEndpoint }, TestConstants.LoggerFactory);
+                new ConnectOptions
+                {
+                    BrowserWSEndpoint = browserWSEndpoint,
+                    Protocol = ((Browser)Browser).Protocol,
+                },
+                TestConstants.LoggerFactory);
             Assert.Null(remoteBrowser.Process);
             remoteBrowser.Disconnect();
         }
