@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var log = await consoleTcs.Task;
             Assert.AreEqual("1 2 3 JSHandle@object", log.Text);
             Assert.AreEqual(4, log.Args.Count);
-            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<object>();
+            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<string>();
             Assert.AreEqual("null", json);
         }
 

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
@@ -139,8 +139,8 @@ namespace PuppeteerSharp.Tests.PageTests
                 FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
             };
 
-            var serialized = JsonConvert.SerializeObject(pdfOptions);
-            var newPdfOptions = JsonConvert.DeserializeObject<PdfOptions>(serialized);
+            var serialized = JsonSerializer.Serialize(pdfOptions);
+            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
             Assert.AreEqual(pdfOptions, newPdfOptions);
         }
     }

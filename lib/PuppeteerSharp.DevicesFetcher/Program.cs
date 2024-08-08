@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 namespace PuppeteerSharp.DevicesFetcher
 {
     static class Program
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.DevicesFetcher
             Device[] devices;
             try
             {
-                devices = JsonConvert.DeserializeObject<Device[]>(text);
+                devices = JsonSerializer.Deserialize<Device[]>(text);
             }
             catch (Exception ex)
             {

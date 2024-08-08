@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 

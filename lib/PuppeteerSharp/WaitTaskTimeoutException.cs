@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -50,15 +49,6 @@ namespace PuppeteerSharp
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
         public WaitTaskTimeoutException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WaitTaskTimeoutException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected WaitTaskTimeoutException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 

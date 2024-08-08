@@ -1,7 +1,7 @@
-using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.BrowserData
 {
@@ -11,7 +11,7 @@ namespace PuppeteerSharp.BrowserData
         {
             using var client = new HttpClient();
             var response = await client.GetStringAsync(url).ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<T>(response);
+            return JsonSerializer.Deserialize<T>(response, JsonHelper.DefaultJsonSerializerSettings.Value);
         }
 
         internal static async Task<string> GetTextAsync(string url)

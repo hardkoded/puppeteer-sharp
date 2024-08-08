@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.EmulationTests

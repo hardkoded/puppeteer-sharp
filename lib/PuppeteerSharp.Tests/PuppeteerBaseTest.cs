@@ -1,6 +1,6 @@
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.TestServer;
 
@@ -29,9 +29,9 @@ namespace PuppeteerSharp.Tests
             HttpsServer.Reset();
         }
 
-        protected static Task<JToken> WaitEvent(ICDPSession emitter, string eventName)
+        protected static Task<JsonElement> WaitEvent(ICDPSession emitter, string eventName)
         {
-            var completion = new TaskCompletionSource<JToken>();
+            var completion = new TaskCompletionSource<JsonElement>();
             void handler(object sender, MessageEventArgs e)
             {
                 if (e.MessageID != eventName)

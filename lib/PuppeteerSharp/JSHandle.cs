@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp.Messaging;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
-    [JsonConverter(typeof(JSHandleMethodConverter))]
     public abstract class JSHandle : IJSHandle
     {
         internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
@@ -85,10 +82,10 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
         {
             var adoptedThis = await Realm.AdoptHandleAsync(this).ConfigureAwait(false);
-            return await Realm.EvaluateFunctionAsync<JToken>(script, [adoptedThis, .. args])
+            return await Realm.EvaluateFunctionAsync<JsonElement?>(script, [adoptedThis, .. args])
                 .ConfigureAwait(false);
         }
 

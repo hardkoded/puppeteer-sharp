@@ -69,14 +69,14 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true));
+                        OnAttachedToTarget(sender, e.MessageData.ToObject<TargetAttachedToTargetResponse>());
                         return;
                     case "Target.targetCreated":
-                        OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>(true));
+                        OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>());
                         return;
 
                     case "Target.targetDestroyed":
-                        OnTargetDestroyed(e.MessageData.ToObject<TargetDestroyedResponse>(true));
+                        OnTargetDestroyed(e.MessageData.ToObject<TargetDestroyedResponse>());
                         return;
                 }
             }

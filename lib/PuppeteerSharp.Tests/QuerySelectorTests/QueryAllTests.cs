@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
@@ -78,12 +76,12 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             await Page.SetContentAsync("<section>2</section><section>2</section><section>1</section><div>3</div>");
             var divHandle = await Page.QuerySelectorAsync("div");
             var text = await Page.QuerySelectorAllHandleAsync("allArray/section")
-                .EvaluateFunctionAsync<string>(@"(sections, div) =>
+                .EvaluateFunctionAsync<int>(@"(sections, div) =>
                     sections.reduce(
                         (acc, section) => acc + Number(section.textContent),
                         0
                     ) + Number(div.textContent)", divHandle);
-            Assert.AreEqual("8", text);
+            Assert.AreEqual(8, text);
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "QueryAll", "should handle many elements")]

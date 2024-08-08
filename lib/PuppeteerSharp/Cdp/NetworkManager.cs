@@ -167,28 +167,28 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPausedAsync(client, e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
+                        await OnRequestPausedAsync(client, e.MessageData.ToObject<FetchRequestPausedResponse>()).ConfigureAwait(false);
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
+                        await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>()).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
+                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>()).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
-                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
+                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
                         break;
                     case "Network.responseReceived":
-                        OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>(true));
+                        OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>());
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
+                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>());
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>(true));
+                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>());
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
+                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
                         break;
                 }
             }

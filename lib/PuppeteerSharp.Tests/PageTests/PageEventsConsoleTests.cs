@@ -23,15 +23,14 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
 
-            var obj = new Dictionary<string, object> { { "foo", "bar" } };
+            var obj = new Dictionary<string, string> { { "foo", "bar" } };
 
             Assert.AreEqual("hello 5 JSHandle@object", message.Text);
             Assert.AreEqual(ConsoleType.Log, message.Type);
 
-            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync());
-            Assert.AreEqual(5, await message.Args[1].JsonValueAsync<float>());
-            Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
-            Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
+            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync<string>());
+            Assert.AreEqual(5, await message.Args[1].JsonValueAsync<int>());
+            Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, string>>());
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        public SetUserAgentTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
@@ -47,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
-        public async Task ShouldWorkWithAdditionalUserAgentMetdata()
+        public async Task ShouldWorkWithAdditionalUserAgentMetadata()
         {
             await Page.SetUserAgentAsync(
                 "MockBrowser",
@@ -71,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
               }")
             );
 
-            var uaData = await Page.EvaluateFunctionAsync<Dictionary<string, object>>(@"() => {
+            var uaData = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
                 return navigator.userAgentData.getHighEntropyValues([
                   'architecture',
                   'model',
@@ -80,10 +76,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 ]);
             }");
 
-            Assert.AreEqual("Mock1", uaData["architecture"]);
-            Assert.AreEqual("Mockbook", uaData["model"]);
-            Assert.AreEqual("MockOS", uaData["platform"]);
-            Assert.AreEqual("3.1", uaData["platformVersion"]);
+            Assert.AreEqual("Mock1", uaData.GetProperty("architecture").GetString());
+            Assert.AreEqual("Mockbook", uaData.GetProperty("model").GetString());
+            Assert.AreEqual("MockOS", uaData.GetProperty("platform").GetString());
+            Assert.AreEqual("3.1", uaData.GetProperty("platformVersion").GetString());
             Assert.AreEqual("MockBrowser", await requestTask);
         }
     }

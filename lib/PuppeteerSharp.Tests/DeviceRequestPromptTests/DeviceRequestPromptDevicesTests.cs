@@ -33,7 +33,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         Assert.AreEqual(1, prompt.Devices.Count);
@@ -59,7 +59,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         Assert.AreEqual(2, prompt.Devices.Count);
@@ -80,7 +80,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         Assert.IsEmpty(prompt.Devices);
@@ -104,7 +104,7 @@ public class DeviceRequestPromptDevicesTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         Assert.IsEmpty(prompt.Devices);

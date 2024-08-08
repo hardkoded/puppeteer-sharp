@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var elementHandle = await watchdog;
             var tagName = await (
               await elementHandle.GetPropertyAsync("tagName")
-            ).JsonValueAsync();
+            ).JsonValueAsync<string>();
             Assert.AreEqual("H1", tagName);
         }
 

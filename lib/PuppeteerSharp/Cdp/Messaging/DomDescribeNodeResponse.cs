@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace PuppeteerSharp.Cdp.Messaging
 {
     internal class DomDescribeNodeResponse
@@ -8,7 +10,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         {
             public string FrameId { get; set; }
 
-            public object BackendNodeId { get; set; }
+            public JsonElement BackendNodeId { get; set; }
         }
     }
 }

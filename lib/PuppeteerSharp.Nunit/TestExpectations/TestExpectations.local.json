@@ -10,42 +10,42 @@
     "comment": "Remove when https://github.com/hardkoded/puppeteer-sharp/issues/2450 is implemented",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["FIREFOX"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   },
   {
     "comment": "Remove when https://github.com/hardkoded/puppeteer-sharp/issues/2450 is implemented",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["FIREFOX"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   },
   {
     "comment": "TODO It's failing on CI/CD",
     "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["FIREFOX"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["FIREFOX"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["FIREFOX"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["CHROME"],
+    "parameters": ["chrome"],
     "expectations": ["FAIL"]
   },
   {

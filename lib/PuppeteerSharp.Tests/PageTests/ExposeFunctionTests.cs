@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Nunit;
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldThrowExceptionInPageContext()
         {
             await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
-            var result = await Page.EvaluateFunctionAsync<JToken>(@" async () =>{
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@" async () =>{
                 try
                 {
                     await woof();
@@ -31,8 +31,8 @@ namespace PuppeteerSharp.Tests.PageTests
                     return { message: e.message, stack: e.stack};
                 }
             }");
-            Assert.AreEqual("WOOF WOOF", result.SelectToken("message").ToObject<string>());
-            StringAssert.Contains("ExposeFunctionTests", result.SelectToken("stack").ToObject<string>());
+            Assert.AreEqual("WOOF WOOF", result.GetProperty("message").GetString());
+            StringAssert.Contains("ExposeFunctionTests", result.GetProperty("stack").GetString());
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
@@ -119,10 +119,12 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithComplexObjects()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            await Page.ExposeFunctionAsync("complexObject", (dynamic a, dynamic b) => Task.FromResult(new { X = a.x + b.x }));
+            await Page.ExposeFunctionAsync(
+                "complexObject",
+                (JsonElement a, JsonElement b) => Task.FromResult(new { X = a.GetProperty("x").GetInt32() + b.GetProperty("x").GetInt32() }));
 
-            var result = await Page.EvaluateFunctionAsync<JToken>("async () => complexObject({x: 5}, {x: 2})");
-            Assert.AreEqual(7, result.SelectToken("x").ToObject<int>());
+            var result = await Page.EvaluateFunctionAsync<JsonElement>("async () => complexObject({x: 5}, {x: 2})");
+            Assert.AreEqual(7, result.GetProperty("x").GetInt32());
         }
 
         [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should await returned task")]

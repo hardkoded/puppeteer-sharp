@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -189,7 +190,7 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal SerializedAXNode Serialize()
         {
-            var properties = new Dictionary<string, JToken>();
+            var properties = new Dictionary<string, JsonElement?>();
 
             if (Payload.Properties != null)
             {
@@ -217,33 +218,33 @@ namespace PuppeteerSharp.PageAccessibility
             var node = new SerializedAXNode
             {
                 Role = _role,
-                Name = properties.GetValueOrDefault("name")?.ToObject<string>(),
-                Value = properties.GetValueOrDefault("value")?.ToObject<string>(),
-                Description = properties.GetValueOrDefault("description")?.ToObject<string>(),
-                KeyShortcuts = properties.GetValueOrDefault("keyshortcuts")?.ToObject<string>(),
-                RoleDescription = properties.GetValueOrDefault("roledescription")?.ToObject<string>(),
-                ValueText = properties.GetValueOrDefault("valuetext")?.ToObject<string>(),
-                Disabled = properties.GetValueOrDefault("disabled")?.ToObject<bool>() ?? false,
-                Expanded = properties.GetValueOrDefault("expanded")?.ToObject<bool>() ?? false,
+                Name = properties.GetValue("name")?.ToObject<string>(),
+                Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
+                Description = properties.GetValue("description")?.ToObject<string>(),
+                KeyShortcuts = properties.GetValue("keyshortcuts")?.ToObject<string>(),
+                RoleDescription = properties.GetValue("roledescription")?.ToObject<string>(),
+                ValueText = properties.GetValue("valuetext")?.ToObject<string>(),
+                Disabled = properties.GetValue("disabled")?.ToObject<bool>() ?? false,
+                Expanded = properties.GetValue("expanded")?.ToObject<bool>() ?? false,
 
                 // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
                 // not whether focus is specifically on the root node.
-                Focused = properties.GetValueOrDefault("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
-                Modal = properties.GetValueOrDefault("modal")?.ToObject<bool>() ?? false,
-                Multiline = properties.GetValueOrDefault("multiline")?.ToObject<bool>() ?? false,
-                Multiselectable = properties.GetValueOrDefault("multiselectable")?.ToObject<bool>() ?? false,
-                Readonly = properties.GetValueOrDefault("readonly")?.ToObject<bool>() ?? false,
-                Required = properties.GetValueOrDefault("required")?.ToObject<bool>() ?? false,
-                Selected = properties.GetValueOrDefault("selected")?.ToObject<bool>() ?? false,
-                Checked = GetCheckedState(properties.GetValueOrDefault("checked")?.ToObject<string>()),
-                Pressed = GetCheckedState(properties.GetValueOrDefault("pressed")?.ToObject<string>()),
-                Level = properties.GetValueOrDefault("level")?.ToObject<int>() ?? 0,
-                ValueMax = properties.GetValueOrDefault("valuemax")?.ToObject<int>() ?? 0,
-                ValueMin = properties.GetValueOrDefault("valuemin")?.ToObject<int>() ?? 0,
-                AutoComplete = GetIfNotFalse(properties.GetValueOrDefault("autocomplete")?.ToObject<string>()),
-                HasPopup = GetIfNotFalse(properties.GetValueOrDefault("haspopup")?.ToObject<string>()),
-                Invalid = GetIfNotFalse(properties.GetValueOrDefault("invalid")?.ToObject<string>()),
-                Orientation = GetIfNotFalse(properties.GetValueOrDefault("orientation")?.ToObject<string>()),
+                Focused = properties.GetValue("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
+                Modal = properties.GetValue("modal")?.ToObject<bool>() ?? false,
+                Multiline = properties.GetValue("multiline")?.ToObject<bool>() ?? false,
+                Multiselectable = properties.GetValue("multiselectable")?.ToObject<bool>() ?? false,
+                Readonly = properties.GetValue("readonly")?.ToObject<bool>() ?? false,
+                Required = properties.GetValue("required")?.ToObject<bool>() ?? false,
+                Selected = properties.GetValue("selected")?.ToObject<bool>() ?? false,
+                Checked = GetCheckedState(properties.GetValue("checked")?.ToObject<string>()),
+                Pressed = GetCheckedState(properties.GetValue("pressed")?.ToObject<string>()),
+                Level = properties.GetValue("level")?.ToObject<int>() ?? 0,
+                ValueMax = properties.GetValue("valuemax")?.ToObject<int>() ?? 0,
+                ValueMin = properties.GetValue("valuemin")?.ToObject<int>() ?? 0,
+                AutoComplete = GetIfNotFalse(properties.GetValue("autocomplete")?.ToObject<string>()),
+                HasPopup = GetIfNotFalse(properties.GetValue("haspopup")?.ToObject<string>()),
+                Invalid = GetIfNotFalse(properties.GetValue("invalid")?.ToObject<string>()),
+                Orientation = GetIfNotFalse(properties.GetValue("orientation")?.ToObject<string>()),
             };
 
             return node;

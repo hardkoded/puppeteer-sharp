@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
 
 namespace PuppeteerSharp.QueryHandlers

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests

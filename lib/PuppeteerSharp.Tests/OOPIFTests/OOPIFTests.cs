@@ -425,7 +425,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 {
                     if (e.MessageID.Equals("Network.requestWillBeSent", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        networkEvents.Add(e.MessageData.SelectToken("request").SelectToken("url").ToObject<string>());
+                        networkEvents.Add(e.MessageData.GetProperty("request").GetProperty("url").GetString());
                     }
                 };
             };

@@ -20,15 +20,11 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 namespace PuppeteerSharp;
 
 /// <summary>
 /// Represents the cookie's 'Priority' status.
 /// </summary>
-[JsonConverter(typeof(StringEnumConverter))]
 public enum CookiePriority
 {
     /// <summary>

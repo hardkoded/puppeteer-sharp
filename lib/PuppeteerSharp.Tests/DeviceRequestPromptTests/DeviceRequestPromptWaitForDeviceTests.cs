@@ -35,7 +35,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
@@ -59,7 +59,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         var device = await promptTask;
@@ -120,7 +120,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         var device = await promptTask;
@@ -204,7 +204,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         promptData = new DeviceAccessDeviceRequestPromptedResponse()
@@ -222,7 +222,7 @@ public class DeviceRequestPromptWaitForDeviceTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = WaitForDevicePromptTests.ToJToken(promptData),
+            Params = WaitForDevicePromptTests.ToJsonElement(promptData),
         });
 
         await deviceTask;

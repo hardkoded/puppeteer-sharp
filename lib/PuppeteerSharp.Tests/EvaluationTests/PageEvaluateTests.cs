@@ -1,13 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class EvaluateTests : PuppeteerPageBaseTest
     {
@@ -155,14 +154,14 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return complex objects")]
-        public async Task SouldReturnComplexObjects()
+        public async Task ShouldReturnComplexObjects()
         {
             dynamic obj = new
             {
                 foo = "bar!"
             };
-            var result = await Page.EvaluateFunctionAsync("a => a", obj);
-            Assert.AreEqual("bar!", result.foo.ToString());
+            var result = await Page.EvaluateFunctionAsync<JsonElement>("a => a", obj);
+            Assert.AreEqual("bar!", result.GetProperty("foo").GetString());
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return BigInt")]
@@ -312,23 +311,6 @@ namespace PuppeteerSharp.Tests.PageTests
             StringAssert.Contains("Error in promise", exception.Message);
         }
 
-        public async Task ShouldWorkWithDifferentSerializerSettings()
-        {
-            var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");
-            Assert.AreEqual("bar", result.Foo);
-
-            result = (await Page.EvaluateFunctionAsync<JToken>("() => { return { Foo: 'bar' }}"))
-                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
-            Assert.AreEqual("bar", result.Foo);
-
-            result = await Page.EvaluateExpressionAsync<ComplexObjectTestClass>("var obj = { foo: 'bar' }; obj;");
-            Assert.AreEqual("bar", result.Foo);
-
-            result = (await Page.EvaluateExpressionAsync<JToken>("var obj = { Foo: 'bar' }; obj;"))
-                .ToObject<ComplexObjectTestClass>(new JsonSerializerSettings());
-            Assert.AreEqual("bar", result.Foo);
-        }
-
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should properly serialize null fields")]
         public async Task ShouldProperlySerializeNullFields()
         {
@@ -354,11 +336,10 @@ namespace PuppeteerSharp.Tests.PageTests
 
             var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
             Assert.NotNull(objectPopulated);
-            Assert.AreEqual(1, objectPopulated["a"]);
+            Assert.AreEqual(1, objectPopulated.Value.GetProperty("a").GetInt32());
 
             var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
-            Assert.IsInstanceOf<JArray>(arrayPopulated);
-            Assert.AreEqual(1, ((JArray)arrayPopulated)[0]);
+            Assert.AreEqual(1, arrayPopulated.Value.EnumerateArray().ElementAt(0));
 
             Assert.AreEqual("1", await Page.EvaluateExpressionAsync("'1'"));
             Assert.AreEqual(1, await Page.EvaluateExpressionAsync("1"));
