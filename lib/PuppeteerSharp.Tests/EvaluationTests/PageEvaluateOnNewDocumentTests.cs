@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(await Page.EvaluateExpressionAsync("window.e"), Is.Null);
         }
 
-        [Test, Ignore("previously not marked as a test")]
+        [Test, Ignore("Inconsistent results on Firefox")]
         public async Task ShouldWorkWithExpressions()
         {
             await Page.EvaluateExpressionOnNewDocumentAsync("window.injected = 123;");

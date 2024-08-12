@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await otherContext.CloseAsync();
         }
 
-        [Test, Ignore("previously not marked as a test")]
+        [Test, Ignore("Fails on Firefox")]
         public async Task AllEnumsdAreValid()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
