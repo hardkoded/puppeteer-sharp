@@ -25,12 +25,12 @@ public class WithNetworkRequestsTests : PuppeteerPageBaseTest
             link.ClickAsync()
         );
 
-        Assert.AreSame(mainFrame, Page.MainFrame);
-        Assert.AreEqual("target", await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"));
-        Assert.AreSame(mainFrame, Page.MainFrame);
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
 
-        Assert.True(urls.Exists(url => url.Contains("prerender/target.html")));
-        Assert.True(urls.Exists(url => url.Contains("prerender/index.html")));
-        Assert.True(urls.Exists(url => url.Contains("prerender/target.html?fromPrerendered")));
+        Assert.That(urls.Exists(url => url.Contains("prerender/target.html")), Is.True);
+        Assert.That(urls.Exists(url => url.Contains("prerender/index.html")), Is.True);
+        Assert.That(urls.Exists(url => url.Contains("prerender/target.html?fromPrerendered")), Is.True);
     }
 }

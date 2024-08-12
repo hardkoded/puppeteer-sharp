@@ -28,9 +28,10 @@ namespace PuppeteerSharp.Tests.FixturesTests
             process.Start();
             process.BeginErrorReadLine();
             process.WaitForExit();
-            Assert.True(success);
+            Assert.That(success, Is.True);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldCloseTheBrowserWhenTheConnectedProcessCloses()
         {
             var browserClosedTaskWrapper = new TaskCompletionSource<bool>();
@@ -54,7 +55,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
             KillProcess(chromiumLauncher.Process.Id);
 
             await browserClosedTaskWrapper.Task;
-            Assert.True(browser.IsClosed);
+            Assert.That(browser.IsClosed, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("fixtures.spec", "Fixtures", "should close the browser when the node process closes")]
@@ -77,7 +78,7 @@ namespace PuppeteerSharp.Tests.FixturesTests
             KillProcess(browser.Process.Id);
 
             await browserClosedTaskWrapper.Task;
-            Assert.True(browser.IsClosed);
+            Assert.That(browser.IsClosed, Is.True);
         }
 
         private void KillProcess(int pid)

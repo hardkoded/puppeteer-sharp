@@ -17,7 +17,7 @@
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
-		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="NUnit" Version="4.1.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />

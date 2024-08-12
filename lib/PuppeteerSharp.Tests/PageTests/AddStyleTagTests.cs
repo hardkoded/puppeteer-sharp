@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions()));
-            Assert.AreEqual("Provide options with a `Url`, `Path` or `Content` property", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Provide options with a `Url`, `Path` or `Content` property"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a url")]
@@ -25,9 +25,10 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Url = "/injectedstyle.css" });
-            Assert.NotNull(styleHandle);
-            Assert.AreEqual("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
-                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.That(styleHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<string>(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"),
+                Is.EqualTo("rgb(255, 0, 0)"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw an error if loading from url fail")]
@@ -36,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(()
                 => Page.AddStyleTagAsync(new AddTagOptions { Url = "/nonexistfile.js" }));
-            StringAssert.Contains("Could not load style", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Could not load style"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a path")]
@@ -44,9 +45,10 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Path = "Assets/injectedstyle.css" });
-            Assert.NotNull(styleHandle);
-            Assert.AreEqual("rgb(255, 0, 0)", await Page.EvaluateExpressionAsync<string>(
-                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.That(styleHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<string>(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"),
+                Is.EqualTo("rgb(255, 0, 0)"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should include sourcemap when path is provided")]
@@ -59,7 +61,7 @@ namespace PuppeteerSharp.Tests.PageTests
             });
             var styleHandle = await Page.QuerySelectorAsync("style");
             var styleContent = await Page.EvaluateFunctionAsync<string>("style => style.innerHTML", styleHandle);
-            StringAssert.Contains(Path.Combine("Assets", "injectedstyle.css"), styleContent);
+            Assert.That(styleContent, Does.Contain(Path.Combine("Assets", "injectedstyle.css")));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with content")]
@@ -67,9 +69,10 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var styleHandle = await Page.AddStyleTagAsync(new AddTagOptions { Content = "body { background-color: green; }" });
-            Assert.NotNull(styleHandle);
-            Assert.AreEqual("rgb(0, 128, 0)", await Page.EvaluateExpressionAsync<string>(
-                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"));
+            Assert.That(styleHandle, Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<string>(
+                "window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')"),
+                Is.EqualTo("rgb(0, 128, 0)"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with content to the CSP page")]
@@ -81,7 +84,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 {
                     Content = "body { background-color: green; }"
                 }));
-            Assert.NotNull(exception);
+            Assert.That(exception, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with URL to the CSP page")]
@@ -93,7 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 {
                     Url = TestConstants.CrossProcessUrl + "/injectedstyle.css"
                 }));
-            Assert.NotNull(exception);
+            Assert.That(exception, Is.Not.Null);
         }
     }
 }

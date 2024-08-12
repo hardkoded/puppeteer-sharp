@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var elementHandle = await Page.QuerySelectorAsync(".box:nth-of-type(13)");
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.AreEqual(new BoundingBox(100, 50, 50, 50), box);
+            Assert.That(box, Is.EqualTo(new BoundingBox(100, 50, 50, 50)));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should handle nested frames")]
@@ -37,11 +37,11 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.AreEqual(new BoundingBox(28, 182, 264, 18), box);
+                Assert.That(box, Is.EqualTo(new BoundingBox(28, 182, 264, 18)));
             }
             else
             {
-                Assert.AreEqual(new BoundingBox(28, 182, 254, 18), box);
+                Assert.That(box, Is.EqualTo(new BoundingBox(28, 182, 254, 18)));
             }
         }
 
@@ -50,7 +50,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            Assert.Null(await elementHandle.BoundingBoxAsync());
+            Assert.That(await elementHandle.BoundingBoxAsync(), Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should force a layout")]
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elementHandle = await Page.QuerySelectorAsync("div");
             await Page.EvaluateFunctionAsync("element => element.style.height = '200px'", elementHandle);
             var box = await elementHandle.BoundingBoxAsync();
-            Assert.AreEqual(new BoundingBox(8, 8, 100, 200), box);
+            Assert.That(box, Is.EqualTo(new BoundingBox(8, 8, 100, 200)));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boundingBox", "should work with SVG nodes")]
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 const rect = e.getBoundingClientRect();
                 return { x: rect.x, y: rect.y, width: rect.width, height: rect.height};
             }", element);
-            Assert.AreEqual(webBoundingBox, pptrBoundingBox);
+            Assert.That(pptrBoundingBox, Is.EqualTo(webBoundingBox));
         }
     }
 }

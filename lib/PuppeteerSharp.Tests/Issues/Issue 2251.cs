@@ -13,9 +13,9 @@ namespace PuppeteerSharp.Tests.Issues
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             // Test case
-            Assert.IsEmpty(await Page.QuerySelectorAllAsync("xpath///one-app-nav-bar-item-root/button[count(.//*[contains(@icon-name, 'close')]) > 0]"));
+            Assert.That(await Page.QuerySelectorAllAsync("xpath///one-app-nav-bar-item-root/button[count(.//*[contains(@icon-name, 'close')]) > 0]"), Is.Empty);
             // check that the Xpath really works
-            Assert.IsNotEmpty(await Page.QuerySelectorAllAsync("xpath///img"));
+            Assert.That(await Page.QuerySelectorAllAsync("xpath///img"), Is.Not.Empty);
         }
     }
 }

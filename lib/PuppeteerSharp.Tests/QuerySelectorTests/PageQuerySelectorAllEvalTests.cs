@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
             var divsCount = await Page.QuerySelectorAllHandleAsync("div").EvaluateFunctionAsync<int>("divs => divs.length");
-            Assert.AreEqual(3, divsCount);
+            Assert.That(divsCount, Is.EqualTo(3));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept extra arguments")]
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var divsCount = await Page
                 .QuerySelectorAllHandleAsync("div")
                 .EvaluateFunctionAsync<int>("(divs, two, three) => divs.length + two + three", 2, 3);
-            Assert.AreEqual(8, divsCount);
+            Assert.That(divsCount, Is.EqualTo(8));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept ElementHandles as arguments")]
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     (acc, section) => acc + Number(section.textContent),
                     0
                 ) + Number(div.textContent)", divHandle);
-            Assert.AreEqual(8, divsCount);
+            Assert.That(divsCount, Is.EqualTo(8));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$eval", "$$eval should handle many elements")]
@@ -58,15 +58,16 @@ namespace PuppeteerSharp.Tests.PageTests
                 .QuerySelectorAllHandleAsync("section")
                 .EvaluateFunctionAsync<int>(@"(sections, div) =>
                 sections.reduce((acc, section) => acc + Number(section.textContent), 0)");
-            Assert.AreEqual(500500, sum);
+            Assert.That(sum, Is.EqualTo(500500));
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithAwaitedElements()
         {
             await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
             var divs = await Page.QuerySelectorAllHandleAsync("div");
             var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length");
-            Assert.AreEqual(3, divsCount);
+            Assert.That(divsCount, Is.EqualTo(3));
         }
     }
 }

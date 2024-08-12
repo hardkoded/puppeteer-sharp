@@ -21,9 +21,9 @@ public class ViaFrameTests : PuppeteerPageBaseTest
             link.ClickAsync()
         );
 
-        Assert.AreSame(mainFrame, Page.MainFrame);
-        Assert.AreEqual("target", await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"));
-        Assert.AreSame(mainFrame, Page.MainFrame);
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 
     [Test, Retry(2), PuppeteerTest("prerender.spec", "Prerender via frame", "can navigate to a prerendered page via Puppeteer")]
@@ -36,8 +36,8 @@ public class ViaFrameTests : PuppeteerPageBaseTest
 
         var mainFrame = Page.MainFrame;
         await mainFrame.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
-        Assert.AreSame(mainFrame, Page.MainFrame);
-        Assert.AreEqual("target", await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"));
-        Assert.AreSame(mainFrame, Page.MainFrame);
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 }

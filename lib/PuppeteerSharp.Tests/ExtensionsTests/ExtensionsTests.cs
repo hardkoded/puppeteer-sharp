@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             await using (await browserWithExtension.NewPageAsync())
             {
                 var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
-                Assert.NotNull(backgroundPageTarget);
+                Assert.That(backgroundPageTarget, Is.Not.Null);
             }
         }
 
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
                 TestConstants.LoggerFactory);
             var serviceWorkTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             await using var page = await browserWithExtension.NewPageAsync();
-            Assert.NotNull(serviceWorkTarget);
+            Assert.That(serviceWorkTarget, Is.Not.Null);
 
         }
 
@@ -65,8 +65,8 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
                 TestConstants.LoggerFactory);
             var backgroundPageTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.BackgroundPage);
             await using var page = await backgroundPageTarget.PageAsync();
-            Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-            Assert.AreEqual(42, await page.EvaluateFunctionAsync<int>("() => window.MAGIC"));
+            Assert.That(await page.EvaluateFunctionAsync<int>("() => 2 * 3"), Is.EqualTo(6));
+            Assert.That(await page.EvaluateFunctionAsync<int>("() => window.MAGIC"), Is.EqualTo(42));
         }
     }
 }

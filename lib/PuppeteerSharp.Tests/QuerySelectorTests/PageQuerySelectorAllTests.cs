@@ -16,9 +16,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
             var elements = await Page.QuerySelectorAllAsync("div");
-            Assert.AreEqual(2, elements.Length);
+            Assert.That(elements, Has.Length.EqualTo(2));
             var tasks = elements.Select(element => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
-            Assert.AreEqual(new[] { "A", "B" }, await Task.WhenAll(tasks));
+            Assert.That(await Task.WhenAll(tasks), Is.EqualTo(new[] { "A", "B" }));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$$", "should return empty array if nothing is found")]
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var elements = await Page.QuerySelectorAllAsync("div");
-            Assert.IsEmpty(elements);
+            Assert.That(elements, Is.Empty);
         }
     }
 }
