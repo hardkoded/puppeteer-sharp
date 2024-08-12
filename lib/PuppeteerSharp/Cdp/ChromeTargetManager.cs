@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Cdp
 
                 // Only wait for pages and frames (except those from extensions)
                 // to auto-attach.
-                var isPageOrFrame = kv.Value.Type == TargetType.Page || kv.Value.Type == TargetType.IFrame;
+                var isPageOrFrame = kv.Value.Type is TargetType.Page or TargetType.IFrame;
                 var isExtension = kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
 
                 if (isPageOrFrame && !isExtension && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
