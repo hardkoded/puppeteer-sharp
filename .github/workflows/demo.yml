@@ -6,7 +6,6 @@ on:
       - master
       - release-*
   pull_request:
-    branches: [master]
     paths:
       - "**.cs"
       - "**.csproj"
