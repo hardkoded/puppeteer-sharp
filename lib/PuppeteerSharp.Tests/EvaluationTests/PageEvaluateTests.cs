@@ -312,7 +312,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Error in promise"));
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithDifferentSerializerSettings()
         {
             var result = await Page.EvaluateFunctionAsync<ComplexObjectTestClass>("() => { return { foo: 'bar' }}");

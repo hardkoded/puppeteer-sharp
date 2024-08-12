@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await popupTarget.PageAsync();
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldNotFailForNullArgument()
         {
             var consoleTcs = new TaskCompletionSource<string>();

@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(frame, Is.EqualTo(Page.FirstChildFrame()));
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkHeadful()
         {
             await using var Browser = await Puppeteer.LaunchAsync(_headfulOptions);

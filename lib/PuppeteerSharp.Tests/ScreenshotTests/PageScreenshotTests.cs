@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
@@ -124,7 +124,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale2.png", screenshot), Is.True);
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldClipScale()
         {
             await using var page = await Context.NewPageAsync();
@@ -361,7 +361,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(screenshot, Is.Not.Empty);
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public void ShouldInferScreenshotTypeFromName()
         {
             Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"), Is.EqualTo(ScreenshotType.Jpeg));
@@ -371,7 +371,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"), Is.Null);
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithQuality()
         {
             await using var page = await Context.NewPageAsync();

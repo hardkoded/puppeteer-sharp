@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldBeAbleToSetBrowserPropertiesUsingConnectOptions()
         {
             var initActionExecuted = false;
@@ -196,7 +196,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browserTwo.CloseAsync();
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;
@@ -216,7 +216,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;

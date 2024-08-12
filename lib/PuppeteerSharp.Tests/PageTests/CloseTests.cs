@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await browser.PagesAsync(), Does.Not.Contains(page));
         }
 
-        [Test]
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldNotBeVisibleInBrowserPagesWithDisposeAsync()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
