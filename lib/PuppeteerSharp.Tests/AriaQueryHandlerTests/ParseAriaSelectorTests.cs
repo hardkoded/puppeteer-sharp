@@ -13,15 +13,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 """<button id="btn" role="button"><span>&nbsp;</span><span>&nbsp;</span>Submit button and some spaces</button>"""
             );
 
-            async Task ExpectFound(IElementHandle button)
-            {
-                Assert.NotNull(button);
-                var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
-                    return button.id;
-                }");
-                Assert.AreEqual("btn", id);
-            }
-
             var button = await Page.QuerySelectorAsync("aria/\u00A0\u00A0Submit button and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
@@ -34,15 +25,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.SetContentAsync(
                 "<button id=\"btn\" role=\"button\">  Submit button and some spaces</button>"
             );
-
-            async Task ExpectFound(IElementHandle button)
-            {
-                Assert.NotNull(button);
-                var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
-                    return button.id;
-                }");
-                Assert.AreEqual("btn", id);
-            }
 
             var button = await Page.QuerySelectorAsync("aria/ubmit button and some spaces");
             Assert.Null(button);
@@ -57,15 +39,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 "<button id=\"btn\" role=\"button\"><span>&ZeroWidthSpace;</span><span>&ZeroWidthSpace;</span>Submit button and some spaces</button>"
             );
 
-            async Task ExpectFound(IElementHandle button)
-            {
-                Assert.NotNull(button);
-                var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
-                    return button.id;
-                }");
-                Assert.AreEqual("btn", id);
-            }
-
             var button = await Page.QuerySelectorAsync("aria/\u200B\u200BSubmit button and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
@@ -78,15 +51,6 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.SetContentAsync(@"
                 <button id=""btn"" role=""button""> Submit  button   and some spaces  </button>
             ");
-
-            async Task ExpectFound(IElementHandle button)
-            {
-                Assert.NotNull(button);
-                var id = await button.EvaluateFunctionAsync<string>(@"(button) => {
-                    return button.id;
-                }");
-                Assert.AreEqual("btn", id);
-            }
 
             var button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role=\"button\"]");
             await ExpectFound(button);
@@ -110,6 +74,15 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await ExpectFound(button);
             var ex = Assert.ThrowsAsync<PuppeteerException>(() => Page.QuerySelectorAsync("aria/smth[smth=\"true\"]"));
             Assert.AreEqual("Unknown aria attribute \"smth\" in selector", ex!.Message);
+        }
+
+        async Task ExpectFound(IElementHandle handle)
+        {
+            Assert.NotNull(handle);
+            var id = await handle.EvaluateFunctionAsync<string>(@"(button) => {
+                    return button.id;
+                }");
+            Assert.AreEqual("btn", id);
         }
     }
 }
