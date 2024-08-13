@@ -1,9 +1,7 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
-using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
@@ -71,7 +69,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJsonElement(promptData),
+                Params = promptData.ToJToken(),
             });
 
             await promptTask;
@@ -121,7 +119,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJsonElement(promptData),
+                Params = promptData.ToJToken(),
             });
 
             await promptTask;
@@ -143,14 +141,11 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJsonElement(promptData),
+                Params = promptData.ToJToken(),
             });
 
             await Task.WhenAll(promptTask, promptTask2);
-            Assert.AreEqual(promptTask.Result, promptTask2.Result);
+            Assert.That(promptTask2.Result, Is.EqualTo(promptTask.Result));
         }
-
-        internal static JsonElement ToJsonElement(DeviceAccessDeviceRequestPromptedResponse promptData)
-            => JsonSerializer.SerializeToElement(promptData, JsonHelper.DefaultJsonSerializerSettings.Value);
     }
 }

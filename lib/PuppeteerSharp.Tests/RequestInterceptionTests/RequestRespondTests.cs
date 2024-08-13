@@ -31,9 +31,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.Created, response.Status);
-            Assert.AreEqual("bar", response.Headers["foo"]);
-            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Created));
+            Assert.That(response.Headers["foo"], Is.EqualTo("bar"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.UpgradeRequired, response.Status);
-            Assert.AreEqual("Upgrade Required", response.StatusText);
-            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.UpgradeRequired));
+            Assert.That(response.StatusText, Is.EqualTo("Upgrade Required"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should redirect")]
@@ -86,8 +86,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
 
             Assert.That(response.Request.RedirectChain, Has.Exactly(1).Items);
-            Assert.AreEqual(TestConstants.ServerUrl + "/rrredirect", response.Request.RedirectChain[0].Url);
-            Assert.AreEqual(TestConstants.EmptyPage, response.Url);
+            Assert.That(response.Request.RedirectChain[0].Url, Is.EqualTo(TestConstants.ServerUrl + "/rrredirect"));
+            Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should allow mocking binary responses")]
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 return new Promise(fulfill => img.onload = fulfill);
             }", TestConstants.ServerUrl);
             var img = await Page.QuerySelectorAsync("img");
-            Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
+            Assert.That(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
@@ -133,11 +133,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.AreEqual("True", response.Headers["foo"]);
-            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers["foo"], Is.EqualTo("True"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -158,13 +159,13 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
 
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.AreEqual("True\nFalse", response.Headers["foo"]);
-            Assert.AreEqual("Yo, page!", await Page.EvaluateExpressionAsync<string>("document.body.textContent"));
-            Assert.AreEqual("specialId", cookies[0].Name);
-            Assert.AreEqual("123456", cookies[0].Value);
-            Assert.AreEqual("sessionId", cookies[1].Name);
-            Assert.AreEqual("abcdef", cookies[1].Value);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers["foo"], Is.EqualTo("True\nFalse"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
+            Assert.That(cookies[0].Name, Is.EqualTo("specialId"));
+            Assert.That(cookies[0].Value, Is.EqualTo("123456"));
+            Assert.That(cookies[1].Name, Is.EqualTo("sessionId"));
+            Assert.That(cookies[1].Value, Is.EqualTo("abcdef"));
         }
     }
 }

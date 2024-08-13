@@ -21,13 +21,13 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
-                Assert.AreEqual(56, response);
+                Assert.That(response, Is.EqualTo(56));
             }
 
             await using (var originalPage = await Browser.NewPageAsync())
             {
                 var response = await originalPage.EvaluateExpressionAsync<int>("7 * 6");
-                Assert.AreEqual(42, response);
+                Assert.That(response, Is.EqualTo(42));
             }
         }
 
@@ -67,11 +67,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 responseTask).WithTimeout(Puppeteer.DefaultTimeout);
 
             var response = responseTask.Result;
-            Assert.True(response.Ok);
-            Assert.NotNull(response.SecurityDetails);
-            Assert.AreEqual(
-                TestUtils.CurateProtocol(requestTask.Result.ToString()),
-                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
+            Assert.That(response.Ok, Is.True);
+            Assert.That(response.SecurityDetails, Is.Not.Null);
+            Assert.That(TestUtils.CurateProtocol(response.SecurityDetails.Protocol),
+                Is.EqualTo(TestUtils.CurateProtocol(requestTask.Result.ToString())));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
@@ -92,13 +91,13 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             var pages = await remoteBrowser.PagesAsync();
 
-            Assert.AreEqual(
-                new[]
+            Assert.That(
+                pages.Select(p => p.Url).OrderBy(t => t),
+                Is.EqualTo(new[]
                 {
                     "about:blank",
                     TestConstants.EmptyPage
-                },
-                pages.Select(p => p.Url).OrderBy(t => t));
+                }));
 
             await page2.CloseAsync();
             await page1.CloseAsync();
@@ -106,6 +105,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldBeAbleToSetBrowserPropertiesUsingConnectOptions()
         {
             var initActionExecuted = false;
@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             };
             var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
 
-            Assert.True(initActionExecuted);
+            Assert.That(initActionExecuted, Is.True);
 
             await browser.CloseAsync();
         }
@@ -141,11 +141,11 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             var pages = (await browser.PagesAsync()).ToList();
             var restoredPage = pages.FirstOrDefault(x => x.Url == url);
-            Assert.NotNull(restoredPage);
+            Assert.That(restoredPage, Is.Not.Null);
             var frameDump = await FrameUtils.DumpFramesAsync(restoredPage.MainFrame);
-            Assert.AreEqual(TestConstants.NestedFramesDumpResult, frameDump);
+            Assert.That(frameDump, Is.EqualTo(TestConstants.NestedFramesDumpResult));
             var response = await restoredPage.EvaluateExpressionAsync<int>("7 * 8");
-            Assert.AreEqual(56, response);
+            Assert.That(response, Is.EqualTo(56));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to the same page simultaneously")]
@@ -169,8 +169,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var page1 = tcs.Task.Result;
             var page2 = page2Task.Result;
 
-            Assert.AreEqual(56, await page1.EvaluateExpressionAsync<int>("7 * 8"));
-            Assert.AreEqual(42, await page2.EvaluateExpressionAsync<int>("7 * 6"));
+            Assert.That(await page1.EvaluateExpressionAsync<int>("7 * 8"), Is.EqualTo(56));
+            Assert.That(await page2.EvaluateExpressionAsync<int>("7 * 6"), Is.EqualTo(42));
             await browserOne.CloseAsync();
         }
 
@@ -196,6 +196,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browserTwo.CloseAsync();
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldSupportCustomWebSocket()
         {
             var customSocketCreated = false;
@@ -211,10 +212,11 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
-                Assert.True(customSocketCreated);
+                Assert.That(customSocketCreated, Is.True);
             }
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;
@@ -230,7 +232,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using (await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory))
             {
-                Assert.True(customTransportCreated);
+                Assert.That(customTransportCreated, Is.True);
             }
         }
     }

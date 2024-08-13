@@ -42,28 +42,28 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 
             // Step 3: query div's boxModel and assert box values.
             var box = await divHandle.BoxModelAsync();
-            Assert.AreEqual(6, box.Width);
-            Assert.AreEqual(7, box.Height);
-            Assert.AreEqual(new BoxModelPoint
+            Assert.That(box.Width, Is.EqualTo(6));
+            Assert.That(box.Height, Is.EqualTo(7));
+            Assert.That(box.Margin[0], Is.EqualTo(new BoxModelPoint
             {
                 X = 1 + 4, // frame.left + div.left
                 Y = 2 + 5
-            }, box.Margin[0]);
-            Assert.AreEqual(new BoxModelPoint
+            }));
+            Assert.That(box.Border[0], Is.EqualTo(new BoxModelPoint
             {
                 X = 1 + 4 + 3, // frame.left + div.left + div.margin-left
                 Y = 2 + 5
-            }, box.Border[0]);
-            Assert.AreEqual(new BoxModelPoint
+            }));
+            Assert.That(box.Padding[0], Is.EqualTo(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1, // frame.left + div.left + div.marginLeft + div.borderLeft
                 Y = 2 + 5
-            }, box.Padding[0]);
-            Assert.AreEqual(new BoxModelPoint
+            }));
+            Assert.That(box.Content[0], Is.EqualTo(new BoxModelPoint
             {
                 X = 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + dif.paddingLeft
                 Y = 2 + 5
-            }, box.Content[0]);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should return null for invisible elements")]
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
             await Page.SetContentAsync("<div style='display:none'>hi</div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            Assert.Null(await elementHandle.BoxModelAsync());
+            Assert.That(await elementHandle.BoxModelAsync(), Is.Null);
         }
     }
 }

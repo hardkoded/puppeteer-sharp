@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 
             var target = await targetTask;
             var page = await target.PageAsync();
-            Assert.True(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"));
+            Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
         }
 
         [Test, Retry(2),
@@ -56,9 +56,9 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             var devtoolsTargetTask = browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
             var devtoolsTarget = await devtoolsTargetTask;
             await using var page = await devtoolsTarget.PageAsync();
-            Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
+            Assert.That(await page.EvaluateFunctionAsync<int>("() => 2 * 3"), Is.EqualTo(6));
             var pages = await browser.PagesAsync();
-            Assert.True(pages.Contains(page));
+            Assert.That(pages, Does.Contain(page));
         }
 
         [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "target.page() should return Page when calling asPage on DevTools target")]
@@ -75,8 +75,8 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             await browser.NewPageAsync();
             var devtoolsTarget = await devtoolsTargetTask;
             await using var page = await devtoolsTarget.AsPageAsync();
-            Assert.AreEqual(6, await page.EvaluateFunctionAsync<int>("() => 2 * 3"));
-            Assert.False((await browser.PagesAsync()).Contains(page));
+            Assert.That(await page.EvaluateFunctionAsync<int>("() => 2 * 3"), Is.EqualTo(6));
+            Assert.That((await browser.PagesAsync()), Does.Not.Contain(page));
         }
 
     }

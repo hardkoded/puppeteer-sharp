@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 .QuerySelectorAllHandleAsync("aria/[role=\"button\"]")
                 .EvaluateFunctionAsync<int>(@"buttons => buttons.reduce((acc, button) => acc + Number(button.textContent), 0)");
 
-            Assert.AreEqual(50005000, sum);
+            Assert.That(sum, Is.EqualTo(50005000));
         }
     }
 }

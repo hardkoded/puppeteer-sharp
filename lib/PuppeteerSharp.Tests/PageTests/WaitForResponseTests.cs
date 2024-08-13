@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }")
             );
-            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForResponse", "should work with predicate")]
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForResponse", "should work with async predicate")]
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fetch('/digits/3.png');
             }")
             );
-            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForResponse", "should respect timeout")]
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForResponseAsync(_ => false, new WaitForOptions(1)));
 
-            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForResponse", "should respect default timeout")]
@@ -84,7 +84,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.WaitForResponseAsync(_ => false));
 
-            StringAssert.Contains("Timeout of 1 ms exceeded", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.waitForResponse", "should work with no timeout")]
@@ -101,7 +101,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     fetch('/digits/3.png');
                 }, 50)")
             );
-            Assert.AreEqual(TestConstants.ServerUrl + "/digits/2.png", task.Result.Url);
+            Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
     }
 }

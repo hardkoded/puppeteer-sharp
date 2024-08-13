@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var gotoTask = Page.GoToAsync("chrome://crash");
 
             await WaitForError();
-            Assert.AreEqual("Page crashed!", error);
+            Assert.That(error, Is.EqualTo("Page crashed!"));
         }
     }
 }

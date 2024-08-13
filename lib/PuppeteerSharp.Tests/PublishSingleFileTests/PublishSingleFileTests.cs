@@ -38,9 +38,9 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
                 process.Kill();
             }
 
-            Assert.True(isExited);
+            Assert.That(isExited, Is.True);
 
-            Assert.True(File.Exists(actualFilePath), $"StdOut: {outputResult}\nStdErr: {errorResult}\n");
+            Assert.That(File.Exists(actualFilePath), Is.True, $"StdOut: {outputResult}\nStdErr: {errorResult}\n");
         }
 
         private static string GetStreamOutput(StreamReader stream)
@@ -74,11 +74,11 @@ namespace PuppeteerSharp.Tests.SingleFileDeployment
 
             var outputResult = GetStreamOutput(process.StandardOutput);
             var errorResult = GetStreamOutput(process.StandardError);
-            Assert.True(process.WaitForExit(20000));
+            Assert.That(process.WaitForExit(20000), Is.True);
 
-            Assert.IsEmpty(errorResult);
+            Assert.That(errorResult, Is.Empty);
 
-            Assert.True(File.Exists(expectedBinaryPath), outputResult);
+            Assert.That(File.Exists(expectedBinaryPath), Is.True, outputResult);
 
             return expectedBinaryPath;
         }

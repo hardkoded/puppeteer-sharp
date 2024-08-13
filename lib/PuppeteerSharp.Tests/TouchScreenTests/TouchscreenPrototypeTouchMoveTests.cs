@@ -22,8 +22,8 @@
 //  * SOFTWARE.
 
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -43,8 +43,9 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         await Page.Touchscreen.TouchEndAsync();
 
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
-        Assert.AreEqual(
-            JsonSerializer.Serialize(new[]
+        Assert.That(
+            JsonConvert.SerializeObject(result),
+            Is.EqualTo(JsonConvert.SerializeObject(new[]
             {
                 new TouchEvent()
                 {
@@ -281,6 +282,6 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
                         },
                     },
                 },
-            }), JsonSerializer.Serialize(result));
+            })));
     }
 }

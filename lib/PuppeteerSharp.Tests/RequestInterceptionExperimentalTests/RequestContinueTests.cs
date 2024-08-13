@@ -33,7 +33,7 @@ public class RequestContinueTests : PuppeteerPageBaseTest
             requestTask,
             Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
         );
-        Assert.AreEqual("bar", requestTask.Result);
+        Assert.That(requestTask.Result, Is.EqualTo("bar"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.continue",
@@ -51,8 +51,8 @@ public class RequestContinueTests : PuppeteerPageBaseTest
         string consoleMessage = null;
         Page.Console += (_, e) => consoleMessage = e.Message.Text;
         await Page.GoToAsync(TestConstants.EmptyPage);
-        Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
-        Assert.AreEqual("yellow", consoleMessage);
+        Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
+        Assert.That(consoleMessage, Is.EqualTo("yellow"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.continue", "should amend method")]
@@ -69,7 +69,7 @@ public class RequestContinueTests : PuppeteerPageBaseTest
             Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
         );
 
-        Assert.AreEqual("POST", requestTask.Result);
+        Assert.That(requestTask.Result, Is.EqualTo("POST"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.continue", "should amend post data")]
@@ -88,7 +88,7 @@ public class RequestContinueTests : PuppeteerPageBaseTest
             Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
         );
 
-        Assert.AreEqual("doggo", await requestTask.Result);
+        Assert.That(await requestTask.Result, Is.EqualTo("doggo"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Request.continue",
@@ -115,7 +115,7 @@ public class RequestContinueTests : PuppeteerPageBaseTest
             Page.GoToAsync(TestConstants.EmptyPage)
         );
         var serverRequest = await serverRequestTask;
-        Assert.AreEqual(HttpMethod.Post.Method, serverRequest.Result.Method);
-        Assert.AreEqual("doggo", serverRequest.Result.Body);
+        Assert.That(serverRequest.Result.Method, Is.EqualTo(HttpMethod.Post.Method));
+        Assert.That(serverRequest.Result.Body, Is.EqualTo("doggo"));
     }
 }

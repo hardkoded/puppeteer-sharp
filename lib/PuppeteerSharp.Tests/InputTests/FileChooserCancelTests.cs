@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.InputTests
             await fileChooser.CancelAsync();
 
             var ex = Assert.ThrowsAsync<PuppeteerException>(() => fileChooser.CancelAsync());
-            Assert.AreEqual("Cannot accept FileChooser which is already handled!", ex.Message);
+            Assert.That(ex.Message, Is.EqualTo("Cannot accept FileChooser which is already handled!"));
         }
     }
 }
