@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
@@ -58,7 +57,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.That(eventTask.Result["url"]!.Value<string>(), Is.EqualTo("foo.js"));
+            Assert.That(eventTask.Result.GetProperty("url")!.GetString(), Is.EqualTo("foo.js"));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
@@ -71,7 +70,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Expression = "1 + 2",
                 ReturnByValue = true
             });
-            Assert.That(evalResponse["result"]!["value"]!.ToObject<int>(), Is.EqualTo(3));
+            Assert.That(evalResponse!.Value.GetProperty("result")!.GetProperty("value")!.GetInt32(), Is.EqualTo(3));
             await client.DetachAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(()

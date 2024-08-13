@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
@@ -121,7 +121,15 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.That(Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"),
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage,
+                new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                });
+            Assert.That(
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4}\/", ":<PORT>/"),
                 Is.EqualTo(TestUtils.CompressText(involved)));
         }
 

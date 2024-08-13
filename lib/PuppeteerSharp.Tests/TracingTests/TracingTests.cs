@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -11,12 +10,7 @@ namespace PuppeteerSharp.Tests.TracingTests
 {
     public sealed class TracingTests : PuppeteerPageBaseTest, IAsyncDisposable
     {
-        private readonly string _file;
-
-        public TracingTests() : base()
-        {
-            _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        }
+        private readonly string _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         public async ValueTask DisposeAsync()
         {
@@ -75,12 +69,15 @@ namespace PuppeteerSharp.Tests.TracingTests
 
             await Page.Tracing.StopAsync();
 
-            using (var file = File.OpenText(_file))
-            using (var reader = new JsonTextReader(file))
-            {
-                var traceJson = JToken.ReadFrom(reader);
-                Assert.That(traceJson["metadata"]["trace-config"].ToString(), Does.Contain("disabled-by-default-v8.cpu_profiler.hires"));
-            }
+            var jsonString = await File.ReadAllTextAsync(_file);
+
+            using var document = JsonDocument.Parse(jsonString);
+            var root = document.RootElement;
+            var metadata = root.GetProperty("metadata");
+            var traceConfig = metadata.GetProperty("trace-config");
+
+            var traceConfigString = traceConfig.GetString();
+            Assert.That(traceConfigString, Does.Contain("disabled-by-default-v8.cpu_profiler.hires"));
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]
@@ -92,13 +89,13 @@ namespace PuppeteerSharp.Tests.TracingTests
             });
 
             await Page.Tracing.StopAsync();
+            var jsonString = await File.ReadAllTextAsync(_file);
 
-            using (var file = File.OpenText(_file))
-            using (var reader = new JsonTextReader(file))
-            {
-                var traceJson = JToken.ReadFrom(reader);
-                Assert.That(traceJson["traceEvents"].ToString(), Does.Contain("toplevel"));
-            }
+            using var document = JsonDocument.Parse(jsonString);
+            var root = document.RootElement;
+            var traceEvents = root.GetProperty("traceEvents");
+            var traceConfigString = traceEvents.ToString();
+            Assert.That(traceConfigString, Does.Contain("toplevel"));
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should throw if tracing on two pages")]

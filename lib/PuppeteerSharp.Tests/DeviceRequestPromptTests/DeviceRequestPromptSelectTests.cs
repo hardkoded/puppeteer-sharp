@@ -34,7 +34,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJToken(),
+            Params = promptData.ToJsonElement(),
         });
 
         var device = await deviceTask;
@@ -84,7 +84,7 @@ public class DeviceRequestPromptSelectTests : PuppeteerPageBaseTest
         client.OnMessage(new ConnectionResponse()
         {
             Method = "DeviceAccess.deviceRequestPrompted",
-            Params = promptData.ToJToken(),
+            Params = promptData.ToJsonElement(),
         });
 
         var device = await deviceTask;
