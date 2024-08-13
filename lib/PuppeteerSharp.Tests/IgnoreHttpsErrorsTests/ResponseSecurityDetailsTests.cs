@@ -23,16 +23,16 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             // We don't need to test that here.
 
             var response = await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.NotNull(response.SecurityDetails);
-            StringAssert.Contains("TLS", response.SecurityDetails.Protocol);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.SecurityDetails, Is.Not.Null);
+            Assert.That(response.SecurityDetails.Protocol, Does.Contain("TLS"));
         }
 
         [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
         public async Task ShouldBeNullForNonSecureRequests()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Null(response.SecurityDetails);
+            Assert.That(response.SecurityDetails, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
@@ -55,11 +55,10 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 
             var response = responseTask.Result;
 
-            Assert.AreEqual(2, responses.Count);
-            Assert.AreEqual(HttpStatusCode.Found, responses[0].Status);
-            Assert.AreEqual(
-                TestUtils.CurateProtocol(requestTask.Result.ToString()),
-                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
+            Assert.That(responses, Has.Count.EqualTo(2));
+            Assert.That(responses[0].Status, Is.EqualTo(HttpStatusCode.Found));
+            Assert.That(TestUtils.CurateProtocol(response.SecurityDetails.Protocol),
+                Is.EqualTo(TestUtils.CurateProtocol(requestTask.Result.ToString())));
         }
     }
 }

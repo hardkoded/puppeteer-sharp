@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
-            StringAssert.Contains("Mozilla", await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"));
+            Assert.That(await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"), Does.Contain("Mozilla"));
             await Page.SetUserAgentAsync("foobar");
 
             var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
@@ -18,13 +18,13 @@ namespace PuppeteerSharp.Tests.PageTests
                 userAgentTask,
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
-            Assert.AreEqual("foobar", userAgentTask.Result);
+            Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
-            StringAssert.Contains("Mozilla", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("Mozilla"));
             await Page.SetUserAgentAsync("foobar");
             var waitForRequestTask = Server.WaitForRequest<string>("/empty.html", (request) => request.Headers["user-agent"]);
 
@@ -37,9 +37,9 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldSimulateDeviceUserAgent()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
-            StringAssert.DoesNotContain("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Not.Contain("iPhone"));
             await Page.SetUserAgentAsync(TestConstants.IPhone.UserAgent);
-            StringAssert.Contains("iPhone", await Page.EvaluateExpressionAsync<string>("navigator.userAgent"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
@@ -61,11 +61,11 @@ namespace PuppeteerSharp.Tests.PageTests
               requestTask,
               Page.GoToAsync(TestConstants.EmptyPage));
 
-            Assert.False(
+            Assert.That(
               await Page.EvaluateFunctionAsync<bool>(@"() => {
                 return navigator.userAgentData.mobile;
               }")
-            );
+, Is.False);
 
             var uaData = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
                 return navigator.userAgentData.getHighEntropyValues([
@@ -76,11 +76,11 @@ namespace PuppeteerSharp.Tests.PageTests
                 ]);
             }");
 
-            Assert.AreEqual("Mock1", uaData.GetProperty("architecture").GetString());
-            Assert.AreEqual("Mockbook", uaData.GetProperty("model").GetString());
-            Assert.AreEqual("MockOS", uaData.GetProperty("platform").GetString());
-            Assert.AreEqual("3.1", uaData.GetProperty("platformVersion").GetString());
-            Assert.AreEqual("MockBrowser", await requestTask);
+            Assert.That(uaData.GetProperty("architecture").GetString(), Is.EqualTo("Mock1"));
+            Assert.That(uaData.GetProperty("model").GetString(), Is.EqualTo("Mockbook"));
+            Assert.That(uaData.GetProperty("platform").GetString(), Is.EqualTo("MockOS"));
+            Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("3.1"));
+            Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
         }
     }
 }

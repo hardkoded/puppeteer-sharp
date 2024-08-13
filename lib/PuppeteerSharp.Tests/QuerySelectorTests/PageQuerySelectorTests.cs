@@ -11,14 +11,14 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section>test</section>");
             var element = await Page.QuerySelectorAsync("section");
-            Assert.NotNull(element);
+            Assert.That(element, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "Page.$", "should return null for non-existing element")]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             var element = await Page.QuerySelectorAsync("non-existing-element");
-            Assert.Null(element);
+            Assert.That(element, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should query existing element")]
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<section>test</section>");
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/section");
-            Assert.NotNull(elements[0]);
+            Assert.That(elements[0], Is.Not.Null);
             Assert.That(elements, Has.Exactly(1).Items);
         }
 
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/non-existing-element");
-            Assert.IsEmpty(elements);
+            Assert.That(elements, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should return multiple elements")]
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         {
             await Page.SetContentAsync("<div></div><div></div>");
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/div");
-            Assert.AreEqual(2, elements.Length);
+            Assert.That(elements, Has.Length.EqualTo(2));
         }
     }
 }

@@ -16,18 +16,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Common\CommonProps.props = Common\CommonProps.props
-		stylecop.json = stylecop.json
-		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
-		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
-		..\.github\workflows\PushNugetPackageToNugetOrg.yml = ..\.github\workflows\PushNugetPackageToNugetOrg.yml
-		..\.github\workflows\sponsors-in-readme.yml = ..\.github\workflows\sponsors-in-readme.yml
-		..\.github\workflows\PushNugetPackageToIntNugetOrg.yml = ..\.github\workflows\PushNugetPackageToIntNugetOrg.yml
 		..\.github\workflows\demo.yml = ..\.github\workflows\demo.yml
+		..\.github\workflows\dotnet.yml = ..\.github\workflows\dotnet.yml
+		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
 		..\.github\workflows\on-push-do-docs.yml = ..\.github\workflows\on-push-do-docs.yml
 		..\.github\workflows\publish-docs.yml = ..\.github\workflows\publish-docs.yml
+		..\.github\workflows\PushNugetPackageToIntNugetOrg.yml = ..\.github\workflows\PushNugetPackageToIntNugetOrg.yml
+		..\.github\workflows\PushNugetPackageToNugetOrg.yml = ..\.github\workflows\PushNugetPackageToNugetOrg.yml
+		..\.github\workflows\sponsors-in-readme.yml = ..\.github\workflows\sponsors-in-readme.yml
+		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Xunit", "PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Nunit", "PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Tooling", "PuppeteerSharp.Tooling\PuppeteerSharp.Tooling.csproj", "{912C1F21-9306-4D6B-A487-47A8FC793E6D}"
 EndProject

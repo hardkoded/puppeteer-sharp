@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync($"{TestConstants.HttpsPrefix}/empty.html");
-            Assert.True(response.Ok);
+            Assert.That(response.Ok, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with request interception")]
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) => await e.Request.ContinueAsync();
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with mixed content")]
@@ -41,11 +41,11 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             {
                 WaitUntil = new[] { WaitUntilNavigation.Load }
             });
-            Assert.AreEqual(2, Page.Frames.Length);
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
             // Make sure blocked iframe has functional execution context
             // @see https://github.com/GoogleChrome/puppeteer/issues/2709
-            Assert.AreEqual(3, await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"));
-            Assert.AreEqual(5, await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"));
+            Assert.That(await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"), Is.EqualTo(3));
+            Assert.That(await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"), Is.EqualTo(5));
         }
     }
 }

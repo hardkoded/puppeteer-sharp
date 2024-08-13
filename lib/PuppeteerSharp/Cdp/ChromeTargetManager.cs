@@ -103,11 +103,12 @@ namespace PuppeteerSharp.Cdp
                     null,
                     _browser.ScreenshotTaskQueue);
 
-                // Targets from extensions and the browser that will not be
-                // auto-attached. Therefore, we should not add them to
-                // #targetsIdsForInit.
-                var skipTarget = kv.Value.Type == TargetType.Browser || kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
-                if (!skipTarget && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
+                // Only wait for pages and frames (except those from extensions)
+                // to auto-attach.
+                var isPageOrFrame = kv.Value.Type is TargetType.Page or TargetType.IFrame;
+                var isExtension = kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
+
+                if (isPageOrFrame && !isExtension && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
                 {
                     _targetsIdsForInit.Add(kv.Key);
                 }

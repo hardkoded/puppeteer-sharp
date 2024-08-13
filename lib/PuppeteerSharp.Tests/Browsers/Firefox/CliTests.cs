@@ -31,12 +31,12 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
             };
             await fetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
 
-            Assert.True(new FileInfo(Path.Combine(
+            Assert.That(new FileInfo(Path.Combine(
                 _cacheDir,
                 "Chrome",
                 $"Linux-{BrowserData.Chrome.DefaultBuildId}",
                 "chrome-linux64",
-                "chrome")).Exists);
+                "chrome")).Exists, Is.True);
         }
     }
 }

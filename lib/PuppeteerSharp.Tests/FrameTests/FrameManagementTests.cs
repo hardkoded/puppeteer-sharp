@@ -12,9 +12,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldHandleNestedFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            Assert.AreEqual(
-                TestConstants.NestedFramesDumpResult,
-                await FrameUtils.DumpFramesAsync(Page.MainFrame));
+            Assert.That(await FrameUtils.DumpFramesAsync(Page.MainFrame),
+                Is.EqualTo(TestConstants.NestedFramesDumpResult));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send events when frames are manipulated dynamically")]
@@ -29,7 +28,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", "./Assets/frame.html");
 
             Assert.That(attachedFrames, Has.Exactly(1).Items);
-            StringAssert.Contains("/Assets/frame.html", attachedFrames[0].Url);
+            Assert.That(attachedFrames[0].Url, Does.Contain("/Assets/frame.html"));
 
             // validate frame navigated events
             var navigatedFrames = new List<IFrame>();
@@ -37,7 +36,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await FrameUtils.NavigateFrameAsync(Page, "frame1", "./empty.html");
             Assert.That(navigatedFrames, Has.Exactly(1).Items);
-            Assert.AreEqual(TestConstants.EmptyPage, navigatedFrames[0].Url);
+            Assert.That(navigatedFrames[0].Url, Is.EqualTo(TestConstants.EmptyPage));
 
             // validate frame detached events
             var detachedFrames = new List<IFrame>();
@@ -45,7 +44,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             Assert.That(detachedFrames, Has.Exactly(1).Items);
-            Assert.True(detachedFrames[0].Detached);
+            Assert.That(detachedFrames[0].Detached, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should send \"framenavigated\" when navigating on anchor URLs")]
@@ -58,15 +57,15 @@ namespace PuppeteerSharp.Tests.FrameTests
                 Page.GoToAsync(TestConstants.EmptyPage + "#foo"),
                 frameNavigated.Task
             );
-            Assert.AreEqual(TestConstants.EmptyPage + "#foo", Page.Url);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage + "#foo"));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support url fragment")]
         public async Task ShouldReturnUrlFragmentAsPartOfUrl()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame-url-fragment.html");
-            Assert.AreEqual(2, Page.Frames.Length);
-            Assert.AreEqual(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment", Page.FirstChildFrame().Url);
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            Assert.That(Page.FirstChildFrame().Url, Is.EqualTo(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment"));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should persist mainFrame on cross-process navigation")]
@@ -75,7 +74,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             var mainFrame = Page.MainFrame;
             await Page.GoToAsync(TestConstants.CrossProcessUrl + "/empty.html");
-            Assert.AreEqual(mainFrame, Page.MainFrame);
+            Assert.That(Page.MainFrame, Is.EqualTo(mainFrame));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should not send attach/detach events for main frame")]
@@ -86,7 +85,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             Page.FrameDetached += (_, _) => hasEvents = true;
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.False(hasEvents);
+            Assert.That(hasEvents, Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should detach child frames on navigation")]
@@ -101,17 +100,17 @@ namespace PuppeteerSharp.Tests.FrameTests
             Page.FrameNavigated += (_, e) => navigatedFrames.Add(e.Frame);
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            Assert.AreEqual(4, attachedFrames.Count);
-            Assert.IsEmpty(detachedFrames);
-            Assert.AreEqual(5, navigatedFrames.Count);
+            Assert.That(attachedFrames, Has.Count.EqualTo(4));
+            Assert.That(detachedFrames, Is.Empty);
+            Assert.That(navigatedFrames, Has.Count.EqualTo(5));
 
             attachedFrames.Clear();
             detachedFrames.Clear();
             navigatedFrames.Clear();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.IsEmpty(attachedFrames);
-            Assert.AreEqual(4, detachedFrames.Count);
+            Assert.That(attachedFrames, Is.Empty);
+            Assert.That(detachedFrames, Has.Count.EqualTo(4));
             Assert.That(navigatedFrames, Has.Exactly(1).Items);
         }
 
@@ -121,7 +120,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
             var frame = await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/frames/frame.html"));
             var div = await frame.WaitForSelectorAsync("div");
-            Assert.NotNull(div);
+            Assert.That(div, Is.Not.Null);
             await div.ClickAsync();
         }
 
@@ -136,7 +135,7 @@ namespace PuppeteerSharp.Tests.FrameTests
                 document.body.shadowRoot.appendChild(frame);
                 await new Promise(x => frame.onload = x);
             }", TestConstants.EmptyPage);
-            Assert.AreEqual(2, Page.Frames.Length);
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
             Assert.That(Page.Frames.Where(frame => frame.Url == TestConstants.EmptyPage), Has.Exactly(1).Items);
         }
 
@@ -147,7 +146,7 @@ namespace PuppeteerSharp.Tests.FrameTests
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
 
             Assert.That(Page.Frames.Where(frame => frame.ParentFrame == null), Has.Exactly(1).Items);
-            Assert.AreEqual(2, Page.Frames.Count(f => f.ParentFrame == Page.MainFrame));
+            Assert.That(Page.Frames.Count(f => f.ParentFrame == Page.MainFrame), Is.EqualTo(2));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should report different frame instance when frame re-attaches")]
@@ -158,13 +157,13 @@ namespace PuppeteerSharp.Tests.FrameTests
                 window.frame = document.querySelector('#frame1');
                 window.frame.remove();
             }");
-            Assert.True(frame1.Detached);
+            Assert.That(frame1.Detached, Is.True);
             var frame2Tcs = new TaskCompletionSource<IFrame>();
             Page.FrameAttached += (_, e) => frame2Tcs.TrySetResult(e.Frame);
             await Page.EvaluateExpressionAsync("document.body.appendChild(window.frame)");
             var frame2 = await frame2Tcs.Task;
-            Assert.False(frame2.Detached);
-            Assert.AreNotSame(frame1, frame2);
+            Assert.That(frame2.Detached, Is.False);
+            Assert.That(frame2, Is.Not.SameAs(frame1));
         }
 
         [Test, Retry(2), PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support framesets")]
@@ -180,17 +179,17 @@ namespace PuppeteerSharp.Tests.FrameTests
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/frameset.html");
 
-            Assert.AreEqual(4, attachedFrames.Count);
-            Assert.IsEmpty(detachedFrames);
-            Assert.AreEqual(5, navigatedFrames.Count);
+            Assert.That(attachedFrames, Has.Count.EqualTo(4));
+            Assert.That(detachedFrames, Is.Empty);
+            Assert.That(navigatedFrames, Has.Count.EqualTo(5));
 
             attachedFrames.Clear();
             detachedFrames.Clear();
             navigatedFrames.Clear();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.IsEmpty(attachedFrames);
-            Assert.AreEqual(4, detachedFrames.Count);
+            Assert.That(attachedFrames, Is.Empty);
+            Assert.That(detachedFrames, Has.Count.EqualTo(4));
             Assert.That(navigatedFrames, Has.Exactly(1).Items);
         }
     }

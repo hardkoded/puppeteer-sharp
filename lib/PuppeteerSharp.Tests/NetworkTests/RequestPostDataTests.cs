@@ -15,15 +15,15 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             var request = await requestTask.WithTimeout();
-            Assert.NotNull(request);
-            Assert.AreEqual("{\"foo\":\"bar\"}", request.PostData);
+            Assert.That(request, Is.Not.Null);
+            Assert.That(request.PostData, Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Null(response.Request.PostData);
+            Assert.That(response.Request.PostData, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
@@ -39,10 +39,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }),
             })");
             var request = await requestTask.WithTimeout();
-            Assert.NotNull(request);
-            Assert.Null(request.PostData);
-            Assert.True(request.HasPostData);
-            Assert.AreEqual("{\"foo\":\"bar\"}", await request.FetchPostDataAsync());
+            Assert.That(request, Is.Not.Null);
+            Assert.That(request.PostData, Is.Null);
+            Assert.That(request.HasPostData, Is.True);
+            Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("{\"foo\":\"bar\"}"));
         }
     }
 }

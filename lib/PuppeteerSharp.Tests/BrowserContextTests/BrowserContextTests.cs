@@ -14,11 +14,11 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var defaultContext = Browser.BrowserContexts()[0];
 #pragma warning disable CS0618 // Type or member is obsolete
-            Assert.False(defaultContext.IsIncognito);
+            Assert.That(defaultContext.IsIncognito, Is.False);
 #pragma warning restore CS0618 // Type or member is obsolete
             var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
-            Assert.AreSame(defaultContext, Browser.DefaultContext);
-            StringAssert.Contains("cannot be closed", exception!.Message);
+            Assert.That(Browser.DefaultContext, Is.SameAs(defaultContext));
+            Assert.That(exception!.Message, Does.Contain("cannot be closed"));
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new incognito context")]
@@ -27,12 +27,12 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var context = await Browser.CreateBrowserContextAsync();
 #pragma warning disable CS0618 // Type or member is obsolete
-            Assert.True(context.IsIncognito);
+            Assert.That(context.IsIncognito, Is.True);
 #pragma warning restore CS0618 // Type or member is obsolete
-            Assert.AreEqual(2, Browser.BrowserContexts().Length);
-            Assert.Contains(context, Browser.BrowserContexts());
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
+            Assert.That(Browser.BrowserContexts(), Does.Contain(context));
             await context.CloseAsync();
-            Assert.True(context.IsClosed);
+            Assert.That(context.IsClosed, Is.True);
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
@@ -43,10 +43,10 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var context = await Browser.CreateBrowserContextAsync();
             await context.NewPageAsync();
-            Assert.AreEqual(2, (await Browser.PagesAsync()).Length);
+            Assert.That((await Browser.PagesAsync()), Has.Length.EqualTo(2));
             Assert.That((await context.PagesAsync()), Has.Exactly(1).Items);
             await context.CloseAsync();
-            Assert.True(context.IsClosed);
+            Assert.That(context.IsClosed, Is.True);
             Assert.That((await Browser.PagesAsync()), Has.Exactly(1).Items);
         }
 
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             );
 
             var popupTarget = await popupTargetCompletion.Task;
-            Assert.AreSame(context, popupTarget.BrowserContext);
+            Assert.That(popupTarget.BrowserContext, Is.SameAs(context));
             await context.CloseAsync();
         }
 
@@ -83,11 +83,11 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Just for half a second to get the last event
             await Task.Delay(500);
 
-            Assert.AreEqual(new[] {
+            Assert.That(events, Is.EqualTo(new[] {
                 $"CREATED: {TestConstants.AboutBlank}",
                 $"CHANGED: {TestConstants.EmptyPage}",
                 $"DESTROYED: {TestConstants.EmptyPage}"
-            }, events);
+            }));
             await context.CloseAsync();
         }
 
@@ -97,8 +97,8 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             // Create two incognito contexts.
             var context1 = await Browser.CreateBrowserContextAsync();
             var context2 = await Browser.CreateBrowserContextAsync();
-            Assert.IsEmpty(context1.Targets());
-            Assert.IsEmpty(context2.Targets());
+            Assert.That(context1.Targets(), Is.Empty);
+            Assert.That(context2.Targets(), Is.Empty);
 
             // Create a page in first incognito context.
             var page1 = await context1.NewPageAsync();
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
-            Assert.IsEmpty(context2.Targets());
+            Assert.That(context2.Targets(), Is.Empty);
 
             // Create a page in second incognito context.
             var page2 = await context2.NewPageAsync();
@@ -120,20 +120,20 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             }");
 
             Assert.That(context1.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page1, await context1.Targets()[0].PageAsync());
+            Assert.That(await context1.Targets()[0].PageAsync(), Is.EqualTo(page1));
             Assert.That(context2.Targets(), Has.Exactly(1).Items);
-            Assert.AreEqual(page2, await context2.Targets()[0].PageAsync());
+            Assert.That(await context2.Targets()[0].PageAsync(), Is.EqualTo(page2));
 
             // Make sure pages don't share localstorage or cookies.
-            Assert.AreEqual("page1", await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
-            Assert.AreEqual("name=page1", await page1.EvaluateExpressionAsync<string>("document.cookie"));
-            Assert.AreEqual("page2", await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"));
-            Assert.AreEqual("name=page2", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+            Assert.That(await page1.EvaluateExpressionAsync<string>("localStorage.getItem('name')"), Is.EqualTo("page1"));
+            Assert.That(await page1.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("name=page1"));
+            Assert.That(await page2.EvaluateExpressionAsync<string>("localStorage.getItem('name')"), Is.EqualTo("page2"));
+            Assert.That(await page2.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("name=page2"));
 
             // Cleanup contexts.
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
-            Assert.True(context1.IsClosed);
-            Assert.True(context2.IsClosed);
+            Assert.That(context1.IsClosed, Is.True);
+            Assert.That(context2.IsClosed, Is.True);
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
         }
 
@@ -142,14 +142,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             var context = await Browser.CreateBrowserContextAsync();
-            Assert.AreEqual(2, Browser.BrowserContexts().Length);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = Browser.WebSocketEndpoint
             });
             var contexts = remoteBrowser.BrowserContexts();
-            Assert.AreEqual(2, contexts.Length);
+            Assert.That(contexts, Has.Length.EqualTo(2));
             remoteBrowser.Disconnect();
             await context.CloseAsync();
         }
@@ -158,11 +158,11 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldProvideAContextId()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            Assert.Null(Browser.BrowserContexts()[0].Id);
+            Assert.That(Browser.BrowserContexts()[0].Id, Is.Null);
 
             var context = await Browser.CreateBrowserContextAsync();
-            Assert.AreEqual(2, Browser.BrowserContexts().Length);
-            Assert.NotNull(Browser.BrowserContexts()[1].Id);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
+            Assert.That(Browser.BrowserContexts()[1].Id, Is.Not.Null);
             await context.CloseAsync();
         }
 
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await page.GoToAsync(TestConstants.EmptyPage);
             var promiseTarget = await targetPromise;
             var targetPage = await promiseTarget.PageAsync();
-            Assert.AreEqual(targetPage, page);
+            Assert.That(page, Is.EqualTo(targetPage));
             await context.CloseAsync();
         }
 

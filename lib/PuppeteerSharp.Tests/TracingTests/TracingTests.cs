@@ -8,14 +8,12 @@ using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TracingTests
 {
-    public class TracingTests : PuppeteerPageBaseTest
+    public sealed class TracingTests : PuppeteerPageBaseTest, IAsyncDisposable
     {
         private readonly string _file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-        public override async Task DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            await base.DisposeAsync();
-
             var attempts = 0;
             const int maxAttempts = 5;
 
@@ -53,7 +51,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             await Page.Tracing.StopAsync();
 
-            Assert.True(File.Exists(_file));
+            Assert.That(File.Exists(_file), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should run with custom categories if provided")]
@@ -79,7 +77,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             var traceConfig = metadata.GetProperty("trace-config");
 
             var traceConfigString = traceConfig.GetString();
-            StringAssert.Contains("disabled-by-default-v8.cpu_profiler.hires", traceConfigString);
+            Assert.That(traceConfigString, Does.Contain("disabled-by-default-v8.cpu_profiler.hires"));
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]
@@ -97,7 +95,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             var root = document.RootElement;
             var traceEvents = root.GetProperty("traceEvents");
             var traceConfigString = traceEvents.ToString();
-            StringAssert.Contains("toplevel", traceConfigString);
+            Assert.That(traceConfigString, Does.Contain("toplevel"));
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should throw if tracing on two pages")]
@@ -131,7 +129,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
             var buf = File.ReadAllText(_file);
-            Assert.AreEqual(trace, buf);
+            Assert.That(buf, Is.EqualTo(trace));
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should work without options")]
@@ -140,7 +138,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StartAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
-            Assert.NotNull(trace);
+            Assert.That(trace, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should support a buffer without a path")]
@@ -152,7 +150,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             });
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
-            StringAssert.Contains("screenshot", trace);
+            Assert.That(trace, Does.Contain("screenshot"));
         }
     }
 }

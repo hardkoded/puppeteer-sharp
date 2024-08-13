@@ -43,8 +43,9 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
         await Page.Touchscreen.TouchEndAsync();
 
         var result = await Page.EvaluateExpressionAsync<TouchEvent[]>("allEvents");
-        Assert.AreEqual(
-            JsonSerializer.Serialize(new[]
+
+        Assert.That(
+            JsonSerializer.Serialize(result), Is.EqualTo(JsonSerializer.Serialize(new[]
             {
                 new TouchEvent()
                 {
@@ -281,6 +282,6 @@ public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
                         },
                     },
                 },
-            }), JsonSerializer.Serialize(result));
+            })));
     }
 }

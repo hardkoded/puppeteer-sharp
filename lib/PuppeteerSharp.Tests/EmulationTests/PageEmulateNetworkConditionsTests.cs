@@ -16,11 +16,11 @@ namespace PuppeteerSharp.Tests.EmulationTests
             var slow3G = Puppeteer.NetworkConditions[NetworkConditions.Slow3G];
             var fast3G = Puppeteer.NetworkConditions[NetworkConditions.Fast3G];
 
-            Assert.AreEqual("4g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false), Is.EqualTo("4g"));
             await Page.EmulateNetworkConditionsAsync(fast3G);
-            Assert.AreEqual("3g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false), Is.EqualTo("3g"));
             await Page.EmulateNetworkConditionsAsync(slow3G);
-            Assert.AreEqual("2g", await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("window.navigator.connection.effectiveType").ConfigureAwait(false), Is.EqualTo("2g"));
             await Page.EmulateNetworkConditionsAsync(null);
         }
     }

@@ -23,14 +23,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task BasicIntFunctionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<int>(script);
-            Assert.AreEqual(expected, result);
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer BigInt")]
         public async Task ShouldTransferBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<BigInteger>("a => a", new BigInteger(42));
-            Assert.AreEqual(new BigInteger(42), result);
+            Assert.That(result, Is.EqualTo(new BigInteger(42)));
         }
 
         [Test]
@@ -46,44 +46,44 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task BasicTransferTest(object transferObject)
         {
             var result = await Page.EvaluateFunctionAsync<object>("a => a", transferObject);
-            Assert.AreEqual(transferObject, result);
+            Assert.That(result, Is.EqualTo(transferObject));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer arrays")]
         public async Task ShouldTransferArrays()
         {
             var result = await Page.EvaluateFunctionAsync<int[]>("a => a", new int[] { 1, 2, 3 });
-            Assert.AreEqual(new int[] { 1, 2, 3 }, result);
+            Assert.That(result, Is.EqualTo(new int[] { 1, 2, 3 }));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer arrays as arrays, not objects")]
         public async Task ShouldTransferArraysAsArraysNotObjects()
         {
             var result = await Page.EvaluateFunctionAsync<bool>("a => Array.isArray(a)", new int[] { 1, 2, 3 });
-            Assert.True(result);
+            Assert.That(result, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should modify global environment")]
         public async Task ShouldModifyGlobalEnvironment()
         {
             await Page.EvaluateFunctionAsync("() => window.globalVar = 123");
-            Assert.AreEqual(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
+            Assert.That(await Page.EvaluateFunctionAsync<int>("() => window.globalVar"), Is.EqualTo(123));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should evaluate in the page context")]
         public async Task ShouldEvaluateInThePageContext()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/global-var.html");
-            Assert.AreEqual(123, await Page.EvaluateFunctionAsync<int>("() => window.globalVar"));
+            Assert.That(await Page.EvaluateFunctionAsync<int>("() => window.globalVar"), Is.EqualTo(123));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for objects with symbols")]
         public async Task ShouldReturnUndefinedForObjectsWithSymbols()
-            => Assert.Null(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"));
+            => Assert.That(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"), Is.Null);
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with unicode chars")]
         public async Task ShouldWorkWithUnicodeChars()
-            => Assert.AreEqual(42, await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }));
+            => Assert.That(await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }), Is.EqualTo(42));
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw when evaluation triggers reload")]
         public void ShouldThrowWhenEvaluationTriggersReload()
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 }");
             });
 
-            StringAssert.Contains("Protocol error", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Protocol error"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work right after framenavigated")]
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             };
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(42, await frameEvaluation);
+            Assert.That(await frameEvaluation, Is.EqualTo(42));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work from-inside an exposed function")]
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var result = await Page.EvaluateFunctionAsync<int>(@"async function() {
                 return await callController(9, 3);
             }");
-            Assert.AreEqual(27, result);
+            Assert.That(result, Is.EqualTo(27));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should reject promise with exception")]
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 return Page.EvaluateFunctionAsync("() => not_existing_object.property");
             });
 
-            StringAssert.Contains("not_existing_object", exception.Message);
+            Assert.That(exception.Message, Does.Contain("not_existing_object"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should support thrown strings as error messages")]
@@ -142,7 +142,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                 () => Page.EvaluateExpressionAsync("throw 'qwerty'"));
-            StringAssert.Contains("qwerty", exception.Message);
+            Assert.That(exception.Message, Does.Contain("qwerty"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should support thrown numbers as error messages")]
@@ -150,7 +150,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(
                             () => Page.EvaluateExpressionAsync("throw 100500"));
-            StringAssert.Contains("100500", exception.Message);
+            Assert.That(exception.Message, Does.Contain("100500"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return complex objects")]
@@ -161,14 +161,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 foo = "bar!"
             };
             var result = await Page.EvaluateFunctionAsync<JsonElement>("a => a", obj);
-            Assert.AreEqual("bar!", result.GetProperty("foo").GetString());
+            Assert.That("bar!", Is.EqualTo(result.GetProperty("foo").GetString()));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return BigInt")]
         public async Task ShouldReturnBigInt()
         {
             var result = await Page.EvaluateFunctionAsync<object>("() => BigInt(42)");
-            Assert.AreEqual(new BigInteger(42), result);
+            Assert.That(result, Is.EqualTo(new BigInteger(42)));
         }
 
         [Test]
@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task BasicEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateFunctionAsync<object>(script);
-            Assert.AreEqual(expected, result);
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept \"undefined\" as one of multiple parameters")]
@@ -194,12 +194,12 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
                 null,
                 "foo");
-            Assert.True(result);
+            Assert.That(result, Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for non-serializable objects")]
         public async Task ShouldReturnNullForNonSerializableObjects()
-            => Assert.Null(await Page.EvaluateFunctionAsync("() => window"));
+            => Assert.That(await Page.EvaluateFunctionAsync("() => window"), Is.Null);
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should fail for circular object")]
         public async Task ShouldFailForCircularObject()
@@ -211,7 +211,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 return a;
             }");
 
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should be able to throw a tricky error")]
@@ -225,7 +225,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             {
                 throw new Error(errorText);
             }", errorText));
-            StringAssert.Contains(errorText, exception.Message);
+            Assert.That(exception.Message, Does.Contain(errorText));
         }
 
         [Test]
@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task BasicIntExressionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateExpressionAsync<int>(script);
-            Assert.AreEqual(expected, result);
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept element handle as an argument")]
@@ -248,7 +248,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             await Page.SetContentAsync("<section>42</section>");
             var element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("e => e.textContent", element);
-            Assert.AreEqual("42", text);
+            Assert.That(text, Is.EqualTo("42"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw if underlying element was disposed")]
@@ -256,11 +256,11 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         {
             await Page.SetContentAsync("<section>39</section>");
             var element = await Page.QuerySelectorAsync("section");
-            Assert.NotNull(element);
+            Assert.That(element, Is.Not.Null);
             await element.DisposeAsync();
             var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
-            StringAssert.Contains("JSHandle is disposed", exception.Message);
+            Assert.That(exception.Message, Does.Contain("JSHandle is disposed"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw if elementHandles are from other frames")]
@@ -270,16 +270,16 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
             var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
-            StringAssert.Contains("JSHandles can be evaluated only in the context they were created", exception.Message);
+            Assert.That(exception.Message, Does.Contain("JSHandles can be evaluated only in the context they were created"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should simulate a user gesture")]
         public async Task ShouldSimulateAUserGesture()
-            => Assert.True(await Page.EvaluateFunctionAsync<bool>(@"() => {
+            => Assert.That(await Page.EvaluateFunctionAsync<bool>(@"() => {
                 document.body.appendChild(document.createTextNode('test'));
                 document.execCommand('selectAll');
                 return document.execCommand('copy');
-            }"));
+            }"), Is.True);
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should not throw an error when evaluation does a navigation")]
         public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
@@ -290,14 +290,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 window.location = '/empty.html';
                 return [42];
             }");
-            Assert.AreEqual(new[] { 42 }, result);
+            Assert.That(result, Is.EqualTo(new[] { 42 }));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer 100Mb of data from page to node.js")]
         public async Task ShouldTransfer100MbOfDataFromPage()
         {
             var a = await Page.EvaluateFunctionAsync<string>("() => Array(100 * 1024 * 1024 + 1).join('a')");
-            Assert.AreEqual(100 * 1024 * 1024, a.Length);
+            Assert.That(a, Has.Length.EqualTo(100 * 1024 * 1024));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw error with detailed information on exception inside promise ")]
@@ -308,15 +308,15 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                     @"() => new Promise(() => {
                         throw new Error('Error in promise');
                     })"));
-            StringAssert.Contains("Error in promise", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Error in promise"));
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should properly serialize null fields")]
         public async Task ShouldProperlySerializeNullFields()
         {
             var result = await Page.EvaluateFunctionAsync<Dictionary<string, object>>("() => ({a: null})");
-            Assert.True(result.ContainsKey("a"));
-            Assert.Null(result["a"]);
+            Assert.That(result.ContainsKey("a"), Is.True);
+            Assert.That(result["a"], Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept element handle as an argument")]
@@ -325,28 +325,33 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             await Page.SetContentAsync("<section>42</section>");
             var element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
-            Assert.AreEqual("42", text);
+            Assert.That(text, Is.EqualTo("42"));
         }
 
+#pragma warning disable NUnit2021 // Incompatible types for EqualTo constraint
+        [Test]
+        [Ignore("I'm not sure how this ever worked?")]
         public async Task ShouldWorkWithoutGenerics()
         {
-            Assert.NotNull(await Page.EvaluateExpressionAsync("var obj = {}; obj;"));
-            Assert.NotNull(await Page.EvaluateExpressionAsync("[]"));
-            Assert.NotNull(await Page.EvaluateExpressionAsync("''"));
+            Assert.That(await Page.EvaluateExpressionAsync("var obj = {}; obj;"), Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync("[]"), Is.Not.Null);
+            Assert.That(await Page.EvaluateExpressionAsync("''"), Is.Not.Null);
 
             var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
-            Assert.NotNull(objectPopulated);
-            Assert.AreEqual(1, objectPopulated.Value.GetProperty("a").GetInt32());
+
+            Assert.That(objectPopulated, Is.Not.Null);
+            Assert.That(objectPopulated.Value.GetProperty("a").GetInt32(), Is.EqualTo(1));
 
             var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
-            Assert.AreEqual(1, arrayPopulated.Value.EnumerateArray().ElementAt(0));
+            Assert.That(arrayPopulated.Value.EnumerateArray().ElementAt(0), Is.EqualTo(1));
 
-            Assert.AreEqual("1", await Page.EvaluateExpressionAsync("'1'"));
-            Assert.AreEqual(1, await Page.EvaluateExpressionAsync("1"));
-            Assert.AreEqual(11111111, await Page.EvaluateExpressionAsync("11111111"));
-            Assert.AreEqual(11111111111111, await Page.EvaluateExpressionAsync("11111111111111"));
-            Assert.AreEqual(1.1, await Page.EvaluateExpressionAsync("1.1"));
+            Assert.That(await Page.EvaluateExpressionAsync("'1'"), Is.EqualTo("1"));
+            Assert.That(await Page.EvaluateExpressionAsync("1"), Is.EqualTo(1));
+            Assert.That(await Page.EvaluateExpressionAsync("11111111"), Is.EqualTo(11111111));
+            Assert.That(await Page.EvaluateExpressionAsync("11111111111111"), Is.EqualTo(11111111111111));
+            Assert.That(await Page.EvaluateExpressionAsync("1.1"), Is.EqualTo(1.1));
         }
+#pragma warning restore NUnit2021 // Incompatible types for EqualTo constraint
 
         public class ComplexObjectTestClass
         {

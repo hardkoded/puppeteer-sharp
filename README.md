@@ -60,7 +60,7 @@ await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L53-L61' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScreenshotAsync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L54-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScreenshotAsync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also change the view port before generating the screenshot
@@ -172,6 +172,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/MarkPflug"><img src="https://github.com/MarkPflug.png" width="60px" alt="Mark Pflug" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
 
 

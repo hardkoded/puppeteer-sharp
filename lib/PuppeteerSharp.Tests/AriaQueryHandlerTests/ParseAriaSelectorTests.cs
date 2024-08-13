@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var button = await Page.QuerySelectorAsync("aria/\u00A0\u00A0Submit button and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle non-breaking spaces")]
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             );
 
             var button = await Page.QuerySelectorAsync("aria/ubmit button and some spaces");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
             await ExpectFound(button);
         }
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var button = await Page.QuerySelectorAsync("aria/\u200B\u200BSubmit button and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
@@ -57,32 +57,32 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces[role='button']");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/  Submit button and some spaces[role=\"button\"]");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/Submit button and some spaces  [role=\"button\"]");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/Submit  button   and  some  spaces   [  role  =  \"button\" ] ");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/[role=\"button\"]Submit button and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/Submit button [role=\"button\"]and some spaces");
             await ExpectFound(button);
             button = await Page.QuerySelectorAsync("aria/[name=\"  Submit  button and some  spaces\"][role=\"button\"]");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/[name='  Submit  button and some  spaces'][role='button']");
-            Assert.Null(button);
+            Assert.That(button, Is.Null);
             button = await Page.QuerySelectorAsync("aria/ignored[name=\"Submit button and some spaces\"][role=\"button\"]");
             await ExpectFound(button);
             var ex = Assert.ThrowsAsync<PuppeteerException>(() => Page.QuerySelectorAsync("aria/smth[smth=\"true\"]"));
-            Assert.AreEqual("Unknown aria attribute \"smth\" in selector", ex!.Message);
+            Assert.That(ex!.Message, Is.EqualTo("Unknown aria attribute \"smth\" in selector"));
         }
 
         async Task ExpectFound(IElementHandle handle)
         {
-            Assert.NotNull(handle);
+            Assert.That(handle, Is.Not.Null);
             var id = await handle.EvaluateFunctionAsync<string>(@"(button) => {
                     return button.id;
                 }");
-            Assert.AreEqual("btn", id);
+            Assert.That(id, Is.EqualTo("btn"));
         }
     }
 }

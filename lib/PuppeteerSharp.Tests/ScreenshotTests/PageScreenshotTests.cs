@@ -10,6 +10,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 {
     public class PageScreenshotTests : PuppeteerBrowserContextBaseTest
     {
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithFile()
         {
             var outputFile = Path.Combine(BaseDirectory, "output.png");
@@ -32,8 +33,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await page.ScreenshotAsync(outputFile);
 
             fileInfo = new FileInfo(outputFile);
-            Assert.True(new FileInfo(outputFile).Length > 0);
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", outputFile));
+            Assert.That(new FileInfo(outputFile).Length, Is.GreaterThan(0));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", outputFile), Is.True);
 
             if (fileInfo.Exists)
             {
@@ -59,7 +60,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await page.GoToAsync("http://www.google.com");
             await page.ScreenshotAsync(outputFile);
             #endregion
-            Assert.True(File.Exists(outputFile));
+            Assert.That(File.Exists(outputFile), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should work")]
@@ -73,7 +74,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             });
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should clip rect")]
@@ -96,7 +97,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                     Height = 100
                 }
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should use scale for clip")]
@@ -120,9 +121,10 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                     Scale = 2,
                 }
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale2.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale2.png", screenshot), Is.True);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldClipScale()
         {
             await using var page = await Context.NewPageAsync();
@@ -143,7 +145,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                     Scale = 2
                 }
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect-scale.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should get screenshot bigger than the viewport")]
@@ -162,7 +164,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                     Height = 100
                 }
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel")]
@@ -192,7 +194,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             }
 
             await Task.WhenAll(tasks);
-            Assert.True(ScreenshotHelper.PixelMatch("grid-cell-1.png", tasks[0].Result));
+            Assert.That(ScreenshotHelper.PixelMatch("grid-cell-1.png", tasks[0].Result), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should take fullPage screenshots")]
@@ -209,7 +211,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             {
                 FullPage = true
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel in multiple pages")]
@@ -251,7 +253,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 
             for (var i = 0; i < n; i++)
             {
-                Assert.True(ScreenshotHelper.PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result));
+                Assert.That(ScreenshotHelper.PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result), Is.True);
             }
 
             var closeTasks = new List<Task>();
@@ -278,7 +280,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 OmitBackground = true
             });
 
-            Assert.True(ScreenshotHelper.PixelMatch("transparent.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("transparent.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should render white background on jpeg file")]
@@ -292,7 +294,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 OmitBackground = true,
                 Type = ScreenshotType.Jpeg
             });
-            Assert.True(ScreenshotHelper.PixelMatch("white.jpg", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("white.jpg", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should work with webp")]
@@ -305,7 +307,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             {
                 Type = ScreenshotType.Webp
             });
-            Assert.Greater(screenshot.Length, 0);
+            Assert.That(screenshot, Is.Not.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should work with odd clip size on Retina displays")]
@@ -323,7 +325,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 }
             });
 
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-odd-size.png", screenshot), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should return base64")]
@@ -338,7 +340,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotBase64Async();
 
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", Convert.FromBase64String(screenshot)));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", Convert.FromBase64String(screenshot)), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should work in \"fromSurface: false\" mode")]
@@ -356,18 +358,20 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 FromSurface = false,
             });
 
-            Assert.Greater(screenshot.Length, 0);
+            Assert.That(screenshot, Is.Not.Empty);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public void ShouldInferScreenshotTypeFromName()
         {
-            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"));
-            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"));
-            Assert.AreEqual(ScreenshotType.Jpeg, ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"));
-            Assert.AreEqual(ScreenshotType.Png, ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"));
-            Assert.Null(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"));
+            Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpg"), Is.EqualTo(ScreenshotType.Jpeg));
+            Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpe"), Is.EqualTo(ScreenshotType.Jpeg));
+            Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.jpeg"), Is.EqualTo(ScreenshotType.Jpeg));
+            Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.png"), Is.EqualTo(ScreenshotType.Png));
+            Assert.That(ScreenshotOptions.GetScreenshotTypeFromFile("Test.exe"), Is.Null);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithQuality()
         {
             await using var page = await Context.NewPageAsync();
@@ -383,7 +387,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 FullPage = true,
                 Quality = 100
             });
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot), Is.True);
         }
     }
 }
