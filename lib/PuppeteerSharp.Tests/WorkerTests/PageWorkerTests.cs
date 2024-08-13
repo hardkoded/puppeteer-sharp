@@ -74,9 +74,10 @@ namespace PuppeteerSharp.Tests.WorkerTests
             };
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
             var log = await consoleTcs.Task;
+
             Assert.That(log.Text, Is.EqualTo("1 2 3 JSHandle@object"));
-            Assert.That(log.Args, Has.Count.EqualTo(4));
-            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<object>();
+            Assert.That(log.Args.Count, Is.EqualTo(4));
+            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<string>();
             Assert.That(json, Is.EqualTo("null"));
         }
 

@@ -50,7 +50,9 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             var startTime = DateTime.UtcNow;
             var polling = 100;
             var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
-            var watchdog = Page.WaitForFunctionAsync("() => window.__FOO === 'hit'", new WaitForFunctionOptions { PollingInterval = polling });
+            var watchdog = Page.WaitForFunctionAsync(
+                "() => {console.log(window.__FOO); return window.__FOO === 'hit';}",
+                new WaitForFunctionOptions { PollingInterval = polling });
             await startedPolling;
             await Page.EvaluateFunctionAsync("() => setTimeout(window.__FOO = 'hit', 50)");
             await watchdog;
@@ -142,7 +144,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should return the success value as a JSHandle")]
-        public async Task ShouldReturnTheSuccessValueAsAJSHandle()
+        public async Task ShouldReturnTheSuccessValueAsAJsHandle()
             => Assert.That(await (await Page.WaitForFunctionAsync("() => 5")).JsonValueAsync<int>(), Is.EqualTo(5));
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should return the window as a success value")]
