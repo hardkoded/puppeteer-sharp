@@ -453,7 +453,7 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[ignorehttpserrors.spec] *",
+    "testIdPattern": "[acceptInsecureCerts.spec] *",
     "platforms": [
       "darwin",
       "linux",

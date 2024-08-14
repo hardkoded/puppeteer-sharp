@@ -10,7 +10,7 @@ public class BFCacheTests : PuppeteerPageBaseTest
     public BFCacheTests()
     {
         DefaultOptions = TestConstants.DefaultBrowserOptions();
-        DefaultOptions.IgnoreHTTPSErrors = true;
+        DefaultOptions.AcceptInsecureCerts = true;
     }
 
     [Test, Retry(2), PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page")]
