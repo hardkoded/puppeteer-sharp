@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
-        public bool IgnoreHTTPSErrors { get; set; }
+        public bool AcceptInsecureCerts { get; set; }
 
         /// <summary>
         /// Whether to run browser in headless mode. Defaults to true unless the devtools option is true.

@@ -15,10 +15,10 @@ namespace PuppeteerSharp.Cdp
             BrowserContext context,
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
-            bool ignoreHTTPSErrors,
+            bool acceptInsecureCerts,
             ViewPortOptions defaultViewport,
             TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue)
+            : base(targetInfo, session, context, targetManager, sessionFactory, acceptInsecureCerts, defaultViewport, screenshotTaskQueue)
         {
         }
 
