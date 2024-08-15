@@ -1,7 +1,4 @@
-using System;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace PuppeteerSharp
 {
@@ -9,7 +6,6 @@ namespace PuppeteerSharp
     /// Override permission.
     /// </summary>
     /// <seealso cref="IBrowserContext.OverridePermissionsAsync(string, System.Collections.Generic.IEnumerable{OverridePermission})"/>
-    [JsonConverter(typeof(StringEnumConverter))]
     public enum OverridePermission
     {
         /// <summary>

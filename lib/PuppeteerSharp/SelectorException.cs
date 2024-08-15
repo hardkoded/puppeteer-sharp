@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -47,15 +46,6 @@ namespace PuppeteerSharp
         /// <param name="message">Message.</param>
         /// <param name="innerException">Inner exception.</param>
         public SelectorException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SelectorException"/> class.
-        /// </summary>
-        /// <param name="info">Serialization Info.</param>
-        /// <param name="context">Streaming Context.</param>
-        protected SelectorException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 

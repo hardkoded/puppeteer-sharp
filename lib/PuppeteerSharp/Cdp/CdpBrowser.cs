@@ -46,14 +46,14 @@ public class CdpBrowser : Browser
         SupportedBrowser browser,
         Connection connection,
         string[] contextIds,
-        bool ignoreHTTPSErrors,
+        bool acceptInsecureCerts,
         ViewPortOptions defaultViewport,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetFunc = null)
     {
         BrowserType = browser;
-        IgnoreHTTPSErrors = ignoreHTTPSErrors;
+        AcceptInsecureCerts = acceptInsecureCerts;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
@@ -157,7 +157,7 @@ public class CdpBrowser : Browser
         SupportedBrowser browserToCreate,
         Connection connection,
         string[] contextIds,
-        bool ignoreHTTPSErrors,
+        bool acceptInsecureCerts,
         ViewPortOptions defaultViewPort,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
@@ -168,7 +168,7 @@ public class CdpBrowser : Browser
             browserToCreate,
             connection,
             contextIds,
-            ignoreHTTPSErrors,
+            acceptInsecureCerts,
             defaultViewPort,
             launcher,
             targetFilter,
@@ -267,7 +267,7 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                IgnoreHTTPSErrors,
+                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }
@@ -280,7 +280,7 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                IgnoreHTTPSErrors,
+                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }

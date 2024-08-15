@@ -1,11 +1,8 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Nunit.TestExpectations;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {

@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace PuppeteerSharp.Input
 {
     internal class MouseState

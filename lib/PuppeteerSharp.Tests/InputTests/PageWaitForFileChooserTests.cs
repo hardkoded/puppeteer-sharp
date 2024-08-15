@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.InputTests

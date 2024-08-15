@@ -29,7 +29,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 

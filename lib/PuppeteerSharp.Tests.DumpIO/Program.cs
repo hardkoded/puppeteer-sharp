@@ -1,12 +1,13 @@
-using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Tests.DumpIO
 {
-    class Program
+    public class Program
     {
         public static async Task Main(string[] args)
         {
+            Debug.Assert(args != null, nameof(args) + " != null");
             var options = new LaunchOptions
             {
                 Headless = true,

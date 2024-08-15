@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {

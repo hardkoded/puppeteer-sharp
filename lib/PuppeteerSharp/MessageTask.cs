@@ -1,18 +1,13 @@
-using System;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
     internal class MessageTask
     {
-        internal MessageTask()
-        {
-        }
-
         internal string Message { get; set; }
 
-        internal TaskCompletionSource<JObject> TaskWrapper { get; set; }
+        internal TaskCompletionSource<JsonElement?> TaskWrapper { get; set; }
 
         internal string Method { get; set; }
     }

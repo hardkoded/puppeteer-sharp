@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Cdp
         {
             _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
-                var protocolEvent = _puppeteerToProtocolLifecycle.GetValueOrDefault(w);
+                var protocolEvent = _puppeteerToProtocolLifecycle.GetValue(w);
                 Contract.Assert(protocolEvent != null, $"Unknown value for options.waitUntil: {w}");
                 return protocolEvent;
             });

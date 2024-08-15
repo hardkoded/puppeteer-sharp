@@ -1,12 +1,8 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-
 namespace PuppeteerSharp
 {
     /// <summary>
     /// An interval at which the <c>pageFunction</c> is executed.
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter), true)]
     public enum WaitForFunctionPollingOption
     {
         /// <summary>

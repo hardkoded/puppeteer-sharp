@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests

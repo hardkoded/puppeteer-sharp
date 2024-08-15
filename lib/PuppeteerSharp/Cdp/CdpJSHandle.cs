@@ -23,15 +23,12 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp;
 
 /// <inheritdoc/>
-[JsonConverter(typeof(JSHandleMethodConverter))]
 public class CdpJSHandle : JSHandle
 {
     internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)

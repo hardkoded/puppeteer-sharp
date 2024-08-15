@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 
@@ -17,7 +18,7 @@ namespace PuppeteerSharp.PageAccessibility
         {
             var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
             var nodes = response.Nodes;
-            object backendNodeId = null;
+            JsonElement? backendNodeId = null;
             if (options?.Root != null)
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
@@ -31,7 +32,7 @@ namespace PuppeteerSharp.PageAccessibility
             var needle = defaultRoot;
             if (backendNodeId != null)
             {
-                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId.Equals(backendNodeId));
+                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId.GetInt32().Equals(backendNodeId.Value.GetInt32()));
                 if (needle == null)
                 {
                     return null;

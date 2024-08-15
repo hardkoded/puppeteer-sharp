@@ -1,7 +1,8 @@
 using System;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers.Json;
 
@@ -42,11 +43,12 @@ namespace PuppeteerSharp
         public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
         {
             var content = await SendAsync(method, args, true, options).ConfigureAwait(false);
-            return content.ToObject<T>(true);
+            Debug.Assert(content != null, nameof(content) + " != null");
+            return content.Value.ToObject<T>();
         }
 
         /// <inheritdoc/>
-        public abstract Task<JObject> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null);
+        public abstract Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null);
 
         /// <inheritdoc/>
         public abstract Task DetachAsync();

@@ -112,10 +112,10 @@ var result = await page.GetContentAsync();
 ```cs
 await using var page = await browser.NewPageAsync();
 var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
-Console.WriteLine(someObject.a);
+var someObject = await page.EvaluateFunctionAsync<JsonElement>("(value) => ({a: value})", 5);
+Console.WriteLine(someObject.GetProperty("a").GetString());
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L16-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-Evaluate' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L17-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-Evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Wait For Selector

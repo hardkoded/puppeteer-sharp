@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         };
 
         private static readonly Lazy<IReadOnlyDictionary<string, NetworkConditions>> _readOnlyConditions =
-            new Lazy<IReadOnlyDictionary<string, NetworkConditions>>(() => new ReadOnlyDictionary<string, NetworkConditions>(Conditions));
+            new(() => new ReadOnlyDictionary<string, NetworkConditions>(Conditions));
 
         internal static IReadOnlyDictionary<string, NetworkConditions> ToReadOnly() => _readOnlyConditions.Value;
     }

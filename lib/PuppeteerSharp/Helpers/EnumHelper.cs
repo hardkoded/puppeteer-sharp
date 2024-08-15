@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Helpers;
 
@@ -76,5 +77,40 @@ internal static class EnumHelper
         });
 
         return enumValues[value];
+    }
+
+    public static TEnum FromValueString<TEnum>(string value)
+        where TEnum : struct, Enum
+    {
+        var enumValues = _stringToEnumCache.GetOrAdd(typeof(TEnum), type =>
+        {
+            var names = Enum.GetNames(type);
+            var dictionary = new Dictionary<string, Enum>(StringComparer.OrdinalIgnoreCase);
+            foreach (var valueName in names)
+            {
+                var field = type.GetField(valueName);
+                var fieldValue = (TEnum)field.GetValue(null);
+                dictionary[valueName] = fieldValue;
+                if (field.GetCustomAttribute<EnumMemberAttribute>()?.Value is { } enumMember)
+                {
+                    dictionary[enumMember] = fieldValue;
+                }
+            }
+
+            return dictionary;
+        });
+
+        if (enumValues.TryGetValue(value, out var enumValue))
+        {
+            return (TEnum)enumValue;
+        }
+
+        var defaultEnumAttribute = typeof(TEnum).GetCustomAttribute<DefaultEnumValueAttribute>();
+        if (defaultEnumAttribute != null)
+        {
+            return (TEnum)(object)defaultEnumAttribute.Value;
+        }
+
+        throw new ArgumentException($"Unknown value '{value}' for enum {typeof(TEnum).Name}");
     }
 }

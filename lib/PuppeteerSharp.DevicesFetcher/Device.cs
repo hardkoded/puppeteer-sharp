@@ -1,14 +1,14 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.DevicesFetcher
 {
     public class Device
     {
-        [JsonProperty("userAgent")]
+        [JsonPropertyName("userAgent")]
         public string UserAgent { get; set; }
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("viewport")]
+        [JsonPropertyName("viewport")]
         public ViewPort Viewport { get; set; }
     }
 }

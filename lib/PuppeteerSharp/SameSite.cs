@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
@@ -6,7 +5,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// SameSite values in cookies.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), None)]
+    [DefaultEnumValue((int)None)]
     public enum SameSite
     {
         /// <summary>

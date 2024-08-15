@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
         }
 
-        private class MatchingResponseData
+        private sealed class MatchingResponseData
         {
             public Task<IFrame> FrameTask { get; internal set; }
             public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>();

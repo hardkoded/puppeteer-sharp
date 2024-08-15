@@ -82,7 +82,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets or Sets whether to ignore HTTPS errors during navigation.
         /// </summary>
-        bool IgnoreHTTPSErrors { get; set; }
+        bool AcceptInsecureCerts { get; set; }
 
         /// <summary>
         /// Gets a value indicating if the browser is closed.

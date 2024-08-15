@@ -22,14 +22,23 @@
 
 namespace PuppeteerSharp.Tests.TouchScreenTests;
 
-internal record TouchEvent
+internal sealed record TouchEvent
 {
+    private decimal _altitudeAngle;
     public string Type { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public decimal AltitudeAngle { get; set; }
+
+    public decimal AltitudeAngle
+    {
+        get => _altitudeAngle;
+        // There are some differences between Convert.ToDecimal(Math.PI / 2) and the value return by the browser.
+        // We will round the value to avoid those differences.
+        set => _altitudeAngle = decimal.Round(value, 12);
+    }
+
     public decimal AzimuthAngle { get; set; }
     public decimal Pressure { get; set; }
     public decimal TiltX { get; set; }
@@ -40,7 +49,7 @@ internal record TouchEvent
 
     public Detail[] ActiveTouches { get; set; } = [];
 
-    internal record Detail
+    internal sealed record Detail
     {
         public int ClientX { get; set; }
         public int ClientY { get; set; }

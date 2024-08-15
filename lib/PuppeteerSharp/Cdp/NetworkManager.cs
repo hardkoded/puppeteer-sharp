@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Cdp
 {
     internal class NetworkManager
     {
-        private readonly bool _ignoreHTTPSErrors;
+        private readonly bool _acceptInsecureCerts;
         private readonly NetworkEventManager _networkEventManager = new();
         private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = [];
@@ -33,13 +33,13 @@ namespace PuppeteerSharp.Cdp
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkManager"/> class.
         /// </summary>
-        /// <param name="ignoreHTTPSErrors">If set to <c>true</c> ignore http errors.</param>
+        /// <param name="acceptInsecureCerts">If set to <c>true</c> ignore http errors.</param>
         /// <param name="frameManager">Frame manager.</param>
         /// <param name="loggerFactory">Logger factory.</param>
-        internal NetworkManager(bool ignoreHTTPSErrors, IFrameProvider frameManager, ILoggerFactory loggerFactory)
+        internal NetworkManager(bool acceptInsecureCerts, IFrameProvider frameManager, ILoggerFactory loggerFactory)
         {
             _frameManager = frameManager;
-            _ignoreHTTPSErrors = ignoreHTTPSErrors;
+            _acceptInsecureCerts = acceptInsecureCerts;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<NetworkManager>();
         }
@@ -71,7 +71,7 @@ namespace PuppeteerSharp.Cdp
             subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
 
             return Task.WhenAll(
-                _ignoreHTTPSErrors ? client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true }) : Task.CompletedTask,
+                _acceptInsecureCerts ? client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true }) : Task.CompletedTask,
                 client.SendAsync("Network.enable"),
                 ApplyExtraHTTPHeadersAsync(client),
                 ApplyNetworkConditionsAsync(client),
@@ -167,28 +167,28 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Fetch.requestPaused":
-                        await OnRequestPausedAsync(client, e.MessageData.ToObject<FetchRequestPausedResponse>(true)).ConfigureAwait(false);
+                        await OnRequestPausedAsync(client, e.MessageData.ToObject<FetchRequestPausedResponse>()).ConfigureAwait(false);
                         break;
                     case "Fetch.authRequired":
-                        await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>(true)).ConfigureAwait(false);
+                        await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>()).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>(true)).ConfigureAwait(false);
+                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>()).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
-                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>(true));
+                        OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
                         break;
                     case "Network.responseReceived":
-                        OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>(true));
+                        OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>());
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>(true));
+                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>());
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>(true));
+                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>());
                         break;
                     case "Network.responseReceivedExtraInfo":
-                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>(true)).ConfigureAwait(false);
+                        await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
                         break;
                 }
             }

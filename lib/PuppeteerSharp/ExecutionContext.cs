@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -46,7 +46,8 @@ namespace PuppeteerSharp
         private Frame Frame => World?.Frame;
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateExpressionAsync(string script) => EvaluateExpressionAsync<JToken>(script);
+        public Task<JsonElement?> EvaluateExpressionAsync(string script)
+            => EvaluateExpressionAsync<JsonElement?>(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
@@ -61,8 +62,8 @@ namespace PuppeteerSharp
             => CreateJSHandle(await EvaluateFunctionInternalAsync(false, script, args).ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
-            => EvaluateFunctionAsync<JToken>(script, args);
+        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+            => EvaluateFunctionAsync<JsonElement?>(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -237,20 +238,32 @@ namespace PuppeteerSharp
             switch (arg)
             {
                 case BigInteger big:
-                    return new { unserializableValue = $"{big}n" };
+                    return new RuntimeCallFunctionOnRequestArgumentValue()
+                    {
+                        UnserializableValue = $"{big}n",
+                    };
 
                 case int integer when integer == -0:
-                    return new { unserializableValue = "-0" };
+                    return new RuntimeCallFunctionOnRequestArgumentValue()
+                    {
+                        UnserializableValue = "-0",
+                    };
 
                 case double d:
                     if (double.IsPositiveInfinity(d))
                     {
-                        return new { unserializableValue = "Infinity" };
+                        return new RuntimeCallFunctionOnRequestArgumentValue()
+                        {
+                            UnserializableValue = "Infinity",
+                        };
                     }
 
                     if (double.IsNegativeInfinity(d))
                     {
-                        return new { unserializableValue = "-Infinity" };
+                        return new RuntimeCallFunctionOnRequestArgumentValue()
+                        {
+                            UnserializableValue = "-Infinity",
+                        };
                     }
 
                     if (double.IsNaN(d))

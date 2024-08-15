@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = promptData.ToJToken(),
+                Params = promptData.ToJsonElement(),
             });
 
             await promptTask;
@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = promptData.ToJToken(),
+                Params = promptData.ToJsonElement(),
             });
 
             await promptTask;
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = promptData.ToJToken(),
+                Params = promptData.ToJsonElement(),
             });
 
             await Task.WhenAll(promptTask, promptTask2);

@@ -1,6 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp
 {
@@ -29,11 +28,11 @@ namespace PuppeteerSharp
 
         internal abstract Task<T> EvaluateExpressionAsync<T>(string script);
 
-        internal abstract Task<JToken> EvaluateExpressionAsync(string script);
+        internal abstract Task<JsonElement?> EvaluateExpressionAsync(string script);
 
         internal abstract Task<T> EvaluateFunctionAsync<T>(string script, params object[] args);
 
-        internal abstract Task<JToken> EvaluateFunctionAsync(string script, params object[] args);
+        internal abstract Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args);
 
         internal async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options, params object[] args)
         {
