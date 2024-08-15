@@ -44,9 +44,6 @@ namespace PuppeteerSharp
         IFrame IFrame.ParentFrame => ParentFrame;
 
         /// <inheritdoc/>
-        public abstract bool IsOopFrame { get; }
-
-        /// <inheritdoc/>
         public string Id { get; internal set; }
 
         /// <inheritdoc/>

@@ -76,11 +76,6 @@ namespace PuppeteerSharp
         IFrame ParentFrame { get; }
 
         /// <summary>
-        /// `true` if the frame is an OOP frame, or `false` otherwise.
-        /// </summary>
-        bool IsOopFrame { get; }
-
-        /// <summary>
         /// Gets the frame's url.
         /// </summary>
         string Url { get; }

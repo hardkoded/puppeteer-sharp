@@ -443,7 +443,7 @@ namespace PuppeteerSharp.Cdp
             var frame = GetFrame(frameId);
             if (frame != null)
             {
-                if (session != null && frame.IsOopFrame)
+                if (session != null && frame.Client != Client)
                 {
                     frame.UpdateClient(session);
                 }

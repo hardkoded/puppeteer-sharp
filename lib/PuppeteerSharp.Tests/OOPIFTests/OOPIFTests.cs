@@ -68,19 +68,16 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             var frame = await frameTask.WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.False);
             var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.True);
             await nav.WithTimeout();
             nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             await nav.WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.False);
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
         }
 
@@ -139,13 +136,11 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             var frame = await frameTask.WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.False);
             await FrameUtils.NavigateFrameAsync(
               Page,
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.True);
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
@@ -160,7 +155,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage).WithTimeout();
             var frame = await frameTask.WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.False);
             var nav = frame.WaitForNavigationAsync();
             await FrameUtils.NavigateFrameAsync(
               Page,
@@ -168,7 +162,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             ).WithTimeout();
             await nav.WithTimeout();
-            Assert.That(frame.IsOopFrame, Is.True);
             var detachedTcs = new TaskCompletionSource<bool>();
             Page.FrameDetached += (sender, e) => detachedTcs.TrySetResult(true);
             await FrameUtils.DetachFrameAsync(Page, "frame1").WithTimeout();
@@ -271,7 +264,6 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/main-frame.html");
             var frame = await frameTask.WithTimeout();
             Assert.That((await GetIframesAsync()), Has.Length.EqualTo(2));
-            Assert.That(Page.Frames.Count(frameElement => frameElement.IsOopFrame), Is.EqualTo(2));
             Assert.That(await frame.EvaluateFunctionAsync<int>("() => document.querySelectorAll('button').length"), Is.EqualTo(1));
         }
 
