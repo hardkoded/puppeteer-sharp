@@ -1221,14 +1221,14 @@ public class CdpPage : Page
         }
 
         decimal pixels;
-        if (parameter is decimal || parameter is int)
+        if (parameter is decimal or int)
         {
             pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
         }
         else
         {
             var text = parameter.ToString();
-            var unit = text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture);
+            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
             string valueText;
             if (_unitToPixels.ContainsKey(unit))
             {
