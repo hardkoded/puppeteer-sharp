@@ -64,7 +64,7 @@ namespace PuppeteerSharp
             {
                 SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
-                _ => throw new ArgumentException("Invalid product"),
+                _ => throw new ArgumentException("Invalid browser"),
             };
 
             try
@@ -136,14 +136,14 @@ namespace PuppeteerSharp
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
 
-                var product = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
+                var browser = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
                   ? SupportedBrowser.Firefox
                   : SupportedBrowser.Chromium;
 
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await CdpBrowser
                     .CreateAsync(
-                        product,
+                        browser,
                         connection,
                         response.BrowserContextIds,
                         options.AcceptInsecureCerts,
