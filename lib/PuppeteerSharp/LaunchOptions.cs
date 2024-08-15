@@ -92,12 +92,6 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Keep alive value.
-        /// </summary>
-        [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
-        public int KeepAliveInterval { get; set; } = 0;
-
-        /// <summary>
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
         public bool LogProcess { get; set; }
@@ -150,12 +144,6 @@ namespace PuppeteerSharp
         /// </example>
         /// </remarks>
         public WebSocketFactory WebSocketFactory { get; set; }
-
-        /// <summary>
-        /// Optional connection transport.
-        /// </summary>
-        [Obsolete("Use " + nameof(TransportFactory) + " instead")]
-        public IConnectionTransport Transport { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
