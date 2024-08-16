@@ -70,6 +70,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "This is flaky on CI/CD",
+    "testIdPattern": "[oopif.spec] OOPIF should provide access to elements",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "",
     "testIdPattern": "[puppeteer-sharp] *",
     "platforms": ["darwin", "linux", "win32"],
