@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
             }).ContinueWith(_ => bothFired = true);
 
-            await waitForRequestTask.WithTimeout();
+            await waitForRequestTask.WithTimeout(5_000);
             await domContentLoadedTask.WithTimeout();
             Assert.That(bothFired, Is.False);
             responseCompleted.SetResult(true);
