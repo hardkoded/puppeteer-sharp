@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
@@ -6,7 +5,7 @@ namespace PuppeteerSharp.Cdp.Messaging
     /// <summary>
     /// Remote object type.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
+    [DefaultEnumValue((int)Other)]
     public enum RemoteObjectType
     {
         /// <summary>

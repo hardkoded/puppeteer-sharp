@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Mobile
     /// </summary>
     public static class DeviceDescriptors
     {
-        private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> Devices = new Dictionary<DeviceDescriptorName, DeviceDescriptor>
+        private static readonly Dictionary<DeviceDescriptorName, DeviceDescriptor> _devices = new()
         {
             [DeviceDescriptorName.BlackberryPlayBook] = new DeviceDescriptor
             {
@@ -1232,15 +1232,7 @@ namespace PuppeteerSharp.Mobile
         };
 
         private static readonly Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>> _readOnlyDevices =
-            new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
-
-        /// <summary>
-        /// Get the specified device description.
-        /// </summary>
-        /// <returns>The device descriptor.</returns>
-        /// <param name="name">Device Name.</param>
-        [Obsolete("Use Puppeteer.Devices instead")]
-        public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
+            new(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(_devices));
 
         internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
     }

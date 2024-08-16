@@ -347,7 +347,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         public async Task ShouldSetSecureSameSiteCookiesFromAFrame()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
+            options.AcceptInsecureCerts = true;
 
             await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             await using var page = await browser.NewPageAsync();

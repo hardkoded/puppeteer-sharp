@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp.Cdp;
@@ -202,7 +203,7 @@ public class CdpMouse : Mouse
             {
                 if (e.MessageID == "Input.dragIntercepted")
                 {
-                    result.TrySetResult(e.MessageData.SelectToken("data").ToObject<DragData>());
+                    result.TrySetResult(e.MessageData.GetProperty("data").ToObject<DragData>());
                     _client.MessageReceived -= DragIntercepted;
                 }
             }

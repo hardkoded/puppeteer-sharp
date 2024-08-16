@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class EmulateMediaFeaturesAsyncTests : PuppeteerPageBaseTest
     {
-        public EmulateMediaFeaturesAsyncTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaFeatures", "should work")]
         public async Task ShouldWork()
         {

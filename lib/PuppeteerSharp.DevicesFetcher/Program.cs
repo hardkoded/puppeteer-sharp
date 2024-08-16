@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 namespace PuppeteerSharp.DevicesFetcher
 {
     static class Program
@@ -34,7 +35,7 @@ namespace PuppeteerSharp.DevicesFetcher
             Device[] devices;
             try
             {
-                devices = JsonConvert.DeserializeObject<Device[]>(text);
+                devices = JsonSerializer.Deserialize<Device[]>(text);
             }
             catch (Exception ex)
             {
@@ -70,14 +71,6 @@ namespace PuppeteerSharp.Mobile
             new Lazy<IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>>(() => new ReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor>(Devices));
 
         internal static IReadOnlyDictionary<DeviceDescriptorName, DeviceDescriptor> ToReadOnly() => _readOnlyDevices.Value;
-
-        /// <summary>
-        /// Get the specified device description.
-        /// </summary>
-        /// <returns>The device descriptor.</returns>
-        /// <param name=""name"">Device Name.</param>
-        [Obsolete(""Use Puppeteer.Devices instead"")]
-        public static DeviceDescriptor Get(DeviceDescriptorName name) => Devices[name];
     }
 }";
 

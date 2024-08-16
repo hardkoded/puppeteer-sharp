@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Net.Http;
-using Newtonsoft.Json;
-using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -14,7 +12,6 @@ namespace PuppeteerSharp
         /// Gets or sets the HTTP method.
         /// </summary>
         /// <value>HTTP method.</value>
-        [JsonConverter(typeof(HttpMethodConverter))]
         public HttpMethod Method { get; set; }
 
         /// <summary>

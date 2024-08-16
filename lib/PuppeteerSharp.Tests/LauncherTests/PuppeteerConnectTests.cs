@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                IgnoreHTTPSErrors = true
+                AcceptInsecureCerts = true
             });
             await using var page = await browser.NewPageAsync();
             var requestTask = HttpsServer.WaitForRequest(

@@ -39,7 +39,7 @@ namespace PuppeteerSharp
         public Process Process => Launcher?.Process;
 
         /// <inheritdoc/>
-        public bool IgnoreHTTPSErrors { get; set; }
+        public bool AcceptInsecureCerts { get; set; }
 
         /// <inheritdoc/>
         public abstract bool IsClosed { get; }

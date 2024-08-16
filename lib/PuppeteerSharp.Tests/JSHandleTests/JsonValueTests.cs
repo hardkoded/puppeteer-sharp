@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -8,16 +8,13 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class JsonValueTests : PuppeteerPageBaseTest
     {
-        public JsonValueTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
-            var json = await aHandle.JsonValueAsync();
-            Assert.That(json, Is.EqualTo(JObject.Parse("{ foo: 'bar' }")));
+
+            var json = await aHandle.JsonValueAsync<JsonElement>();
+            Assert.That(json.GetProperty("foo").GetString(), Is.EqualTo("bar"));
         }
 
         [Test, Retry(2),

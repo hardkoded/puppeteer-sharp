@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Helpers
         }
 
         internal TValue GetValueOrDefault(TKey key)
-            => _dictionary.GetValueOrDefault(key);
+            => _dictionary.GetValue(key);
 
         internal bool TryGetValue(TKey key, out TValue value)
             => _dictionary.TryGetValue(key, out value);

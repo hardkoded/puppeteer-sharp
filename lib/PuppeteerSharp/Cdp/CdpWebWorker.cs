@@ -122,13 +122,13 @@ public class CdpWebWorker : WebWorker
             switch (e.MessageID)
             {
                 case "Runtime.executionContextCreated":
-                    OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true));
+                    OnExecutionContextCreated(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>());
                     break;
                 case "Runtime.consoleAPICalled":
                     await OnConsoleAPICalledAsync(e).ConfigureAwait(false);
                     break;
                 case "Runtime.exceptionThrown":
-                    OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true));
+                    OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>());
                     break;
             }
         }
@@ -144,7 +144,7 @@ public class CdpWebWorker : WebWorker
 
     private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
     {
-        var consoleData = e.MessageData.ToObject<PageConsoleResponse>(true);
+        var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
         await _consoleAPICalled(
             consoleData.Type,
             consoleData.Args.Select(i => new CdpJSHandle(World, i)).ToArray(),

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -20,9 +19,6 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public string Id { get; protected init; }
-
-        /// <inheritdoc/>
-        public bool IsIncognito => Id != null;
 
         /// <inheritdoc/>
         public bool IsClosed => !Browser.BrowserContexts().Contains(this);

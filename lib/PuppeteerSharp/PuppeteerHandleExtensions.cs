@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {
@@ -116,7 +116,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        internal static object FormatArgument(this IJSHandle jSHandle, ExecutionContext context)
+        internal static RuntimeCallFunctionOnRequestArgumentValue FormatArgument(this IJSHandle jSHandle, ExecutionContext context)
         {
             if (jSHandle.Disposed)
             {
@@ -132,17 +132,26 @@ namespace PuppeteerSharp
 
             if (unserializableValue != null)
             {
-                return new { unserializableValue };
+                return new RuntimeCallFunctionOnRequestArgumentValue
+                {
+                    UnserializableValue = unserializableValue,
+                };
             }
 
             if (jSHandle.RemoteObject.ObjectId == null)
             {
-                return new { jSHandle.RemoteObject.Value };
+                return new RuntimeCallFunctionOnRequestArgumentValue()
+                {
+                    Value = jSHandle.RemoteObject.Value,
+                };
             }
 
             var objectId = jSHandle.RemoteObject.ObjectId;
 
-            return new { objectId };
+            return new RuntimeCallFunctionOnRequestArgumentValue()
+            {
+                ObjectId = objectId,
+            };
         }
 
         internal static async IAsyncEnumerable<IElementHandle> TransposeIterableHandleAsync(this IJSHandle handle)

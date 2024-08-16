@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             Assert.That(coverage[0].Url, Does.Contain("/jscoverage/simple.html"));
-            Assert.That(coverage[0].Ranges, Is.EqualTo(new CoverageEntryRange[]
+            Assert.That(coverage[0].Ranges, Is.EqualTo(new[]
             {
                 new CoverageEntryRange
                 {
@@ -94,10 +94,10 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.That(coverage, Has.Length.EqualTo(2));
-            var orderedList = coverage.OrderBy(c => c.Url);
-            Assert.That(orderedList.ElementAt(0).Url, Does.Contain("/jscoverage/script1.js"));
-            Assert.That(orderedList.ElementAt(1).Url, Does.Contain("/jscoverage/script2.js"));
+            Assert.That(coverage.Length, Is.EqualTo(2));
+            var orderedList = coverage.OrderBy(c => c.Url).ToArray();
+            Assert.That(orderedList[0].Url, Does.Contain("/jscoverage/script1.js"));
+            Assert.That(orderedList[1].Url, Does.Contain("/jscoverage/script2.js"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report right ranges")]
@@ -166,7 +166,14 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Give the coverage some time.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.That(Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"),
+
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage, new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                });
+            Assert.That(
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @"\d{4}\/", "<PORT>/"),
                 Is.EqualTo(TestUtils.CompressText(involved)));
         }
 

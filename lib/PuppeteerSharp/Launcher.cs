@@ -2,12 +2,13 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -63,7 +64,7 @@ namespace PuppeteerSharp
             {
                 SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
-                _ => throw new ArgumentException("Invalid product"),
+                _ => throw new ArgumentException("Invalid browser"),
             };
 
             try
@@ -82,7 +83,7 @@ namespace PuppeteerSharp
                             options.Browser,
                             connection,
                             [],
-                            options.IgnoreHTTPSErrors,
+                            options.AcceptInsecureCerts,
                             options.DefaultViewport,
                             Process,
                             options.TargetFilter,
@@ -135,17 +136,17 @@ namespace PuppeteerSharp
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
 
-                var product = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
+                var browser = version.Product.ToLower(CultureInfo.CurrentCulture).Contains("firefox")
                   ? SupportedBrowser.Firefox
                   : SupportedBrowser.Chromium;
 
                 var response = await connection.SendAsync<GetBrowserContextsResponse>("Target.getBrowserContexts").ConfigureAwait(false);
                 return await CdpBrowser
                     .CreateAsync(
-                        product,
+                        browser,
                         connection,
                         response.BrowserContextIds,
-                        options.IgnoreHTTPSErrors,
+                        options.AcceptInsecureCerts,
                         options.DefaultViewport,
                         null,
                         options.TargetFilter,
@@ -172,7 +173,7 @@ namespace PuppeteerSharp
                         data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
                     }
 
-                    return JsonConvert.DeserializeObject<WSEndpointResponse>(data).WebSocketDebuggerUrl;
+                    return JsonSerializer.Deserialize<WSEndpointResponse>(data, JsonHelper.DefaultJsonSerializerSettings.Value).WebSocketDebuggerUrl;
                 }
 
                 throw new PuppeteerException($"Invalid URL {browserURL}");

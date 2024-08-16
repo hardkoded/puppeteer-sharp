@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class OfflineModeTests : PuppeteerPageBaseTest
     {
-        public OfflineModeTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
         public async Task ShouldWork()
         {

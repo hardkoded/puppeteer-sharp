@@ -13,13 +13,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
-        public bool IgnoreHTTPSErrors { get; set; }
-
-        /// <summary>
-        /// If set to true, sets Headless = false, otherwise, enables automation.
-        /// </summary>
-        [Obsolete("No longer required and usages should be removed")]
-        public bool AppMode { get; set; }
+        public bool AcceptInsecureCerts { get; set; }
 
         /// <summary>
         /// A browser websocket endpoint to connect to.
@@ -38,12 +32,6 @@ namespace PuppeteerSharp
         public int SlowMo { get; set; }
 
         /// <summary>
-        /// Keep alive value.
-        /// </summary>
-        [Obsolete("Chromium doesn't support pings yet (see: https://bugs.chromium.org/p/chromium/issues/detail?id=865002)")]
-        public int KeepAliveInterval { get; set; } = 0;
-
-        /// <summary>
         /// Optional factory for <see cref="WebSocket"/> implementations.
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
@@ -54,12 +42,6 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
-
-        /// <summary>
-        /// Optional connection transport.
-        /// </summary>
-        [Obsolete("Use " + nameof(TransportFactory) + " instead")]
-        public IConnectionTransport Transport { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.

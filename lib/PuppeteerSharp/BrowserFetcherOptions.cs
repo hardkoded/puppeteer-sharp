@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -17,7 +16,7 @@ namespace PuppeteerSharp
         public delegate Task CustomFileDownloadAction(string address, string fileName);
 
         /// <summary>
-        /// Product. Defaults to Chrome.
+        /// Browser. Defaults to Chrome.
         /// </summary>
         public SupportedBrowser Browser { get; set; } = SupportedBrowser.Chrome;
 

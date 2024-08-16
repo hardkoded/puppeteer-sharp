@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -31,15 +30,6 @@ namespace PuppeteerSharp
         /// <param name="innerException">Inner exception.</param>
         public EvaluationFailedException(string message, Exception innerException)
             : base(RewriteErrorMeesage(message), innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EvaluationFailedException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected EvaluationFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

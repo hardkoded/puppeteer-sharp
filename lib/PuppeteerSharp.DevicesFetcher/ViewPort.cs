@@ -1,22 +1,22 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.DevicesFetcher
 {
     public class ViewPort
     {
-        [JsonProperty("width")]
+        [JsonPropertyName("width")]
         public int Width { get; set; }
-        [JsonProperty("height")]
+        [JsonPropertyName("height")]
         public int Height { get; set; }
 
-        [JsonProperty("deviceScaleFactor")]
+        [JsonPropertyName("deviceScaleFactor")]
         public double DeviceScaleFactor { get; set; }
 
-        [JsonProperty("isMobile")]
+        [JsonPropertyName("isMobile")]
         public bool IsMobile { get; set; }
-        [JsonProperty("hasTouch")]
+        [JsonPropertyName("hasTouch")]
         public bool HasTouch { get; set; }
-        [JsonProperty("isLandscape")]
+        [JsonPropertyName("isLandscape")]
         public bool IsLandscape { get; set; }
     }
 }

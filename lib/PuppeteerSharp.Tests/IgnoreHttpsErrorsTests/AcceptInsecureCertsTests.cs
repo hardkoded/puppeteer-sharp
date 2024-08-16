@@ -1,31 +1,27 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 {
-    public class IgnoreHttpsErrorsTests : PuppeteerPageBaseTest
+    public class AcceptInsecureCertsTests : PuppeteerPageBaseTest
     {
-        public IgnoreHttpsErrorsTests() : base()
+        public AcceptInsecureCertsTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.IgnoreHTTPSErrors = true;
+            DefaultOptions.AcceptInsecureCerts = true;
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync($"{TestConstants.HttpsPrefix}/empty.html");
             Assert.That(response.Ok, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with request interception")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -34,7 +30,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "ignoreHTTPSErrors", "should work with mixed content")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with mixed content")]
         public async Task ShouldWorkWithMixedContent()
         {
             HttpsServer.SetRoute("/mixedcontent.html", async (context) =>

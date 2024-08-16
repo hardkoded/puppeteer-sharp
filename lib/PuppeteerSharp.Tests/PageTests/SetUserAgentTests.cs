@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        public SetUserAgentTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
@@ -47,7 +43,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
-        public async Task ShouldWorkWithAdditionalUserAgentMetdata()
+        public async Task ShouldWorkWithAdditionalUserAgentMetadata()
         {
             await Page.SetUserAgentAsync(
                 "MockBrowser",
@@ -71,7 +67,7 @@ namespace PuppeteerSharp.Tests.PageTests
               }")
 , Is.False);
 
-            var uaData = await Page.EvaluateFunctionAsync<Dictionary<string, object>>(@"() => {
+            var uaData = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
                 return navigator.userAgentData.getHighEntropyValues([
                   'architecture',
                   'model',
@@ -80,10 +76,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 ]);
             }");
 
-            Assert.That(uaData["architecture"], Is.EqualTo("Mock1"));
-            Assert.That(uaData["model"], Is.EqualTo("Mockbook"));
-            Assert.That(uaData["platform"], Is.EqualTo("MockOS"));
-            Assert.That(uaData["platformVersion"], Is.EqualTo("3.1"));
+            Assert.That(uaData.GetProperty("architecture").GetString(), Is.EqualTo("Mock1"));
+            Assert.That(uaData.GetProperty("model").GetString(), Is.EqualTo("Mockbook"));
+            Assert.That(uaData.GetProperty("platform").GetString(), Is.EqualTo("MockOS"));
+            Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("3.1"));
             Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
         }
     }

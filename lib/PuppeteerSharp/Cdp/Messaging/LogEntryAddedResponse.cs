@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         internal class LogEntry
         {
-            public TargetType Source { get; set; }
+            public LogSource Source { get; set; }
 
             public RemoteObject[] Args { get; set; }
 
