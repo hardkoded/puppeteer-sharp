@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests

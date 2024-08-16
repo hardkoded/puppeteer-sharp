@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
@@ -7,12 +6,13 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target type.
     /// </summary>
-    [JsonConverter(typeof(FlexibleStringEnumConverter), Other)]
+    [DefaultEnumValue((int)Other)]
     public enum TargetType
     {
         /// <summary>
         /// The other.
         /// </summary>
+        [EnumMember(Value = "other")]
         Other,
 
         /// <summary>
@@ -96,6 +96,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Webview.
         /// </summary>
+        [EnumMember(Value = "webview")]
         Webview,
 
         /// <summary>

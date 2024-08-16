@@ -8,7 +8,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
-        bool IgnoreHTTPSErrors { get; }
+        bool AcceptInsecureCerts { get; }
 
         /// <summary>
         /// Gets or sets the default Viewport.

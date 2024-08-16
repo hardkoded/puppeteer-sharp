@@ -4,41 +4,34 @@ using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests
 {
-    public sealed class PollerInterceptor : IConnectionTransport
+    public sealed class PollerInterceptor(IConnectionTransport connectionTransport) : IConnectionTransport
     {
-        private readonly IConnectionTransport _connectionTransport;
-
-        public PollerInterceptor(IConnectionTransport connectionTransport)
-        {
-            _connectionTransport = connectionTransport;
-        }
-
         public event EventHandler<string> MessageSent;
 
         public Task SendAsync(string message)
         {
-            var task = _connectionTransport.SendAsync(message);
-            MessageSent?.Invoke(_connectionTransport, message);
+            var task = connectionTransport.SendAsync(message);
+            MessageSent?.Invoke(connectionTransport, message);
             return task;
         }
 
-        public bool IsClosed => _connectionTransport.IsClosed;
+        public bool IsClosed => connectionTransport.IsClosed;
 
         public event EventHandler<TransportClosedEventArgs> Closed
         {
-            add { _connectionTransport.Closed += value; }
-            remove { _connectionTransport.Closed -= value; }
+            add { connectionTransport.Closed += value; }
+            remove { connectionTransport.Closed -= value; }
         }
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived
         {
-            add { _connectionTransport.MessageReceived += value; }
-            remove { _connectionTransport.MessageReceived -= value; }
+            add { connectionTransport.MessageReceived += value; }
+            remove { connectionTransport.MessageReceived -= value; }
         }
 
-        public void Dispose() => _connectionTransport.Dispose();
+        public void Dispose() => connectionTransport.Dispose();
 
-        public void StopReading() => _connectionTransport.StopReading();
+        public void StopReading() => connectionTransport.StopReading();
 
         public Task<bool> WaitForStartPollingAsync()
         {
@@ -48,7 +41,7 @@ namespace PuppeteerSharp.Tests
             // We intercept the poller.start() call to prevent tests from continuing before the polling has started.
             MessageSent += (_, message) =>
             {
-                if (message.Contains("poller => poller.start()"))
+                if (message.Contains("poller.start()"))
                 {
                     startedPolling.SetResult(true);
                 }

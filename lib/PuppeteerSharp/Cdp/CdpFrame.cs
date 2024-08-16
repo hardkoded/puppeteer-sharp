@@ -54,13 +54,10 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    public override CDPSession Client { get; protected set; }
+    public sealed override CDPSession Client { get; protected set; }
 
     /// <inheritdoc/>
     public override IPage Page => FrameManager.Page;
-
-    /// <inheritdoc/>
-    public override bool IsOopFrame => Client != FrameManager.Client;
 
     /// <inheritdoc/>
     public override IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
@@ -80,10 +77,10 @@ public class CdpFrame : Frame
         }
 
         var referrer = string.IsNullOrEmpty(options.Referer)
-            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
+            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue(RefererHeaderName)
             : options.Referer;
         var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
-            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
+            ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue("referer-policy")
             : options.ReferrerPolicy;
         var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
 
@@ -98,8 +95,9 @@ public class CdpFrame : Frame
             await task.ConfigureAwait(false);
 
             task = await Task.WhenAny(
-                watcher.TerminationTask,
-                ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask).ConfigureAwait(false);
+                    watcher.TerminationTask,
+                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
+                .ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
         }
@@ -122,7 +120,8 @@ public class CdpFrame : Frame
 
             ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
-            if (!string.IsNullOrEmpty(response.ErrorText) && response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
+            if (!string.IsNullOrEmpty(response.ErrorText) &&
+                response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
             {
                 throw new NavigationException(response.ErrorText, url);
             }
@@ -137,7 +136,9 @@ public class CdpFrame : Frame
         var raceTask = await Task.WhenAny(
         [
             watcher.NewDocumentNavigationTask,
-            .. options?.IgnoreSameDocumentNavigation == true ? Array.Empty<Task>() : [watcher.SameDocumentNavigationTask],
+            .. options?.IgnoreSameDocumentNavigation == true
+                ? Array.Empty<Task>()
+                : [watcher.SameDocumentNavigationTask],
             watcher.TerminationTask,
         ]).ConfigureAwait(false);
 
@@ -178,7 +179,8 @@ public class CdpFrame : Frame
             throw new ArgumentNullException(nameof(options));
         }
 
-        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
+        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+            string.IsNullOrEmpty(options.Content))
         {
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
@@ -244,7 +246,8 @@ public class CdpFrame : Frame
             throw new ArgumentNullException(nameof(options));
         }
 
-        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) && string.IsNullOrEmpty(options.Content))
+        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+            string.IsNullOrEmpty(options.Content))
         {
             throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
         }
@@ -331,17 +334,5 @@ public class CdpFrame : Frame
 
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
-    {
-        if (IsOopFrame)
-        {
-            return FrameManager.GetDeviceRequestPromptManager(Client);
-        }
-
-        if (ParentFrame == null)
-        {
-            throw new PuppeteerException("Unable to find parent frame");
-        }
-
-        return ParentFrame.GetDeviceRequestPromptManager();
-    }
+        => FrameManager.GetDeviceRequestPromptManager(Client);
 }

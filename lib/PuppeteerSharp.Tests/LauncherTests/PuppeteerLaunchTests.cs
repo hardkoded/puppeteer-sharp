@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
+            options.AcceptInsecureCerts = true;
 
             await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             await using var page = await browser.NewPageAsync();

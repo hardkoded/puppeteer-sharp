@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace PuppeteerSharp.Cdp.Messaging
 {
     internal class TargetSetDiscoverTargetsRequest
@@ -10,10 +8,8 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         internal class DiscoverFilter
         {
-            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public string Type { get; set; }
 
-            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public bool? Exclude { get; set; }
         }
     }

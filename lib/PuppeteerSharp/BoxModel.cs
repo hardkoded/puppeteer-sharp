@@ -5,10 +5,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class BoxModel
     {
-        internal BoxModel()
-        {
-        }
-
         /// <summary>
         /// Gets the Content box.
         /// </summary>
@@ -32,11 +28,11 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the element's width.
         /// </summary>
-        public int Width { get; set; }
+        public decimal Width { get; set; }
 
         /// <summary>
         /// Gets the element's height.
         /// </summary>
-        public int Height { get; set; }
+        public decimal Height { get; set; }
     }
 }

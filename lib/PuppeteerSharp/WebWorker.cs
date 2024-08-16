@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -68,7 +68,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<JToken> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
             => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>

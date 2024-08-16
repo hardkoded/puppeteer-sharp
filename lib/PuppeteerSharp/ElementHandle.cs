@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
@@ -114,7 +114,7 @@ namespace PuppeteerSharp
                     clip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
                 }
 
-                var points = await EvaluateFunctionAsync<int[]>(@"() => {
+                var points = await EvaluateFunctionAsync<decimal[]>(@"() => {
                     if (!window.visualViewport) {
                         throw new Error('window.visualViewport is not supported.');
                     }
@@ -124,8 +124,8 @@ namespace PuppeteerSharp
                     ];
                 }").ConfigureAwait(false);
 
-                clip.X += points[0];
-                clip.Y += points[1];
+                clip.X += decimal.Floor(points[0]);
+                clip.Y += decimal.Floor(points[1]);
 
                 options.Clip = clip.ToClip();
 
@@ -199,7 +199,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task FocusAsync() =>
-            BindIsolatedHandleAsync<JToken, ElementHandle>(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
+            BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
 
         /// <inheritdoc/>
         public Task TypeAsync(string text, TypeOptions options = null)
@@ -669,7 +669,7 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
-            => BindIsolatedHandleAsync<JToken, ElementHandle>(handle
+            => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(
                         @"element => {
                             element.scrollIntoView({
@@ -931,11 +931,11 @@ namespace PuppeteerSharp
                     const rect = element.getBoundingClientRect();
                     const style = window.getComputedStyle(element);
                     return {
-                        X:
+                        x:
                         rect.left +
                             parseInt(style.paddingLeft, 10) +
                             parseInt(style.borderLeftWidth, 10),
-                        Y:
+                        y:
                         rect.top +
                             parseInt(style.paddingTop, 10) +
                             parseInt(style.borderTopWidth, 10),

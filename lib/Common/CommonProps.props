@@ -11,6 +11,6 @@
     </None>
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet format $(ProjectPath)" />
+    <Exec Command="dotnet format $(ProjectPath) --exclude-diagnostics CA1865" />
   </Target>
 </Project>

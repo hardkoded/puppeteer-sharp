@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
 {
@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
             public IEnumerable<AXTreeProperty> Properties { get; set; }
 
-            public object BackendDOMNodeId { get; set; }
+            public JsonElement BackendDOMNodeId { get; set; }
 
             public bool Ignored { get; set; }
         }
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         {
             public string Type { get; set; }
 
-            public JToken Value { get; set; }
+            public JsonElement Value { get; set; }
         }
     }
 }

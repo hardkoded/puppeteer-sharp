@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PuppeteerSharp
 {
@@ -12,7 +12,7 @@ namespace PuppeteerSharp
     /// <seealso cref="IPage.GoForwardAsync(NavigationOptions)"/>
     /// <seealso cref="IPage.ReloadAsync(int?, WaitUntilNavigation[])"/>
     /// <seealso cref="IPage.Response"/>
-    /// <seealso cref="IPage.WaitForResponseAsync(Func{IResponse, bool}, WaitForOptions)"/>
+    /// <seealso cref="IPage.WaitForResponseAsync(System.Func{PuppeteerSharp.IResponse,bool}, WaitForOptions)"/>
     public interface IResponse
     {
         /// <summary>
@@ -90,18 +90,20 @@ namespace PuppeteerSharp
         Task<string> TextAsync();
 
         /// <summary>
-        /// Returns a Task which resolves to a <see cref="JObject"/> representation of response body.
+        /// Returns a Task which resolves to a <see cref="JsonDocument"/> representation of response body.
         /// </summary>
+        /// <param name="options">Parsing options.</param>
         /// <seealso cref="JsonAsync{T}"/>
-        /// <returns>A Task which resolves to a <see cref="JObject"/> representation of response body.</returns>
-        Task<JObject> JsonAsync();
+        /// <returns>A Task which resolves to a <see cref="JsonDocument"/> representation of response body.</returns>
+        Task<JsonDocument> JsonAsync(JsonDocumentOptions options = default);
 
         /// <summary>
         /// Returns a Task which resolves to a <typeparamref name="T"/> representation of response body.
         /// </summary>
+        /// <param name="options">Parsing options.</param>
         /// <typeparam name="T">The type of the response.</typeparam>
         /// <seealso cref="JsonAsync"/>
         /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body.</returns>
-        Task<T> JsonAsync<T>();
+        Task<T> JsonAsync<T>(JsonSerializerOptions options = default);
     }
 }

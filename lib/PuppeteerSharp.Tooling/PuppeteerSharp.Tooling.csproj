@@ -11,11 +11,6 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 		<PackageReference Include="System.CodeDom" Version="5.0.0" />
-		<PackageReference Include="Macross.Json.Extensions" Version="1.5.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Primitives" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 		<PackageReference Include="NUnit" Version="4.1.0" />
 	</ItemGroup>

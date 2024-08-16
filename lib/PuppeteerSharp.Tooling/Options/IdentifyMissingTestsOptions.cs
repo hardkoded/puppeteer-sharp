@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tooling
     /// Describes the options for scaffolding the tests.
     /// </summary>
     [Verb("missing-tests", HelpText = "Checks if there are missing tests in the C# variant, compared to the specs.")]
-    internal class IdentifyMissingTestsOptions
+    internal sealed class IdentifyMissingTestsOptions
     {
         [Option(Required = true, HelpText = "Location of spec files.")]
         public string SpecFileLocations { get; set; }

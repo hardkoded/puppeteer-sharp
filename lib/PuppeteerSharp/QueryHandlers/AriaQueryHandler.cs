@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
 
 namespace PuppeteerSharp.QueryHandlers
@@ -10,10 +11,9 @@ namespace PuppeteerSharp.QueryHandlers
     internal class AriaQueryHandler : QueryHandler
     {
         private static readonly Regex _ariaSelectorAttributeRegEx = new(
-            "\\[\\s*(?<attribute>\\w+)\\s*=\\s*(?<quote>\"|')(?<value>\\\\.|.*?(?=\\k<quote>))\\k<quote>\\s*\\]",
+            """\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""",
             RegexOptions.Compiled);
 
-        private static readonly Regex _normalizedRegex = new(" +", RegexOptions.Compiled);
         private static readonly string[] _nonElementNodeRoles = { "StaticText", "InlineTextBox" };
 
         public AriaQueryHandler()
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.QueryHandlers
             AriaQueryOption queryOptions = new();
             var defaultName = _ariaSelectorAttributeRegEx.Replace(selector, match =>
             {
-                var attribute = match.Groups["attribute"].Value.Trim();
+                var attribute = match.Groups["attribute"].Value;
                 if (!knownAriaAttributes.Contains(attribute))
                 {
                     throw new PuppeteerException($"Unknown aria attribute \"{attribute}\" in selector");
@@ -87,11 +87,11 @@ namespace PuppeteerSharp.QueryHandlers
 
                 if (attribute == "name")
                 {
-                    queryOptions.Name = NormalizeValue(match.Groups["value"].Value);
+                    queryOptions.Name = match.Groups["value"].Value;
                 }
                 else
                 {
-                    queryOptions.Role = NormalizeValue(match.Groups["value"].Value);
+                    queryOptions.Role = match.Groups["value"].Value;
                 }
 
                 return string.Empty;
@@ -99,12 +99,10 @@ namespace PuppeteerSharp.QueryHandlers
 
             if (!string.IsNullOrEmpty(defaultName) && string.IsNullOrEmpty(queryOptions.Name))
             {
-                queryOptions.Name = NormalizeValue(defaultName);
+                queryOptions.Name = defaultName;
             }
 
             return queryOptions;
-
-            static string NormalizeValue(string value) => _normalizedRegex.Replace(value, " ").Trim();
         }
     }
 }

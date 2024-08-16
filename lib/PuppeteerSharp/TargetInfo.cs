@@ -1,4 +1,5 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -7,54 +8,44 @@ namespace PuppeteerSharp
     /// </summary>
     public class TargetInfo
     {
-        internal TargetInfo()
-        {
-        }
-
         /// <summary>
         /// Gets the type.
         /// </summary>
         /// <value>The type.</value>
-        [JsonProperty]
-        public TargetType Type { get; internal set; }
+        public TargetType Type { get; set; }
 
         /// <summary>
         /// Gets the URL.
         /// </summary>
         /// <value>The URL.</value>
-        [JsonProperty]
-        public string Url { get; internal set; }
+        public string Url { get; set; }
 
         /// <summary>
         /// Gets the target identifier.
         /// </summary>
         /// <value>The target identifier.</value>
-        [JsonProperty]
-        public string TargetId { get; internal set; }
+        public string TargetId { get; set; }
 
         /// <summary>
         /// Gets the target browser contextId.
         /// </summary>
-        [JsonProperty]
-        public string BrowserContextId { get; internal set; }
+        [JsonConverter(typeof(AnyTypeToStringConverter))]
+        public string BrowserContextId { get; set; }
 
         /// <summary>
         /// Get the target that opened this target.
         /// </summary>
-        [JsonProperty]
-        public string OpenerId { get; internal set; }
+        public string OpenerId { get; set; }
 
         /// <summary>
         /// Gets whether the target is attached.
         /// </summary>
-        [JsonProperty]
-        public bool Attached { get; internal set; }
+        public bool Attached { get; set; }
 
         /// <summary>
         /// Provides additional details for specific target types. For example, for
         /// the type of "page", this may be set to "portal" or "prerender".
         /// </summary>
-        [JsonProperty]
         public string Subtype { get; set; }
     }
 }

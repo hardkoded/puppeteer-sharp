@@ -206,8 +206,8 @@ namespace PuppeteerSharp
             return assemblyDirectory.FullName;
         }
 
-        private static string GetDownloadURL(SupportedBrowser product, Platform platform, string baseUrl, string buildId)
-            => _downloadsUrl[product](platform, buildId, baseUrl);
+        private static string GetDownloadURL(SupportedBrowser browser, Platform platform, string baseUrl, string buildId)
+            => _downloadsUrl[browser](platform, buildId, baseUrl);
 
         private static void ExtractTar(string zipPath, string folderPath)
         {

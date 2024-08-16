@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
@@ -35,15 +34,6 @@ namespace PuppeteerSharp
         }
 
         internal MessageException(MessageTask callback, ConnectionError error) : base(GetCallbackMessage(callback, error))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MessageException"/> class.
-        /// </summary>
-        /// <param name="info">The serialization collection for custom serializations.</param>
-        /// <param name="context">Provides additional caller-provided context.</param>
-        protected MessageException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 

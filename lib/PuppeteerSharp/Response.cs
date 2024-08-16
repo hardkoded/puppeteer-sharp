@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
@@ -62,9 +62,17 @@ namespace PuppeteerSharp
         public async Task<string> TextAsync() => Encoding.UTF8.GetString(await BufferAsync().ConfigureAwait(false));
 
         /// <inheritdoc/>
-        public async Task<JObject> JsonAsync() => JObject.Parse(await TextAsync().ConfigureAwait(false));
+        public async Task<JsonDocument> JsonAsync(JsonDocumentOptions options = default)
+        {
+            var content = await TextAsync().ConfigureAwait(false);
+            return JsonDocument.Parse(content, options);
+        }
 
         /// <inheritdoc/>
-        public async Task<T> JsonAsync<T>() => (await JsonAsync().ConfigureAwait(false)).ToObject<T>(true);
+        public async Task<T> JsonAsync<T>(JsonSerializerOptions options = default)
+        {
+            var content = await TextAsync().ConfigureAwait(false);
+            return JsonSerializer.Deserialize<T>(content, options ?? JsonHelper.DefaultJsonSerializerSettings.Value);
+        }
     }
 }

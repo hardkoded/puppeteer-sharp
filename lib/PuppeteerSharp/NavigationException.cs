@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace PuppeteerSharp
 {
@@ -41,15 +40,6 @@ namespace PuppeteerSharp
         /// <param name="innerException">Inner exception.</param>
         public NavigationException(string message, Exception innerException) : base(message, innerException)
             => Url = (innerException as NavigationException)?.Url;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NavigationException"/> class.
-        /// </summary>
-        /// <param name="info">Info.</param>
-        /// <param name="context">Context.</param>
-        protected NavigationException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
 
         /// <inheritdoc/>
         public override string Message
