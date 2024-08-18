@@ -131,7 +131,7 @@ namespace PuppeteerSharp.BrowserData
         private static (FirefoxChannel Channel, string BuildId) ParseBuildId(string buildId)
         {
             // Iterate through all the FirefoxChannel enum values as string
-            foreach (var value in Enum.GetValues(typeof(FirefoxChannel)).Cast<FirefoxChannel>().Select(v => v.ToValueString()))
+            foreach (var value in EnumHelper.GetValues<FirefoxChannel>().Select(v => v.ToValueString()))
             {
                 if (buildId.StartsWith(value, StringComparison.OrdinalIgnoreCase))
                 {
