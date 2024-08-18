@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace PuppeteerSharp.BrowserData
@@ -9,14 +8,6 @@ namespace PuppeteerSharp.BrowserData
     /// </summary>
     public class InstalledBrowser
     {
-        private static readonly Dictionary<SupportedBrowser, Func<Platform, string, string>> _executablePathByBrowser = new()
-        {
-            [SupportedBrowser.Chrome] = Chrome.RelativeExecutablePath,
-            [SupportedBrowser.ChromeHeadlessShell] = ChromeHeadlessShell.RelativeExecutablePath,
-            [SupportedBrowser.Chromium] = Chromium.RelativeExecutablePath,
-            [SupportedBrowser.Firefox] = Firefox.RelativeExecutablePath,
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InstalledBrowser"/> class.
         /// </summary>
@@ -62,7 +53,16 @@ namespace PuppeteerSharp.BrowserData
             var installationDir = Cache.GetInstallationDir(Browser, Platform, BuildId);
             return Path.Combine(
                 installationDir,
-                _executablePathByBrowser[Browser](Platform, BuildId));
+                GetExecutablePath(Browser, Platform, BuildId));
         }
+
+        private static string GetExecutablePath(SupportedBrowser browser, Platform platform, string buildId) => browser switch
+        {
+            SupportedBrowser.Chrome => Chrome.RelativeExecutablePath(platform, buildId),
+            SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.RelativeExecutablePath(platform, buildId),
+            SupportedBrowser.Chromium => Chromium.RelativeExecutablePath(platform, buildId),
+            SupportedBrowser.Firefox => Firefox.RelativeExecutablePath(platform, buildId),
+            _ => throw new NotSupportedException(),
+        };
     }
 }

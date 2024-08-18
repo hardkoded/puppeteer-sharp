@@ -43,14 +43,6 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpPage : Page
 {
-    private static readonly Dictionary<string, decimal> _unitToPixels = new()
-    {
-        ["px"] = 1,
-        ["in"] = 96,
-        ["cm"] = 37.8m,
-        ["mm"] = 3.78m,
-    };
-
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
     private readonly EmulationManager _emulationManager;
@@ -920,6 +912,15 @@ public class CdpPage : Page
         }
     }
 
+    private static decimal? GetPixels(string unit) => unit switch
+    {
+        "px" => 1,
+        "in" => 96,
+        "cm" => 37.8m,
+        "mm" => 3.78m,
+        _ => null,
+    };
+
     private void SetupPrimaryTargetListeners()
     {
         PrimaryTargetClient.Ready += OnAttachedToTarget;
@@ -1230,7 +1231,7 @@ public class CdpPage : Page
             var text = parameter.ToString();
             var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
             string valueText;
-            if (_unitToPixels.ContainsKey(unit))
+            if (GetPixels(unit) is { })
             {
                 valueText = text.Substring(0, text.Length - 2);
             }
@@ -1244,7 +1245,7 @@ public class CdpPage : Page
 
             if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
             {
-                pixels = number * _unitToPixels[unit];
+                pixels = number * GetPixels(unit).Value;
             }
             else
             {
