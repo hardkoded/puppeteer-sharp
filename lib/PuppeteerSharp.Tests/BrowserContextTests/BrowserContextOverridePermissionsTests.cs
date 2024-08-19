@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Context.OverridePermissionsAsync(
                 TestConstants.EmptyPage,
-                Enum.GetValues(typeof(OverridePermission)).Cast<OverridePermission>().ToArray());
+                Enum.GetValues<OverridePermission>());
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("granted"));
             await Context.ClearPermissionOverridesAsync();
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));

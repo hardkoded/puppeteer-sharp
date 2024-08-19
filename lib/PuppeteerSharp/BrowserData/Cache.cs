@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.BrowserData
 {
@@ -27,12 +28,12 @@ namespace PuppeteerSharp.BrowserData
                 return Array.Empty<InstalledBrowser>();
             }
 
-            var browserNames = Enum.GetNames(typeof(SupportedBrowser)).Select(browser => browser.ToUpperInvariant());
+            var browserNames = EnumHelper.GetNames<SupportedBrowser>().Select(browser => browser.ToUpperInvariant());
             var browsers = rootInfo.GetDirectories().Where(browser => browserNames.Contains(browser.Name.ToUpperInvariant()));
 
             return browsers.SelectMany(browser =>
             {
-                var browserEnum = (SupportedBrowser)Enum.Parse(typeof(SupportedBrowser), browser.Name, ignoreCase: true);
+                var browserEnum = EnumHelper.Parse<SupportedBrowser>(browser.Name, ignoreCase: true);
                 var dirInfo = new DirectoryInfo(GetBrowserRoot(browserEnum));
                 var dirs = dirInfo.GetDirectories();
 
@@ -45,7 +46,7 @@ namespace PuppeteerSharp.BrowserData
                         return null;
                     }
 
-                    var platformEnum = (Platform)Enum.Parse(typeof(Platform), result.Value.Platform, ignoreCase: true);
+                    var platformEnum = EnumHelper.Parse<Platform>(result.Value.Platform, ignoreCase: true);
                     return new InstalledBrowser(this, browserEnum, result.Value.BuildId, platformEnum);
                 })
                 .Where(item => item != null);
