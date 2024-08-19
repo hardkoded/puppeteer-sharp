@@ -22,14 +22,6 @@ namespace PuppeteerSharp
     {
         private const string PublishSingleFileLocalApplicationDataFolderName = "PuppeteerSharp";
 
-        private static readonly Dictionary<SupportedBrowser, Func<Platform, string, string, string>> _downloadsUrl = new()
-        {
-            [SupportedBrowser.Chrome] = Chrome.ResolveDownloadUrl,
-            [SupportedBrowser.ChromeHeadlessShell] = ChromeHeadlessShell.ResolveDownloadUrl,
-            [SupportedBrowser.Chromium] = Chromium.ResolveDownloadUrl,
-            [SupportedBrowser.Firefox] = Firefox.ResolveDownloadUrl,
-        };
-
         private readonly CustomFileDownloadAction _customFileDownload;
         private readonly ILogger<BrowserFetcher> _logger;
 
@@ -206,8 +198,14 @@ namespace PuppeteerSharp
             return assemblyDirectory.FullName;
         }
 
-        private static string GetDownloadURL(SupportedBrowser browser, Platform platform, string baseUrl, string buildId)
-            => _downloadsUrl[browser](platform, buildId, baseUrl);
+        private static string GetDownloadURL(SupportedBrowser browser, Platform platform, string baseUrl, string buildId) => browser switch
+        {
+            SupportedBrowser.Chrome => Chrome.ResolveDownloadUrl(platform, buildId, baseUrl),
+            SupportedBrowser.ChromeHeadlessShell => ChromeHeadlessShell.ResolveDownloadUrl(platform, buildId, baseUrl),
+            SupportedBrowser.Chromium => Chromium.ResolveDownloadUrl(platform, buildId, baseUrl),
+            SupportedBrowser.Firefox => Firefox.ResolveDownloadUrl(platform, buildId, baseUrl),
+            _ => throw new NotSupportedException(),
+        };
 
         private static void ExtractTar(string zipPath, string folderPath)
         {
@@ -236,7 +234,7 @@ namespace PuppeteerSharp
 
         private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
         {
-            var url = _downloadsUrl[browser](Platform, buildId, BaseUrl);
+            var url = GetDownloadURL(browser, Platform, BaseUrl, buildId);
             var fileName = url.Split('/').Last();
             var cache = new Cache(CacheDir);
             var archivePath = Path.Combine(CacheDir, fileName);
