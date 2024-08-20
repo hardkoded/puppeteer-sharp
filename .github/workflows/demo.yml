@@ -39,10 +39,11 @@ jobs:
       run: |
           dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net8.0
     - name: Run with AOT
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'windows-2022'
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj  -r osx-arm64  -c Release -f net8.0 auto-exit
+          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build  -f net8.0
+          build/PuppeteerSharpPdfDemo-Local.exe auto-exit
     - name: Run on .NET Framework
       if: matrix.os == 'windows-2022'
       working-directory: ./demos/PuppeteerSharpPdfDemo
