@@ -16,7 +16,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 ## Recent news
 
-PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 release notes!](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v19.9.0).
+PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 release notes!](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v19.0.0).
 
 ## Useful links
 
