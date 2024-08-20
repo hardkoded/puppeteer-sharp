@@ -20,8 +20,12 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp;
 
+[JsonConverter(typeof(JsonStringEnumMemberConverter<InterceptResolutionAction>))]
 internal enum InterceptResolutionAction
 {
     Abort,

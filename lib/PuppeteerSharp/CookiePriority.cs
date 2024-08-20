@@ -20,11 +20,15 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp;
 
 /// <summary>
 /// Represents the cookie's 'Priority' status.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumMemberConverter<CookiePriority>))]
 public enum CookiePriority
 {
     /// <summary>

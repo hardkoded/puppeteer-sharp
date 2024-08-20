@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
@@ -6,6 +7,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target type.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<TargetType>))]
     [DefaultEnumValue((int)Other)]
     public enum TargetType
     {

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
@@ -5,6 +6,7 @@ namespace PuppeteerSharp.Cdp.Messaging
     /// <summary>
     /// Remote object type.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<RemoteObjectType>))]
     [DefaultEnumValue((int)Other)]
     public enum RemoteObjectType
     {
