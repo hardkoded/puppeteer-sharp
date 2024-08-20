@@ -1,5 +1,9 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp.Cdp.Messaging
 {
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<FrameDetachedReason>))]
     internal enum FrameDetachedReason
     {
         /// <summary>
