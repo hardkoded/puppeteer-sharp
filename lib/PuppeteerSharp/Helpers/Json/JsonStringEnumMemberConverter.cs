@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -31,26 +32,28 @@ namespace PuppeteerSharp.Helpers.Json;
 /// <summary>
 /// Converts an enum value to or from a JSON string.
 /// </summary>
-internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
+/// <typeparam name="TEnum">The enum type.</typeparam>
+internal class JsonStringEnumMemberConverter<TEnum> : JsonConverterFactory
+    where TEnum : struct, Enum
 {
-    /// <inheritdoc />
-    public override bool CanConvert(Type typeToConvert)
-        => (typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true) &&
-           !Attribute.IsDefined(typeToConvert, typeof(JsonStringIgnoreAttribute));
+    private static readonly ConcurrentDictionary<Type, JsonConverter> _jsonConverterCache = new();
 
-    /// <inheritdoc />
-    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    public static JsonConverter CreateJsonConverter()
     {
-        var nullableType = Nullable.GetUnderlyingType(typeToConvert);
-
-        return (JsonConverter)Activator.CreateInstance(
-            nullableType == null ?
-                typeof(EnumMemberConverter<>).MakeGenericType(typeToConvert) :
-                typeof(NullableEnumMemberConverter<>).MakeGenericType(nullableType));
+        var nullableType = Nullable.GetUnderlyingType(typeof(TEnum));
+        JsonConverter jsonConverter = nullableType == null ? new EnumMemberConverter<TEnum>() : new NullableEnumMemberConverter<TEnum>();
+        _jsonConverterCache.TryAdd(typeof(TEnum), jsonConverter);
+        return jsonConverter;
     }
 
-    private static TEnum? Read<TEnum>(ref Utf8JsonReader reader)
-        where TEnum : struct, Enum
+    public override bool CanConvert(Type typeToConvert)
+        => typeToConvert.IsEnum || Nullable.GetUnderlyingType(typeToConvert)?.IsEnum == true;
+
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        => _jsonConverterCache.TryGetValue(typeToConvert, out var jsonConverter) ? jsonConverter : CreateJsonConverter();
+
+    private static T? Read<T>(ref Utf8JsonReader reader)
+        where T : struct, Enum
     {
         if (reader.TokenType == JsonTokenType.Null)
         {
@@ -59,22 +62,22 @@ internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
 
         if (reader.TokenType == JsonTokenType.String)
         {
-            return EnumHelper.FromValueString<TEnum>(reader.GetString());
+            return EnumHelper.FromValueString<T>(reader.GetString());
         }
 
         if (reader.TokenType == JsonTokenType.Number)
         {
-            var enumTypeCode = Type.GetTypeCode(typeof(TEnum));
+            var enumTypeCode = Type.GetTypeCode(typeof(T));
             return enumTypeCode switch
             {
-                TypeCode.Int32 => (TEnum)(object)reader.GetInt32(),
-                TypeCode.Int64 => (TEnum)(object)reader.GetInt64(),
-                TypeCode.Int16 => (TEnum)(object)reader.GetInt16(),
-                TypeCode.Byte => (TEnum)(object)reader.GetByte(),
-                TypeCode.UInt32 => (TEnum)(object)reader.GetUInt32(),
-                TypeCode.UInt64 => (TEnum)(object)reader.GetUInt64(),
-                TypeCode.UInt16 => (TEnum)(object)reader.GetUInt16(),
-                TypeCode.SByte => (TEnum)(object)reader.GetSByte(),
+                TypeCode.Int32 => (T)(object)reader.GetInt32(),
+                TypeCode.Int64 => (T)(object)reader.GetInt64(),
+                TypeCode.Int16 => (T)(object)reader.GetInt16(),
+                TypeCode.Byte => (T)(object)reader.GetByte(),
+                TypeCode.UInt32 => (T)(object)reader.GetUInt32(),
+                TypeCode.UInt64 => (T)(object)reader.GetUInt64(),
+                TypeCode.UInt16 => (T)(object)reader.GetUInt16(),
+                TypeCode.SByte => (T)(object)reader.GetSByte(),
                 _ => throw new JsonException($"Enum '{typeof(TEnum).Name}' of {enumTypeCode} type is not supported."),
             };
         }
@@ -82,8 +85,8 @@ internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
         throw new JsonException();
     }
 
-    private static void Write<TEnum>(Utf8JsonWriter writer, TEnum? value)
-        where TEnum : struct, Enum
+    private static void Write<T>(Utf8JsonWriter writer, T? value)
+        where T : struct, Enum
     {
         if (value.HasValue)
         {
@@ -95,23 +98,23 @@ internal sealed class JsonStringEnumMemberConverter : JsonConverterFactory
         }
     }
 
-    private class EnumMemberConverter<TEnum> : JsonConverter<TEnum>
-        where TEnum : struct, Enum
+    private class EnumMemberConverter<T> : JsonConverter<T>
+        where T : struct, Enum
     {
-        public override TEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => Read<TEnum>(ref reader) ?? default;
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => Read<T>(ref reader) ?? default;
 
-        public override void Write(Utf8JsonWriter writer, TEnum value, JsonSerializerOptions options)
-            => Write<TEnum>(writer, value);
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+            => Write<T>(writer, value);
     }
 
-    private class NullableEnumMemberConverter<TEnum> : JsonConverter<TEnum?>
-        where TEnum : struct, Enum
+    private class NullableEnumMemberConverter<T> : JsonConverter<T?>
+        where T : struct, Enum
     {
-        public override TEnum? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => Read<TEnum>(ref reader);
+        public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => Read<T>(ref reader);
 
-        public override void Write(Utf8JsonWriter writer, TEnum? value, JsonSerializerOptions options)
-            => Write<TEnum>(writer, value);
+        public override void Write(Utf8JsonWriter writer, T? value, JsonSerializerOptions options)
+            => Write<T>(writer, value);
     }
 }

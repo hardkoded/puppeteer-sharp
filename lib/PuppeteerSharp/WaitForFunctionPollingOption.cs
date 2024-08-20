@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// An interval at which the <c>pageFunction</c> is executed.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<WaitForFunctionPollingOption>))]
     public enum WaitForFunctionPollingOption
     {
         /// <summary>

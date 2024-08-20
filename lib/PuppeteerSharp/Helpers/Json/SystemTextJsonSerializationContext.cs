@@ -205,6 +205,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetSendMessageToTargetRequest))]
 [JsonSerializable(typeof(TargetSetAutoAttachRequest))]
 [JsonSerializable(typeof(TargetSetDiscoverTargetsRequest))]
+[JsonSerializable(typeof(TargetType))]
 [JsonSerializable(typeof(TracingCompleteResponse))]
 [JsonSerializable(typeof(TracingStartRequest))]
 [JsonSerializable(typeof(WSEndpointResponse))]

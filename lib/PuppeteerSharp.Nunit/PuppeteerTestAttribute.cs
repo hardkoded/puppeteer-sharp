@@ -172,13 +172,9 @@ namespace PuppeteerSharp.Nunit
             _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
 
         private static readonly JsonSerializerOptions DefaultJsonSerializerOptions =
-            new JsonSerializerOptions()
+            new()
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters =
-                {
-                    new JsonStringEnumMemberConverter(),
-                },
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
         private static TestExpectation[] LoadExpectationsFromResource(string resourceName)

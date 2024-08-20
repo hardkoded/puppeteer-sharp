@@ -1,10 +1,13 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Types of vision deficiency to emulate using <see cref="IPage.EmulateVisionDeficiencyAsync(VisionDeficiency)"/>.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<VisionDeficiency>))]
     public enum VisionDeficiency
     {
         /// <summary>

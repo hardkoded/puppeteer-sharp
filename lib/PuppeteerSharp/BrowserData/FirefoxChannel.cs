@@ -21,12 +21,15 @@
 //  * SOFTWARE.
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.BrowserData;
 
 /// <summary>
 /// Firefox channels.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumMemberConverter<FirefoxChannel>))]
 public enum FirefoxChannel
 {
     /// <summary>

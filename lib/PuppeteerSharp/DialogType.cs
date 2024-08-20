@@ -1,4 +1,6 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
@@ -6,6 +8,7 @@ namespace PuppeteerSharp
     /// Dialog type.
     /// </summary>
     /// <seealso cref="Dialog"/>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<DialogType>))]
     public enum DialogType
     {
         /// <summary>

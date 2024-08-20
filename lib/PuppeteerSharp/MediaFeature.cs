@@ -1,10 +1,13 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Media Feature. See <see cref="IPage.EmulateMediaFeaturesAsync(System.Collections.Generic.IEnumerable{MediaFeatureValue})"/>.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<MediaFeature>))]
     public enum MediaFeature
     {
         /// <summary>

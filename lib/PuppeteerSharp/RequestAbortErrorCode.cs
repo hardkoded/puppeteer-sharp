@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Abort error codes. used by <see cref="IRequest.AbortAsync(RequestAbortErrorCode, int?)"/>.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<RequestAbortErrorCode>))]
     public enum RequestAbortErrorCode
     {
         /// <summary>

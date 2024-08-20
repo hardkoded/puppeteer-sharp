@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Wait until navigation.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<WaitUntilNavigation>))]
     public enum WaitUntilNavigation
     {
         /// <summary>

@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Helpers.Json
 #endif
                 Converters =
                 {
-                    new HttpMethodConverter(), new JSHandleConverter(), new JsonStringEnumMemberConverter(),
+                    new HttpMethodConverter(), new JSHandleConverter(),
                 },
             };
         });
