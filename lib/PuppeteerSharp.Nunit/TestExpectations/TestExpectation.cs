@@ -21,7 +21,9 @@
 //  * SOFTWARE.
 
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Nunit.TestExpectations;
 
@@ -54,6 +56,7 @@ public class TestExpectation
 
     public TestExpectationResult[] Expectations { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationResult>))]
     public enum TestExpectationResult
     {
         [EnumMember(Value = "FAIL")] Fail,
@@ -62,6 +65,7 @@ public class TestExpectation
         [EnumMember(Value = "TIMEOUT")] Timeout,
     }
 
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationsParameter>))]
     public enum TestExpectationsParameter
     {
         [EnumMember(Value = "firefox")]
@@ -80,6 +84,7 @@ public class TestExpectation
         Headful,
     }
 
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationPlatform>))]
     public enum TestExpectationPlatform
     {
         [EnumMember(Value = "darwin")]
