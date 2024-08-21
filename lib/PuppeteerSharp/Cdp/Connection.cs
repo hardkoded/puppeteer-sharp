@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -281,11 +280,7 @@ namespace PuppeteerSharp.Cdp
                     return;
                 }
 
-                if (_logger.IsEnabled(LogLevel.Trace))
-                {
-                    _logger.LogTrace("◀ Receive {Message}", Encoding.UTF8.GetString(response));
-                }
-
+                _logger.LogTrace("◀ Receive {Message}", response);
                 ProcessIncomingMessage(obj);
             }
             catch (Exception ex)
