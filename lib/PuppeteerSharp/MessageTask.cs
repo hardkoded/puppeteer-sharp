@@ -5,7 +5,7 @@ namespace PuppeteerSharp
 {
     internal class MessageTask
     {
-        internal string Message { get; set; }
+        internal byte[] Message { get; set; }
 
         internal TaskCompletionSource<JsonElement?> TaskWrapper { get; set; }
 
