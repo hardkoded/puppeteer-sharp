@@ -12,11 +12,11 @@ namespace PuppeteerSharp.Transport
         /// Initializes a new instance of the <see cref="PuppeteerSharp.Transport.MessageReceivedEventArgs"/> class.
         /// </summary>
         /// <param name="message">Message.</param>
-        public MessageReceivedEventArgs(string message) => Message = message;
+        public MessageReceivedEventArgs(byte[] message) => Message = message;
 
         /// <summary>
         /// Transport message.
         /// </summary>
-        public string Message { get; }
+        public byte[] Message { get; }
     }
 }
