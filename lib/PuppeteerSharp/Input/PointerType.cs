@@ -1,10 +1,10 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Input
 {
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<PointerType>))]
     internal enum PointerType
     {
         /// <summary>

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
@@ -18,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldReturnFalseForNonCachedContent()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.False(response.FromCache);
+            Assert.That(response.FromCache, Is.False);
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.fromCache", "should work")]
@@ -35,11 +34,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.ReloadAsync();
 
-            Assert.AreEqual(2, responses.Count);
-            Assert.AreEqual(HttpStatusCode.NotModified, responses["one-style.html"].Status);
-            Assert.False(responses["one-style.html"].FromCache);
-            Assert.AreEqual(HttpStatusCode.OK, responses["one-style.css"].Status);
-            Assert.True(responses["one-style.css"].FromCache);
+            Assert.That(responses, Has.Count.EqualTo(2));
+            Assert.That(responses["one-style.html"].Status, Is.EqualTo(HttpStatusCode.NotModified));
+            Assert.That(responses["one-style.html"].FromCache, Is.False);
+            Assert.That(responses["one-style.css"].Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responses["one-style.css"].FromCache, Is.True);
         }
     }
 }

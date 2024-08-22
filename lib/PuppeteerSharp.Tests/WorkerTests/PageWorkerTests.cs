@@ -24,12 +24,12 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 workerCreatedTcs.Task,
                 Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
-            StringAssert.Contains("worker.js", worker.Url);
-            Assert.AreEqual("worker function result", await worker.EvaluateExpressionAsync<string>("self.workerFunction()"));
+            Assert.That(worker.Url, Does.Contain("worker.js"));
+            Assert.That(await worker.EvaluateExpressionAsync<string>("self.workerFunction()"), Is.EqualTo("worker function result"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await workerDestroyedTcs.Task.WithTimeout();
-            Assert.IsEmpty(Page.Workers);
+            Assert.That(Page.Workers, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerDestroyedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerDestroyed += (_, e) => workerDestroyedTcs.TrySetResult(e.Worker);
             await Page.EvaluateFunctionAsync("workerObj => workerObj.terminate()", workerObj);
-            Assert.AreSame(worker, await workerDestroyedTcs.Task);
+            Assert.That(await workerDestroyedTcs.Task, Is.SameAs(worker));
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report console logs")]
@@ -55,13 +55,13 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
 
             var log = await consoleTcs.Task;
-            Assert.AreEqual("1", log.Text);
-            Assert.AreEqual(new ConsoleMessageLocation
+            Assert.That(log.Text, Is.EqualTo("1"));
+            Assert.That(log.Location, Is.EqualTo(new ConsoleMessageLocation
             {
                 URL = "",
                 LineNumber = 0,
                 ColumnNumber = 8
-            }, log.Location);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]
@@ -74,10 +74,11 @@ namespace PuppeteerSharp.Tests.WorkerTests
             };
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1, 2, 3, this)`)");
             var log = await consoleTcs.Task;
-            Assert.AreEqual("1 2 3 JSHandle@object", log.Text);
-            Assert.AreEqual(4, log.Args.Count);
-            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<object>();
-            Assert.AreEqual("null", json);
+
+            Assert.That(log.Text, Is.EqualTo("1 2 3 JSHandle@object"));
+            Assert.That(log.Args.Count, Is.EqualTo(4));
+            var json = await (await log.Args[3].GetPropertyAsync("origin")).JsonValueAsync<string>();
+            Assert.That(json, Is.EqualTo("null"));
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should have an execution context")]
@@ -88,7 +89,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1)`)");
             var worker = await workerCreatedTcs.Task;
-            Assert.AreEqual(2, await worker.EvaluateExpressionAsync<int>("1+1"));
+            Assert.That(await worker.EvaluateExpressionAsync<int>("1+1"), Is.EqualTo(2));
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "should report errors")]
@@ -99,7 +100,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
 
             await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript, throw new Error('this is my error');`)");
             var errorLog = await errorTcs.Task;
-            StringAssert.Contains("this is my error", errorLog);
+            Assert.That(errorLog, Does.Contain("this is my error"));
         }
 
         [Test, Retry(2), PuppeteerTest("worker.spec", "Workers", "scan be closed")]
@@ -114,9 +115,9 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var workerClosedTcs = new TaskCompletionSource<WebWorker>();
             Page.WorkerDestroyed += (_, e) => workerClosedTcs.TrySetResult(e.Worker);
 
-            StringAssert.Contains("worker.js", worker.Url);
+            Assert.That(worker.Url, Does.Contain("worker.js"));
             await worker.CloseAsync();
-            Assert.AreSame(worker, await workerClosedTcs.Task);
+            Assert.That(await workerClosedTcs.Task, Is.SameAs(worker));
         }
     }
 }

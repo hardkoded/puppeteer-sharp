@@ -11,15 +11,6 @@ namespace PuppeteerSharp.Cdp
 {
     internal sealed class LifecycleWatcher : IDisposable
     {
-        private static readonly Dictionary<WaitUntilNavigation, string> _puppeteerToProtocolLifecycle =
-            new()
-            {
-                [WaitUntilNavigation.Load] = "load",
-                [WaitUntilNavigation.DOMContentLoaded] = "DOMContentLoaded",
-                [WaitUntilNavigation.Networkidle0] = "networkIdle",
-                [WaitUntilNavigation.Networkidle2] = "networkAlmostIdle",
-            };
-
         private static readonly WaitUntilNavigation[] _defaultWaitUntil = [WaitUntilNavigation.Load];
 
         private readonly NetworkManager _networkManager;
@@ -44,7 +35,7 @@ namespace PuppeteerSharp.Cdp
         {
             _expectedLifecycle = (waitUntil ?? _defaultWaitUntil).Select(w =>
             {
-                var protocolEvent = _puppeteerToProtocolLifecycle.GetValueOrDefault(w);
+                var protocolEvent = GetProtocolEvent(w);
                 Contract.Assert(protocolEvent != null, $"Unknown value for options.waitUntil: {w}");
                 return protocolEvent;
             });
@@ -86,6 +77,15 @@ namespace PuppeteerSharp.Cdp
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
+
+        private static string GetProtocolEvent(WaitUntilNavigation waitUntil) => waitUntil switch
+        {
+            WaitUntilNavigation.Load => "load",
+            WaitUntilNavigation.DOMContentLoaded => "DOMContentLoaded",
+            WaitUntilNavigation.Networkidle0 => "networkIdle",
+            WaitUntilNavigation.Networkidle2 => "networkAlmostIdle",
+            _ => null,
+        };
 
         private void Navigated(object sender, FrameNavigatedEventArgs e)
         {

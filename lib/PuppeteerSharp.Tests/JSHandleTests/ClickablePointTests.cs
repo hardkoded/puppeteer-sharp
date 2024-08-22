@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -29,14 +25,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var clickablePoint = await divHandle.ClickablePointAsync();
 
             // margin + middle point offset
-            Assert.AreEqual(45 + 60, clickablePoint.X);
-            Assert.AreEqual(45 + 30, clickablePoint.Y);
+            Assert.That(clickablePoint.X, Is.EqualTo(45 + 60));
+            Assert.That(clickablePoint.Y, Is.EqualTo(45 + 30));
 
             clickablePoint = await divHandle.ClickablePointAsync(new Offset { X = 10, Y = 15 });
 
             // margin + offset
-            Assert.AreEqual(30 + 10, clickablePoint.X);
-            Assert.AreEqual(30 + 15, clickablePoint.Y);
+            Assert.That(clickablePoint.X, Is.EqualTo(30 + 10));
+            Assert.That(clickablePoint.Y, Is.EqualTo(30 + 15));
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
@@ -56,14 +52,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var clickablePoint = await divHandle.ClickablePointAsync();
 
             // iframe pos + margin + middle point offset
-            Assert.AreEqual(20 + 45 + 60, clickablePoint.X);
-            Assert.AreEqual(20 + 45 + 30, clickablePoint.Y);
+            Assert.That(clickablePoint.X, Is.EqualTo(20 + 45 + 60));
+            Assert.That(clickablePoint.Y, Is.EqualTo(20 + 45 + 30));
 
             clickablePoint = await divHandle.ClickablePointAsync(new Offset { X = 10, Y = 15 });
 
             // iframe pos + margin + offset
-            Assert.AreEqual(20 + 30 + 10, clickablePoint.X);
-            Assert.AreEqual(20 + 30 + 15, clickablePoint.Y);
+            Assert.That(clickablePoint.X, Is.EqualTo(20 + 30 + 10));
+            Assert.That(clickablePoint.Y, Is.EqualTo(20 + 30 + 15));
         }
     }
 }

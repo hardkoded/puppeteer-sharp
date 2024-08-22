@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -14,7 +13,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
             var button = await Page.QuerySelectorAsync("button");
             await button.ClickAsync();
-            Assert.AreEqual("Clicked", await Page.EvaluateExpressionAsync<string>("result"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("result"), Is.EqualTo("Clicked"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should work for Shadow DOM v1")]
@@ -23,7 +22,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
             var buttonHandle = (IElementHandle)await Page.EvaluateExpressionHandleAsync("button");
             await buttonHandle.ClickAsync();
-            Assert.True(await Page.EvaluateExpressionAsync<bool>("clicked"));
+            Assert.That(await Page.EvaluateExpressionAsync<bool>("clicked"), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should not work for TextNodes")]
@@ -44,7 +43,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.remove()", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is detached from document", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Node is detached from document"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for hidden nodes")]
@@ -54,7 +53,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.style.display = 'none'", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for recursively hidden nodes")]
@@ -64,7 +63,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var button = await Page.QuerySelectorAsync("button");
             await Page.EvaluateFunctionAsync("button => button.parentElement.style.display = 'none'", button);
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for <br> elements")]
@@ -73,7 +72,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.SetContentAsync("hello<br>goodbye");
             var br = await Page.QuerySelectorAsync("br");
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
-            Assert.AreEqual("Node is either not clickable or not an Element", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
         [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should return Point data")]
@@ -103,12 +102,12 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await TestUtils.ShortWaitForCollectionToHaveAtLeastNElementsAsync(clicks, 2);
 
             // margin + middle point offset
-            Assert.AreEqual(45 + 60, clicks[0].X);
-            Assert.AreEqual(45 + 30, clicks[0].Y);
+            Assert.That(clicks[0].X, Is.EqualTo(45 + 60));
+            Assert.That(clicks[0].Y, Is.EqualTo(45 + 30));
 
             // margin + offset
-            Assert.AreEqual(30 + 10, clicks[1].X);
-            Assert.AreEqual(30 + 15, clicks[1].Y);
+            Assert.That(clicks[1].X, Is.EqualTo(30 + 10));
+            Assert.That(clicks[1].Y, Is.EqualTo(30 + 15));
         }
     }
 }

@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         public int? ExecutionContextId { get; set; }
 
-        public IEnumerable<object> Arguments { get; set; }
+        public object[] Arguments { get; set; }
 
         public bool ReturnByValue { get; set; }
 

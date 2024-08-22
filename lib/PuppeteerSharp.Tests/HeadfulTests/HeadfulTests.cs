@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -33,7 +30,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
             {
                 var headlessPage = await headlessBrowser.NewPageAsync();
                 await headlessPage.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual("foo=true", await headlessPage.EvaluateExpressionAsync<string>("document.cookie"));
+                Assert.That(await headlessPage.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("foo=true"));
             }
         }
     }

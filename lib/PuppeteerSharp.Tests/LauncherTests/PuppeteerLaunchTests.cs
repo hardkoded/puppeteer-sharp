@@ -18,12 +18,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreHTTPSErrors = true;
+            options.AcceptInsecureCerts = true;
 
             await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             await using var page = await browser.NewPageAsync();
             var response = await page.GoToAsync("https://www.github.com");
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject all promises when browser is closed")]
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var neverResolves = page.EvaluateFunctionHandleAsync("() => new Promise(r => {})");
             await browser.CloseAsync();
             var exception = Assert.ThrowsAsync<TargetClosedException>(() => neverResolves);
-            StringAssert.Contains("Protocol error", exception!.Message);
+            Assert.That(exception!.Message, Does.Contain("Protocol error"));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should reject if executable path is invalid")]
@@ -57,9 +57,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             var launcher = new Launcher(TestConstants.LoggerFactory);
             await using var browser = await launcher.LaunchAsync(options);
-            Assert.True(Directory.GetFiles(userDataDir.Path).Length > 0);
+            Assert.That(Directory.GetFiles(userDataDir.Path), Is.Not.Empty);
             await browser.CloseAsync();
-            Assert.True(Directory.GetFiles(userDataDir.Path).Length > 0);
+            Assert.That(Directory.GetFiles(userDataDir.Path), Is.Not.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir argument")]
@@ -81,9 +81,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await launcher.LaunchAsync(options);
             // Open a page to make sure its functional.
             await browser.NewPageAsync();
-            Assert.True(Directory.GetFiles(userDataDir.Path).Length > 0);
+            Assert.That(Directory.GetFiles(userDataDir.Path), Is.Not.Empty);
             await browser.CloseAsync();
-            Assert.True(Directory.GetFiles(userDataDir.Path).Length > 0);
+            Assert.That(Directory.GetFiles(userDataDir.Path), Is.Not.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option should restore state")]
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual("hello", await page2.EvaluateExpressionAsync<string>("localStorage.hey"));
+                Assert.That(await page2.EvaluateExpressionAsync<string>("localStorage.hey"), Is.EqualTo("hello"));
             }
         }
 
@@ -139,14 +139,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 var page2 = await browser2.NewPageAsync();
                 await page2.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual("doSomethingOnlyOnce=true", await page2.EvaluateExpressionAsync<string>("document.cookie"));
+                Assert.That(await page2.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("doSomethingOnlyOnce=true"));
             }
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should return the default arguments")]
         public void ShouldReturnTheDefaultArguments()
         {
-            Assert.Contains("--headless=new", Puppeteer.GetDefaultArgs(new LaunchOptions() { Headless = true }));
+            Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions() { Headless = true }), Does.Contain("--headless=new"));
             Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
             {
                 Headless = false
@@ -154,34 +154,34 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             if (TestConstants.IsChrome)
             {
-                Assert.Contains("--no-first-run", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
-                Assert.Contains("--user-data-dir=\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+                Assert.That(Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()), Does.Contain("--no-first-run"));
+                Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo"
-                }));
+                }), Does.Contain("--user-data-dir=\"foo\""));
             }
             else
             {
-                Assert.Contains("--no-remote", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                Assert.That(Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()), Does.Contain("--no-remote"));
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    Assert.Contains("--foreground", Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()));
+                    Assert.That(Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()), Does.Contain("--foreground"));
                 }
                 else
                 {
                     Assert.That(Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions()), Does.Not.Contain("--foreground"));
                 }
-                Assert.Contains("--profile", Puppeteer.GetDefaultArgs(new LaunchOptions
+                Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
                     Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
-                }));
-                Assert.Contains("\"foo\"", Puppeteer.GetDefaultArgs(new LaunchOptions
+                }), Does.Contain("--profile"));
+                Assert.That(Puppeteer.GetDefaultArgs(new LaunchOptions
                 {
                     UserDataDir = "foo",
                     Browser = TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
-                }));
+                }), Does.Contain("\"foo\""));
             }
         }
 
@@ -195,7 +195,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await launcher.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
             var response = await page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
 
             if (useDisposeAsync)
             {
@@ -207,9 +207,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 await browser.CloseAsync();
             }
 
-            Assert.True(launcher.Process.HasExited);
+            Assert.That(launcher.Process.HasExited, Is.True);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ChromeShouldBeClosedOnDispose()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -219,13 +220,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.GoToAsync(TestConstants.EmptyPage);
-                Assert.AreEqual(HttpStatusCode.OK, response.Status);
+                Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
             }
 
-            Assert.True(await launcher.Process.WaitForExitAsync(TimeSpan.FromSeconds(10)));
-            Assert.True(launcher.Process.HasExited);
+            Assert.That(await launcher.Process.WaitForExitAsync(TimeSpan.FromSeconds(10)), Is.True);
+            Assert.That(launcher.Process.HasExited, Is.True);
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldNotOpenTwoChromesUsingTheSameLauncher()
         {
             var launcher = new Launcher(TestConstants.LoggerFactory);
@@ -233,7 +235,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 var exception = Assert.ThrowsAsync<InvalidOperationException>(
                     () => launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()));
-                Assert.AreEqual("Unable to create or connect to another process", exception!.Message);
+                Assert.That(exception!.Message, Is.EqualTo("Unable to create or connect to another process"));
             }
         }
 
@@ -244,7 +246,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             options.IgnoreDefaultArgs = true;
             await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
             await using var page = await browser.NewPageAsync();
-            Assert.AreEqual(121, await page.EvaluateExpressionAsync<int>("11 * 11"));
+            Assert.That(await page.EvaluateExpressionAsync<int>("11 * 11"), Is.EqualTo(121));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments in Chrome")]
@@ -255,9 +257,9 @@ namespace PuppeteerSharp.Tests.LauncherTests
             options.IgnoredDefaultArgs = [defaultArgs[0], defaultArgs[2]];
             await using var browser = await Puppeteer.LaunchAsync(options);
             var spawnArgs = browser.Process.StartInfo.Arguments;
-            StringAssert.DoesNotContain(defaultArgs[0], spawnArgs);
-            StringAssert.Contains(defaultArgs[1], spawnArgs);
-            StringAssert.DoesNotContain(defaultArgs[2], spawnArgs);
+            Assert.That(spawnArgs, Does.Not.Contain(defaultArgs[0]));
+            Assert.That(spawnArgs, Does.Contain(defaultArgs[1]));
+            Assert.That(spawnArgs, Does.Not.Contain(defaultArgs[2]));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should have default URL when launching browser")]
@@ -265,7 +267,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
             var pages = (await browser.PagesAsync()).Select(page => page.Url);
-            Assert.AreEqual(new[] { TestConstants.AboutBlank }, pages);
+            Assert.That(pages, Is.EqualTo(new[] { TestConstants.AboutBlank }));
         }
 
 
@@ -295,7 +297,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 await pages[0].WaitForNavigationAsync();
             }
-            Assert.AreEqual(TestConstants.EmptyPage, pages[0].Url);
+            Assert.That(pages[0].Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should set the default viewport")]
@@ -310,8 +312,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
-            Assert.AreEqual(456, await page.EvaluateExpressionAsync<int>("window.innerWidth"));
-            Assert.AreEqual(789, await page.EvaluateExpressionAsync<int>("window.innerHeight"));
+            Assert.That(await page.EvaluateExpressionAsync<int>("window.innerWidth"), Is.EqualTo(456));
+            Assert.That(await page.EvaluateExpressionAsync<int>("window.innerHeight"), Is.EqualTo(789));
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should disable the default viewport")]
@@ -322,7 +324,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
-            Assert.Null(page.Viewport);
+            Assert.That(page.Viewport, Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should take fullPage screenshots when defaultViewport is null")]
@@ -334,7 +336,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
-            Assert.IsNotEmpty(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }));
+            Assert.That(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }), Is.Not.Empty);
         }
 
         [Test, Retry(2)]
@@ -350,7 +352,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
-                Assert.True(customSocketCreated);
+                Assert.That(customSocketCreated, Is.True);
             }
         }
 
@@ -367,7 +369,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             await using (await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory))
             {
-                Assert.True(customTransportCreated);
+                Assert.That(customTransportCreated, Is.True);
             }
         }
     }

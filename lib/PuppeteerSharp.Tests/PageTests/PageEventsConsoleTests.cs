@@ -23,15 +23,14 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
 
-            var obj = new Dictionary<string, object> { { "foo", "bar" } };
+            var obj = new Dictionary<string, string> { { "foo", "bar" } };
 
-            Assert.AreEqual("hello 5 JSHandle@object", message.Text);
-            Assert.AreEqual(ConsoleType.Log, message.Type);
+            Assert.That(message.Text, Is.EqualTo("hello 5 JSHandle@object"));
+            Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
 
-            Assert.AreEqual("hello", await message.Args[0].JsonValueAsync());
-            Assert.AreEqual(5, await message.Args[1].JsonValueAsync<float>());
-            Assert.AreEqual(obj, await message.Args[2].JsonValueAsync<Dictionary<string, object>>());
-            Assert.AreEqual("bar", (await message.Args[2].JsonValueAsync<dynamic>()).foo.ToString());
+            Assert.That(await message.Args[0].JsonValueAsync<string>(), Is.EqualTo("hello"));
+            Assert.That(await message.Args[1].JsonValueAsync<int>(), Is.EqualTo(5));
+            Assert.That(await message.Args[2].JsonValueAsync<Dictionary<string, string>>(), Is.EqualTo(obj));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
@@ -52,7 +51,9 @@ namespace PuppeteerSharp.Tests.PageTests
               console.log(Promise.resolve('should not wait until resolved!'));
             }");
 
-            Assert.AreEqual(new[]
+            Assert.That(messages
+                .Select(_ => _.Type)
+                .ToArray(), Is.EqualTo(new[]
             {
                 ConsoleType.TimeEnd,
                 ConsoleType.Trace,
@@ -60,23 +61,21 @@ namespace PuppeteerSharp.Tests.PageTests
                 ConsoleType.Warning,
                 ConsoleType.Error,
                 ConsoleType.Log
-            }, messages
-                .Select(_ => _.Type)
-                .ToArray());
+            }));
 
-            StringAssert.Contains("calling console.time", messages[0].Text);
+            Assert.That(messages[0].Text, Does.Contain("calling console.time"));
 
-            Assert.AreEqual(new[]
+            Assert.That(messages
+                .Skip(1)
+                .Select(msg => msg.Text)
+                .ToArray(), Is.EqualTo(new[]
             {
                 "calling console.trace",
                 "calling console.dir",
                 "calling console.warn",
                 "calling console.error",
                 "JSHandle@promise"
-            }, messages
-                .Skip(1)
-                .Select(msg => msg.Text)
-                .ToArray());
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
@@ -97,7 +96,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.EvaluateExpressionAsync("console.error(window)")
             );
 
-            Assert.AreEqual("JSHandle@object", await consoleTcs.Task);
+            Assert.That(await consoleTcs.Task, Is.EqualTo("JSHandle@object"));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
@@ -110,15 +109,15 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
             var message = await messageTask.Task;
-            StringAssert.Contains("No 'Access-Control-Allow-Origin'", message.Text);
+            Assert.That(message.Text, Does.Contain("No 'Access-Control-Allow-Origin'"));
 
             if (TestConstants.IsChrome)
             {
-                Assert.AreEqual(ConsoleType.Error, message.Type);
+                Assert.That(message.Type, Is.EqualTo(ConsoleType.Error));
             }
             else
             {
-                Assert.AreEqual(ConsoleType.Warning, message.Type);
+                Assert.That(message.Type, Is.EqualTo(ConsoleType.Warning));
             }
         }
 
@@ -134,12 +133,12 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.SetContentAsync("<script>fetch('http://wat');</script>"));
 
             var args = await consoleTask.Task;
-            StringAssert.Contains("ERR_NAME", args.Message.Text);
-            Assert.AreEqual(ConsoleType.Error, args.Message.Type);
-            Assert.AreEqual(new ConsoleMessageLocation
+            Assert.That(args.Message.Text, Does.Contain("ERR_NAME"));
+            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Error));
+            Assert.That(args.Message.Location, Is.EqualTo(new ConsoleMessageLocation
             {
                 URL = "http://wat/",
-            }, args.Message.Location);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location and stack trace for console API calls")]
@@ -154,14 +153,14 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
 
             var args = await consoleTask.Task;
-            Assert.AreEqual("yellow", args.Message.Text);
-            Assert.AreEqual(ConsoleType.Log, args.Message.Type);
-            Assert.AreEqual(new ConsoleMessageLocation
+            Assert.That(args.Message.Text, Is.EqualTo("yellow"));
+            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Log));
+            Assert.That(args.Message.Location, Is.EqualTo(new ConsoleMessageLocation
             {
                 URL = TestConstants.ServerUrl + "/consolelog.html",
                 LineNumber = 7,
                 ColumnNumber = 14
-            }, args.Message.Location);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
@@ -187,6 +186,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await popupTarget.PageAsync();
         }
 
+        [Test, Ignore("previously not marked as a test")]
         public async Task ShouldNotFailForNullArgument()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -204,7 +204,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Page.EvaluateExpressionAsync("console.debug(null);")
             );
 
-            Assert.AreEqual("JSHandle:null", await consoleTcs.Task);
+            Assert.That(await consoleTcs.Task, Is.EqualTo("JSHandle:null"));
         }
     }
 }

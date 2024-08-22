@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Cdp.Messaging
 {
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         public string StatusText { get; set; }
 
-        [JsonProperty("remoteIPAddress")]
+        [JsonPropertyName("remoteIPAddress")]
         public string RemoteIPAddress { get; set; }
 
         public int RemotePort { get; set; }

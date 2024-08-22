@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Newtonsoft.Json;
+using System.Text.Json;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit.TestExpectations;
 
 namespace PuppeteerSharp.Nunit
@@ -20,8 +21,11 @@ namespace PuppeteerSharp.Nunit
     {
         private static TestExpectation[] _localExpectations;
         private static TestExpectation[] _upstreamExpectations;
+
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("PRODUCT") != "FIREFOX";
+        // TODO: Change implementation when we implement Webdriver Bidi
         public static readonly bool IsCdp = Environment.GetEnvironmentVariable("PROTOCOL") == "cdp";
+
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
             (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
@@ -169,6 +173,12 @@ namespace PuppeteerSharp.Nunit
         private static TestExpectation[] GetUpstreamExpectations() =>
             _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
 
+        private static readonly JsonSerializerOptions DefaultJsonSerializerOptions =
+            new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
         private static TestExpectation[] LoadExpectationsFromResource(string resourceName)
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -176,7 +186,7 @@ namespace PuppeteerSharp.Nunit
             using var stream = assembly.GetManifestResourceStream(resourceName);
             using var reader = new StreamReader(stream);
             var fileContent = reader.ReadToEnd();
-            return JsonConvert.DeserializeObject<TestExpectation[]>(fileContent);
+            return JsonSerializer.Deserialize<TestExpectation[]>(fileContent, DefaultJsonSerializerOptions);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
+            Assert.That((await response.TextAsync()).Trim(), Is.EqualTo("{\"foo\": \"bar\"}"));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should return uncompressed text")]
@@ -26,8 +24,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             Server.EnableGzip("/simple.json");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/simple.json");
-            Assert.AreEqual("gzip", response.Headers["Content-Encoding"]);
-            Assert.AreEqual("{\"foo\": \"bar\"}", (await response.TextAsync()).Trim());
+            Assert.That(response.Headers["Content-Encoding"], Is.EqualTo("gzip"));
+            Assert.That((await response.TextAsync()).Trim(), Is.EqualTo("{\"foo\": \"bar\"}"));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should throw when requesting body of redirected response")]
@@ -38,10 +36,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var redirectChain = response.Request.RedirectChain;
             Assert.That(redirectChain, Has.Exactly(1).Items);
             var redirected = redirectChain[0].Response;
-            Assert.AreEqual(HttpStatusCode.Redirect, redirected.Status);
+            Assert.That(redirected.Status, Is.EqualTo(HttpStatusCode.Redirect));
 
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
-            StringAssert.Contains("Response body is unavailable for redirect responses", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Response body is unavailable for redirect responses"));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.text", "should wait until response completes")]
@@ -82,10 +80,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 WaitForPageResponseEvent()
             );
 
-            Assert.NotNull(serverResponse);
-            Assert.NotNull(pageResponse);
-            Assert.AreEqual(HttpStatusCode.OK, pageResponse.Status);
-            Assert.False(requestFinished);
+            Assert.That(serverResponse, Is.Not.Null);
+            Assert.That(pageResponse, Is.Not.Null);
+            Assert.That(pageResponse.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(requestFinished, Is.False);
 
             var responseText = pageResponse.TextAsync();
             // Write part of the response and wait for it to be flushed.
@@ -93,7 +91,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             // Finish response.
             await serverResponse.WriteAsync("ld!");
             serverResponseCompletion.SetResult(true);
-            Assert.AreEqual("hello world!", await responseText);
+            Assert.That(await responseText, Is.EqualTo("hello world!"));
         }
     }
 }

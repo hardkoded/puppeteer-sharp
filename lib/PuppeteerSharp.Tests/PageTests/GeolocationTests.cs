@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -26,11 +25,11 @@ namespace PuppeteerSharp.Tests.PageTests
                 @"() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
                     resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
                 }))");
-            Assert.AreEqual(new GeolocationOption
+            Assert.That(geolocation, Is.EqualTo(new GeolocationOption
             {
                 Latitude = 10,
                 Longitude = 10
-            }, geolocation);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setGeolocation", "should throw when invalid longitude")]
@@ -42,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
                     Longitude = 200,
                     Latitude = 100
                 }));
-            StringAssert.Contains("Invalid longitude '200'", exception.Message);
+            Assert.That(exception.Message, Does.Contain("Invalid longitude '200'"));
         }
     }
 }

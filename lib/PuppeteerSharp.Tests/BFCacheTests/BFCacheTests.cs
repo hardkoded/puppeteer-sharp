@@ -10,7 +10,7 @@ public class BFCacheTests : PuppeteerPageBaseTest
     public BFCacheTests()
     {
         DefaultOptions = TestConstants.DefaultBrowserOptions();
-        DefaultOptions.IgnoreHTTPSErrors = true;
+        DefaultOptions.AcceptInsecureCerts = true;
     }
 
     [Test, Retry(2), PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page")]
@@ -20,9 +20,9 @@ public class BFCacheTests : PuppeteerPageBaseTest
         await Page.GoToAsync(TestConstants.ServerUrl + "/cached/bfcache/index.html");
         await Task.WhenAll(Page.WaitForNavigationAsync(), Page.ClickAsync("a"));
 
-        StringAssert.Contains("target", Page.Url);
+        Assert.That(Page.Url, Does.Contain("target"));
         await Task.WhenAll(Page.WaitForNavigationAsync(), Page.GoBackAsync());
-        Assert.AreEqual("BFCachednext", await Page.EvaluateExpressionAsync<string>("document.body.innerText"));
+        Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("BFCachednext"));
     }
 
     [Test, Retry(2), PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page containing an OOPIF and a worker")]
@@ -33,7 +33,7 @@ public class BFCacheTests : PuppeteerPageBaseTest
         Page.WorkerCreated += (_, e) => workerTcs.TrySetResult(e.Worker);
         await Page.GoToAsync(TestConstants.ServerUrl + "/cached/bfcache/worker-iframe-container.html");
         var worker1 = await workerTcs.Task.WithTimeout();
-        Assert.AreEqual(2, await worker1.EvaluateExpressionAsync<int>("1 + 1"));
+        Assert.That(await worker1.EvaluateExpressionAsync<int>("1 + 1"), Is.EqualTo(2));
         await Task.WhenAll(
             Page.WaitForNavigationAsync(),
             Page.ClickAsync("a"));
@@ -44,6 +44,6 @@ public class BFCacheTests : PuppeteerPageBaseTest
             Page.GoBackAsync()).WithTimeout();
 
         var worker2 = await workerTcs.Task.WithTimeout();
-        Assert.AreEqual(2, await worker2.EvaluateExpressionAsync<int>("1 + 1"));
+        Assert.That(await worker2.EvaluateExpressionAsync<int>("1 + 1"), Is.EqualTo(2));
     }
 }

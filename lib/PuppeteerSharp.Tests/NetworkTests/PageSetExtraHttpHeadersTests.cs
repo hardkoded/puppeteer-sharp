@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var headerTask = Server.WaitForRequest("/empty.html", request => request.Headers["Foo"]);
             await Task.WhenAll(Page.GoToAsync(TestConstants.EmptyPage), headerTask);
 
-            Assert.AreEqual("Bar", headerTask.Result);
+            Assert.That(headerTask.Result, Is.EqualTo("Bar"));
         }
     }
 }

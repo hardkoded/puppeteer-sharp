@@ -1,8 +1,12 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp.Mobile
 {
     /// <summary>
     /// Device descriptor name.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<DeviceDescriptorName>))]
     public enum DeviceDescriptorName
     {
         /// <summary>

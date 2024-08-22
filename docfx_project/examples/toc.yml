@@ -18,6 +18,8 @@
       href: Page.Request.md
     - name: How to download an specific browser
       href: DownloadFetcher.Download.md
+    - name: Using PuppeteerSharp with AOT compilation
+      href: AOT.md
 - name: Advanced
   items:
     - name: How to log CDP communication

@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -17,15 +14,15 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         public async Task ShouldQueryExistingElement()
         {
             await Page.SetContentAsync("<section>test</section>");
-            Assert.NotNull(await Page.QuerySelectorAsync("text/test"));
+            Assert.That(await Page.QuerySelectorAsync("text/test"), Is.Not.Null);
             Assert.That(await Page.QuerySelectorAllAsync("text/test"), Has.Exactly(1).Items);
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should return empty array for non-existing element")]
         public async Task ShouldReturnEmptyArrayForNonExistingElement()
         {
-            Assert.Null(await Page.QuerySelectorAsync("text/test"));
-            Assert.IsEmpty(await Page.QuerySelectorAllAsync("text/test"));
+            Assert.That(await Page.QuerySelectorAsync("text/test"), Is.Null);
+            Assert.That(await Page.QuerySelectorAllAsync("text/test"), Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should return first element")]
@@ -33,14 +30,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<div id=\"1\">a</div><div>a</div>");
             var element = await Page.QuerySelectorAsync("text/a");
-            Assert.AreEqual("1", await element.EvaluateFunctionAsync<string>("element => element.id"));
+            Assert.That(await element.EvaluateFunctionAsync<string>("element => element.id"), Is.EqualTo("1"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should return multiple elements")]
         public async Task ShouldReturnMultipleElements()
         {
             await Page.SetContentAsync("<div>a</div><div>a</div>");
-            Assert.AreEqual(2, (await Page.QuerySelectorAllAsync("text/a")).Length);
+            Assert.That((await Page.QuerySelectorAllAsync("text/a")), Has.Length.EqualTo(2));
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should pierce shadow DOM")]
@@ -58,7 +55,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
                 document.body.append(div);
             }");
             var element = await Page.QuerySelectorAsync("text/a");
-            Assert.AreEqual("a", await element.EvaluateFunctionAsync<string>("element => element.textContent"));
+            Assert.That(await element.EvaluateFunctionAsync<string>("element => element.textContent"), Is.EqualTo("a"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should query deeply nested text")]
@@ -66,7 +63,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<div><div>a</div><div>b</div></div>");
             var element = await Page.QuerySelectorAsync("text/a");
-            Assert.AreEqual("a", await element.EvaluateFunctionAsync<string>("element => element.textContent"));
+            Assert.That(await element.EvaluateFunctionAsync<string>("element => element.textContent"), Is.EqualTo("a"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should query inputs")]
@@ -74,14 +71,14 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<input value=\"a\">");
             var element = await Page.QuerySelectorAsync("text/a");
-            Assert.AreEqual("a", await element.EvaluateFunctionAsync<string>("element => element.value"));
+            Assert.That(await element.EvaluateFunctionAsync<string>("element => element.value"), Is.EqualTo("a"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should not query radio")]
         public async Task ShouldNotQueryRadio()
         {
             await Page.SetContentAsync("<radio value=\"a\">");
-            Assert.Null(await Page.QuerySelectorAsync("text/a"));
+            Assert.That(await Page.QuerySelectorAsync("text/a"), Is.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should query text spanning multiple elements")]
@@ -89,7 +86,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<div><span>a</span> <span>b</span><div>");
             var element = await Page.QuerySelectorAsync("text/a b");
-            Assert.AreEqual("a b", await element.EvaluateFunctionAsync<string>("element => element.textContent"));
+            Assert.That(await element.EvaluateFunctionAsync<string>("element => element.textContent"), Is.EqualTo("a b"));
         }
     }
 }

@@ -18,31 +18,31 @@ namespace PuppeteerSharp.Tests.EmulationTests
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.None);
             var screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Achromatopsia);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("vision-deficiency-achromatopsia.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-achromatopsia.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.BlurredVision);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("vision-deficiency-blurredVision.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-blurredVision.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Deuteranopia);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("vision-deficiency-deuteranopia.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-deuteranopia.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Protanopia);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("vision-deficiency-protanopia.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-protanopia.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.Tritanopia);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("vision-deficiency-tritanopia.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-tritanopia.png", screenshot), Is.True);
 
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.None);
             screenshot = await Page.ScreenshotDataAsync();
-            Assert.True(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot));
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot), Is.True);
         }
     }
 }

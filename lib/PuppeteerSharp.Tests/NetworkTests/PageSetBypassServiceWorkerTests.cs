@@ -56,12 +56,12 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
             WaitUntil = [WaitUntilNavigation.Networkidle2],
         });
 
-        Assert.False(Page.IsServiceWorkerBypassed);
-        Assert.AreEqual(2, responses.Count);
-        Assert.AreEqual(HttpStatusCode.OK, responses["sw.html"].Status);
-        Assert.True(responses["sw.html"].FromServiceWorker);
-        Assert.AreEqual(HttpStatusCode.OK, responses["style.css"].Status);
-        Assert.True(responses["style.css"].FromServiceWorker);
+        Assert.That(Page.IsServiceWorkerBypassed, Is.False);
+        Assert.That(responses, Has.Count.EqualTo(2));
+        Assert.That(responses["sw.html"].Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(responses["sw.html"].FromServiceWorker, Is.True);
+        Assert.That(responses["style.css"].Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(responses["style.css"].FromServiceWorker, Is.True);
 
         await Page.SetBypassServiceWorkerAsync(true);
         await Page.ReloadAsync(new NavigationOptions()
@@ -69,10 +69,10 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
             WaitUntil = [WaitUntilNavigation.Networkidle2],
         });
 
-        Assert.True(Page.IsServiceWorkerBypassed);
-        Assert.AreEqual(HttpStatusCode.OK, responses["sw.html"].Status);
-        Assert.False(responses["sw.html"].FromServiceWorker);
-        Assert.AreEqual(HttpStatusCode.OK, responses["style.css"].Status);
-        Assert.False(responses["style.css"].FromServiceWorker);
+        Assert.That(Page.IsServiceWorkerBypassed, Is.True);
+        Assert.That(responses["sw.html"].Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(responses["sw.html"].FromServiceWorker, Is.False);
+        Assert.That(responses["style.css"].Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(responses["style.css"].FromServiceWorker, Is.False);
     }
 }

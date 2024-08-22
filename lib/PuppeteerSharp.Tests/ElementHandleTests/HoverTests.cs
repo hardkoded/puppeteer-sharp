@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -17,8 +16,8 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/scrollable.html");
             var button = await Page.QuerySelectorAsync("#button-6");
             await button.HoverAsync();
-            Assert.AreEqual("button-6", await Page.EvaluateExpressionAsync<string>(
-                "document.querySelector('button:hover').id"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>(
+                "document.querySelector('button:hover').id"), Is.EqualTo("button-6"));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -17,7 +16,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
-            Assert.AreEqual(imageBuffer, await response.BufferAsync());
+            Assert.That(await response.BufferAsync(), Is.EqualTo(imageBuffer));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Response.buffer", "should work with compression")]
@@ -26,7 +25,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Server.EnableGzip("/pptr.png");
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
             var imageBuffer = File.ReadAllBytes("./Assets/pptr.png");
-            Assert.AreEqual(imageBuffer, await response.BufferAsync());
+            Assert.That(await response.BufferAsync(), Is.EqualTo(imageBuffer));
         }
     }
 }

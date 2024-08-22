@@ -21,8 +21,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")), Has.Exactly(1).Items);
             var childFrame = Page.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.AreSame(response.Frame, childFrame);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(childFrame, Is.SameAs(response.Frame));
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should reject when frame detaches")]
@@ -35,13 +35,13 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await waitForRequestTask;
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await navigationTask);
-            Assert.True(
+            Assert.That(
                 new[]
                 {
                     "Navigating frame was detached",
                     "Error: NS_BINDING_ABORTED",
                     "net::ERR_ABORTED"
-                }.Any(error => exception.Message.Contains(error)));
+                }.Any(error => exception.Message.Contains(error)), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should return matching responses")]
@@ -85,12 +85,12 @@ namespace PuppeteerSharp.Tests.NavigationTests
             {
                 matchingData[i].ServerResponseTcs.TrySetResult(serverResponseTexts[i]);
                 var response = await matchingData[i].NavigationTask;
-                Assert.AreSame(matchingData[i].FrameTask.Result, response.Frame);
-                Assert.AreEqual(serverResponseTexts[i], await response.TextAsync());
+                Assert.That(response.Frame, Is.SameAs(matchingData[i].FrameTask.Result));
+                Assert.That(await response.TextAsync(), Is.EqualTo(serverResponseTexts[i]));
             }
         }
 
-        private class MatchingResponseData
+        private sealed class MatchingResponseData
         {
             public Task<IFrame> FrameTask { get; internal set; }
             public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>();

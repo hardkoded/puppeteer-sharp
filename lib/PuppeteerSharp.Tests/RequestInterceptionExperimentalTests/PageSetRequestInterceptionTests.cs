@@ -29,7 +29,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
@@ -122,9 +121,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
         }
 
-        Assert.AreEqual(1, actionResults.Count);
-        Assert.AreEqual(expectedAction, actionResults[0]);
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
+        Assert.That(actionResults, Has.Count.EqualTo(1));
+        Assert.That(actionResults[0], Is.EqualTo(expectedAction));
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should intercept")]
@@ -139,22 +138,22 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
                 return;
             }
 
-            StringAssert.Contains("empty.html", request.Url);
-            Assert.NotNull(request.Headers);
-            Assert.NotNull(request.Headers["user-agent"]);
-            Assert.NotNull(request.Headers["accept"]);
-            Assert.AreEqual(HttpMethod.Get, request.Method);
-            Assert.Null(request.PostData);
-            Assert.True(request.IsNavigationRequest);
-            Assert.AreEqual(ResourceType.Document, request.ResourceType);
-            Assert.AreEqual(Page.MainFrame, request.Frame);
-            Assert.AreEqual(TestConstants.AboutBlank, request.Frame.Url);
+            Assert.That(request.Url, Does.Contain("empty.html"));
+            Assert.That(request.Headers, Is.Not.Null);
+            Assert.That(request.Headers["user-agent"], Is.Not.Null);
+            Assert.That(request.Headers["accept"], Is.Not.Null);
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.PostData, Is.Null);
+            Assert.That(request.IsNavigationRequest, Is.True);
+            Assert.That(request.ResourceType, Is.EqualTo(ResourceType.Document));
+            Assert.That(request.Frame, Is.EqualTo(Page.MainFrame));
+            Assert.That(request.Frame.Url, Is.EqualTo(TestConstants.AboutBlank));
             await request.ContinueAsync(new Payload(), 0);
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage);
-        Assert.True(response.Ok);
+        Assert.That(response.Ok, Is.True);
 
-        Assert.AreEqual(TestConstants.Port, response.RemoteAddress.Port);
+        Assert.That(response.RemoteAddress.Port, Is.EqualTo(TestConstants.Port));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -212,7 +211,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             requestTask,
             Page.GoToAsync(TestConstants.ServerUrl + "/empty.html")
         );
-        Assert.True(string.IsNullOrEmpty(requestTask.Result));
+        Assert.That(string.IsNullOrEmpty(requestTask.Result), Is.True);
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -240,8 +239,8 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 
         await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
         await requestsReadyTcs.Task.WithTimeout();
-        StringAssert.Contains("/one-style.css", requests[1].Url);
-        StringAssert.Contains("/one-style.html", requests[1].Headers["Referer"]);
+        Assert.That(requests[1].Url, Does.Contain("/one-style.css"));
+        Assert.That(requests[1].Headers["Referer"], Does.Contain("/one-style.html"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -256,7 +255,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.SetRequestInterceptionAsync(true);
         Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
         var response = await Page.ReloadAsync();
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -285,11 +284,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.SetRequestInterceptionAsync(true);
         Page.AddRequestInterceptor(request =>
         {
-            Assert.AreEqual("bar", request.Headers["foo"]);
+            Assert.That(request.Headers["foo"], Is.EqualTo("bar"));
             return request.ContinueAsync(new Payload(), 0);
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage);
-        Assert.True(response.Ok);
+        Assert.That(response.Ok, Is.True);
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -308,7 +307,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
                 request.send(null);
                 return request.status;
             }");
-        Assert.AreEqual(200, status);
+        Assert.That(status, Is.EqualTo(200));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -319,11 +318,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.SetRequestInterceptionAsync(true);
         Page.AddRequestInterceptor(request =>
         {
-            Assert.AreEqual(TestConstants.EmptyPage, request.Headers["referer"]);
+            Assert.That(request.Headers["referer"], Is.EqualTo(TestConstants.EmptyPage));
             return request.ContinueAsync(new Payload(), 0);
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage);
-        Assert.True(response.Ok);
+        Assert.That(response.Ok, Is.True);
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should be abortable")]
@@ -344,9 +343,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var failedRequests = 0;
         Page.RequestFailed += (_, _) => failedRequests++;
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
-        Assert.True(response.Ok);
-        Assert.Null(response.Request.FailureText);
-        Assert.AreEqual(1, failedRequests);
+        Assert.That(response.Ok, Is.True);
+        Assert.That(response.Request.FailureText, Is.Null);
+        Assert.That(failedRequests, Is.EqualTo(1));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -361,9 +360,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var exception = Assert.ThrowsAsync<NavigationException>(
             () => Page.GoToAsync(TestConstants.EmptyPage));
 
-        StringAssert.StartsWith("net::ERR_INTERNET_DISCONNECTED", exception.Message);
-        Assert.NotNull(failedRequest);
-        Assert.AreEqual("net::ERR_INTERNET_DISCONNECTED", failedRequest.FailureText);
+        Assert.That(exception.Message, Does.StartWith("net::ERR_INTERNET_DISCONNECTED"));
+        Assert.That(failedRequest, Is.Not.Null);
+        Assert.That(failedRequest.FailureText, Is.EqualTo("net::ERR_INTERNET_DISCONNECTED"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should send referer")]
@@ -377,7 +376,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             requestTask,
             Page.GoToAsync(TestConstants.ServerUrl + "/grid.html")
         );
-        Assert.AreEqual("http://google.com/", requestTask.Result);
+        Assert.That(requestTask.Result, Is.EqualTo("http://google.com/"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -391,11 +390,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 
         if (TestConstants.IsChrome)
         {
-            StringAssert.Contains("net::ERR_FAILED", exception.Message);
+            Assert.That(exception.Message, Does.Contain("net::ERR_FAILED"));
         }
         else
         {
-            StringAssert.Contains("NS_ERROR_FAILURE", exception.Message);
+            Assert.That(exception.Message, Does.Contain("NS_ERROR_FAILURE"));
         }
     }
 
@@ -416,22 +415,22 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Server.SetRedirect("/non-existing-page-3.html", "/non-existing-page-4.html");
         Server.SetRedirect("/non-existing-page-4.html", "/empty.html");
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/non-existing-page.html");
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
-        StringAssert.Contains("empty.html", response.Url);
-        Assert.AreEqual(5, requests.Count);
-        Assert.AreEqual(ResourceType.Document, requests[2].ResourceType);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(response.Url, Does.Contain("empty.html"));
+        Assert.That(requests, Has.Count.EqualTo(5));
+        Assert.That(requests[2].ResourceType, Is.EqualTo(ResourceType.Document));
 
         // Check redirect chain
         var redirectChain = response.Request.RedirectChain;
-        Assert.AreEqual(4, redirectChain.Length);
-        StringAssert.Contains("/non-existing-page.html", redirectChain[0].Url);
-        StringAssert.Contains("/non-existing-page-3.html", redirectChain[2].Url);
+        Assert.That(redirectChain, Has.Length.EqualTo(4));
+        Assert.That(redirectChain[0].Url, Does.Contain("/non-existing-page.html"));
+        Assert.That(redirectChain[2].Url, Does.Contain("/non-existing-page-3.html"));
 
         for (var i = 0; i < redirectChain.Length; ++i)
         {
             var request = redirectChain[i];
-            Assert.True(request.IsNavigationRequest);
-            Assert.AreEqual(request, request.RedirectChain.ElementAt(i));
+            Assert.That(request.IsNavigationRequest, Is.True);
+            Assert.That(request.RedirectChain.ElementAt(i), Is.EqualTo(request));
         }
     }
 
@@ -458,17 +457,17 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             async context => { await context.Response.WriteAsync("body {box-sizing: border-box; }"); });
 
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
-        StringAssert.Contains("one-style.html", response.Url);
-        Assert.AreEqual(5, requests.Count);
-        Assert.AreEqual(ResourceType.Document, requests[0].ResourceType);
-        Assert.AreEqual(ResourceType.StyleSheet, requests[1].ResourceType);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(response.Url, Does.Contain("one-style.html"));
+        Assert.That(requests, Has.Count.EqualTo(5));
+        Assert.That(requests[0].ResourceType, Is.EqualTo(ResourceType.Document));
+        Assert.That(requests[1].ResourceType, Is.EqualTo(ResourceType.StyleSheet));
 
         // Check redirect chain
         var redirectChain = requests[1].RedirectChain;
-        Assert.AreEqual(3, redirectChain.Length);
-        StringAssert.Contains("one-style.css", redirectChain[0].Url);
-        StringAssert.Contains("three-style.css", redirectChain[2].Url);
+        Assert.That(redirectChain, Has.Length.EqualTo(3));
+        Assert.That(redirectChain[0].Url, Does.Contain("one-style.css"));
+        Assert.That(redirectChain[2].Url, Does.Contain("three-style.css"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -502,11 +501,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 
         if (TestConstants.IsChrome)
         {
-            StringAssert.Contains("Failed to fetch", result);
+            Assert.That(result, Does.Contain("Failed to fetch"));
         }
         else
         {
-            StringAssert.Contains("NetworkError", result);
+            Assert.That(result, Does.Contain("NetworkError"));
         }
     }
 
@@ -543,7 +542,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
             ])");
-        Assert.AreEqual(new[] { "11", "FAILED", "22" }, results);
+        Assert.That(results, Is.EqualTo(new[] { "11", "FAILED", "22" }));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -560,9 +559,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 
         var dataURL = "data:text/html,<div>yo</div>";
         var response = await Page.GoToAsync(dataURL);
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(requests, Has.Exactly(1).Items);
-        Assert.AreEqual(dataURL, requests[0].Url);
+        Assert.That(requests[0].Url, Is.EqualTo(dataURL));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -583,9 +582,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var dataURL = "data:text/html,<div>yo</div>";
         var text = await Page.EvaluateFunctionAsync<string>("url => fetch(url).then(r => r.text())", dataURL);
 
-        Assert.AreEqual("<div>yo</div>", text);
+        Assert.That(text, Is.EqualTo("<div>yo</div>"));
         Assert.That(requests, Has.Exactly(1).Items);
-        Assert.AreEqual(dataURL, requests[0].Url);
+        Assert.That(requests[0].Url, Is.EqualTo(dataURL));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -600,10 +599,10 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             return request.ContinueAsync(new Payload(), 0);
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
-        Assert.AreEqual(TestConstants.EmptyPage, response.Url);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
         Assert.That(requests, Has.Exactly(1).Items);
-        Assert.AreEqual(TestConstants.EmptyPage, requests[0].Url);
+        Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -615,7 +614,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.SetRequestInterceptionAsync(true);
         Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/some nonexisting page");
-        Assert.AreEqual(HttpStatusCode.NotFound, response.Status);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -626,7 +625,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Server.SetRoute("/malformed?rnd=%911", _ => Task.CompletedTask);
         Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/malformed?rnd=%911");
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -645,9 +644,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var response =
             await Page.GoToAsync(
                 $"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
-        Assert.AreEqual(HttpStatusCode.OK, response.Status);
-        Assert.AreEqual(2, requests.Count);
-        Assert.AreEqual(HttpStatusCode.NotFound, requests[1].Response.Status);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(requests, Has.Count.EqualTo(2));
+        Assert.That(requests[1].Response.Status, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -690,7 +689,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             }
         });
         await Page.GoToAsync(TestConstants.EmptyPage);
-        StringAssert.Contains("Request Interception is not enabled", exception.Message);
+        Assert.That(exception.Message, Does.Contain("Request Interception is not enabled"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -707,9 +706,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 
         var uri = new Uri(Path.Combine(Directory.GetCurrentDirectory(), "Assets", "one-style.html")).AbsoluteUri;
         await Page.GoToAsync(uri);
-        Assert.AreEqual(2, urls.Count);
-        Assert.Contains("one-style.html", urls);
-        Assert.Contains("one-style.css", urls);
+        Assert.That(urls, Has.Count.EqualTo(2));
+        Assert.That(urls, Does.Contain("one-style.html"));
+        Assert.That(urls, Does.Contain("one-style.css"));
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
@@ -725,7 +724,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
 
         await Page.ReloadAsync();
-        Assert.IsEmpty(cached);
+        Assert.That(cached, Is.Empty);
     }
 
     [Test, Retry(2), PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",

@@ -1,11 +1,8 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using PuppeteerSharp.Nunit.TestExpectations;
 
 namespace PuppeteerSharp.Tests.TargetTests
 {
@@ -20,9 +17,9 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             // The pages will be the testing page and the original newtab page
             var targets = Browser.Targets();
-            Assert.True(targets.Any(target => target.Type == TargetType.Page
-                && target.Url == TestConstants.AboutBlank));
-            Assert.True(targets.Any(target => target.Type == TargetType.Browser));
+            Assert.That(targets.Any(target => target.Type == TargetType.Page
+                && target.Url == TestConstants.AboutBlank), Is.True);
+            Assert.That(targets.Any(target => target.Type == TargetType.Browser), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "Browser.pages should return all of the pages")]
@@ -31,7 +28,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             // The pages will be the testing page and the original newtab page
             var allPages = (await Context.PagesAsync()).ToArray();
             Assert.That(allPages, Has.Exactly(1).Items);
-            Assert.Contains(Page, allPages);
+            Assert.That(allPages, Does.Contain(Page));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should contain browser target")]
@@ -39,7 +36,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             var targets = Browser.Targets();
             var browserTarget = targets.FirstOrDefault(target => target.Type == TargetType.Browser);
-            Assert.NotNull(browserTarget);
+            Assert.That(browserTarget, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should be able to use the default page in the browser")]
@@ -49,8 +46,8 @@ namespace PuppeteerSharp.Tests.TargetTests
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             var allPages = await browser.PagesAsync();
             var originalPage = allPages.First(p => p != Page);
-            Assert.AreEqual("Hello world", await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
-            Assert.NotNull(await originalPage.QuerySelectorAsync("body"));
+            Assert.That(await originalPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"), Is.EqualTo("Hello world"));
+            Assert.That(await originalPage.QuerySelectorAsync("body"), Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should report when a new page is created and closed")]
@@ -65,14 +62,14 @@ namespace PuppeteerSharp.Tests.TargetTests
                 );
 
             var otherPage = await otherPageTask.Result;
-            StringAssert.Contains(TestConstants.CrossProcessUrl, otherPage.Url);
+            Assert.That(otherPage.Url, Does.Contain(TestConstants.CrossProcessUrl));
 
-            Assert.AreEqual("Hello world", await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"));
-            Assert.NotNull(await otherPage.QuerySelectorAsync("body"));
+            Assert.That(await otherPage.EvaluateExpressionAsync<string>("['Hello', 'world'].join(' ')"), Is.EqualTo("Hello world"));
+            Assert.That(await otherPage.QuerySelectorAsync("body"), Is.Not.Null);
 
             var allPages = await Context.PagesAsync();
-            Assert.Contains(Page, allPages);
-            Assert.Contains(otherPage, allPages);
+            Assert.That(allPages, Does.Contain(Page));
+            Assert.That(allPages, Does.Contain(otherPage));
 
             var closePageTaskCompletion = new TaskCompletionSource<IPage>();
             async void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
@@ -82,10 +79,10 @@ namespace PuppeteerSharp.Tests.TargetTests
             }
             Context.TargetDestroyed += TargetDestroyedEventHandler;
             await otherPage.CloseAsync();
-            Assert.AreEqual(otherPage, await closePageTaskCompletion.Task);
+            Assert.That(await closePageTaskCompletion.Task, Is.EqualTo(otherPage));
 
             allPages = await Task.WhenAll(Context.Targets().Select(target => target.PageAsync()));
-            Assert.Contains(Page, allPages);
+            Assert.That(allPages, Does.Contain(Page));
             Assert.That(allPages, Does.Not.Contain(otherPage));
         }
 
@@ -103,8 +100,8 @@ namespace PuppeteerSharp.Tests.TargetTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
 
             var createdTarget = await createdTargetTaskCompletion.Task;
-            Assert.AreEqual(TargetType.ServiceWorker, createdTarget.Type);
-            Assert.AreEqual(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js", createdTarget.Url);
+            Assert.That(createdTarget.Type, Is.EqualTo(TargetType.ServiceWorker));
+            Assert.That(createdTarget.Url, Is.EqualTo(TestConstants.ServerUrl + "/serviceworkers/empty/sw.js"));
 
             var targetDestroyedTaskCompletion = new TaskCompletionSource<ITarget>();
             void TargetDestroyedEventHandler(object sender, TargetChangedArgs e)
@@ -114,7 +111,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             }
             Context.TargetDestroyed += TargetDestroyedEventHandler;
             await Page.EvaluateExpressionAsync("window.registrationPromise.then(registration => registration.unregister())");
-            Assert.AreEqual(createdTarget, await targetDestroyedTaskCompletion.Task);
+            Assert.That(await targetDestroyedTaskCompletion.Task, Is.EqualTo(createdTarget));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should create a worker from a service worker")]
@@ -124,7 +121,7 @@ namespace PuppeteerSharp.Tests.TargetTests
 
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             var worker = await target.WorkerAsync();
-            Assert.AreEqual("[object ServiceWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
+            Assert.That(await worker.EvaluateFunctionAsync<string>("() => self.toString()"), Is.EqualTo("[object ServiceWorkerGlobalScope]"));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should close a service worker")]
@@ -138,7 +135,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
             Context.TargetDestroyed += (sender, e) => workerDestroyed.TrySetResult(e);
             await worker.CloseAsync();
-            Assert.AreSame(target, (await workerDestroyed.Task).Target);
+            Assert.That((await workerDestroyed.Task).Target, Is.SameAs(target));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should create a worker from a shared worker")]
@@ -151,7 +148,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             }");
             var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.SharedWorker);
             var worker = await target.WorkerAsync();
-            Assert.AreEqual("[object SharedWorkerGlobalScope]", await worker.EvaluateFunctionAsync<string>("() => self.toString()"));
+            Assert.That(await worker.EvaluateFunctionAsync<string>("() => self.toString()"), Is.EqualTo("[object SharedWorkerGlobalScope]"));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should close a shared worker")]
@@ -169,7 +166,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             var workerDestroyed = new TaskCompletionSource<TargetChangedArgs>();
             Context.TargetDestroyed += (sender, e) => workerDestroyed.TrySetResult(e);
             await worker.CloseAsync();
-            Assert.AreSame(target, (await workerDestroyed.Task).Target);
+            Assert.That((await workerDestroyed.Task).Target, Is.SameAs(target));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should report when a target url changes")]
@@ -187,13 +184,13 @@ namespace PuppeteerSharp.Tests.TargetTests
 
             await Page.GoToAsync(TestConstants.CrossProcessUrl + "/");
             var changedTarget = await changedTargetTaskCompletion.Task;
-            Assert.AreEqual(TestConstants.CrossProcessUrl + "/", changedTarget.Url);
+            Assert.That(changedTarget.Url, Is.EqualTo(TestConstants.CrossProcessUrl + "/"));
 
             changedTargetTaskCompletion = new TaskCompletionSource<ITarget>();
             Context.TargetChanged += ChangedTargetEventHandler;
             await Page.GoToAsync(TestConstants.EmptyPage);
             changedTarget = await changedTargetTaskCompletion.Task;
-            Assert.AreEqual(TestConstants.EmptyPage, changedTarget.Url);
+            Assert.That(changedTarget.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
         [Test, Retry(2), PuppeteerTest("target.spec", "Target", "should not report uninitialized pages")]
@@ -211,17 +208,17 @@ namespace PuppeteerSharp.Tests.TargetTests
             Context.TargetCreated += TargetCreatedEventHandler;
             var newPageTask = Context.NewPageAsync();
             var target = await targetCompletionTask.Task;
-            Assert.AreEqual(TestConstants.AboutBlank, target.Url);
+            Assert.That(target.Url, Is.EqualTo(TestConstants.AboutBlank));
 
             var newPage = await newPageTask;
             targetCompletionTask = new TaskCompletionSource<ITarget>();
             Context.TargetCreated += TargetCreatedEventHandler;
             var evaluateTask = newPage.EvaluateExpressionHandleAsync("window.open('about:blank')");
             var target2 = await targetCompletionTask.Task;
-            Assert.AreEqual(TestConstants.AboutBlank, target2.Url);
+            Assert.That(target2.Url, Is.EqualTo(TestConstants.AboutBlank));
             await evaluateTask;
             await newPage.CloseAsync();
-            Assert.False(targetChanged, "target should not be reported as changed");
+            Assert.That(targetChanged, Is.False, "target should not be reported as changed");
             Context.TargetChanged -= listener;
         }
 
@@ -257,10 +254,10 @@ namespace PuppeteerSharp.Tests.TargetTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/popup/window-open.html");
             var createdTarget = await targetCreatedCompletion.Task;
 
-            Assert.AreEqual(TestConstants.ServerUrl + "/popup/popup.html", (await createdTarget.PageAsync()).Url);
+            Assert.That((await createdTarget.PageAsync()).Url, Is.EqualTo(TestConstants.ServerUrl + "/popup/popup.html"));
 #pragma warning disable CS0618 // Type or member is obsolete
-            Assert.AreSame(Page.Target, createdTarget.Opener);
-            Assert.Null(Page.Target.Opener);
+            Assert.That(createdTarget.Opener, Is.SameAs(Page.Target));
+            Assert.That(Page.Target.Opener, Is.Null);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
     }

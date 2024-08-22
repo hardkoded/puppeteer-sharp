@@ -1,10 +1,10 @@
+using System;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace PuppeteerSharp.Transport
 {
-    using System;
-    using System.Net.WebSockets;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Delegate for creation of <see cref="WebSocket"/> instances.
     /// </summary>

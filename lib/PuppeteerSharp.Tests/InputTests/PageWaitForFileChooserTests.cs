@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.InputTests
@@ -22,7 +21,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.NotNull(waitForTask.Result);
+            Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("input.spec", "Page.waitForFileChooser", "should work when file input is not attached to DOM")]
@@ -39,7 +38,7 @@ namespace PuppeteerSharp.Tests.InputTests
                     el.click();
                 }"));
 
-            Assert.NotNull(waitForTask.Result);
+            Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("input.spec", "Page.waitForFileChooser", "should respect timeout")]
@@ -81,7 +80,7 @@ namespace PuppeteerSharp.Tests.InputTests
                     el.type = 'file';
                     el.click();
                 }, 50)"));
-            Assert.NotNull(waitForTask.Result);
+            Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
         [Test, Retry(2), PuppeteerTest("input.spec", "Page.waitForFileChooser", "should return the same file chooser when there are many watchdogs simultaneously")]
@@ -95,7 +94,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 fileChooserTask1,
                 fileChooserTask2,
                 Page.QuerySelectorAsync("input").EvaluateFunctionAsync("input => input.click()"));
-            Assert.AreSame(fileChooserTask1.Result, fileChooserTask2.Result);
+            Assert.That(fileChooserTask2.Result, Is.SameAs(fileChooserTask1.Result));
         }
     }
 }

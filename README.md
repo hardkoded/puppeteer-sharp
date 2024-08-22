@@ -16,7 +16,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 ## Recent news
 
-* [Puppeteer-Sharp 2023 recap](https://www.hardkoded.com/blog/puppeteer-sharp-2023-recap).
+PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 release notes!](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v19.0.0).
 
 ## Useful links
 
@@ -28,7 +28,7 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 ## Prerequisites
 
-* As Puppeteer-Sharp is a NetStandard 2.0 library, the minimum platform versions are .NET Framework 4.6.1 and .NET Core 2.0. [Read more](https://docs.microsoft.com/en-us/dotnet/standard/net-standard).
+* Puppeteer-Sharp comes in two flavors: a NetStandard 2.0 library for .NET Framework 4.6.1 and .NET Core 2.0 or greater and a .NET 8 version.
 * If you have issues running Chrome on Linux, the Puppeteer repo has a [great troubleshooting guide](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md).
 * X-server is required on Linux.
 
@@ -60,7 +60,7 @@ await using var page = await browser.NewPageAsync();
 await page.GoToAsync("http://www.google.com");
 await page.ScreenshotAsync(outputFile);
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L53-L61' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScreenshotAsync' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/PageScreenshotTests.cs#L54-L62' title='Snippet source file'>snippet source</a> | <a href='#snippet-ScreenshotAsync' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 You can also change the view port before generating the screenshot
@@ -112,10 +112,10 @@ var result = await page.GetContentAsync();
 ```cs
 await using var page = await browser.NewPageAsync();
 var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
-Console.WriteLine(someObject.a);
+var someObject = await page.EvaluateFunctionAsync<JsonElement>("(value) => ({a: value})", 5);
+Console.WriteLine(someObject.GetProperty("a").GetString());
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L16-L21' title='Snippet source file'>snippet source</a> | <a href='#snippet-Evaluate' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/QuerySelectorTests/ElementHandleQuerySelectorEvalTests.cs#L17-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-Evaluate' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Wait For Selector
@@ -172,6 +172,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><a href="https://github.com/MarkPflug"><img src="https://github.com/MarkPflug.png" width="60px" alt="Mark Pflug" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
 
 

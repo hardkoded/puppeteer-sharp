@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -16,7 +15,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var windowHandle = await Page.MainFrame.EvaluateExpressionHandleAsync("window");
-            Assert.NotNull(windowHandle);
+            Assert.That(windowHandle, Is.Not.Null);
         }
     }
 }

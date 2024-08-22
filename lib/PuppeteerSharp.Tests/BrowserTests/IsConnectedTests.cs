@@ -14,9 +14,9 @@ namespace PuppeteerSharp.Tests.BrowserTests
                 BrowserWSEndpoint = Browser.WebSocketEndpoint,
                 Protocol = ((Browser)Browser).Protocol,
             });
-            Assert.True(newBrowser.IsConnected);
+            Assert.That(newBrowser.IsConnected, Is.True);
             newBrowser.Disconnect();
-            Assert.False(newBrowser.IsConnected);
+            Assert.That(newBrowser.IsConnected, Is.False);
         }
     }
 }

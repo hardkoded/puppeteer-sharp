@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.EvaluateFunctionAsync(AddElement, "button");
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
             var result = await Page.EvaluateExpressionAsync<int>("globalThis.ariaQuerySelector(2,8)");
-            Assert.AreEqual(10, result);
+            Assert.That(result, Is.EqualTo(10));
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work with removed MutationObserver")]
@@ -71,8 +71,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Task.WhenAll(
                 handleTask,
                 Page.SetContentAsync("<h1>anything</h1>"));
-            Assert.NotNull(handleTask.Result);
-            Assert.AreEqual("anything", await Page.EvaluateFunctionAsync<string>("x => x.textContent", handleTask.Result));
+            Assert.That(handleTask.Result, Is.Not.Null);
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", handleTask.Result), Is.EqualTo("anything"));
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should resolve promise when node is added")]
@@ -86,8 +86,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var elementHandle = await watchdog;
             var tagName = await (
               await elementHandle.GetPropertyAsync("tagName")
-            ).JsonValueAsync();
-            Assert.AreEqual("H1", tagName);
+            ).JsonValueAsync<string>();
+            Assert.That(tagName, Is.EqualTo("H1"));
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should work when node is added through innerHTML")]
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await otherFrame.EvaluateFunctionAsync(AddElement, "button");
             await Page.EvaluateFunctionAsync(AddElement, "button");
             var elementHandle = await watchdog;
-            Assert.AreSame(elementHandle.Frame, Page.MainFrame);
+            Assert.That(Page.MainFrame, Is.SameAs(elementHandle.Frame));
         }
 
         [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "waitForSelector (aria)", "should run in specified frame")]
@@ -127,7 +127,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await frame1.EvaluateFunctionAsync(AddElement, "button");
             await frame2.EvaluateFunctionAsync(AddElement, "button");
             var elementHandle = await waitForSelectorTask;
-            Assert.AreSame(elementHandle.Frame, frame2);
+            Assert.That(frame2, Is.SameAs(elementHandle.Frame));
         }
     }
 }

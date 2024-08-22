@@ -1,10 +1,10 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
 {
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<MouseEventType>))]
     internal enum MouseEventType
     {
         /// <summary>

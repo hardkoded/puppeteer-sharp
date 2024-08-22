@@ -1,10 +1,13 @@
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
     /// <summary>
     /// Console type used on <see cref="ConsoleMessage"/>.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumMemberConverter<ConsoleType>))]
     public enum ConsoleType
     {
         /// <summary>

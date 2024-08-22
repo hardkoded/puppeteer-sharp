@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -16,8 +17,8 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             #region Evaluate
             await using var page = await browser.NewPageAsync();
             var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
-            var someObject = await page.EvaluateFunctionAsync<dynamic>("(value) => ({a: value})", 5);
-            Console.WriteLine(someObject.a);
+            var someObject = await page.EvaluateFunctionAsync<JsonElement>("(value) => ({a: value})", 5);
+            Console.WriteLine(someObject.GetProperty("a").GetString());
             #endregion
         }
 
@@ -28,7 +29,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var tweet = await Page.QuerySelectorAsync(".tweet");
             var content = await tweet.QuerySelectorAsync(".like")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
-            Assert.AreEqual("100", content);
+            Assert.That(content, Is.EqualTo("100"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should retrieve content from subtree")]
@@ -39,7 +40,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var elementHandle = await Page.QuerySelectorAsync("#myId");
             var content = await elementHandle.QuerySelectorAsync(".a")
                 .EvaluateFunctionAsync<string>("node => node.innerText");
-            Assert.AreEqual("a-child-div", content);
+            Assert.That(content, Is.EqualTo("a-child-div"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$eval", "should throw in case of missing selector")]
@@ -51,7 +52,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             var exception = Assert.ThrowsAsync<SelectorException>(
                 () => elementHandle.QuerySelectorAsync(".a").EvaluateFunctionAsync<string>("node => node.innerText")
             );
-            Assert.AreEqual("Error: failed to find element matching selector", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Error: failed to find element matching selector"));
         }
     }
 }

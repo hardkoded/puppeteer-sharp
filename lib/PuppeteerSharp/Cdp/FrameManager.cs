@@ -24,12 +24,12 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, bool ignoreHTTPSErrors, TimeoutSettings timeoutSettings)
+        internal FrameManager(CDPSession client, Page page, bool acceptInsecureCerts, TimeoutSettings timeoutSettings)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(ignoreHTTPSErrors, this, client.Connection.LoggerFactory);
+            NetworkManager = new NetworkManager(acceptInsecureCerts, this, client.Connection.LoggerFactory);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
@@ -211,38 +211,38 @@ namespace PuppeteerSharp.Cdp
                             break;
 
                         case "Page.frameNavigated":
-                            var response = e.MessageData.ToObject<PageFrameNavigatedResponse>(true);
+                            var response = e.MessageData.ToObject<PageFrameNavigatedResponse>();
                             await OnFrameNavigatedAsync(response.Frame, response.Type).ConfigureAwait(false);
                             break;
 
                         case "Page.navigatedWithinDocument":
-                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>(true));
+                            OnFrameNavigatedWithinDocument(e.MessageData.ToObject<NavigatedWithinDocumentResponse>());
                             break;
 
                         case "Page.frameDetached":
-                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>(true));
+                            OnFrameDetached(e.MessageData.ToObject<PageFrameDetachedResponse>());
                             break;
 
                         case "Page.frameStartedLoading":
-                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStartedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                             break;
 
                         case "Page.frameStoppedLoading":
-                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>(true));
+                            OnFrameStoppedLoading(e.MessageData.ToObject<BasicFrameResponse>());
                             break;
 
                         case "Runtime.executionContextCreated":
-                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>(true).Context, sender as CDPSession).ConfigureAwait(false);
+                            await OnExecutionContextCreatedAsync(e.MessageData.ToObject<RuntimeExecutionContextCreatedResponse>().Context, sender as CDPSession).ConfigureAwait(false);
                             break;
 
                         case "Runtime.executionContextDestroyed":
-                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>(true).ExecutionContextId, sender as CDPSession);
+                            OnExecutionContextDestroyed(e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>().ExecutionContextId, sender as CDPSession);
                             break;
                         case "Runtime.executionContextsCleared":
                             OnExecutionContextsCleared(sender as CDPSession);
                             break;
                         case "Page.lifecycleEvent":
-                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>(true));
+                            OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
                             break;
                     }
                 }
@@ -443,7 +443,7 @@ namespace PuppeteerSharp.Cdp
             var frame = GetFrame(frameId);
             if (frame != null)
             {
-                if (session != null && frame.IsOopFrame)
+                if (session != null && frame.Client != Client)
                 {
                     frame.UpdateClient(session);
                 }

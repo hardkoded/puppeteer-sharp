@@ -13,7 +13,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Whether to ignore HTTPS errors during navigation. Defaults to false.
         /// </summary>
-        public bool IgnoreHTTPSErrors { get; set; }
+        public bool AcceptInsecureCerts { get; set; }
 
         /// <summary>
         /// A browser websocket endpoint to connect to.

@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -28,7 +25,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await page.CloseAsync();
             // Wait for half a second to ensure that all events have been processed
             await Task.Delay(500);
-            Assert.AreEqual(new[] { "CREATED", "CHANGED", "DESTROYED" }, events);
+            Assert.That(events, Is.EqualTo(new[] { "CREATED", "CHANGED", "DESTROYED" }));
         }
     }
 }

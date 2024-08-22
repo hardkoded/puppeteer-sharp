@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -15,29 +13,29 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
         public ResponseSecurityDetailsTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.IgnoreHTTPSErrors = true;
+            DefaultOptions.AcceptInsecureCerts = true;
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Should Work")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "Response.securityDetails", "Should Work")]
         public async Task ShouldWork()
         {
-            // Checking for the TLS socket is it is in upstreams proves to be flacky in .net framework.
+            // Checking for the TLS socket is it is in upstreams proves to be flaky in .net framework.
             // We don't need to test that here.
 
             var response = await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            Assert.NotNull(response.SecurityDetails);
-            StringAssert.Contains("TLS", response.SecurityDetails.Protocol);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.SecurityDetails, Is.Not.Null);
+            Assert.That(response.SecurityDetails.Protocol, Does.Contain("TLS"));
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "Response.securityDetails", "should be |null| for non-secure requests")]
         public async Task ShouldBeNullForNonSecureRequests()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.Null(response.SecurityDetails);
+            Assert.That(response.SecurityDetails, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("ignorehttpserrors.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
+        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "Response.securityDetails", "Network redirects should report SecurityDetails")]
         [Ignore("This is super flaky")]
         public async Task NetworkRedirectsShouldReportSecurityDetails()
         {
@@ -57,11 +55,10 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
 
             var response = responseTask.Result;
 
-            Assert.AreEqual(2, responses.Count);
-            Assert.AreEqual(HttpStatusCode.Found, responses[0].Status);
-            Assert.AreEqual(
-                TestUtils.CurateProtocol(requestTask.Result.ToString()),
-                TestUtils.CurateProtocol(response.SecurityDetails.Protocol));
+            Assert.That(responses, Has.Count.EqualTo(2));
+            Assert.That(responses[0].Status, Is.EqualTo(HttpStatusCode.Found));
+            Assert.That(TestUtils.CurateProtocol(response.SecurityDetails.Protocol),
+                Is.EqualTo(TestUtils.CurateProtocol(requestTask.Result.ToString())));
         }
     }
 }

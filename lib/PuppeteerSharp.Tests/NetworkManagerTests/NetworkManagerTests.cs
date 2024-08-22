@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkManagerTests;
@@ -31,7 +32,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
@@ -40,7 +41,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -48,7 +49,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
@@ -67,7 +68,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -75,7 +76,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
@@ -94,7 +95,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     Type = ResourceType.Document,
                     FrameId = "099A5216AF03AAFEC988F214B024DF08",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
     }
 
@@ -122,7 +123,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "11ACE9783588040D644B905E8B55285B",
                     LoaderId = "11ACE9783588040D644B905E8B55285B",
@@ -136,7 +137,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -144,7 +145,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Fetch.requestPaused",
-                MessageData = JToken.FromObject(new FetchRequestPausedResponse
+                MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
                 {
                     RequestId = "interception-job-1.0",
                     Request = new Payload
@@ -156,7 +157,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
                     ResourceType = ResourceType.Document,
                     NetworkId = "11ACE9783588040D644B905E8B55285B",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -164,7 +165,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Fetch.requestPaused",
-                MessageData = JToken.FromObject(new FetchRequestPausedResponse
+                MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
                 {
                     RequestId = "interception-job-2.0",
                     Request = new Payload()
@@ -176,10 +177,10 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     FrameId = "84AC261A351B86932B775B76D1DD79F8",
                     ResourceType = ResourceType.Document,
                     NetworkId = "11ACE9783588040D644B905E8B55285B",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(2, requests.Count);
+        Assert.That(requests, Has.Count.EqualTo(2));
     }
 
     [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
@@ -205,7 +206,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "1360.2",
                     LoaderId = "9E86B0282CC98B77FB0ABD49156DDFDD",
@@ -220,7 +221,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Script,
                     FrameId = "60E6C35E7E519F28E646056820095498",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -228,7 +229,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "1360.2",
                     Response = new ResponsePayload()
@@ -246,7 +247,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -254,7 +255,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "1360.2",
                     Headers = new Dictionary<string, string>
@@ -263,7 +264,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -271,10 +272,10 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JToken.FromObject(new LoadingFinishedEventResponse { RequestId = "1360.2", })
+                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse { RequestId = "1360.2", }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(1, requests.Count);
+        Assert.That(requests, Has.Count.EqualTo(1));
     }
 
     [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
@@ -299,7 +300,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
                 {
                     RequestId = "LOADERID",
                     LoaderId = "LOADERID",
@@ -319,7 +320,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -327,7 +328,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "LOADERID",
                     Response = new ResponsePayload()
@@ -350,7 +351,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -358,19 +359,19 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.loadingFinished",
-                MessageData = JToken.FromObject(new LoadingFinishedEventResponse() { RequestId = "LOADERID", })
+                MessageData = JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse() { RequestId = "LOADERID", }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(1, pendingRequests.Count);
-        Assert.AreEqual(0, finishedRequests.Count);
-        Assert.Null(pendingRequests[0].Response);
+        Assert.That(pendingRequests, Has.Count.EqualTo(1));
+        Assert.That(finishedRequests, Is.Empty);
+        Assert.That(pendingRequests[0].Response, Is.Null);
 
         client.MessageReceived += Raise.EventWith(
             client,
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "LOADERID",
                     Headers = new Dictionary<string, string>
@@ -379,12 +380,12 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(1, pendingRequests.Count);
-        Assert.AreEqual(1, finishedRequests.Count);
-        Assert.NotNull(pendingRequests[0].Response);
+        Assert.That(pendingRequests, Has.Count.EqualTo(1));
+        Assert.That(finishedRequests, Has.Count.EqualTo(1));
+        Assert.That(pendingRequests[0].Response, Is.Not.Null);
     }
 
     [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
@@ -409,7 +410,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
                     LoaderId = "94051D839ACF29E53A3D1273FB20B4C4",
@@ -423,7 +424,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "1",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -431,7 +432,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
                     Headers = new Dictionary<string, string>
@@ -440,7 +441,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -448,7 +449,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
                     Response = new ResponsePayload()
@@ -466,12 +467,12 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(1, responses.Count);
-        Assert.AreEqual(1, requests.Count);
-        Assert.NotNull(requests[0].Response);
+        Assert.That(responses, Has.Count.EqualTo(1));
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(requests[0].Response, Is.Not.Null);
     }
 
     [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
@@ -496,7 +497,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
                 {
                     RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
                     LoaderId = "E18BEB94B486CA8771F9AFA2030FEA37",
@@ -510,7 +511,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
                     FrameId = "F9C89A517341F1EFFE63310141630189",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -518,7 +519,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
                     Response = new ResponsePayload()
@@ -536,7 +537,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -545,10 +546,10 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             {
                 MessageID = "Network.loadingFinished",
                 MessageData =
-                    JToken.FromObject(new LoadingFinishedEventResponse()
+                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    })
+                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -556,7 +557,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
                     Headers = new Dictionary<string, string>
@@ -565,12 +566,12 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(1, requests.Count);
-        Assert.AreEqual(1, responses.Count);
-        Assert.NotNull(requests[0].Response);
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(responses, Has.Count.EqualTo(1));
+        Assert.That(requests[0].Response, Is.Not.Null);
     }
 
     [Test, Retry(2), PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should handle cached redirects")]
@@ -591,7 +592,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
                 {
                     RequestId = "6D76C8ACAECE880C722FA515AD380015",
                     LoaderId = "6D76C8ACAECE880C722FA515AD380015",
@@ -611,7 +612,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -619,7 +620,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "6D76C8ACAECE880C722FA515AD380015",
                     Headers = new Dictionary<string, string>
@@ -628,7 +629,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.OK,
                     HeadersText = "HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -636,7 +637,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "6D76C8ACAECE880C722FA515AD380015",
                     Response = new ResponsePayload()
@@ -659,7 +660,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -668,10 +669,10 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             {
                 MessageID = "Network.loadingFinished",
                 MessageData =
-                    JToken.FromObject(new LoadingFinishedEventResponse()
+                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "6D76C8ACAECE880C722FA515AD380015",
-                    })
+                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -679,7 +680,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
@@ -699,7 +700,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     Initiator = new Initiator() { Type = InitiatorType.Other, },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -707,7 +708,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     Headers = new Dictionary<string, string>
@@ -716,7 +717,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.Redirect,
                     HeadersText = "HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -724,7 +725,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JToken.FromObject(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
@@ -750,7 +751,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         StatusText = "Found",
                     },
                     Type = ResourceType.Document,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -758,7 +759,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceived",
-                MessageData = JToken.FromObject(new ResponseReceivedResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedResponse
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     Response = new ResponsePayload()
@@ -781,7 +782,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                         FromServiceWorker = false,
                     },
                     HasExtraInfo = true,
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -789,7 +790,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.responseReceivedExtraInfo",
-                MessageData = JToken.FromObject(new ResponseReceivedExtraInfoResponse
+                MessageData = JsonSerializer.SerializeToElement(new ResponseReceivedExtraInfoResponse
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     Headers = new Dictionary<string, string>
@@ -798,7 +799,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                     },
                     StatusCode = HttpStatusCode.Redirect,
                     HeadersText = "HTTP/1.1 302 Found",
-                })
+                }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
         client.MessageReceived += Raise.EventWith(
@@ -807,12 +808,12 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             {
                 MessageID = "Network.loadingFinished",
                 MessageData =
-                    JToken.FromObject(new LoadingFinishedEventResponse()
+                    JsonSerializer.SerializeToElement(new LoadingFinishedEventResponse()
                     {
                         RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    })
+                    }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.AreEqual(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }, responses.Select(response => response.Status));
+        Assert.That(responses.Select(response => response.Status), Is.EqualTo(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }));
     }
 }

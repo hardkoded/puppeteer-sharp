@@ -25,16 +25,15 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             }", classHandle);
 
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
-            Assert.AreEqual(
-                1,
+            Assert.That(
                 await Page.EvaluateFunctionAsync<int>(@"objects => {
                     return objects.length;
-                }", objectsHandle));
+                }", objectsHandle), Is.EqualTo(1));
 
             // Check that instances.
-            Assert.True(await Page.EvaluateFunctionAsync<bool>(@"objects => {
+            Assert.That(await Page.EvaluateFunctionAsync<bool>(@"objects => {
                 return objects[0] === self.customClass;
-            }", objectsHandle));
+            }", objectsHandle), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should work for non-trivial page")]
@@ -57,16 +56,15 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             }", classHandle);
 
             var objectsHandle = await Page.QueryObjectsAsync(prototypeHandle);
-            Assert.AreEqual(
-                1,
+            Assert.That(
                 await Page.EvaluateFunctionAsync<int>(@"objects => {
                     return objects.length;
-                }", objectsHandle));
+                }", objectsHandle), Is.EqualTo(1));
 
             // Check that instances.
-            Assert.True(await Page.EvaluateFunctionAsync<bool>(@"objects => {
+            Assert.That(await Page.EvaluateFunctionAsync<bool>(@"objects => {
                 return objects[0] === self.customClass;
-            }", objectsHandle));
+            }", objectsHandle), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail for disposed handles")]
@@ -76,7 +74,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             await prototypeHandle.DisposeAsync();
             var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
-            Assert.AreEqual("Prototype JSHandle is disposed!", exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo("Prototype JSHandle is disposed!"));
         }
 
         [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail primitive values as prototypes")]
@@ -85,7 +83,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("42");
             var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.QueryObjectsAsync(prototypeHandle));
-            Assert.AreEqual("Prototype JSHandle must not be referencing primitive value", exception!.Message);
+            Assert.That(exception!.Message, Is.EqualTo("Prototype JSHandle must not be referencing primitive value"));
         }
     }
 }

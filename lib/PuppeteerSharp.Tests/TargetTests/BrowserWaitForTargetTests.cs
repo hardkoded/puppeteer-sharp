@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -18,10 +16,10 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
             var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
             var page = await Browser.NewPageAsync();
-            Assert.False(targetTask.IsCompleted);
+            Assert.That(targetTask.IsCompleted, Is.False);
             await page.GoToAsync(TestConstants.EmptyPage);
-            Assert.True(targetTask.IsCompleted);
-            Assert.AreSame(await targetTask.Result.PageAsync(), page);
+            Assert.That(targetTask.IsCompleted, Is.True);
+            Assert.That(page, Is.SameAs(await targetTask.Result.PageAsync()));
 
             await page.CloseAsync();
         }

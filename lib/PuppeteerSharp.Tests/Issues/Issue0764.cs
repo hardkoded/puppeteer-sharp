@@ -23,7 +23,7 @@ namespace PuppeteerSharp.Tests.Issues
             await Task.WhenAll(
                 Page.GoToAsync(TestConstants.ServerUrl + "/grid.html"),
                 tcs.Task);
-            Assert.True(ScreenshotHelper.PixelMatch("0.png", await tcs.Task));
+            Assert.That(ScreenshotHelper.PixelMatch("0.png", await tcs.Task), Is.True);
         }
     }
 }

@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
@@ -22,17 +22,17 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/simple.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            StringAssert.Contains("/csscoverage/simple.html", coverage[0].Url);
-            Assert.AreEqual(new CoverageEntryRange[]
+            Assert.That(coverage[0].Url, Does.Contain("/csscoverage/simple.html"));
+            Assert.That(coverage[0].Ranges, Is.EqualTo(new CoverageEntryRange[]
             {
                 new CoverageEntryRange
                 {
                     Start = 1,
                     End = 22
                 }
-            }, coverage[0].Ranges);
+            }));
             var range = coverage[0].Ranges[0];
-            Assert.AreEqual("div { color: green; }", coverage[0].Text.Substring(range.Start, range.End - range.Start));
+            Assert.That(coverage[0].Text.Substring(range.Start, range.End - range.Start), Is.EqualTo("div { color: green; }"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report sourceURLs")]
@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            Assert.AreEqual("nicename.css", coverage[0].Url);
+            Assert.That(coverage[0].Url, Is.EqualTo("nicename.css"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report multiple stylesheets")]
@@ -53,10 +53,10 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/multiple.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.AreEqual(2, coverage.Length);
+            Assert.That(coverage, Has.Length.EqualTo(2));
             var orderedList = coverage.OrderBy(c => c.Url);
-            StringAssert.Contains("/csscoverage/stylesheet1.css", orderedList.ElementAt(0).Url);
-            StringAssert.Contains("/csscoverage/stylesheet2.css", orderedList.ElementAt(1).Url);
+            Assert.That(orderedList.ElementAt(0).Url, Does.Contain("/csscoverage/stylesheet1.css"));
+            Assert.That(orderedList.ElementAt(1).Url, Does.Contain("/csscoverage/stylesheet2.css"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should report stylesheets that have no coverage")]
@@ -67,8 +67,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
-            StringAssert.Contains("unused.css", entry.Url);
-            Assert.IsEmpty(entry.Ranges);
+            Assert.That(entry.Url, Does.Contain("unused.css"));
+            Assert.That(entry.Ranges, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with media queries")]
@@ -79,8 +79,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
-            StringAssert.Contains("/csscoverage/media.html", entry.Url);
-            Assert.AreEqual(new CoverageEntryRange[]
+            Assert.That(entry.Url, Does.Contain("/csscoverage/media.html"));
+            Assert.That(coverage[0].Ranges, Is.EqualTo(new CoverageEntryRange[]
             {
                 new CoverageEntryRange
                 {
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                     Start = 17,
                     End = 38
                 }
-            }, coverage[0].Ranges);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with complicated usecases")]
@@ -121,9 +121,16 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.Coverage.StartCSSCoverageAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/involved.html");
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.AreEqual(
-                TestUtils.CompressText(involved),
-                Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @":\d{4}\/", ":<PORT>/"));
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage,
+                new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = true
+                });
+            Assert.That(
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4}\/", ":<PORT>/"),
+                Is.EqualTo(TestUtils.CompressText(involved)));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should ignore injected stylesheets")]
@@ -136,9 +143,9 @@ namespace PuppeteerSharp.Tests.CoverageTests
             });
             // trigger style recalc
             var margin = await Page.EvaluateExpressionAsync<string>("window.getComputedStyle(document.body).margin");
-            Assert.AreEqual("10px", margin);
+            Assert.That(margin, Is.EqualTo("10px"));
             var coverage = await Page.Coverage.StopCSSCoverageAsync();
-            Assert.IsEmpty(coverage);
+            Assert.That(coverage, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with a recently loaded stylesheet")]

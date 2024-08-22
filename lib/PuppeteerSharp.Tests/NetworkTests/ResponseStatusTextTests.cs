@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 return Task.CompletedTask;
             });
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
-            Assert.AreEqual("cool!", response.StatusText);
+            Assert.That(response.StatusText, Is.EqualTo("cool!"));
         }
     }
 }

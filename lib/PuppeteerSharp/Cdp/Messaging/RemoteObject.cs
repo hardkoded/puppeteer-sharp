@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace PuppeteerSharp.Cdp.Messaging
 {
@@ -40,6 +40,6 @@ namespace PuppeteerSharp.Cdp.Messaging
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
-        public JToken Value { get; set; }
+        public JsonElement? Value { get; set; }
     }
 }

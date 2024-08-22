@@ -43,14 +43,6 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpPage : Page
 {
-    private static readonly Dictionary<string, decimal> _unitToPixels = new()
-    {
-        ["px"] = 1,
-        ["in"] = 96,
-        ["cm"] = 37.8m,
-        ["mm"] = 3.78m,
-    };
-
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
     private readonly EmulationManager _emulationManager;
@@ -65,7 +57,7 @@ public class CdpPage : Page
         CdpCDPSession client,
         CdpTarget target,
         TaskQueue screenshotTaskQueue,
-        bool ignoreHTTPSErrors) : base(screenshotTaskQueue)
+        bool acceptInsecureCerts) : base(screenshotTaskQueue)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -80,7 +72,7 @@ public class CdpPage : Page
 
         _emulationManager = new EmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, ignoreHTTPSErrors, TimeoutSettings);
+        FrameManager = new FrameManager(client, this, acceptInsecureCerts, TimeoutSettings);
         Accessibility = new Accessibility(client);
 
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
@@ -715,11 +707,11 @@ public class CdpPage : Page
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,
-        bool ignoreHTTPSErrors,
+        bool acceptInsecureCerts,
         ViewPortOptions defaultViewPort,
         TaskQueue screenshotTaskQueue)
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue, ignoreHTTPSErrors);
+        var page = new CdpPage(client, target, screenshotTaskQueue, acceptInsecureCerts);
 
         try
         {
@@ -920,6 +912,15 @@ public class CdpPage : Page
         }
     }
 
+    private static decimal? GetPixels(string unit) => unit switch
+    {
+        "px" => 1,
+        "in" => 96,
+        "cm" => 37.8m,
+        "mm" => 3.78m,
+        _ => null,
+    };
+
     private void SetupPrimaryTargetListeners()
     {
         PrimaryTargetClient.Ready += OnAttachedToTarget;
@@ -961,31 +962,31 @@ public class CdpPage : Page
                     OnLoad();
                     break;
                 case "Runtime.consoleAPICalled":
-                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(true))
+                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Page.javascriptDialogOpening":
-                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>(true));
+                    OnDialog(e.MessageData.ToObject<PageJavascriptDialogOpeningResponse>());
                     break;
                 case "Runtime.exceptionThrown":
-                    HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>(true).ExceptionDetails);
+                    HandleException(e.MessageData.ToObject<RuntimeExceptionThrownResponse>().ExceptionDetails);
                     break;
                 case "Inspector.targetCrashed":
                     OnTargetCrashed();
                     break;
                 case "Performance.metrics":
-                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>(true));
+                    EmitMetrics(e.MessageData.ToObject<PerformanceMetricsResponse>());
                     break;
                 case "Log.entryAdded":
-                    await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>(true))
+                    await OnLogEntryAddedAsync(e.MessageData.ToObject<LogEntryAddedResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Runtime.bindingCalled":
-                    await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>(true))
+                    await OnBindingCalledAsync(e.MessageData.ToObject<BindingCalledResponse>())
                         .ConfigureAwait(false);
                     break;
                 case "Page.fileChooserOpened":
-                    await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>(true))
+                    await OnFileChooserAsync(e.MessageData.ToObject<PageFileChooserOpenedResponse>())
                         .ConfigureAwait(false);
                     break;
             }
@@ -1079,7 +1080,7 @@ public class CdpPage : Page
         var tokens = values.Select(i =>
             i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<string>(i.RemoteObject));
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(i.RemoteObject)?.ToString() ?? "null");
 
         var location = new ConsoleMessageLocation();
         if (stackTrace?.CallFrames?.Length > 0)
@@ -1159,7 +1160,7 @@ public class CdpPage : Page
             }
         }
 
-        if (e.Entry.Source != TargetType.Worker)
+        if (e.Entry.Source != LogSource.Worker)
         {
             OnConsole(new ConsoleEventArgs(new ConsoleMessage(
                 e.Entry.Level,
@@ -1221,16 +1222,16 @@ public class CdpPage : Page
         }
 
         decimal pixels;
-        if (parameter is decimal || parameter is int)
+        if (parameter is decimal or int)
         {
             pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
         }
         else
         {
             var text = parameter.ToString();
-            var unit = text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture);
+            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
             string valueText;
-            if (_unitToPixels.ContainsKey(unit))
+            if (GetPixels(unit) is { })
             {
                 valueText = text.Substring(0, text.Length - 2);
             }
@@ -1244,7 +1245,7 @@ public class CdpPage : Page
 
             if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
             {
-                pixels = number * _unitToPixels[unit];
+                pixels = number * GetPixels(unit).Value;
             }
             else
             {

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.BrowserData
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.BrowserData
                 string.Join(
                     "\n",
                     defaultPreferences.Select(i =>
-                            $"user_pref({JsonConvert.SerializeObject(i.Key)}, {JsonConvert.SerializeObject(i.Value)});")
+                            $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});")
                         .ToArray()));
 
             File.WriteAllText(Path.Combine(tempUserDataDirectory, "prefs.js"), string.Empty);
@@ -131,7 +131,7 @@ namespace PuppeteerSharp.BrowserData
         private static (FirefoxChannel Channel, string BuildId) ParseBuildId(string buildId)
         {
             // Iterate through all the FirefoxChannel enum values as string
-            foreach (var value in Enum.GetValues(typeof(FirefoxChannel)).Cast<FirefoxChannel>().Select(v => v.ToValueString()))
+            foreach (var value in EnumHelper.GetValues<FirefoxChannel>().Select(v => v.ToValueString()))
             {
                 if (buildId.StartsWith(value, StringComparison.OrdinalIgnoreCase))
                 {

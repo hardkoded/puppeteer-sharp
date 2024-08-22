@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -25,7 +23,7 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
         private async Task VerifyStateAsync(string expectedState)
         {
             var actualState = await GetIdleStateAsync();
-            Assert.AreEqual(expectedState, actualState);
+            Assert.That(actualState, Is.EqualTo(expectedState));
         }
 
         [Test, Retry(2), PuppeteerTest("idle_override.spec", "Emulate idle state", "changing idle state emulation causes change of the IdleDetector state")]

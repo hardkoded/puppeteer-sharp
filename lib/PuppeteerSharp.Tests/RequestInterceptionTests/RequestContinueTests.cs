@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
-using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.RequestInterceptionTests
@@ -45,7 +40,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 requestTask,
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
-            Assert.AreEqual("bar", requestTask.Result);
+            Assert.That(requestTask.Result, Is.EqualTo("bar"));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.continue", "should redirect in a way non-observable to page")]
@@ -62,8 +57,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             string consoleMessage = null;
             Page.Console += (_, e) => consoleMessage = e.Message.Text;
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.AreEqual(TestConstants.EmptyPage, Page.Url);
-            Assert.AreEqual("yellow", consoleMessage);
+            Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(consoleMessage, Is.EqualTo("yellow"));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.continue", "should amend method")]
@@ -83,7 +78,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.EvaluateExpressionAsync("fetch('/sleep.zzz')")
             );
 
-            Assert.AreEqual("POST", requestTask.Result);
+            Assert.That(requestTask.Result, Is.EqualTo("POST"));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.continue", "should amend post data")]
@@ -111,7 +106,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/sleep.zzz")
             );
 
-            Assert.AreEqual("doggo", await requestTask.Result);
+            Assert.That(await requestTask.Result, Is.EqualTo("doggo"));
         }
 
         [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.continue", "should amend both post data and method on navigation")]
@@ -135,8 +130,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                 Page.GoToAsync(TestConstants.EmptyPage)
             );
             var serverRequest = await serverRequestTask;
-            Assert.AreEqual(HttpMethod.Post.Method, serverRequest.Result.Method);
-            Assert.AreEqual("doggo", serverRequest.Result.Body);
+            Assert.That(serverRequest.Result.Method, Is.EqualTo(HttpMethod.Post.Method));
+            Assert.That(serverRequest.Result.Body, Is.EqualTo("doggo"));
         }
     }
 }

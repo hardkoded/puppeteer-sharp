@@ -1,7 +1,7 @@
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             #endregion
 
-            Assert.True(File.Exists(outputFile));
+            Assert.That(File.Exists(outputFile), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF and save to file")]
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
             await Page.PdfAsync(outputFile);
             fileInfo = new FileInfo(outputFile);
-            Assert.True(new FileInfo(outputFile).Length > 0);
+            Assert.That(new FileInfo(outputFile).Length, Is.GreaterThan(0));
             if (fileInfo.Exists)
             {
                 fileInfo.Delete();
@@ -70,7 +70,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             // Firefox in Linux might generate and of by one result here.
             // If the difference is less than 2 bytes is good
-            Assert.True(Math.Abs(new FileInfo(outputFile).Length - stream.Length) < 2);
+            Assert.That(Math.Abs(new FileInfo(outputFile).Length - stream.Length), Is.LessThan(2));
         }
 
         [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with accessible")]
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(accessibleOutputFile, new PdfOptions { Tagged = true });
 
-            Assert.Greater(new FileInfo(accessibleOutputFile).Length, new FileInfo(outputFile).Length);
+            Assert.That(new FileInfo(accessibleOutputFile).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
         }
 
         [Test, Retry(2), PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
@@ -119,7 +119,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.PdfAsync(outputFile, new PdfOptions { Tagged = false });
             await Page.PdfAsync(outputFileOutlined, new PdfOptions { Tagged = true });
 
-            Assert.Greater(new FileInfo(outputFileOutlined).Length, new FileInfo(outputFile).Length);
+            Assert.That(new FileInfo(outputFileOutlined).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
         }
 
         [Test]
@@ -139,9 +139,31 @@ namespace PuppeteerSharp.Tests.PageTests
                 FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
             };
 
-            var serialized = JsonConvert.SerializeObject(pdfOptions);
-            var newPdfOptions = JsonConvert.DeserializeObject<PdfOptions>(serialized);
-            Assert.AreEqual(pdfOptions, newPdfOptions);
+            var serialized = JsonSerializer.Serialize(pdfOptions);
+            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
+            Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
+        }
+
+        [Test]
+        public void PdfOptionsShouldWorkWithMarginWithNoUnits()
+        {
+            var pdfOptions = new PdfOptions
+            {
+                Format = PaperFormat.A4,
+                DisplayHeaderFooter = true,
+                MarginOptions = new MarginOptions
+                {
+                    Top = "0",
+                    Right = "0",
+                    Bottom = "0",
+                    Left = "0"
+                },
+                FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
+            };
+
+            var serialized = JsonSerializer.Serialize(pdfOptions);
+            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
+            Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -18,11 +17,11 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync("data:text/html, <script>var something = 'forbidden'</script>");
 
             var exception = Assert.ThrowsAsync<EvaluationFailedException>(async () => await Page.EvaluateExpressionAsync("something"));
-            StringAssert.Contains("something is not defined", exception.Message);
+            Assert.That(exception.Message, Does.Contain("something is not defined"));
 
             await Page.SetJavaScriptEnabledAsync(true);
             await Page.GoToAsync("data:text/html, <script>var something = 'forbidden'</script>");
-            Assert.AreEqual("forbidden", await Page.EvaluateExpressionAsync<string>("something"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("something"), Is.EqualTo("forbidden"));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -22,9 +21,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var elementHandle = await Page.QuerySelectorAsync("#frame1");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.AreEqual(Page.FirstChildFrame(), frame);
+            Assert.That(frame, Is.EqualTo(Page.FirstChildFrame()));
         }
 
+        [Test]
         public async Task ShouldWorkHeadful()
         {
             await using var Browser = await Puppeteer.LaunchAsync(_headfulOptions);
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
             var elementHandle = await Page.QuerySelectorAsync("iframe");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.AreEqual(Page.FirstChildFrame(), frame);
+            Assert.That(frame, Is.EqualTo(Page.FirstChildFrame()));
         }
     }
 }

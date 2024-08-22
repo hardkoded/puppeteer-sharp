@@ -1,11 +1,6 @@
-using System;
-using System.Linq;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
@@ -30,7 +25,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
                 .QuerySelectorAllHandleAsync("aria/[role=\"button\"]")
                 .EvaluateFunctionAsync<int>(@"buttons => buttons.reduce((acc, button) => acc + Number(button.textContent), 0)");
 
-            Assert.AreEqual(50005000, sum);
+            Assert.That(sum, Is.EqualTo(50005000));
         }
     }
 }

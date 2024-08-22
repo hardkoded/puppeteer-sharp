@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.PageCoverage;
@@ -18,8 +18,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/simple.html", WaitUntilNavigation.Networkidle0);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            StringAssert.Contains("/jscoverage/simple.html", coverage[0].Url);
-            Assert.AreEqual(new CoverageEntryRange[]
+            Assert.That(coverage[0].Url, Does.Contain("/jscoverage/simple.html"));
+            Assert.That(coverage[0].Ranges, Is.EqualTo(new[]
             {
                 new CoverageEntryRange
                 {
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                     Start = 35,
                     End = 61
                 },
-            }, coverage[0].Ranges);
+            }));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report sourceURLs")]
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
-            Assert.AreEqual("nicename.js", coverage[0].Url);
+            Assert.That(coverage[0].Url, Is.EqualTo("nicename.js"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should ignore eval() scripts by default")]
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             var filtered = coverage.Where(entry => !entry.Url.StartsWith("debugger://"));
-            Assert.AreEqual(1, filtered.Count());
+            Assert.That(filtered.Count(), Is.EqualTo(1));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should ignore pptr internal scripts if reportAnonymousScripts is true")]
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             await Page.EvaluateExpressionAsync("console.log('foo')");
             await Page.EvaluateFunctionAsync("() => console.log('bar')");
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.IsEmpty(coverage);
+            Assert.That(coverage, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report multiple scripts")]
@@ -94,10 +94,10 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Prevent flaky tests.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.AreEqual(2, coverage.Length);
-            var orderedList = coverage.OrderBy(c => c.Url);
-            StringAssert.Contains("/jscoverage/script1.js", orderedList.ElementAt(0).Url);
-            StringAssert.Contains("/jscoverage/script2.js", orderedList.ElementAt(1).Url);
+            Assert.That(coverage.Length, Is.EqualTo(2));
+            var orderedList = coverage.OrderBy(c => c.Url).ToArray();
+            Assert.That(orderedList[0].Url, Does.Contain("/jscoverage/script1.js"));
+            Assert.That(orderedList[1].Url, Does.Contain("/jscoverage/script2.js"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report right ranges")]
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var entry = coverage[0];
             Assert.That(entry.Ranges, Has.Exactly(1).Items);
             var range = entry.Ranges[0];
-            Assert.AreEqual("console.log('used!');", entry.Text.Substring(range.Start, range.End - range.Start));
+            Assert.That(entry.Text.Substring(range.Start, range.End - range.Start), Is.EqualTo("console.log('used!');"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report scripts that have no coverage")]
@@ -125,8 +125,8 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
-            StringAssert.Contains("unused.html", entry.Url);
-            Assert.IsEmpty(entry.Ranges);
+            Assert.That(entry.Url, Does.Contain("unused.html"));
+            Assert.That(entry.Ranges, Is.Empty);
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should work with conditionals")]
@@ -166,9 +166,15 @@ namespace PuppeteerSharp.Tests.CoverageTests
             // Give the coverage some time.
             await Task.Delay(1000);
             var coverage = await Page.Coverage.StopJSCoverageAsync();
-            Assert.AreEqual(
-                TestUtils.CompressText(involved),
-                Regex.Replace(TestUtils.CompressText(JsonConvert.SerializeObject(coverage)), @"\d{4}\/", "<PORT>/"));
+
+            var coverageAsJsonString = JsonSerializer.Serialize(
+                coverage, new JsonSerializerOptions()
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                });
+            Assert.That(
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @"\d{4}\/", "<PORT>/"),
+                Is.EqualTo(TestUtils.CompressText(involved)));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should not hang when there is a debugger statement")]

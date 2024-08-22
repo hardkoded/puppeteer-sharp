@@ -103,11 +103,12 @@ namespace PuppeteerSharp.Cdp
                     null,
                     _browser.ScreenshotTaskQueue);
 
-                // Targets from extensions and the browser that will not be
-                // auto-attached. Therefore, we should not add them to
-                // #targetsIdsForInit.
-                var skipTarget = kv.Value.Type == TargetType.Browser || kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
-                if (!skipTarget && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
+                // Only wait for pages and frames (except those from extensions)
+                // to auto-attach.
+                var isPageOrFrame = kv.Value.Type is TargetType.Page or TargetType.IFrame;
+                var isExtension = kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
+
+                if (isPageOrFrame && !isExtension && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
                 {
                     _targetsIdsForInit.Add(kv.Key);
                 }
@@ -133,23 +134,23 @@ namespace PuppeteerSharp.Cdp
                 switch (e.MessageID)
                 {
                     case "Target.attachedToTarget":
-                        _ = OnAttachedToTargetHandlingExceptionsAsync(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>(true));
+                        _ = OnAttachedToTargetHandlingExceptionsAsync(sender, e.MessageID, e.MessageData.ToObject<TargetAttachedToTargetResponse>());
                         return;
 
                     case "Target.detachedFromTarget":
-                        OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>(true));
+                        OnDetachedFromTarget(sender, e.MessageData.ToObject<TargetDetachedFromTargetResponse>());
                         return;
 
                     case "Target.targetCreated":
-                        OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>(true));
+                        OnTargetCreated(e.MessageData.ToObject<TargetCreatedResponse>());
                         return;
 
                     case "Target.targetDestroyed":
-                        _ = OnTargetDestroyedAsync(e.MessageID, e.MessageData.ToObject<TargetDestroyedResponse>(true));
+                        _ = OnTargetDestroyedAsync(e.MessageID, e.MessageData.ToObject<TargetDestroyedResponse>());
                         return;
 
                     case "Target.targetInfoChanged":
-                        OnTargetInfoChanged(e.MessageData.ToObject<TargetCreatedResponse>(true));
+                        OnTargetInfoChanged(e.MessageData.ToObject<TargetCreatedResponse>());
                         return;
                 }
             }

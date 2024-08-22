@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
@@ -20,7 +19,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
               client.SendAsync("Runtime.evaluate", new RuntimeEvaluateRequest { Expression = "window.foo = 'bar'" })
             );
             var foo = await Page.EvaluateExpressionAsync<string>("window.foo");
-            Assert.AreEqual("bar", foo);
+            Assert.That(foo, Is.EqualTo("bar"));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
@@ -58,7 +57,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Page.EvaluateExpressionAsync("//# sourceURL=foo.js")
             );
             // expect events to be dispatched.
-            Assert.AreEqual("foo.js", eventTask.Result["url"]!.Value<string>());
+            Assert.That(eventTask.Result.GetProperty("url")!.GetString(), Is.EqualTo("foo.js"));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
@@ -71,7 +70,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                 Expression = "1 + 2",
                 ReturnByValue = true
             });
-            Assert.AreEqual(3, evalResponse["result"]!["value"]!.ToObject<int>());
+            Assert.That(evalResponse!.Value.GetProperty("result")!.GetProperty("value")!.GetInt32(), Is.EqualTo(3));
             await client.DetachAsync();
 
             var exception = Assert.ThrowsAsync<TargetClosedException>(()
@@ -80,7 +79,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                     Expression = "3 + 1",
                     ReturnByValue = true
                 }));
-            StringAssert.Contains("Session closed.", exception!.Message);
+            Assert.That(exception!.Message, Does.Contain("Session closed."));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
@@ -112,8 +111,8 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             {
                 await TheSourceOfTheProblems();
             });
-            StringAssert.Contains("TheSourceOfTheProblems", exception!.StackTrace);
-            StringAssert.Contains("ThisCommand.DoesNotExist", exception.Message);
+            Assert.That(exception!.StackTrace, Does.Contain("TheSourceOfTheProblems"));
+            Assert.That(exception.Message, Does.Contain("ThisCommand.DoesNotExist"));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should respect custom timeout")]
@@ -135,11 +134,11 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
                         Timeout = 50
                     });
             });
-            StringAssert.Contains("Timeout of 50 ms exceeded", exception!.Message);
+            Assert.That(exception!.Message, Does.Contain("Timeout of 50 ms exceeded"));
         }
 
         [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
-            => Assert.NotNull(await Page.CreateCDPSessionAsync());
+            => Assert.That(await Page.CreateCDPSessionAsync(), Is.Not.Null);
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -24,10 +23,10 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 frame.EvaluateFunctionAsync("url => window.location.href = url", TestConstants.ServerUrl + "/grid.html")
             );
             var response = await waitForNavigationResult;
-            Assert.AreEqual(HttpStatusCode.OK, response.Status);
-            StringAssert.Contains("grid.html", response.Url);
-            Assert.AreSame(frame, response.Frame);
-            StringAssert.Contains("/frames/one-frame.html", Page.Url);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Url, Does.Contain("grid.html"));
+            Assert.That(response.Frame, Is.SameAs(frame));
+            Assert.That(Page.Url, Does.Contain("/frames/one-frame.html"));
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should fail when frame detaches")]
@@ -43,7 +42,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             await Page.QuerySelectorAsync("iframe").EvaluateFunctionAsync("frame => frame.remove()");
             var exception = Assert.ThrowsAsync<PuppeteerException>(() => waitForNavigationResult);
-            Assert.AreEqual("Navigating frame was detached", exception.Message);
+            Assert.That(exception.Message, Is.EqualTo("Navigating frame was detached"));
         }
     }
 }

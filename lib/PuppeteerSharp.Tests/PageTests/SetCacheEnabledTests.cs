@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -22,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 waitForRequestTask,
                 Page.ReloadAsync());
 
-            Assert.False(string.IsNullOrEmpty(waitForRequestTask.Result));
+            Assert.That(string.IsNullOrEmpty(waitForRequestTask.Result), Is.False);
 
             await Page.SetCacheEnabledAsync(false);
             waitForRequestTask = Server.WaitForRequest<string>("/cached/one-style.html", (request) => request.Headers["if-modified-since"]);
@@ -31,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 waitForRequestTask,
                 Page.ReloadAsync());
 
-            Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
+            Assert.That(string.IsNullOrEmpty(waitForRequestTask.Result), Is.True);
         }
 
         [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setCacheEnabled", "should stay disabled when toggling request interception on/off")]
@@ -48,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
               waitForRequestTask,
               Page.ReloadAsync());
 
-            Assert.True(string.IsNullOrEmpty(waitForRequestTask.Result));
+            Assert.That(string.IsNullOrEmpty(waitForRequestTask.Result), Is.True);
         }
     }
 }

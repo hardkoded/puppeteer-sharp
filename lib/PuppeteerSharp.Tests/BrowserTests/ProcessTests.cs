@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         public void ShouldReturnProcessInstance()
         {
             var process = Browser.Process;
-            Assert.True(process.Id > 0);
+            Assert.That(process.Id, Is.GreaterThan(0));
         }
 
         [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.process", "should not return child_process for remote browser")]
@@ -24,7 +24,8 @@ namespace PuppeteerSharp.Tests.BrowserTests
                     Protocol = ((Browser)Browser).Protocol,
                 },
                 TestConstants.LoggerFactory);
-            Assert.Null(remoteBrowser.Process);
+                Assert.That(remoteBrowser.Process, Is.Null);
+
             remoteBrowser.Disconnect();
         }
     }

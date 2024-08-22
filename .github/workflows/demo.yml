@@ -6,7 +6,6 @@ on:
       - master
       - release-*
   pull_request:
-    branches: [master]
     paths:
       - "**.cs"
       - "**.csproj"
@@ -35,7 +34,18 @@ jobs:
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
         dotnet restore PuppeteerSharpPdfDemo-Local.csproj
-    - name: Run Project
+    - name: Run on .NET
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net8.0
+    - name: Run with AOT
+      if: matrix.os == 'windows-2022'
+      working-directory: ./demos/PuppeteerSharpPdfDemo
+      run: |
+          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build  -f net8.0
+          build/PuppeteerSharpPdfDemo-Local.exe auto-exit
+    - name: Run on .NET Framework
+      if: matrix.os == 'windows-2022'
+      working-directory: ./demos/PuppeteerSharpPdfDemo
+      run: |
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net471

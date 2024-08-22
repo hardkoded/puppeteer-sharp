@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
@@ -10,14 +9,6 @@ namespace PuppeteerSharp
     /// </summary>
     public class ScreenshotOptions
     {
-        private static readonly Dictionary<string, ScreenshotType?> _extensionScreenshotTypeMap = new()
-        {
-            ["jpe"] = ScreenshotType.Jpeg,
-            ["jpeg"] = ScreenshotType.Jpeg,
-            ["jpg"] = ScreenshotType.Jpeg,
-            ["png"] = ScreenshotType.Png,
-        };
-
         /// <summary>
         /// Specifies clipping region of the page.
         /// </summary>
@@ -87,8 +78,14 @@ namespace PuppeteerSharp
         internal static ScreenshotType? GetScreenshotTypeFromFile(string file)
         {
             var extension = new FileInfo(file).Extension.Replace(".", string.Empty);
-            _extensionScreenshotTypeMap.TryGetValue(extension, out var result);
-            return result;
+            return GetScreenshotType(extension);
         }
+
+        private static ScreenshotType? GetScreenshotType(string extension) => extension switch
+        {
+            "jpe" or "jpeg" or "jpg" => ScreenshotType.Jpeg,
+            "png" => ScreenshotType.Png,
+            _ => null,
+        };
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -17,7 +15,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<div class=\"a\"><span>a</span></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            Assert.NotNull(await elementHandle.QuerySelectorAsync("text/a"));
+            Assert.That(await elementHandle.QuerySelectorAsync("text/a"), Is.Not.Null);
             Assert.That(await elementHandle.QuerySelectorAllAsync("text/a"), Has.Exactly(1).Items);
         }
 
@@ -26,8 +24,8 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
         {
             await Page.SetContentAsync("<div class=\"a\"></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
-            Assert.Null(await elementHandle.QuerySelectorAsync("text/a"));
-            Assert.IsEmpty(await elementHandle.QuerySelectorAllAsync("text/a"));
+            Assert.That(await elementHandle.QuerySelectorAsync("text/a"), Is.Null);
+            Assert.That(await elementHandle.QuerySelectorAllAsync("text/a"), Is.Empty);
         }
     }
 }

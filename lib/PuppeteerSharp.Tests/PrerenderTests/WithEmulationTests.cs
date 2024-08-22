@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -36,7 +35,7 @@ public class WithEmulationTests : PuppeteerPageBaseTest
             ];
         }");
 
-        Assert.AreEqual(300 * result[2], result[0]);
-        Assert.AreEqual(400 * result[2], result[1]);
+        Assert.That(result[0], Is.EqualTo(300 * result[2]));
+        Assert.That(result[1], Is.EqualTo(400 * result[2]));
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
@@ -70,7 +69,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = promptData.ToJsonElement(),
             });
 
             await promptTask;
@@ -120,7 +119,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = promptData.ToJsonElement(),
             });
 
             await promptTask;
@@ -142,24 +141,11 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
             client.OnMessage(new ConnectionResponse()
             {
                 Method = "DeviceAccess.deviceRequestPrompted",
-                Params = ToJToken(promptData),
+                Params = promptData.ToJsonElement(),
             });
 
             await Task.WhenAll(promptTask, promptTask2);
-            Assert.AreEqual(promptTask.Result, promptTask2.Result);
-        }
-
-        internal static JToken ToJToken(DeviceAccessDeviceRequestPromptedResponse promptData)
-        {
-            var jObject = new JObject { { "id", promptData.Id } };
-            var devices = new JArray();
-            foreach (var device in promptData.Devices)
-            {
-                var deviceObject = new JObject { { "name", device.Name }, { "id", device.Id } };
-                devices.Add(deviceObject);
-            }
-            jObject.Add("devices", devices);
-            return jObject;
+            Assert.That(promptTask2.Result, Is.EqualTo(promptTask.Result));
         }
     }
 }
