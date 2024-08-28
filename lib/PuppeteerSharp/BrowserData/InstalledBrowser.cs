@@ -39,6 +39,14 @@ namespace PuppeteerSharp.BrowserData
         public Platform Platform { get; set; }
 
         /// <summary>
+        /// Whether the permissions have been fixed in the browser.
+        /// If Puppeteer executed the command to fix the permissions, this will be true.
+        /// If Puppeteer failed to fix the permissions, this will be false.
+        /// If the platform does not require permissions to be fixed, this will be null.
+        /// </summary>
+        public bool? PermissionsFixed { get; internal set; }
+
+        /// <summary>
         /// Revision platform.
         /// </summary>
         internal Cache Cache { get; set; }
