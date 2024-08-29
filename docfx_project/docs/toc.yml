@@ -24,3 +24,7 @@
   items:
     - name: How to log CDP communication
       href: LogCDPCommunication.md
+- name: Troubleshooting
+  items:
+    - name: Issues generating PDF files
+      href: IssuesGeneratingPdfFiles.md
