@@ -1,7 +1,7 @@
 # Issues generating PDF files
 _Contributors: [Dario Kondratiuk](https://github.com/kblok)_
 
-## Simptoms
+## Symptoms
 
 When generating PDF files using `PdfAsync`, everything works fine in your development environment. However, once you deploy your application to a server, you get a timeout.
 
