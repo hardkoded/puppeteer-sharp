@@ -27,8 +27,8 @@
       },
       {
         "files": [
-          "examples/**.yml",
-          "examples/**.md"
+          "docs/**.yml",
+          "docs/**.md"
         ]
       },
       {
