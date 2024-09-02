@@ -31,9 +31,6 @@ namespace PuppeteerSharp
         public string Id { get; init; }
 
         /// <inheritdoc/>
-        public string CloseReason { get; protected set; }
-
-        /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
         internal Connection Connection { get; set; }
