@@ -173,7 +173,7 @@ namespace PuppeteerSharp.Cdp
                         await OnAuthRequiredAsync(client, e.MessageData.ToObject<FetchAuthRequiredResponse>()).ConfigureAwait(false);
                         break;
                     case "Network.requestWillBeSent":
-                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentPayload>()).ConfigureAwait(false);
+                        await OnRequestWillBeSentAsync(client, e.MessageData.ToObject<RequestWillBeSentResponse>()).ConfigureAwait(false);
                         break;
                     case "Network.requestServedFromCache":
                         OnRequestServedFromCache(e.MessageData.ToObject<RequestServedFromCacheResponse>());
@@ -462,7 +462,7 @@ namespace PuppeteerSharp.Cdp
             _ = request.FinalizeInterceptionsAsync();
         }
 
-        private async Task OnRequestAsync(CDPSession client, RequestWillBeSentPayload e, string fetchRequestId)
+        private async Task OnRequestAsync(CDPSession client, RequestWillBeSentResponse e, string fetchRequestId)
         {
             CdpHttpRequest request;
             var redirectChain = new List<IRequest>();
@@ -549,7 +549,7 @@ namespace PuppeteerSharp.Cdp
             RequestFinished?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private async Task OnRequestWillBeSentAsync(CDPSession client, RequestWillBeSentPayload e)
+        private async Task OnRequestWillBeSentAsync(CDPSession client, RequestWillBeSentResponse e)
         {
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
@@ -571,7 +571,7 @@ namespace PuppeteerSharp.Cdp
             await OnRequestAsync(client, e, null).ConfigureAwait(false);
         }
 
-        private void PatchRequestEventHeaders(RequestWillBeSentPayload requestWillBeSentEvent, FetchRequestPausedResponse requestPausedEvent)
+        private void PatchRequestEventHeaders(RequestWillBeSentResponse requestWillBeSentEvent, FetchRequestPausedResponse requestPausedEvent)
         {
             foreach (var kv in requestPausedEvent.Request.Headers)
             {
