@@ -5,7 +5,7 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.BrowserData
 {
-    internal class JsonUtils
+    internal static class JsonUtils
     {
         public static async Task<T> GetAsync<T>(string url)
         {

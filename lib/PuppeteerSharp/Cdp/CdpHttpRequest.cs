@@ -29,7 +29,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         IFrame frame,
         string interceptionId,
         bool allowInterception,
-        RequestWillBeSentPayload data,
+        RequestWillBeSentResponse data,
         List<IRequest> redirectChain,
         ILoggerFactory loggerFactory)
     {
