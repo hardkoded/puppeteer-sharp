@@ -19,7 +19,7 @@ var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
 var browserFetcher = new BrowserFetcher(browserFetcherOptions);
 var installedBrowser = await browserFetcher.DownloadAsync();
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/Browsers/Chrome/ChromeDataTests.cs#L14-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-ReuseChromeExample' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/Browsers/Chrome/ChromeDataTests.cs#L14-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-reusechrome_example' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 Use `Puppeteer.LaunchAsync()` with `LaunchOptions` with the `LaunchOptions.ExecutablePath` property set to the
