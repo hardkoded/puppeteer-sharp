@@ -172,6 +172,6 @@ A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https://github.com/tolgabalci.png" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https://github.com/nogginbox.png" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https://github.com/aws.png" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;2467618?u&#x3D;8ed50176b40b4e869c95c4c53137ab6a8a5fe1b1&amp;v&#x3D;4" width="60px" alt="Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;729381?v&#x3D;4" width="60px" alt="Richard Garside" /></a><a href="https://github.com/aws"><img src="https:&#x2F;&#x2F;avatars.githubusercontent.com&#x2F;u&#x2F;2232217?v&#x3D;4" width="60px" alt="Amazon Web Services" /></a><!-- sponsors -->
 
 
