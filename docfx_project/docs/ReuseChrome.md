@@ -11,8 +11,8 @@ from a location where it was previously downloaded instead of from the default l
 
 Use `BrowserFetcherOptions` to specify the full path for where to download Chrome.
 
-<!-- snippet: ReuseChromeExample -->
-<a id='snippet-ReuseChromeExample'></a>
+<!-- snippet: reusechrome_example -->
+<a id='snippet-reusechrome_example'></a>
 ```cs
 var downloadPath = "/Users/dario/chrome";
 var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };

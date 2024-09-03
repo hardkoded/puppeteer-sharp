@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
     {
         public async Task ReuseChromeExample()
         {
-            #region reuse_chrome_example
+            #region reusechrome_example
             var downloadPath = "/Users/dario/chrome";
             var browserFetcherOptions = new BrowserFetcherOptions { Path = downloadPath };
             var browserFetcher = new BrowserFetcher(browserFetcherOptions);
