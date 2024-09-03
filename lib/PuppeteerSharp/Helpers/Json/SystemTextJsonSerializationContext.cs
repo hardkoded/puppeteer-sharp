@@ -165,7 +165,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(RemoteObjectSubtype))]
 [JsonSerializable(typeof(RemoteObjectType))]
 [JsonSerializable(typeof(RequestServedFromCacheResponse))]
-[JsonSerializable(typeof(RequestWillBeSentPayload))]
+[JsonSerializable(typeof(RequestWillBeSentResponse))]
 [JsonSerializable(typeof(ResponsePayload))]
 [JsonSerializable(typeof(ResponseReceivedExtraInfoResponse))]
 [JsonSerializable(typeof(ResponseReceivedResponse))]

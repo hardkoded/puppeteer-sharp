@@ -110,7 +110,14 @@ namespace PuppeteerSharp.Cdp
             var frame = sender as Frame;
             if (_frame == frame)
             {
-                Terminate(new PuppeteerException("Navigating frame was detached"));
+                var message = "Navigating frame was detached";
+
+                if (!string.IsNullOrEmpty(frame?.Client?.CloseReason))
+                {
+                    message += $": {frame.Client.CloseReason}";
+                }
+
+                Terminate(new PuppeteerException(message));
                 return;
             }
 

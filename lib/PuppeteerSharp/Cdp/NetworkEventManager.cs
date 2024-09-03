@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Cdp
 {
     internal class NetworkEventManager
     {
-        private readonly ConcurrentDictionary<string, RequestWillBeSentPayload> _requestWillBeSentMap = new();
+        private readonly ConcurrentDictionary<string, RequestWillBeSentResponse> _requestWillBeSentMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
         private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
@@ -59,10 +59,10 @@ namespace PuppeteerSharp.Cdp
             return result;
         }
 
-        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentPayload e)
+        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentResponse e)
             => _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
 
-        internal RequestWillBeSentPayload GetRequestWillBeSent(string networkRequestId)
+        internal RequestWillBeSentResponse GetRequestWillBeSent(string networkRequestId)
         {
             _requestWillBeSentMap.TryGetValue(networkRequestId, out var result);
             return result;

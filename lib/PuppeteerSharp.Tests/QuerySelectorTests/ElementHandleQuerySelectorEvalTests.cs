@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 
         public async Task Usage(Browser browser)
         {
-            #region Evaluate
+            #region evaluate_example
             await using var page = await browser.NewPageAsync();
             var seven = await page.EvaluateExpressionAsync<int>("4 + 3");
             var someObject = await page.EvaluateFunctionAsync<JsonElement>("(value) => ({a: value})", 5);
