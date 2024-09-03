@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
 
         public async Task Usage()
         {
-            #region custom_version_example
+            #region customversions_example
             Console.WriteLine("Downloading browsers");
 
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Chrome);

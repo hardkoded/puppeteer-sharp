@@ -13,8 +13,8 @@ You will find the available versions [here](https://googlechromelabs.github.io/c
 Once you have the version you want, you can download it using the `BrowserFetcher` class.
 
 ```cs
-<!-- snippet: CustomVersionsExample -->
-<a id='snippet-CustomVersionsExample'></a>
+<!-- snippet: customversions_example -->
+<a id='snippet-customversions_example'></a>
 ```cs
 Console.WriteLine("Downloading browsers");
 
