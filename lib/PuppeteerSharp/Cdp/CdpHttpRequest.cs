@@ -42,7 +42,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         Url = data.Request.Url;
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = data.Request.PostData.ToString();
+        PostData = data.Request.PostData?.ToString();
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
