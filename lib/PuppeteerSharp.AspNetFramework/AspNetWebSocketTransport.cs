@@ -9,8 +9,6 @@ namespace PuppeteerSharp.AspNetFramework
 {
     public class AspNetWebSocketTransport : WebSocketTransport
     {
-        #region Static fields
-
         /// <summary>
         /// Gets a <see cref="TransportFactory"/> that creates <see cref="AspNetWebSocketTransport"/> instances.
         /// </summary>
@@ -21,10 +19,6 @@ namespace PuppeteerSharp.AspNetFramework
         /// for scheduling of tasks.
         /// </summary>
         public static readonly TransportTaskScheduler AspNetTransportScheduler = ScheduleBackgroundTask;
-
-        #endregion
-
-        #region Static methods
 
         private static async Task<IConnectionTransport> CreateAspNetTransport(Uri url, IConnectionOptions connectionOptions, CancellationToken cancellationToken)
         {
@@ -40,15 +34,9 @@ namespace PuppeteerSharp.AspNetFramework
             HostingEnvironment.QueueBackgroundWorkItem(ExecuteAsync);
         }
 
-        #endregion
-
-        #region Constructor(s)
-
         /// <inheritdoc />
         public AspNetWebSocketTransport(WebSocket client, bool queueRequests)
             : base(client, AspNetTransportScheduler, queueRequests)
         { }
-
-        #endregion
     }
 }

@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 fileInfo.Delete();
             }
 
-            #region PdfAsync
+            #region pdfasync_example
 
             var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
