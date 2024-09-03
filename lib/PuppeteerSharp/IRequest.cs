@@ -67,7 +67,7 @@ namespace PuppeteerSharp
         /// Gets the post data.
         /// </summary>
         /// <value>The post data.</value>
-        object PostData { get; }
+        string PostData { get; }
 
         /// <summary>
         /// Gets the HTTP headers.

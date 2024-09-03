@@ -33,6 +33,6 @@ namespace PuppeteerSharp.Transport
         /// </summary>
         /// <param name="message">Message to send.</param>
         /// <returns>The task.</returns>
-        Task SendAsync(string message);
+        Task SendAsync(byte[] message);
     }
 }

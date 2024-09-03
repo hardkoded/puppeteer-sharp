@@ -6,9 +6,9 @@ namespace PuppeteerSharp.Tests
 {
     public sealed class PollerInterceptor(IConnectionTransport connectionTransport) : IConnectionTransport
     {
-        public event EventHandler<string> MessageSent;
+        public event EventHandler<byte[]> MessageSent;
 
-        public Task SendAsync(string message)
+        public Task SendAsync(byte[] message)
         {
             var task = connectionTransport.SendAsync(message);
             MessageSent?.Invoke(connectionTransport, message);
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests
             // We intercept the poller.start() call to prevent tests from continuing before the polling has started.
             MessageSent += (_, message) =>
             {
-                if (message.Contains("poller.start()"))
+                if (message.AsSpan().IndexOf("poller.start()"u8) != -1)
                 {
                     startedPolling.SetResult(true);
                 }

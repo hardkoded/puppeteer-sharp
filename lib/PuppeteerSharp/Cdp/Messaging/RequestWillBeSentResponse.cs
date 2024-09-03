@@ -1,12 +1,12 @@
 namespace PuppeteerSharp.Cdp.Messaging
 {
-    internal class RequestWillBeSentPayload
+    internal class RequestWillBeSentResponse
     {
         public string RequestId { get; set; }
 
         public string LoaderId { get; set; }
 
-        public Payload Request { get; set; }
+        public Request Request { get; set; }
 
         public ResponsePayload RedirectResponse { get; set; }
 
