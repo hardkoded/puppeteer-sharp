@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Tests.EvaluationTests;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
@@ -16,7 +17,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");
             var request = await requestTask.WithTimeout();
             Assert.That(request, Is.Not.Null);
-            Assert.That(request.PostData, Is.EqualTo("{\"foo\":\"bar\"}"));
+            Assert.That(((EvaluateTests.ComplexObjectTestClass)request.PostData).Foo, Is.EqualTo("bar"));
         }
 
         [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
