@@ -40,7 +40,6 @@ public class CdpCDPSession : CDPSession
     private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
     private readonly string _parentSessionId;
     private readonly TargetType _targetType;
-    private string _closeReason;
     private int _lastId;
 
     internal CdpCDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
@@ -79,8 +78,8 @@ public class CdpCDPSession : CDPSession
             throw new TargetClosedException(
                 $"Protocol error ({method}): Session closed. " +
                 $"Most likely the {_targetType} has been closed." +
-                $"Close reason: {_closeReason}",
-                _closeReason);
+                $"Close reason: {CloseReason}",
+                CloseReason);
         }
 
         var id = GetMessageId();
@@ -147,7 +146,7 @@ public class CdpCDPSession : CDPSession
             return;
         }
 
-        _closeReason = closeReason;
+        CloseReason = closeReason;
         IsClosed = true;
 
         foreach (var callback in _callbacks.Values.ToArray())

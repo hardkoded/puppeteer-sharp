@@ -3,9 +3,13 @@ on:
   push:
 jobs:
   docs:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
     - name: Run MarkdownSnippets
       run: |
         dotnet tool install --global MarkdownSnippets.Tool

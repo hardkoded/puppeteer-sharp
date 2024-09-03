@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [Test, Retry(2), PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should work")]
         public async Task ShouldWork()
         {
-            #region SetViewportAsync
+            #region setviewportasync_example
             await Page.SetViewportAsync(new ViewPortOptions
             {
                 Width = 500,

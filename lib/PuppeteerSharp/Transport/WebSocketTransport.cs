@@ -69,11 +69,9 @@ namespace PuppeteerSharp.Transport
         public bool IsClosed { get; private set; }
 
         /// <inheritdoc />
-        public Task SendAsync(string message)
+        public Task SendAsync(byte[] message)
         {
-            var encoded = Encoding.UTF8.GetBytes(message);
-            var buffer = new ArraySegment<byte>(encoded, 0, encoded.Length);
-            Task SendCoreAsync() => _client.SendAsync(buffer, WebSocketMessageType.Text, true, default);
+            Task SendCoreAsync() => _client.SendAsync(new ArraySegment<byte>(message), WebSocketMessageType.Text, true, default);
 
             return _queueRequests ? _socketQueue.Enqueue(SendCoreAsync) : SendCoreAsync();
         }

@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
     {
         public async Task Usage()
         {
-            #region DeviceRequestPromptUsage
+            #region devicerequestprompt_usage
             var promptTask = Page.WaitForDevicePromptAsync();
             await Task.WhenAll(
                 promptTask,
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
 
         public async Task PageUsage()
         {
-            #region IPageWaitForDevicePromptAsyncUsage
+            #region ipagewaitfordevicepromptasync_usage
             var promptTask = Page.WaitForDevicePromptAsync();
             await Task.WhenAll(
                 promptTask,
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.DeviceRequestPromptTests
         public async Task FrameUsage()
         {
             var frame = Page.MainFrame;
-            #region IFrameWaitForDevicePromptAsyncUsage
+            #region iframewaitfordevicepromptasync_usage
             var promptTask = frame.WaitForDevicePromptAsync();
             await Task.WhenAll(
                 promptTask,
