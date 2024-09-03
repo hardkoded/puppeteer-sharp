@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         public HttpMethod Method { get; internal init; }
 
         /// <inheritdoc/>
-        public object PostData { get; internal init; }
+        public string PostData { get; internal init; }
 
         /// <inheritdoc/>
         public Dictionary<string, string> Headers { get; internal init; }
