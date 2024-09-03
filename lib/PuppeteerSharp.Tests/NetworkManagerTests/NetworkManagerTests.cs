@@ -32,11 +32,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Payload() { Url = "http://localhost:8907/redirect/1.html", Method = HttpMethod.Get },
+                    Request = new Request() { Url = "http://localhost:8907/redirect/1.html", Method = HttpMethod.Get },
                     Initiator = new Initiator { Type = InitiatorType.Other },
                     RedirectHasExtraInfo = false,
                     Type = ResourceType.Document,
@@ -49,11 +49,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Payload() { Url = "http://localhost:8907/redirect/2.html", Method = HttpMethod.Get, },
+                    Request = new Request() { Url = "http://localhost:8907/redirect/2.html", Method = HttpMethod.Get, },
                     Initiator = new Initiator { Type = InitiatorType.Other },
                     RedirectHasExtraInfo = true,
                     RedirectResponse = new ResponsePayload
@@ -76,11 +76,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "7760711DEFCFA23132D98ABA6B4E175C",
                     LoaderId = "7760711DEFCFA23132D98ABA6B4E175C",
-                    Request = new Payload { Url = "http://localhost:8907/redirect/3.html", Method = HttpMethod.Get, },
+                    Request = new Request { Url = "http://localhost:8907/redirect/3.html", Method = HttpMethod.Get, },
                     Initiator = new Initiator { Type = InitiatorType.Other },
                     RedirectHasExtraInfo = true,
                     RedirectResponse = new ResponsePayload
@@ -123,11 +123,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "11ACE9783588040D644B905E8B55285B",
                     LoaderId = "11ACE9783588040D644B905E8B55285B",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "https://www.google.com/",
                         Method = HttpMethod.Get,
@@ -148,7 +148,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                 MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
                 {
                     RequestId = "interception-job-1.0",
-                    Request = new Payload
+                    Request = new Request
                     {
                         Url = "https://www.google.com/",
                         Method = HttpMethod.Get,
@@ -168,7 +168,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                 MessageData = JsonSerializer.SerializeToElement(new FetchRequestPausedResponse
                 {
                     RequestId = "interception-job-2.0",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "https://www.google.com/",
                         Method = HttpMethod.Get,
@@ -206,11 +206,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "1360.2",
                     LoaderId = "9E86B0282CC98B77FB0ABD49156DDFDD",
-                    Request = new Payload { Url = "http://this.is.a.test.com:1080/test.js", Method = HttpMethod.Get, },
+                    Request = new Request { Url = "http://this.is.a.test.com:1080/test.js", Method = HttpMethod.Get, },
                     Initiator = new Initiator()
                     {
                         Type = InitiatorType.Parser,
@@ -300,11 +300,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
                 {
                     RequestId = "LOADERID",
                     LoaderId = "LOADERID",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "http://10.1.0.39:42915/empty.html",
                         Method = HttpMethod.Get,
@@ -410,11 +410,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "94051D839ACF29E53A3D1273FB20B4C4",
                     LoaderId = "94051D839ACF29E53A3D1273FB20B4C4",
-                    Request = new Payload
+                    Request = new Request
                     {
                         Url = "http://localhost:8080/iframe.html",
                         Method = HttpMethod.Get,
@@ -497,11 +497,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse
                 {
                     RequestId = "E18BEB94B486CA8771F9AFA2030FEA37",
                     LoaderId = "E18BEB94B486CA8771F9AFA2030FEA37",
-                    Request = new Payload
+                    Request = new Request
                     {
                         Url = "http://localhost:8080/iframe.html",
                         Method = HttpMethod.Get,
@@ -592,11 +592,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
                 {
                     RequestId = "6D76C8ACAECE880C722FA515AD380015",
                     LoaderId = "6D76C8ACAECE880C722FA515AD380015",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "http://10.1.0.39:42915/empty.html",
                         Method = HttpMethod.Get,
@@ -680,11 +680,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "http://10.1.0.39:42915/empty.html",
                         Method = HttpMethod.Get,
@@ -725,11 +725,11 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             new MessageEventArgs()
             {
                 MessageID = "Network.requestWillBeSent",
-                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentPayload()
+                MessageData = JsonSerializer.SerializeToElement(new RequestWillBeSentResponse()
                 {
                     RequestId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
                     LoaderId = "4C2CC44FB6A6CAC5BE2780BCC9313105",
-                    Request = new Payload()
+                    Request = new Request()
                     {
                         Url = "http://10.1.0.39:42915/empty.html",
                         Method = HttpMethod.Get,
