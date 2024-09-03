@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
         public async Task Usage(IBrowser browser)
         {
-            #region SetContentAsync
+            #region setcontentasync_example
 
             await using var page = await browser.NewPageAsync();
             await page.SetContentAsync("<div>My Receipt</div>");
