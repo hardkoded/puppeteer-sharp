@@ -396,8 +396,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 Assert.That(userDataDirInfo.GetFiles(), Is.Not.Empty);
 
-                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "prefs.js")), Is.EqualTo(prefsJSContent));
-                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")), Is.EqualTo(prefsJSContent));
+                Assert.That(
+                    await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "prefs.js")),
+                    Is.EqualTo(prefsJSContent));
+                Assert.That(
+                    await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")),
+                    Is.EqualTo(prefsJSContent));
             });
         }
     }

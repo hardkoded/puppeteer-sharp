@@ -83,6 +83,7 @@ namespace PuppeteerSharp
 
         internal override void OnExit()
         {
+            // If TempUserDataDir is null it means that the user provided their own userDataDir
             if (TempUserDataDir is null)
             {
                 var backupSuffix = ".puppeteer";
