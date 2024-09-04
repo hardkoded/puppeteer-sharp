@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace PuppeteerSharp
         ];
 
         private static readonly string[] _profileCommandLineArguments = ["-profile", "--profile"];
+        private readonly string _userDataDir;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FirefoxLauncher"/> class.
@@ -29,7 +31,7 @@ namespace PuppeteerSharp
         public FirefoxLauncher(string executable, LaunchOptions options)
             : base(executable, options)
         {
-            (var firefoxArgs, TempUserDataDir) = PrepareFirefoxArgs(options);
+            (var firefoxArgs, TempUserDataDir, _userDataDir) = PrepareFirefoxArgs(options);
 
             Process.StartInfo.Arguments = string.Join(" ", firefoxArgs);
         }
@@ -79,7 +81,27 @@ namespace PuppeteerSharp
             return firefoxArguments.ToArray();
         }
 
-        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
+        internal override void OnExit()
+        {
+            if (TempUserDataDir is null)
+            {
+                var backupSuffix = ".puppeteer";
+                string[] backupFiles = ["prefs.js", "user.js"];
+
+                foreach (var backupFile in backupFiles)
+                {
+                    var backupPath = Path.Combine(_userDataDir, backupFile + backupSuffix);
+                    if (File.Exists(backupPath))
+                    {
+                        File.Move(backupPath, Path.Combine(_userDataDir, backupFile));
+                    }
+                }
+            }
+
+            base.OnExit();
+        }
+
+        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory, string UserDataDir) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArguments = new List<string>();
 
@@ -126,7 +148,7 @@ namespace PuppeteerSharp
 
             Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
 
-            return (firefoxArguments, tempUserDataDirectory);
+            return (firefoxArguments, tempUserDataDirectory, userDataDir);
         }
 
         private static Dictionary<string, object> GetPreferences(Dictionary<string, object> optionsExtraPreferencesFirefox)

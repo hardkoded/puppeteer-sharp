@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.BrowserData
@@ -117,15 +118,30 @@ namespace PuppeteerSharp.BrowserData
 
             var defaultPreferences = GetDefaultPreferences(preferences);
 
-            File.WriteAllText(
-                Path.Combine(tempUserDataDirectory, "user.js"),
-                string.Join(
-                    "\n",
-                    defaultPreferences.Select(i =>
-                            $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});")
-                        .ToArray()));
+            SyncPreferences(defaultPreferences, tempUserDataDirectory);
+        }
 
-            File.WriteAllText(Path.Combine(tempUserDataDirectory, "prefs.js"), string.Empty);
+        private static void SyncPreferences(Dictionary<string, object> defaultPreferences, string tempUserDataDirectory)
+        {
+            var perfsPath = Path.Combine(tempUserDataDirectory, "prefs.js");
+            var userPath = Path.Combine(tempUserDataDirectory, "user.js");
+            var lines = string.Join(
+                "\n",
+                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray());
+
+            BackupFile(userPath);
+            BackupFile(perfsPath);
+            File.WriteAllText(userPath, lines);
+            File.WriteAllText(perfsPath, string.Empty);
+        }
+
+        private static void BackupFile(string userPath)
+        {
+            if (File.Exists(userPath))
+            {
+                var backupPath = $"{userPath}.puppeteer";
+                File.Copy(userPath, backupPath);
+            }
         }
 
         private static (FirefoxChannel Channel, string BuildId) ParseBuildId(string buildId)

@@ -147,6 +147,25 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Cleans up temporary user data directory.
+        /// </summary>
+        internal virtual void OnExit()
+        {
+            if (TempUserDataDir is { } tempUserDataDir)
+            {
+                tempUserDataDir
+                    .DeleteAsync()
+                    .ContinueWith(
+                        t => ExitCompletionSource.TrySetResult(true),
+                        TaskScheduler.Default);
+            }
+            else
+            {
+                ExitCompletionSource.TrySetResult(true);
+            }
+        }
+
+        /// <summary>
         /// Set Env Variables.
         /// </summary>
         /// <param name="environment">The environment.</param>

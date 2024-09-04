@@ -372,5 +372,33 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Assert.That(customTransportCreated, Is.True);
             }
         }
+
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option restores preferences")]
+        public async Task UserDataDirOptionRestoresPreferences()
+        {
+            using var userDataDir = new TempDirectory();
+            var userDataDirInfo = new DirectoryInfo(userDataDir.Path);
+            var prefsJSPath = Path.Combine(userDataDir.Path, "perfs.js");
+            var userJSPath = Path.Combine(userDataDir.Path, "user.js");
+            var perfsJSContent = """user_pref("browser.warnOnQuit", true);""";
+            await File.WriteAllTextAsync(prefsJSPath, perfsJSContent);
+            await File.WriteAllTextAsync(userJSPath, perfsJSContent);
+
+            var options = TestConstants.DefaultBrowserOptions();
+            options.UserDataDir = userDataDir.Path;
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await browser.NewPageAsync();
+
+            Assert.That(userDataDirInfo.GetFiles(), Is.Not.Empty);
+            await browser.CloseAsync();
+            await Assert.MultipleAsync(async () =>
+            {
+                Assert.That(userDataDirInfo.GetFiles(), Is.Not.Empty);
+
+                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "perfs.js")), Is.EqualTo(perfsJSContent));
+                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")), Is.EqualTo(perfsJSContent));
+            });
+        }
     }
 }
