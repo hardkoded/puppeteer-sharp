@@ -12,7 +12,7 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>20.0.1</PackageVersion>
+    <PackageVersion>20.0.1-beta1</PackageVersion>
     <ReleaseVersion>20.0.1</ReleaseVersion>
     <AssemblyVersion>20.0.1</AssemblyVersion>
     <FileVersion>20.0.1</FileVersion>
