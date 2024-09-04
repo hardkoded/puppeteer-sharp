@@ -11,7 +11,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
-            await using var remote = await Puppeteer.ConnectAsync(new ConnectOptions { BrowserWSEndpoint = browser.WebSocketEndpoint });
+            await using var remote = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browser.WebSocketEndpoint,
+                Protocol = ((Browser)browser).Protocol,
+            });
+
             var newPage = await remote.NewPageAsync();
             var requestTask = newPage.WaitForRequestAsync(TestConstants.EmptyPage);
             var responseTask = newPage.WaitForResponseAsync(TestConstants.EmptyPage);

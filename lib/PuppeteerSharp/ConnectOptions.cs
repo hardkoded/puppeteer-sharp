@@ -82,6 +82,9 @@ namespace PuppeteerSharp
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
 
+        // TODO: Restore when it's usable
+        internal ProtocolType Protocol { get; set; } = ProtocolType.Cdp;
+
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>

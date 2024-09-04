@@ -102,6 +102,8 @@ public class CdpBrowser : Browser
 
     internal ITargetManager TargetManager { get; }
 
+    internal override ProtocolType Protocol => ProtocolType.Cdp;
+
     /// <inheritdoc/>
     public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
 
@@ -135,10 +137,10 @@ public class CdpBrowser : Browser
             new TargetCreateBrowserContextRequest
             {
                 ProxyServer = options?.ProxyServer ?? string.Empty,
-                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
+                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? []),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
-        _contexts.TryAdd(response.BrowserContextId, (CdpBrowserContext)context);
+        _contexts.TryAdd(response.BrowserContextId, context);
         return context;
     }
 
