@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -136,18 +137,16 @@ namespace PuppeteerSharp.Transport
         /// Starts listening the socket.
         /// </summary>
         /// <returns>The start.</returns>
-        private async Task<object> GetResponseAsync(CancellationToken cancellationToken)
+        private async Task GetResponseAsync(CancellationToken cancellationToken)
         {
             var buffer = new byte[2048];
 
             while (!IsClosed)
             {
-                var endOfMessage = false;
-                var response = new StringBuilder();
-
-                while (!endOfMessage)
+                MemoryStream memoryStream = null;
+                WebSocketReceiveResult result;
+                do
                 {
-                    WebSocketReceiveResult result;
                     try
                     {
                         result = await _client.ReceiveAsync(
@@ -156,31 +155,35 @@ namespace PuppeteerSharp.Transport
                     }
                     catch (OperationCanceledException)
                     {
-                        return null;
+                        return;
                     }
                     catch (Exception ex)
                     {
                         OnClose(ex.Message);
-                        return null;
+                        return;
                     }
 
-                    endOfMessage = result.EndOfMessage;
-
-                    if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        response.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Close)
+                    if (result.MessageType == WebSocketMessageType.Close)
                     {
                         OnClose("WebSocket closed");
-                        return null;
+                        return;
                     }
+                    else if (result.MessageType == WebSocketMessageType.Binary)
+                    {
+                        continue;
+                    }
+
+                    if (memoryStream is null && !result.EndOfMessage)
+                    {
+                        memoryStream = new MemoryStream(buffer.Length);
+                    }
+
+                    memoryStream?.Write(buffer, 0, result.Count);
                 }
+                while (!result.EndOfMessage);
 
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(response.ToString()));
+                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(memoryStream is null ? buffer.AsSpan(0, result.Count).ToArray() : memoryStream.ToArray()));
             }
-
-            return null;
         }
 
         private void OnClose(string closeReason)

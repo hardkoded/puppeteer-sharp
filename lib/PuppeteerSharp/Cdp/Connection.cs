@@ -285,7 +285,11 @@ namespace PuppeteerSharp.Cdp
                     return;
                 }
 
-                _logger.LogTrace("◀ Receive {Message}", response);
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace("◀ Receive {Message}", Encoding.UTF8.GetString(response));
+                }
+
                 ProcessIncomingMessage(obj);
             }
             catch (Exception ex)
