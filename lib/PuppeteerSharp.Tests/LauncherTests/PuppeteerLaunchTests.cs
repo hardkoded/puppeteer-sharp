@@ -378,11 +378,11 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             using var userDataDir = new TempDirectory();
             var userDataDirInfo = new DirectoryInfo(userDataDir.Path);
-            var prefsJSPath = Path.Combine(userDataDir.Path, "perfs.js");
+            var prefsJSPath = Path.Combine(userDataDir.Path, "prefs.js");
             var userJSPath = Path.Combine(userDataDir.Path, "user.js");
-            var perfsJSContent = """user_pref("browser.warnOnQuit", true);""";
-            await File.WriteAllTextAsync(prefsJSPath, perfsJSContent);
-            await File.WriteAllTextAsync(userJSPath, perfsJSContent);
+            var prefsJSContent = """user_pref("browser.warnOnQuit", true);""";
+            await File.WriteAllTextAsync(prefsJSPath, prefsJSContent);
+            await File.WriteAllTextAsync(userJSPath, prefsJSContent);
 
             var options = TestConstants.DefaultBrowserOptions();
             options.UserDataDir = userDataDir.Path;
@@ -396,8 +396,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 Assert.That(userDataDirInfo.GetFiles(), Is.Not.Empty);
 
-                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "perfs.js")), Is.EqualTo(perfsJSContent));
-                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")), Is.EqualTo(perfsJSContent));
+                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "prefs.js")), Is.EqualTo(prefsJSContent));
+                Assert.That(await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")), Is.EqualTo(prefsJSContent));
             });
         }
     }

@@ -87,13 +87,20 @@ namespace PuppeteerSharp
             {
                 var backupSuffix = ".puppeteer";
                 string[] backupFiles = ["prefs.js", "user.js"];
-
+                var basePath = _userDataDir.Unquote();
                 foreach (var backupFile in backupFiles)
                 {
-                    var backupPath = Path.Combine(_userDataDir, backupFile + backupSuffix);
+                    var backupPath = Path.Combine(basePath, backupFile + backupSuffix);
+                    var originalPath = Path.Combine(basePath, backupFile);
                     if (File.Exists(backupPath))
                     {
-                        File.Move(backupPath, Path.Combine(_userDataDir, backupFile));
+                        // We don't have the overwrite parameter in netstandard
+                        if (File.Exists(originalPath))
+                        {
+                            File.Delete(originalPath);
+                        }
+
+                        File.Move(backupPath, Path.Combine(basePath, backupFile));
                     }
                 }
             }

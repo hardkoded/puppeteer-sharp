@@ -110,12 +110,7 @@ namespace PuppeteerSharp.BrowserData
 
         internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
         {
-            // If the tempUserDataDirectory begins and ends with a quote, remove the quote
-            if (tempUserDataDirectory.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && tempUserDataDirectory.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
-            {
-                tempUserDataDirectory = tempUserDataDirectory.Substring(1, tempUserDataDirectory.Length - 2);
-            }
-
+            tempUserDataDirectory = tempUserDataDirectory.Unquote();
             var defaultPreferences = GetDefaultPreferences(preferences);
 
             SyncPreferences(defaultPreferences, tempUserDataDirectory);
@@ -123,16 +118,16 @@ namespace PuppeteerSharp.BrowserData
 
         private static void SyncPreferences(Dictionary<string, object> defaultPreferences, string tempUserDataDirectory)
         {
-            var perfsPath = Path.Combine(tempUserDataDirectory, "prefs.js");
+            var prefsPath = Path.Combine(tempUserDataDirectory, "prefs.js");
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
                 defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray());
 
             BackupFile(userPath);
-            BackupFile(perfsPath);
+            BackupFile(prefsPath);
             File.WriteAllText(userPath, lines);
-            File.WriteAllText(perfsPath, string.Empty);
+            File.WriteAllText(prefsPath, string.Empty);
         }
 
         private static void BackupFile(string userPath)
@@ -140,7 +135,7 @@ namespace PuppeteerSharp.BrowserData
             if (File.Exists(userPath))
             {
                 var backupPath = $"{userPath}.puppeteer";
-                File.Copy(userPath, backupPath);
+                File.Copy(userPath, backupPath, true);
             }
         }
 
