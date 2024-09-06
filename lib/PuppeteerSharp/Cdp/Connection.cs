@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,14 +157,18 @@ namespace PuppeteerSharp.Cdp
 
         internal int GetMessageId() => Interlocked.Increment(ref _lastId);
 
-        internal Task RawSendAsync(string message, CommandOptions options = null)
+        internal Task RawSendAsync(byte[] message, CommandOptions options = null)
         {
-            _logger.LogTrace("Send ► {Message}", message);
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("Send ► {Message}", Encoding.UTF8.GetString(message));
+            }
+
             return Transport.SendAsync(message);
         }
 
-        internal string GetMessage(int id, string method, object args, string sessionId = null)
-            => JsonSerializer.Serialize(
+        internal byte[] GetMessage(int id, string method, object args, string sessionId = null)
+            => JsonSerializer.SerializeToUtf8Bytes(
                 new ConnectionRequest { Id = id, Method = method, Params = args, SessionId = sessionId },
                 JsonHelper.DefaultJsonSerializerSettings.Value);
 
@@ -280,7 +285,11 @@ namespace PuppeteerSharp.Cdp
                     return;
                 }
 
-                _logger.LogTrace("◀ Receive {Message}", response);
+                if (_logger.IsEnabled(LogLevel.Trace))
+                {
+                    _logger.LogTrace("◀ Receive {Message}", Encoding.UTF8.GetString(response));
+                }
+
                 ProcessIncomingMessage(obj);
             }
             catch (Exception ex)

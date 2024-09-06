@@ -294,9 +294,8 @@ Thumbs.db
 
 demos/PuppeteerSharpPdfDemo/google.pdf
 demos/PuppeteerSharpPdfDemo/.local-chromium/
-docs/
+/docs
 samples/PupppeterSharpAspNetFrameworkSample/PupppeterSharpAspNetFrameworkSample/App_Data/
-
 # Visual Studio Code user config directory
 .vscode/
 tools/github-ops/.env

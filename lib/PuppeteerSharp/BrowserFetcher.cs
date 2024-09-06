@@ -250,7 +250,7 @@ namespace PuppeteerSharp
             if (new DirectoryInfo(outputPath).Exists)
             {
                 var existingBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
-                RunSetup(existingBrowser);
+                existingBrowser.PermissionsFixed = RunSetup(existingBrowser);
                 return existingBrowser;
             }
 
@@ -267,11 +267,11 @@ namespace PuppeteerSharp
             new FileInfo(archivePath).Delete();
 
             var installedBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
-            RunSetup(installedBrowser);
+            installedBrowser.PermissionsFixed = RunSetup(installedBrowser);
             return installedBrowser;
         }
 
-        private void RunSetup(InstalledBrowser installedBrowser)
+        private bool? RunSetup(InstalledBrowser installedBrowser)
         {
             // On Windows for Chrome invoke setup.exe to configure sandboxes.
             if (
@@ -285,7 +285,7 @@ namespace PuppeteerSharp
 
                     if (!File.Exists(setupExePath))
                     {
-                        return;
+                        return false;
                     }
 
                     using var process = new Process();
@@ -295,12 +295,17 @@ namespace PuppeteerSharp
                     process.StartInfo.UseShellExecute = false;
                     process.Start();
                     process.WaitForExit();
+
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     _logger?.LogError(ex, "Failed to run setup.exe");
+                    return false;
                 }
             }
+
+            return null;
         }
 
         private async Task InstallDmgAsync(string dmgPath, string folderPath)

@@ -29,7 +29,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         IFrame frame,
         string interceptionId,
         bool allowInterception,
-        RequestWillBeSentPayload data,
+        RequestWillBeSentResponse data,
         List<IRequest> redirectChain,
         ILoggerFactory loggerFactory)
     {
@@ -42,7 +42,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         Url = data.Request.Url;
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = data.Request.PostData;
+        PostData = data.Request.PostData?.ToString();
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
