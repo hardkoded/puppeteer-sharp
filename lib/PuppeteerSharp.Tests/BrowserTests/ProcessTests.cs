@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
                     Protocol = ((Browser)Browser).Protocol,
                 },
                 TestConstants.LoggerFactory);
-                Assert.That(remoteBrowser.Process, Is.Null);
+            Assert.That(remoteBrowser.Process, Is.Null);
 
             remoteBrowser.Disconnect();
         }

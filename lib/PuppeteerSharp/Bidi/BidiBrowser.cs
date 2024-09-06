@@ -111,9 +111,9 @@ public class BidiBrowser : Browser
             {
                 Capabilities = new CapabilitiesRequest()
                 {
-                    AlwaysMatch = new CapabilitiesRequestInfo()
+                    AlwaysMatch = new CapabilityRequest()
                     {
-                        AcceptInsecureCertificates = options.IgnoreHTTPSErrors,
+                        AcceptInsecureCertificates = options.AcceptInsecureCerts,
                         AdditionalCapabilities = { ["webSocketUrl"] = true, },
                     },
                 },

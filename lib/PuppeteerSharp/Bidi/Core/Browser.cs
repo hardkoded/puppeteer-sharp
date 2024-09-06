@@ -67,7 +67,7 @@ internal class Browser(Session session) : IDisposable
     private Task InitializeAsync()
     {
         Session.Ended += OnSessionEnded;
-        Session.Driver.OnEventReceived.AddHandler(OnEventReceived);
+        Session.Driver.OnEventReceived.AddObserver(OnEventReceived);
 
         return Task.CompletedTask;
     }
