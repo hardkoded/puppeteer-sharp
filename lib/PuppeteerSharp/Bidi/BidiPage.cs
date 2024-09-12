@@ -43,9 +43,6 @@ public class BidiPage : Page
     public override CDPSession Client { get; }
 
     /// <inheritdoc />
-    public override IFrame MainFrame { get; }
-
-    /// <inheritdoc />
     public override Target Target { get; }
 
     /// <inheritdoc />
@@ -56,6 +53,18 @@ public class BidiPage : Page
 
     /// <inheritdoc />
     public override bool IsJavaScriptEnabled { get; }
+
+    /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+    Before:
+    /// <inheritdoc/>
+    After:
+    /// <inheritdoc/>
+    */
+
+    /// <inheritdoc/>
+    public override IFrame MainFrame => BidiMainFrame;
+
+    internal BidiFrame BidiMainFrame { get; set; }
 
     /// <inheritdoc />
     protected override Browser Browser { get; }

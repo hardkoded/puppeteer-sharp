@@ -209,7 +209,7 @@ public class CdpBrowser : Browser
 
         var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
             .ConfigureAwait(false)).TargetId;
-        var target = await WaitForTargetAsync(t => t.TargetId == targetId).ConfigureAwait(false) as Target;
+        var target = await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false) as CdpTarget;
         await target!.InitializedTask.ConfigureAwait(false);
         return await target.PageAsync().ConfigureAwait(false);
     }
@@ -363,23 +363,24 @@ public class CdpBrowser : Browser
 
     private void OnTargetChanged(object sender, TargetChangedArgs e)
     {
-        var args = new TargetChangedArgs { Target = e.Target };
+        var args = new TargetChangedArgs(e.Target);
         OnTargetChanged(args);
-        ((CdpTarget)e.Target).BrowserContext.OnTargetChanged(this, args);
+        ((CdpTarget)e.Target).BrowserContext.OnTargetChanged(args);
     }
 
     private async void OnDetachedFromTargetAsync(object sender, TargetChangedArgs e)
     {
         try
         {
-            e.Target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
-            e.Target.CloseTaskWrapper.TrySetResult(true);
+            var target = (CdpTarget)e.Target;
+            target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
+            target.CloseTaskWrapper.TrySetResult(true);
 
-            if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
+            if ((await target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
             {
-                var args = new TargetChangedArgs { Target = e.Target };
+                var args = new TargetChangedArgs(e.Target);
                 OnTargetDestroyed(args);
-                e.Target.BrowserContext.OnTargetDestroyed(this, args);
+                e.Target.BrowserContext.OnTargetDestroyed(args);
             }
         }
         catch (Exception ex)
@@ -394,11 +395,12 @@ public class CdpBrowser : Browser
     {
         try
         {
-            if (await e.Target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
+            var target = (CdpTarget)e.Target;
+            if (await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
             {
-                var args = new TargetChangedArgs { Target = e.Target };
+                var args = new TargetChangedArgs(e.Target);
                 OnTargetCreated(args);
-                ((CdpTarget)e.Target).BrowserContext.OnTargetCreated(this, args);
+                ((CdpTarget)e.Target).BrowserContext.OnTargetCreated(args);
             }
         }
         catch (Exception ex)

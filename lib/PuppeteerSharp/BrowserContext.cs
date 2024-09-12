@@ -51,10 +51,10 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
-        internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
+        internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);
 
-        internal void OnTargetDestroyed(Browser browser, TargetChangedArgs args) => TargetDestroyed?.Invoke(browser, args);
+        internal void OnTargetDestroyed(TargetChangedArgs args) => TargetDestroyed?.Invoke(this, args);
 
-        internal void OnTargetChanged(Browser browser, TargetChangedArgs args) => TargetChanged?.Invoke(browser, args);
+        internal void OnTargetChanged(TargetChangedArgs args) => TargetChanged?.Invoke(this, args);
     }
 }

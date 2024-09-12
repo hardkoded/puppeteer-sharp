@@ -38,7 +38,7 @@ namespace PuppeteerSharp
 
         internal Connection Connection { get; set; }
 
-        internal Target Target { get; set; }
+        internal CdpTarget Target { get; set; }
 
         internal abstract CDPSession ParentSession { get; }
 

@@ -20,7 +20,9 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
@@ -30,7 +32,8 @@ namespace PuppeteerSharp.Bidi;
 /// <inheritdoc />
 public class BidiBrowserContext : BrowserContext
 {
-    private readonly ConcurrentSet<BidiPage> _pages = [];
+    private readonly ConcurrentDictionary<BrowsingContext, BidiPage> _pages = [];
+    private readonly ConcurrentDictionary<BidiPage, BidiPageTargetInfo> _targets = new();
 
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
     {
@@ -55,7 +58,13 @@ public class BidiBrowserContext : BrowserContext
     public override Task CloseAsync() => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override ITarget[] Targets() => throw new System.NotImplementedException();
+    public override ITarget[] Targets()
+        => (ITarget[])_targets.SelectMany(target =>
+            (ITarget[])[
+                (ITarget)target.Value.BidiPageTarget,
+                .. target.Value.FrameTargets.Values.ToArray(),
+                .. target.Value.WorkerTargets.Values.ToArray(),
+            ]);
 
     internal static BidiBrowserContext From(
         BidiBrowser browser,
@@ -79,7 +88,72 @@ public class BidiBrowserContext : BrowserContext
     private void CreatePage(BrowsingContext browsingContext)
     {
         var page = BidiPage.From(this, browsingContext);
-        _pages.Add(page);
+        _pages.AddOrUpdate(browsingContext, page, (_, _) => page);
+
+        var pageTarget = new BidiPageTarget(page);
+        var targetInfo = new BidiPageTargetInfo { BidiPageTarget = pageTarget };
+        _targets.TryAdd(page, targetInfo);
+
+        page.FrameAttached += (_, e) =>
+        {
+            var bidiFrame = (BidiFrame)e.Frame;
+            var frameTarget = new BidiFrameTarget(bidiFrame);
+            targetInfo.FrameTargets.TryAdd(bidiFrame, frameTarget);
+        };
+
+        page.FrameNavigated += (_, e) =>
+        {
+            var bidiFrame = (BidiFrame)e.Frame;
+            OnTargetChanged(new TargetChangedArgs(
+                targetInfo.FrameTargets.TryGetValue(bidiFrame, out var frameTarget)
+                    ? frameTarget
+                    : pageTarget));
+        };
+
+        page.FrameDetached += (_, e) =>
+        {
+            var bidiFrame = (BidiFrame)e.Frame;
+            if (targetInfo.FrameTargets.TryRemove(bidiFrame, out var frameTarget))
+            {
+                OnTargetDestroyed(new TargetChangedArgs(frameTarget));
+            }
+        };
+
+        page.WorkerCreated += (_, e) =>
+        {
+            var bidiWorker = (BidiWebWorker)e.Worker;
+            var workerTarget = new BidiWorkerTarget(bidiWorker);
+            targetInfo.WorkerTargets.TryAdd(bidiWorker, workerTarget);
+        };
+
+        page.WorkerDestroyed += (_, e) =>
+        {
+            var bidiWorker = (BidiWebWorker)e.Worker;
+            if (targetInfo.WorkerTargets.TryRemove(bidiWorker, out var workerTarget))
+            {
+                OnTargetDestroyed(new TargetChangedArgs(workerTarget));
+            }
+        };
+
+        page.Close += (_, _) =>
+        {
+            if (_targets.TryRemove(page, out _))
+            {
+                OnTargetDestroyed(new TargetChangedArgs(pageTarget));
+            }
+        };
+
+        OnTargetCreated(new TargetChangedArgs(pageTarget));
+    }
+
+    private class BidiPageTargetInfo
+    {
+        public BidiPageTarget BidiPageTarget { get; set; }
+
+        public ConcurrentDictionary<BidiFrame, BidiFrameTarget> FrameTargets { get; set; } = new();
+
+        public ConcurrentDictionary<BidiWebWorker, BidiWorkerTarget> WorkerTargets { get; set; } = new();
     }
 }
+
 

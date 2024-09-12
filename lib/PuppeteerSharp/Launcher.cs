@@ -87,10 +87,8 @@ namespace PuppeteerSharp
                 {
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
-                        Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
                         var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
-                        await driver.StartAsync(Process.EndPoint).ConfigureAwait(false);
-
+                        await driver.StartAsync(Process.EndPoint + "/session").ConfigureAwait(false);
                         browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory).ConfigureAwait(false);
                     }
                     else

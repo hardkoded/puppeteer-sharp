@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebDriverBiDi.Browser;
 using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
 
@@ -42,11 +43,23 @@ internal class Browser(Session session) : IDisposable
 
     internal ICollection<UserContext> UserContexts => _userContexts.Values;
 
-    public async Task<Browser> From(Session session)
+    public static async Task<Browser> From(Session session)
     {
         var browser = new Browser(session);
         await browser.InitializeAsync().ConfigureAwait(false);
         return browser;
+    }
+
+    public async Task CloseAsync()
+    {
+        try
+        {
+            await Session.Driver.Browser.CloseAsync(new CloseCommandParameters()).ConfigureAwait(false);
+        }
+        finally
+        {
+            Dispose("Browser already closed.", true);
+        }
     }
 
     public void Dispose()
@@ -64,12 +77,13 @@ internal class Browser(Session session) : IDisposable
         Dispose();
     }
 
-    private Task InitializeAsync()
+    private async Task InitializeAsync()
     {
         Session.Ended += OnSessionEnded;
         Session.Driver.OnEventReceived.AddObserver(OnEventReceived);
 
-        return Task.CompletedTask;
+        await SyncUserContextsAsync().ConfigureAwait(false);
+        await SyncBrowsingContextsAsync().ConfigureAwait(false);
     }
 
     private void OnEventReceived(EventReceivedEventArgs e)

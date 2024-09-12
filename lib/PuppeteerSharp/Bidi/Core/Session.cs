@@ -53,7 +53,6 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public Task SubscribeAsync(string[] events, string[] contexts = null)
     {
-        // TODO: Refactor with new version
         var args = new SubscribeCommandParameters();
         args.Events.AddRange(events);
         args.Contexts.AddRange(contexts ?? []);

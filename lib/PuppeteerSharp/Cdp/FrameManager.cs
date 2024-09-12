@@ -86,18 +86,18 @@ namespace PuppeteerSharp.Cdp
             return context;
         }
 
-        internal void OnAttachedToTarget(TargetChangedArgs e)
+        internal void OnAttachedToTarget(CdpTarget target)
         {
-            if (e.TargetInfo.Type != TargetType.IFrame)
+            if (target.TargetInfo.Type != TargetType.IFrame)
             {
                 return;
             }
 
-            var frame = GetFrame(e.TargetInfo.TargetId);
-            frame?.UpdateClient(e.Target.Session);
+            var frame = GetFrame(target.TargetInfo.TargetId);
+            frame?.UpdateClient(target.Session);
 
-            e.Target.Session.MessageReceived += Client_MessageReceived;
-            _ = InitializeAsync(e.Target.Session);
+            target.Session.MessageReceived += Client_MessageReceived;
+            _ = InitializeAsync(target.Session);
         }
 
         internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)

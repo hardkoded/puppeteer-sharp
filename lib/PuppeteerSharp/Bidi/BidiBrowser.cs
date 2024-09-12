@@ -22,6 +22,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
@@ -38,11 +39,15 @@ public class BidiBrowser : Browser
 {
     private readonly LaunchOptions _options;
     private readonly ConcurrentSet<BidiBrowserContext> _browserContexts = [];
+    private readonly ILogger<BidiBrowser> _logger;
+    private readonly BidiBrowserTarget _target;
 
-    private BidiBrowser(Core.Browser browserCore, LaunchOptions options)
+    private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
     {
+        _target = new(this);
         _options = options;
         BrowserCore = browserCore;
+        _logger = loggerFactory.CreateLogger<BidiBrowser>();
     }
 
     /// <inheritdoc />
@@ -67,6 +72,8 @@ public class BidiBrowser : Browser
         "cdp.Page.screencastFrame",
     ];
 
+    internal BiDiDriver Driver => BrowserCore.Session.Driver;
+
     internal Core.Browser BrowserCore { get; }
 
     internal override ProtocolType Protocol => ProtocolType.WebdriverBiDi;
@@ -81,13 +88,32 @@ public class BidiBrowser : Browser
     public override void Disconnect() => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task CloseAsync() => throw new NotImplementedException();
+    public override async Task CloseAsync()
+    {
+        try
+        {
+            await BrowserCore.CloseAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to close connection");
+        }
+        finally
+        {
+            await Driver.StopAsync().ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc />
     public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override ITarget[] Targets() => throw new NotImplementedException();
+    public override ITarget[] Targets()
+        =>
+        [
+            _target,
+            .. _browserContexts.SelectMany(context => context.Targets()).ToArray()
+        ];
 
     /// <inheritdoc />
     public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) =>
@@ -125,7 +151,7 @@ public class BidiBrowser : Browser
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
 
-        var browser = new BidiBrowser(session.Browser, options);
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory);
         browser.InitializeAsync();
         return browser;
     }
@@ -151,3 +177,4 @@ public class BidiBrowser : Browser
         return browserContext;
     }
 }
+
