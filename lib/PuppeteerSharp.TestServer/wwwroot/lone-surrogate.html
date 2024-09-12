@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lone Surrogate via JavaScript</title>
+</head>
+<body>
+<h1>Lone Surrogate Example</h1>
+<p id="surrogate-text">This paragraph will be updated with a lone surrogate.</p>
+
+<script>
+    // Create a lone surrogate
+    var loneSurrogate = String.fromCharCode(0xD83D); // High surrogate without its pair
+    document.getElementById('surrogate-text').textContent = "This paragraph contains a lone surrogate: " + loneSurrogate;
+</script>
+</body>
+</html>
