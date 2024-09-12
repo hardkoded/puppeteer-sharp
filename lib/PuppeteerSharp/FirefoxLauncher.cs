@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace PuppeteerSharp
         ];
 
         private static readonly string[] _profileCommandLineArguments = ["-profile", "--profile"];
+        private readonly string _userDataDir;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FirefoxLauncher"/> class.
@@ -29,7 +31,7 @@ namespace PuppeteerSharp
         public FirefoxLauncher(string executable, LaunchOptions options)
             : base(executable, options)
         {
-            (var firefoxArgs, TempUserDataDir) = PrepareFirefoxArgs(options);
+            (var firefoxArgs, TempUserDataDir, _userDataDir) = PrepareFirefoxArgs(options);
 
             Process.StartInfo.Arguments = string.Join(" ", firefoxArgs);
         }
@@ -79,7 +81,35 @@ namespace PuppeteerSharp
             return firefoxArguments.ToArray();
         }
 
-        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory) PrepareFirefoxArgs(LaunchOptions options)
+        internal override void OnExit()
+        {
+            // If TempUserDataDir is null it means that the user provided their own userDataDir
+            if (TempUserDataDir is null)
+            {
+                var backupSuffix = ".puppeteer";
+                string[] backupFiles = ["prefs.js", "user.js"];
+                var basePath = _userDataDir.Unquote();
+                foreach (var backupFile in backupFiles)
+                {
+                    var backupPath = Path.Combine(basePath, backupFile + backupSuffix);
+                    var originalPath = Path.Combine(basePath, backupFile);
+                    if (File.Exists(backupPath))
+                    {
+                        // We don't have the overwrite parameter in netstandard
+                        if (File.Exists(originalPath))
+                        {
+                            File.Delete(originalPath);
+                        }
+
+                        File.Move(backupPath, Path.Combine(basePath, backupFile));
+                    }
+                }
+            }
+
+            base.OnExit();
+        }
+
+        private static (List<string> FirefoxArgs, TempDirectory TempUserDataDirectory, string UserDataDir) PrepareFirefoxArgs(LaunchOptions options)
         {
             var firefoxArguments = new List<string>();
 
@@ -126,7 +156,7 @@ namespace PuppeteerSharp
 
             Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
 
-            return (firefoxArguments, tempUserDataDirectory);
+            return (firefoxArguments, tempUserDataDirectory, userDataDir);
         }
 
         private static Dictionary<string, object> GetPreferences(Dictionary<string, object> optionsExtraPreferencesFirefox)

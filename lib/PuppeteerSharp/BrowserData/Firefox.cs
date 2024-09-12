@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.BrowserData
@@ -109,23 +110,33 @@ namespace PuppeteerSharp.BrowserData
 
         internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
         {
-            // If the tempUserDataDirectory begins and ends with a quote, remove the quote
-            if (tempUserDataDirectory.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && tempUserDataDirectory.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
-            {
-                tempUserDataDirectory = tempUserDataDirectory.Substring(1, tempUserDataDirectory.Length - 2);
-            }
-
+            tempUserDataDirectory = tempUserDataDirectory.Unquote();
             var defaultPreferences = GetDefaultPreferences(preferences);
 
-            File.WriteAllText(
-                Path.Combine(tempUserDataDirectory, "user.js"),
-                string.Join(
-                    "\n",
-                    defaultPreferences.Select(i =>
-                            $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});")
-                        .ToArray()));
+            SyncPreferences(defaultPreferences, tempUserDataDirectory);
+        }
 
-            File.WriteAllText(Path.Combine(tempUserDataDirectory, "prefs.js"), string.Empty);
+        private static void SyncPreferences(Dictionary<string, object> defaultPreferences, string tempUserDataDirectory)
+        {
+            var prefsPath = Path.Combine(tempUserDataDirectory, "prefs.js");
+            var userPath = Path.Combine(tempUserDataDirectory, "user.js");
+            var lines = string.Join(
+                "\n",
+                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray());
+
+            BackupFile(userPath);
+            BackupFile(prefsPath);
+            File.WriteAllText(userPath, lines);
+            File.WriteAllText(prefsPath, string.Empty);
+        }
+
+        private static void BackupFile(string userPath)
+        {
+            if (File.Exists(userPath))
+            {
+                var backupPath = $"{userPath}.puppeteer";
+                File.Copy(userPath, backupPath, true);
+            }
         }
 
         private static (FirefoxChannel Channel, string BuildId) ParseBuildId(string buildId)
