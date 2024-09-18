@@ -88,11 +88,12 @@ namespace PuppeteerSharp
         /// </summary>
         public CookieSourceScheme? SourceScheme { get; set; }
 
+#nullable enable
         /// <summary>
-        /// Cookie partition key. The site of the top-level URL the browser was visiting at the
-        /// start of the request to the endpoint that set the cookie. Supported only in Chrome.
+        /// Cookie partition key. Supported only in Chrome.
         /// </summary>
-        public string PartitionKey { get; set; }
+        public CookiePartitionKey? PartitionKey { get; set; }
+#nullable disable
 
         /// <summary>
         /// True if cookie partition key is opaque. Supported only in Chrome.
