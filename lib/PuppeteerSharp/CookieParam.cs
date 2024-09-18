@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -90,9 +93,12 @@ namespace PuppeteerSharp
 
 #nullable enable
         /// <summary>
-        /// Cookie partition key. Supported only in Chrome.
+        /// Cookie partition key. The site of the top-level URL the browser was visiting at the
+        /// start of the request to the endpoint that set the cookie. Supported only in Chrome.
+        /// TODO: a breaking change is needed to support other partition keys.
         /// </summary>
-        public CookiePartitionKey? PartitionKey { get; set; }
+        [JsonConverter(typeof(CookiePartitionKeyConverter))]
+        public string? PartitionKey { get; set; }
 #nullable disable
 
         /// <summary>
