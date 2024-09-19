@@ -35,9 +35,13 @@ internal class Browser(Session session) : IDisposable
     private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
     private bool _disposed;
 
+    public event EventHandler Closed;
+
+    public event EventHandler Disconnected;
+
     public Session Session { get; } = session;
 
-    public bool Closed { get; set; }
+    public bool IsClosed { get; set; }
 
     public string Reason { get; set; }
 
@@ -86,6 +90,32 @@ internal class Browser(Session session) : IDisposable
         await SyncBrowsingContextsAsync().ConfigureAwait(false);
     }
 
+    private async Task SyncUserContextsAsync()
+    {
+        var result = await Session.Driver.Browser.GetUserContextsAsync(new GetUserContextsCommandParameters()).ConfigureAwait(false);
+
+        foreach (var context in result.UserContexts) {
+            CreateUserContext(context.UserContextId);
+        }
+    }
+
+    private void CreateUserContext(string id)
+    {
+        var userContext = UserContext.Create(this, id);
+        this.#userContexts.set(userContext.id, userContext);
+
+        const userContextEmitter = this.#disposables.use(
+            new EventEmitter(userContext)
+        );
+        userContextEmitter.once('closed', () => {
+            userContextEmitter.removeAllListeners();
+
+            this.#userContexts.delete(userContext.id);
+        });
+
+        return userContext;
+    }
+
     private void OnEventReceived(EventReceivedEventArgs e)
     {
         switch (e.EventName)
@@ -112,7 +142,7 @@ internal class Browser(Session session) : IDisposable
     private void Dispose(string reason = null, bool closed = false)
     {
         Reason = reason;
-        Closed = closed;
+        IsClosed = closed;
         Dispose(true);
     }
 }
