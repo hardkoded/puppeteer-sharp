@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
     /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>.
     /// </summary>
-    public interface IBrowserContext
+    public interface IBrowserContext : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Raised when the url of a target changes

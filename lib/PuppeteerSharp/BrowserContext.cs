@@ -51,10 +51,33 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Closes the browser context. All the targets that belong to the browser context will be closed.
+        /// </summary>
+        /// <returns>ValueTask.</returns>
+        public async ValueTask DisposeAsync()
+        {
+            await CloseAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
+
         internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
 
         internal void OnTargetDestroyed(Browser browser, TargetChangedArgs args) => TargetDestroyed?.Invoke(browser, args);
 
         internal void OnTargetChanged(Browser browser, TargetChangedArgs args) => TargetChanged?.Invoke(browser, args);
+
+        /// <summary>
+        /// Closes the browser context. All the targets that belong to the browser context will be closed.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync();
     }
 }
