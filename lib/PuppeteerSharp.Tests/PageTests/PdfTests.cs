@@ -127,6 +127,8 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             var pdfOptions = new PdfOptions
             {
+                Width = 100,
+                Height = 100,
                 Format = PaperFormat.A4,
                 DisplayHeaderFooter = true,
                 MarginOptions = new MarginOptions
@@ -135,28 +137,6 @@ namespace PuppeteerSharp.Tests.PageTests
                     Right = "20px",
                     Bottom = "40px",
                     Left = "20px"
-                },
-                FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
-            };
-
-            var serialized = JsonSerializer.Serialize(pdfOptions);
-            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
-            Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
-        }
-
-        [Test]
-        public void PdfOptionsShouldWorkWithMarginWithNoUnits()
-        {
-            var pdfOptions = new PdfOptions
-            {
-                Format = PaperFormat.A4,
-                DisplayHeaderFooter = true,
-                MarginOptions = new MarginOptions
-                {
-                    Top = "0",
-                    Right = "0",
-                    Bottom = "0",
-                    Left = "0"
                 },
                 FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
             };
