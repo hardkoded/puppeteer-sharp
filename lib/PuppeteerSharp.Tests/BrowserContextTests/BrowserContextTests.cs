@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
         public async Task WindowOpenShouldUseParentTabContext()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<ITarget>();
@@ -60,13 +60,12 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var popupTarget = await popupTargetCompletion.Task;
             Assert.That(popupTarget.BrowserContext, Is.SameAs(context));
-            await context.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should fire target events")]
         public async Task ShouldFireTargetEvents()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var events = new List<string>();
             context.TargetCreated += (_, e) => events.Add("CREATED: " + e.Target.Url);
             context.TargetChanged += (_, e) => events.Add("CHANGED: " + e.Target.Url);
@@ -82,7 +81,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 $"CHANGED: {TestConstants.EmptyPage}",
                 $"DESTROYED: {TestConstants.EmptyPage}"
             }));
-            await context.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
@@ -135,7 +133,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
@@ -145,7 +143,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             var contexts = remoteBrowser.BrowserContexts();
             Assert.That(contexts, Has.Length.EqualTo(2));
             remoteBrowser.Disconnect();
-            await context.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
@@ -154,32 +151,29 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
             Assert.That(Browser.BrowserContexts()[0].Id, Is.Null);
 
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
             Assert.That(Browser.BrowserContexts()[1].Id, Is.Not.Null);
-            await context.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]
         public async Task ShouldWaitForTarget()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var targetPromise = context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var promiseTarget = await targetPromise;
             var targetPage = await promiseTarget.PageAsync();
             Assert.That(page, Is.EqualTo(targetPage));
-            await context.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
         public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
-            await context.CloseAsync();
         }
     }
 }
