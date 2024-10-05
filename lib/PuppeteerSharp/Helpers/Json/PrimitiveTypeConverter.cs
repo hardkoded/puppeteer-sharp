@@ -6,7 +6,11 @@ using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Helpers.Json
 {
-    // Support types used in PdfOptions / MarginOptions: string, decimal, int
+    /// <summary>
+    /// Support types (<see cref="decimal"/>, <see cref="int"/> and <see cref="string"/>)
+    /// used by <see cref="PdfOptions"/> and <see cref="Media.MarginOptions"/> for serialization / deserialization.
+    /// For usecases like <see href="https://github.com/hardkoded/puppeteer-sharp/issues/1001"/>.
+    /// </summary>
     internal sealed class PrimitiveTypeConverter : JsonConverter<object>
     {
         public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
