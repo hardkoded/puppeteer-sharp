@@ -47,8 +47,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
               remoteBrowser.CloseAsync());
         }
 
-        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
-        public async Task ShouldSupportIgnoreHTTPSErrorsOption()
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support acceptInsecureCerts option")]
+        public async Task ShouldSupportAcceptInsecureCertsOption()
         {
             await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
