@@ -21,26 +21,47 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class BrowsingContext : IDisposable
 {
-    private readonly UserContext _userContext;
     private readonly BrowsingContext _parent;
-    private readonly string _id;
-    private readonly string _url;
     private readonly string _originalOpener;
+    private readonly ConcurrentDictionary<string, BrowsingContext> _children = new();
+    private readonly ConcurrentDictionary<string, Request> _requests = new();
     private string _reason;
+    private Navigation _navigation;
 
     private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
     {
-        _userContext = userContext;
+        UserContext = userContext;
         _parent = parent;
-        _id = id;
-        _url = url;
+        Id = id;
+        Url = url;
         _originalOpener = originalOpener;
     }
+
+    public event EventHandler<BrowserContextClosedEventArgs> Closed;
+
+    public event EventHandler DomContentLoaded;
+
+    public event EventHandler Load;
+
+    public event EventHandler<BidiBrowsingContextEventArgs> BrowsingContextCreated;
+
+    public event EventHandler<RequestEventArgs> Request;
+
+    public event EventHandler<BrowserContextNavigationEventArgs> Navigation;
+
+    public UserContext UserContext { get; }
+
+    public string Id { get; }
+
+    public string Url { get; private set; }
+
+    public Session Session => UserContext.Browser.Session;
 
     public static BrowsingContext From(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
     {
@@ -54,11 +75,121 @@ internal class BrowsingContext : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
+
     private void Initialize()
     {
-        _userContext.Closed += (sender, args) => Dispose("User context was closed");
-        _userContext.Disconnected += (sender, args) => Dispose("User context was disconnected");
+        UserContext.Closed += (sender, args) => Dispose("User context was closed");
+        UserContext.Disconnected += (sender, args) => Dispose("User context was disconnected");
+
+        Session.BrowsingContextContextCreated += (sender, args) =>
+        {
+            if (args.Parent != Id)
+            {
+                return;
+            }
+
+            var browsingContext = From(UserContext, this, args.UserContextId, args.Url, args.OriginalOpener);
+
+            _children.TryAdd(args.UserContextId, browsingContext);
+
+            browsingContext.Closed += (sender, args) =>
+            {
+                _children.TryRemove(browsingContext.Id, out _);
+            };
+
+            OnBrowsingContextCreated(new BidiBrowsingContextEventArgs(browsingContext));
+        };
+
+        Session.BrowsingContextContextDestroyed += (sender, args) =>
+        {
+            if (args.UserContextId != Id)
+            {
+                return;
+            }
+
+            Dispose("Browsing context already closed.");
+        };
+
+        Session.BrowsingContextDomContentLoaded += (sender, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            Url = args.Url;
+            OnDomContentLoaded();
+        };
+
+        Session.BrowsingContextLoad += (sender, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            Url = args.Url;
+            OnLoad();
+        };
+
+        Session.BrowsingcontextNavigationStarted += (sender, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            foreach (var entry in _requests)
+            {
+                if (entry.Value.IsDisposed)
+                {
+                    _requests.TryRemove(entry.Key, out _);
+                }
+            }
+
+            if (_navigation is { IsDisposed: false })
+            {
+                return;
+            }
+
+            _navigation = Core.Navigation.From(this);
+
+            _navigation.Fragment += UpdateUrlFromEvent;
+            _navigation.Aborted += UpdateUrlFromEvent;
+            _navigation.Failed += UpdateUrlFromEvent;
+
+            OnNavigation(new BrowserContextNavigationEventArgs(_navigation));
+        };
+
+        Session.NetworkBeforeRequestSent += (sender, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            if (_requests.ContainsKey(args.Request.RequestId))
+            {
+                return;
+            }
+
+            var request = Core.Request.From(this, args);
+            _requests.TryAdd(args.Request.RequestId, request);
+            Request?.Invoke(this, new RequestEventArgs(request));
+        };
     }
+
+    private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
+
+    private void UpdateUrlFromEvent(object sender, NavigationEventArgs e)
+    {
+        Url = e.Url;
+    }
+
+    private void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+
+    private void OnDomContentLoaded() => DomContentLoaded?.Invoke(this, EventArgs.Empty);
 
     private void Dispose(string reason)
     {

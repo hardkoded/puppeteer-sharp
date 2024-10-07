@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebDriverBiDi;
+using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Network;
 using WebDriverBiDi.Session;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -32,6 +34,28 @@ namespace PuppeteerSharp.Bidi.Core;
 internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 {
     public event EventHandler<SessionEndArgs> Ended;
+
+    public event EventHandler<BrowsingContextEventArgs> BrowsingContextContextCreated;
+
+    public event EventHandler<BrowsingContextEventArgs> BrowsingContextContextDestroyed;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingcontextNavigationStarted;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextLoad;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextDomContentLoaded;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextNavigationAborted;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextNavigationFailed;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextFragmentNavigated;
+
+    public event EventHandler<BeforeRequestSentEventArgs> NetworkBeforeRequestSent;
+
+    public event EventHandler<AuthRequiredEventArgs> NetworkAuthRequired;
+
+    public event EventHandler<FetchErrorEventArgs> NetworkFetchError;
 
     public BiDiDriver Driver { get; } = driver;
 
@@ -51,20 +75,51 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     {
     }
 
-    public Task SubscribeAsync(string[] events, string[] contexts = null)
+    public async Task SubscribeAsync(string[] events, string[] contexts = null)
     {
         var args = new SubscribeCommandParameters();
         args.Events.AddRange(events);
         args.Contexts.AddRange(contexts ?? []);
-        Driver.Session.SubscribeAsync(args);
-
-        return Task.CompletedTask;
+        await Driver.Session.SubscribeAsync(args).ConfigureAwait(false);
     }
 
     internal virtual void OnEnded(SessionEndArgs e) => Ended?.Invoke(this, e);
 
+    internal virtual void OnBrowsingContextContextCreated(BrowsingContextEventArgs e) => BrowsingContextContextCreated?.Invoke(this, e);
+
     private async Task InitializeAsync()
     {
         Browser = await Browser.From(this).ConfigureAwait(false);
+        Driver.BrowsingContext.OnContextCreated.AddObserver(OnBrowsingContextContextCreated);
+        Driver.BrowsingContext.OnContextDestroyed.AddObserver(OnBrowsingContextContextDestroyed);
+        Driver.BrowsingContext.OnDomContentLoaded.AddObserver(OnBrowsingContextDomContentLoaded);
+        Driver.BrowsingContext.OnLoad.AddObserver(OnBrowsingContextLoad);
+        Driver.BrowsingContext.OnNavigationStarted.AddObserver(OnBrowsingContextNavigationStarted);
+        Driver.BrowsingContext.OnFragmentNavigated.AddObserver(OnBrowsingContextFragmentNavigated);
+        Driver.BrowsingContext.OnNavigationFailed.AddObserver(OnBrowsingContextNavigationFailed);
+        Driver.BrowsingContext.OnNavigationAborted.AddObserver(OnBrowsingContextNavigationAborted);
+        Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
+        Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
+        Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
     }
+
+    private void OnNetworkFetchError(FetchErrorEventArgs obj) => NetworkFetchError?.Invoke(this, obj);
+
+    private void OnNetworkAuthRequired(AuthRequiredEventArgs obj) => NetworkAuthRequired?.Invoke(this, obj);
+
+    private void OnBeforeRequestSent(BeforeRequestSentEventArgs obj) => NetworkBeforeRequestSent?.Invoke(this, obj);
+
+    private void OnBrowsingContextNavigationAborted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationAborted?.Invoke(this, obj);
+
+    private void OnBrowsingContextNavigationFailed(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationFailed?.Invoke(this, obj);
+
+    private void OnBrowsingContextFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextFragmentNavigated?.Invoke(this, obj);
+
+    private void OnBrowsingContextNavigationStarted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingcontextNavigationStarted?.Invoke(this, obj);
+
+    private void OnBrowsingContextLoad(WebDriverBiDi.BrowsingContext.NavigationEventArgs arg) => BrowsingContextLoad?.Invoke(this, arg);
+
+    private void OnBrowsingContextDomContentLoaded(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextDomContentLoaded?.Invoke(this, obj);
+
+    private void OnBrowsingContextContextDestroyed(BrowsingContextEventArgs obj) => BrowsingContextContextDestroyed?.Invoke(this, obj);
 }

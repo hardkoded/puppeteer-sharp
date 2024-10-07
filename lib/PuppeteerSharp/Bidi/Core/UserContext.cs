@@ -29,22 +29,26 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class UserContext : IDisposable
 {
-    private readonly Browser _browser;
-    private readonly string _id;
     private readonly ConcurrentDictionary<string, BrowsingContext> _browsingContexts = new();
     private string _reason;
 
     private UserContext(Browser browser, string id)
     {
-        _browser = browser;
-        _id = id;
+        Browser = browser;
+        Id = id;
     }
 
     public event EventHandler Closed;
 
     public event EventHandler Disconnected;
 
+    public event EventHandler<BidiBrowsingContextEventArgs> BrowsingContextCreated;
+
+    public Browser Browser { get; }
+
     public static IEnumerable<BrowsingContext> BrowsingContexts { get; set; }
+
+    public string Id { get; }
 
     public static UserContext Create(Browser browser, string id)
     {
@@ -60,20 +64,20 @@ internal class UserContext : IDisposable
 
     private void Initialize()
     {
-        _browser.Closed += (sender, args) => Dispose("User context was closed");
-        _browser.Disconnected += (sender, args) => Dispose("User context was disconnected");
+        Browser.Closed += (sender, args) => Dispose("User context was closed");
+        Browser.Disconnected += (sender, args) => Dispose("User context was disconnected");
 
-        _browser.Session.Driver.BrowsingContext.OnContextCreated.AddObserver(OnContextCreated);
+        Browser.Session.BrowsingContextContextCreated += OnBrowsingContextContextCreated;
     }
 
-    private void OnContextCreated(BrowsingContextEventArgs info)
+    private void OnBrowsingContextContextCreated(object sender, BrowsingContextEventArgs info)
     {
         if (info.Parent == null)
         {
             return;
         }
 
-        if (info.UserContextId != _id)
+        if (info.UserContextId != Id)
         {
             return;
         }
@@ -85,19 +89,14 @@ internal class UserContext : IDisposable
             info.Url,
             info.OriginalOpener);
 
-        _browsingContexts.set(browsingContext.id, browsingContext);
+        _browsingContexts.TryAdd(browsingContext.Id, browsingContext);
 
-        const browsingContextEmitter = this.#disposables.use(
-            new EventEmitter(browsingContext)
-        );
-        browsingContextEmitter.on('closed', () => {
-            browsingContextEmitter.removeAllListeners();
+        browsingContext.Closed += (sender, args) => _browsingContexts.TryRemove(browsingContext.Id, out _);
 
-            this.#browsingContexts.delete(browsingContext.id);
-        });
-
-        this.emit('browsingcontext', {browsingContext});
+        OnBrowsingContext(browsingContext);
     }
+
+    private void OnBrowsingContext(BrowsingContext browsingContext) => BrowsingContextCreated?.Invoke(this, new BidiBrowsingContextEventArgs(browsingContext));
 
     private void Dispose(string reason)
     {

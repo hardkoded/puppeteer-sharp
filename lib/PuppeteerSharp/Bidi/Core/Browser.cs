@@ -24,9 +24,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Browser;
+using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
+using CloseCommandParameters = WebDriverBiDi.Browser.CloseCommandParameters;
 
 namespace PuppeteerSharp.Bidi.Core;
 
@@ -90,28 +93,83 @@ internal class Browser(Session session) : IDisposable
         await SyncBrowsingContextsAsync().ConfigureAwait(false);
     }
 
+    private Task SyncBrowsingContextsAsync()
+    {
+        // In case contexts are created or destroyed during `getTree`, we use this
+        // set to detect them.
+        var contextIds = new ConcurrentSet<string>();
+
+        Session.Driver.BrowsingContext.OnContextCreated.AddObserver(info =>
+        {
+            contextIds.Add(info.BrowsingContextId);
+        });
+        var tree = Session.Driver.BrowsingContext.GetTreeAsync(new GetTreeCommandParameters());
+        var contexts = tree.Result.ContextTree;
+
+        // Simulating events so contexts are created naturally.
+        foreach (var info in contexts)
+        {
+            if (!contextIds.Contains(info.BrowsingContextId))
+            {
+                Session.OnBrowsingContextContextCreated(new BrowsingContextEventArgs(info));
+            }
+
+            foreach (var child in info.Children)
+            {
+                contexts.Add(child);
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
     private async Task SyncUserContextsAsync()
     {
         var result = await Session.Driver.Browser.GetUserContextsAsync(new GetUserContextsCommandParameters()).ConfigureAwait(false);
 
-        foreach (var context in result.UserContexts) {
+
+/* Unmerged change from project 'PuppeteerSharp(net8.0)'
+Before:
+/* Unmerged change from project 'PuppeteerSharp(net8.0)'
+After:
+/* Unmerged change from project 'PuppeteerSharp(net8.0)'
+*/
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        Before:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        After:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        */
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        Before:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        After:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        */
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        Before:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        After:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        */
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        Before:
+                foreach (var context in result.UserContexts) {
+        After:
+                foreach (var context in result.UserContexts)
+                {
+        */
+        foreach (var context in result.UserContexts)
+        {
             CreateUserContext(context.UserContextId);
         }
     }
 
-    private void CreateUserContext(string id)
+    private UserContext CreateUserContext(string id)
     {
         var userContext = UserContext.Create(this, id);
-        this.#userContexts.set(userContext.id, userContext);
-
-        const userContextEmitter = this.#disposables.use(
-            new EventEmitter(userContext)
-        );
-        userContextEmitter.once('closed', () => {
-            userContextEmitter.removeAllListeners();
-
-            this.#userContexts.delete(userContext.id);
-        });
+        _userContexts.TryAdd(userContext.Id, userContext);
+        userContext.Closed += (sender, args) => _userContexts.TryRemove(userContext.Id, out _);
 
         return userContext;
     }
