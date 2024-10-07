@@ -46,14 +46,12 @@ public class CdpBrowser : Browser
         SupportedBrowser browser,
         Connection connection,
         string[] contextIds,
-        bool acceptInsecureCerts,
         ViewPortOptions defaultViewport,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetFunc = null)
     {
         BrowserType = browser;
-        AcceptInsecureCerts = acceptInsecureCerts;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
@@ -168,7 +166,6 @@ public class CdpBrowser : Browser
             browserToCreate,
             connection,
             contextIds,
-            acceptInsecureCerts,
             defaultViewPort,
             launcher,
             targetFilter,
@@ -177,6 +174,12 @@ public class CdpBrowser : Browser
         try
         {
             initAction?.Invoke(browser);
+
+            if (acceptInsecureCerts)
+            {
+                await connection.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true })
+                    .ConfigureAwait(false);
+            }
 
             await browser.AttachAsync().ConfigureAwait(false);
             return browser;
@@ -267,7 +270,6 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }
@@ -280,7 +282,6 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }

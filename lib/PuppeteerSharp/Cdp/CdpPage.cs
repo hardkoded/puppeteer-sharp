@@ -56,8 +56,7 @@ public class CdpPage : Page
     private CdpPage(
         CdpCDPSession client,
         CdpTarget target,
-        TaskQueue screenshotTaskQueue,
-        bool acceptInsecureCerts) : base(screenshotTaskQueue)
+        TaskQueue screenshotTaskQueue) : base(screenshotTaskQueue)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -72,7 +71,7 @@ public class CdpPage : Page
 
         _emulationManager = new EmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, acceptInsecureCerts, TimeoutSettings);
+        FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
 
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
@@ -707,11 +706,10 @@ public class CdpPage : Page
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,
-        bool acceptInsecureCerts,
         ViewPortOptions defaultViewPort,
         TaskQueue screenshotTaskQueue)
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue, acceptInsecureCerts);
+        var page = new CdpPage(client, target, screenshotTaskQueue);
 
         try
         {
