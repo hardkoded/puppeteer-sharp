@@ -731,6 +731,48 @@ public class CdpPage : Page
         }
     }
 
+    internal static decimal ConvertPrintParameterToInches(object parameter)
+    {
+        if (parameter == null)
+        {
+            return 0;
+        }
+
+        decimal pixels;
+        if (parameter is decimal or int)
+        {
+            pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
+        }
+        else
+        {
+            var text = parameter.ToString();
+            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
+            string valueText;
+            if (GetPixels(unit) is { })
+            {
+                valueText = text.Substring(0, text.Length - 2);
+            }
+            else
+            {
+                // In case of unknown unit try to parse the whole parameter as number of pixels.
+                // This is consistent with phantom's paperSize behavior.
+                unit = "px";
+                valueText = text;
+            }
+
+            if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
+            {
+                pixels = number * GetPixels(unit).Value;
+            }
+            else
+            {
+                throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
+            }
+        }
+
+        return pixels / 96;
+    }
+
     /// <inheritdoc />
     protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
     {
@@ -1212,48 +1254,6 @@ public class CdpPage : Page
                 tcs.TrySetResult(fileChooser);
             }
         }
-    }
-
-    private decimal ConvertPrintParameterToInches(object parameter)
-    {
-        if (parameter == null)
-        {
-            return 0;
-        }
-
-        decimal pixels;
-        if (parameter is decimal or int)
-        {
-            pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
-        }
-        else
-        {
-            var text = parameter.ToString();
-            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
-            string valueText;
-            if (GetPixels(unit) is { })
-            {
-                valueText = text.Substring(0, text.Length - 2);
-            }
-            else
-            {
-                // In case of unknown unit try to parse the whole parameter as number of pixels.
-                // This is consistent with phantom's paperSize behavior.
-                unit = "px";
-                valueText = text;
-            }
-
-            if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
-            {
-                pixels = number * GetPixels(unit).Value;
-            }
-            else
-            {
-                throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
-            }
-        }
-
-        return pixels / 96;
     }
 
     private Clip GetIntersectionRect(Clip clip, BoundingBox viewport)

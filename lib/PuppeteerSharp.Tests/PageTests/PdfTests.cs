@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.Nunit;
 
@@ -147,25 +148,13 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         [Test]
-        public void PdfOptionsShouldWorkWithMarginWithNoUnits()
+        public void ConvertPrintParameterToInchesTests()
         {
-            var pdfOptions = new PdfOptions
-            {
-                Format = PaperFormat.A4,
-                DisplayHeaderFooter = true,
-                MarginOptions = new MarginOptions
-                {
-                    Top = "0",
-                    Right = "0",
-                    Bottom = "0",
-                    Left = "0"
-                },
-                FooterTemplate = "<div id=\"footer-template\" style=\"font-size:10px !important; color:#808080; padding-left:10px\">- <span class=\"pageNumber\"></span> - </div>"
-            };
-
-            var serialized = JsonSerializer.Serialize(pdfOptions);
-            var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
-            Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
+            Assert.That(CdpPage.ConvertPrintParameterToInches("10"), Is.EqualTo(10m / 96));
+            Assert.That(CdpPage.ConvertPrintParameterToInches("10px"), Is.EqualTo(10m / 96));
+            Assert.That(CdpPage.ConvertPrintParameterToInches("0"), Is.EqualTo(0));
+            Assert.That(CdpPage.ConvertPrintParameterToInches("0px"), Is.EqualTo(0));
+            Assert.That(CdpPage.ConvertPrintParameterToInches("10in"), Is.EqualTo(10));
         }
     }
 }
