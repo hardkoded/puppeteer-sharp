@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
@@ -67,11 +69,13 @@ namespace PuppeteerSharp
         /// <summary>
         /// Paper width, accepts values labeled with units.
         /// </summary>
+        [JsonConverter(typeof(PrimitiveTypeConverter))]
         public object Width { get; set; }
 
         /// <summary>
         /// Paper height, accepts values labeled with units.
         /// </summary>
+        [JsonConverter(typeof(PrimitiveTypeConverter))]
         public object Height { get; set; }
 
         /// <summary>
