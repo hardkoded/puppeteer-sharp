@@ -92,6 +92,7 @@ jobs:
       env:
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
+        PUPPETEER_CACHE_DIR: '~/.cache'
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5

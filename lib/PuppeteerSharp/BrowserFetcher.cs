@@ -168,6 +168,18 @@ namespace PuppeteerSharp
 
         internal static string GetBrowsersLocation()
         {
+            // Check the PUPPETEER_CACHE_DIR env variable if exists use that.
+            var puppeteerCacheDir = Environment.GetEnvironmentVariable("PUPPETEER_CACHE_DIR");
+            if (!string.IsNullOrEmpty(puppeteerCacheDir))
+            {
+                if (!Directory.Exists(puppeteerCacheDir))
+                {
+                    Directory.CreateDirectory(puppeteerCacheDir);
+                }
+
+                return puppeteerCacheDir;
+            }
+
             var assembly = typeof(Puppeteer).Assembly;
             var assemblyName = assembly.GetName().Name + ".dll";
             DirectoryInfo assemblyDirectory = new(AppContext.BaseDirectory);
