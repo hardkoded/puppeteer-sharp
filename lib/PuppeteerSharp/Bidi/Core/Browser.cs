@@ -154,6 +154,12 @@ After:
         */
         /* Unmerged change from project 'PuppeteerSharp(net8.0)'
         Before:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        After:
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        */
+        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
+        Before:
                 foreach (var context in result.UserContexts) {
         After:
                 foreach (var context in result.UserContexts)

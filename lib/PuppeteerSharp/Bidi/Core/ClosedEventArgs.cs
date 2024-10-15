@@ -22,7 +22,7 @@
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class BrowserContextClosedEventArgs(string reason)
+internal class ClosedEventArgs(string reason)
 {
     public string Reason { get; } = reason;
 }

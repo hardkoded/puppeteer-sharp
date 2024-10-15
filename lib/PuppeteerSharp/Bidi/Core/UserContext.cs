@@ -38,15 +38,15 @@ internal class UserContext : IDisposable
         Id = id;
     }
 
-    public event EventHandler Closed;
-
-    public event EventHandler Disconnected;
+    public event EventHandler<ClosedEventArgs> Closed;
 
     public event EventHandler<BidiBrowsingContextEventArgs> BrowsingContextCreated;
 
+    public static IEnumerable<BrowsingContext> BrowsingContexts { get; set; }
+
     public Browser Browser { get; }
 
-    public static IEnumerable<BrowsingContext> BrowsingContexts { get; set; }
+    public Session Session => Browser.Session;
 
     public string Id { get; }
 
@@ -59,6 +59,10 @@ internal class UserContext : IDisposable
 
     public void Dispose()
     {
+        _reason ??= "User context already closed, probably because the browser disconnected/closed.";
+        OnClosed();
+        Browser.Dispose();
+        Session.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -103,4 +107,6 @@ internal class UserContext : IDisposable
         _reason = reason;
         Dispose();
     }
+
+    private void OnClosed() => Closed?.Invoke(this, new ClosedEventArgs(_reason));
 }

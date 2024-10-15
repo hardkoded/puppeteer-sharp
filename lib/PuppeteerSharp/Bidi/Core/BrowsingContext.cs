@@ -33,6 +33,7 @@ internal class BrowsingContext : IDisposable
     private readonly ConcurrentDictionary<string, Request> _requests = new();
     private string _reason;
     private Navigation _navigation;
+    private bool _closed
 
     private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
     {
@@ -43,7 +44,7 @@ internal class BrowsingContext : IDisposable
         _originalOpener = originalOpener;
     }
 
-    public event EventHandler<BrowserContextClosedEventArgs> Closed;
+    public event EventHandler<ClosedEventArgs> Closed;
 
     public event EventHandler DomContentLoaded;
 
@@ -72,6 +73,10 @@ internal class BrowsingContext : IDisposable
 
     public void Dispose()
     {
+        _reason ??= "Browser was disconnected, probably because the session ended.";
+        if (closed) {
+            this.emit('closed', {reason: this.#reason});
+        }
         GC.SuppressFinalize(this);
     }
 
@@ -191,9 +196,12 @@ internal class BrowsingContext : IDisposable
 
     private void OnDomContentLoaded() => DomContentLoaded?.Invoke(this, EventArgs.Empty);
 
-    private void Dispose(string reason)
+    private void Dispose(string reason, bool closed = false)
     {
+
         _reason = reason;
         Dispose();
     }
+
+    private void OnClosed(string reason) => Closed?.Invoke(this, new ClosedEventArgs(reason));
 }
