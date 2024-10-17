@@ -87,6 +87,9 @@ jobs:
     - name: Build
       working-directory: lib
       run: dotnet build PuppeteerSharp.sln
+    - name: Disable AppArmor
+      if: matrix.os == 'ubuntu-latest'
+      run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
     - name: Test (Linux)
       if: matrix.os == 'ubuntu-latest'
       env:
