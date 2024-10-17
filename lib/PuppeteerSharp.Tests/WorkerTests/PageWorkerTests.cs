@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html"));
             var worker = Page.Workers[0];
             Assert.That(worker.Url, Does.Contain("worker.js"));
-            Assert.That(await worker.EvaluateExpressionAsync<string>("self.workerFunction()"), Is.EqualTo("worker function result"));
+            Assert.That(await worker.EvaluateExpressionAsync<string>("globalThis.workerFunction()"), Is.EqualTo("worker function result"));
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             await workerDestroyedTcs.Task.WithTimeout();
