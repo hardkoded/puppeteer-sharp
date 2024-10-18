@@ -349,7 +349,7 @@ namespace PuppeteerSharp
         public abstract Task RemoveExposedFunctionAsync(string name);
 
         /// <inheritdoc/>
-        public Task<string> GetContentAsync() => MainFrame.GetContentAsync();
+        public Task<string> GetContentAsync(GetContentOptions options = null) => MainFrame.GetContentAsync(options);
 
         /// <inheritdoc/>
         public Task SetContentAsync(string html, NavigationOptions options = null)

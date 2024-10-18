@@ -205,22 +205,24 @@ namespace PuppeteerSharp
         public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public Task<string> GetContentAsync()
-            => EvaluateFunctionAsync<string>(@"() => {
-                let content = '';
-                for (const node of document.childNodes) {
-                    switch (node) {
-                    case document.documentElement:
-                        content += document.documentElement.outerHTML;
-                        break;
-                    default:
-                        content += new XMLSerializer().serializeToString(node);
-                        break;
+        public Task<string> GetContentAsync(GetContentOptions options = null)
+            => EvaluateFunctionAsync<string>(
+                @"(replaceLoneSurrogates) => {
+                    let content = '';
+                    for (const node of document.childNodes) {
+                        switch (node) {
+                        case document.documentElement:
+                            content += document.documentElement.outerHTML;
+                            break;
+                        default:
+                            content += new XMLSerializer().serializeToString(node);
+                            break;
+                        }
                     }
-                }
 
-                return content;
-            }");
+                    return replaceLoneSurrogates ? content.toWellFormed() : content;
+                }",
+                options?.ReplaceLoneSurrogates ?? false);
 
         /// <inheritdoc/>
         public abstract Task SetContentAsync(string html, NavigationOptions options = null);

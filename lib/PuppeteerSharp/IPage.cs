@@ -749,9 +749,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets the full HTML contents of the page, including the doctype.
         /// </summary>
+        /// <param name="options">Options.</param>
         /// <returns>Task which resolves to the HTML content.</returns>
         /// <seealso cref="IFrame.GetContentAsync"/>
-        Task<string> GetContentAsync();
+        Task<string> GetContentAsync(GetContentOptions options = null);
 
         /// <summary>
         /// Returns the page's cookies.

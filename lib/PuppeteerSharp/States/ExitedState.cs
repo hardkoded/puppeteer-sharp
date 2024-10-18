@@ -19,18 +19,7 @@ namespace PuppeteerSharp.States
                 }
             }
 
-            if (launcher.TempUserDataDir is { } tempUserDataDir)
-            {
-                tempUserDataDir
-                    .DeleteAsync()
-                    .ContinueWith(
-                        t => launcher.ExitCompletionSource.TrySetResult(true),
-                        TaskScheduler.Default);
-            }
-            else
-            {
-                launcher.ExitCompletionSource.TrySetResult(true);
-            }
+            launcher.OnExit();
         }
 
         public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => Task.CompletedTask;

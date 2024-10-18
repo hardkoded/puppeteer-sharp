@@ -16,6 +16,16 @@ namespace PuppeteerSharp
         public const string Fast3G = "Fast 3G";
 
         /// <summary>
+        /// Key to be used with <see cref="Puppeteer.NetworkConditions()"/>.
+        /// </summary>
+        public const string Slow4G = "Slow 4G";
+
+        /// <summary>
+        /// Key to be used with <see cref="Puppeteer.NetworkConditions()"/>.
+        /// </summary>
+        public const string Fast4G = "Fast 4G";
+
+        /// <summary>
         /// Download speed (bytes/s), `-1` to disable.
         /// </summary>
         public double Download { get; set; } = -1;
