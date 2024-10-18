@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-
 namespace PuppeteerSharp.Media
 {
     /// <summary>
     /// Paper format.
     /// </summary>
     /// <seealso cref="PdfOptions.Format"/>
-    public class PaperFormat : IEquatable<PaperFormat>
+    public record PaperFormat
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="PaperFormat"/> class.
@@ -87,41 +84,5 @@ namespace PuppeteerSharp.Media
         /// </summary>
         /// <value>The Height.</value>
         public decimal Height { get; set; }
-
-        /// <summary>Overriding == operator for <see cref="PaperFormat"/>. </summary>
-        /// <param name="left">the value to compare against <paramref name="right" />.</param>
-        /// <param name="right">the value to compare against <paramref name="left" />.</param>
-        /// <returns><c>true</c> if the two instances are equal to the same value.</returns>
-        public static bool operator ==(PaperFormat left, PaperFormat right)
-            => EqualityComparer<PaperFormat>.Default.Equals(left, right);
-
-        /// <summary>Overriding != operator for <see cref="PaperFormat"/>. </summary>
-        /// <param name="left">the value to compare against <paramref name="right" />.</param>
-        /// <param name="right">the value to compare against <paramref name="left" />.</param>
-        /// <returns><c>true</c> if the two instances are not equal to the same value.</returns>
-        public static bool operator !=(PaperFormat left, PaperFormat right) => !(left == right);
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            return Equals((PaperFormat)obj);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(PaperFormat format)
-            => format != null &&
-                   Width == format.Width &&
-                   Height == format.Height;
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-            => 859600377
-                ^ Width.GetHashCode()
-                ^ Height.GetHashCode();
     }
 }
