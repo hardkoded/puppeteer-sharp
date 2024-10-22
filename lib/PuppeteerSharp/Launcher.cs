@@ -51,14 +51,19 @@ namespace PuppeteerSharp
 
             EnsureSingleLaunchOrConnect();
             _browser = options.Browser;
-            var buildId = options.Browser switch
+
+            var executable = options.ExecutablePath;
+            if (executable == null)
             {
-                SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
-                SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
-                SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(BrowserFetcher.GetCurrentPlatform()).ConfigureAwait(false),
-                _ => throw new ArgumentException("Invalid browser"),
-            };
-            var executable = options.ExecutablePath ?? GetExecutablePath(options, buildId);
+                var buildId = options.Browser switch
+                {
+                    SupportedBrowser.Firefox => await Firefox.GetDefaultBuildIdAsync().ConfigureAwait(false),
+                    SupportedBrowser.Chrome or SupportedBrowser.ChromeHeadlessShell => Chrome.DefaultBuildId,
+                    SupportedBrowser.Chromium => await Chromium.ResolveBuildIdAsync(BrowserFetcher.GetCurrentPlatform()).ConfigureAwait(false),
+                    _ => throw new ArgumentException("Invalid browser"),
+                };
+                executable = GetExecutablePath(options, buildId);
+            }
 
             Process = options.Browser switch
             {
