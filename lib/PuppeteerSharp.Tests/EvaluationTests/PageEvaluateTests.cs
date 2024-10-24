@@ -323,7 +323,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldAcceptObjectHandleAsAnArgument()
         {
             await Page.SetContentAsync("<section>42</section>");
-            var element = await Page.QuerySelectorAsync("section");
+            object element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
             Assert.That(text, Is.EqualTo("42"));
         }
