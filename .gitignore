@@ -290,7 +290,7 @@ Thumbs.db
 
 # ignore local cert
 /lib/PuppeteerSharp.TestServer/testCert.cer
-/lib/PuppeteerSharp.Tests/Screenshots/test.png
+/lib/PuppeteerSharp.Tests/Screenshots/
 
 demos/PuppeteerSharpPdfDemo/google.pdf
 demos/PuppeteerSharpPdfDemo/.local-chromium/
@@ -299,4 +299,3 @@ samples/PupppeterSharpAspNetFrameworkSample/PupppeterSharpAspNetFrameworkSample/
 # Visual Studio Code user config directory
 .vscode/
 tools/github-ops/.env
-/lib/PuppeteerSharp.Tests/Screenshots
