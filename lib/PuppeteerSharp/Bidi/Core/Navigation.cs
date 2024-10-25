@@ -25,12 +25,11 @@ using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Navigation : IDisposable
+internal class Navigation
 {
     private readonly BrowsingContext _browsingContext;
     private Navigation _navigation;
     private string _id;
-    private Request _request;
 
     private Navigation(BrowsingContext browsingContext)
     {
@@ -43,7 +42,9 @@ internal class Navigation : IDisposable
 
     public event EventHandler<NavigationEventArgs> Aborted;
 
-    public event EventHandler<RequestEventArgs> Request;
+    public event EventHandler<RequestEventArgs> RequestCreated;
+
+    public Request Request { get; private set; }
 
     public Session Session => _browsingContext.UserContext.Browser.Session;
 
@@ -61,6 +62,8 @@ internal class Navigation : IDisposable
         IsDisposed = true;
     }
 
+    protected virtual void OnFailed(NavigationEventArgs e) => Failed?.Invoke(this, e);
+
     private void Initialize()
     {
         _browsingContext.Closed += (sender, args) =>
@@ -75,9 +78,9 @@ internal class Navigation : IDisposable
                 return;
             }
 
-            _request = args.Request;
-            OnRequest(_request);
-            _request.Redirect += (sender, args) => _request = args.Request;
+            Request = args.Request;
+            OnRequestCreated(Request);
+            Request.Redirect += (sender, args) => Request = args.Request;
         };
 
         Session.BrowsingcontextNavigationStarted += (sender, args) =>
@@ -123,7 +126,7 @@ internal class Navigation : IDisposable
         Dispose();
     }
 
-    private void OnRequest(Request request) => Request?.Invoke(this, new RequestEventArgs(request));
+    private void OnRequestCreated(Request request) => RequestCreated?.Invoke(this, new RequestEventArgs(request));
 
     private bool Matches(string navigation)
     {
@@ -140,6 +143,4 @@ internal class Navigation : IDisposable
 
         return _id == navigation;
     }
-
-    protected virtual void OnFailed(NavigationEventArgs e) => Failed?.Invoke(this, e);
 }

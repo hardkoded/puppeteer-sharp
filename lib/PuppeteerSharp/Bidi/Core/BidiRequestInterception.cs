@@ -21,31 +21,13 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PuppeteerSharp.Bidi;
+namespace PuppeteerSharp.Bidi.Core;
 
-internal class BidiPageTarget(BidiPage page) : Target
+internal class BidiRequestInterception
 {
-    public override string Url => page.Url;
-
-    public override TargetType Type => TargetType.Page;
-
-    public override ITarget Opener => throw new InvalidOperationException();
-
-    internal override Browser Browser { get; }
-
-    internal override BrowserContext BrowserContext => BidiBrowserContext;
-
-    internal BidiBrowserContext BidiBrowserContext { get; }
-
-    public override Task<IPage> PageAsync() => Task.FromResult<IPage>(page);
-
-    public override Task<IPage> AsPageAsync()
-#pragma warning disable CA2000
-        => Task.FromResult(BidiPage.From(BidiBrowserContext, page.BidiMainFrame.BrowsingContext) as IPage);
-#pragma warning restore CA2000
-
-    public override Task<ICDPSession> CreateCDPSessionAsync()
-        => page.CreateCDPSessionAsync();
+    public List<Func<Task>> Handlers { get; } = new();
 }
+

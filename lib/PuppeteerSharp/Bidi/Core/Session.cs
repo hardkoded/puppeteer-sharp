@@ -57,6 +57,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<FetchErrorEventArgs> NetworkFetchError;
 
+    public event EventHandler<ResponseCompletedEventArgs> NetworkResponseComplete;
+
     public BiDiDriver Driver { get; } = driver;
 
     public NewCommandResult Info { get; } = info;
@@ -101,7 +103,10 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
         Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
+        Driver.Network.OnResponseCompleted.AddObserver(OnNetworkResponseCompleted);
     }
+
+    private void OnNetworkResponseCompleted(ResponseCompletedEventArgs obj) => NetworkResponseComplete?.Invoke(this, obj);
 
     private void OnNetworkFetchError(FetchErrorEventArgs obj) => NetworkFetchError?.Invoke(this, obj);
 

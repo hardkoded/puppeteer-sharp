@@ -22,26 +22,26 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class BrowsingContext : IDisposable
 {
-    private readonly BrowsingContext _parent;
-    private readonly string _originalOpener;
     private readonly ConcurrentDictionary<string, BrowsingContext> _children = new();
     private readonly ConcurrentDictionary<string, Request> _requests = new();
     private string _reason;
     private Navigation _navigation;
-    private bool _closed
 
     private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
     {
         UserContext = userContext;
-        _parent = parent;
+        Parent = parent;
         Id = id;
         Url = url;
-        _originalOpener = originalOpener;
+        OriginalOpener = originalOpener;
     }
 
     public event EventHandler<ClosedEventArgs> Closed;
@@ -64,6 +64,27 @@ internal class BrowsingContext : IDisposable
 
     public Session Session => UserContext.Browser.Session;
 
+    public IEnumerable<BrowsingContext> Children => _children.Values;
+
+    internal string OriginalOpener { get; }
+
+    internal BrowsingContext Top
+    {
+        get
+        {
+            var context = this;
+
+            while (context.Parent != null)
+            {
+                context = context.Parent;
+            }
+
+            return context;
+        }
+    }
+
+    private BrowsingContext Parent { get; }
+
     public static BrowsingContext From(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
     {
         var context = new BrowsingContext(userContext, parent, id, url, originalOpener);
@@ -74,10 +95,32 @@ internal class BrowsingContext : IDisposable
     public void Dispose()
     {
         _reason ??= "Browser was disconnected, probably because the session ended.";
-        if (closed) {
-            this.emit('closed', {reason: this.#reason});
+        OnClosed(_reason);
+        foreach (var context in _children.Values)
+        {
+            context.Dispose("Parent browsing context was disposed");
         }
-        GC.SuppressFinalize(this);
+    }
+
+    public async Task CloseAsync(bool? promptUnload)
+    {
+        foreach (var context in _children.Values)
+        {
+            await context.CloseAsync(promptUnload).ConfigureAwait(false);
+        }
+
+        await Session.Driver.BrowsingContext.CloseAsync(new CloseCommandParameters(Id)
+        {
+            PromptUnload = promptUnload,
+        }).ConfigureAwait(false);
+    }
+
+    internal async Task NavigateAsync(string url, ReadinessState wait)
+    {
+        await Session.Driver.BrowsingContext.NavigateAsync(new NavigateCommandParameters(Id, url)
+        {
+            Wait = wait,
+        }).ConfigureAwait(false);
     }
 
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
@@ -85,7 +128,6 @@ internal class BrowsingContext : IDisposable
     private void Initialize()
     {
         UserContext.Closed += (sender, args) => Dispose("User context was closed");
-        UserContext.Disconnected += (sender, args) => Dispose("User context was disconnected");
 
         Session.BrowsingContextContextCreated += (sender, args) =>
         {
@@ -196,9 +238,8 @@ internal class BrowsingContext : IDisposable
 
     private void OnDomContentLoaded() => DomContentLoaded?.Invoke(this, EventArgs.Empty);
 
-    private void Dispose(string reason, bool closed = false)
+    private void Dispose(string reason)
     {
-
         _reason = reason;
         Dispose();
     }

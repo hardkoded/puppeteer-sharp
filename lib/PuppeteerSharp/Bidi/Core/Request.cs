@@ -21,7 +21,6 @@
 //  * SOFTWARE.
 
 using System;
-using PuppeteerSharp.Cdp.Messaging;
 using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -32,6 +31,7 @@ internal class Request : IDisposable
     private readonly BeforeRequestSentEventArgs _eventArgs;
     private string _error;
     private Request _redirect;
+    private WebDriverBiDi.Network.ResponseData _response;
 
     private Request(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
@@ -45,9 +45,11 @@ internal class Request : IDisposable
 
     public event EventHandler Authenticate;
 
+    internal event EventHandler<ResponseEventArgs> Success;
+
     public bool IsDisposed { get; set; }
 
-    public string Navigation { get; }
+    public string Navigation => _eventArgs.NavigationId;
 
     public string Id => _eventArgs.Request.RequestId;
 
@@ -83,7 +85,7 @@ internal class Request : IDisposable
                 return;
             }
 
-            _redirect = Request.From(_browsingContext, args);
+            _redirect = From(_browsingContext, args);
             OnRedirect(_redirect);
             Dispose();
         };
@@ -109,7 +111,31 @@ internal class Request : IDisposable
             OnError(_error);
             Dispose();
         };
+
+        Session.NetworkResponseComplete += (sender, args) =>
+        {
+            if (args.BrowsingContextId != _browsingContext.Id ||
+                args.Request.RequestId != Id ||
+                _eventArgs.RedirectCount != args.RedirectCount)
+            {
+                return;
+            }
+
+            _response = args.Response;
+            _eventArgs.Request.Timings = args.Request.Timings;
+            OnSuccess(new ResponseEventArgs(_response));
+
+            // In case this is a redirect.
+            if (_response.Status is >= 300 and < 400)
+            {
+                return;
+            }
+
+            Dispose();
+        };
     }
+
+    private void OnSuccess(ResponseEventArgs responseEventArgs) => Success?.Invoke(this, responseEventArgs);
 
     private void OnAuthenticate() => Authenticate?.Invoke(this, EventArgs.Empty);
 

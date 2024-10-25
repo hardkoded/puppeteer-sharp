@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -42,11 +43,13 @@ internal class UserContext : IDisposable
 
     public event EventHandler<BidiBrowsingContextEventArgs> BrowsingContextCreated;
 
-    public static IEnumerable<BrowsingContext> BrowsingContexts { get; set; }
+    public IEnumerable<BrowsingContext> BrowsingContexts => _browsingContexts.Values;
 
     public Browser Browser { get; }
 
     public Session Session => Browser.Session;
+
+    public bool IsDisposed { get; set; }
 
     public string Id { get; }
 
@@ -59,11 +62,33 @@ internal class UserContext : IDisposable
 
     public void Dispose()
     {
+        if (IsDisposed)
+        {
+            return;
+        }
+
+        IsDisposed = true;
         _reason ??= "User context already closed, probably because the browser disconnected/closed.";
         OnClosed();
         Browser.Dispose();
         Session.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public async Task<BrowsingContext> CreateBrowserContextAsync(CreateType contextType)
+    {
+        var createParams = new CreateCommandParameters(contextType) { UserContextId = Id };
+        var result = await Session.Driver.BrowsingContext.CreateAsync(createParams).ConfigureAwait(false);
+
+        _browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext);
+
+        if (browsingContext is null)
+        {
+            throw new PuppeteerException(
+                "The WebDriver BiDi implementation is failing to create a browsing context correctly.");
+        }
+
+        return browsingContext;
     }
 
     private void Initialize()
@@ -76,7 +101,7 @@ internal class UserContext : IDisposable
 
     private void OnBrowsingContextContextCreated(object sender, BrowsingContextEventArgs info)
     {
-        if (info.Parent == null)
+        if (info.Parent != null)
         {
             return;
         }

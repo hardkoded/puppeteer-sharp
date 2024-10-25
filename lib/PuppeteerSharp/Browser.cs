@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 
@@ -179,7 +180,8 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             // On disposal, the browser doesn't get closed. It gets disconnected.
-            if (Launcher == null)
+            // TODO: See a better way to handle this instead of checking for BidiBrowser.
+            if (Launcher == null && this is not BidiBrowser)
             {
                 Disconnect();
             }

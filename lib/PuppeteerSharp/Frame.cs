@@ -32,7 +32,7 @@ namespace PuppeteerSharp
         public string Name { get; private set; }
 
         /// <inheritdoc/>
-        public string Url { get; private set; } = string.Empty;
+        public virtual string Url { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
         public bool Detached { get; private set; }

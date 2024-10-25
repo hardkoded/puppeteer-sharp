@@ -37,10 +37,16 @@ public class BidiBrowserContext : BrowserContext
 
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
     {
+        UserContext = userContext;
         Browser = browser;
+        DefaultViewport = options.DefaultViewport;
     }
 
+    internal ViewPortOptions DefaultViewport { get; set; }
+
     internal TaskQueue ScreenshotTaskQueue => Browser.ScreenshotTaskQueue;
+
+    internal UserContext UserContext { get; }
 
     /// <inheritdoc />
     public override Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions) => throw new System.NotImplementedException();
@@ -52,19 +58,41 @@ public class BidiBrowserContext : BrowserContext
     public override Task<IPage[]> PagesAsync() => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IPage> NewPageAsync() => throw new System.NotImplementedException();
+    public override async Task<IPage> NewPageAsync()
+    {
+        var context = await UserContext.CreateBrowserContextAsync(WebDriverBiDi.BrowsingContext.CreateType.Tab).ConfigureAwait(false);
+
+        if (!_pages.TryGetValue(context, out var page))
+        {
+            throw new PuppeteerException("Page is not found");
+        }
+
+        if (DefaultViewport != null)
+        {
+            try
+            {
+                await page.SetViewportAsync(DefaultViewport).ConfigureAwait(false);
+            }
+            catch
+            {
+                // No support for setViewport in Firefox.
+            }
+        }
+
+        return page;
+    }
 
     /// <inheritdoc />
     public override Task CloseAsync() => throw new System.NotImplementedException();
 
     /// <inheritdoc />
     public override ITarget[] Targets()
-        => (ITarget[])_targets.SelectMany(target =>
+        => _targets.SelectMany(target =>
             (ITarget[])[
-                (ITarget)target.Value.BidiPageTarget,
+                target.Value.BidiPageTarget,
                 .. target.Value.FrameTargets.Values.ToArray(),
                 .. target.Value.WorkerTargets.Values.ToArray(),
-            ]);
+            ]).ToArray();
 
     internal static BidiBrowserContext From(
         BidiBrowser browser,
@@ -83,9 +111,38 @@ public class BidiBrowserContext : BrowserContext
         {
             CreatePage(browsingContext);
         }
+
+        UserContext.BrowsingContextCreated += (sender, args) =>
+        {
+            var browsingContext = args.BrowsingContext;
+            var page = CreatePage(browsingContext);
+
+            // We need to wait for the DOMContentLoaded as the
+            // browsingContext still may be navigating from the about:blank
+            browsingContext.DomContentLoaded += (o, eventArgs) =>
+            {
+                if (browsingContext.OriginalOpener == null)
+                {
+                    return;
+                }
+
+                foreach (var context in UserContext.BrowsingContexts)
+                {
+                    if (context.Id != browsingContext.OriginalOpener)
+                    {
+                        continue;
+                    }
+
+                    if (_pages.TryGetValue(context, out var originalOpenerPage))
+                    {
+                        originalOpenerPage.OnPopup(page);
+                    }
+                }
+            };
+        };
     }
 
-    private void CreatePage(BrowsingContext browsingContext)
+    private BidiPage CreatePage(BrowsingContext browsingContext)
     {
         var page = BidiPage.From(this, browsingContext);
         _pages.AddOrUpdate(browsingContext, page, (_, _) => page);
@@ -144,6 +201,7 @@ public class BidiBrowserContext : BrowserContext
         };
 
         OnTargetCreated(new TargetChangedArgs(pageTarget));
+        return page;
     }
 
     private class BidiPageTargetInfo

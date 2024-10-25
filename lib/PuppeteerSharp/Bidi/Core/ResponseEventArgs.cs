@@ -20,32 +20,9 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
+namespace PuppeteerSharp.Bidi.Core;
 
-namespace PuppeteerSharp.Bidi;
-
-internal class BidiPageTarget(BidiPage page) : Target
+internal class ResponseEventArgs(WebDriverBiDi.Network.ResponseData response)
 {
-    public override string Url => page.Url;
-
-    public override TargetType Type => TargetType.Page;
-
-    public override ITarget Opener => throw new InvalidOperationException();
-
-    internal override Browser Browser { get; }
-
-    internal override BrowserContext BrowserContext => BidiBrowserContext;
-
-    internal BidiBrowserContext BidiBrowserContext { get; }
-
-    public override Task<IPage> PageAsync() => Task.FromResult<IPage>(page);
-
-    public override Task<IPage> AsPageAsync()
-#pragma warning disable CA2000
-        => Task.FromResult(BidiPage.From(BidiBrowserContext, page.BidiMainFrame.BrowsingContext) as IPage);
-#pragma warning restore CA2000
-
-    public override Task<ICDPSession> CreateCDPSessionAsync()
-        => page.CreateCDPSessionAsync();
+    public WebDriverBiDi.Network.ResponseData Response { get; } = response;
 }

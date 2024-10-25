@@ -78,6 +78,9 @@ public class BidiBrowser : Browser
 
     internal override ProtocolType Protocol => ProtocolType.WebdriverBiDi;
 
+    // TODO: Implement
+    internal bool CdpSupported => false;
+
     /// <inheritdoc />
     public override Task<string> GetVersionAsync() => throw new NotImplementedException();
 
@@ -116,8 +119,11 @@ public class BidiBrowser : Browser
         ];
 
     /// <inheritdoc />
-    public override Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null) =>
-        throw new NotImplementedException();
+    public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
+    {
+        var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
+        return CreateBrowserContext(userContext);
+    }
 
     /// <inheritdoc />
     public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
@@ -173,6 +179,9 @@ public class BidiBrowser : Browser
             new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport, });
 
         _browserContexts.Add(browserContext);
+
+        browserContext.TargetCreated += (sender, args) => OnTargetCreated(args);
+        browserContext.TargetDestroyed += (sender, args) => OnTargetDestroyed(args);
 
         return browserContext;
     }

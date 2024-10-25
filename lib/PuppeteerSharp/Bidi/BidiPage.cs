@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
@@ -34,6 +35,8 @@ public class BidiPage : Page
 {
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
+        BrowserContext = browserContext;
+        BidiMainFrame = BidiFrame.From(this, null, browsingContext);
     }
 
     /// <inheritdoc />
@@ -54,17 +57,16 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override bool IsJavaScriptEnabled { get; }
 
-    /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-    Before:
-    /// <inheritdoc/>
-    After:
-    /// <inheritdoc/>
-    */
-
     /// <inheritdoc/>
     public override IFrame MainFrame => BidiMainFrame;
 
+    internal BidiBrowser BidiBrowser => (BidiBrowser)BrowserContext.Browser;
+
     internal BidiFrame BidiMainFrame { get; set; }
+
+    internal ConcurrentDictionary<string, string> ExtraHttpHeaders { get; set; } = new();
+
+    internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
     /// <inheritdoc />
     protected override Browser Browser { get; }
@@ -145,7 +147,17 @@ public class BidiPage : Page
     public override Task SetCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task CloseAsync(PageCloseOptions options = null) => throw new NotImplementedException();
+    public override async Task CloseAsync(PageCloseOptions options = null)
+    {
+        try
+        {
+            await BidiMainFrame.BrowsingContext.CloseAsync(options?.RunBeforeUnload).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            return;
+        }
+    }
 
     /// <inheritdoc />
     public override Task DeleteCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();

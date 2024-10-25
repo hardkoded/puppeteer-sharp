@@ -20,32 +20,43 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiPageTarget(BidiPage page) : Target
+/// <inheritdoc />
+public class BidiHttpResponse : Response<BidiHttpRequest>
 {
-    public override string Url => page.Url;
+    private readonly WebDriverBiDi.Network.ResponseData _data;
+    private readonly BidiHttpRequest _request;
 
-    public override TargetType Type => TargetType.Page;
+    private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
+    {
+        _data = data;
+        _request = request;
+    }
 
-    public override ITarget Opener => throw new InvalidOperationException();
+    /// <inheritdoc />
+    public override bool FromCache { get; }
 
-    internal override Browser Browser { get; }
+    /// <inheritdoc />
+    public override ValueTask<byte[]> BufferAsync() => throw new System.NotImplementedException();
 
-    internal override BrowserContext BrowserContext => BidiBrowserContext;
+    internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
+    {
+        var response = new BidiHttpResponse(data, request, cdpSupported);
+        response.Initialize();
+        return response;
+    }
 
-    internal BidiBrowserContext BidiBrowserContext { get; }
+    private void Initialize()
+    {
+        if (_data.FromCache)
+        {
+            _request.FromMemoryCache = true;
+            ((Page)_request.Frame.Page).OnRequestServedFromCache(new RequestEventArgs(_request));
+        }
 
-    public override Task<IPage> PageAsync() => Task.FromResult<IPage>(page);
-
-    public override Task<IPage> AsPageAsync()
-#pragma warning disable CA2000
-        => Task.FromResult(BidiPage.From(BidiBrowserContext, page.BidiMainFrame.BrowsingContext) as IPage);
-#pragma warning restore CA2000
-
-    public override Task<ICDPSession> CreateCDPSessionAsync()
-        => page.CreateCDPSessionAsync();
+        _request.BidiPage.OnResponse(new ResponseCreatedEventArgs(this));
+    }
 }

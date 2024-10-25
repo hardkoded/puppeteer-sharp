@@ -33,14 +33,15 @@ using CloseCommandParameters = WebDriverBiDi.Browser.CloseCommandParameters;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Browser(Session session) : IDisposable
+internal sealed class Browser(Session session) : IDisposable
 {
     private readonly ConcurrentDictionary<string, UserContext> _userContexts = new();
     private bool _disposed;
+    private string _reason;
 
-    public event EventHandler Closed;
+    public event EventHandler<ClosedEventArgs> Closed;
 
-    public event EventHandler Disconnected;
+    public event EventHandler<ClosedEventArgs> Disconnected;
 
     public Session Session { get; } = session;
 
@@ -73,13 +74,36 @@ internal class Browser(Session session) : IDisposable
     {
         if (!_disposed)
         {
-            Session?.Dispose();
+            return;
         }
 
         _disposed = true;
+        _reason ??= "Browser was disconnected, probably because the session ended.";
+
+        if (IsClosed)
+        {
+            Closed?.Invoke(this, new ClosedEventArgs(_reason));
+        }
+
+        Disconnected?.Invoke(this, new ClosedEventArgs(_reason));
+
+        Session?.Dispose();
     }
 
-    protected virtual void Dispose(bool disposing)
+    public async Task<UserContext> CreateUserContextAsync()
+    {
+        var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        return CreateUserContext(result.UserContextId);
+    }
+
+    private void Dispose(string reason)
+    {
+        _reason = reason;
+        IsClosed = true;
+        Dispose();
+    }
+
+    private void Dispose(bool disposing)
     {
         Dispose();
     }
@@ -127,44 +151,6 @@ internal class Browser(Session session) : IDisposable
     {
         var result = await Session.Driver.Browser.GetUserContextsAsync(new GetUserContextsCommandParameters()).ConfigureAwait(false);
 
-
-/* Unmerged change from project 'PuppeteerSharp(net8.0)'
-Before:
-/* Unmerged change from project 'PuppeteerSharp(net8.0)'
-After:
-/* Unmerged change from project 'PuppeteerSharp(net8.0)'
-*/
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        Before:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        After:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        */
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        Before:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        After:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        */
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        Before:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        After:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        */
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        Before:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        After:
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        */
-        /* Unmerged change from project 'PuppeteerSharp(net8.0)'
-        Before:
-                foreach (var context in result.UserContexts) {
-        After:
-                foreach (var context in result.UserContexts)
-                {
-        */
         foreach (var context in result.UserContexts)
         {
             CreateUserContext(context.UserContextId);
