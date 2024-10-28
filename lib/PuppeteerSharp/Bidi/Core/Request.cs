@@ -37,6 +37,7 @@ internal class Request : IDisposable
     {
         _browsingContext = browsingContext;
         _eventArgs = args;
+        Timings = args.Request.Timings;
     }
 
     public event EventHandler<RequestEventArgs> Redirect;
@@ -54,6 +55,8 @@ internal class Request : IDisposable
     public string Id => _eventArgs.Request.RequestId;
 
     public Session Session => _browsingContext.UserContext.Browser.Session;
+
+    public FetchTimingInfo Timings { get; private set; }
 
     public static Request From(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
@@ -122,7 +125,7 @@ internal class Request : IDisposable
             }
 
             _response = args.Response;
-            _eventArgs.Request.Timings = args.Request.Timings;
+            Timings = args.Request.Timings;
             OnSuccess(new ResponseEventArgs(_response));
 
             // In case this is a redirect.
