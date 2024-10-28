@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
-        [Test]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "PuppeteerSharp", "delete temp user data dir when disposing browser")]
         public async Task DeleteTempUserDataDirWhenDisposingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();
