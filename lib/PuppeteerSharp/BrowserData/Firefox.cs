@@ -17,11 +17,11 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "128.0b5";
+        public const string DefaultBuildId = "stable_131.0.3";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
-        internal static Task<string> GetDefaultBuildIdAsync() => ResolveBuildIdAsync(FirefoxChannel.Nightly);
+        internal static Task<string> GetDefaultBuildIdAsync() => Task.FromResult(DefaultBuildId);
 
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
         {

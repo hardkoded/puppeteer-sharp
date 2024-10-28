@@ -44,7 +44,7 @@ public class BidiBrowser : Browser
 
     private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
     {
-        _target = new(this);
+        _target = new BidiBrowserTarget(this);
         _options = options;
         BrowserCore = browserCore;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
