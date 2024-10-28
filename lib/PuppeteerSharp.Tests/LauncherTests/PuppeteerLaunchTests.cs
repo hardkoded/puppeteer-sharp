@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        [Test, Retry(2)]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "PuppeteerSharp", "should work in real life")]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
