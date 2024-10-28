@@ -81,8 +81,12 @@ public class BidiBrowser : Browser
     // TODO: Implement
     internal bool CdpSupported => false;
 
+    internal string BrowserVersion => BrowserCore.Session.Info.Capabilities.BrowserVersion;
+
+    internal string BrowserName => BrowserCore.Session.Info.Capabilities.BrowserName;
+
     /// <inheritdoc />
-    public override Task<string> GetVersionAsync() => throw new NotImplementedException();
+    public override Task<string> GetVersionAsync() => Task.FromResult($"{BrowserName}/{BrowserVersion}");
 
     /// <inheritdoc />
     public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
