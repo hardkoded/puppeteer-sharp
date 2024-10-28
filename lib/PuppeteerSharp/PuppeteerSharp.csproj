@@ -26,7 +26,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
     <AnalysisLevel>8.0-Recommended</AnalysisLevel>
-    <NoWarn>CS8002</NoWarn>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
