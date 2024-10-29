@@ -115,6 +115,21 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *should work with anchor navigation*",
     "platforms": [
       "darwin",
@@ -160,7 +175,217 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] navigation Page.reload*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *should fail when navigating and show the url at the error message*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should work with self requesting page*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should work when reload causes history API in beforeunload*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should work when navigating to valid url*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should work when navigating to 404*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should wait for network idle to succeed navigation*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should return last response in redirect chain*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should not throw an error for a 404 response with an empty body*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should navigate to page with iframe and networkidle0*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should navigate to empty page with networkidle2*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should navigate to empty page with networkidle0*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should navigate to empty page with domcontentloaded*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should not throw an error for a 500 response with an empty body*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[navigation.spec] *should return response when page changes its URL after load*",
     "platforms": [
       "darwin",
       "linux",
@@ -971,6 +1196,21 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[launcher.spec] PuppeteerSharp *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[puppeteer-sharp.spec.ts] PuppeteerSharp *",
     "platforms": [
       "darwin",
       "linux",

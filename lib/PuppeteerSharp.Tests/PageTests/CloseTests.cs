@@ -128,7 +128,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
-        [Test, Retry(2)]
+        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.close PuppeteerSharp", "should close when connection breaks prematurely")]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Disconnect();
