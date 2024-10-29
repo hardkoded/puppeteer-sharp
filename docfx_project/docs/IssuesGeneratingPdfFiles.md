@@ -27,6 +27,8 @@ if (!installedBrowser.PermissionsFixed)
 
 If PuppeteerSharp did not manage to apply the sandbox permissions, you can manually fix this by running the `setup.exe` file that was downloaded with the browser:
 
+**IMPORTANT**: You need to run this as administrator.
+
 ```bash
 cd <path-to-browser>
 .\setup.exe --configure-browser-in-directory="<path-to-browser>"
