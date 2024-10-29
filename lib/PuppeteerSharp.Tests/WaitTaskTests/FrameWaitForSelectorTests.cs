@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         public void Dispose()
         {
-            _pollerInterceptor.Dispose();
+            _pollerInterceptor?.Dispose();
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should immediately resolve promise if node exists")]
