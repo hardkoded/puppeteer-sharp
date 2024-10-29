@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Cdp
 {
     internal class NetworkManager
     {
-        private readonly bool _acceptInsecureCerts;
         private readonly NetworkEventManager _networkEventManager = new();
         private readonly ILogger _logger;
         private readonly ConcurrentSet<string> _attemptedAuthentications = [];
@@ -33,13 +32,11 @@ namespace PuppeteerSharp.Cdp
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkManager"/> class.
         /// </summary>
-        /// <param name="acceptInsecureCerts">If set to <c>true</c> ignore http errors.</param>
         /// <param name="frameManager">Frame manager.</param>
         /// <param name="loggerFactory">Logger factory.</param>
-        internal NetworkManager(bool acceptInsecureCerts, IFrameProvider frameManager, ILoggerFactory loggerFactory)
+        internal NetworkManager(IFrameProvider frameManager, ILoggerFactory loggerFactory)
         {
             _frameManager = frameManager;
-            _acceptInsecureCerts = acceptInsecureCerts;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<NetworkManager>();
         }
@@ -71,7 +68,6 @@ namespace PuppeteerSharp.Cdp
             subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
 
             return Task.WhenAll(
-                _acceptInsecureCerts ? client.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true }) : Task.CompletedTask,
                 client.SendAsync("Network.enable"),
                 ApplyExtraHTTPHeadersAsync(client),
                 ApplyNetworkConditionsAsync(client),

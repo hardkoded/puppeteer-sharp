@@ -100,10 +100,10 @@ public class CdpTarget : Target
         if (Session == null)
         {
             var session = (CdpCDPSession)await CreateCDPSessionAsync().ConfigureAwait(false);
-            return await CdpPage.CreateAsync(session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+            return await CdpPage.CreateAsync(session, this, null, ScreenshotTaskQueue).ConfigureAwait(false);
         }
 
-        return await CdpPage.CreateAsync((CdpCDPSession)Session, this, false, null, ScreenshotTaskQueue).ConfigureAwait(false);
+        return await CdpPage.CreateAsync((CdpCDPSession)Session, this, null, ScreenshotTaskQueue).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

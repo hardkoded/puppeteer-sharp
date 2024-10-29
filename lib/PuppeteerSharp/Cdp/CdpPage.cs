@@ -56,8 +56,7 @@ public class CdpPage : Page
     private CdpPage(
         CdpCDPSession client,
         CdpTarget target,
-        TaskQueue screenshotTaskQueue,
-        bool acceptInsecureCerts) : base(screenshotTaskQueue)
+        TaskQueue screenshotTaskQueue) : base(screenshotTaskQueue)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -72,7 +71,7 @@ public class CdpPage : Page
 
         _emulationManager = new EmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, acceptInsecureCerts, TimeoutSettings);
+        FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
 
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
@@ -707,11 +706,10 @@ public class CdpPage : Page
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,
-        bool acceptInsecureCerts,
         ViewPortOptions defaultViewPort,
         TaskQueue screenshotTaskQueue)
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue, acceptInsecureCerts);
+        var page = new CdpPage(client, target, screenshotTaskQueue);
 
         try
         {
@@ -729,6 +727,48 @@ public class CdpPage : Page
             await page.DisposeAsync().ConfigureAwait(false);
             throw;
         }
+    }
+
+    internal static decimal ConvertPrintParameterToInches(object parameter)
+    {
+        if (parameter == null)
+        {
+            return 0;
+        }
+
+        decimal pixels;
+        if (parameter is decimal or int)
+        {
+            pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
+        }
+        else
+        {
+            var text = parameter.ToString();
+            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
+            string valueText;
+            if (GetPixels(unit) is { })
+            {
+                valueText = text.Substring(0, text.Length - 2);
+            }
+            else
+            {
+                // In case of unknown unit try to parse the whole parameter as number of pixels.
+                // This is consistent with phantom's paperSize behavior.
+                unit = "px";
+                valueText = text;
+            }
+
+            if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
+            {
+                pixels = number * GetPixels(unit).Value;
+            }
+            else
+            {
+                throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
+            }
+        }
+
+        return pixels / 96;
     }
 
     /// <inheritdoc />
@@ -1212,48 +1252,6 @@ public class CdpPage : Page
                 tcs.TrySetResult(fileChooser);
             }
         }
-    }
-
-    private decimal ConvertPrintParameterToInches(object parameter)
-    {
-        if (parameter == null)
-        {
-            return 0;
-        }
-
-        decimal pixels;
-        if (parameter is decimal or int)
-        {
-            pixels = Convert.ToDecimal(parameter, CultureInfo.CurrentCulture);
-        }
-        else
-        {
-            var text = parameter.ToString();
-            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLower(CultureInfo.CurrentCulture) : string.Empty;
-            string valueText;
-            if (GetPixels(unit) is { })
-            {
-                valueText = text.Substring(0, text.Length - 2);
-            }
-            else
-            {
-                // In case of unknown unit try to parse the whole parameter as number of pixels.
-                // This is consistent with phantom's paperSize behavior.
-                unit = "px";
-                valueText = text;
-            }
-
-            if (decimal.TryParse(valueText, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out var number))
-            {
-                pixels = number * GetPixels(unit).Value;
-            }
-            else
-            {
-                throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
-            }
-        }
-
-        return pixels / 96;
     }
 
     private Clip GetIntersectionRect(Clip clip, BoundingBox viewport)

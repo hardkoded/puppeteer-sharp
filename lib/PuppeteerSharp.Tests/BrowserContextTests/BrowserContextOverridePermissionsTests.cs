@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         public async Task ShouldIsolatePermissionsBetweenBrowserContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var otherContext = await Browser.CreateBrowserContextAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
             var otherPage = await otherContext.NewPageAsync();
             await otherPage.GoToAsync(TestConstants.EmptyPage);
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
@@ -101,8 +101,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await Context.ClearPermissionOverridesAsync();
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
             Assert.That(await GetPermissionAsync(otherPage, "geolocation"), Is.EqualTo("granted"));
-
-            await otherContext.CloseAsync();
         }
 
         [Test, Ignore("Fails on Firefox")]

@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should isolate cookies in browser contexts")]
         public async Task ShouldIsolateCookiesInBrowserContexts()
         {
-            var anotherContext = await Browser.CreateBrowserContextAsync();
+            await using var anotherContext = await Browser.CreateBrowserContextAsync();
             var anotherPage = await anotherContext.NewPageAsync();
 
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -49,8 +49,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookies1[0].Value, Is.EqualTo("page1value"));
             Assert.That(cookies2[0].Name, Is.EqualTo("page2cookie"));
             Assert.That(cookies2[0].Value, Is.EqualTo("page2value"));
-
-            await anotherContext.CloseAsync();
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should set multiple cookies")]
