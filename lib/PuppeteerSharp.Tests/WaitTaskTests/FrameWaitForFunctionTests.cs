@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         public void Dispose()
         {
-            _pollerInterceptor.Dispose();
+            _pollerInterceptor?.Dispose();
         }
 
         [Test, Retry(2), PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should work when resolved right before execution context disposal")]
