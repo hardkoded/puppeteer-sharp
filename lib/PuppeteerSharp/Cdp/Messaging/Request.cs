@@ -29,7 +29,7 @@ internal class Request
 {
     public HttpMethod Method { get; set; }
 
-    public object PostData { get; set; }
+    public string PostData { get; set; }
 
     public Dictionary<string, string> Headers { get; set; } = [];
 
