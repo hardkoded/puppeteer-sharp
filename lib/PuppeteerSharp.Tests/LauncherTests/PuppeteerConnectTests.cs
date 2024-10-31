@@ -15,7 +15,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             };
             var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             await using (var page = await browser.NewPageAsync())
@@ -54,7 +55,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                AcceptInsecureCerts = true
+                AcceptInsecureCerts = true,
+                Protocol = ((Browser)Browser).Protocol,
             });
             await using var page = await browser.NewPageAsync();
             var requestTask = HttpsServer.WaitForRequest(
@@ -87,6 +89,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 BrowserWSEndpoint = browser.WebSocketEndpoint,
                 TargetFilter = target => !target.Url.Contains("should-be-ignored"),
+                Protocol = ((Browser)browser).Protocol,
             }, TestConstants.LoggerFactory);
 
             var pages = await remoteBrowser.PagesAsync();
@@ -129,7 +132,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             };
 
             var url = TestConstants.ServerUrl + "/frames/nested-frames.html";
@@ -154,7 +158,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
             var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserOne.WebSocketEndpoint
+                BrowserWSEndpoint = browserOne.WebSocketEndpoint,
+                Protocol = ((Browser)browserOne).Protocol,
             });
             var tcs = new TaskCompletionSource<IPage>();
             async void TargetCreated(object sender, TargetChangedArgs e)
@@ -185,7 +190,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserWSEndpoint
+                BrowserWSEndpoint = browserWSEndpoint,
+                Protocol = ((Browser)browserOne).Protocol,
             });
 
             var pages = await browserTwo.PagesAsync();

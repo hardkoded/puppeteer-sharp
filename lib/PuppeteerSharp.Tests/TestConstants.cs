@@ -22,7 +22,6 @@ namespace PuppeteerSharp.Tests
         public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
         public static readonly string CrossProcessUrl = ServerIpUrl;
         public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
-
         public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
 
@@ -46,6 +45,7 @@ namespace PuppeteerSharp.Tests
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,
+            Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
 #if NETCOREAPP
             EnqueueTransportMessages = false
 #else

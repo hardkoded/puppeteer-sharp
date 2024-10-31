@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        [Test, Retry(2)]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "PuppeteerSharp", "should work in real life")]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -187,6 +187,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
         [TestCase(false)]
         [TestCase(true)]
+        [PuppeteerTest("launcher.spec", "PuppeteerSharp", "chrome should be closed")]
         public async Task ChromeShouldBeClosed(bool useDisposeAsync)
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -339,7 +340,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }), Is.Not.Empty);
         }
 
-        [Test, Retry(2)]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "PuppeteerSharp", "should support custom websocket")]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -356,7 +357,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, Retry(2)]
+        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should support custom transport")]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;

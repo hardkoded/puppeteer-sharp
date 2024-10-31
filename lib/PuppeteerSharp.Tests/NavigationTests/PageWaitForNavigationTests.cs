@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(response.Url, Does.Contain("grid.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
+        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with both domcontentloaded and load")]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();

@@ -268,7 +268,7 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 var response = e.Message;
-                ConnectionResponse obj = null;
+                ConnectionResponse obj;
 
                 if (response.Length > 0 && Delay > 0)
                 {
@@ -340,8 +340,8 @@ namespace PuppeteerSharp.Cdp
             }
             else if (obj.Id.HasValue)
             {
-                // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it
+                // If we get the object we are waiting for we return it.
+                // If not we add this to the list, sooner or later someone will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     MessageQueue.Enqueue(callback, obj);

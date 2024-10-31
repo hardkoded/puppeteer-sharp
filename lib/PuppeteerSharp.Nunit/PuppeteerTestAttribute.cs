@@ -21,9 +21,10 @@ namespace PuppeteerSharp.Nunit
     {
         private static TestExpectation[] _localExpectations;
         private static TestExpectation[] _upstreamExpectations;
+
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
-        // TODO: Change implementation when we implement Webdriver Bidi
-        public static readonly bool IsCdp = true;
+        public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
+
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
             (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :

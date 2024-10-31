@@ -694,7 +694,7 @@ public class CdpPage : Page
         else
         {
             await PrimaryTargetClient.Connection
-                .SendAsync("Target.closeTarget", new TargetCloseTargetRequest { TargetId = Target.TargetId, })
+                .SendAsync("Target.closeTarget", new TargetCloseTargetRequest { TargetId = PrimaryTarget.TargetId, })
                 .ConfigureAwait(false);
 
             // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
@@ -971,7 +971,7 @@ public class CdpPage : Page
     {
         var session = e.Session as CDPSession;
         Debug.Assert(session != null, nameof(session) + " != null");
-        FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
+        FrameManager.OnAttachedToTarget(session.Target);
 
         if (session.Target.Type == TargetType.Worker)
         {
@@ -1081,7 +1081,7 @@ public class CdpPage : Page
 
     private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
     {
-        var sessionId = e.Target.Session?.Id;
+        var sessionId = ((CdpTarget)e.Target).Session?.Id;
         if (sessionId != null && _workers.TryRemove(sessionId, out var worker))
         {
             OnWorkerDestroyed(worker);

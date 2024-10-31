@@ -1,3 +1,5 @@
+using PuppeteerSharp.Cdp;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -10,13 +12,22 @@ namespace PuppeteerSharp
     {
         private TargetInfo _targetInfo;
 
+        internal TargetChangedArgs()
+        {
+        }
+
+        internal TargetChangedArgs(Target target)
+        {
+            Target = target;
+        }
+
         /// <summary>
         /// Gets the target info.
         /// </summary>
         /// <value>The target info.</value>
         public TargetInfo TargetInfo
         {
-            get => _targetInfo ?? Target.TargetInfo;
+            get => _targetInfo ?? (Target as CdpTarget)?.TargetInfo;
             internal set => _targetInfo = value;
         }
 
