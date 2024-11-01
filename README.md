@@ -163,7 +163,7 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ## Sponsors
 
-A massive thanks to [AWS](https://github.com/aws), who sponsored Puppeteer-sharp from Nov 2023 via the [.NET on AWS Open Source Software Fund](https://github.com/aws/dotnet-foss) and [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
+A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
 
 <div style="display:inline">
 <img src="https://raw.githubusercontent.com/aaubry/YamlDotNet/master/Sponsors/aws-logo-small.png" width="200" height="200"/>
