@@ -58,6 +58,8 @@ internal class Request : IDisposable
 
     public FetchTimingInfo Timings { get; private set; }
 
+    public Request LastRedirect { get; set; }
+
     public static Request From(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
         var request = new Request(browsingContext, args);
