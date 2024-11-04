@@ -114,7 +114,7 @@ public class BidiFrame : Frame
             var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             // TODO: Async void is not safe. Refactor code.
-            BrowsingContext.Navigation += (sender, args) => navigationTcs.SetResult(args.Navigation);
+            BrowsingContext.Navigation += (sender, args) => navigationTcs.TrySetResult(args.Navigation);
 
             await navigationTcs.Task.ConfigureAwait(false);
 
@@ -182,14 +182,14 @@ public class BidiFrame : Frame
         if (waitUntil.Contains(WaitUntilNavigation.Load))
         {
             var loadTcs = new TaskCompletionSource<bool>();
-            BrowsingContext.Load += (sender, args) => loadTcs.SetResult(true);
+            BrowsingContext.Load += (sender, args) => loadTcs.TrySetResult(true);
             tasks.Add(loadTcs.Task);
         }
 
         if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
         {
             var domContentLoadedTcs = new TaskCompletionSource<bool>();
-            BrowsingContext.DomContentLoaded += (sender, args) => domContentLoadedTcs.SetResult(true);
+            BrowsingContext.DomContentLoaded += (sender, args) => domContentLoadedTcs.TrySetResult(true);
             tasks.Add(domContentLoadedTcs.Task);
         }
 
