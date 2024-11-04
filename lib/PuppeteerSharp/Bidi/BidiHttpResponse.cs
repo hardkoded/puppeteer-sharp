@@ -20,6 +20,7 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
@@ -34,6 +35,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     {
         _data = data;
         _request = request;
+        Status = (HttpStatusCode)data.Status;
     }
 
     /// <inheritdoc />
