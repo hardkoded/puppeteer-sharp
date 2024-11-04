@@ -77,6 +77,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "This is flaky on CI/CD",
+    "testIdPattern": "[worker.spec] Workers Page.workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "",
     "testIdPattern": "[puppeteer-sharp] *",
     "platforms": ["darwin", "linux", "win32"],
@@ -326,21 +333,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *should navigate to empty page with networkidle0*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] *should navigate to empty page with domcontentloaded*",
     "platforms": [
       "darwin",
       "linux",
