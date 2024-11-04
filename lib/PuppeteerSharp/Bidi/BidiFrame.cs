@@ -23,8 +23,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -102,40 +104,55 @@ public class BidiFrame : Frame
     }
 
     /// <inheritdoc />
-    public override Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
+    public override async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
     {
-        // TODO: This logic is missing tons of things.
-        var navigationTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
-        // TODO: Async void is not safe. Refactor code.
-        BrowsingContext.Navigation += (sender, args) =>
+        async Task<Navigation> WaitForEventNavigationAsync()
         {
-            args.Navigation.RequestCreated += async (o, eventArgs) =>
+            // TODO: This logic is missing tons of things.
+            var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            // TODO: Async void is not safe. Refactor code.
+            BrowsingContext.Navigation += (sender, args) => navigationTcs.SetResult(args.Navigation);
+
+            await navigationTcs.Task.ConfigureAwait(false);
+
+            var waitForLoadTask = WaitForLoadAsync(options);
+
+            // TODO: Add frame detached event.
+            // TODO: Add fragment, failed and aborted events.
+            await Task.WhenAny(waitForLoadTask).WithTimeout(timeout).ConfigureAwait(false);
+
+            return navigationTcs.Task.Result;
+        }
+
+        var waitForEventNavigationTask = WaitForEventNavigationAsync();
+        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
+
+        var waitForResponse = new Func<Task<IResponse>>(async () =>
+        {
+            await Task.WhenAll(waitForEventNavigationTask, waitForNetworkIdleTask).ConfigureAwait(false);
+            var navigation = waitForEventNavigationTask.Result;
+            var request = navigation.Request;
+
+            if (navigation.Request == null)
             {
-                try
-                {
-                    var httpRequest = await BidiHttpRequest.Requests.GetItemAsync(args.Navigation.Request)
-                        .ConfigureAwait(false);
+                return null;
+            }
 
-                    if (httpRequest.Response != null)
-                    {
-                        navigationTcs.TrySetResult(httpRequest.Response);
-                        return;
-                    }
+            var lastRequest = request.LastRedirect ?? request;
+            BidiHttpRequest.Requests.TryGetValue(lastRequest, out var httpRequest);
 
-                    args.Navigation.Request.Success += (o, eventArgs) =>
-                    {
-                        navigationTcs.TrySetResult(httpRequest.Response);
-                    };
-                }
-                catch (Exception ex)
-                {
-                    navigationTcs.TrySetException(ex);
-                }
-            };
-        };
+            return httpRequest.Response;
+        });
 
-        return navigationTcs.Task;
+        var waitForResponseTask = waitForResponse();
+
+        // TODO: Listen to frame detached event.
+        await Task.WhenAny(waitForResponseTask).WithTimeout(timeout).ConfigureAwait(false);
+
+        return waitForResponseTask.Result;
     }
 
     internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
@@ -153,6 +170,37 @@ public class BidiFrame : Frame
         return ex is TimeoutException
             ? new NavigationException($"Navigation timeout of {timeoutSettingsNavigationTimeout} ms exceeded", url)
             : new PuppeteerException("Navigation failed: " + ex.Message, ex);
+    }
+
+    private Task WaitForLoadAsync(NavigationOptions options)
+    {
+        var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
+        var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+
+        List<Task> tasks = new();
+
+        if (waitUntil.Contains(WaitUntilNavigation.Load))
+        {
+            var loadTcs = new TaskCompletionSource<bool>();
+            BrowsingContext.Load += (sender, args) => loadTcs.SetResult(true);
+            tasks.Add(loadTcs.Task);
+        }
+
+        if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
+        {
+            var domContentLoadedTcs = new TaskCompletionSource<bool>();
+            BrowsingContext.DomContentLoaded += (sender, args) => domContentLoadedTcs.SetResult(true);
+            tasks.Add(domContentLoadedTcs.Task);
+        }
+
+        // TODO: Check frame detached event.
+        return Task.WhenAll(tasks).WithTimeout(timeout);
+    }
+
+    private Task WaitForNetworkIdleAsync(NavigationOptions options)
+    {
+        // TODO: Complete this method.
+        return Task.CompletedTask;
     }
 
     private async Task NavigateAsync(string url)
