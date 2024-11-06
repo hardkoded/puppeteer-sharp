@@ -180,7 +180,7 @@ internal class BrowsingContext : IDisposable
             OnLoad();
         };
 
-        Session.BrowsingcontextNavigationStarted += (sender, args) =>
+        Session.BrowsingContextNavigationStarted += (sender, args) =>
         {
             if (args.BrowsingContextId != Id)
             {
