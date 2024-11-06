@@ -22,12 +22,27 @@ namespace PuppeteerSharp
         /// <param name="validTo">Valid to.</param>
         /// <param name="protocol">Protocol.</param>
         public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol)
+         : this(subjectName, issuer, validFrom, validTo, protocol, [])
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecurityDetails"/> class.
+        /// </summary>
+        /// <param name="subjectName">Subject name.</param>
+        /// <param name="issuer">Issuer.</param>
+        /// <param name="validFrom">Valid from.</param>
+        /// <param name="validTo">Valid to.</param>
+        /// <param name="protocol">Protocol.</param>
+        /// <param name="subjectAlternativeNames">Subject alternative names.</param>
+        public SecurityDetails(string subjectName, string issuer, long validFrom, long validTo, string protocol, string[] subjectAlternativeNames)
         {
             SubjectName = subjectName;
             Issuer = issuer;
             ValidFrom = validFrom;
             ValidTo = validTo;
             Protocol = protocol;
+            SubjectAlternativeNames = subjectAlternativeNames;
         }
 
         /// <summary>
@@ -59,5 +74,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <value>The protocol.</value>
         public string Protocol { get; set; }
+
+        /// <summary>
+        /// Gets the list of subject alternative names (SANs) of the certificate.
+        /// </summary>
+        /// <value>The list of subject alternative names (SANs) of the certificate.</value>
+        public string[] SubjectAlternativeNames { get; set; }
     }
 }
