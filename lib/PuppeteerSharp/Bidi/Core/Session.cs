@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using WebDriverBiDi;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Network;
@@ -33,13 +34,15 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 {
+    private readonly ConcurrentSet<WebDriverBiDi.BrowsingContext.NavigationEventArgs> _fragmentSeen = new();
+
     public event EventHandler<SessionEndArgs> Ended;
 
     public event EventHandler<BrowsingContextEventArgs> BrowsingContextContextCreated;
 
     public event EventHandler<BrowsingContextEventArgs> BrowsingContextContextDestroyed;
 
-    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingcontextNavigationStarted;
+    public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextNavigationStarted;
 
     public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextLoad;
 
@@ -97,13 +100,25 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.BrowsingContext.OnDomContentLoaded.AddObserver(OnBrowsingContextDomContentLoaded);
         Driver.BrowsingContext.OnLoad.AddObserver(OnBrowsingContextLoad);
         Driver.BrowsingContext.OnNavigationStarted.AddObserver(OnBrowsingContextNavigationStarted);
-        Driver.BrowsingContext.OnFragmentNavigated.AddObserver(OnBrowsingContextFragmentNavigated);
+        Driver.BrowsingContext.OnFragmentNavigated.AddObserver(OnFragmentNavigated);
         Driver.BrowsingContext.OnNavigationFailed.AddObserver(OnBrowsingContextNavigationFailed);
         Driver.BrowsingContext.OnNavigationAborted.AddObserver(OnBrowsingContextNavigationAborted);
         Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
         Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
         Driver.Network.OnResponseCompleted.AddObserver(OnNetworkResponseCompleted);
+    }
+
+    private void OnFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs info)
+    {
+        if (_fragmentSeen.Contains(info))
+        {
+            return;
+        }
+
+        _fragmentSeen.Add(info);
+        OnBrowsingContextNavigationStarted(info);
+        OnBrowsingContextFragmentNavigated(info);
     }
 
     private void OnNetworkResponseCompleted(ResponseCompletedEventArgs obj) => NetworkResponseComplete?.Invoke(this, obj);
@@ -120,7 +135,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     private void OnBrowsingContextFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextFragmentNavigated?.Invoke(this, obj);
 
-    private void OnBrowsingContextNavigationStarted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingcontextNavigationStarted?.Invoke(this, obj);
+    private void OnBrowsingContextNavigationStarted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationStarted?.Invoke(this, obj);
 
     private void OnBrowsingContextLoad(WebDriverBiDi.BrowsingContext.NavigationEventArgs arg) => BrowsingContextLoad?.Invoke(this, arg);
 

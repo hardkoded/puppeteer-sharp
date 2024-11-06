@@ -29,7 +29,6 @@ internal class Navigation
 {
     private readonly BrowsingContext _browsingContext;
     private Navigation _navigation;
-    private string _id;
 
     private Navigation(BrowsingContext browsingContext)
     {
@@ -44,11 +43,17 @@ internal class Navigation
 
     public event EventHandler<RequestEventArgs> RequestCreated;
 
+    public string Id { get; private set; }
+
     public Request Request { get; private set; }
 
     public Session Session => _browsingContext.UserContext.Browser.Session;
 
     public bool IsDisposed { get; private set; }
+
+    // We have some race conditions puppeteer doesn't have.
+    // We might receive a fragment before the BidiFrame sets up the listener.
+    public bool FragmentReceived { get; set; }
 
     public static Navigation From(BrowsingContext context)
     {
@@ -83,7 +88,7 @@ internal class Navigation
             Request.Redirect += (sender, args) => Request = args.Request;
         };
 
-        Session.BrowsingcontextNavigationStarted += (sender, args) =>
+        Session.BrowsingContextNavigationStarted += (sender, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id || _navigation != null)
             {
@@ -112,7 +117,11 @@ internal class Navigation
         Dispose();
     }
 
-    private void OnFragment(NavigationEventArgs args) => Fragment?.Invoke(this, args);
+    private void OnFragment(NavigationEventArgs args)
+    {
+        FragmentReceived = true;
+        Fragment?.Invoke(this, args);
+    }
 
     private void OnAborted(NavigationEventArgs args) => Aborted?.Invoke(this, args);
 
@@ -135,12 +144,12 @@ internal class Navigation
             return false;
         }
 
-        if (_id == null)
+        if (Id == null)
         {
-            _id = navigation;
+            Id = navigation;
             return true;
         }
 
-        return _id == navigation;
+        return Id == navigation;
     }
 }

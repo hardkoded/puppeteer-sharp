@@ -120,9 +120,22 @@ public class BidiFrame : Frame
 
             var waitForLoadTask = WaitForLoadAsync(options);
 
+            Task<bool> waitForFragmentTask;
+
+            if (navigationTcs.Task.Result.FragmentReceived)
+            {
+                waitForFragmentTask = Task.FromResult(true);
+            }
+            else
+            {
+                var waitForFragmentTcs = new TaskCompletionSource<bool>();
+                navigationTcs.Task.Result.Fragment += (sender, args) => waitForFragmentTcs.TrySetResult(true);
+                waitForFragmentTask = waitForFragmentTcs.Task;
+            }
+
             // TODO: Add frame detached event.
-            // TODO: Add fragment, failed and aborted events.
-            await Task.WhenAny(waitForLoadTask).WithTimeout(timeout).ConfigureAwait(false);
+            // TODO: Add failed and aborted events.
+            await Task.WhenAny(waitForLoadTask, waitForFragmentTask).WithTimeout(timeout).ConfigureAwait(false);
 
             return navigationTcs.Task.Result;
         }
@@ -168,7 +181,7 @@ public class BidiFrame : Frame
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
     {
         return ex is TimeoutException
-            ? new NavigationException($"Navigation timeout of {timeoutSettingsNavigationTimeout} ms exceeded", url)
+            ? new NavigationException($"Navigation timeout of {timeoutSettingsNavigationTimeout} ms exceeded", url, ex)
             : new PuppeteerException("Navigation failed: " + ex.Message, ex);
     }
 
