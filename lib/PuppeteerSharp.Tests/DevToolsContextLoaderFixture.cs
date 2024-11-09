@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests
 
         private void InitializeAsyncInternal()
         {
-            if (!Cef.IsInitialized)
+            if (Cef.IsInitialized == null)
             {
                 var isDefault = AppDomain.CurrentDomain.IsDefaultAppDomain();
                 if (!isDefault)
@@ -48,11 +48,17 @@ namespace PuppeteerSharp.Tests
 
                 Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
             }
+
+            if(Cef.IsInitialized == false)
+            {
+                var exitCode = Cef.GetExitCode();
+                throw new Exception($"CEF failed with exit code {exitCode}");
+            }
         }
 
         private void DisposeAsyncInternal()
         {
-            if (Cef.IsInitialized)
+            if (Cef.IsInitialized == true)
             {
                 Cef.Shutdown();
             }

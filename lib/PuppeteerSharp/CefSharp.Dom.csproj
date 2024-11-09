@@ -16,7 +16,7 @@
     <Description>CefSharp.Dom - A strongly typed DOM API for use with with CefSharp, based on PuppeteerSharp.</Description>
     <PackageId>CefSharp.Dom</PackageId>
     <PackageReleaseNotes>Improved DOM API</PackageReleaseNotes>
-    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionPrefix>4.0.0</VersionPrefix>
     <!--<VersionSuffix>preview</VersionSuffix>-->
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -30,12 +30,12 @@
   <Import Project="../Common/SignAssembly.props" />
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-    <PackageReference Include="CefSharp.Common" Version="126.2.70" />
+    <PackageReference Include="CefSharp.Common" Version="130.1.90" />
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'net462'">
-    <PackageReference Include="CefSharp.Common.NETCore" Version="126.2.70" />
+    <PackageReference Include="CefSharp.Common.NETCore" Version="130.1.90" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(APPVEYOR)' == 'True'">
@@ -47,7 +47,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
