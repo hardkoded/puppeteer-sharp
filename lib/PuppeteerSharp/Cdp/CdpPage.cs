@@ -420,62 +420,6 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
-    public override async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
-    {
-        var timeout = options?.Timeout ?? DefaultTimeout;
-        var idleTime = options?.IdleTime ?? 500;
-
-        var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var idleTimer = new Timer { Interval = idleTime, };
-
-        idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
-
-        var networkManager = FrameManager.NetworkManager;
-
-        void Evaluate()
-        {
-            idleTimer.Stop();
-
-            if (networkManager.NumRequestsInProgress == 0)
-            {
-                idleTimer.Start();
-            }
-        }
-
-        void RequestEventListener(object sender, RequestEventArgs e) => Evaluate();
-        void ResponseEventListener(object sender, ResponseCreatedEventArgs e) => Evaluate();
-
-        void Cleanup()
-        {
-            idleTimer.Stop();
-            idleTimer.Dispose();
-
-            networkManager.Request -= RequestEventListener;
-            networkManager.Response -= ResponseEventListener;
-        }
-
-        networkManager.Request += RequestEventListener;
-        networkManager.Response += ResponseEventListener;
-
-        Evaluate();
-
-        await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
-        {
-            Cleanup();
-
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        }).ConfigureAwait(false);
-
-        Cleanup();
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc/>
     public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
     {
         var timeout = options?.Timeout ?? DefaultTimeout;

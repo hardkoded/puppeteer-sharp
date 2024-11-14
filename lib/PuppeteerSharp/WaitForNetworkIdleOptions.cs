@@ -10,5 +10,10 @@ namespace PuppeteerSharp
         /// How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
         /// </summary>
         public int? IdleTime { get; set; }
+
+        /// <summary>
+        /// Maximum number concurrent of network connections to be considered inactive.
+        /// </summary>
+        public int Concurrency { get; set; }
     }
 }

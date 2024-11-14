@@ -14,9 +14,6 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap = new();
         private readonly ConcurrentDictionary<string, List<ResponseReceivedExtraInfoResponse>> _responseReceivedExtraInfoMap = new();
 
-        public int NumRequestsInProgress
-            => _httpRequestsMap.Values.Count(r => r.Response == null);
-
         internal void Forget(string requestId)
         {
             _requestWillBeSentMap.TryRemove(requestId, out _);
