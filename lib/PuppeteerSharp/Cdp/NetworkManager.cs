@@ -56,8 +56,6 @@ namespace PuppeteerSharp.Cdp
 
         internal Dictionary<string, string> ExtraHTTPHeaders => _extraHTTPHeaders?.Clone();
 
-        internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
-
         internal Task AddClientAsync(ICDPSession client)
         {
             if (_clients.ContainsKey(client))
