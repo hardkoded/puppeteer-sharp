@@ -96,9 +96,6 @@ public class BidiPage : Page
     public override Task<IResponse> ReloadAsync(NavigationOptions options) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
-
-    /// <inheritdoc />
     public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />

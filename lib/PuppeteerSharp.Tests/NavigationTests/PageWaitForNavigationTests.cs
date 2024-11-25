@@ -4,14 +4,10 @@ using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public PageWaitForNavigationTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work")]
         public async Task ShouldWork()
         {
@@ -30,10 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
-            Server.SetRoute("/one-style.css", _ =>
-            {
-                return responseCompleted.Task;
-            });
+            Server.SetRoute("/one-style.css", _ => responseCompleted.Task);
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
