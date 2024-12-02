@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiFrame : Frame
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
-    private Realms _realms;
+    private readonly Realms _realms;
 
     internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
@@ -58,12 +58,12 @@ public class BidiFrame : Frame
     public override IPage Page => BidiPage;
 
     /// <inheritdoc />
+    public override CDPSession Client { get; protected set; }
+
+    /// <inheritdoc />
     internal override Realm MainRealm => _realms.Default;
 
     internal override Realm IsolatedRealm => _realms.Internal;
-
-    /// <inheritdoc />
-    public override CDPSession Client { get; protected set; }
 
     internal BidiPage BidiPage
     {

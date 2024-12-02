@@ -20,16 +20,18 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Collections.Generic;
+using WebDriverBiDi.Script;
+
 namespace PuppeteerSharp.Bidi.Core;
 
-/// <summary>
-/// Different types of realms.
-/// Upstream it's DedicatedWorkerRealm | SharedWorkerRealm | WindowRealm.
-/// </summary>
-internal interface IDedicatedWorkerOwnerRealm
+internal class CallFunctionParameters
 {
-    /// <summary>
-    /// Session.
-    /// </summary>
-    Session Session { get; }
+    public List<ArgumentValue> Arguments { get; set; } = new();
+
+    public ResultOwnership? ResultOwnership { get; set; }
+
+    public bool? UserActivation { get; set; }
+
+    public SerializationOptions SerializationOptions { get; set; }
 }

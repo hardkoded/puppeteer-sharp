@@ -20,19 +20,22 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Linq;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class DedicatedWorkerRealm : Realm
 {
-    private ConcurrentSet<IDedicatedWorkerOwnerRealm> _owners = [];
+    private readonly ConcurrentSet<IDedicatedWorkerOwnerRealm> _owners = [];
 
     private DedicatedWorkerRealm(IDedicatedWorkerOwnerRealm owner, string id, string origin)
     : base(id, origin)
     {
         _owners.Add(owner);
     }
+
+    public override Session Session => _owners.FirstOrDefault()?.Session;
 
     public static DedicatedWorkerRealm From(IDedicatedWorkerOwnerRealm owner, string id, string origin)
     {

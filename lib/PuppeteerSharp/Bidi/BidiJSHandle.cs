@@ -25,7 +25,7 @@ using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiJSHandle: JSHandle
+internal class BidiJSHandle : JSHandle
 {
     public BidiJSHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)
     {

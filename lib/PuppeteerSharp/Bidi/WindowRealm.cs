@@ -30,14 +30,12 @@ namespace PuppeteerSharp.Bidi;
 
 internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null) : Core.Realm(string.Empty, string.Empty), IDedicatedWorkerOwnerRealm
 {
-    private string _sandbox = sandbox;
+    private readonly string _sandbox = sandbox;
     private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
-
-    public event EventHandler Updated;
 
     public event EventHandler<WorkerRealmEventArgs> Worker;
 
-    private Session Session => browsingContext.UserContext.Browser.Session;
+    public override Session Session => browsingContext.UserContext.Browser.Session;
 
     public string ExecutionContextId { get; set; }
 
@@ -88,7 +86,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
         OnWorker(realm);
     }
 
-    private void OnWorker(DedicatedWorkerRealm realm) => Worker?.Invoke(this, new WorkerRealmEventArgs(real))
+    private void OnWorker(DedicatedWorkerRealm realm) => Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
 
     private void OnDedicatedRealmCreated(RealmCreatedEventArgs args)
     {
@@ -104,6 +102,4 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
         ExecutionContextId = null;
         OnUpdated();
     }
-
-    private void OnUpdated() => Updated?.Invoke(this, EventArgs.Empty);
 }

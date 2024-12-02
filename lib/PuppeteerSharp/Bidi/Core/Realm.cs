@@ -21,19 +21,28 @@
 //  * SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class Realm(string id, string origin) : IDisposable
+internal abstract class Realm(string id, string origin) : IDisposable
 {
     private string _reason;
-    private bool _disposed = false;
 
     public event EventHandler<ClosedEventArgs> Destroyed;
+
+    public event EventHandler Updated;
 
     public string Id { get; protected set; } = id;
 
     public string Origin { get; protected set; } = origin;
+
+    public bool Disposed { get; private set; }
+
+    public WebDriverBiDi.Script.Target Target => new RealmTarget(Id);
+
+    public abstract Session Session { get; }
 
     public void Dispose(string reason)
     {
@@ -46,8 +55,45 @@ internal class Realm(string id, string origin) : IDisposable
         _reason ??=
             "Realm already destroyed, probably because all associated browsing contexts closed.";
         OnDestroyed();
-        _disposed = true;
+        Disposed = true;
     }
+
+    public Task<EvaluateResult> EvaluateAsync(
+        string functionDeclaration,
+        bool awaitPromise,
+        CallFunctionParameters options = null)
+    {
+        var parameters = new EvaluateCommandParameters(functionDeclaration, Target, awaitPromise);
+
+        if (options != null)
+        {
+            parameters.ResultOwnership = options.ResultOwnership;
+            parameters.UserActivation = options.UserActivation;
+            parameters.SerializationOptions = options.SerializationOptions;
+        }
+
+        return Session.Driver.Script.EvaluateAsync(parameters);
+    }
+
+    public Task<EvaluateResult> CallFunctionAsync(
+        string functionDeclaration,
+        bool awaitPromise,
+        CallFunctionParameters options = null)
+    {
+        var parameters = new CallFunctionCommandParameters(functionDeclaration, Target, awaitPromise);
+
+        if (options != null)
+        {
+            parameters.Arguments.AddRange(options.Arguments);
+            parameters.ResultOwnership = options.ResultOwnership;
+            parameters.UserActivation = options.UserActivation;
+            parameters.SerializationOptions = options.SerializationOptions;
+        }
+
+        return Session.Driver.Script.CallFunctionAsync(parameters);
+    }
+
+    protected virtual void OnUpdated() => Updated?.Invoke(this, EventArgs.Empty);
 
     private void OnDestroyed() => Destroyed?.Invoke(this, new ClosedEventArgs(_reason));
 }

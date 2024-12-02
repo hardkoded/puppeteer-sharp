@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Threading.Tasks;
+
 namespace PuppeteerSharp.Bidi;
 
 internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings)
@@ -32,6 +34,21 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         var frameRealm = new BidiFrameRealm(realm, frame);
         frameRealm.Initialize();
         return frameRealm;
+    }
+
+    public override async Task<IJSHandle> GetPuppeteerUtilAsync()
+    {
+        var installTcs = new TaskCompletionSource<bool>();
+
+        if (!_bindingsInstalled)
+        {
+            // TODO: Implement
+            installTcs.TrySetResult(true);
+            _bindingsInstalled = true;
+        }
+
+        await installTcs.Task.ConfigureAwait(false);
+        return await base.GetPuppeteerUtilAsync().ConfigureAwait(false);
     }
 
     protected override void Initialize()

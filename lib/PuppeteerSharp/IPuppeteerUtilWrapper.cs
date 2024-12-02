@@ -20,16 +20,18 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-namespace PuppeteerSharp.Bidi.Core;
+using System.Threading.Tasks;
+
+namespace PuppeteerSharp;
 
 /// <summary>
-/// Different types of realms.
-/// Upstream it's DedicatedWorkerRealm | SharedWorkerRealm | WindowRealm.
+/// A class that contains a method to get the PuppeteerUtil handle.
 /// </summary>
-internal interface IDedicatedWorkerOwnerRealm
+public interface IPuppeteerUtilWrapper
 {
     /// <summary>
-    /// Session.
+    /// Gets the PuppeteerUtil handle.
     /// </summary>
-    Session Session { get; }
+    /// <returns>The PuppeteerUtil handle.</returns>
+    Task<IJSHandle> GetPuppeteerUtilAsync();
 }

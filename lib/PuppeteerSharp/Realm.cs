@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    public abstract class Realm
+    internal abstract class Realm
     {
         public Realm(TimeoutSettings timeoutSettings)
         {

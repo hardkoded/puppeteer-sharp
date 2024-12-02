@@ -12,7 +12,7 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="IExecutionContext"/>
-    public sealed class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
+    public sealed class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable, IPuppeteerUtilWrapper
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
         private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
@@ -97,7 +97,8 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
-        internal async Task<IJSHandle> GetPuppeteerUtilAsync()
+        /// <inheritdoc />
+        public async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
             {
