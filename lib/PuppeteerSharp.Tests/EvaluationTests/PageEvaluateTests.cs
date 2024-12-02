@@ -187,6 +187,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
             var result = await Page.EvaluateFunctionAsync<bool>(
+
                 "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
                 null,
                 "foo");

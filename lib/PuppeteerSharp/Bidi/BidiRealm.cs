@@ -27,6 +27,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -71,12 +72,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     internal override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args) => throw new System.NotImplementedException();
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
-        => DeserializeEvaluationResult<T>(await EvaluateAsync(false, true, script).ConfigureAwait(false));
+        => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
 
     internal override Task<JsonElement?> EvaluateExpressionAsync(string script) => throw new System.NotImplementedException();
 
     internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        => DeserializeEvaluationResult<T>(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
+        => DeserializeResult<T>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
 
     internal override Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args) => throw new System.NotImplementedException();
 
@@ -148,22 +149,74 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return result as EvaluateResultSuccess;
     }
 
-    private T DeserializeEvaluationResult<T>(EvaluateResultSuccess result)
+    private T DeserializeResult<T>(object result)
     {
+        if (result is null)
+        {
+            return default;
+        }
+
+        if (typeof(T) == typeof(JsonElement?))
+        {
+            return (T)(object)JsonSerializer.SerializeToElement(result);
+        }
+
         // Convert known types first
         if (typeof(T) == typeof(int))
         {
-            return (T)(object)Convert.ToInt32(result.Result.Value, CultureInfo.InvariantCulture);
+            return (T)(object)Convert.ToInt32(result, CultureInfo.InvariantCulture);
         }
 
-        switch (result.Result.Type)
+        if (typeof(T) == typeof(double))
         {
-            case "number":
-                // TODO: Way too many todos here.
-                return (T)result.Result.Value;
+            return (T)(object)Convert.ToDouble(result, CultureInfo.InvariantCulture);
         }
 
-        return default;
+        if (typeof(T) == typeof(string))
+        {
+            return (T)result;
+        }
+
+        if (typeof(T) == typeof(bool))
+        {
+            return (T)(object)Convert.ToBoolean(result, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T).IsArray)
+        {
+            // Get the element type of the array
+            var elementType = typeof(T).GetElementType();
+
+            if (elementType != null && result is IEnumerable enumerable)
+            {
+                // Create a list of the element type
+                var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+
+                // Iterate over the input and add converted items to the list
+                foreach (var item in enumerable)
+                {
+                    var itemToSerialize = item;
+
+                    if (item is RemoteValue remoteValue)
+                    {
+                        itemToSerialize = remoteValue.Value;
+                    }
+
+                    // Maybe there is a better way to do this.
+                    var deserializedItem = typeof(BidiRealm)
+                        .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                        ?.MakeGenericMethod(elementType)
+                        .Invoke(this, [itemToSerialize]);
+
+                    list.Add(deserializedItem);
+                }
+
+                // Convert the list to an array
+                return (T)list.GetType().GetMethod("ToArray")!.Invoke(list, null)!;
+            }
+        }
+
+        return (T)result;
     }
 
     private async Task<LocalValue> FormatArgumentAsync(object arg)
@@ -176,6 +229,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         if (arg is BidiLazyArg lazyArg)
         {
             arg = await lazyArg(this).ConfigureAwait(false);
+        }
+
+        if (arg is null)
+        {
+            return LocalValue.Null;
         }
 
         switch (arg)
