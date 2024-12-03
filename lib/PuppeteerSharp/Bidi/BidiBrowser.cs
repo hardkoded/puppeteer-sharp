@@ -89,7 +89,7 @@ public class BidiBrowser : Browser
     public override Task<string> GetVersionAsync() => Task.FromResult($"{BrowserName}/{BrowserVersion}");
 
     /// <inheritdoc />
-    public override Task<string> GetUserAgentAsync() => throw new NotImplementedException();
+    public override Task<string> GetUserAgentAsync() => Task.FromResult(BrowserCore.Session.Info.Capabilities.UserAgent);
 
     /// <inheritdoc />
     public override void Disconnect() => throw new NotImplementedException();
