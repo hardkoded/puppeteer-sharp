@@ -37,7 +37,7 @@ using WebDriverBiDi.Script;
 namespace PuppeteerSharp.Bidi;
 
 /// <summary>
-/// A LazyArg is an evaluation argument that will be resolved when the CDP call is built.
+/// A BidiLazyArg is an evaluation argument that will be resolved when the CDP call is built.
 /// </summary>
 /// <param name="context">Execution context.</param>
 /// <returns>Resolved argument.</returns>
