@@ -42,9 +42,13 @@ internal class BrowsingContext : IDisposable
         Id = id;
         Url = url;
         OriginalOpener = originalOpener;
+
+        DefaultRealm = CreateWindowRealm();
     }
 
     public event EventHandler<ClosedEventArgs> Closed;
+
+    public event EventHandler<WorkerRealmEventArgs> Worker;
 
     public event EventHandler DomContentLoaded;
 
@@ -65,6 +69,8 @@ internal class BrowsingContext : IDisposable
     public Session Session => UserContext.Browser.Session;
 
     public IEnumerable<BrowsingContext> Children => _children.Values;
+
+    public WindowRealm DefaultRealm { get; }
 
     internal string OriginalOpener { get; }
 
@@ -121,6 +127,18 @@ internal class BrowsingContext : IDisposable
         {
             Wait = wait,
         }).ConfigureAwait(false);
+    }
+
+    internal WindowRealm CreateWindowRealm(string sandbox = null)
+    {
+        var realm = WindowRealm.From(this, sandbox);
+
+        realm.Worker += (sender, args) =>
+        {
+            OnWorker(args.Realm);
+        };
+
+        return realm;
     }
 
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
@@ -245,4 +263,6 @@ internal class BrowsingContext : IDisposable
     }
 
     private void OnClosed(string reason) => Closed?.Invoke(this, new ClosedEventArgs(reason));
+
+    private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
 }

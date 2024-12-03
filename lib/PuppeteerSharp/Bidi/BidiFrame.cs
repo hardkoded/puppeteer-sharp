@@ -34,12 +34,18 @@ namespace PuppeteerSharp.Bidi;
 public class BidiFrame : Frame
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
+    private readonly Realms _realms;
 
     internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;
+        _realms = new Realms(
+#pragma warning disable CA2000
+            BidiFrameRealm.From(browsingContext.DefaultRealm, this),
+            BidiFrameRealm.From(browsingContext.CreateWindowRealm($"__puppeteer_internal_{new Random().Next(0, 10000)}"), this));
+#pragma warning restore CA2000
     }
 
     /// <inheritdoc />
@@ -53,6 +59,11 @@ public class BidiFrame : Frame
 
     /// <inheritdoc />
     public override CDPSession Client { get; protected set; }
+
+    /// <inheritdoc />
+    internal override Realm MainRealm => _realms.Default;
+
+    internal override Realm IsolatedRealm => _realms.Internal;
 
     internal BidiPage BidiPage
     {
@@ -285,6 +296,13 @@ public class BidiFrame : Frame
         {
             _frames.TryRemove(browsingContext, out var _);
         };
+    }
+
+    private class Realms(BidiFrameRealm defaultRealm, BidiFrameRealm internalRealm)
+    {
+        public BidiFrameRealm Default { get; } = defaultRealm;
+
+        public BidiFrameRealm Internal { get; } = internalRealm;
     }
 }
 

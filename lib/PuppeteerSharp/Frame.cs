@@ -58,9 +58,9 @@ namespace PuppeteerSharp
 
         internal List<string> LifecycleEvents { get; } = new();
 
-        internal Realm MainRealm { get; set; }
+        internal virtual Realm MainRealm { get; set; }
 
-        internal Realm IsolatedRealm { get; set; }
+        internal virtual Realm IsolatedRealm { get; set; }
 
         internal IsolatedWorld MainWorld => MainRealm as IsolatedWorld;
 

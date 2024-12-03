@@ -10,10 +10,6 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class EvaluateTests : PuppeteerPageBaseTest
     {
-        public EvaluateTests() : base()
-        {
-        }
-
         [Test]
         [Retry(2)]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work")]
@@ -191,6 +187,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
             var result = await Page.EvaluateFunctionAsync<bool>(
+
                 "(a, b) => Object.is(a, null) && Object.is(b, 'foo')",
                 null,
                 "foo");
@@ -236,7 +233,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [TestCase("1 + 2;", 3)]
         [TestCase("1 + 5;", 6)]
         [TestCase("2 + 5\n// do some math!'", 7)]
-        public async Task BasicIntExressionEvaluationTest(string script, object expected)
+        public async Task BasicIntExpressionEvaluationTest(string script, object expected)
         {
             var result = await Page.EvaluateExpressionAsync<int>(script);
             Assert.That(result, Is.EqualTo(expected));
