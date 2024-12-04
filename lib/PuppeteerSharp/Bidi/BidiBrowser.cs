@@ -142,7 +142,8 @@ public class BidiBrowser : Browser
     internal static async Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        LauncherBase launcher)
     {
         var session = await Session.FromAsync(
             driver,
@@ -164,7 +165,7 @@ public class BidiBrowser : Browser
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory);
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory) { Launcher = launcher };
         browser.InitializeAsync();
         return browser;
     }
