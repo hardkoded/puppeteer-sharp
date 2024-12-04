@@ -53,6 +53,9 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override bool IsClosed { get; }
 
+    /// <inheritdoc />
+    public override ITarget Target => _target;
+
     internal static string[] SubscribeModules { get; } =
     [
         "browsingContext",

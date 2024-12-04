@@ -28,7 +28,7 @@ internal class BidiBrowserTarget(BidiBrowser bidiBrowser) : Target
 {
     public override string Url { get; }
 
-    public override TargetType Type { get; }
+    public override TargetType Type => TargetType.Browser;
 
     public override ITarget Opener { get; }
 
