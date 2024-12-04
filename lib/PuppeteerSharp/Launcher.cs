@@ -94,7 +94,7 @@ namespace PuppeteerSharp
                     {
                         var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
                         await driver.StartAsync(Process.EndPoint + "/session").ConfigureAwait(false);
-                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory).ConfigureAwait(false);
+                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
                     }
                     else
                     {
