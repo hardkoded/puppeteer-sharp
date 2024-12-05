@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
@@ -105,10 +106,10 @@ public class BidiPage : Page
     public override Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IResponse> GoBackAsync(NavigationOptions options = null) => throw new NotImplementedException();
+    public override Task<IResponse> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
 
     /// <inheritdoc />
-    public override Task<IResponse> GoForwardAsync(NavigationOptions options = null) => throw new NotImplementedException();
+    public override Task<IResponse> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
 
     /// <inheritdoc />
     public override Task SetBurstModeOffAsync() => throw new NotImplementedException();
@@ -210,6 +211,28 @@ public class BidiPage : Page
 
     /// <inheritdoc />
     protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+
+    private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
+    {
+        var waitForNavigationTask = WaitForNavigationAsync(options);
+        var navigationTask = BidiMainFrame.BrowsingContext.TraverseHistoryAsync(delta);
+
+        try
+        {
+            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("no such history entry"))
+            {
+                return null;
+            }
+
+            throw new NavigationException(ex.Message, ex);
+        }
+
+        return waitForNavigationTask.Result;
+    }
 
     private void Initialize()
     {
