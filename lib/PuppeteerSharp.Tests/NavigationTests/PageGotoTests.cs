@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("invalid URL"));
+                Assert.That(exception.Message, Does.Contain("NS_ERROR_MALFORMED_URI"));
             }
         }
 
