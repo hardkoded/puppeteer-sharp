@@ -137,21 +137,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] * should fail when main resources failed to load",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] navigation Frame.goto*",
     "platforms": [
       "darwin",
@@ -273,21 +258,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *SSL*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] *should fail*",
     "platforms": [
       "darwin",
       "linux",

@@ -106,6 +106,10 @@ public class BidiFrame : Frame
         {
             await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
         }
+        catch (NavigationException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
@@ -244,7 +248,7 @@ public class BidiFrame : Frame
                 return;
             }
 
-            throw new PuppeteerException("Failed to navigate to " + url, ex);
+            throw new NavigationException($"Failed to navigate to {url}. {ex.Message}", url, ex);
         }
     }
 
