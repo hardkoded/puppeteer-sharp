@@ -287,21 +287,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] navigation Page.goBack *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *timeout*",
     "platforms": [
       "darwin",

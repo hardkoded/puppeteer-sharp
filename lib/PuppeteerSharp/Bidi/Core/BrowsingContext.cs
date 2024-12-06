@@ -141,6 +141,9 @@ internal class BrowsingContext : IDisposable
         return realm;
     }
 
+    internal async Task TraverseHistoryAsync(int delta)
+        => await Session.Driver.BrowsingContext.TraverseHistoryAsync(new TraverseHistoryCommandParameters(Id, delta)).ConfigureAwait(false);
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
