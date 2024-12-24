@@ -29,17 +29,17 @@ internal class DedicatedWorkerRealm : Realm
 {
     private readonly ConcurrentSet<IDedicatedWorkerOwnerRealm> _owners = [];
 
-    private DedicatedWorkerRealm(IDedicatedWorkerOwnerRealm owner, string id, string origin)
-    : base(id, origin)
+    private DedicatedWorkerRealm(BrowsingContext context, IDedicatedWorkerOwnerRealm owner, string id, string origin)
+    : base(context, id, origin)
     {
         _owners.Add(owner);
     }
 
     public override Session Session => _owners.FirstOrDefault()?.Session;
 
-    public static DedicatedWorkerRealm From(IDedicatedWorkerOwnerRealm owner, string id, string origin)
+    public static DedicatedWorkerRealm From(BrowsingContext context, IDedicatedWorkerOwnerRealm owner, string id, string origin)
     {
-        var realm = new DedicatedWorkerRealm(owner, id, origin);
+        var realm = new DedicatedWorkerRealm(context, owner, id, origin);
         realm.Initialize();
         return realm;
     }

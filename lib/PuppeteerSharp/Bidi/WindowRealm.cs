@@ -22,20 +22,22 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
-using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null) : Core.Realm(string.Empty, string.Empty), IDedicatedWorkerOwnerRealm
+internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null) : Core.Realm(browsingContext, string.Empty, string.Empty), IDedicatedWorkerOwnerRealm
 {
     private readonly string _sandbox = sandbox;
     private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
 
     public event EventHandler<WorkerRealmEventArgs> Worker;
 
-    public override Session Session => browsingContext.UserContext.Browser.Session;
+    public override Session Session => Context.UserContext.Browser.Session;
+
+    public override ContextTarget Target => new(Context.Id); // TODO: Add sandbox
 
     public string ExecutionContextId { get; set; }
 
@@ -48,7 +50,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
 
     public override void Dispose()
     {
-        browsingContext.Dispose();
+        Context.Dispose();
         Session.Dispose();
 
         foreach (var worker in _workers.Values)
@@ -61,7 +63,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
 
     private void Initialize()
     {
-        browsingContext.Closed += (sender, args) => Dispose(args.Reason);
+        Context.Closed += (sender, args) => Dispose(args.Reason);
         Session.Driver.Script.OnRealmCreated.AddObserver(OnWindowRealmCreated);
         Session.Driver.Script.OnRealmCreated.AddObserver(OnDedicatedRealmCreated);
     }
@@ -80,7 +82,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
             return;
         }
 
-        var realm = DedicatedWorkerRealm.From(this, dedicatedWorkerInfo.RealmId, dedicatedWorkerInfo.Origin);
+        var realm = DedicatedWorkerRealm.From(Context, this, dedicatedWorkerInfo.RealmId, dedicatedWorkerInfo.Origin);
         _workers.TryAdd(realm.Id, realm);
         realm.Destroyed += (sender, args) => _workers.TryRemove(realm.Id, out _);
         OnWorker(realm);
@@ -91,7 +93,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
     private void OnDedicatedRealmCreated(RealmCreatedEventArgs args)
     {
         if (args.Type != RealmType.Window ||
-            args.As<WindowRealmInfo>().BrowsingContext != browsingContext.Id ||
+            args.As<WindowRealmInfo>().BrowsingContext != Context.Id ||
             args.As<WindowRealmInfo>().Sandbox != _sandbox)
         {
             return;

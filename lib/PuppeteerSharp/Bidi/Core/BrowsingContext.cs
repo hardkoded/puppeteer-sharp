@@ -157,7 +157,7 @@ internal class BrowsingContext : IDisposable
                 return;
             }
 
-            var browsingContext = From(UserContext, this, args.UserContextId, args.Url, args.OriginalOpener);
+            var browsingContext = From(UserContext, this, args.BrowsingContextId, args.Url, args.OriginalOpener);
 
             _children.TryAdd(args.UserContextId, browsingContext);
 
