@@ -67,9 +67,25 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     internal override Task<IJSHandle> TransferHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
 
-    internal override Task<IJSHandle> EvaluateExpressionHandleAsync(string script) => throw new System.NotImplementedException();
+    internal async override Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        => CreateHandleAsync((await EvaluateAsync(false, true, script).ConfigureAwait(false)).Result.Value);
 
-    internal override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args) => throw new System.NotImplementedException();
+    internal async override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        => CreateHandleAsync((await EvaluateAsync(false, false, script).ConfigureAwait(false)).Result.Value);
+
+    private IJSHandle CreateHandleAsync(EvaluateResultSuccess evaluateResult)
+    {
+        var result = evaluateResult.Result;
+
+        if (
+            (result.Type == "node" || result.Type == "window") &&
+            this is BidiFrameRealm)
+        {
+            return BidiElementHandle.From(result, this);
+        }
+
+        return BidiJSHandle.From(result, this);
+    }
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
         => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
