@@ -144,19 +144,13 @@ namespace PuppeteerSharp.Tests.NavigationTests
             var frameAttachedTaskSource = new TaskCompletionSource<IFrame>();
             Page.FrameAttached += (_, e) =>
             {
-                frameAttachedTaskSource.SetResult(e.Frame);
+                if (e.Frame.ParentFrame != null)
+                {
+                    frameAttachedTaskSource.SetResult(e.Frame);
+                }
             };
 
             var frame = await frameAttachedTaskSource.Task;
-            var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
-            Page.FrameNavigated += (_, e) =>
-            {
-                if (e.Frame == frame)
-                {
-                    frameNavigatedTaskSource.TrySetResult(true);
-                }
-            };
-            await frameNavigatedTaskSource.Task;
             await Task.WhenAll(
                 frame.EvaluateFunctionAsync("() => window.stop()"),
                 navigationTask

@@ -122,7 +122,7 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation*",
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation*should work with clicking on anchor links",
     "platforms": [
       "darwin",
       "linux",

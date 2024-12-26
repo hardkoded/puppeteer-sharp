@@ -905,6 +905,22 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Raises the <see cref="DOMContentLoaded"/> event.
+        /// </summary>
+        internal void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="Load"/> event.
+        /// </summary>
+        internal void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="FrameNavigated"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+
+        /// <summary>
         /// Dispose resources.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
@@ -913,22 +929,6 @@ namespace PuppeteerSharp
             Mouse.Dispose();
             _ = DisposeAsync();
         }
-
-        /// <summary>
-        /// Raises the <see cref="FrameNavigated"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="DOMContentLoaded"/> event.
-        /// </summary>
-        protected void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Raises the <see cref="Load"/> event.
-        /// </summary>
-        protected void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Raises the <see cref="WorkerDestroyed"/> event.

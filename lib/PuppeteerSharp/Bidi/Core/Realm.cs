@@ -26,7 +26,7 @@ using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal abstract class Realm(string id, string origin) : IDisposable
+internal abstract class Realm(BrowsingContext context, string id, string origin) : IDisposable
 {
     private string _reason;
 
@@ -40,9 +40,12 @@ internal abstract class Realm(string id, string origin) : IDisposable
 
     public bool Disposed { get; private set; }
 
-    public WebDriverBiDi.Script.Target Target => new RealmTarget(Id);
+    public virtual ContextTarget Target => new ContextTarget(Id);
 
     public abstract Session Session { get; }
+
+    // Just for testing purposes
+    internal BrowsingContext Context => context;
 
     public void Dispose(string reason)
     {

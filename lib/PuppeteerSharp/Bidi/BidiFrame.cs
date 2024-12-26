@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
@@ -41,6 +42,7 @@ public class BidiFrame : Frame
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;
+        Id = browsingContext.Id;
         _realms = new Realms(
 #pragma warning disable CA2000
             BidiFrameRealm.From(browsingContext.DefaultRealm, this),
@@ -259,6 +261,11 @@ public class BidiFrame : Frame
             CreateFrameTarget(browsingContext);
         }
 
+        BrowsingContext.BrowsingContextCreated += (sender, args) =>
+        {
+            CreateFrameTarget(args.BrowsingContext);
+        };
+
         BrowsingContext.Closed += (sender, args) =>
         {
             foreach (var session in BidiCdpSession.Sessions)
@@ -288,11 +295,35 @@ public class BidiFrame : Frame
 
             _ = httpRequest.FinalizeInterceptionsAsync();
         };
+
+        BrowsingContext.Navigation += (sender, args) =>
+        {
+            if (args.Navigation.FragmentReceived)
+            {
+                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+            }
+
+            args.Navigation.Fragment += (o, eventArgs) =>
+            {
+                ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+            };
+        };
+
+        BrowsingContext.Load += (sender, args) =>
+        {
+            ((Page)Page).OnLoad();
+        };
+
+        BrowsingContext.DomContentLoaded += (sender, args) =>
+        {
+            ((Page)Page).OnDOMContentLoaded();
+            ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
+        };
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)
     {
-        var frame = BidiFrame.From(null, this, browsingContext);
+        var frame = From(null, this, browsingContext);
         _frames.TryAdd(browsingContext, frame);
         ((BidiPage)Page).OnFrameAttached(new FrameEventArgs(frame));
 
