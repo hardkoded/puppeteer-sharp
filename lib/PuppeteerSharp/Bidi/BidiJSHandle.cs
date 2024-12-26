@@ -27,9 +27,13 @@ namespace PuppeteerSharp.Bidi;
 
 internal class BidiJSHandle : JSHandle
 {
-    public BidiJSHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)
+    public BidiJSHandle(IsolatedWorld world, RemoteObject remoteObject)
     {
     }
+
+    public override RemoteObject RemoteObject { get; }
+
+    internal override IsolatedWorld Realm { get; }
 
     public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
 
