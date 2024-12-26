@@ -31,10 +31,17 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc/>
 public class CdpJSHandle : JSHandle
 {
-    internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)
+    internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject)
     {
+        Realm = world;
+        RemoteObject = remoteObject;
         Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
     }
+
+    /// <inheritdoc/>
+    public override RemoteObject RemoteObject { get; }
+
+    internal override IsolatedWorld Realm { get; }
 
     /// <summary>
     /// Logger.
