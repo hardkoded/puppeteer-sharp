@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
@@ -116,7 +117,7 @@ namespace PuppeteerSharp
             return result;
         }
 
-        internal static RuntimeCallFunctionOnRequestArgumentValue FormatArgument(this IJSHandle jSHandle, ExecutionContext context)
+        internal static RuntimeCallFunctionOnRequestArgumentValue FormatArgument(this CdpJSHandle jSHandle, ExecutionContext context)
         {
             if (jSHandle.Disposed)
             {

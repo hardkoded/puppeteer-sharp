@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.PageAccessibility
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
                 {
-                    ObjectId = options.Root.RemoteObject.ObjectId,
+                    ObjectId = ((CdpElementHandle)options.Root).RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
                 backendNodeId = node.Node.BackendNodeId;
             }

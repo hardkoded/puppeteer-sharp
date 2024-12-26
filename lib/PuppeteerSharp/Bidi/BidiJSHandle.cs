@@ -22,13 +22,19 @@
 
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiJSHandle : JSHandle
+internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 {
-    public BidiJSHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)
+    public RemoteValue RemoteValue { get; } = value;
+
+    internal override Realm Realm { get; } = realm;
+
+    public static BidiJSHandle From(RemoteValue value, BidiRealm realm)
     {
+        return new BidiJSHandle(value, realm);
     }
 
     public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();

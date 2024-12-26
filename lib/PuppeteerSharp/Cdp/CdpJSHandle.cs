@@ -38,10 +38,14 @@ public class CdpJSHandle : JSHandle
         Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
     }
 
-    /// <inheritdoc/>
-    public override RemoteObject RemoteObject { get; }
+    /// <summary>
+    /// CDP remote object.
+    /// </summary>
+    public RemoteObject RemoteObject { get; }
 
-    internal override IsolatedWorld Realm { get; }
+    internal string Id => RemoteObject.ObjectId;
+
+    internal override Realm Realm { get; }
 
     /// <summary>
     /// Logger.

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -130,12 +131,13 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (CdpJSHandle)handle;
+            if (cdpHandle.Realm == this)
             {
                 return handle;
             }
 
-            if (handle.RemoteObject.ObjectId == null)
+            if (cdpHandle.RemoteObject.ObjectId == null)
             {
                 return handle;
             }
@@ -144,7 +146,7 @@ namespace PuppeteerSharp
                 "DOM.describeNode",
                 new DomDescribeNodeRequest
                 {
-                    ObjectId = handle.RemoteObject.ObjectId,
+                    ObjectId = cdpHandle.RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
 
             var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId).ConfigureAwait(false);
@@ -154,14 +156,15 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (CdpJSHandle)handle;
+            if (cdpHandle.Realm == this)
             {
                 return handle;
             }
 
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = ((JSHandle)handle).RemoteObject.ObjectId,
+                ObjectId = cdpHandle.RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }

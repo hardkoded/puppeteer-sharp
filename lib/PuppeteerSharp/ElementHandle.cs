@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
@@ -14,7 +12,6 @@ using PuppeteerSharp.QueryHandlers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="PuppeteerSharp.IElementHandle" />
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class ElementHandle : JSHandle, IElementHandle
     {
         private ElementHandle _isolatedHandle;
@@ -37,11 +34,6 @@ namespace PuppeteerSharp
         /// Element's page.
         /// </summary>
         protected abstract Page Page { get; }
-
-        private string DebuggerDisplay =>
-            string.IsNullOrEmpty(RemoteObject.ClassName)
-                ? ToString()
-                : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ElementScreenshotOptions());

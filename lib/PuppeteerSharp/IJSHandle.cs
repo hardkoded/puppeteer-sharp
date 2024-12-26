@@ -18,12 +18,6 @@ namespace PuppeteerSharp
         bool Disposed { get; }
 
         /// <summary>
-        /// Gets the remote object.
-        /// </summary>
-        /// <value>The remote object.</value>
-        RemoteObject RemoteObject { get; }
-
-        /// <summary>
         /// Executes a function in browser context.
         /// </summary>
         /// <param name="script">Script to be evaluated in browser context.</param>

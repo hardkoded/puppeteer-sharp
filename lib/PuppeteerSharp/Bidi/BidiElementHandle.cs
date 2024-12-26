@@ -20,13 +20,34 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.QueryHandlers;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiElementHandle : ElementHandle
+internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHandle
 {
-    public BidiElementHandle(IsolatedWorld world, RemoteObject remoteObject) : base(world, remoteObject)
+    /// <summary>
+    /// Bidi Remote value.
+    /// </summary>
+    public RemoteValue Value { get; } = value;
+
+    internal override Realm Realm => realm;
+
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
+
+    protected override Page Page { get; }
+
+    public static IJSHandle From(RemoteValue value, BidiRealm realm)
     {
+        return new BidiElementHandle(value, realm);
     }
+
+    public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
+
+    public override Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths) => throw new System.NotImplementedException();
+
+    public override Task<IFrame> ContentFrameAsync() => throw new System.NotImplementedException();
 }

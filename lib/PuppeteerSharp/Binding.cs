@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
@@ -51,7 +52,7 @@ namespace PuppeteerSharp
                             // aren't plain objects so add subtypes when the use-case arises.
                             if (int.TryParse(kv.Key, out var index) && args.Length > index)
                             {
-                                switch (handle.RemoteObject.Subtype)
+                                switch (((CdpJSHandle)handle).RemoteObject.Subtype)
                                 {
                                     case RemoteObjectSubtype.Node:
                                         args[index] = handle;
