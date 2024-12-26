@@ -33,9 +33,9 @@ public class CdpJSHandle : JSHandle
 {
     internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject)
     {
-        Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
         Realm = world;
         RemoteObject = remoteObject;
+        Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
     }
 
     /// <inheritdoc/>
