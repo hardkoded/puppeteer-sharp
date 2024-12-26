@@ -9,21 +9,19 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public abstract class JSHandle : IJSHandle
     {
-        internal JSHandle(IsolatedWorld world, RemoteObject remoteObject)
+        internal JSHandle()
         {
-            Realm = world;
-            RemoteObject = remoteObject;
         }
 
         /// <inheritdoc/>
         public bool Disposed { get; protected set; }
 
         /// <inheritdoc/>
-        public RemoteObject RemoteObject { get; }
+        public abstract RemoteObject RemoteObject { get; }
 
         internal Func<Task> DisposeAction { get; set; }
 
-        internal IsolatedWorld Realm { get; }
+        internal abstract IsolatedWorld Realm { get; }
 
         internal Frame Frame => Realm.Environment as Frame;
 

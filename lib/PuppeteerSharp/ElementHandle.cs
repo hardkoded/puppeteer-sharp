@@ -19,9 +19,7 @@ namespace PuppeteerSharp
     {
         private ElementHandle _isolatedHandle;
 
-        internal ElementHandle(
-            IsolatedWorld world,
-            RemoteObject remoteObject) : base(world, remoteObject)
+        internal ElementHandle()
         {
         }
 
