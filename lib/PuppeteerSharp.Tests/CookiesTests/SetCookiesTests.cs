@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -184,6 +185,43 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.HttpOnly, Is.False);
             Assert.That(cookie.Secure, Is.False);
             Assert.That(cookie.Session, Is.True);
+        }
+
+        [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should set a cookie with a partitionKey")]
+        public async Task ShouldSetACookieWithAPartitionKey()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.AcceptInsecureCerts = true;
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+            var url = new Uri(page.Url);
+            var key = url.GetLeftPart(UriPartial.Authority);
+            await page.SetCookieAsync(new CookieParam
+            {
+                Url = url.AbsoluteUri,
+                Name = "partitionCookie",
+                Value = "partition",
+                Secure = true,
+                PartitionKey = key,
+            });
+            var cookies = await page.GetCookiesAsync();
+            Assert.That(cookies, Has.Exactly(1).Items);
+            var cookie = cookies.First();
+            Assert.That(cookie.Name, Is.EqualTo("partitionCookie"));
+            Assert.That(cookie.Value, Is.EqualTo("partition"));
+            Assert.That(cookie.Domain, Is.EqualTo(url.Host));
+            Assert.That(cookie.Path, Is.EqualTo("/"));
+            Assert.That(cookie.Expires, Is.EqualTo(-1));
+            Assert.That(cookie.Size, Is.EqualTo(24));
+            Assert.That(cookie.HttpOnly, Is.False);
+            Assert.That(cookie.Secure, Is.True);
+            Assert.That(cookie.Session, Is.True);
+            Assert.That(cookie.SourceScheme, Is.EqualTo(CookieSourceScheme.Secure));
+            if (TestConstants.IsChrome)
+                key = url.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.UriEscaped);
+            Assert.That(cookie.PartitionKey, Is.EqualTo(key));
         }
 
         [Test, Retry(2), PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should not set a cookie on a blank page")]
