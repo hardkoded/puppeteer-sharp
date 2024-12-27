@@ -30,6 +30,18 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 {
     public RemoteValue RemoteValue { get; } = value;
 
+    public bool IsPrimitiveValue
+    {
+        get
+        {
+            return RemoteValue.Type switch
+            {
+                "string" or "number" or "bigint" or "boolean" or "undefined" or "null" => true,
+                _ => false,
+            };
+        }
+    }
+
     internal override Realm Realm { get; } = realm;
 
     public static BidiJSHandle From(RemoteValue value, BidiRealm realm)
@@ -40,4 +52,15 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
     public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
 
     public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        if (IsPrimitiveValue)
+        {
+            return "JSHandle:" + RemoteValue.ToPrettyPrint();
+        }
+
+        return "JSHandle@" + RemoteValue.Type;
+    }
 }

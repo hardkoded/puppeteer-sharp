@@ -27,7 +27,9 @@ using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHandle
+#pragma warning disable CA2000
+internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHandle(BidiJSHandle.From(value, realm))
+#pragma warning restore CA2000
 {
     /// <summary>
     /// Bidi Remote value.

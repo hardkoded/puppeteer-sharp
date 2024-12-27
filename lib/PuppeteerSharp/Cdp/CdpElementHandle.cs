@@ -39,9 +39,10 @@ public class CdpElementHandle : ElementHandle
 
     internal CdpElementHandle(
         IsolatedWorld world,
-        RemoteObject remoteObject)
+#pragma warning disable CA2000
+        RemoteObject remoteObject) : base(new CdpJSHandle(world, remoteObject))
+#pragma warning restore CA2000
     {
-        Handle = new CdpJSHandle(world, remoteObject);
         Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
         _cdpFrame = IsolatedWorld.Frame as CdpFrame;
     }

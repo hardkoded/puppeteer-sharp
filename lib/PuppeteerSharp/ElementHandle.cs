@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
@@ -16,8 +17,9 @@ namespace PuppeteerSharp
     {
         private ElementHandle _isolatedHandle;
 
-        internal ElementHandle()
+        internal ElementHandle(JSHandle handle)
         {
+            Handle = handle;
         }
 
         /// <inheritdoc/>
@@ -28,12 +30,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Base handle.
         /// </summary>
-        protected JSHandle Handle { get; init; }
+        protected JSHandle Handle { get; }
 
         /// <summary>
         /// Element's page.
         /// </summary>
         protected abstract Page Page { get; }
+
+        /// <inheritdoc/>
+        public override string ToString() => Handle.ToString();
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ElementScreenshotOptions());
