@@ -22,45 +22,34 @@
 
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.QueryHandlers;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
+#pragma warning disable CA2000
+internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHandle(BidiJSHandle.From(value, realm))
+#pragma warning restore CA2000
 {
-    public RemoteValue RemoteValue { get; } = value;
+    /// <summary>
+    /// Bidi Remote value.
+    /// </summary>
+    public RemoteValue Value { get; } = value;
 
-    public bool IsPrimitiveValue
+    internal override Realm Realm => realm;
+
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
+
+    protected override Page Page { get; }
+
+    public static IJSHandle From(RemoteValue value, BidiRealm realm)
     {
-        get
-        {
-            return RemoteValue.Type switch
-            {
-                "string" or "number" or "bigint" or "boolean" or "undefined" or "null" => true,
-                _ => false,
-            };
-        }
+        return new BidiElementHandle(value, realm);
     }
-
-    internal override Realm Realm { get; } = realm;
-
-    public static BidiJSHandle From(RemoteValue value, BidiRealm realm)
-    {
-        return new BidiJSHandle(value, realm);
-    }
-
-    public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
 
     public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
 
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        if (IsPrimitiveValue)
-        {
-            return "JSHandle:" + RemoteValue.ToPrettyPrint();
-        }
+    public override Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths) => throw new System.NotImplementedException();
 
-        return "JSHandle@" + RemoteValue.Type;
-    }
+    public override Task<IFrame> ContentFrameAsync() => throw new System.NotImplementedException();
 }

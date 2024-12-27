@@ -274,7 +274,7 @@ namespace PuppeteerSharp
 
                     break;
 
-                case IJSHandle objectHandle:
+                case ICdpHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
 

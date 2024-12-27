@@ -29,7 +29,7 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp.Cdp;
 
 /// <inheritdoc/>
-public class CdpJSHandle : JSHandle
+public class CdpJSHandle : JSHandle, ICdpHandle
 {
     internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject)
     {
@@ -38,10 +38,15 @@ public class CdpJSHandle : JSHandle
         Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
     }
 
-    /// <inheritdoc/>
-    public override RemoteObject RemoteObject { get; }
+    /// <summary>
+    /// CDP remote object.
+    /// </summary>
+    public RemoteObject RemoteObject { get; }
 
-    internal override IsolatedWorld Realm { get; }
+    internal string Id => RemoteObject.ObjectId;
+
+    /// <inheritdoc/>
+    internal override Realm Realm { get; }
 
     /// <summary>
     /// Logger.

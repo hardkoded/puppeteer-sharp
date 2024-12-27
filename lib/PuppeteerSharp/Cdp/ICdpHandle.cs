@@ -20,47 +20,17 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
-using WebDriverBiDi.Script;
 
-namespace PuppeteerSharp.Bidi;
+namespace PuppeteerSharp.Cdp;
 
-internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
+/// <summary>
+/// CDP Specific handle info.
+/// </summary>
+internal interface ICdpHandle : IJSHandle
 {
-    public RemoteValue RemoteValue { get; } = value;
-
-    public bool IsPrimitiveValue
-    {
-        get
-        {
-            return RemoteValue.Type switch
-            {
-                "string" or "number" or "bigint" or "boolean" or "undefined" or "null" => true,
-                _ => false,
-            };
-        }
-    }
-
-    internal override Realm Realm { get; } = realm;
-
-    public static BidiJSHandle From(RemoteValue value, BidiRealm realm)
-    {
-        return new BidiJSHandle(value, realm);
-    }
-
-    public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
-
-    public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        if (IsPrimitiveValue)
-        {
-            return "JSHandle:" + RemoteValue.ToPrettyPrint();
-        }
-
-        return "JSHandle@" + RemoteValue.Type;
-    }
+    /// <summary>
+    /// CDP remote object.
+    /// </summary>
+    RemoteObject RemoteObject { get; }
 }

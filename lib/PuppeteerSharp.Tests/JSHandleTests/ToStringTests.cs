@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class ToStringTests : PuppeteerPageBaseTest
     {
-        public ToStringTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for primitives")]
         public async Task ShouldWorkForPrimitives()
         {
@@ -23,7 +19,15 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldWorkForComplicatedObjects()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("window");
-            Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@object"));
+
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@object"));
+            }
+            else
+            {
+                Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@window"));
+            }
         }
 
         [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with different subtypes")]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
 using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
@@ -48,11 +49,12 @@ namespace PuppeteerSharp.QueryHandlers
 
         private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, IElementHandle element, string accessibleName, string role)
         {
+            var cdpElementHandle = (CdpElementHandle)element;
             var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(
                 "Accessibility.queryAXTree",
                 new AccessibilityQueryAXTreeRequest()
                 {
-                    ObjectId = element.RemoteObject.ObjectId,
+                    ObjectId = cdpElementHandle.RemoteObject.ObjectId,
                     AccessibleName = accessibleName,
                     Role = role,
                 }).ConfigureAwait(false);
