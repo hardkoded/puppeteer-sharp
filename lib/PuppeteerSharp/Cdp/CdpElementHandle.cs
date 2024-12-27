@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Cdp;
 
 /// <inheritdoc />
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class CdpElementHandle : ElementHandle
+public class CdpElementHandle : ElementHandle, ICdpHandle
 {
     private readonly CdpFrame _cdpFrame;
 
@@ -52,6 +52,7 @@ public class CdpElementHandle : ElementHandle
     /// </summary>
     public RemoteObject RemoteObject => ((CdpJSHandle)Handle).RemoteObject;
 
+    /// <inheritdoc/>
     internal override Realm Realm => Handle.Realm;
 
     /// <summary>
