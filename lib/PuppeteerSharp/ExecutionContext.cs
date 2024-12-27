@@ -274,8 +274,8 @@ namespace PuppeteerSharp
 
                     break;
 
-                case IJSHandle objectHandle:
-                    return ((CdpJSHandle)objectHandle).FormatArgument(this);
+                case ICdpHandle objectHandle:
+                    return objectHandle.FormatArgument(this);
             }
 
             return new RuntimeCallFunctionOnRequestArgument
