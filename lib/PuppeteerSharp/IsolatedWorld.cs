@@ -37,7 +37,7 @@ namespace PuppeteerSharp
             Frame = frame;
             Worker = worker;
             IsMainWorld = isMainWorld;
-            _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
+            _logger = Client.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
             FrameUpdated();
@@ -50,7 +50,9 @@ namespace PuppeteerSharp
 
         internal Frame Frame { get; }
 
-        internal CDPSession Client => Frame?.Client ?? Worker?.Client;
+        internal ICDPSession Client => Frame?.Client ?? Worker?.Client;
+
+        internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 

@@ -54,7 +54,7 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    public sealed override CDPSession Client { get; protected set; }
+    public sealed override ICDPSession Client { get; protected set; }
 
     /// <inheritdoc/>
     public override IPage Page => FrameManager.Page;
@@ -65,6 +65,8 @@ public class CdpFrame : Frame
     internal FrameManager FrameManager { get; }
 
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+
+    internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
     /// <inheritdoc/>
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
@@ -334,5 +336,5 @@ public class CdpFrame : Frame
 
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
-        => FrameManager.GetDeviceRequestPromptManager(Client);
+        => FrameManager.GetDeviceRequestPromptManager(CdpCDPSession);
 }

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -47,7 +48,7 @@ namespace PuppeteerSharp
         public string Id { get; internal set; }
 
         /// <inheritdoc/>
-        public abstract CDPSession Client { get; protected set; }
+        public abstract ICDPSession Client { get; protected set; }
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => MainRealm;
@@ -111,7 +112,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = Client.Connection.CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 

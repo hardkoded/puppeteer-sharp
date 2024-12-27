@@ -14,6 +14,11 @@ namespace PuppeteerSharp.QueryHandlers
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
         private readonly QueryHandler _defaultHandler = new CssQueryHandler();
 
+        // The connection is a good place to keep the state of custom queries and injectors.
+        // Although I consider that the Browser class would be a better place for this,
+        // The connection is being shared between all the components involved in one browser instance
+        internal static CustomQuerySelectorRegistry Default { get; set; } = new();
+
         internal Dictionary<string, QueryHandler> InternalQueryHandlers => new()
         {
             ["aria"] = new AriaQueryHandler(),

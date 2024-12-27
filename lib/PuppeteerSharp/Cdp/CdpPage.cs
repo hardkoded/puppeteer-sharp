@@ -45,7 +45,7 @@ public class CdpPage : Page
 {
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
-    private readonly EmulationManager _emulationManager;
+    private readonly CdpEmulationManager _cdpEmulationManager;
     private readonly ILogger _logger;
     private readonly Task _closedFinishedTask;
     private readonly ConcurrentDictionary<string, Binding> _bindings = new();
@@ -69,7 +69,7 @@ public class CdpPage : Page
         Tracing = new Tracing(client);
         Coverage = new Coverage(client);
 
-        _emulationManager = new EmulationManager(client);
+        _cdpEmulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
         FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
@@ -126,7 +126,7 @@ public class CdpPage : Page
     public override IBrowserContext BrowserContext => PrimaryTarget.BrowserContext;
 
     /// <inheritdoc/>
-    public override bool IsJavaScriptEnabled => _emulationManager.JavascriptEnabled;
+    public override bool IsJavaScriptEnabled => _cdpEmulationManager.JavascriptEnabled;
 
     /// <inheritdoc />
     protected override Browser Browser => PrimaryTarget.Browser;
@@ -164,7 +164,7 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override Task SetGeolocationAsync(GeolocationOption options)
-        => _emulationManager.SetGeolocationAsync(options);
+        => _cdpEmulationManager.SetGeolocationAsync(options);
 
     /// <inheritdoc/>
     public override Task SetDragInterceptionAsync(bool enabled)
@@ -362,7 +362,7 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override Task SetJavaScriptEnabledAsync(bool enabled)
-        => _emulationManager.SetJavaScriptEnabledAsync(enabled);
+        => _cdpEmulationManager.SetJavaScriptEnabledAsync(enabled);
 
     /// <inheritdoc/>
     public override Task SetBypassCSPAsync(bool enabled) => PrimaryTargetClient.SendAsync(
@@ -371,11 +371,11 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override Task EmulateMediaTypeAsync(MediaType type)
-        => _emulationManager.EmulateMediaTypeAsync(type);
+        => _cdpEmulationManager.EmulateMediaTypeAsync(type);
 
     /// <inheritdoc/>
     public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
-        => _emulationManager.EmulateMediaFeaturesAsync(features);
+        => _cdpEmulationManager.EmulateMediaFeaturesAsync(features);
 
     /// <inheritdoc/>
     public override async Task SetViewportAsync(ViewPortOptions viewport)
@@ -385,7 +385,7 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(viewport));
         }
 
-        var needsReload = await _emulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
+        var needsReload = await _cdpEmulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
         Viewport = viewport;
 
         if (needsReload)
@@ -513,19 +513,19 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
-        => _emulationManager.EmulateVisionDeficiencyAsync(type);
+        => _cdpEmulationManager.EmulateVisionDeficiencyAsync(type);
 
     /// <inheritdoc/>
     public override Task EmulateTimezoneAsync(string timezoneId)
-        => _emulationManager.EmulateTimezoneAsync(timezoneId);
+        => _cdpEmulationManager.EmulateTimezoneAsync(timezoneId);
 
     /// <inheritdoc/>
     public override Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
-        => _emulationManager.EmulateIdleStateAsync(overrides);
+        => _cdpEmulationManager.EmulateIdleStateAsync(overrides);
 
     /// <inheritdoc/>
     public override Task EmulateCPUThrottlingAsync(decimal? factor = null)
-        => _emulationManager.EmulateCPUThrottlingAsync(factor);
+        => _cdpEmulationManager.EmulateCPUThrottlingAsync(factor);
 
     /// <inheritdoc/>
     public override Task<IResponse> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
@@ -799,7 +799,7 @@ public class CdpPage : Page
 
         if (options.OmitBackground)
         {
-            await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+            await _cdpEmulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
         }
 
         await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("() => documents.fonts.ready")
@@ -830,7 +830,7 @@ public class CdpPage : Page
 
         if (options.OmitBackground)
         {
-            await _emulationManager.ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
+            await _cdpEmulationManager.ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
         }
 
         return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file)
@@ -844,7 +844,7 @@ public class CdpPage : Page
         await using (stack.ConfigureAwait(false))
         {
             Debug.Assert(options != null, nameof(options) + " != null");
-
+            options.FromSurface ??= true;
             var clip = options.Clip;
             var captureBeyondViewport = options.CaptureBeyondViewport;
 
@@ -852,8 +852,8 @@ public class CdpPage : Page
                 options.OmitBackground &&
                 (type == ScreenshotType.Png || type == ScreenshotType.Webp))
             {
-                await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
-                stack.Defer(() => _emulationManager.ResetDefaultBackgroundColorAsync());
+                await _cdpEmulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
+                stack.Defer(() => _cdpEmulationManager.ResetDefaultBackgroundColorAsync());
             }
 
             if (clip != null && !captureBeyondViewport)
@@ -995,7 +995,7 @@ public class CdpPage : Page
             ((CdpMouse)Mouse).UpdateClient(Client);
             ((CdpTouchscreen)Touchscreen).UpdateClient(Client);
             Accessibility.UpdateClient(Client);
-            _emulationManager.UpdateClient(Client);
+            _cdpEmulationManager.UpdateClient(Client);
             Tracing.UpdateClient(Client);
             Coverage.UpdateClient(Client);
             await FrameManager.SwapFrameTreeAsync(Client).ConfigureAwait(false);
@@ -1017,7 +1017,7 @@ public class CdpPage : Page
         try
         {
             await FrameManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
-            await _emulationManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
+            await _cdpEmulationManager.RegisterSpeculativeSessionAsync(session).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -1250,7 +1250,7 @@ public class CdpPage : Page
     private Task ResetBackgroundColorAndViewportAsync(ScreenshotOptions options)
     {
         var omitBackgroundTask = options is { OmitBackground: true, Type: ScreenshotType.Png }
-            ? _emulationManager.ResetDefaultBackgroundColorAsync()
+            ? _cdpEmulationManager.ResetDefaultBackgroundColorAsync()
             : Task.CompletedTask;
         var setViewPortTask = (options?.FullPage == true && Viewport != null)
             ? SetViewportAsync(Viewport)

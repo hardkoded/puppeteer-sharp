@@ -71,5 +71,11 @@ namespace PuppeteerSharp
         /// <returns>A Task that when awaited detaches from the session target.</returns>
         /// <exception cref="T:PuppeteerSharp.PuppeteerException">If the <see cref="Connection"/> is closed.</exception>
         Task DetachAsync();
+
+        /// <summary>
+        /// Closes the session.
+        /// </summary>
+        /// <param name="closeReason">The close reason.</param>
+        void Close(string closeReason);
     }
 }

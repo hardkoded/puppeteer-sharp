@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -151,16 +152,16 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(queryHandler));
             }
 
-            Connection.CustomQuerySelectorRegistry.RegisterCustomQueryHandler(name, queryHandler);
+            CustomQuerySelectorRegistry.Default.RegisterCustomQueryHandler(name, queryHandler);
         }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)
-            => Connection.CustomQuerySelectorRegistry.UnregisterCustomQueryHandler(name);
+            => CustomQuerySelectorRegistry.Default.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
-            => Connection.CustomQuerySelectorRegistry.ClearCustomQueryHandlers();
+            => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
         /// <inheritdoc />
         public void Dispose()
@@ -192,7 +193,7 @@ namespace PuppeteerSharp
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => Connection.CustomQuerySelectorRegistry.GetCustomQueryHandlerNames();
+            => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was

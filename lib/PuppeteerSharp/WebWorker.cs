@@ -35,10 +35,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// The CDP session client the WebWorker belongs to.
         /// </summary>
-        public abstract CDPSession Client { get; }
-
-        /// <inheritdoc/>
-        CDPSession IEnvironment.Client => Client;
+        public abstract ICDPSession Client { get; }
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => World;

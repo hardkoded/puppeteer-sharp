@@ -31,7 +31,7 @@ using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Cdp;
 
-/// <inheritdoc />
+/// <inheritdoc cref="ElementHandle" />
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class CdpElementHandle : ElementHandle, ICdpHandle
 {
@@ -43,7 +43,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
         RemoteObject remoteObject) : base(new CdpJSHandle(world, remoteObject))
 #pragma warning restore CA2000
     {
-        Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
+        Logger = world.CdpCDPSession.Connection.LoggerFactory.CreateLogger(GetType());
         _cdpFrame = IsolatedWorld.Frame as CdpFrame;
     }
 
@@ -60,8 +60,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
     /// </summary>
     internal ILogger Logger { get; }
 
-    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry =>
-        Client.Connection.CustomQuerySelectorRegistry;
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
 
     internal string Id => RemoteObject.ObjectId;
 
@@ -70,7 +69,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
 
     private IsolatedWorld IsolatedWorld => (IsolatedWorld)Realm;
 
-    private CDPSession Client => Handle.Realm.Environment.Client;
+    private ICDPSession Client => Handle.Realm.Environment.Client;
 
     private FrameManager FrameManager => _cdpFrame.FrameManager;
 

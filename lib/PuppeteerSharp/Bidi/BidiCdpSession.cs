@@ -31,7 +31,7 @@ using Microsoft.Extensions.Logging;
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
-public class BidiCdpSession : ICDPSession
+public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) : ICDPSession
 {
     // I don't like the idea of having this static field. But this is the original implementation.
     private static readonly ConcurrentDictionary<string, BidiCdpSession> _sessions = new();
@@ -49,17 +49,17 @@ public class BidiCdpSession : ICDPSession
     public event EventHandler<SessionEventArgs> SessionDetached;
 
     /// <inheritdoc />
-    public ILoggerFactory LoggerFactory { get; }
+    public ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     /// <inheritdoc />
     public string Id { get; }
 
     /// <inheritdoc />
-    public string CloseReason { get; }
+    public string CloseReason { get; private set; }
 
     internal static IEnumerable<BidiCdpSession> Sessions => _sessions.Values;
 
-    internal BidiFrame Frame { get; set; }
+    internal BidiFrame Frame { get; set; } = bidiFrame;
 
     /// <inheritdoc />
     public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null) => throw new NotImplementedException();
@@ -69,6 +69,13 @@ public class BidiCdpSession : ICDPSession
 
     /// <inheritdoc />
     public Task DetachAsync() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public void Close(string reason = null)
+    {
+        CloseReason = reason;
+        OnClose();
+    }
 
     internal void OnClose()
     {
