@@ -156,8 +156,8 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            var cdpHandle = (CdpJSHandle)handle;
-            if (cdpHandle.Realm == this)
+            var cdpHandle = (ICdpHandle)handle;
+            if (((JSHandle)cdpHandle).Realm == this)
             {
                 return handle;
             }
