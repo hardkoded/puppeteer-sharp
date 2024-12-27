@@ -52,7 +52,7 @@ namespace PuppeteerSharp
                             // aren't plain objects so add subtypes when the use-case arises.
                             if (int.TryParse(kv.Key, out var index) && args.Length > index)
                             {
-                                switch (((CdpJSHandle)handle).RemoteObject.Subtype)
+                                switch (((ICdpHandle)handle).RemoteObject.Subtype)
                                 {
                                     case RemoteObjectSubtype.Node:
                                         args[index] = handle;
