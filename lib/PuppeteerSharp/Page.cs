@@ -534,10 +534,6 @@ namespace PuppeteerSharp
                             throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
                     }
-                    else
-                    {
-                        options.FromSurface ??= true;
-                    }
 
                     if (options.Clip != null && options.FullPage)
                     {

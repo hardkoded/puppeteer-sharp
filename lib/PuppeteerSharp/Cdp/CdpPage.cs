@@ -45,7 +45,7 @@ public class CdpPage : Page
 {
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
-    private readonly EmulationManager _emulationManager;
+    private readonly CdpEmulationManager _emulationManager;
     private readonly ILogger _logger;
     private readonly Task _closedFinishedTask;
     private readonly ConcurrentDictionary<string, Binding> _bindings = new();
@@ -69,7 +69,7 @@ public class CdpPage : Page
         Tracing = new Tracing(client);
         Coverage = new Coverage(client);
 
-        _emulationManager = new EmulationManager(client);
+        _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
         FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
@@ -844,7 +844,7 @@ public class CdpPage : Page
         await using (stack.ConfigureAwait(false))
         {
             Debug.Assert(options != null, nameof(options) + " != null");
-
+            options.FromSurface ??= true;
             var clip = options.Clip;
             var captureBeyondViewport = options.CaptureBeyondViewport;
 

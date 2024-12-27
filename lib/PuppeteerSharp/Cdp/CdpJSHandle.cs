@@ -35,7 +35,7 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     {
         Realm = world;
         RemoteObject = remoteObject;
-        Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
+        Logger = Client.LoggerFactory.CreateLogger(GetType());
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     /// </summary>
     private ILogger Logger { get; }
 
-    private CDPSession Client => Realm.Environment.Client;
+    private ICDPSession Client => Realm.Environment.Client;
 
     /// <inheritdoc/>
     public override async Task<T> JsonValueAsync<T>()

@@ -39,6 +39,7 @@ public class BidiFrame : Frame
 
     internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
+        Client = new BidiCdpSession(this, parentPage.BidiBrowser.LoggerFactory);
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;
@@ -60,7 +61,7 @@ public class BidiFrame : Frame
     public override IPage Page => BidiPage;
 
     /// <inheritdoc />
-    public override CDPSession Client { get; protected set; }
+    public override ICDPSession Client { get; protected set; }
 
     /// <inheritdoc />
     internal override Realm MainRealm => _realms.Default;

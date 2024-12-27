@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -114,7 +115,7 @@ namespace PuppeteerSharp
 
                             await InstallGlobalBindingAsync(new Binding(
                                 "__ariaQuerySelector",
-                                (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
+                                (Func<IElementHandle, string, Task<IElementHandle>>)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"].QueryOneAsync))
                                 .ConfigureAwait(false);
                             _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
                         },

@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -127,6 +128,36 @@ internal class BrowsingContext : IDisposable
         {
             Wait = wait,
         }).ConfigureAwait(false);
+    }
+
+    internal async Task ActivateAsync()
+    {
+        await Session.Driver.BrowsingContext.ActivateAsync(new ActivateCommandParameters(Id)).ConfigureAwait(false);
+    }
+
+    internal async Task<string> CaptureScreenshotAsync(ScreenshotParameters options)
+    {
+        var parameters = new CaptureScreenshotCommandParameters(Id)
+        {
+            Format = options.Format,
+            Clip = options.Clip,
+            Origin = options.Origin,
+        };
+
+        return (await Session.Driver.BrowsingContext.CaptureScreenshotAsync(parameters).ConfigureAwait(false)).Data;
+    }
+
+    internal async Task SetViewportAsync(SetViewportOptions options = null)
+    {
+        var parameters = new SetViewportCommandParameters(Id)
+        {
+            Viewport = options?.Viewport != null
+                ? new Viewport() { Width = options.Viewport.Width, Height = options.Viewport.Height }
+                : null,
+            DevicePixelRatio = options?.DevicePixelRatio,
+        };
+
+        await Session.Driver.BrowsingContext.SetViewportAsync(parameters).ConfigureAwait(false);
     }
 
     internal WindowRealm CreateWindowRealm(string sandbox = null)

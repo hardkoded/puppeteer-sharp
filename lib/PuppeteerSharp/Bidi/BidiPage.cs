@@ -23,21 +23,27 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
+using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
 public class BidiPage : Page
 {
+    private readonly CdpEmulationManager _cdpEmulationManager;
+
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
         BrowserContext = browserContext;
+        Browser = browserContext.Browser;
         BidiMainFrame = BidiFrame.From(this, null, browsingContext);
+        _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
     }
 
     /// <inheritdoc />
@@ -79,7 +85,8 @@ public class BidiPage : Page
     public override Task AuthenticateAsync(Credentials credentials) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task BringToFrontAsync() => throw new NotImplementedException();
+    public override async Task BringToFrontAsync()
+        => await BidiMainFrame.BrowsingContext.ActivateAsync().ConfigureAwait(false);
 
     /// <inheritdoc />
     public override Task EmulateVisionDeficiencyAsync(VisionDeficiency type) => throw new NotImplementedException();
@@ -139,7 +146,39 @@ public class BidiPage : Page
     public override Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetViewportAsync(ViewPortOptions viewport) => throw new NotImplementedException();
+    public override async Task SetViewportAsync(ViewPortOptions viewport)
+    {
+        if (viewport == null)
+        {
+            throw new ArgumentNullException(nameof(viewport));
+        }
+
+        if (!BidiBrowser.CdpSupported)
+        {
+            await BidiMainFrame.BrowsingContext.SetViewportAsync(
+                new SetViewportOptions()
+                {
+                    Viewport = viewport?.Width > 0 && viewport?.Height > 0
+                        ? new WebDriverBiDi.BrowsingContext.Viewport()
+                        {
+                            Width = (ulong)viewport.Width,
+                            Height = (ulong)viewport.Height,
+                        }
+                        : null,
+                    DevicePixelRatio = viewport?.DeviceScaleFactor,
+                }).ConfigureAwait(false);
+            Viewport = viewport;
+            return;
+        }
+
+        var needsReload = await _cdpEmulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
+        Viewport = viewport;
+
+        if (needsReload)
+        {
+            await ReloadAsync().ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc />
     public override Task SetCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();
@@ -207,7 +246,78 @@ public class BidiPage : Page
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    protected override Task<string> PerformScreenshotAsync(ScreenshotType type, ScreenshotOptions options) => throw new NotImplementedException();
+    protected override async Task<string> PerformScreenshotAsync(ScreenshotType type, ScreenshotOptions options)
+    {
+        Debug.Assert(options != null, nameof(options) + " != null");
+
+        if (options.OmitBackground)
+        {
+            throw new PuppeteerException("BiDi does not support 'omitBackground'.");
+        }
+
+        if (options.OptimizeForSpeed == true)
+        {
+            throw new PuppeteerException("BiDi does not support 'optimizeForSpeed'.");
+        }
+
+        if (options.FromSurface == true)
+        {
+            throw new PuppeteerException("BiDi does not support 'fromSurface'.");
+        }
+
+        if (options.Clip != null && options.Clip.Scale != 1)
+        {
+            throw new PuppeteerException("BiDi does not support 'scale' in 'clip'.");
+        }
+
+        BoundingBox box;
+        if (options.Clip != null)
+        {
+            if (options.CaptureBeyondViewport)
+            {
+                box = options.Clip;
+            }
+            else
+            {
+                // The clip is always with respect to the document coordinates, so we
+                // need to convert this to viewport coordinates when we aren't capturing
+                // beyond the viewport.
+                var points = await EvaluateFunctionAsync<decimal[]>(@"() => {
+                    if (!window.visualViewport) {
+                        throw new Error('window.visualViewport is not supported.');
+                    }
+                    return [
+                        window.visualViewport.pageLeft,
+                        window.visualViewport.pageTop,
+                    ];
+                }").ConfigureAwait(false);
+
+                options.Clip.X += decimal.Floor(points[0]);
+                options.Clip.Y += decimal.Floor(points[1]);
+            }
+        }
+
+        var fileType = options.Type switch
+        {
+            ScreenshotType.Jpeg => "jpg",
+            ScreenshotType.Png => "png",
+            ScreenshotType.Webp => "webp",
+            _ => "png",
+        };
+
+        // TODO: Missing box
+        var data = await BidiMainFrame.BrowsingContext.CaptureScreenshotAsync(new ScreenshotParameters()
+        {
+            Origin = options.CaptureBeyondViewport ? ScreenshotOrigin.Document : ScreenshotOrigin.Viewport,
+            Format = new ImageFormat()
+            {
+                Type = $"image/{fileType}",
+                Quality = options.Quality / 100,
+            },
+        }).ConfigureAwait(false);
+
+        return data;
+    }
 
     /// <inheritdoc />
     protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();

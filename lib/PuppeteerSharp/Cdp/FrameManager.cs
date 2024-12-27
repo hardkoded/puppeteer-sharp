@@ -340,7 +340,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            var context = new ExecutionContext(frame.Client ?? Client, contextPayload, world);
+            var context = new ExecutionContext((CDPSession)frame.Client ?? Client, contextPayload, world);
             world.SetContext(context);
 
             var key = $"{session.Id}:{contextPayload.Id}";

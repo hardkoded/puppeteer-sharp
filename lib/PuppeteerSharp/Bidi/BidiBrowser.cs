@@ -48,6 +48,7 @@ public class BidiBrowser : Browser
         _options = options;
         BrowserCore = browserCore;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
+        LoggerFactory = loggerFactory;
     }
 
     /// <inheritdoc />
@@ -74,6 +75,8 @@ public class BidiBrowser : Browser
         "cdp.Debugger.scriptParsed",
         "cdp.Page.screencastFrame",
     ];
+
+    internal ILoggerFactory LoggerFactory { get; set; }
 
     internal BiDiDriver Driver => BrowserCore.Session.Driver;
 

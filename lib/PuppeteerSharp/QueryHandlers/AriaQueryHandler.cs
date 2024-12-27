@@ -47,7 +47,7 @@ namespace PuppeteerSharp.QueryHandlers
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
         }
 
-        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, IElementHandle element, string accessibleName, string role)
+        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(ICDPSession client, IElementHandle element, string accessibleName, string role)
         {
             var cdpElementHandle = (CdpElementHandle)element;
             var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(

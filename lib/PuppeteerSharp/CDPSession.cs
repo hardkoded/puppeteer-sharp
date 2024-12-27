@@ -56,9 +56,10 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task DetachAsync();
 
-        internal void OnSessionReady(CDPSession session) => Ready?.Invoke(this, new SessionEventArgs(session));
+        /// <inheritdoc/>
+        public abstract void Close(string closeReason);
 
-        internal abstract void Close(string closeReason);
+        internal void OnSessionReady(CDPSession session) => Ready?.Invoke(this, new SessionEventArgs(session));
 
         internal void OnSessionAttached(CDPSession session)
             => SessionAttached?.Invoke(this, new SessionEventArgs(session));

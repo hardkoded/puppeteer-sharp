@@ -20,19 +20,13 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System.Threading.Tasks;
+using WebDriverBiDi.BrowsingContext;
 
-namespace PuppeteerSharp.Bidi;
+namespace PuppeteerSharp.Bidi.Core;
 
-internal class BidiWebWorker : WebWorker
+internal class SetViewportOptions
 {
-    public BidiWebWorker(string url) : base(url)
-    {
-    }
+    public Viewport Viewport { get; set; }
 
-    public override ICDPSession Client { get; }
-
-    internal override IsolatedWorld World { get; }
-
-    public override Task CloseAsync() => throw new System.NotImplementedException();
+    public double? DevicePixelRatio { get; set; }
 }
