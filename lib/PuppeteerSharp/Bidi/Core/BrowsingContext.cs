@@ -175,6 +175,9 @@ internal class BrowsingContext : IDisposable
     internal async Task TraverseHistoryAsync(int delta)
         => await Session.Driver.BrowsingContext.TraverseHistoryAsync(new TraverseHistoryCommandParameters(Id, delta)).ConfigureAwait(false);
 
+    internal async Task ReloadAsync()
+        => await Session.Driver.BrowsingContext.ReloadAsync(new ReloadCommandParameters(Id)).ConfigureAwait(false);
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()

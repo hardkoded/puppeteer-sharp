@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageReloadTests : PuppeteerPageBaseTest
     {
-        public PageReloadTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.reload", "should work")]
         public async Task ShouldWork()
         {

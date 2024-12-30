@@ -101,7 +101,27 @@ public class BidiPage : Page
     public override Task EmulateCPUThrottlingAsync(decimal? factor = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IResponse> ReloadAsync(NavigationOptions options) => throw new NotImplementedException();
+    public override async Task<IResponse> ReloadAsync(NavigationOptions options)
+    {
+        var waitForNavigationTask = WaitForNavigationAsync(options);
+        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+
+        try
+        {
+            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("no such history entry"))
+            {
+                return null;
+            }
+
+            throw new NavigationException(ex.Message, ex);
+        }
+
+        return waitForNavigationTask.Result;
+    }
 
     /// <inheritdoc />
     public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
