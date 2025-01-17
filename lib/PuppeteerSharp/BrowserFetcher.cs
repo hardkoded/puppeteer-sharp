@@ -433,7 +433,7 @@ namespace PuppeteerSharp
             {
                 ExecuteSetup(archivePath, outputPath);
             }
-            else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
+            else if (archivePath.Contains(".tar."))
             {
                 ExtractTar(archivePath, outputPath);
             }
