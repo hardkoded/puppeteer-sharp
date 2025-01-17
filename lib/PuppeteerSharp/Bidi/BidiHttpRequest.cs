@@ -117,7 +117,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         _request.Success += (sender, e) =>
         {
             Response = BidiHttpResponse.From(e.Response, this, BidiPage.BidiBrowser.CdpSupported);
-            BidiPage.OnRequest(this);
         };
 
         _request.Success += (sender, args) =>
