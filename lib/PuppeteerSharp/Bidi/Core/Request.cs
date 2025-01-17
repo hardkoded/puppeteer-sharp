@@ -60,6 +60,8 @@ internal class Request : IDisposable
 
     public Request LastRedirect { get; set; }
 
+    public string Url => _eventArgs.Request.Url;
+
     public static Request From(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
         var request = new Request(browsingContext, args);

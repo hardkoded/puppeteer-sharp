@@ -75,7 +75,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
-        var request = new BidiHttpRequest(bidiRequest, frame, redirect);
+        var request = new BidiHttpRequest(bidiRequest, frame, redirect) { Url = bidiRequest.Url, };
         request.Initialize();
         return request;
     }
