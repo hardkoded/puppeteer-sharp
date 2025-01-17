@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             {
                 window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
             }");
-            var response = await Page.ReloadAsync();
+            await Page.ReloadAsync();
             Assert.That(await Page.EvaluateFunctionAsync<int>("() => 1"), Is.EqualTo(1));
         }
 

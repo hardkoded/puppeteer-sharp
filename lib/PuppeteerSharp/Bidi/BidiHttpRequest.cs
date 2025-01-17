@@ -75,7 +75,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
-        var request = new BidiHttpRequest(bidiRequest, frame, redirect);
+        var request = new BidiHttpRequest(bidiRequest, frame, redirect) { Url = bidiRequest.Url, };
         request.Initialize();
         return request;
     }
@@ -117,7 +117,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         _request.Success += (sender, e) =>
         {
             Response = BidiHttpResponse.From(e.Response, this, BidiPage.BidiBrowser.CdpSupported);
-            BidiPage.OnRequest(this);
         };
 
         _request.Success += (sender, args) =>
