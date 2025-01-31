@@ -124,7 +124,10 @@ namespace PuppeteerSharp
                 firefoxArguments.Add($"{userDataDir.Quote()}");
             }
 
-            Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
+            if (!options.DisableCreateFirefoxProfile)
+            {
+                Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
+            }
 
             return (firefoxArguments, tempUserDataDirectory);
         }

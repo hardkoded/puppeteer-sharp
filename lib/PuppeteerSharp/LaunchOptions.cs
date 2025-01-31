@@ -208,6 +208,11 @@ namespace PuppeteerSharp
         public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
 
         /// <summary>
+        /// Kameleo workaround for https://github.com/hardkoded/puppeteer-sharp/issues/2772.
+        /// </summary>
+        public bool DisableCreateFirefoxProfile { get; set; } = false;
+
+        /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         internal Func<Target, bool> IsPageTarget { get; set; }
