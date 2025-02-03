@@ -209,10 +209,11 @@ namespace PuppeteerSharp
 
         private static void ExtractTar(string zipPath, string folderPath)
         {
+            var compression = zipPath.EndsWith("xz", StringComparison.InvariantCulture) ? "J" : "j";
             new DirectoryInfo(folderPath).Create();
             using var process = new Process();
             process.StartInfo.FileName = "tar";
-            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.Arguments = $"-xv{compression}f \"{zipPath}\" -C \"{folderPath}\"";
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.Start();
