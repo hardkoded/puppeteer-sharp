@@ -41,7 +41,7 @@ jobs:
         uses: actions/deploy-pages@v2
         id: deployment
       - name: Upload Site to artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'Website'
           path: docs/
