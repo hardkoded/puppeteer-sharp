@@ -6,11 +6,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryAllArrayTests : PuppeteerPageBaseTest
     {
-        public QueryAllArrayTests() : base()
-        {
-        }
-
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "queryAllArray", "$$eval should handle many elements")]
+        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryAllArray", "$$eval should handle many elements")]
         public async Task EvalShouldHandleManyElements()
         {
             await Page.SetContentAsync("");
