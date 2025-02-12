@@ -62,7 +62,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
 
     internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
 
-    internal string Id => RemoteObject.ObjectId;
+    internal override string Id => RemoteObject.ObjectId;
 
     /// <inheritdoc/>
     protected override Page Page => _cdpFrame.FrameManager.Page;
@@ -161,20 +161,6 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
 
                 return handle;
             });
-
-    /// <inheritdoc />
-    public override async ValueTask DisposeAsync()
-    {
-        if (Disposed)
-        {
-            return;
-        }
-
-        Disposed = true;
-
-        await Handle.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
-    }
 
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();

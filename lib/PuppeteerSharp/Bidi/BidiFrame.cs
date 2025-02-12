@@ -343,11 +343,11 @@ public class BidiFrame : Frame
 
     private Task SetFrameContentAsync(string content)
         => EvaluateFunctionAsync(
-            @"""html => {{
+            @"html => {{
                 document.open();
                 document.write(html);
                 document.close();
-            }}""",
+            }}",
             content);
 
     private class Realms(BidiFrameRealm defaultRealm, BidiFrameRealm internalRealm)

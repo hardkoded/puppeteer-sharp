@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using WebDriverBiDi.Script;
 
@@ -43,9 +44,11 @@ namespace PuppeteerSharp.Bidi;
 /// <returns>Resolved argument.</returns>
 public delegate Task<LocalValue> BidiLazyArg(IPuppeteerUtilWrapper context);
 
-internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
+internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILoggerFactory loggerFactory) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
 {
     private static readonly Regex _sourceUrlRegex = new(@"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$", RegexOptions.Multiline);
+
+    private readonly ILogger _logger = loggerFactory.CreateLogger<BidiRealm>();
 
     public bool Disposed { get; private set; }
 
@@ -61,16 +64,27 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     public virtual Task<IJSHandle> GetPuppeteerUtilAsync() => throw new NotImplementedException();
 
-    internal override Task<IJSHandle> AdoptHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+    internal override Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+        => EvaluateFunctionHandleAsync("node => node", handle);
 
     internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
 
-    internal override Task<IJSHandle> TransferHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+    internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
+    {
+        if (handle is not JSHandle jsHandle || jsHandle.Realm == this)
+        {
+            return handle;
+        }
 
-    internal async override Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        var transferredHandle = AdoptHandleAsync(handle);
+        await handle.DisposeAsync().ConfigureAwait(false);
+        return await transferredHandle.ConfigureAwait(false);
+    }
+
+    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
 
-    internal async override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
         => CreateHandleAsync(await EvaluateAsync(false, false, script).ConfigureAwait(false));
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
@@ -83,6 +97,33 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     internal override async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
         => DeserializeResult<JsonElement?>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
+
+    internal async Task DestroyHandlesAsync(BidiJSHandle[] handles)
+    {
+        if (Disposed)
+        {
+            return;
+        }
+
+        var handleIds = handles
+            .Select(handle => handle.Id)
+            .Where(id => id is not null)
+            .ToArray();
+
+        if (handleIds.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await realm.DisownAsync(handleIds).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to destroy handles");
+        }
+    }
 
     protected virtual void Initialize()
     {

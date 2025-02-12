@@ -27,6 +27,8 @@ namespace PuppeteerSharp
 
         internal abstract CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; }
 
+        internal override string Id => Handle.Id;
+
         /// <summary>
         /// Base handle.
         /// </summary>
@@ -39,6 +41,20 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public override string ToString() => Handle.ToString();
+
+        /// <inheritdoc/>
+        public override async ValueTask DisposeAsync()
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            Disposed = true;
+
+            await Handle.DisposeAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ElementScreenshotOptions());
