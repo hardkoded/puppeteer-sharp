@@ -1814,5 +1814,20 @@
     "expectations": [
       "FAIL"
     ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[page.spec] *Page.setContent*should await resources to load",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
   }
 ]
