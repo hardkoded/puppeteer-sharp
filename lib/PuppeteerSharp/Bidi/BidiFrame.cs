@@ -97,7 +97,14 @@ public class BidiFrame : Frame
     public override Task<IElementHandle> AddScriptTagAsync(AddTagOptions options) => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetContentAsync(string html, NavigationOptions options = null) => throw new System.NotImplementedException();
+    public override Task SetContentAsync(string html, NavigationOptions options = null)
+    {
+        var waitForLoadTask = WaitForLoadAsync(options);
+        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
+        var waitTask = Task.WhenAny([waitForLoadTask, waitForNetworkIdleTask]);
+
+        return Task.WhenAll(SetFrameContentAsync(html), waitTask);
+    }
 
     /// <inheritdoc />
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
@@ -333,6 +340,15 @@ public class BidiFrame : Frame
             _frames.TryRemove(browsingContext, out var _);
         };
     }
+
+    private Task SetFrameContentAsync(string content)
+        => EvaluateFunctionAsync(
+            @"""html => {{
+                document.open();
+                document.write(html);
+                document.close();
+            }}""",
+            content);
 
     private class Realms(BidiFrameRealm defaultRealm, BidiFrameRealm internalRealm)
     {
