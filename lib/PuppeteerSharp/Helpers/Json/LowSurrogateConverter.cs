@@ -16,11 +16,24 @@ internal class LowSurrogateConverter : JsonConverter<string>
         }
 
         var span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan.ToArray();
-        return Encoding.UTF8.GetString(span);
+        var value = Encoding.UTF8.GetString(span);
+
+        if (reader.ValueIsEscaped)
+        {
+            value = JsonUnescape(value);
+        }
+
+        return value;
     }
 
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value);
+    }
+
+    private static string JsonUnescape(string jsonString)
+    {
+        using var doc = JsonDocument.Parse($"\"{jsonString}\"");
+        return doc.RootElement.GetString();
     }
 }
