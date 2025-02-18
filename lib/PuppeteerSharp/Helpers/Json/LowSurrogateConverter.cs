@@ -18,12 +18,19 @@ internal class LowSurrogateConverter : JsonConverter<string>
         var span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan.ToArray();
         var value = Encoding.UTF8.GetString(span);
 
-        if (reader.ValueIsEscaped)
+        try
         {
-            value = JsonUnescape(value);
-        }
+            if (reader.ValueIsEscaped)
+            {
+                value = JsonUnescape(value);
+            }
 
-        return value;
+            return value;
+        }
+        catch
+        {
+            return value;
+        }
     }
 
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
