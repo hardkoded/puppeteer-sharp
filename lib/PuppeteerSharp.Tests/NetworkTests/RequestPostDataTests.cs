@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("Hello, world!"));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "PuppeteerSharpnetwork Request.postData", "should work with low surrogate")]
+        [Test, Retry(2), PuppeteerTest("network.spec", "PuppeteerSharp network Request.postData", "should work with low surrogate")]
         public async Task ShouldWorkWithLowSurrogate()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
