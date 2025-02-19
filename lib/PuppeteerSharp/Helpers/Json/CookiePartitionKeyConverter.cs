@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Helpers.Json
         {
             if (value != null && writer != null)
             {
-                writer.WriteStartObject("partitionKey");
+                writer.WriteStartObject();
                 writer.WriteString("topLevelSite", value);
                 writer.WriteBoolean("hasCrossSiteAncestor", false);
                 writer.WriteEndObject();
