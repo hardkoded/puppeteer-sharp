@@ -43,7 +43,7 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     /// </summary>
     public RemoteObject RemoteObject { get; }
 
-    internal string Id => RemoteObject.ObjectId;
+    internal override string Id => RemoteObject.ObjectId;
 
     /// <inheritdoc/>
     internal override Realm Realm { get; }
