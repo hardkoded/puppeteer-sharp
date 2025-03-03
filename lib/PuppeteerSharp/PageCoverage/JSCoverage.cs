@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly Dictionary<string, string> _scriptURLs = new();
-        private readonly Dictionary<string, string> _scriptSources = new();
+        private readonly ConcurrentDictionary<string, string> _scriptURLs = new();
+        private readonly ConcurrentDictionary<string, string> _scriptSources = new();
         private readonly ILogger _logger;
 
         private CDPSession _client;
@@ -140,8 +141,8 @@ namespace PuppeteerSharp.PageCoverage
                 {
                     ScriptId = scriptParseResponse.ScriptId,
                 }).ConfigureAwait(false);
-                _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response.ScriptSource);
+                _scriptURLs.TryAdd(scriptParseResponse.ScriptId, scriptParseResponse.Url);
+                _scriptSources.TryAdd(scriptParseResponse.ScriptId, response.ScriptSource);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -181,11 +182,17 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchiveNightly(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-x86_64.tar.bz2",
+                Platform.Linux => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-x86_64.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"firefox-{buildId}.en-US.mac.dmg",
                 Platform.Win32 or Platform.Win64 => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}.zip",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
+
+        private static string GetFormat(string buildId)
+        {
+            var majorVersion = int.Parse(buildId.Split('.')[0], CultureInfo.CurrentCulture);
+            return majorVersion >= 135 ? "xz" : "bz2";
+        }
 
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
