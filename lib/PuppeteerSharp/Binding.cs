@@ -76,15 +76,24 @@ namespace PuppeteerSharp
 
                 const string taskResultPropertyName = "Result";
                 var result = await BindingUtils.ExecuteBindingAsync(Function, args).ConfigureAwait(false);
-                if (result is Task taskResult)
-                {
-                    await taskResult.ConfigureAwait(false);
 
-                    if (taskResult.GetType().IsGenericType)
-                    {
-                        // the task is already awaited and therefore the call to property Result will not deadlock
-                        result = taskResult.GetType().GetProperty(taskResultPropertyName)?.GetValue(taskResult);
-                    }
+                switch (result)
+                {
+                    case Task<object> taskObjectResult:
+                        result = await taskObjectResult.ConfigureAwait(false);
+                        break;
+                    case Task taskResult:
+                        {
+                            await taskResult.ConfigureAwait(false);
+
+                            if (taskResult.GetType().IsGenericType)
+                            {
+                                // the task is already awaited and therefore the call to property Result will not deadlock
+                                result = taskResult.GetType().GetProperty(taskResultPropertyName)?.GetValue(taskResult);
+                            }
+
+                            break;
+                        }
                 }
 
                 await context.EvaluateFunctionAsync(
