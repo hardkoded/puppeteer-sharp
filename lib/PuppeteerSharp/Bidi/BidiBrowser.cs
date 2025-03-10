@@ -21,12 +21,12 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
-using PuppeteerSharp.Helpers;
 using WebDriverBiDi;
 using WebDriverBiDi.Session;
 
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiBrowser : Browser
 {
     private readonly LaunchOptions _options;
-    private readonly ConcurrentSet<BidiBrowserContext> _browserContexts = [];
+    private readonly ConcurrentDictionary<string, BidiBrowserContext> _browserContexts = [];
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
 
@@ -56,6 +56,16 @@ public class BidiBrowser : Browser
 
     /// <inheritdoc />
     public override ITarget Target => _target;
+
+    /// <inheritdoc/>
+    public override IBrowserContext DefaultContext
+    {
+        get
+        {
+            _browserContexts.TryGetValue(BrowserCore.DefaultUserContext.Id, out var value);
+            return value;
+        }
+    }
 
     internal static string[] SubscribeModules { get; } =
     [
@@ -125,7 +135,7 @@ public class BidiBrowser : Browser
         =>
         [
             _target,
-            .. _browserContexts.SelectMany(context => context.Targets()).ToArray()
+            .. _browserContexts.Values.SelectMany(context => context.Targets()).ToArray()
         ];
 
     /// <inheritdoc />
@@ -189,7 +199,7 @@ public class BidiBrowser : Browser
             userContext,
             new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport, });
 
-        _browserContexts.Add(browserContext);
+        _browserContexts.TryAdd(userContext.Id, browserContext);
 
         browserContext.TargetCreated += (sender, args) => OnTargetCreated(args);
         browserContext.TargetDestroyed += (sender, args) => OnTargetDestroyed(args);

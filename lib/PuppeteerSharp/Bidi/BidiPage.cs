@@ -30,6 +30,8 @@ using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Network;
+using WebDriverBiDi.Storage;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -124,6 +126,9 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
+    public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
+
+    /// <inheritdoc />
     public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
@@ -201,7 +206,53 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task SetCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();
+    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    {
+        if (cookies == null)
+        {
+            throw new ArgumentNullException(nameof(cookies));
+        }
+
+        var pageUrl = Url;
+        var pageUrlStartsWithHttp = pageUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase);
+
+        foreach (var cookie in cookies)
+        {
+            var cookieUrl = cookie.Url ?? string.Empty;
+
+            if (cookieUrl == string.Empty && pageUrlStartsWithHttp)
+            {
+                cookieUrl = pageUrl;
+            }
+
+            if (cookieUrl == "about:blank")
+            {
+                throw new PuppeteerException($"Blank page can not have cookie '{cookie.Name}'");
+            }
+
+            if (cookieUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new PuppeteerException($"Data URL page can not have cookie '{cookie.Name}'");
+            }
+
+            if (!string.IsNullOrEmpty(cookie.PartitionKey))
+            {
+                throw new PuppeteerException("BiDi only allows domain partition keys");
+            }
+
+            Uri.TryCreate(cookieUrl, UriKind.Absolute, out var normalizedUrl);
+
+            var domain = cookie.Domain ?? normalizedUrl?.Host;
+
+            if (string.IsNullOrEmpty(domain))
+            {
+                throw new PuppeteerException("At least one of the url and domain needs to be specified");
+            }
+
+            var bidiCookie = new PartialCookie(cookie.Name, BytesValue.FromString(cookie.Value), domain);
+
+        }
+    }
 
     /// <inheritdoc />
     public override async Task CloseAsync(PageCloseOptions options = null)
