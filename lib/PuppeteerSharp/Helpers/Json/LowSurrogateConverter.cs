@@ -15,14 +15,14 @@ internal class LowSurrogateConverter : JsonConverter<string>
             return null;
         }
 
-        var valueSpan = reader.HasValueSequence
+        var span = reader.HasValueSequence
             ? reader.ValueSequence.ToArray()
 #if NET8_0_OR_GREATER
             : reader.ValueSpan;
 #else
             : reader.ValueSpan.ToArray();
 #endif
-        var value = Encoding.UTF8.GetString(valueSpan);
+        var value = Encoding.UTF8.GetString(span);
 
         try
         {
