@@ -44,7 +44,7 @@ public class BidiPage : Page
     {
         BrowserContext = browserContext;
         Browser = browserContext.Browser;
-        BidiMainFrame = BidiFrame.From(this, null, browsingContext);
+        BidiMainFrame = BidiFrame.From(this, null, browsingContext, browserContext.LoggerFactory);
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
     }
 
@@ -58,7 +58,15 @@ public class BidiPage : Page
     public override Target Target { get; }
 
     /// <inheritdoc />
-    public override IFrame[] Frames { get; }
+    public override IFrame[] Frames
+    {
+        get
+        {
+            var frames = BidiMainFrame.ChildFrames.ToList();
+            frames.Insert(0, BidiMainFrame);
+            return [.. frames];
+        }
+    }
 
     /// <inheritdoc />
     public override WebWorker[] Workers { get; }
@@ -206,7 +214,7 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    public async override Task SetCookieAsync(params CookieParam[] cookies)
     {
         if (cookies == null)
         {
@@ -251,6 +259,17 @@ public class BidiPage : Page
 
             var bidiCookie = new PartialCookie(cookie.Name, BytesValue.FromString(cookie.Value), domain);
 
+            if (cookie.PartitionKey != null)
+            {
+                await BrowserContext.Us.setCookie(
+                    bidiCookie,
+                    cookie.partitionKey,
+                );
+            }
+            else
+            {
+                await this.#frame.browsingContext.setCookie(bidiCookie);
+            }
         }
     }
 

@@ -20,6 +20,8 @@ namespace PuppeteerSharp
 
         internal abstract Realm Realm { get; }
 
+        internal abstract string Id { get; }
+
         internal Frame Frame => Realm.Environment as Frame;
 
         /// <inheritdoc/>

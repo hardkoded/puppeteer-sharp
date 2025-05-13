@@ -29,6 +29,8 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
     private readonly WindowRealm _realm = realm;
     private bool _bindingsInstalled;
 
+    internal override IEnvironment Environment => frame;
+
     public static BidiFrameRealm From(WindowRealm realm, BidiFrame frame)
     {
         var frameRealm = new BidiFrameRealm(realm, frame);
@@ -50,6 +52,8 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         await installTcs.Task.ConfigureAwait(false);
         return await base.GetPuppeteerUtilAsync().ConfigureAwait(false);
     }
+
+    internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
 
     protected override void Initialize()
     {

@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -32,20 +33,17 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
-/// <summary>
-/// A BidiLazyArg is an evaluation argument that will be resolved when the CDP call is built.
-/// </summary>
-/// <param name="context">Execution context.</param>
-/// <returns>Resolved argument.</returns>
-public delegate Task<LocalValue> BidiLazyArg(IPuppeteerUtilWrapper context);
-
-internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
+internal abstract class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
 {
+    private bool _bindingsInstalled;
     private static readonly Regex _sourceUrlRegex = new(@"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$", RegexOptions.Multiline);
+    private readonly TaskQueue _puppeteerUtilQueue = new();
+    private IJSHandle _puppeteerUtil;
 
     public bool Disposed { get; private set; }
 
@@ -53,25 +51,93 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     internal override IEnvironment Environment { get; }
 
+    internal Core.Session Session => realm.Session;
+
     public void Dispose()
     {
         Disposed = true;
         TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
     }
 
-    public virtual Task<IJSHandle> GetPuppeteerUtilAsync() => throw new NotImplementedException();
+    public async virtual Task<IJSHandle> GetPuppeteerUtilAsync()
+    {
+        if (!_bindingsInstalled)
+        {
+            _bindingsInstalled = true;
+        }
 
-    internal override Task<IJSHandle> AdoptHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+        await _puppeteerUtilQueue.Enqueue(async () =>
+        {
+            if (_puppeteerUtil == null)
+            {
+                await Session.ScriptInjector.InjectAsync(
+                    async (script) =>
+                    {
+                        if (_puppeteerUtil != null)
+                        {
+                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                        }
 
-    internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
+                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+                    },
+                    _puppeteerUtil == null).ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+        return _puppeteerUtil;
+    }
 
-    internal override Task<IJSHandle> TransferHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+    public async Task DestroyHandlesAsync(params BidiJSHandle[] handles)
+    {
+        if (Disposed)
+        {
+            return;
+        }
 
-    internal async override Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        var handleIds = handles.Select(handle => handle.Id).Where(id => id != null).ToList();
+
+        if (handleIds.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await realm.DisownAsync(handleIds).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // TODO: Implement logger factory here.
+            Debug.WriteLine(ex);
+        }
+    }
+
+    internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+    {
+        return await EvaluateFunctionHandleAsync("node => node", handle).ConfigureAwait(false) as IElementHandle;
+    }
+
+    internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
+    {
+        if (handle is not JSHandle jsHandle)
+        {
+            throw new PuppeteerException("Unable to transfer handle");
+        }
+
+        if (jsHandle.Realm == this)
+        {
+            return jsHandle;
+        }
+
+        var transferredHandle = AdoptHandleAsync(jsHandle);
+        await jsHandle.DisposeAsync().ConfigureAwait(false);
+        return await transferredHandle.ConfigureAwait(false);
+    }
+
+    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
 
-    internal async override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        => CreateHandleAsync(await EvaluateAsync(false, false, script).ConfigureAwait(false));
+    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
         => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
@@ -236,14 +302,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return (T)result;
     }
 
-    private async Task<LocalValue> FormatArgumentAsync(object arg)
+    private async Task<ArgumentValue> FormatArgumentAsync(object arg)
     {
         if (arg is TaskCompletionSource<object> tcs)
         {
             arg = await tcs.Task.ConfigureAwait(false);
         }
 
-        if (arg is BidiLazyArg lazyArg)
+        if (arg is LazyArg lazyArg)
         {
             arg = await lazyArg(this).ConfigureAwait(false);
         }
@@ -289,14 +355,30 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             case float floatValue:
                 return LocalValue.Number(floatValue);
             case IEnumerable enumerable:
-                var list = new List<LocalValue>();
+                var list = new List<ArgumentValue>();
                 foreach (var item in enumerable)
                 {
                     list.Add(await FormatArgumentAsync(item).ConfigureAwait(false));
                 }
 
-                return LocalValue.Array(list);
-            case IJSHandle objectHandle:
+                return LocalValue.Array(list.Cast<LocalValue>().ToList());
+            case JSHandle objectHandle:
+                if (objectHandle.Realm != this)
+                {
+                    // TODO: Implement this
+                }
+
+                // TODO: See if we can unify these to conditions
+                if (objectHandle is BidiJSHandle bidiHandle)
+                {
+                    return bidiHandle.RemoteValue.ToRemoteReference();
+                }
+
+                if (objectHandle is BidiElementHandle bidiElementHandle)
+                {
+                    return bidiElementHandle.Value.ToRemoteReference();
+                }
+
                 // TODO: Implement this
                 return null;
 

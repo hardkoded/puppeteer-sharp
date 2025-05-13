@@ -335,6 +335,6 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
+    protected override DeviceRequestPromptManager GetDeviceRequestPromptManager()
         => FrameManager.GetDeviceRequestPromptManager(CdpCDPSession);
 }

@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -37,9 +38,12 @@ public class BidiFrame : Frame
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
     private readonly Realms _realms;
 
-    internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
+    private readonly ILoggerFactory _loggerFactory;
+
+    internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext, ILoggerFactory loggerFactory)
     {
-        Client = new BidiCdpSession(this, parentPage.BidiBrowser.LoggerFactory);
+        Client = new BidiCdpSession(this, loggerFactory);
+        _loggerFactory = loggerFactory;
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;
@@ -52,7 +56,18 @@ public class BidiFrame : Frame
     }
 
     /// <inheritdoc />
-    public override IReadOnlyCollection<IFrame> ChildFrames { get; }
+    public override IReadOnlyCollection<IFrame> ChildFrames
+    {
+        get
+        {
+            return BrowsingContext.Children.Select(child =>
+            {
+                _frames.TryGetValue(child, out var frame);
+
+                return frame;
+            }).Where(frame => frame != null).ToList();
+        }
+    }
 
     /// <inheritdoc/>
     public override string Url => BrowsingContext.Url;
@@ -186,15 +201,15 @@ public class BidiFrame : Frame
         return waitForResponseTask.Result;
     }
 
-    internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
+    /// <inheritdoc />
+    protected override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
+
+    internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext, ILoggerFactory loggerFactory)
     {
-        parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext);
+        parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext, loggerFactory);
         parentFrame.Initialize();
         return parentFrame;
     }
-
-    /// <inheritdoc />
-    protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
 
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
     {
@@ -259,12 +274,12 @@ public class BidiFrame : Frame
     {
         foreach (var browsingContext in BrowsingContext.Children)
         {
-            CreateFrameTarget(browsingContext);
+            CreateFrameTarget(browsingContext, _loggerFactory);
         }
 
         BrowsingContext.BrowsingContextCreated += (sender, args) =>
         {
-            CreateFrameTarget(args.BrowsingContext);
+            CreateFrameTarget(args.BrowsingContext, _loggerFactory);
         };
 
         BrowsingContext.Closed += (sender, args) =>
@@ -322,9 +337,9 @@ public class BidiFrame : Frame
         };
     }
 
-    private void CreateFrameTarget(BrowsingContext browsingContext)
+    private void CreateFrameTarget(BrowsingContext browsingContext, ILoggerFactory loggerFactory)
     {
-        var frame = From(null, this, browsingContext);
+        var frame = From(null, this, browsingContext, loggerFactory);
         _frames.TryAdd(browsingContext, frame);
         ((BidiPage)Page).OnFrameAttached(new FrameEventArgs(frame));
 

@@ -44,6 +44,8 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 
     internal override Realm Realm { get; } = realm;
 
+    internal override string Id => RemoteValue.Handle;
+
     public static BidiJSHandle From(RemoteValue value, BidiRealm realm)
     {
         return new BidiJSHandle(value, realm);
@@ -51,7 +53,16 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 
     public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
 
-    public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
+    public override async ValueTask DisposeAsync()
+    {
+        if (Disposed)
+        {
+            return;
+        }
+
+        Disposed = true;
+        await realm.DestroyHandlesAsync(this).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public override string ToString()

@@ -9,20 +9,22 @@ namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class FrameGoToTests : PuppeteerPageBaseTest
     {
-        public FrameGoToTests() : base()
-        {
-        }
-
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should navigate subframes")]
         public async Task ShouldNavigateSubFrames()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")), Has.Exactly(1).Items);
-            Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")), Has.Exactly(1).Items);
+            Assert.Multiple(() =>
+            {
+                Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/one-frame.html")), Has.Exactly(1).Items);
+                Assert.That(Page.Frames.Where(f => f.Url.Contains("/frames/frame.html")), Has.Exactly(1).Items);
+            });
             var childFrame = Page.FirstChildFrame();
             var response = await childFrame.GoToAsync(TestConstants.EmptyPage);
-            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(childFrame, Is.SameAs(response.Frame));
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(childFrame, Is.SameAs(response.Frame));
+            });
         }
 
         [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.goto", "should reject when frame detaches")]
@@ -53,9 +55,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
             // Attach three frames.
             var matchingData = new MatchingResponseData[]
             {
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage)},
-                new MatchingResponseData{ FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame3", TestConstants.EmptyPage)}
+                new() { FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage)},
+                new() { FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage)},
+                new() { FrameTask =  FrameUtils.AttachFrameAsync(Page, "frame3", TestConstants.EmptyPage)}
             };
 
             await Task.WhenAll(matchingData.Select(m => m.FrameTask));
@@ -80,20 +82,23 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 await waitRequestTask;
             }
             // Respond from server out-of-order.
-            var serverResponseTexts = new string[] { "AAA", "BBB", "CCC" };
+            var serverResponseTexts = new[] { "AAA", "BBB", "CCC" };
             for (var i = 0; i < 3; ++i)
             {
                 matchingData[i].ServerResponseTcs.TrySetResult(serverResponseTexts[i]);
                 var response = await matchingData[i].NavigationTask;
-                Assert.That(response.Frame, Is.SameAs(matchingData[i].FrameTask.Result));
-                Assert.That(await response.TextAsync(), Is.EqualTo(serverResponseTexts[i]));
+                await Assert.MultipleAsync(async () =>
+                {
+                    Assert.That(response.Frame, Is.SameAs(matchingData[i].FrameTask.Result));
+                    Assert.That(await response.TextAsync(), Is.EqualTo(serverResponseTexts[i]));
+                });
             }
         }
 
         private sealed class MatchingResponseData
         {
-            public Task<IFrame> FrameTask { get; internal set; }
-            public TaskCompletionSource<string> ServerResponseTcs { get; internal set; } = new TaskCompletionSource<string>();
+            public Task<IFrame> FrameTask { get; internal init; }
+            public TaskCompletionSource<string> ServerResponseTcs { get; } = new();
             public Task<IResponse> NavigationTask { get; internal set; }
         }
     }

@@ -24,6 +24,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 
@@ -39,8 +40,11 @@ public class BidiBrowserContext : BrowserContext
     {
         UserContext = userContext;
         Browser = browser;
+        LoggerFactory = browser.LoggerFactory;
         DefaultViewport = options.DefaultViewport;
     }
+
+    internal ILoggerFactory LoggerFactory { get; }
 
     internal ViewPortOptions DefaultViewport { get; set; }
 

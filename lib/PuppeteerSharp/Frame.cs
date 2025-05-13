@@ -385,7 +385,7 @@ namespace PuppeteerSharp
         /// Gets the prompts manager for the current client.
         /// </summary>
         /// <returns>The <see cref="DeviceRequestPromptManager"/>.</returns>
-        protected internal abstract DeviceRequestPromptManager GetDeviceRequestPromptManager();
+        protected abstract DeviceRequestPromptManager GetDeviceRequestPromptManager();
 
         private Task<ElementHandle> GetDocumentAsync()
         {

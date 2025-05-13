@@ -35,6 +35,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     {
         _data = data;
         _request = request;
+        Request = request;
         Status = (HttpStatusCode)data.Status;
         Url = data.Url;
     }

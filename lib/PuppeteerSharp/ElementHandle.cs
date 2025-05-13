@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
@@ -26,6 +25,8 @@ namespace PuppeteerSharp
         IFrame IElementHandle.Frame => Frame;
 
         internal abstract CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; }
+
+        internal override string Id => Handle.Id;
 
         /// <summary>
         /// Base handle.
@@ -627,6 +628,20 @@ namespace PuppeteerSharp
                     .ConfigureAwait(false);
                 return handle;
             });
+
+        /// <inheritdoc/>
+        public override async ValueTask DisposeAsync()
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            Disposed = true;
+
+            await Handle.DisposeAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null)
