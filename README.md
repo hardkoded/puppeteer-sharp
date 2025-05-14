@@ -172,6 +172,6 @@ A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) 
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;github.com&#x2F;tolgabalci.png" width="60px" alt="User avatar: Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;nogginbox.png" width="60px" alt="User avatar: Richard Garside" /></a><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;github.com&#x2F;tolgabalci.png" width="60px" alt="User avatar: Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;nogginbox.png" width="60px" alt="User avatar: Richard Garside" /></a><a href="https://github.com/rogue6800"><img src="https:&#x2F;&#x2F;github.com&#x2F;rogue6800.png" width="60px" alt="User avatar: Hayden Ravenscroft" /></a><!-- sponsors -->
 
 
