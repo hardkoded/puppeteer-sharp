@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CefSharp.Dom.Input;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace CefSharp.Dom
@@ -65,6 +66,8 @@ namespace CefSharp.Dom
             Id = frameId;
             IsMainFrame = isMainFrame;
 
+            Logger = frameManager.Connection.LoggerFactory.CreateLogger(GetType());
+
             LifecycleEvents = new List<string>();
 
             MainWorld = new DOMWorld(FrameManager, this, FrameManager.TimeoutSettings);
@@ -110,6 +113,11 @@ namespace CefSharp.Dom
         /// Gets the parent frame, if any. Detached frames and main frames return <c>null</c>
         /// </summary>
         public Frame ParentFrame { get; private set; }
+
+        /// <summary>
+        /// Logger.
+        /// </summary>
+        protected ILogger Logger { get; }
 
         internal FrameManager FrameManager { get; }
 
@@ -609,6 +617,43 @@ namespace CefSharp.Dom
                 ParentFrame.RemoveChildFrame(this);
             }
             ParentFrame = null;
+        }
+
+        /// <summary>
+        /// The frame element associated with this frame (if any).
+        /// </summary>
+        /// <returns>Task which resolves to the frame element.</returns>
+        public async Task<ElementHandle> FrameElementAsync()
+        {
+            var parentFrame = ParentFrame;
+            if (parentFrame == null)
+            {
+                return null;
+            }
+
+            var list = await parentFrame.EvaluateFunctionHandleAsync(@"() => {
+                return document.querySelectorAll('iframe, frame');
+            }").ConfigureAwait(false);
+
+            await foreach (var iframe in list.TransposeIterableHandleAsync())
+            {
+                var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
+                if (frame?.Id == Id)
+                {
+                    return iframe as ElementHandle;
+                }
+
+                try
+                {
+                    await iframe.DisposeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    Logger.LogWarning("FrameElementAsync: Error disposing iframe");
+                }
+            }
+
+            return null;
         }
     }
 }

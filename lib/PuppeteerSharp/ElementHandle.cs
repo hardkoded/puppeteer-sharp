@@ -209,7 +209,7 @@ namespace CefSharp.Dom
         public async Task ClickAsync(ClickOptions options = null)
         {
             await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var point = await ClickablePointAsync().ConfigureAwait(false);
+            var point = await ClickablePointAsync(options?.OffSet).ConfigureAwait(false);
             await DevToolsContext.Mouse.ClickAsync(point.X, point.Y, options).ConfigureAwait(false);
         }
 
@@ -288,15 +288,27 @@ namespace CefSharp.Dom
         }
 
         /// <summary>
+        /// Scrolls element into view if needed, and then uses <see cref="Touchscreen.TapAsync(decimal, decimal)"/> to tap the element
+        /// at the specified <see cref="TapOptions.OffSet"/> or in the center of the element if OffSet is null.
+        /// </summary>
+        /// <param name="options">tap options</param>
+        /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
+        /// <returns>Task which resolves when the element is successfully tapped</returns>
+        public async Task TapAsync(TapOptions options)
+        {
+            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
+            var point = await ClickablePointAsync(options?.OffSet).ConfigureAwait(false);
+            await DevToolsContext.Touchscreen.TapAsync(point.X, point.Y).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Scrolls element into view if needed, and then uses <see cref="Touchscreen.TapAsync(decimal, decimal)"/> to tap in the center of the element.
         /// </summary>
         /// <exception cref="PuppeteerException">if the element is detached from DOM</exception>
         /// <returns>Task which resolves when the element is successfully tapped</returns>
         public async Task TapAsync()
         {
-            await ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-            var point = await ClickablePointAsync().ConfigureAwait(false);
-            await DevToolsContext.Touchscreen.TapAsync(point.X, point.Y).ConfigureAwait(false);
+            await TapAsync(null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -676,6 +688,24 @@ namespace CefSharp.Dom
         }
 
         /// <summary>
+        /// Returns the middle point within an element unless a specific offset is provided.
+        /// </summary>
+        /// <param name="offset">Optional offset.</param>
+        /// <exception cref="PuppeteerException">When the node is not visible or not an HTMLElement.</exception>
+        /// <returns>A <see cref="Task"/> that resolves to the clickable point.</returns>
+        public async Task<BoxModelPoint> ClickablePointAsync(Offset? offset = null)
+        {
+            var box = await ClickableBoxAsync().ConfigureAwait(false) ?? throw new PuppeteerException("Node is either not clickable or not an Element");
+
+            if (offset != null)
+            {
+                return new BoxModelPoint() { X = box.X + offset.Value.X, Y = box.Y + offset.Value.Y, };
+            }
+
+            return new BoxModelPoint() { X = box.X + (box.Width / 2), Y = box.Y + (box.Height / 2), };
+        }
+
+        /// <summary>
         /// Gets a clickable point for the current element (currently the mid point).
         /// </summary>
         /// <returns>Task that resolves to the x, y point that describes the element's position.</returns>
@@ -811,6 +841,100 @@ namespace CefSharp.Dom
                 area += ((p1.X * p2.Y) - (p2.X * p1.Y)) / 2;
             }
             return Math.Abs(area);
+        }
+
+        private async Task<BoundingBox> ClickableBoxAsync()
+        {
+            var boxes = await EvaluateFunctionAsync<BoundingBox[]>(@"element => {
+                if (!(element instanceof Element)) {
+                    return null;
+                }
+                return [...element.getClientRects()].map(rect => {
+                    return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+                });
+            }").ConfigureAwait(false);
+
+            if (boxes == null || boxes.Length == 0)
+            {
+                return null;
+            }
+
+            await IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
+
+            var frame = ExecutionContext.Frame;
+            var parentFrame = frame.ParentFrame;
+            while (parentFrame != null)
+            {
+                var handle = await frame.FrameElementAsync().ConfigureAwait(false)
+                    ?? throw new PuppeteerException("Unsupported frame type");
+
+                var parentBox = await handle.EvaluateFunctionAsync<BoundingBox>(@"element => {
+                    // Element is not visible.
+                    if (element.getClientRects().length === 0) {
+                        return null;
+                    }
+                    const rect = element.getBoundingClientRect();
+                    const style = window.getComputedStyle(element);
+                    return {
+                        x:
+                        rect.left +
+                            parseInt(style.paddingLeft, 10) +
+                            parseInt(style.borderLeftWidth, 10),
+                        y:
+                        rect.top +
+                            parseInt(style.paddingTop, 10) +
+                            parseInt(style.borderTopWidth, 10),
+                    };
+                }").ConfigureAwait(false);
+
+                if (parentBox == null)
+                {
+                    return null;
+                }
+
+                foreach (var box in boxes)
+                {
+                    box.X += parentBox.X;
+                    box.Y += parentBox.Y;
+                }
+
+                await handle.IntersectBoundingBoxesWithFrameAsync(boxes).ConfigureAwait(false);
+                frame = parentFrame;
+                parentFrame = frame.ParentFrame;
+            }
+
+            var resultBox = boxes.FirstOrDefault(box => box.Width >= 1 && box.Height >= 1);
+
+            return resultBox;
+        }
+
+        private async Task IntersectBoundingBoxesWithFrameAsync(BoundingBox[] boxes)
+        {
+            var documentBox = await EvaluateFunctionAsync<BoundingBox>(@"() => {
+                    return {
+                        width: document.documentElement.clientWidth,
+                        height: document.documentElement.clientHeight,
+                    };
+                }").ConfigureAwait(false);
+
+            foreach (var box in boxes)
+            {
+                IntersectBoundingBox(box, documentBox.Width, documentBox.Height);
+            }
+        }
+
+        private void IntersectBoundingBox(BoundingBox box, decimal width, decimal height)
+        {
+            box.Width = Math.Max(
+                box.X >= 0
+                    ? Math.Min(width - box.X, box.Width)
+                    : Math.Min(width, box.Width + box.X),
+                0);
+            box.Height = Math.Max(
+                box.Y >= 0
+                    ? Math.Min(height - box.Y, box.Height)
+                    : Math.Min(height, box.Height + box.Y),
+                0);
         }
     }
 }

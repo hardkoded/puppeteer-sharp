@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CefSharp.Dom
@@ -111,6 +113,66 @@ namespace CefSharp.Dom
             var result = await arrayHandle.EvaluateFunctionAsync<T>(pageFunction, args).ConfigureAwait(false);
             await arrayHandle.DisposeAsync().ConfigureAwait(false);
             return result;
+        }
+
+        internal static async IAsyncEnumerable<ElementHandle> TransposeIterableHandleAsync(this JSHandle handle)
+        {
+            var iterator = await handle.EvaluateFunctionHandleAsync(@"iterable => {
+                return (async function* () {
+                    yield* iterable;
+                })();
+            }").ConfigureAwait(false);
+
+            await foreach (var item in iterator.TransposeIteratorHandleAsync())
+            {
+                yield return item;
+            }
+        }
+
+        internal static async IAsyncEnumerable<ElementHandle> TransposeIteratorHandleAsync(this JSHandle iterator)
+        {
+            try
+            {
+                IEnumerable<ElementHandle> result;
+                do
+                {
+                    result = await iterator.FastTransposeIteratorHandleAsync().ConfigureAwait(false);
+                    foreach (var item in result)
+                    {
+                        yield return item;
+                    }
+                }
+                while (result.Any());
+            }
+            finally
+            {
+                await iterator.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+
+        internal static async Task<IEnumerable<ElementHandle>> FastTransposeIteratorHandleAsync(this JSHandle handle)
+        {
+            var array = await handle.EvaluateFunctionHandleAsync(
+                @"async (iterator, size) =>
+                {
+                    const results = [];
+                    while (results.length < size)
+                    {
+                        const result = await iterator.next();
+                        if (result.done)
+                        {
+                            break;
+                        }
+                        results.push(result.value);
+                    }
+                    return results;
+                }",
+                20).ConfigureAwait(false);
+
+            var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
+
+            await array.DisposeAsync().ConfigureAwait(false);
+            return properties.Values.Where(handle => handle is ElementHandle).Cast<ElementHandle>();
         }
     }
 }

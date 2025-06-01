@@ -19,5 +19,10 @@ namespace CefSharp.Dom.Input
         /// The button to use for the click. Defaults to <see cref="MouseButton.Left"/>
         /// </summary>
         public MouseButton Button { get; set; } = MouseButton.Left;
+
+        /// <summary>
+        /// Offset for the clickable point relative to the top-left corner of the border-box.
+        /// </summary>
+        public Offset? OffSet { get; set; }
     }
 }

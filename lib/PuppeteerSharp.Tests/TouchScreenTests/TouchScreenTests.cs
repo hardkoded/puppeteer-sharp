@@ -40,5 +40,18 @@ namespace PuppeteerSharp.Tests.TouchScreenTests
                 "Touchend: 0"
             }, await DevToolsContext.EvaluateExpressionAsync<string[]>("getResult()"));
         }
+
+        [PuppeteerFact]
+        public async Task ShouldReportClickForOffSet()
+        {
+            await DevToolsContext.EmulateAsync(_iPhone);
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var button = await DevToolsContext.QuerySelectorAsync("button");
+            await button.TapAsync(new CefSharp.Dom.Input.TapOptions { OffSet = new Offset(5, 5) });
+
+            var actual = await DevToolsContext.EvaluateExpressionAsync<string>("result");
+
+            Assert.Equal("Clicked", actual);
+        }
     }
 }
