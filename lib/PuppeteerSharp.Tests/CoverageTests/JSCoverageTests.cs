@@ -110,9 +110,31 @@ namespace PuppeteerSharp.Tests.CoverageTests
             var coverage = await Page.Coverage.StopJSCoverageAsync();
             Assert.That(coverage, Has.Exactly(1).Items);
             var entry = coverage[0];
-            Assert.That(entry.Ranges, Has.Exactly(1).Items);
-            var range = entry.Ranges[0];
-            Assert.That(entry.Text.Substring(range.Start, range.End - range.Start), Is.EqualTo("console.log('used!');"));
+            Assert.That(entry.Ranges, Has.Exactly(2).Items);
+            var range1 = entry.Ranges[0];
+            Assert.That(entry.Text.Substring(range1.Start, range1.End - range1.Start), Is.EqualTo("\n"));
+            var range2 = entry.Ranges[1];
+            Assert.That(entry.Text.Substring(range2.Start, range2.End - range2.Start), Is.EqualTo("console.log('used!');if(true===false)"));
+        }
+
+        [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report right ranges for \"per function\" scope")]
+        public async Task ShouldReportRightRangesForPerFunctionScope()
+        {
+            var coverageOptions = new CoverageStartOptions
+            {
+                UseBlockCoverage = false,
+            };
+
+            await Page.Coverage.StartJSCoverageAsync(coverageOptions);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/jscoverage/ranges.html");
+            var coverage = await Page.Coverage.StopJSCoverageAsync();
+            Assert.That(coverage, Has.Exactly(1).Items);
+            var entry = coverage[0];
+            Assert.That(entry.Ranges, Has.Exactly(2).Items);
+            var range1 = entry.Ranges[0];
+            Assert.That(entry.Text.Substring(range1.Start, range1.End - range1.Start), Is.EqualTo("\n"));
+            var range2 = entry.Ranges[1];
+            Assert.That(entry.Text.Substring(range2.Start, range2.End - range2.Start), Is.EqualTo("console.log('used!');if(true===false)console.log('unused!');"));
         }
 
         [Test, Retry(2), PuppeteerTest("coverage.spec", "Coverage specs JSCoverage", "should report scripts that have no coverage")]

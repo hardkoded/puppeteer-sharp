@@ -17,7 +17,9 @@ namespace PuppeteerSharp.PageCoverage
         /// <summary>
         /// Starts JS coverage.
         /// </summary>
-        /// <param name="options">Set of configurable options for coverage.</param>
+        /// <param name="options">Set of configurable options for coverage defaults to
+        /// resetOnNavigation : true, reportAnonymousScripts : false,
+        /// includeRawScriptCoverage : false, useBlockCoverage : true.</param>
         /// <returns>A task that resolves when coverage is started.</returns>
         Task StartJSCoverageAsync(CoverageStartOptions options = null);
 
