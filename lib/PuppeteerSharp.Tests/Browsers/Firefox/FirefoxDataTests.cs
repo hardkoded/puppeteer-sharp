@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
             Assert.That(
               BrowserData.Firefox.RelativeExecutablePath(Platform.MacOS, "111.0a1"),
               Is.EqualTo(Path.Combine(
-                    "Firefox Nightly.app",
+                    "Firefox.app",
                     "Contents",
                     "MacOS",
                     "firefox"
