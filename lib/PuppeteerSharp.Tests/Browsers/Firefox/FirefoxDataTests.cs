@@ -10,19 +10,19 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
         public void ShouldResolveUrlsForNightly()
         {
             Assert.That(
-                BrowserData.Firefox.ResolveDownloadUrl(Platform.Linux, "111.0a1", null),
+                BrowserData.Firefox.ResolveDownloadUrl(Platform.Linux, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.linux-x86_64.tar.bz2"));
             Assert.That(
-                BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOS, "111.0a1", null),
+                BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOS, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg"));
             Assert.That(
-                BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOSArm64, "111.0a1", null),
+                BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOSArm64, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg"));
             Assert.That(
-                BrowserData.Firefox.ResolveDownloadUrl(Platform.Win32, "111.0a1", null),
+                BrowserData.Firefox.ResolveDownloadUrl(Platform.Win32, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win32.zip"));
             Assert.That(
-                BrowserData.Firefox.ResolveDownloadUrl(Platform.Win64, "111.0a1", null),
+                BrowserData.Firefox.ResolveDownloadUrl(Platform.Win64, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win64.zip"));
         }
 
@@ -122,11 +122,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 
             Assert.That(
               BrowserData.Firefox.RelativeExecutablePath(Platform.Win32, "111.0a1"),
-              Is.EqualTo(Path.Combine("firefox", "firefox.exe")));
-
-            Assert.That(
-              Path.Combine("firefox", "firefox.exe"),
-              Is.EqualTo(BrowserData.Firefox.RelativeExecutablePath(Platform.Win64, "111.0a1")));
+              Is.EqualTo(Path.Combine("core", "firefox.exe")));
         }
     }
 }
