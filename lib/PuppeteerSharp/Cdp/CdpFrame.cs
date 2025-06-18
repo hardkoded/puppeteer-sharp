@@ -114,7 +114,7 @@ public class CdpFrame : Frame
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
-                ReferrerPolicy = referrerPolicy ?? string.Empty,
+                ReferrerPolicy = referrerPolicy,
                 FrameId = Id,
             }).ConfigureAwait(false);
 
