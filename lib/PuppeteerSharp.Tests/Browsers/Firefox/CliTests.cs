@@ -13,11 +13,11 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
     {
         private readonly string _cacheDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-        [OneTimeSetUp]
+        [SetUp]
         public void CreateDir()
             => new DirectoryInfo(_cacheDir).Create();
 
-        [OneTimeTearDown]
+        [TearDown]
         public void DeleteDir()
             => new Cache(_cacheDir).Clear();
 

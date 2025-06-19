@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests
     {
         protected IBrowserContext Context { get; set; }
 
-        [OneTimeSetUp]
+        [SetUp]
         public async Task CreateContextAsync()
         {
             Context = await Browser.CreateBrowserContextAsync();

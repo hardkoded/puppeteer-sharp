@@ -8,14 +8,14 @@ namespace PuppeteerSharp.Tests
     {
         protected IPage Page { get; set; }
 
-        [OneTimeSetUp]
+        [SetUp]
         public async Task CreatePageAsync()
         {
             Page = await Context.NewPageAsync();
             Page.DefaultTimeout = Debugger.IsAttached ? TestConstants.DebuggerAttachedTestTimeout : TestConstants.DefaultPuppeteerTimeout;
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public async Task ClosePageAsync()
         {
             if (Page is not null)

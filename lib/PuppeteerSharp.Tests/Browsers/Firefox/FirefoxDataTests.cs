@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg"));
             Assert.That(
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.MacOSArm64, "nightly_111.0a1", null),
-                Is.EqualTo("https://archicve.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg"));
+                Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.mac.dmg"));
             Assert.That(
                 BrowserData.Firefox.ResolveDownloadUrl(Platform.Win32, "nightly_111.0a1", null),
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win32.zip"));

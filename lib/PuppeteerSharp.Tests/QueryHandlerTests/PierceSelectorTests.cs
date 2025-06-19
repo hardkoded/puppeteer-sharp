@@ -7,7 +7,11 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
 {
     public class PierceSelectorTests : PuppeteerPageBaseTest
     {
-        [OneTimeSetUp]
+        public PierceSelectorTests() : base()
+        {
+        }
+
+        [SetUp]
         public async Task SetDefaultContentAsync()
         {
             await Page.SetContentAsync(@"
@@ -27,7 +31,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
                 ");
         }
 
-        [OneTimeTearDown]
+        [TearDown]
         public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();

@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         {
         }
 
-        [OneTimeSetUp]
+        [SetUp]
         public async Task CreateNewPageAsync()
         {
             Context = Browser.DefaultContext;
