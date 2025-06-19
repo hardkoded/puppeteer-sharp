@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
 {
     public class ClickTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should work")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("result"), Is.EqualTo("Clicked"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should work for Shadow DOM v1")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should work for Shadow DOM v1")]
         public async Task ShouldWorkForShadowDomV1()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/shadow.html");
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await Page.EvaluateExpressionAsync<bool>("clicked"), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should not work for TextNodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should not work for TextNodes")]
         public async Task ShouldNotWorkForTextNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(exception.Message, Does.Contain("is not of type HTMLElement"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for detached nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for detached nodes")]
         public async Task ShouldThrowForDetachedNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(exception.Message, Is.EqualTo("Node is detached from document"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for hidden nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for hidden nodes")]
         public async Task ShouldThrowForHiddenNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for recursively hidden nodes")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for recursively hidden nodes")]
         public async Task ShouldThrowForRecursivelyHiddenNodes()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for <br> elements")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should throw for <br> elements")]
         public async Task ShouldThrowForBrElements()
         {
             await Page.SetContentAsync("hello<br>goodbye");
@@ -75,7 +75,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(exception.Message, Is.EqualTo("Node is either not clickable or not an Element"));
         }
 
-        [Test, Retry(2), PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should return Point data")]
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.click", "should return Point data")]
         public async Task ShouldReturnPointData()
         {
             var clicks = new List<BoxModelPoint>();

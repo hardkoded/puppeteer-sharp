@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
 {
     public class QueryObjectsTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should work")]
+        [Test, PuppeteerTest("queryObjects.spec", "page.queryObjects", "should work")]
         public async Task ShouldWork()
         {
             // Create a custom class
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             }", objectsHandle), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should work for non-trivial page")]
+        [Test, PuppeteerTest("queryObjects.spec", "page.queryObjects", "should work for non-trivial page")]
         public async Task ShouldWorkForNonTrivialPage()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             }", objectsHandle), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail for disposed handles")]
+        [Test, PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail for disposed handles")]
         public async Task ShouldFailForDisposedHandles()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("HTMLBodyElement.prototype");
@@ -77,7 +77,7 @@ namespace PuppeteerSharp.Tests.QueryObjectsTests
             Assert.That(exception!.Message, Is.EqualTo("Prototype JSHandle is disposed!"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail primitive values as prototypes")]
+        [Test, PuppeteerTest("queryObjects.spec", "page.queryObjects", "should fail primitive values as prototypes")]
         public async Task ShouldFailPrimitiveValuesAsPrototypes()
         {
             var prototypeHandle = await Page.EvaluateExpressionHandleAsync("42");

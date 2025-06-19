@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageAuthenticateTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
+        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(newResponse.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
+        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
         public async Task ShouldFailIfWrongCredentials()
         {
             Server.SetAuth("/empty.html", "user2", "pass2");
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
+        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should allow disable authentication")]
         public async Task ShouldAllowDisableAuthentication()
         {
             Server.SetAuth("/empty.html", "user3", "pass3");
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]
+        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should not disable caching")]
         public async Task ShouldNotDisableCaching()
         {
             Server.SetAuth("/cached/one-style.css", "user4", "pass4");

@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle non-breaking spaces")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle non-breaking spaces")]
         public async Task ShouldHandleNonBreakingSpaces()
         {
             await Page.SetContentAsync(
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(button, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle non-breaking spaces")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle non-breaking spaces")]
         public async Task ShouldHandleNonBreakingSpaces2()
         {
             await Page.SetContentAsync(
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await ExpectFound(button);
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle zero width spaces")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should handle zero width spaces")]
         public async Task ShouldHandleZeroWidthSpaces()
         {
             await Page.SetContentAsync(
@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(button, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "parseAriaSelector", "should find button")]
         public async Task ShouldFindButton()
         {
             await Page.SetContentAsync(@"

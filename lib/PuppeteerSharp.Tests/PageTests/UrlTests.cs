@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.url", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.url", "should work")]
         public async Task ShouldWork()
         {
             Assert.That(Page.Url, Is.EqualTo(TestConstants.AboutBlank));

@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
 {
     public class FirefoxDataTests
     {
-        [Test, Retry(2), PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for Nightly")]
+        [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for Nightly")]
         public void ShouldResolveUrlsForNightly()
         {
             Assert.That(
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central/firefox-111.0a1.en-US.win64.zip"));
         }
 
-        [Test, Retry(2), PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for beta")]
+        [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for beta")]
         public void ShouldResolveUrlsForBeta()
         {
             Assert.That(
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/releases/115.0b8/win64/en-US/Firefox Setup 115.0b8.exe"));
         }
 
-        [Test, Retry(2), PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for stable")]
+        [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for stable")]
         public void ShouldResolveUrlsForStable()
         {
             Assert.That(
@@ -66,7 +66,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 Is.EqualTo("https://archive.mozilla.org/pub/firefox/releases/114.0/win64/en-US/Firefox Setup 114.0.exe"));
         }
 
-        [Test, Retry(2), PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for devedition")]
+        [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve URLs for devedition")]
         public void ShouldResolveUrlsForDevedition()
         {
             Assert.That(
@@ -86,7 +86,7 @@ namespace PuppeteerSharp.Tests.Browsers.Firefox
                 Is.EqualTo("https://archive.mozilla.org/pub/devedition/releases/114.0b8/win64/en-US/Firefox Setup 114.0b8.exe"));
         }
 
-        [Test, Retry(2), PuppeteerTest("firefox-data.spec", "Firefox", "should resolve executable paths")]
+        [Test, PuppeteerTest("firefox-data.spec", "Firefox", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.That(

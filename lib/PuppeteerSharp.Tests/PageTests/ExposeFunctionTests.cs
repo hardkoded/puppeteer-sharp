@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class ExposeFunctionTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldWork()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(36));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should throw exception in page context")]
         public async Task ShouldThrowExceptionInPageContext()
         {
             await Page.ExposeFunctionAsync("woof", () => throw new Exception("WOOF WOOF"));
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result.GetProperty("stack").GetString(), Does.Contain("ExposeFunctionTests"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
         public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
         {
             var called = false;
@@ -46,7 +46,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(called, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
         public async Task ShouldSurviveNavigation()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
@@ -55,7 +55,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(36));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned promise")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned promise")]
         public async Task ShouldAwaitReturnedValueTask()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -63,7 +63,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(15));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames")]
         public async Task ShouldWorkOnFrames()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(15));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with loading frames")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with loading frames")]
         public async Task ShouldWorkWithLoadingFrames()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -105,7 +105,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(15));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work on frames before navigation")]
         public async Task ShouldWorkOnFramesBeforeNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(15));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
         public async Task ShouldWorkWithComplexObjects()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
@@ -128,7 +128,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result.GetProperty("x").GetInt32(), Is.EqualTo(7));
         }
 
-        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should await returned task")]
+        [Test, PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should await returned task")]
         public async Task ShouldAwaitReturnedTask()
         {
             var called = false;
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(called, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should work with action")]
+        [Test, PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should work with action")]
         public async Task ShouldWorkWithAction()
         {
             var called = false;
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(called, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should keel the callback clean")]
+        [Test, PuppeteerTest("puppeteer-sharp", "ExposeFunctionTests", "should keel the callback clean")]
         public async Task ShouldKeepTheCallbackClean()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);

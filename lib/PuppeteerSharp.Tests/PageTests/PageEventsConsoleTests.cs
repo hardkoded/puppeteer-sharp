@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
         public async Task ShouldWork()
         {
             ConsoleMessage message = null;
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await message.Args[2].JsonValueAsync<Dictionary<string, string>>(), Is.EqualTo(obj));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithLoggingFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
         public async Task ShouldNotFailForWindowObject()
         {
             var consoleTcs = new TaskCompletionSource<string>();
@@ -99,7 +99,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await consoleTcs.Task, Is.EqualTo("JSHandle@object"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
         public async Task ShouldTriggerCorrectLog()
         {
             await Page.GoToAsync(TestConstants.AboutBlank);
@@ -121,7 +121,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location when fetch fails")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location when fetch fails")]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location and stack trace for console API calls")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location and stack trace for console API calls")]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

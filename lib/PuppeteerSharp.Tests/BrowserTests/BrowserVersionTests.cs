@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class BrowserVersionTests : PuppeteerBrowserBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.version", "should return version")]
+        [Test, PuppeteerTest("browser.spec", "Browser.version", "should return version")]
         public async Task ShouldReturnVersion()
         {
             var version = await Browser.GetVersionAsync();

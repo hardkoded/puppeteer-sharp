@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should output a trace")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should output a trace")]
         public async Task ShouldOutputATrace()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -54,7 +54,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(File.Exists(_file), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should run with custom categories if provided")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should run with custom categories if provided")]
         public async Task ShouldRunWithCustomCategoriesProvided()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(traceConfigString, Does.Contain("disabled-by-default-v8.cpu_profiler.hires"));
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]
         public async Task ShouldRunWithDefaultCategories()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(traceConfigString, Does.Contain("toplevel"));
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should throw if tracing on two pages")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should throw if tracing on two pages")]
         public async Task ShouldThrowIfTracingOnTwoPages()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StopAsync();
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should return a buffer")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should return a buffer")]
         public async Task ShouldReturnABuffer()
         {
             await Page.Tracing.StartAsync(new TracingOptions
@@ -132,7 +132,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(buf, Is.EqualTo(trace));
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should work without options")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should work without options")]
         public async Task ShouldWorkWithoutOptions()
         {
             await Page.Tracing.StartAsync();
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(trace, Is.Not.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("tracing.spec", "Tracing", "should support a buffer without a path")]
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should support a buffer without a path")]
         public async Task ShouldSupportABufferWithoutAPath()
         {
             await Page.Tracing.StartAsync(new TracingOptions

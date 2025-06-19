@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             }
         };
 
-        [Test, Retry(2), PuppeteerTest("extensions.spec", "extensions", "service_worker target type should be available")]
+        [Test, PuppeteerTest("extensions.spec", "extensions", "service_worker target type should be available")]
         public async Task ServiceWorkerTargetTypeShouldBeAvailable()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             Assert.That(serviceWorkTarget, Is.Not.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("extensions.spec", "extensions", "can evaluate in the service worker")]
+        [Test, PuppeteerTest("extensions.spec", "extensions", "can evaluate in the service worker")]
         public async Task CanEvaluateInTheServiceWorker()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
