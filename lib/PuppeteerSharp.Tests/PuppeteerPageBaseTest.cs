@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
-    public abstract class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
+    public class PuppeteerPageBaseTest : PuppeteerBrowserContextBaseTest
     {
         protected IPage Page { get; set; }
 
