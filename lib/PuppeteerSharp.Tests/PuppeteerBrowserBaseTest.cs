@@ -9,13 +9,13 @@ namespace PuppeteerSharp.Tests
 
         protected LaunchOptions DefaultOptions { get; set; }
 
-        [SetUp]
+        [OneTimeSetUp]
         public async Task InitializeAsync()
             => Browser = await Puppeteer.LaunchAsync(
                 DefaultOptions ?? TestConstants.DefaultBrowserOptions(),
                 TestConstants.LoggerFactory);
 
-        [TearDown]
+        [OneTimeTearDown]
         public async Task TearDownAsync()
         {
             if (Browser is not null)

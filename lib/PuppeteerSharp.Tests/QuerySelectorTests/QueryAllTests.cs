@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class QueryAllTests : PuppeteerPageBaseTest
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void RegisterCustomQueryHandler()
         {
             Browser.RegisterCustomQueryHandler("allArray", new CustomQueryHandler
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             });
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void ClearCustomQueryHandlers()
         {
             Browser.ClearCustomQueryHandlers();

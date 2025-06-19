@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests
 
         protected SimpleServer HttpsServer => TestServerSetup.HttpsServer;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             BaseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "workspace");
