@@ -5,7 +5,7 @@
     <LangVersion>12</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="NUnit" Version="4.1.0" />
+	  <PackageReference Include="NUnit" Version="4.3.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="TestExpectations\TestExpectations.local.json" />
