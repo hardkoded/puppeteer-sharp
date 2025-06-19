@@ -100,7 +100,7 @@ jobs:
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
           dotnet tool update -g dotnet-retest
-          dotnet retest -- -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
+          dotnet retest --verbosity normal -- -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
     - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       env:
@@ -109,5 +109,5 @@ jobs:
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet tool update -g dotnet-retest
-        dotnet retest -- -s test.runsettings --blame-hang-timeout 300000
+        dotnet retest --verbosity normal -- -s test.runsettings --blame-hang-timeout 300000
 
