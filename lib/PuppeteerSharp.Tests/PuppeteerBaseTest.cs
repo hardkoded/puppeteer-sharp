@@ -6,7 +6,7 @@ using PuppeteerSharp.TestServer;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBaseTest
+    public abstract class PuppeteerBaseTest
     {
         protected string BaseDirectory { get; set; }
 

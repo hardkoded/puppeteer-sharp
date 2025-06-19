@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace PuppeteerSharp.Tests
 {
-    public class PuppeteerBrowserContextBaseTest : PuppeteerBrowserBaseTest
+    public abstract class PuppeteerBrowserContextBaseTest : PuppeteerBrowserBaseTest
     {
         protected IBrowserContext Context { get; set; }
 
