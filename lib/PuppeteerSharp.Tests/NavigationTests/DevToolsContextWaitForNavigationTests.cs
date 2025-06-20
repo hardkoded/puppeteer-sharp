@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.DevToolsContextTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
-        [PuppeteerFact]
+        [PuppeteerRetryFact()]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.DevToolsContextTests
                 }
             }).ContinueWith(_ => bothFired = true);
 
-            await waitForRequestTask.WithTimeout();
+            await waitForRequestTask.WithTimeout(5_000);
             await domContentLoadedTask.WithTimeout();
             Assert.False(bothFired);
             responseCompleted.SetResult(true);

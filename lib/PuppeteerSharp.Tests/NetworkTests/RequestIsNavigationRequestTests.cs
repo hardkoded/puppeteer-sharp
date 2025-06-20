@@ -57,8 +57,16 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ShouldWorkWhenNavigatingToImage()
         {
             var requests = new List<Request>();
-            DevToolsContext.Request += (_, e) => requests.Add(e.Request);
+            DevToolsContext.Request += (_, e) =>
+            {
+                if (!e.Request.Url.EndsWith("favicon.ico"))
+                {
+                    requests.Add(e.Request);
+                }
+            };
             await DevToolsContext.GoToAsync(TestConstants.ServerUrl + "/pptr.png");
+            await ChromiumWebBrowser.WaitForRenderIdleAsync();
+
             Assert.True(requests[0].IsNavigationRequest);
         }
     }

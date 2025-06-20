@@ -23,6 +23,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
             Server.SetRoute("/post", _ => Task.CompletedTask);
+            await ChromiumWebBrowser.WaitForRenderIdleAsync(1000);
+
             Request request = null;
             DevToolsContext.Request += (_, e) => request = e.Request;
             await DevToolsContext.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: JSON.stringify({ foo: 'bar'})})");

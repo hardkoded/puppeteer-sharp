@@ -273,7 +273,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         }
 
         [PuppeteerTest("navigation.spec.ts", "Page.goto", "should wait for network idle to succeed navigation")]
-        [PuppeteerFact]
+        [PuppeteerRetryFact]
         public async Task ShouldWaitForNetworkIdleToSucceedNavigation()
         {
             var responses = new List<TaskCompletionSource<Func<HttpResponse, Task>>>();

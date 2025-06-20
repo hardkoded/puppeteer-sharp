@@ -1,5 +1,5 @@
 using System;
-using CefSharp.Dom.Messaging;
+using CefSharp.DevTools.Profiler;
 
 namespace CefSharp.Dom.PageCoverage
 {
@@ -9,7 +9,7 @@ namespace CefSharp.Dom.PageCoverage
 
         public int Type { get; internal set; }
 
-        public CoverageResponseRange Range { get; internal set; }
+        public CoverageRange Range { get; internal set; }
 
         public int CompareTo(CoverageEntryPoint other)
         {

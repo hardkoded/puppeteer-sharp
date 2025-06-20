@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using CefSharp.Dom;
 using PuppeteerSharp.Tests.Attributes;
 using PuppeteerSharp.Xunit;
+using SixLabors.ImageSharp.Processing.Processors.Dithering;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -66,7 +67,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 .AndThen(x => x.SetPropertyAsync("display", "none"));
             //await DevToolsContext.EvaluateFunctionAsync("button => button.style.display = 'none'", (JSHandle)button);
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+
+            if (TestUtils.IsRunningOnAppVeyor())
+            {
+                Assert.Equal("Node is either not clickable or not an Element", exception.Message);
+            }
+            else
+            {
+                Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+            }
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for recursively hidden nodes")]
@@ -79,7 +88,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
                 .AndThen(x => x.GetStyleAsync())
                 .AndThen(x => x.SetPropertyAsync("display", "none"));
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await button.ClickAsync());
-            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+
+            if (TestUtils.IsRunningOnAppVeyor())
+            {
+                Assert.Equal("Node is either not clickable or not an Element", exception.Message);
+            }
+            else
+            {
+                Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+            }
         }
 
         [PuppeteerTest("elementhandle.spec.ts", "ElementHandle.click", "should throw for <br> elements")]
@@ -89,7 +106,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await DevToolsContext.SetContentAsync("hello<br>goodbye");
             var br = await DevToolsContext.QuerySelectorAsync<HtmlElement>("br");
             var exception = await Assert.ThrowsAsync<PuppeteerException>(async () => await br.ClickAsync());
-            Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+
+            if (TestUtils.IsRunningOnAppVeyor())
+            {
+                Assert.Equal("Node is either not clickable or not an Element", exception.Message);
+            }
+            else
+            {
+                Assert.Equal("Node is either not visible or not an HTMLElement", exception.Message);
+            }
         }
     }
 }

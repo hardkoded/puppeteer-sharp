@@ -72,13 +72,16 @@ namespace CefSharp.Dom
             var referrer = string.IsNullOrEmpty(options.Referer)
                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault(RefererHeaderName)
                : options.Referer;
+            var referrerPolicy = string.IsNullOrEmpty(options.ReferrerPolicy)
+                ? NetworkManager.ExtraHTTPHeaders?.GetValueOrDefault("referer-policy")
+                : options.ReferrerPolicy;
             var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
             using (var watcher = new LifecycleWatcher(this, frame, options?.WaitUntil, timeout))
             {
                 try
                 {
-                    var navigateTask = NavigateAsync(Connection, url, referrer, frame.Id);
+                    var navigateTask = NavigateAsync(Connection, url, referrer, referrerPolicy, frame.Id);
                     var task = await Task.WhenAny(
                         watcher.TimeoutOrTerminationTask,
                         navigateTask).ConfigureAwait(false);
@@ -100,18 +103,20 @@ namespace CefSharp.Dom
             }
         }
 
-        private async Task NavigateAsync(DevToolsConnection client, string url, string referrer, string frameId)
+        private async Task NavigateAsync(DevToolsConnection client, string url, string referrer, string referrerPolicy, string frameId)
         {
             var response = await client.SendAsync<PageNavigateResponse>("Page.navigate", new PageNavigateRequest
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
+                ReferrerPolicy = referrerPolicy ?? string.Empty,
                 FrameId = frameId
             }).ConfigureAwait(false);
 
             _ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
-            if (!string.IsNullOrEmpty(response.ErrorText))
+            if (!string.IsNullOrEmpty(response.ErrorText) &&
+                response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
             {
                 throw new NavigationException(response.ErrorText, url);
             }

@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await DevToolsContext.EvaluateFunctionAsync("async () => await window.activationPromise");
             await DevToolsContext.ReloadAsync();
 
-            Assert.Equal(2, responses.Count);
+            Assert.Equal(3, responses.Count);
             Assert.Equal(HttpStatusCode.OK, responses["sw.html"].Status);
             Assert.True(responses["sw.html"].FromServiceWorker);
             Assert.Equal(HttpStatusCode.OK, responses["style.css"].Status);

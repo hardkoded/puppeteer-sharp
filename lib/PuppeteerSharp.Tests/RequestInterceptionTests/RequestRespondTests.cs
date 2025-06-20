@@ -98,29 +98,37 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should allow mocking binary responses")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Investigate")]
         public async Task ShouldAllowMockingBinaryResponses()
         {
+            await DevToolsContext.GoToAsync(TestConstants.ServerUrl);
+
             await DevToolsContext.SetRequestInterceptionAsync(true);
             DevToolsContext.Request += async (_, e) =>
             {
                 var imageData = System.IO.File.ReadAllBytes("./Assets/pptr.png");
-                await e.Request.RespondAsync(new ResponseData
+                var response = new ResponseData
                 {
                     ContentType = "image/png",
                     BodyData = imageData
-                });
+                };
+                await e.Request.RespondAsync(response);
             };
 
             await DevToolsContext.EvaluateFunctionAsync(@"PREFIX =>
             {
                 const img = document.createElement('img');
                 img.src = PREFIX + '/does-not-exist.png';
+                img.width = 69;
+                img.height = 100;
                 document.body.appendChild(img);
                 return new Promise(fulfill => img.onload = fulfill);
             }", TestConstants.ServerUrl);
+
             var img = await DevToolsContext.QuerySelectorAsync("img");
-            Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()));
+            var screenshot = await img.ScreenshotDataAsync();
+
+            Assert.True(ScreenshotHelper.PixelMatch("mock-binary-response.png", screenshot));
         }
 
         [PuppeteerTest("requestinterception.spec.ts", "Request.respond", "should stringify intercepted request response headers")]

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CefSharp.DevTools.Profiler;
 
 namespace CefSharp.Dom.PageCoverage
 {

@@ -23,5 +23,10 @@ namespace CefSharp.Dom
         /// </summary>
         /// <value>The referer.</value>
         public string Referer { get; set; }
+
+        /// <summary>
+        /// Referrer policy. If provided it will take preference over the referer-policy header value set by <see cref="IDevToolsContext.SetExtraHttpHeadersAsync(System.Collections.Generic.Dictionary{string, string})"/>.
+        /// </summary>
+        public string ReferrerPolicy { get; set; }
     }
 }

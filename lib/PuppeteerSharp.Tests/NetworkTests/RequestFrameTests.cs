@@ -13,8 +13,11 @@ namespace PuppeteerSharp.Tests.NetworkTests
     [Collection(TestConstants.TestFixtureCollectionName)]
     public class RequestFrameTests : DevToolsContextBaseTest
     {
+        private readonly ITestOutputHelper _output;
+
         public RequestFrameTests(ITestOutputHelper output) : base(output)
         {
+            _output = output;
         }
 
         [PuppeteerTest("network.spec.ts", "Request.Frame", "should work for main frame navigation request")]
@@ -31,6 +34,9 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
 
             await DevToolsContext.GoToAsync(TestConstants.EmptyPage);
+
+            _output.WriteLine(string.Join(',', requests.Select(x => x.Url).ToArray()));
+
             Assert.Single(requests);
             Assert.Equal(DevToolsContext.MainFrame, requests[0].Frame);
         }

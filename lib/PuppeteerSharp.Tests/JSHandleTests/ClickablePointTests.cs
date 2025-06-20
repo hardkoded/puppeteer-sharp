@@ -28,14 +28,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             var clickablePoint = await divHandle.ClickablePointAsync();
 
             // margin + middle point offset
-            Assert.Equal(clickablePoint.X, 45 + 60);
-            Assert.Equal(clickablePoint.Y, 45 + 30);
+            Assert.Equal(45 + 60, clickablePoint.X);
+            Assert.Equal(45 + 30, clickablePoint.Y);
 
             clickablePoint = await divHandle.ClickablePointAsync(new Offset { X = 10, Y = 15 });
 
             // margin + offset
-            Assert.Equal(clickablePoint.X, 30 + 10);
-            Assert.Equal(clickablePoint.Y, 30 + 15);
+            Assert.Equal(30 + 10, clickablePoint.X);
+            Assert.Equal(30 + 15, clickablePoint.Y);
         }
 
         [PuppeteerFact]

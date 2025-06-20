@@ -30,14 +30,15 @@
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xRetry" Version="1.9.0" />
+		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.8" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="126.2.70" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="137.0.100" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\CefSharp.Dom.TestServer.csproj" />

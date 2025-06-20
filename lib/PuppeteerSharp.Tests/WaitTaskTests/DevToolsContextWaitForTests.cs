@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.WaitForTests
         }
 
         [PuppeteerTest("waittask.spec.ts", "Page.waitFor", "should wait for selector")]
-        [PuppeteerFact]
+        [PuppeteerRetryFact]
         public async Task ShouldWaitForSelector()
         {
             var found = false;

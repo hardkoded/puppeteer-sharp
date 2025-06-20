@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -84,11 +85,17 @@ namespace PuppeteerSharp.Tests
                 await Task.Delay(100);
             }
         }
-        internal static bool IsFavicon(Request request) => request.Url.Contains("favicon.ico");
+        internal static bool IsFavicon(Request request) => IsFavicon(request.Url);
+        internal static bool IsFavicon(string url) => url.Contains("favicon.ico");
         internal static string CurateProtocol(string protocol)
             => protocol
                 .ToLower()
                 .Replace(" ", string.Empty)
                 .Replace(".", string.Empty);
+
+        internal static bool IsRunningOnAppVeyor()
+        {
+            return Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp.DevTools.Profiler;
 using CefSharp.Dom.Messaging;
 
 namespace CefSharp.Dom.PageCoverage
@@ -53,7 +54,7 @@ namespace CefSharp.Dom.PageCoverage
         /// </remarks>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
-        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageResponseRange> nestedRanges)
+        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageRange> nestedRanges)
         {
             var points = new List<CoverageEntryPoint>();
             foreach (var range in nestedRanges)

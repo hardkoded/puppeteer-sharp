@@ -2135,10 +2135,9 @@ namespace CefSharp.Dom
 
             await Task.WhenAll(
                 waitTask,
-                Connection.SendAsync("Page.navigateToHistoryEntry", new PageNavigateToHistoryEntryRequest
-                {
-                    EntryId = entry.Id
-                })).ConfigureAwait(false);
+                Connection.SendAsync(
+                    "Page.navigateToHistoryEntry",
+                    new PageNavigateToHistoryEntryRequest { EntryId = entry.Id, })).ConfigureAwait(false);
 
             return waitTask.Result;
         }

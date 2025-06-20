@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CefSharp.DevTools.Profiler;
 using CefSharp.Dom.Helpers;
 using CefSharp.Dom.Helpers.Json;
 using CefSharp.Dom.Messaging;
@@ -11,11 +12,11 @@ namespace CefSharp.Dom.PageCoverage
 {
     internal class CSSCoverage
     {
-        private readonly DevToolsConnection _connection;
-        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets;
-        private readonly DeferredTaskQueue _callbackQueue;
+        private readonly ConcurrentDictionary<string, (string Url, string Source)> _stylesheets = new();
+        private readonly DeferredTaskQueue _callbackQueue = new();
         private readonly ILogger _logger;
 
+        private DevToolsConnection _connection;
         private bool _enabled;
         private bool _resetOnNavigation;
 
@@ -23,12 +24,11 @@ namespace CefSharp.Dom.PageCoverage
         {
             _connection = connection;
             _enabled = false;
-            _stylesheets = new ConcurrentDictionary<string, (string Url, string Source)>();
             _logger = _connection.LoggerFactory.CreateLogger<CSSCoverage>();
-            _callbackQueue = new DeferredTaskQueue();
-
             _resetOnNavigation = false;
         }
+
+        internal void UpdateClient(DevToolsConnection connection) => _connection = connection;
 
         internal Task StartAsync(CoverageStartOptions options)
         {
@@ -55,6 +55,7 @@ namespace CefSharp.Dom.PageCoverage
             {
                 throw new InvalidOperationException("CSSCoverage is not enabled");
             }
+
             _enabled = false;
 
             var trackingResponse = await _connection.SendAsync<CSSStopRuleUsageTrackingResponse>("CSS.stopRuleUsageTracking").ConfigureAwait(false);
@@ -68,16 +69,17 @@ namespace CefSharp.Dom.PageCoverage
                 _connection.SendAsync("CSS.disable"),
                 _connection.SendAsync("DOM.disable")).ConfigureAwait(false);
 
-            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageResponseRange>>();
+            var styleSheetIdToCoverage = new Dictionary<string, List<CoverageRange>>();
             foreach (var entry in trackingResponse.RuleUsage)
             {
                 styleSheetIdToCoverage.TryGetValue(entry.StyleSheetId, out var ranges);
                 if (ranges == null)
                 {
-                    ranges = new List<CoverageResponseRange>();
+                    ranges = new List<CoverageRange>();
                     styleSheetIdToCoverage[entry.StyleSheetId] = ranges;
                 }
-                ranges.Add(new CoverageResponseRange
+
+                ranges.Add(new CoverageRange
                 {
                     StartOffset = entry.StartOffset,
                     EndOffset = entry.EndOffset,
@@ -91,15 +93,22 @@ namespace CefSharp.Dom.PageCoverage
                 var styleSheetId = kv.Key;
                 var url = kv.Value.Url;
                 var text = kv.Value.Source;
+
+                if (url.StartsWith("chrome-error://"))
+                {
+                    continue;
+                }
+
                 styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageResponseRange>());
+                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageRange>());
                 coverage.Add(new CoverageEntry
                 {
                     Url = url,
                     Ranges = ranges,
-                    Text = text
+                    Text = text,
                 });
             }
+
             return coverage.ToArray();
         }
 
@@ -110,7 +119,8 @@ namespace CefSharp.Dom.PageCoverage
                 switch (e.MessageID)
                 {
                     case "CSS.styleSheetAdded":
-                        await _callbackQueue.Enqueue(() => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>(true))).ConfigureAwait(false);
+                        await _callbackQueue.Enqueue(()
+                            => OnStyleSheetAddedAsync(e.MessageData.ToObject<CSSStyleSheetAddedResponse>())).ConfigureAwait(false);
                         break;
                     case "Runtime.executionContextsCleared":
                         OnExecutionContextsCleared();
@@ -136,7 +146,7 @@ namespace CefSharp.Dom.PageCoverage
             {
                 var response = await _connection.SendAsync<CssGetStyleSheetTextResponse>("CSS.getStyleSheetText", new CssGetStyleSheetTextRequest
                 {
-                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId
+                    StyleSheetId = styleSheetAddedResponse.Header.StyleSheetId,
                 }).ConfigureAwait(false);
 
                 _stylesheets.TryAdd(styleSheetAddedResponse.Header.StyleSheetId, (styleSheetAddedResponse.Header.SourceURL, response.Text));

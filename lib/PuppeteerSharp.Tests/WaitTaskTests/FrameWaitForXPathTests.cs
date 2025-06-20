@@ -14,9 +14,11 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     public class FrameWaitForXPathTests : DevToolsContextBaseTest
     {
         const string addElement = "tag => document.body.appendChild(document.createElement(tag))";
+        private readonly ITestOutputHelper _output;
 
         public FrameWaitForXPathTests(ITestOutputHelper output) : base(output)
         {
+            _output = output;
         }
 
         [PuppeteerTest("waittask.spec.ts", "Frame.waitForXPath", "should support some fancy xpath")]
@@ -101,10 +103,18 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         [PuppeteerFact]
         public async Task ShouldRespectTimeout()
         {
-            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(()
-                    => DevToolsContext.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 }));
+            await DevToolsContext.SetContentAsync("<p>red herring</p><p>hello  world  </p>");
 
-            Assert.Contains("waiting for XPath '//div' failed: timeout", exception.Message);
+            await ChromiumWebBrowser.WaitForRenderIdleAsync(1000);
+
+            var exception = await Assert.ThrowsAsync<WaitTaskTimeoutException>(async () =>
+            {
+                var waitForXPath = await DevToolsContext.WaitForXPathAsync("//div", new WaitForSelectorOptions { Timeout = 10 });
+
+                _output.WriteLine("Waiting for XPath: " + waitForXPath.ToString());
+            });
+
+            Assert.Contains("waiting for XPath '//div' failed: timeout 10 ms exceeded", exception.Message);
         }
     }
 }

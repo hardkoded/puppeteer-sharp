@@ -7,5 +7,7 @@ namespace CefSharp.Dom.Messaging
         public string Referrer { get; set; }
 
         public string FrameId { get; set; }
+
+        public string ReferrerPolicy { get; set; }
     }
 }

@@ -10,21 +10,20 @@ namespace CefSharp.Dom.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly DevToolsConnection _connection;
-        private readonly Dictionary<string, string> _scriptURLs;
-        private readonly Dictionary<string, string> _scriptSources;
+        private readonly Dictionary<string, string> _scriptURLs = new();
+        private readonly Dictionary<string, string> _scriptSources = new();
         private readonly ILogger _logger;
 
+        private readonly DevToolsConnection _connection;
         private bool _enabled;
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
+        private bool _includeRawScriptCoverage;
 
         public JSCoverage(DevToolsConnection connection)
         {
             _connection = connection;
             _enabled = false;
-            _scriptURLs = new Dictionary<string, string>();
-            _scriptSources = new Dictionary<string, string>();
             _logger = _connection.LoggerFactory.CreateLogger<JSCoverage>();
 
             _resetOnNavigation = false;
@@ -39,6 +38,7 @@ namespace CefSharp.Dom.PageCoverage
 
             _resetOnNavigation = options.ResetOnNavigation;
             _reportAnonymousScripts = options.ReportAnonymousScripts;
+            _includeRawScriptCoverage = options.IncludeRawScriptCoverage;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
@@ -49,8 +49,8 @@ namespace CefSharp.Dom.PageCoverage
                 _connection.SendAsync("Profiler.enable"),
                 _connection.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
                 {
-                    CallCount = false,
-                    Detailed = true
+                    CallCount = _includeRawScriptCoverage,
+                    Detailed = true,
                 }),
                 _connection.SendAsync("Debugger.enable"),
                 _connection.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
@@ -72,7 +72,7 @@ namespace CefSharp.Dom.PageCoverage
                _connection.SendAsync("Debugger.disable")).ConfigureAwait(false);
             _connection.MessageReceived -= Client_MessageReceived;
 
-            var coverage = new List<CoverageEntry>();
+            var coverage = new List<JSCoverageEntry>();
             foreach (var entry in profileResponseTask.Result.Result)
             {
                 _scriptURLs.TryGetValue(entry.ScriptId, out var url);
@@ -88,11 +88,12 @@ namespace CefSharp.Dom.PageCoverage
 
                 var flattenRanges = entry.Functions.SelectMany(f => f.Ranges).ToList();
                 var ranges = Coverage.ConvertToDisjointRanges(flattenRanges);
-                coverage.Add(new CoverageEntry
+                coverage.Add(new JSCoverageEntry
                 {
                     Url = url,
                     Ranges = ranges,
-                    Text = text
+                    Text = text,
+                    RawScriptCoverage = _includeRawScriptCoverage ? entry : null,
                 });
             }
             return coverage.ToArray();

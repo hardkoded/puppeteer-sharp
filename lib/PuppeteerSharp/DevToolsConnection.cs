@@ -171,7 +171,7 @@ namespace CefSharp.Dom
                 }
                 catch (JsonException exc)
                 {
-                    _logger.LogError(exc, "Failed to deserialize response", response);
+                    _logger.LogError(exc, "Failed to deserialize response {response}", response);
                     return;
                 }
 

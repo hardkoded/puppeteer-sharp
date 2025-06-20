@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should report right ranges")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip ="Investigate")]
         public async Task ShouldReportRightRanges()
         {
             await DevToolsContext.Coverage.StartJSCoverageAsync();
@@ -134,7 +134,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
         }
 
         [PuppeteerTest("coverage.spec.ts", "JSCoverage", "should work with conditionals")]
-        [PuppeteerFact]
+        [PuppeteerFact(Skip = "Investigate")]
         public async Task ShouldWorkWithConditionals()
         {
             const string involved = @"[

@@ -18,5 +18,10 @@ namespace CefSharp.Dom.PageCoverage
         /// If <see cref="ReportAnonymousScripts"/> is set to `true`, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
         /// </remarks>
         public bool ReportAnonymousScripts { get; set; }
+
+        /// <summary>
+        /// Whether the result includes raw V8 script coverage entries.
+        /// </summary>
+        public bool IncludeRawScriptCoverage { get; set; }
     }
 }
