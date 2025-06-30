@@ -8,9 +8,11 @@ using PuppeteerSharp.Cdp.Messaging;
 namespace PuppeteerSharp.Cdp;
 
 /// <inheritdoc/>
-public class CdpHttpResponse : Response<CdpHttpRequest>
+public partial class CdpHttpResponse : Response<CdpHttpRequest>
 {
+#if NETSTANDARD2_0
     private static readonly Regex _extraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
+#endif
     private readonly CDPSession _client;
     private readonly bool _fromDiskCache;
     private byte[] _buffer;
@@ -82,6 +84,13 @@ public class CdpHttpResponse : Response<CdpHttpRequest>
         return _buffer;
     }
 
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline)]
+    private static partial Regex GetExtraInfoLines();
+#else
+    private static Regex GetExtraInfoLines() => _extraInfoLines;
+#endif
+
     private string ParseStatusTextFromExtraInfo(ResponseReceivedExtraInfoResponse extraInfo)
     {
         if (extraInfo == null || extraInfo.HeadersText == null)
@@ -97,7 +106,7 @@ public class CdpHttpResponse : Response<CdpHttpRequest>
 
         var firstLine = lines[0];
 
-        var match = _extraInfoLines.Match(firstLine);
+        var match = GetExtraInfoLines().Match(firstLine);
         if (!match.Success)
         {
             return null;
