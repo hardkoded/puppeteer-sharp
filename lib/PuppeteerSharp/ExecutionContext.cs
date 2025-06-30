@@ -12,12 +12,16 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="IExecutionContext"/>
-    public sealed class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
+    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
         private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
 
-        private static readonly Regex _sourceUrlRegex = new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
+#if NETSTANDARD2_0
+        private static readonly Regex _sourceUrlRegex =
+            new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
+#endif
+
         private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
 
@@ -128,6 +132,13 @@ namespace PuppeteerSharp
                 ? new CdpElementHandle(World, remoteObject)
                 : new CdpJSHandle(World, remoteObject);
 
+#if NET8_0_OR_GREATER
+        [GeneratedRegex(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline)]
+        private static partial Regex GetSourceUrlRegex();
+#else
+        private static Regex GetSourceUrlRegex() => _sourceUrlRegex;
+#endif
+
         private static string GetExceptionMessage(EvaluateExceptionResponseDetails exceptionDetails)
         {
             if (exceptionDetails.Exception != null)
@@ -179,7 +190,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = _sourceUrlRegex.IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
                 ["contextId"] = ContextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
