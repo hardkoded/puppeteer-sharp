@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
 {
     public class ChromiumDataTests
     {
-        [Test, Retry(2), PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
+        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.That(
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chromium
                 Is.EqualTo("https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1083080/chrome-win.zip"));
         }
 
-        [Test, Retry(2), PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
+        [Test, PuppeteerTest("chromium-data.spec", "Chromium", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.That(

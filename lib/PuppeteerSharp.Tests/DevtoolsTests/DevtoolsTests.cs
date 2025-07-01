@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
 {
     public class DevtoolsTests : PuppeteerBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should open devtools when \"devtools: true\" option is given")]
+        [Test, PuppeteerTest("devtools.spec", "DevTools", "should open devtools when \"devtools: true\" option is given")]
         public async Task ShouldOpenDevtoolsWhenDevtoolsTrueOptionIsGiven()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
                 browser.WaitForTargetAsync(target => target.Url.Contains("devtools://")));
         }
 
-        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "should expose DevTools as a page")]
+        [Test, PuppeteerTest("devtools.spec", "DevTools", "should expose DevTools as a page")]
         public async Task ShouldExposeDevToolsAsAPage()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That(pages, Does.Contain(page));
         }
 
-        [Test, Retry(2), PuppeteerTest("devtools.spec", "DevTools", "target.page() should return Page when calling asPage on DevTools target")]
+        [Test, PuppeteerTest("devtools.spec", "DevTools", "target.page() should return Page when calling asPage on DevTools target")]
         public async Task TargetPageShouldReturnADevToolsPageIfAsPageIsUsed()
         {
             var headfulOptions = TestConstants.DefaultBrowserOptions();

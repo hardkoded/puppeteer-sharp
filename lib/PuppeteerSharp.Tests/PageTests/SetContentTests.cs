@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             #endregion
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync("<div>hello</div>");
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(ExpectedOutput));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with doctype")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with doctype")]
         public async Task ShouldWorkWithDoctype()
         {
             const string doctype = "<!DOCTYPE html>";
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo($"{doctype}{ExpectedOutput}"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with HTML 4 doctype")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with HTML 4 doctype")]
         public async Task ShouldWorkWithHtml4Doctype()
         {
             const string doctype = "<!DOCTYPE html PUBLIC \" -//W3C//DTD HTML 4.01//EN\" " +
@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo($"{doctype}{ExpectedOutput}"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should respect timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should respect timeout")]
         public async Task ShouldRespectTimeout()
         {
             const string imgPath = "/img.png";
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should respect default navigation timeout")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should respect default navigation timeout")]
         public async Task ShouldRespectDefaultTimeout()
         {
             const string imgPath = "/img.png";
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should await resources to load")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should await resources to load")]
         public async Task ShouldAwaitResourcesToLoad()
         {
             var imgPath = "/img.png";
@@ -98,7 +98,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await contentTask;
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work fast enough")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work fast enough")]
         public async Task ShouldWorkFastEnough()
         {
             for (var i = 0; i < 20; ++i)
@@ -107,28 +107,28 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with tricky content")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with tricky content")]
         public async Task ShouldWorkWithTrickyContent()
         {
             await Page.SetContentAsync("<div>hello world</div>\x7F");
             Assert.That(await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"), Is.EqualTo("hello world"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with accents")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with accents")]
         public async Task ShouldWorkWithAccents()
         {
             await Page.SetContentAsync("<div>aberración</div>");
             Assert.That(await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"), Is.EqualTo("aberración"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with emojis")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with emojis")]
         public async Task ShouldWorkWithEmojis()
         {
             await Page.SetContentAsync("<div>🐥</div>");
             Assert.That(await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"), Is.EqualTo("🐥"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setContent", "should work with newline")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with newline")]
         public async Task ShouldWorkWithNewline()
         {
             await Page.SetContentAsync("<div>\n</div>");

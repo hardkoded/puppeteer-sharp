@@ -88,7 +88,7 @@ namespace PuppeteerSharp.PageCoverage
             }
 
             // Filter out empty ranges.
-            return results.Where(range => range.End - range.Start > 1).ToArray();
+            return results.Where(range => range.End - range.Start > 0).ToArray();
         }
 
         internal void UpdateClient(CDPSession client)

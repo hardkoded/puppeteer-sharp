@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should query existing elements")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should query existing elements")]
         public async Task ShouldQueryExistingElements()
         {
             await Page.SetContentAsync("<html><body><div>A</div><br/><div>B</div></body></html>");
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await Task.WhenAll(tasks), Is.EqualTo(new[] { "A", "B" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should return empty array for non-existing elements")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$$", "should return empty array for non-existing elements")]
         public async Task ShouldReturnEmptyArrayForNonExistingElements()
         {
             await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");

@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageBringToFrontTests : PuppeteerBrowserContextBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.bringToFront", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.bringToFront", "should work")]
         public async Task ShouldWork()
         {
             await using var page = await Context.NewPageAsync();

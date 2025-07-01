@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.HeadfulTests
 {
     public class HeadfulTests : PuppeteerBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("headful.spec", "headful tests HEADFUL", "headless should be able to read cookies written by headful")]
+        [Test, PuppeteerTest("headful.spec", "headful tests HEADFUL", "headless should be able to read cookies written by headful")]
         public async Task HeadlessShouldBeAbleToReadCookiesWrittenByHeadful()
         {
             using var userDataDir = new TempDirectory();

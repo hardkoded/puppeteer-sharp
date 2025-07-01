@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -26,7 +26,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(response.Url, Does.Contain("grid.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
+        [Test, PuppeteerTest("navigation.spec", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await navigationTask.WithTimeout();
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with clicking on anchor links")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with clicking on anchor links")]
         public async Task ShouldWorkWithClickingOnAnchorLinks()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -74,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage + "#foobar"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.pushState()")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.pushState()")]
         public async Task ShouldWorkWithHistoryPushState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/wow.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.replaceState()")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with history.replaceState()")]
         public async Task ShouldWorkWithHistoryReplaceState()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -112,7 +112,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/replaced.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with DOM history.back()/history.forward()")]
         public async Task ShouldWorkWithDOMHistoryBackAndHistoryForward()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work when subframe issues window.stop()")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work when subframe issues window.stop()")]
         public async Task ShouldWorkWhenSubframeIssuesWindowStop()
         {
             Server.SetRoute("/frames/style.css", _ => Task.CompletedTask);

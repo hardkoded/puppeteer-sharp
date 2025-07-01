@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP meta tag")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP meta tag")]
         public async Task ShouldBypassCSPMetaTag()
         {
             // Make sure CSP prohibits addScriptTag.
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP header")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP header")]
         public async Task ShouldBypassCSPHeader()
         {
             // Make sure CSP prohibits addScriptTag.
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass after cross-process navigation")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass after cross-process navigation")]
         public async Task ShouldBypassAfterCrossProcessNavigation()
         {
             await Page.SetBypassCSPAsync(true);
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP in iframes as well")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setBypassCSP", "should bypass CSP in iframes as well")]
         public async Task ShouldBypassCSPInIframesAsWell()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -20,6 +20,7 @@ namespace PuppeteerSharp.PageCoverage
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
         private bool _includeRawScriptCoverage;
+        private bool _useBlockCoverage;
 
         public JSCoverage(CDPSession client)
         {
@@ -42,6 +43,7 @@ namespace PuppeteerSharp.PageCoverage
             _resetOnNavigation = options.ResetOnNavigation;
             _reportAnonymousScripts = options.ReportAnonymousScripts;
             _includeRawScriptCoverage = options.IncludeRawScriptCoverage;
+            _useBlockCoverage = options.UseBlockCoverage;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
@@ -53,7 +55,7 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
                 {
                     CallCount = _includeRawScriptCoverage,
-                    Detailed = true,
+                    Detailed = _useBlockCoverage,
                 }),
                 _client.SendAsync("Debugger.enable"),
                 _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));

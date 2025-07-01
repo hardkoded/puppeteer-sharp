@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             #endregion
         }
 
-        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve download URLs")]
         public void ShouldResolveDownloadUrls()
         {
             Assert.That(
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/win64/chrome-win64.zip"));
         }
 
-        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve executable paths")]
         public void ShouldResolveExecutablePath()
         {
             Assert.That(
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         // This has a custom name
-        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
             Assert.That(
@@ -124,7 +124,7 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 Is.EqualTo("C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"));
         }
 
-        [Test, Retry(2), PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.That(

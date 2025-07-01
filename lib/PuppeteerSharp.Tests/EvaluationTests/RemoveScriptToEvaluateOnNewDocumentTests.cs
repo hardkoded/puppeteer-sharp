@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class RemoveScriptToEvaluateOnNewDocumentTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Page.removeScriptToEvaluateOnNewDocument", "should remove new document script")]
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.removeScriptToEvaluateOnNewDocument", "should remove new document script")]
         public async Task ShouldRemoveNewDocumentScript()
         {
             var id = await Page.EvaluateFunctionOnNewDocumentAsync("() => globalThis.injected = 123");

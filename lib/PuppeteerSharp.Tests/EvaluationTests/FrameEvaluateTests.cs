@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have different execution contexts")]
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have different execution contexts")]
         public async Task ShouldHaveDifferentExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(await frame2.EvaluateExpressionAsync<string>("window.FOO"), Is.EqualTo("bar"));
         }
 
-        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have correct execution contexts")]
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should have correct execution contexts")]
         public async Task ShouldHaveCorrectExecutionContexts()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo("Hi, I'm frame"));
         }
 
-        [Test, Retry(2), PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should execute after cross-site navigation")]
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Frame.evaluate", "should execute after cross-site navigation")]
         public async Task ShouldExecuteAfterCrossSiteNavigation()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

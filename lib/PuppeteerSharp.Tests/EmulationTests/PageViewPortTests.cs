@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class PageViewPortTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should get the proper viewport size")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should get the proper viewport size")]
         public async Task ShouldGetTheProperViewPortSize()
         {
             Assert.That(Page.Viewport.Width, Is.EqualTo(800));
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(Page.Viewport.Height, Is.EqualTo(456));
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support mobile emulation")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support mobile emulation")]
         public async Task ShouldSupportMobileEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.innerWidth"), Is.EqualTo(400));
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support touch emulation")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support touch emulation")]
         public async Task ShouldSupportTouchEmulation()
         {
             const string dispatchTouch = @"
@@ -58,7 +58,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateExpressionAsync<bool>("'ontouchstart' in window"), Is.False);
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should be detectable by Modernizr")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should be detectable by Modernizr")]
         public async Task ShouldBeDetectableByModernizr()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/detect-touch.html");
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo("YES"));
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should detect touch when applying viewport with touches")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should detect touch when applying viewport with touches")]
         public async Task ShouldDetectTouchWhenApplyingViewportWithTouches()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -85,7 +85,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateFunctionAsync<bool>("() => globalThis.Modernizr.touchevents"), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support landscape emulation")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should support landscape emulation")]
         public async Task ShouldSupportLandscapeEmulation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -96,7 +96,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("screen.orientation.type"), Is.EqualTo("portrait-primary"));
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should update media queries when resoltion changes")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should update media queries when resoltion changes")]
         public async Task ShouldUpdateMediaQueriesWhenResolutionChanges()
         {
             foreach (var dpr in new[] { 1, 2, 3 })
@@ -110,7 +110,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should load correct pictures when emulation dpr")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.viewport", "should load correct pictures when emulation dpr")]
         public async Task ShouldLoadCorrectPicturesWhenEmulationDpr()
         {
             foreach (var dpr in new[] { 1, 2, 3 })
