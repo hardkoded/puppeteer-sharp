@@ -9,11 +9,13 @@ using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
 
 namespace PuppeteerSharp.QueryHandlers
 {
-    internal class AriaQueryHandler : QueryHandler
+    internal partial class AriaQueryHandler : QueryHandler
     {
-        private static readonly Regex _ariaSelectorAttributeRegEx = new(
+#if NETSTANDARD2_0
+        private static readonly Regex _ariaSelectorAttributeRegex = new(
             """\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""",
             RegexOptions.Compiled);
+#endif
 
         private static readonly string[] _nonElementNodeRoles = { "StaticText", "InlineTextBox" };
 
@@ -79,7 +81,7 @@ namespace PuppeteerSharp.QueryHandlers
         {
             var knownAriaAttributes = new[] { "name", "role" };
             AriaQueryOption queryOptions = new();
-            var defaultName = _ariaSelectorAttributeRegEx.Replace(selector, match =>
+            var defaultName = GetAriaSelectorAttributeRegex().Replace(selector, match =>
             {
                 var attribute = match.Groups["attribute"].Value;
                 if (!knownAriaAttributes.Contains(attribute))
@@ -106,5 +108,12 @@ namespace PuppeteerSharp.QueryHandlers
 
             return queryOptions;
         }
+
+#if NET8_0_OR_GREATER
+        [GeneratedRegex("""\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""")]
+        private static partial Regex GetAriaSelectorAttributeRegex();
+#else
+        private static Regex GetAriaSelectorAttributeRegex() => _ariaSelectorAttributeRegex;
+#endif
     }
 }

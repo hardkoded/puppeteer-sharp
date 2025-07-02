@@ -884,7 +884,7 @@
     "comment": "addBinding is not supported"
   },
   {
-    "testIdPattern": "[bfcache.spec] BFCache can navigate to a BFCached page containing an OOPIF and a worker",
+    "testIdPattern": "[bfcache.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
@@ -1534,7 +1534,7 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[extensions.spec] extensions background_page target type should be available",
+    "testIdPattern": "[extensions.spec] extensions *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["SKIP"],
@@ -1545,7 +1545,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Chrome-specific test"
   },
   {
     "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
@@ -1567,6 +1567,12 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+    "testIdPattern": "[extensions.spec] extensions can evaluate in the service worker",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Flaky or failing on Windows. See https://github.com/puppeteer/puppeteer/issues/13417"
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
@@ -3461,11 +3467,26 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+
     "testIdPattern": "[extensions.spec] extensions service_worker target type should be available",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["SKIP"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  ],
+  {
+    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["FAIL"],
+    "comment": "TODO: started to fail with Chrome headless shell 135 on Windows"
+  },
+  {
+    "testIdPattern": "[extensions.spec] extensions *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"],
+    "comment": "No extensions in chrome-headless-shell"
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",

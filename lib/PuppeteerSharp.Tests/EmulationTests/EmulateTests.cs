@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
 {
     public class EmulateTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
         public async Task ShouldSupportClicking()
         {
             await Page.EmulateAsync(TestConstants.IPhone);

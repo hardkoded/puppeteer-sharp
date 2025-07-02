@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
         public async Task ShouldWork()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '0';
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(clickablePoint.Y, Is.EqualTo(30 + 15));
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work for iframes")]
         public async Task ShouldWorkForIFrames()
         {
             await Page.EvaluateExpressionAsync(@"document.body.style.padding = '10px';

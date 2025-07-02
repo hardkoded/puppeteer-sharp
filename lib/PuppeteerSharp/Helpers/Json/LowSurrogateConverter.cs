@@ -15,17 +15,18 @@ internal class LowSurrogateConverter : JsonConverter<string>
             return null;
         }
 
-        var span = reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan.ToArray();
+        var span = reader.HasValueSequence
+            ? reader.ValueSequence.ToArray()
+#if NET8_0_OR_GREATER
+            : reader.ValueSpan;
+#else
+            : reader.ValueSpan.ToArray();
+#endif
         var value = Encoding.UTF8.GetString(span);
 
         try
         {
-            if (reader.ValueIsEscaped)
-            {
-                value = JsonUnescape(value);
-            }
-
-            return value;
+            return JsonUnescapedValue(reader, value);
         }
         catch
         {
@@ -38,9 +39,16 @@ internal class LowSurrogateConverter : JsonConverter<string>
         writer.WriteStringValue(value);
     }
 
-    private static string JsonUnescape(string jsonString)
+    private static string JsonUnescapedValue(Utf8JsonReader reader, string jsonString)
     {
-        using var doc = JsonDocument.Parse($"\"{jsonString}\"");
-        return doc.RootElement.GetString();
+        if (reader.ValueIsEscaped)
+        {
+            using var doc = JsonDocument.Parse($"\"{jsonString}\"");
+            return doc.RootElement.GetString();
+        }
+        else
+        {
+            return jsonString;
+        }
     }
 }

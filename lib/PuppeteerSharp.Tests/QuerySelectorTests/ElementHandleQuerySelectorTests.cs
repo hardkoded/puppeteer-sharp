@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
 {
     public class ElementHandleQuerySelectorTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$", "should query existing element")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(content, Is.EqualTo("A"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$", "should return null for non-existing element")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$", "should return null for non-existing element")]
         public async Task ShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(second, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should query existing element")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should query existing element")]
         public async Task XPathShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
             Assert.That(content, Is.EqualTo("A"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should return null for non-existing element")]
+        [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should return null for non-existing element")]
         public async Task XPathShouldReturnNullForNonExistingElement()
         {
             await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");

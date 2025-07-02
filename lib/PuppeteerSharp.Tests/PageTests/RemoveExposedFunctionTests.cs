@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class RemoveExposeFunctionTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.removeExposedFunction", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.removeExposedFunction", "should work")]
         public async Task ShouldWork()
         {
             // Run twice to verify function can be added again after remove

@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class QueryOneTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find button by role")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find button by role")]
         public async Task ShouldFindButtonByRole()
         {
             await Page.SetContentAsync("<div id='div'><button id='btn' role='button'>Submit</button></div>");
@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(id, Is.EqualTo("btn"));
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find button by name and role")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find button by name and role")]
         public async Task ShouldFindButtonNameAndByRole()
         {
             await Page.SetContentAsync("<div id='div'><button id='btn' role='button'>Submit</button></div>");
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(id, Is.EqualTo("btn"));
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find first matching element")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find first matching element")]
         public async Task ShouldFindFirstMatchingElement()
         {
             await Page.SetContentAsync(@"
@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(id, Is.EqualTo("mnu1"));
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find by name")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find by name")]
         public async Task ShouldFindByName()
         {
             await Page.SetContentAsync(@"
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(id, Is.EqualTo("mnu1"));
         }
 
-        [Test, Retry(2), PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find by name")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find by name")]
         public async Task ShouldFindByName2()
         {
             await Page.SetContentAsync(@"

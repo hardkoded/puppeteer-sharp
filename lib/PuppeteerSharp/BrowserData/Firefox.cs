@@ -152,7 +152,7 @@ namespace PuppeteerSharp.BrowserData
                 }
             }
 
-            return (FirefoxChannel.Nightly, buildId);
+            return (FirefoxChannel.Stable, buildId);
         }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)

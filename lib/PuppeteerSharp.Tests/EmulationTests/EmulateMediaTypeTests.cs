@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaType", "should work")]
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateMediaType", "should work")]
         public async Task ShouldWork()
         {
             Assert.That(await Page.EvaluateExpressionAsync<bool>("matchMedia('screen').matches"), Is.True);

@@ -14,14 +14,14 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             DefaultOptions.AcceptInsecureCerts = true;
         }
 
-        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync($"{TestConstants.HttpsPrefix}/empty.html");
             Assert.That(response.Ok, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with request interception")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, Retry(2), PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with mixed content")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with mixed content")]
         public async Task ShouldWorkWithMixedContent()
         {
             HttpsServer.SetRoute("/mixedcontent.html", async (context) =>

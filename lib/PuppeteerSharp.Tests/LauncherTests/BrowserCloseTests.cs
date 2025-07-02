@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class BrowserCloseTests : PuppeteerBrowserBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should terminate network waiters")]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should terminate network waiters")]
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
-        [Test, Retry(2), PuppeteerTest("launcher.spec", "PuppeteerSharp", "delete temp user data dir when disposing browser")]
+        [Test, PuppeteerTest("launcher.spec", "PuppeteerSharp", "delete temp user data dir when disposing browser")]
         public async Task DeleteTempUserDataDirWhenDisposingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();

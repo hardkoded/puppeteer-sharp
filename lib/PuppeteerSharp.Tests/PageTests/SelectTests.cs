@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should select single option")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should select single option")]
         public async Task ShouldSelectSingleOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onChange"), Is.EqualTo(new string[] { "blue" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should select only first option")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should select only first option")]
         public async Task ShouldSelectOnlyFirstOption()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onChange"), Is.EqualTo(new string[] { "blue" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should not throw when select causes navigation")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should not throw when select causes navigation")]
         public async Task ShouldNotThrowWhenSelectCausesNavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(Page.Url, Does.Contain("empty.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should select multiple options")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should select multiple options")]
         public async Task ShouldSelectMultipleOptions()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onChange"), Is.EqualTo(new string[] { "blue", "green", "red" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should respect event bubbling")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should respect event bubbling")]
         public async Task ShouldRespectEventBubbling()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onBubblingChange"), Is.EqualTo(new string[] { "blue" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should throw when element is not a <select>")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should throw when element is not a <select>")]
         public async Task ShouldThrowWhenElementIsNotASelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Element is not a <select> element."));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should return [] on no matched values")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should return [] on no matched values")]
         public async Task ShouldReturnEmptyArrayOnNoMatchedValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.Empty);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should return an array of matched values")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should return an array of matched values")]
         public async Task ShouldReturnAnArrayOfMatchedValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -86,21 +86,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(new string[] { "black", "blue", "magenta" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should return an array of one element when multiple is not set")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should return an array of one element when multiple is not set")]
         public async Task ShouldReturnAnArrayOfOneElementWhenMultipleIsNotSet()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             Assert.That(await Page.SelectAsync("select", "42", "blue", "black", "magenta"), Has.Exactly(1).Items);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should return [] on no values")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should return [] on no values")]
         public async Task ShouldReturnEmptyArrayOnNoValues()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             Assert.That(await Page.SelectAsync("select"), Is.Empty);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should deselect all options when passed no values for a multiple select")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should deselect all options when passed no values for a multiple select")]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForAMultipleSelect()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 "select => Array.from(select.options).every(option => !option.selected)"), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.select", "should deselect all options when passed no values for a select without multiple")]
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should deselect all options when passed no values for a select without multiple")]
         public async Task ShouldDeselectAllOptionsWhenPassedNoValuesForASelectWithoutMultiple()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");

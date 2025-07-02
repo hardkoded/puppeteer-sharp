@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PageTests
     public class GetContentTests : PuppeteerPageBaseTest
     {
 
-        [Test, Retry(2), PuppeteerTest("puppeteer-sharp.spec.ts", "PuppeteerSharp", "should work with lone surrogate")]
+        [Test, PuppeteerTest("puppeteer-sharp.spec.ts", "PuppeteerSharp", "should work with lone surrogate")]
         public async Task ShouldWorkWithLoneSurrogate()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/lone-surrogate.html");

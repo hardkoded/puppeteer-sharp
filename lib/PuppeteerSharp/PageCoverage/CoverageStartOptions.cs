@@ -24,5 +24,12 @@ namespace PuppeteerSharp.PageCoverage
         /// Whether the result includes raw V8 script coverage entries.
         /// </summary>
         public bool IncludeRawScriptCoverage { get; set; }
+
+        /// <summary>
+        /// Whether to collect coverage information at the block level.
+        /// If true, coverage will be collected at the block level (this is the default).
+        /// If false, coverage will be collected at the function level.
+        /// </summary>
+        public bool UseBlockCoverage { get; set; } = true;
     }
 }

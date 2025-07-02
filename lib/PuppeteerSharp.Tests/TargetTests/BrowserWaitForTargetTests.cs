@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.TargetTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
+        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
         public async Task ShouldWaitForATarget()
         {
             var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.TargetTests
             await page.CloseAsync();
         }
 
-        [Test, Retry(2), PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should timeout waiting for a non-existent target")]
+        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should timeout waiting for a non-existent target")]
         public void ShouldTimeoutWaitingForANonExistentTarget()
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,

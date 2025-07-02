@@ -124,6 +124,9 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
+    public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
+
+    /// <inheritdoc />
     public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />

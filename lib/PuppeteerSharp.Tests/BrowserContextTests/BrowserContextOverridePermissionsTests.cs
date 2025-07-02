@@ -17,14 +17,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 "name => navigator.permissions.query({ name }).then(result => result.state)",
                 name);
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should be prompt by default")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should be prompt by default")]
         public async Task ShouldBePromptByDefault()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
         }
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should deny permission when not listed")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should deny permission when not listed")]
         public async Task ShouldDenyPermissionWhenNotListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("denied"));
         }
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should grant permission when listed")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should grant permission when listed")]
         public async Task ShouldGrantPermissionWhenListed()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("granted"));
         }
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should reset permissions")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should reset permissions")]
         public async Task ShouldResetPermissions()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("prompt"));
         }
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should trigger permission onchange")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should trigger permission onchange")]
         public async Task ShouldTriggerPermissionOnchange()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 await Page.EvaluateExpressionAsync<string[]>("window.events"), Is.EqualTo(new string[] { "prompt", "denied", "granted", "prompt" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should isolate permissions between browser contexts")]
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should isolate permissions between browser contexts")]
         public async Task ShouldIsolatePermissionsBetweenBrowserContexts()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

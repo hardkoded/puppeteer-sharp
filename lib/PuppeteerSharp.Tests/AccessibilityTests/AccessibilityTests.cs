@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class AccessibilityTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "should work")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetContentAsync(@"
@@ -107,7 +107,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot, Is.EqualTo(nodeToCheck));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "should report uninteresting nodes")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should report uninteresting nodes")]
         public async Task ShouldReportUninterestingNodes()
         {
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
@@ -151,7 +151,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "get snapshots while the tree is re-calculated")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "get snapshots while the tree is re-calculated")]
         public async Task GetSnapshotsWhileTheTreeIsReCalculated()
         {
             await Page.SetContentAsync(@"
@@ -201,7 +201,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             })).Name;
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "roledescription")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "roledescription")]
         public async Task RoleDescription()
         {
             await Page.SetContentAsync("<div tabIndex=-1 aria-roledescription='foo'>Hi</div>");
@@ -210,7 +210,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].RoleDescription, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "orientation")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "orientation")]
         public async Task Orientation()
         {
             await Page.SetContentAsync("<a href='' role='slider' aria-orientation='vertical'>11</a>");
@@ -218,7 +218,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].Orientation, Is.EqualTo("vertical"));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "autocomplete")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "autocomplete")]
         public async Task AutoComplete()
         {
             await Page.SetContentAsync("<input type='number' aria-autocomplete='list' />");
@@ -226,7 +226,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].AutoComplete, Is.EqualTo("list"));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "multiselectable")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "multiselectable")]
         public async Task MultiSelectable()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-multiselectable=true>hey</div>");
@@ -234,7 +234,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].Multiselectable, Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "Accessibility", "keyshortcuts")]
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "keyshortcuts")]
         public async Task KeyShortcuts()
         {
             await Page.SetContentAsync("<div role='grid' tabIndex=-1 aria-keyshortcuts='foo'>hey</div>");
@@ -242,7 +242,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].KeyShortcuts, Is.EqualTo("foo"));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "should not report text nodes inside controls")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "should not report text nodes inside controls")]
         public async Task ShouldNotReportTextNodesInsideControls()
         {
             await Page.SetContentAsync(@"
@@ -271,7 +271,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields should have children")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields should have children")]
         public async Task RichTextEditableFieldsShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -299,7 +299,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields with role should have children")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "rich text editable fields with role should have children")]
         public async Task RichTextEditableFieldsWithRoleShouldHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -324,7 +324,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with role should not have children")]
+        [Test, PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with role should not have children")]
         public async Task PlainTextFieldWithRoleShouldNotHaveChildren()
         {
             await Page.SetContentAsync("<div contenteditable='plaintext-only' role='textbox'>Edit this image:<img src='fakeimage.png' alt='my fake image'></div>");
@@ -339,7 +339,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with tabindex and without role should not have content")]
+        [Test, PuppeteerTest("accessibility.spec", "plaintext contenteditable", "plain text field with tabindex and without role should not have content")]
         public async Task PlainTextFieldWithoutRoleShouldNotHaveContent()
         {
             await Page.SetContentAsync(
@@ -349,7 +349,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot.Children[0].Name, Is.EqualTo(string.Empty));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "non editable textbox with role and tabIndex and label should not have children")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "non editable textbox with role and tabIndex and label should not have children")]
         public async Task NonEditableTextboxWithRoleAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -367,7 +367,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox with and tabIndex and label should not have children")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox with and tabIndex and label should not have children")]
         public async Task CheckboxWithAndTabIndexAndLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"
@@ -385,7 +385,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox without label should not have children")]
+        [Test, PuppeteerTest("accessibility.spec", "filtering children of leaf nodes", "checkbox without label should not have children")]
         public async Task CheckboxWithoutLabelShouldNotHaveChildren()
         {
             await Page.SetContentAsync(@"

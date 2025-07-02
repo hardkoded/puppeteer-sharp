@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class ToStringTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for primitives")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for primitives")]
         public async Task ShouldWorkForPrimitives()
         {
             var numberHandle = await Page.EvaluateExpressionHandleAsync("2");
@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(stringHandle.ToString(), Is.EqualTo("JSHandle:a"));
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for complicated objects")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for complicated objects")]
         public async Task ShouldWorkForComplicatedObjects()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("window");
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             }
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with different subtypes")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with different subtypes")]
         public async Task ShouldWorkWithDifferentSubtypes()
         {
             Assert.That((await Page.EvaluateExpressionHandleAsync("(function(){})")).ToString(), Is.EqualTo("JSHandle@function"));
