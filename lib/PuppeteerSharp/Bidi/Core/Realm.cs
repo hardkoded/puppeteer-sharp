@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using WebDriverBiDi.Script;
 
@@ -95,6 +96,9 @@ internal abstract class Realm(BrowsingContext context, string id, string origin)
 
         return Session.Driver.Script.CallFunctionAsync(parameters);
     }
+
+    public Task DisownAsync(string[] handleIds)
+        => Session.Driver.Script.DisownAsync(new DisownCommandParameters(Target, handleIds));
 
     protected virtual void OnUpdated() => Updated?.Invoke(this, EventArgs.Empty);
 

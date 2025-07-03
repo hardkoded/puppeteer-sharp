@@ -32,16 +32,10 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers.Json;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
-
-/// <summary>
-/// A BidiLazyArg is an evaluation argument that will be resolved when the CDP call is built.
-/// </summary>
-/// <param name="context">Execution context.</param>
-/// <returns>Resolved argument.</returns>
-public delegate Task<LocalValue> BidiLazyArg(IPuppeteerUtilWrapper context);
 
 internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
 {
@@ -61,17 +55,70 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     public virtual Task<IJSHandle> GetPuppeteerUtilAsync() => throw new NotImplementedException();
 
-    internal override Task<IJSHandle> AdoptHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+    public async Task DestroyHandlesAsync(params BidiJSHandle[] handles)
+    {
+        if (Disposed)
+        {
+            return;
+        }
+
+        var handleIds = handles
+            .Select((handle) => handle.Id)
+            .Where(id => !string.IsNullOrEmpty(id)).ToArray();
+
+        if (handleIds.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await realm.DisownAsync(handleIds).ConfigureAwait(false);
+        }
+        catch
+        {
+            // TODO: Add Logger
+        }
+    }
+
+    internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+    {
+        try
+        {
+            return await EvaluateFunctionHandleAsync(
+                @"node => {
+                return node;
+            }",
+                handle).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
     internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
 
-    internal override Task<IJSHandle> TransferHandleAsync(IJSHandle handle) => throw new System.NotImplementedException();
+    internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
+    {
+        var handleImpl = handle as JSHandle;
+
+        if (handleImpl.Realm == this)
+        {
+            return handle;
+        }
+
+        var transferredHandle = AdoptHandleAsync(handle);
+        await handle.DisposeAsync().ConfigureAwait(false);
+        return await transferredHandle.ConfigureAwait(false);
+    }
 
     internal async override Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
 
     internal async override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
-        => CreateHandleAsync(await EvaluateAsync(false, false, script).ConfigureAwait(false));
+        => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
         => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
@@ -236,14 +283,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return (T)result;
     }
 
-    private async Task<LocalValue> FormatArgumentAsync(object arg)
+    private async Task<ArgumentValue> FormatArgumentAsync(object arg)
     {
         if (arg is TaskCompletionSource<object> tcs)
         {
             arg = await tcs.Task.ConfigureAwait(false);
         }
 
-        if (arg is BidiLazyArg lazyArg)
+        if (arg is LazyArg lazyArg)
         {
             arg = await lazyArg(this).ConfigureAwait(false);
         }
@@ -288,17 +335,20 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return LocalValue.Number(longValue);
             case float floatValue:
                 return LocalValue.Number(floatValue);
+            case decimal decimalValue:
+                return LocalValue.Number(decimalValue);
             case IEnumerable enumerable:
-                var list = new List<LocalValue>();
+                var list = new List<ArgumentValue>();
                 foreach (var item in enumerable)
                 {
                     list.Add(await FormatArgumentAsync(item).ConfigureAwait(false));
                 }
 
-                return LocalValue.Array(list);
-            case IJSHandle objectHandle:
-                // TODO: Implement this
-                return null;
+                return LocalValue.Array(list.Select(el => el as LocalValue).ToList());
+            case BidiJSHandle objectHandle:
+                return objectHandle.RemoteValue.ToRemoteReference();
+            case BidiElementHandle elementHandle:
+                return elementHandle.Value.ToRemoteReference();
 
                 // TODO: Cover the rest of the cases
         }

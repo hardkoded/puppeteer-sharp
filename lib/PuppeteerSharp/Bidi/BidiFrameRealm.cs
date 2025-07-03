@@ -20,14 +20,20 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Bidi;
 
 internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings)
 {
     private readonly WindowRealm _realm = realm;
-    private bool _bindingsInstalled;
+    private readonly TaskQueue _puppeteerUtilQueue = new();
+    private IJSHandle _puppeteerUtil;
+
+    internal override IEnvironment Environment => frame;
 
     public static BidiFrameRealm From(WindowRealm realm, BidiFrame frame)
     {
@@ -38,17 +44,26 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
 
     public override async Task<IJSHandle> GetPuppeteerUtilAsync()
     {
-        var installTcs = new TaskCompletionSource<bool>();
+        var scriptInjector = frame.BrowsingContext.Session.ScriptInjector;
 
-        if (!_bindingsInstalled)
+        await _puppeteerUtilQueue.Enqueue(async () =>
         {
-            // TODO: Implement
-            installTcs.TrySetResult(true);
-            _bindingsInstalled = true;
-        }
+            if (_puppeteerUtil == null)
+            {
+                await scriptInjector.InjectAsync(
+                    async (script) =>
+                    {
+                        if (_puppeteerUtil != null)
+                        {
+                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                        }
 
-        await installTcs.Task.ConfigureAwait(false);
-        return await base.GetPuppeteerUtilAsync().ConfigureAwait(false);
+                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+                    },
+                    _puppeteerUtil == null).ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+        return _puppeteerUtil;
     }
 
     protected override void Initialize()
@@ -58,7 +73,7 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         _realm.Updated += (_, __) =>
         {
             (Environment as Frame)?.ClearDocumentHandle();
-            _bindingsInstalled = false;
+            _puppeteerUtil = null;
         };
     }
 }

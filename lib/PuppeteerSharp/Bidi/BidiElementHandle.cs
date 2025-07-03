@@ -21,7 +21,6 @@
 //  * SOFTWARE.
 
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.QueryHandlers;
 using WebDriverBiDi.Script;
 
@@ -46,8 +45,6 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
     {
         return new BidiElementHandle(value, realm);
     }
-
-    public override ValueTask DisposeAsync() => throw new System.NotImplementedException();
 
     public override Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths) => throw new System.NotImplementedException();
 
