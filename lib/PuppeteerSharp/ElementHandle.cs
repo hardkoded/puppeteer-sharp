@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Base handle.
         /// </summary>
-        protected JSHandle Handle { get; }
+        internal JSHandle Handle { get; }
 
         /// <summary>
         /// Element's page.
@@ -661,6 +661,20 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override Task<T> JsonValueAsync<T>()
             => BindIsolatedHandleAsync<T, ElementHandle>(element => element.Handle.JsonValueAsync<T>());
+
+        /// <inheritdoc />
+        public override async ValueTask DisposeAsync()
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            Disposed = true;
+
+            await Handle.DisposeAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
