@@ -32,6 +32,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 using WebDriverBiDi.Script;
 
@@ -246,6 +247,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return (T)(object)Convert.ToBoolean(result, CultureInfo.InvariantCulture);
         }
 
+        if (result is RemoteValueDictionary dic)
+        {
+            return RemoteDictionaryTo<T>(dic);
+        }
+
         if (typeof(T).IsArray)
         {
             // Get the element type of the array
@@ -281,6 +287,31 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
 
         return (T)result;
+    }
+
+    private T RemoteDictionaryTo<T>(RemoteValueDictionary dic)
+    {
+        var localDictionary = new Dictionary<object, object>();
+
+        foreach (var kvp in dic)
+        {
+            // Convert RemoteValue to its actual value
+            var value = kvp.Value.Value;
+
+            // If the value is a RemoteValue, we need to deserialize it
+            if (value is RemoteValue remoteValue)
+            {
+                value = remoteValue.Value;
+            }
+
+            localDictionary[kvp.Key] = value;
+        }
+
+        // Serialize the dictionary to JSON
+        var json = JsonSerializer.Serialize(localDictionary, JsonHelper.DefaultJsonSerializerSettings.Value);
+
+        // Deserialize JSON into the target type
+        return JsonSerializer.Deserialize<T>(json, JsonHelper.DefaultJsonSerializerSettings.Value);
     }
 
     private async Task<ArgumentValue> FormatArgumentAsync(object arg)

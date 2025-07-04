@@ -39,7 +39,9 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
     internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
 
-    protected override Page Page { get; }
+    internal BidiFrame BidiFrame => realm.Environment as BidiFrame;
+
+    protected override Page Page => BidiFrame.BidiPage;
 
     public static IJSHandle From(RemoteValue value, BidiRealm realm)
     {

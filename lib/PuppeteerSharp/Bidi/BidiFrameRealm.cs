@@ -35,6 +35,8 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
 
     internal override IEnvironment Environment => frame;
 
+    internal BidiFrame Frame => frame;
+
     public static BidiFrameRealm From(WindowRealm realm, BidiFrame frame)
     {
         var frameRealm = new BidiFrameRealm(realm, frame);
