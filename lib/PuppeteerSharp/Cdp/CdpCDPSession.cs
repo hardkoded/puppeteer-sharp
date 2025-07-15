@@ -130,7 +130,7 @@ public class CdpCDPSession : CDPSession
         {
             Connection.MessageQueue.Enqueue(callback, obj);
         }
-        else if (obj.Method != null)
+        else if (obj.Method is not null && obj.Params is not null)
         {
             // If the message was set to not wait for callback, the message won't be in the callbacks dictionary
             // And it might have no method set.
