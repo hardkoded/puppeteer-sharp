@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         Linux,
 
         /// <summary>
-        /// Linux arm64.
+        /// Linux ARM64.
         /// </summary>
         LinuxArm64,
 
