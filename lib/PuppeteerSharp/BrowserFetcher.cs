@@ -160,11 +160,14 @@ namespace PuppeteerSharp
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
+                return RuntimeInformation.OSArchitecture == Architecture.X64 || IsWindows11() ? Platform.Win64 : Platform.Win32;
             }
 
             return Platform.Unknown;
         }
+
+        internal static bool IsWindows11()
+            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version.Build >= 22000;
 
         internal static string GetBrowsersLocation()
         {
