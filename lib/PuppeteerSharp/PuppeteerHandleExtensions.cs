@@ -163,7 +163,7 @@ namespace PuppeteerSharp
                 })();
             }").ConfigureAwait(false);
 
-            await foreach (var item in iterator.TransposeIteratorHandleAsync())
+            await foreach (var item in iterator.TransposeIteratorHandleAsync().ConfigureAwait(false))
             {
                 yield return item;
             }
@@ -212,7 +212,7 @@ namespace PuppeteerSharp
             var properties = await array.GetPropertiesAsync().ConfigureAwait(false);
 
             await array.DisposeAsync().ConfigureAwait(false);
-            return properties.Values.Where(handle => handle is IElementHandle).Cast<IElementHandle>();
+            return properties.Values.Where(h => h is IElementHandle).Cast<IElementHandle>();
         }
     }
 }

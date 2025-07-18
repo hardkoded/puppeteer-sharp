@@ -507,7 +507,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 Server.WaitForRequest("/digits/1.png", r => referer2 = r.Headers["Referer"]),
                 Page.GoToAsync(TestConstants.ServerUrl + "/grid.html", new NavigationOptions
                 {
-                    ReferrerPolicy = "no-referer"
+                    ReferrerPolicy = "no-referrer"
                 })
             );
 
