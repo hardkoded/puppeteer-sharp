@@ -99,8 +99,11 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     public override async Task SetContentAsync(string html, NavigationOptions options = null)
     {
-        var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+
+        // Wait for load and network idle events
+        var waitForLoadTask = WaitForLoadAsync(options);
+        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
         // Set the frame content using JavaScript, similar to CDP implementation
         await EvaluateFunctionAsync(
@@ -110,10 +113,6 @@ public class BidiFrame : Frame
                 document.close();
             }",
             html).ConfigureAwait(false);
-
-        // Wait for load and network idle events
-        var waitForLoadTask = WaitForLoadAsync(options);
-        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
         await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(timeout).ConfigureAwait(false);
     }
