@@ -97,7 +97,26 @@ public class BidiFrame : Frame
     public override Task<IElementHandle> AddScriptTagAsync(AddTagOptions options) => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetContentAsync(string html, NavigationOptions options = null) => throw new System.NotImplementedException();
+    public override async Task SetContentAsync(string html, NavigationOptions options = null)
+    {
+        var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
+        var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+
+        // Set the frame content using JavaScript, similar to CDP implementation
+        await EvaluateFunctionAsync(
+            @"html => {
+                document.open();
+                document.write(html);
+                document.close();
+            }",
+            html).ConfigureAwait(false);
+
+        // Wait for load and network idle events
+        var waitForLoadTask = WaitForLoadAsync(options);
+        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
+
+        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(timeout).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
