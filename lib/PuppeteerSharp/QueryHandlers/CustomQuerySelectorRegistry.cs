@@ -84,6 +84,6 @@ namespace PuppeteerSharp.QueryHandlers
             }
         }
 
-        private IEnumerable<string> CustomQueryHandlerNames() => _queryHandlers.Keys.ToArray();
+        private IEnumerable<string> CustomQueryHandlerNames() => _queryHandlers.Keys;
     }
 }

@@ -283,7 +283,7 @@ namespace PuppeteerSharp.Cdp
 
         private void OnExecutionContextsCleared(CDPSession session)
         {
-            foreach (var key in _contextIdToContext.Keys.ToArray())
+            foreach (var key in _contextIdToContext.Keys)
             {
                 var context = _contextIdToContext[key];
                 if (context.Client != session)
