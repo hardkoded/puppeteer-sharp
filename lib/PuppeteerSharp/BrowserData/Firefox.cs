@@ -123,7 +123,7 @@ namespace PuppeteerSharp.BrowserData
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
-                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray());
+                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});"));
 
             BackupFile(userPath);
             BackupFile(prefsPath);

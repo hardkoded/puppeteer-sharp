@@ -111,11 +111,11 @@ namespace PuppeteerSharp
                                     return fun(...args);
                                 });
                             }",
-                            new object[]
-                            {
+                            [
                                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                                 _fn,
-                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                                .._args
+                            ]).ConfigureAwait(false);
                 }
                 else
                 {
@@ -127,12 +127,12 @@ namespace PuppeteerSharp
                                     return fun(...args);
                                 }, root || document);
                             }",
-                            new object[]
-                            {
+                            [
                                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
                                 _root,
                                 _fn,
-                            }.Concat(_args).ToArray()).ConfigureAwait(false);
+                                .._args
+                            ]).ConfigureAwait(false);
                 }
 
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution

@@ -149,7 +149,7 @@ public class CdpCDPSession : CDPSession
         CloseReason = closeReason;
         IsClosed = true;
 
-        foreach (var callback in _callbacks.Values.ToArray())
+        foreach (var callback in _callbacks.Values)
         {
             callback.TaskWrapper.TrySetException(new TargetClosedException(
                 $"Protocol error({callback.Method}): Target closed.",
