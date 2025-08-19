@@ -137,7 +137,7 @@ namespace PuppeteerSharp
             }
             finally
             {
-                await Task.WhenAll(garbage.ToArray()).ConfigureAwait(false);
+                await Task.WhenAll(garbage).ConfigureAwait(false);
             }
         }
     }
