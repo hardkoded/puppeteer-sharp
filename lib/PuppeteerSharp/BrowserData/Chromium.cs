@@ -21,23 +21,23 @@ namespace PuppeteerSharp.BrowserData
                     "Contents",
                     "MacOS",
                     "Chromium"),
-                Platform.Linux => Path.Combine("chrome-linux", "chrome"),
+                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-linux", "chrome"),
                 Platform.Win32 or Platform.Win64 => Path.Combine("chrome-win", "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            => new string[]
-            {
+            =>
+            [
                 GetFolder(platform),
                 buildId,
-                $"{GetArchive(platform, buildId)}.zip",
-            };
+                $"{GetArchive(platform, buildId)}.zip"
+            ];
 
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux => "chrome-linux",
+                Platform.Linux or Platform.LinuxArm64 => "chrome-linux",
                 Platform.MacOS or Platform.MacOSArm64 => "chrome-mac",
 
                 // Windows archive name changed at r591479.
@@ -48,7 +48,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetFolder(Platform platform)
             => platform switch
             {
-                Platform.Linux => "Linux_x64",
+                Platform.Linux or Platform.LinuxArm64 => "Linux_x64",
                 Platform.MacOSArm64 => "Mac_Arm",
                 Platform.MacOS => "Mac",
                 Platform.Win32 => "Win",
