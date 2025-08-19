@@ -31,7 +31,6 @@ public class PrerenderTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
-
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
         Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
     }

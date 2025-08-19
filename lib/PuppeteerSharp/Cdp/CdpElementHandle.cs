@@ -163,20 +163,6 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
             });
 
     /// <inheritdoc />
-    public override async ValueTask DisposeAsync()
-    {
-        if (Disposed)
-        {
-            return;
-        }
-
-        Disposed = true;
-
-        await Handle.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <inheritdoc />
     public override string ToString() => Handle.ToString();
 
     private void CheckForFileAccess(string[] files)
