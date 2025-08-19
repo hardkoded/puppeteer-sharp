@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings)
+internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings, frame.BidiPage.BidiBrowser.LoggerFactory)
 {
     private readonly WindowRealm _realm = realm;
     private bool _bindingsInstalled;
