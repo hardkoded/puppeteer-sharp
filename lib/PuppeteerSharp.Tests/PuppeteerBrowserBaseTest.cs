@@ -18,9 +18,16 @@ namespace PuppeteerSharp.Tests
         [TearDown]
         public async Task TearDownAsync()
         {
-            if (Browser is not null)
+            try
             {
-                await Browser.DisposeAsync();
+                if (Browser is not null)
+                {
+                    await Browser.DisposeAsync();
+                }
+            }
+            catch
+            {
+                // Ignore exceptions during browser disposal
             }
         }
     }
