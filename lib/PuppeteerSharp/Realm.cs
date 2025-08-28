@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp
 {
-    internal abstract class Realm(int timeout)
+    internal abstract class Realm(TimeoutSettings timeoutSettings)
     {
         internal TaskManager TaskManager { get; } = new();
 
-        internal int Timeout { get; } = timeout;
+        internal TimeoutSettings TimeoutSettings { get; } = timeoutSettings;
 
         internal abstract IEnvironment Environment { get; }
 
@@ -37,7 +37,7 @@ namespace PuppeteerSharp
                 false,
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? Timeout,
+                options.Timeout ?? TimeoutSettings.Timeout,
                 options.Root,
                 args);
 
@@ -54,7 +54,7 @@ namespace PuppeteerSharp
                 true,
                 options.Polling,
                 options.PollingInterval,
-                options.Timeout ?? Timeout,
+                options.Timeout ?? TimeoutSettings.Timeout,
                 null, // Root
                 null); // args
 

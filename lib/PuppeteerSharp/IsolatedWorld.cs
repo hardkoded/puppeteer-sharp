@@ -30,8 +30,8 @@ namespace PuppeteerSharp
         public IsolatedWorld(
             Frame frame,
             WebWorker worker,
-            int timeout,
-            bool isMainWorld) : base(timeout)
+            TimeoutSettings timeoutSettings,
+            bool isMainWorld) : base(timeoutSettings)
         {
             Frame = frame;
             Worker = worker;

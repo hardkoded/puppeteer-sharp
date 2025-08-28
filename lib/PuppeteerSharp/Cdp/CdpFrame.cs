@@ -65,6 +65,8 @@ public class CdpFrame : Frame
 
     internal FrameManager FrameManager { get; }
 
+    internal CdpPage CdpPage => Page as CdpPage;
+
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
     /// <inheritdoc/>
@@ -317,13 +319,13 @@ public class CdpFrame : Frame
             MainRealm = new IsolatedWorld(
                 this,
                 null,
-                Page.DefaultTimeout,
+                CdpPage.TimeoutSettings,
                 true);
 
             IsolatedRealm = new IsolatedWorld(
                 this,
                 null,
-                Page.DefaultTimeout,
+                CdpPage.TimeoutSettings,
                 false);
         }
         else
