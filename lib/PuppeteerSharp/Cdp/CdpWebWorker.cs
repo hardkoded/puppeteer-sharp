@@ -50,7 +50,7 @@ public class CdpWebWorker : WebWorker
         _id = targetId;
         Client = client;
         _targetType = targetType;
-        World = new IsolatedWorld(null, this, new TimeoutSettings(), true);
+        World = new IsolatedWorld(null, this, Puppeteer.DefaultTimeout, true);
         _consoleAPICalled = consoleAPICalled;
         _exceptionThrown = exceptionThrown;
         client.MessageReceived += OnMessageReceived;

@@ -317,13 +317,13 @@ public class CdpFrame : Frame
             MainRealm = new IsolatedWorld(
                 this,
                 null,
-                FrameManager.TimeoutSettings,
+                Page.DefaultTimeout,
                 true);
 
             IsolatedRealm = new IsolatedWorld(
                 this,
                 null,
-                FrameManager.TimeoutSettings,
+                Page.DefaultTimeout,
                 false);
         }
         else
