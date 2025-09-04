@@ -63,7 +63,7 @@ namespace PuppeteerSharp
 
             var chromiumArguments = new List<string>(
             [
-                    "--allow-pre-commit-input",
+                "--allow-pre-commit-input",
                 "--disable-background-networking",
                 "--disable-background-timer-throttling",
                 "--disable-backgrounding-occluded-windows",
@@ -74,7 +74,6 @@ namespace PuppeteerSharp
                 "--disable-default-apps",
                 "--disable-dev-shm-usage",
                 "--disable-extensions",
-                "--disable-field-trial-config",
                 "--disable-hang-monitor",
                 "--disable-infobars",
                 "--disable-ipc-flooding-protection",
