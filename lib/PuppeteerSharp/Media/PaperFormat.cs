@@ -39,39 +39,39 @@ namespace PuppeteerSharp.Media
         public static PaperFormat Ledger => new PaperFormat(17, 11);
 
         /// <summary>
-        /// A0: 33.1 inches by 46.8 inches.
+        /// A0: 33.1102 inches by 46.811 inches.
         /// </summary>
-        public static PaperFormat A0 => new PaperFormat(33.1m, 46.8m);
+        public static PaperFormat A0 => new PaperFormat(33.1102m, 46.811m);
 
         /// <summary>
-        /// A1: 23.4 inches by 33.1 inches.
+        /// A1: 23.3858 inches by 33.1102 inches.
         /// </summary>
-        public static PaperFormat A1 => new PaperFormat(23.4m, 33.1m);
+        public static PaperFormat A1 => new PaperFormat(23.3858m, 33.1102m);
 
         /// <summary>
-        /// A2: 16.5 inches by 23.4 inches.
+        /// A2: 16.5354 inches by 23.3858 inches.
         /// </summary>
-        public static PaperFormat A2 => new PaperFormat(16.54m, 23.4m);
+        public static PaperFormat A2 => new PaperFormat(16.5354m, 23.3858m);
 
         /// <summary>
-        /// A3: 11.7 inches by 16.5 inches.
+        /// A3: 11.6929 inches by 16.5354 inches.
         /// </summary>
-        public static PaperFormat A3 => new PaperFormat(11.7m, 16.54m);
+        public static PaperFormat A3 => new PaperFormat(11.6929m, 16.5354m);
 
         /// <summary>
-        /// A4: 8.27 inches by 11.7 inches.
+        /// A4: 8.2677 inches by 11.6929 inches.
         /// </summary>
-        public static PaperFormat A4 => new PaperFormat(8.27m, 11.7m);
+        public static PaperFormat A4 => new PaperFormat(8.2677m, 11.6929m);
 
         /// <summary>
-        /// A5: 5.83 inches by 8.27 inches.
+        /// A5: 5.8268 inches by 8.2677 inches.
         /// </summary>
-        public static PaperFormat A5 => new PaperFormat(5.83m, 8.27m);
+        public static PaperFormat A5 => new PaperFormat(5.8268m, 8.2677m);
 
         /// <summary>
-        /// A6: 4.13 inches by 5.83 inches.
+        /// A6: 4.1339 inches by 5.8268 inches.
         /// </summary>
-        public static PaperFormat A6 => new PaperFormat(4.13m, 5.83m);
+        public static PaperFormat A6 => new PaperFormat(4.1339m, 5.8268m);
 
         /// <summary>
         /// Page width in inches.
