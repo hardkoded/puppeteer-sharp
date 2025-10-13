@@ -62,6 +62,10 @@ internal class Request : IDisposable
 
     public string Url => _eventArgs.Request.Url;
 
+    public WebDriverBiDi.Network.ResponseData Response => _response;
+
+    public bool HasError => _error != null;
+
     public static Request From(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
         var request = new Request(browsingContext, args);

@@ -30,6 +30,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
 {
     private readonly WebDriverBiDi.Network.ResponseData _data;
     private readonly BidiHttpRequest _request;
+    private readonly bool _fromCache;
 
     private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {
@@ -37,10 +38,21 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         _request = request;
         Status = (HttpStatusCode)data.Status;
         Url = data.Url;
+        _fromCache = data.FromCache;
+    }
+
+    // Internal constructor for synthetic responses (e.g., cached history navigation)
+    private BidiHttpResponse(string url, HttpStatusCode status, bool fromCache)
+    {
+        _data = null;
+        _request = null;
+        Url = url;
+        Status = status;
+        _fromCache = fromCache;
     }
 
     /// <inheritdoc />
-    public override bool FromCache { get; }
+    public override bool FromCache => _fromCache;
 
     /// <inheritdoc />
     public override ValueTask<byte[]> BufferAsync() => throw new System.NotImplementedException();
@@ -50,6 +62,13 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         var response = new BidiHttpResponse(data, request, cdpSupported);
         response.Initialize();
         return response;
+    }
+
+    // Creates a synthetic response for cached navigation (e.g., history navigation)
+    // See: https://github.com/w3c/webdriver-bidi/issues/502
+    internal static BidiHttpResponse FromCachedNavigation(string url)
+    {
+        return new BidiHttpResponse(url, HttpStatusCode.OK, fromCache: true);
     }
 
     private void Initialize()
