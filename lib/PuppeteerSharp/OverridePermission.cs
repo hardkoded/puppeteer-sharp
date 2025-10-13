@@ -88,5 +88,11 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "durableStorage")]
         PersistentStorage,
+
+        /// <summary>
+        /// Local Network Access.
+        /// </summary>
+        [EnumMember(Value = "local-network-access")]
+        LocalNetworkAccess,
     }
 }

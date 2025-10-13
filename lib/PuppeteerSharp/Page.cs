@@ -182,6 +182,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract bool IsJavaScriptEnabled { get; }
 
+        /// <summary>
+        /// Timeout settings.
+        /// </summary>
+        public TimeoutSettings TimeoutSettings { get; set; } = new();
+
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
@@ -202,11 +207,6 @@ namespace PuppeteerSharp
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
         internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
-
-        /// <summary>
-        /// Timeout settings.
-        /// </summary>
-        internal TimeoutSettings TimeoutSettings { get; set; } = new();
 
         /// <summary>
         /// Whether the <see cref="Console"/> event has listeners.
