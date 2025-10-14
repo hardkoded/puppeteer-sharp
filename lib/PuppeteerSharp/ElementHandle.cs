@@ -451,8 +451,9 @@ namespace PuppeteerSharp
             => BindIsolatedHandleAsync<bool, ElementHandle>(async handle =>
             {
                 await handle.AssertConnectedElementAsync().ConfigureAwait(false);
-                var svgHandle = await AsSVGElementHandleAsync(this).ConfigureAwait(false);
-                var target = svgHandle == null ? handle : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var svgHandle = await AsSVGElementHandleAsync(handle).ConfigureAwait(false);
+                var ownerSVGElement = svgHandle == null ? null : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var target = ownerSVGElement ?? handle;
 
                 return await target.Realm.EvaluateFunctionAsync<bool>(
                     @"async (element, threshold) => {
