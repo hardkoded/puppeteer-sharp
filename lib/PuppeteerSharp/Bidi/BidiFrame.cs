@@ -256,6 +256,23 @@ public class BidiFrame : Frame
                     await frameDetachedTask.ConfigureAwait(false);
                 }
 
+                // Wait for request to be created if we don't have one yet
+                if (navigation.Request == null)
+                {
+                    var requestCreatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    void OnRequestCreated(object sender, Core.RequestEventArgs args) => requestCreatedTcs.TrySetResult(true);
+
+                    navigation.RequestCreated += OnRequestCreated;
+
+                    // Wait up to 1 second for request to be created
+                    // If it doesn't happen, it means this is a cached/history navigation
+                    var requestCreatedTask = requestCreatedTcs.Task;
+                    var delay = Task.Delay(1000);
+                    await Task.WhenAny(requestCreatedTask, delay).ConfigureAwait(false);
+
+                    navigation.RequestCreated -= OnRequestCreated;
+                }
+
                 // Wait for request completion if navigation has a request
                 if (navigation.Request != null)
                 {
@@ -294,15 +311,26 @@ public class BidiFrame : Frame
                 return null;
             }
 
-            // For cached history navigation (GoBack/GoForward), BiDi doesn't create a request
-            // because the page is loaded from cache. We create a synthetic response.
+            // If there's no request associated with this navigation after waiting,
+            // it means this is either:
+            // 1. A special URL like about:blank (no network request) - return null
+            // 2. A cached history navigation (GoBack/GoForward) - create synthetic response
             // See: https://github.com/w3c/webdriver-bidi/issues/502
             var request = navigation.Request;
 
             if (request == null)
             {
-                // Create a synthetic cached response with the current URL
-                return BidiHttpResponse.FromCachedNavigation(BrowsingContext.Url);
+                var url = BrowsingContext.Url;
+
+                // Special URLs like about:blank don't have network requests
+                if (url.StartsWith("about:", StringComparison.OrdinalIgnoreCase) ||
+                    url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                {
+                    return null;
+                }
+
+                // For cached history navigations, create a synthetic response
+                return BidiHttpResponse.FromCachedNavigation(url);
             }
 
             var lastRequest = request.LastRedirect ?? request;
