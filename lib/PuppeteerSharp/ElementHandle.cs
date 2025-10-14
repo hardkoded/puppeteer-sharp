@@ -688,20 +688,6 @@ namespace PuppeteerSharp
                             });
                         }"));
 
-        /// <inheritdoc />
-        public override async ValueTask DisposeAsync()
-        {
-            if (Disposed)
-            {
-                return;
-            }
-
-            Disposed = true;
-
-            await Handle.DisposeAsync().ConfigureAwait(false);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         /// Checks whether the element is still connected to the browser.
         /// </summary>
