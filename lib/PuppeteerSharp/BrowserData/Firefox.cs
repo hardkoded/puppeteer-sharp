@@ -199,7 +199,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.bz2",
+                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"Firefox {buildId}.dmg",
                 Platform.Win32 or Platform.Win64 =>
                     $"Firefox Setup {buildId}.exe",
