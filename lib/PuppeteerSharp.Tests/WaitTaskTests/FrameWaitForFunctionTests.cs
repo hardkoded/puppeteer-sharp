@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     {
         private PollerInterceptor _pollerInterceptor;
 
-        public FrameWaitForFunctionTests() : base()
+        public FrameWaitForFunctionTests()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
 

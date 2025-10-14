@@ -93,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
                     continue;
                 }
 
-                var flattenRanges = entry.Functions.SelectMany(f => f.Ranges).ToList();
+                var flattenRanges = entry.Functions.SelectMany(f => f.Ranges);
                 var ranges = Coverage.ConvertToDisjointRanges(flattenRanges);
                 coverage.Add(new JSCoverageEntry
                 {

@@ -30,7 +30,7 @@ namespace PuppeteerSharp.PageCoverage
         /// <inheritdoc/>
         public Task<CoverageEntry[]> StopCSSCoverageAsync() => _cssCoverage.StopAsync();
 
-        internal static CoverageEntryRange[] ConvertToDisjointRanges(List<CoverageRange> nestedRanges)
+        internal static CoverageEntryRange[] ConvertToDisjointRanges(IEnumerable<CoverageRange> nestedRanges)
         {
             var points = new List<CoverageEntryPoint>();
             foreach (var range in nestedRanges)

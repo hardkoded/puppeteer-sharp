@@ -18,7 +18,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "stable_131.0.3";
+        public const string DefaultBuildId = "stable_143.0.4";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.BrowserData
                             "Contents",
                             "MacOS",
                             "firefox"),
-                        Platform.Linux => Path.Combine("firefox", "firefox"),
+                        Platform.Linux or Platform.LinuxArm64 => Path.Combine("firefox", "firefox"),
                         Platform.Win32 or Platform.Win64 => Path.Combine("firefox", "firefox.exe"),
                         _ => throw new ArgumentException("Invalid platform", nameof(platform)),
                     };
@@ -102,7 +102,7 @@ namespace PuppeteerSharp.BrowserData
                             "Contents",
                             "MacOS",
                             "firefox"),
-                        Platform.Linux => Path.Combine("firefox", "firefox"),
+                        Platform.Linux or Platform.LinuxArm64 => Path.Combine("firefox", "firefox"),
                         Platform.Win32 or Platform.Win64 => Path.Combine("core", "firefox.exe"),
                         _ => throw new ArgumentException("Invalid platform", nameof(platform)),
                     };
@@ -123,7 +123,7 @@ namespace PuppeteerSharp.BrowserData
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
-                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});").ToArray());
+                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});"));
 
             BackupFile(userPath);
             BackupFile(prefsPath);
@@ -162,6 +162,7 @@ namespace PuppeteerSharp.BrowserData
             => platform switch
             {
                 Platform.Linux => "linux-x86_64",
+                Platform.LinuxArm64 => "linux-aarch64",
                 Platform.MacOS or Platform.MacOSArm64 => "mac",
                 Platform.Win32 => "win32",
                 Platform.Win64 => "win64",
@@ -171,7 +172,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetFirefoxPlatform(Platform platform)
             => platform switch
             {
-                Platform.Linux => "linux",
+                Platform.Linux or Platform.LinuxArm64 => "linux",
                 Platform.MacOS => "mac",
                 Platform.MacOSArm64 => "mac_arm",
                 Platform.Win32 => "win32",
@@ -182,6 +183,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchiveNightly(Platform platform, string buildId)
             => platform switch
             {
+                Platform.LinuxArm64 => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-aarch64.tar.{GetFormat(buildId)}",
                 Platform.Linux => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}-x86_64.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"firefox-{buildId}.en-US.mac.dmg",
                 Platform.Win32 or Platform.Win64 => $"firefox-{buildId}.en-US.{GetFirefoxPlatform(platform)}.zip",
@@ -197,7 +199,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux => $"firefox-{buildId}.tar.bz2",
+                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"Firefox {buildId}.dmg",
                 Platform.Win32 or Platform.Win64 =>
                     $"Firefox Setup {buildId}.exe",

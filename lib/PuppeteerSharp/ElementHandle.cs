@@ -238,7 +238,7 @@ namespace PuppeteerSharp
 
                 var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
                 var result = new List<IElementHandle>();
-                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector))
+                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector).ConfigureAwait(false))
                 {
                     result.Add(item);
                 }
@@ -687,6 +687,20 @@ namespace PuppeteerSharp
                                 behavior: 'instant',
                             });
                         }"));
+
+        /// <inheritdoc />
+        public override async ValueTask DisposeAsync()
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            Disposed = true;
+
+            await Handle.DisposeAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         /// Checks whether the element is still connected to the browser.

@@ -26,6 +26,11 @@ namespace PuppeteerSharp
         Linux,
 
         /// <summary>
+        /// Linux ARM64.
+        /// </summary>
+        LinuxArm64,
+
+        /// <summary>
         /// Win32.
         /// </summary>
         Win32,

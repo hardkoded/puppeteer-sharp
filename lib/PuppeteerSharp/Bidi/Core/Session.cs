@@ -54,6 +54,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<WebDriverBiDi.BrowsingContext.NavigationEventArgs> BrowsingContextFragmentNavigated;
 
+    public event EventHandler<WebDriverBiDi.BrowsingContext.HistoryUpdatedEventArgs> BrowsingContextHistoryUpdated;
+
     public event EventHandler<BeforeRequestSentEventArgs> NetworkBeforeRequestSent;
 
     public event EventHandler<AuthRequiredEventArgs> NetworkAuthRequired;
@@ -105,6 +107,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.BrowsingContext.OnFragmentNavigated.AddObserver(OnFragmentNavigated);
         Driver.BrowsingContext.OnNavigationFailed.AddObserver(OnBrowsingContextNavigationFailed);
         Driver.BrowsingContext.OnNavigationAborted.AddObserver(OnBrowsingContextNavigationAborted);
+        Driver.BrowsingContext.OnHistoryUpdated.AddObserver(OnBrowsingContextHistoryUpdated);
         Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
         Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
@@ -136,6 +139,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     private void OnBrowsingContextNavigationFailed(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationFailed?.Invoke(this, obj);
 
     private void OnBrowsingContextFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextFragmentNavigated?.Invoke(this, obj);
+
+    private void OnBrowsingContextHistoryUpdated(WebDriverBiDi.BrowsingContext.HistoryUpdatedEventArgs obj) => BrowsingContextHistoryUpdated?.Invoke(this, obj);
 
     private void OnBrowsingContextNavigationStarted(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextNavigationStarted?.Invoke(this, obj);
 

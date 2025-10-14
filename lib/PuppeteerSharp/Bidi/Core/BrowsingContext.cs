@@ -62,6 +62,8 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler<BrowserContextNavigationEventArgs> Navigation;
 
+    public event EventHandler HistoryUpdated;
+
     public UserContext UserContext { get; }
 
     public string Id { get; }
@@ -272,6 +274,16 @@ internal class BrowsingContext : IDisposable
             OnNavigation(new BrowserContextNavigationEventArgs(_navigation));
         };
 
+        Session.BrowsingContextHistoryUpdated += (sender, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            OnHistoryUpdated();
+        };
+
         Session.NetworkBeforeRequestSent += (sender, args) =>
         {
             if (args.BrowsingContextId != Id)
@@ -300,6 +312,8 @@ internal class BrowsingContext : IDisposable
     private void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
 
     private void OnDomContentLoaded() => DomContentLoaded?.Invoke(this, EventArgs.Empty);
+
+    private void OnHistoryUpdated() => HistoryUpdated?.Invoke(this, EventArgs.Empty);
 
     private void Dispose(string reason)
     {

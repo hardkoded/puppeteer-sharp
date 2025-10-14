@@ -13,7 +13,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default chrome build.
         /// </summary>
-        public static string DefaultBuildId => "138.0.7204.92";
+        public static string DefaultBuildId => "138.0.7204.101";
 
         internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel)
             => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.BrowserData
                     "Contents",
                     "MacOS",
                     "Google Chrome for Testing"),
-                Platform.Linux => Path.Combine("chrome-linux64", "chrome"),
+                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-linux64", "chrome"),
                 Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform), "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
@@ -60,6 +60,7 @@ namespace PuppeteerSharp.BrowserData
                         ChromeReleaseChannel.Dev => $"/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev",
                         _ => throw new PuppeteerException($"{channel} is not supported"),
                     };
+                case Platform.LinuxArm64:
                 case Platform.Linux:
                     return channel switch
                     {
@@ -86,17 +87,17 @@ namespace PuppeteerSharp.BrowserData
         }
 
         private static string[] ResolveDownloadPath(Platform platform, string buildId)
-            => new string[]
-            {
+            =>
+            [
                 buildId,
                 GetFolder(platform),
-                $"chrome-{GetFolder(platform)}.zip",
-            };
+                $"chrome-{GetFolder(platform)}.zip"
+            ];
 
         private static string GetFolder(Platform platform)
             => platform switch
             {
-                Platform.Linux => "linux64",
+                Platform.Linux or Platform.LinuxArm64 => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
                 Platform.MacOS => "mac-x64",
                 Platform.Win32 => "win32",
