@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.DialogTests
 {
     public class DialogTests : PuppeteerPageBaseTest
     {
-        public DialogTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should fire")]
         public async Task ShouldFire()
         {

@@ -64,6 +64,10 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<ResponseCompletedEventArgs> NetworkResponseComplete;
 
+    public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs> BrowsingContextUserPromptOpened;
+
+    public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs> BrowsingContextUserPromptClosed;
+
     public BiDiDriver Driver { get; } = driver;
 
     public NewCommandResult Info { get; } = info;
@@ -112,6 +116,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
         Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
         Driver.Network.OnResponseCompleted.AddObserver(OnNetworkResponseCompleted);
+        Driver.BrowsingContext.OnUserPromptOpened.AddObserver(OnBrowsingContextUserPromptOpened);
+        Driver.BrowsingContext.OnUserPromptClosed.AddObserver(OnBrowsingContextUserPromptClosed);
     }
 
     private void OnFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs info)
@@ -149,4 +155,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     private void OnBrowsingContextDomContentLoaded(WebDriverBiDi.BrowsingContext.NavigationEventArgs obj) => BrowsingContextDomContentLoaded?.Invoke(this, obj);
 
     private void OnBrowsingContextContextDestroyed(BrowsingContextEventArgs obj) => BrowsingContextContextDestroyed?.Invoke(this, obj);
+
+    private void OnBrowsingContextUserPromptOpened(WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs obj) => BrowsingContextUserPromptOpened?.Invoke(this, obj);
+
+    private void OnBrowsingContextUserPromptClosed(WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs obj) => BrowsingContextUserPromptClosed?.Invoke(this, obj);
 }

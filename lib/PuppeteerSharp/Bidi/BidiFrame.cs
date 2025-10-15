@@ -570,6 +570,12 @@ public class BidiFrame : Frame
             ((Page)Page).OnDOMContentLoaded();
             ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
         };
+
+        BrowsingContext.UserPrompt += (sender, args) =>
+        {
+            var dialog = BidiDialog.From(args.UserPrompt);
+            ((Page)Page).OnDialog(new DialogEventArgs(dialog));
+        };
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)

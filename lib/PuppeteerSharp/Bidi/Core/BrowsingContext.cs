@@ -24,7 +24,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Input;
 
@@ -63,6 +62,8 @@ internal class BrowsingContext : IDisposable
     public event EventHandler<BrowserContextNavigationEventArgs> Navigation;
 
     public event EventHandler HistoryUpdated;
+
+    public event EventHandler<UserPromptEventArgs> UserPrompt;
 
     public UserContext UserContext { get; }
 
@@ -174,7 +175,7 @@ internal class BrowsingContext : IDisposable
     {
         var realm = WindowRealm.From(this, sandbox);
 
-        realm.Worker += (sender, args) =>
+        realm.Worker += (_, args) =>
         {
             OnWorker(args.Realm);
         };
@@ -192,7 +193,7 @@ internal class BrowsingContext : IDisposable
 
     private void Initialize()
     {
-        UserContext.Closed += (sender, args) => Dispose("User context was closed");
+        UserContext.Closed += (_, _) => Dispose("User context was closed");
 
         Session.BrowsingContextContextCreated += (sender, args) =>
         {
@@ -205,7 +206,7 @@ internal class BrowsingContext : IDisposable
 
             _children.TryAdd(args.UserContextId, browsingContext);
 
-            browsingContext.Closed += (sender, args) =>
+            browsingContext.Closed += (_, _) =>
             {
                 _children.TryRemove(browsingContext.Id, out _);
             };
@@ -213,7 +214,7 @@ internal class BrowsingContext : IDisposable
             OnBrowsingContextCreated(new BidiBrowsingContextEventArgs(browsingContext));
         };
 
-        Session.BrowsingContextContextDestroyed += (sender, args) =>
+        Session.BrowsingContextContextDestroyed += (_, args) =>
         {
             if (args.UserContextId != Id)
             {
@@ -223,7 +224,7 @@ internal class BrowsingContext : IDisposable
             Dispose("Browsing context already closed.");
         };
 
-        Session.BrowsingContextDomContentLoaded += (sender, args) =>
+        Session.BrowsingContextDomContentLoaded += (_, args) =>
         {
             if (args.BrowsingContextId != Id)
             {
@@ -234,7 +235,7 @@ internal class BrowsingContext : IDisposable
             OnDomContentLoaded();
         };
 
-        Session.BrowsingContextLoad += (sender, args) =>
+        Session.BrowsingContextLoad += (_, args) =>
         {
             if (args.BrowsingContextId != Id)
             {
@@ -274,7 +275,7 @@ internal class BrowsingContext : IDisposable
             OnNavigation(new BrowserContextNavigationEventArgs(_navigation));
         };
 
-        Session.BrowsingContextHistoryUpdated += (sender, args) =>
+        Session.BrowsingContextHistoryUpdated += (_, args) =>
         {
             if (args.BrowsingContextId != Id)
             {
@@ -284,7 +285,7 @@ internal class BrowsingContext : IDisposable
             OnHistoryUpdated();
         };
 
-        Session.NetworkBeforeRequestSent += (sender, args) =>
+        Session.NetworkBeforeRequestSent += (_, args) =>
         {
             if (args.BrowsingContextId != Id)
             {
@@ -299,6 +300,17 @@ internal class BrowsingContext : IDisposable
             var request = Core.Request.From(this, args);
             _requests.TryAdd(args.Request.RequestId, request);
             Request?.Invoke(this, new RequestEventArgs(request));
+        };
+
+        Session.BrowsingContextUserPromptOpened += (_, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            var userPrompt = Core.UserPrompt.From(this, args);
+            OnUserPromptOpened(new UserPromptEventArgs(userPrompt));
         };
     }
 
@@ -324,4 +336,6 @@ internal class BrowsingContext : IDisposable
     private void OnClosed(string reason) => Closed?.Invoke(this, new ClosedEventArgs(reason));
 
     private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
+
+    private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
 }
