@@ -30,7 +30,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Base handle.
         /// </summary>
-        protected JSHandle Handle { get; }
+        internal JSHandle Handle { get; }
 
         /// <summary>
         /// Element's page.
@@ -451,8 +451,9 @@ namespace PuppeteerSharp
             => BindIsolatedHandleAsync<bool, ElementHandle>(async handle =>
             {
                 await handle.AssertConnectedElementAsync().ConfigureAwait(false);
-                var svgHandle = await AsSVGElementHandleAsync(this).ConfigureAwait(false);
-                var target = svgHandle == null ? handle : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var svgHandle = await AsSVGElementHandleAsync(handle).ConfigureAwait(false);
+                var ownerSVGElement = svgHandle == null ? null : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var target = ownerSVGElement ?? handle;
 
                 return await target.Realm.EvaluateFunctionAsync<bool>(
                     @"async (element, threshold) => {
@@ -662,18 +663,6 @@ namespace PuppeteerSharp
         public override Task<T> JsonValueAsync<T>()
             => BindIsolatedHandleAsync<T, ElementHandle>(element => element.Handle.JsonValueAsync<T>());
 
-        /// <inheritdoc/>
-        public virtual Task ScrollIntoViewAsync()
-            => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
-                => handle.EvaluateFunctionAsync(
-                        @"element => {
-                            element.scrollIntoView({
-                                block: 'center',
-                                inline: 'center',
-                                behavior: 'instant',
-                            });
-                        }"));
-
         /// <inheritdoc />
         public override async ValueTask DisposeAsync()
         {
@@ -687,6 +676,18 @@ namespace PuppeteerSharp
             await Handle.DisposeAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
+
+        /// <inheritdoc/>
+        public virtual Task ScrollIntoViewAsync()
+            => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
+                => handle.EvaluateFunctionAsync(
+                        @"element => {
+                            element.scrollIntoView({
+                                block: 'center',
+                                inline: 'center',
+                                behavior: 'instant',
+                            });
+                        }"));
 
         /// <summary>
         /// Checks whether the element is still connected to the browser.

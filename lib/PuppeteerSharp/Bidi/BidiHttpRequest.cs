@@ -39,7 +39,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     {
         _request = request;
         Frame = frame;
-        RedirectChainList = new List<IRequest>();
+        RedirectChainList = [];
         Requests.AddItem(request, this);
     }
 

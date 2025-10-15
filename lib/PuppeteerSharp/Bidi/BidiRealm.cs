@@ -245,6 +245,16 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return (T)(object)Convert.ToBoolean(result, CultureInfo.InvariantCulture);
         }
 
+        if (typeof(T) == typeof(decimal))
+        {
+            return (T)(object)Convert.ToDecimal(result, CultureInfo.InvariantCulture);
+        }
+
+        if (result is RemoteValueDictionary remoteValueDictionary)
+        {
+            return DeserializeRemoteValueDictionary<T>(remoteValueDictionary);
+        }
+
         if (typeof(T).IsArray)
         {
             // Get the element type of the array
@@ -282,6 +292,45 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return (T)result;
     }
 
+    private T DeserializeRemoteValueDictionary<T>(RemoteValueDictionary remoteValueDictionary)
+    {
+        // Create an instance of T
+        var instance = Activator.CreateInstance<T>();
+        var type = typeof(T);
+
+        // Iterate through the dictionary and populate properties
+        foreach (var entry in remoteValueDictionary)
+        {
+            var propertyName = entry.Key?.ToString();
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                continue;
+            }
+
+            var remoteValue = entry.Value;
+
+            // Find the property on the type (case-insensitive)
+            var property = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            if (property != null && property.CanWrite)
+            {
+                // Get the value from RemoteValue
+                var value = remoteValue.Value;
+
+                // Recursively deserialize the value to the property type
+                var deserializedValue = typeof(BidiRealm)
+                    .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?.MakeGenericMethod(property.PropertyType)
+                    .Invoke(this, [value]);
+
+                // Set the property value
+                property.SetValue(instance, deserializedValue);
+            }
+        }
+
+        return instance;
+    }
+
     private async Task<ArgumentValue> FormatArgumentAsync(object arg)
     {
         if (arg is TaskCompletionSource<object> tcs)
@@ -306,6 +355,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
             case int integer when integer == -0:
                 return LocalValue.NegativeZero;
+
+            case decimal decimalValue:
+                return LocalValue.Number(decimalValue);
 
             case double d:
                 if (double.IsPositiveInfinity(d))

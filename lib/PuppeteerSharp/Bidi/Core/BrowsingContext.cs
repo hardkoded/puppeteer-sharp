@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Input;
 
 namespace PuppeteerSharp.Bidi.Core;
 
@@ -160,6 +161,13 @@ internal class BrowsingContext : IDisposable
         };
 
         await Session.Driver.BrowsingContext.SetViewportAsync(parameters).ConfigureAwait(false);
+    }
+
+    internal async Task PerformActionsAsync(SourceActions[] actions)
+    {
+        var param = new PerformActionsCommandParameters(Id);
+        param.Actions.AddRange(actions);
+        await Session.Driver.Input.PerformActionsAsync(param).ConfigureAwait(false);
     }
 
     internal WindowRealm CreateWindowRealm(string sandbox = null)
