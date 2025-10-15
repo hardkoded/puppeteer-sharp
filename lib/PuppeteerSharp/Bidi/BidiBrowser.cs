@@ -41,6 +41,7 @@ public class BidiBrowser : Browser
     private readonly ConcurrentSet<BidiBrowserContext> _browserContexts = [];
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
+    private bool _isClosed;
 
     private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
     {
@@ -52,7 +53,7 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override bool IsClosed { get; }
+    public override bool IsClosed => _isClosed;
 
     /// <inheritdoc />
     public override ITarget Target => _target;
@@ -103,6 +104,7 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task CloseAsync()
     {
+        _isClosed = true;
         try
         {
             await BrowserCore.CloseAsync().ConfigureAwait(false);

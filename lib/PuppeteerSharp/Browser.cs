@@ -179,7 +179,7 @@ namespace PuppeteerSharp
         {
             // On disposal, the browser doesn't get closed. It gets disconnected.
             // TODO: See a better way to handle this instead of checking for BidiBrowser.
-            if (Launcher == null && this is not BidiBrowser)
+            if (Launcher == null)
             {
                 Disconnect();
             }
