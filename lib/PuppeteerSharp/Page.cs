@@ -785,6 +785,15 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Raises the <see cref="Dialog"/> event.
+        /// </summary>
+        /// <param name="e">Dialog event args.</param>
+        internal void OnDialog(DialogEventArgs e)
+        {
+            Dialog?.Invoke(this, e);
+        }
+
+        /// <summary>
         /// Raises the <see cref="FrameAttached"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>

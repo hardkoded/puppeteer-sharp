@@ -17,7 +17,7 @@ namespace PuppeteerSharp.QueryHandlers
         // The connection is a good place to keep the state of custom queries and injectors.
         // Although I consider that the Browser class would be a better place for this,
         // The connection is being shared between all the components involved in one browser instance
-        internal static CustomQuerySelectorRegistry Default { get; set; } = new();
+        internal static CustomQuerySelectorRegistry Default { get; } = new();
 
         internal Dictionary<string, QueryHandler> InternalQueryHandlers => new()
         {
