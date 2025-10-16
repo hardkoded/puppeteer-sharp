@@ -35,7 +35,6 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
     private string _reason;
     private UserPromptClosedEventArgs _result;
 
-
     /// <summary>
     /// Gets the information about the user prompt when it was opened.
     /// </summary>
