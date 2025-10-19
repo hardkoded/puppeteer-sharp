@@ -63,16 +63,10 @@ internal class Request : IDisposable
         get
         {
             var redirect = _redirect;
-            while (redirect != null)
+            while (redirect?._redirect != null)
             {
-                if (redirect._redirect == null)
-                {
-                    return redirect;
-                }
-
                 redirect = redirect._redirect;
             }
-
             return redirect;
         }
     }
