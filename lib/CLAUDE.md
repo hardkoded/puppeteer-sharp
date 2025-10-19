@@ -426,4 +426,4 @@ Test directory structure demonstrates comprehensive coverage:
 
 ## Continuous improvement
 
-Every time you find a code style error during likes, for instance rules failures like "SA1648". Update this document to include the new rule and a brief description of how the codebase adheres to it. This will help maintain a high standard of code quality and consistency throughout the project.
+Every time you find a code style error during builds, for instance rules failures like "SA1648". Update this document to include the new rule and a brief description of how the codebase adheres to it. This will help maintain a high standard of code quality and consistency throughout the project.
