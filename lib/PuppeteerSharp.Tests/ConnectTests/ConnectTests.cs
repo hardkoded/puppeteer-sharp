@@ -2,19 +2,15 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.ChromiumSpecificTests
+namespace PuppeteerSharp.Tests.ConnectTests
 {
-    public class BrowserUrlOptionTests : PuppeteerPageBaseTest
+    public class ConnectTests : PuppeteerPageBaseTest
     {
-        public BrowserUrlOptionTests() : base()
-        {
-        }
-
-        [Test, PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should be able to connect using browserUrl, with and without trailing slash")]
+        [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should be able to connect using browserUrl, with and without trailing slash")]
         public async Task ShouldBeAbleToConnectUsingBrowserURLWithAndWithoutTrailingSlash()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = new string[] { "--remote-debugging-port=21222" };
+            options.Args = ["--remote-debugging-port=21222"];
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:21222";
 
@@ -30,11 +26,11 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should throw when using both browserWSEndpoint and browserURL")]
+        [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should throw when using both browserWSEndpoint and browserURL")]
         public async Task ShouldThrowWhenUsingBothBrowserWSEndpointAndBrowserURL()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = new string[] { "--remote-debugging-port=21222" };
+            options.Args = ["--remote-debugging-port=21222"];
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:21222";
 
@@ -47,11 +43,11 @@ namespace PuppeteerSharp.Tests.ChromiumSpecificTests
             await originalBrowser.CloseAsync();
         }
 
-        [Test, PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |browserURL| option", "should throw when trying to connect to non-existing browser")]
+        [Test, PuppeteerTest("connect.spec", "Puppeteer.connect", "should throw when trying to connect to non-existing browser")]
         public async Task ShouldThrowWhenTryingToConnectToNonExistingBrowser()
         {
             var options = TestConstants.DefaultBrowserOptions();
-            options.Args = new string[] { "--remote-debugging-port=21222" };
+            options.Args = ["--remote-debugging-port=21222"];
             var originalBrowser = await Puppeteer.LaunchAsync(options);
             var browserURL = "http://127.0.0.1:2122";
 

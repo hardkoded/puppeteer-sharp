@@ -3,15 +3,11 @@ using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.ChromiumSpecificTests
+namespace PuppeteerSharp.Tests.InterventionHeadersTests
 {
-    public class PageTests : PuppeteerPageBaseTest
+    public class InterventionHeadersTests : PuppeteerPageBaseTest
     {
-        public PageTests() : base()
-        {
-        }
-
-        [Test, PuppeteerTest("chromiumonly.spec", "Chromium-Specific Page Tests", "Page.setRequestInterception should work with intervention headers")]
+        [Test, PuppeteerTest("interventionHeaders.spec", "Page.setRequestInterception", "should work with intervention headers")]
         public async Task ShouldWorkWithInterventionHeaders()
         {
             Server.SetRoute("/intervention", context => context.Response.WriteAsync($@"
