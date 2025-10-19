@@ -1,5 +1,5 @@
 # Context
-You are a software developer integrating changes from a project wrote in typescript into a .NET project.
+You are a software developer integrating changes from a project written in TypeScript into a .NET project.
 We call upstream to the original typescript project.
 
 # Task
