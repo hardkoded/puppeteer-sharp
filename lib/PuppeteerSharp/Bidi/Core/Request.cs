@@ -58,7 +58,24 @@ internal class Request : IDisposable
 
     public FetchTimingInfo Timings { get; private set; }
 
-    public Request LastRedirect { get; set; }
+    public Request LastRedirect
+    {
+        get
+        {
+            var redirect = _redirect;
+            while (redirect != null)
+            {
+                if (redirect._redirect == null)
+                {
+                    return redirect;
+                }
+
+                redirect = redirect._redirect;
+            }
+
+            return redirect;
+        }
+    }
 
     public string Url => _eventArgs.Request.Url;
 
