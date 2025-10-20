@@ -302,7 +302,7 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[chromiumonly.spec] *",
+    "testIdPattern": "[cookies.spec] *",
     "platforms": [
       "darwin",
       "linux",
@@ -317,7 +317,22 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[cookies.spec] *",
+    "testIdPattern": "[connect.spec] *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[interventionHeaders.spec] *",
     "platforms": [
       "darwin",
       "linux",
