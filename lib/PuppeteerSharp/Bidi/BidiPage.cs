@@ -205,7 +205,80 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task SetCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();
+    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    {
+        if (cookies == null)
+        {
+            throw new ArgumentNullException(nameof(cookies));
+        }
+
+        var pageUrl = Url;
+        var pageUrlStartsWithHttp = pageUrl.StartsWith("http", StringComparison.Ordinal);
+
+        foreach (var cookie in cookies)
+        {
+            var cookieUrl = cookie.Url ?? string.Empty;
+            if (string.IsNullOrEmpty(cookieUrl) && pageUrlStartsWithHttp)
+            {
+                cookieUrl = pageUrl;
+            }
+
+            if (cookieUrl == "about:blank")
+            {
+                throw new PuppeteerException($"Blank page can not have cookie \"{cookie.Name}\"");
+            }
+
+            if (cookieUrl.StartsWith("data:", StringComparison.Ordinal))
+            {
+                throw new PuppeteerException($"Data URL page can not have cookie \"{cookie.Name}\"");
+            }
+
+            // TODO: Support Chrome cookie partition keys
+            if (!string.IsNullOrEmpty(cookie.PartitionKey))
+            {
+                throw new PuppeteerException("BiDi only allows domain partition keys");
+            }
+
+            Uri normalizedUrl = null;
+            if (Uri.TryCreate(cookieUrl, UriKind.Absolute, out var parsedUrl))
+            {
+                normalizedUrl = parsedUrl;
+            }
+
+            var domain = cookie.Domain ?? normalizedUrl?.Host;
+            if (string.IsNullOrEmpty(domain))
+            {
+                throw new MessageException("At least one of the url and domain needs to be specified");
+            }
+
+            // Automatically set secure flag for HTTPS URLs if not explicitly provided
+            var cookieToUse = cookie;
+            if (!cookie.Secure.HasValue && normalizedUrl?.Scheme == "https")
+            {
+                // Create a copy to avoid mutating the input parameter
+                cookieToUse = new CookieParam
+                {
+                    Name = cookie.Name,
+                    Value = cookie.Value,
+                    Url = cookie.Url,
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Secure = true,
+                    HttpOnly = cookie.HttpOnly,
+                    Expires = cookie.Expires,
+                    SameSite = cookie.SameSite,
+                    PartitionKey = cookie.PartitionKey,
+                };
+            }
+
+            var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookieToUse, domain);
+
+            await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
+            {
+                Partition = new WebDriverBiDi.Storage.BrowsingContextPartitionDescriptor(BidiMainFrame.BrowsingContext.Id),
+            }).ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc />
     public override async Task CloseAsync(PageCloseOptions options = null)
@@ -221,7 +294,41 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task DeleteCookieAsync(params CookieParam[] cookies) => throw new NotImplementedException();
+    public override async Task DeleteCookieAsync(params CookieParam[] cookies)
+    {
+        await Task.WhenAll(cookies.Select(async cookie =>
+        {
+            var cookieUrl = cookie.Url ?? Url;
+            Uri normalizedUrl = null;
+            if (Uri.TryCreate(cookieUrl, UriKind.Absolute, out var parsedUrl))
+            {
+                normalizedUrl = parsedUrl;
+            }
+
+            var domain = cookie.Domain ?? normalizedUrl?.Host;
+            if (string.IsNullOrEmpty(domain))
+            {
+                throw new MessageException("At least one of the url and domain needs to be specified");
+            }
+
+            var filter = new WebDriverBiDi.Storage.CookieFilter
+            {
+                Domain = domain,
+                Name = cookie.Name,
+            };
+
+            if (!string.IsNullOrEmpty(cookie.Path))
+            {
+                filter.Path = cookie.Path;
+            }
+
+            await BidiBrowser.Driver.Storage.DeleteCookiesAsync(new WebDriverBiDi.Storage.DeleteCookiesCommandParameters
+            {
+                Filter = filter,
+                Partition = new WebDriverBiDi.Storage.BrowsingContextPartitionDescriptor(BidiMainFrame.BrowsingContext.Id),
+            }).ConfigureAwait(false);
+        })).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task SetDragInterceptionAsync(bool enabled) => throw new NotImplementedException();
@@ -257,7 +364,25 @@ public class BidiPage : Page
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<CookieParam[]> GetCookiesAsync(params string[] urls) => throw new NotImplementedException();
+    public override async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
+    {
+        if (urls == null)
+        {
+            throw new ArgumentNullException(nameof(urls));
+        }
+
+        var normalizedUrls = (urls.Length > 0 ? urls : [Url]).Select(url => new Uri(url)).ToArray();
+
+        var result = await BidiBrowser.Driver.Storage.GetCookiesAsync(new WebDriverBiDi.Storage.GetCookiesCommandParameters
+        {
+            Partition = new WebDriverBiDi.Storage.BrowsingContextPartitionDescriptor(BidiMainFrame.BrowsingContext.Id),
+        }).ConfigureAwait(false);
+
+        return result.Cookies
+            .Select(BidiCookieHelper.BidiToPuppeteerCookie)
+            .Where(cookie => normalizedUrls.Any(url => BidiCookieHelper.TestUrlMatchCookie(cookie, url)))
+            .ToArray();
+    }
 
     internal static BidiPage From(BidiBrowserContext browserContext, BrowsingContext browsingContext)
     {

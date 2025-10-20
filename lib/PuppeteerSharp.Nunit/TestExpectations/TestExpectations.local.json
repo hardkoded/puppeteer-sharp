@@ -1769,5 +1769,20 @@
     "expectations": [
       "FAIL"
     ]
+  },
+  {
+    "comment": "BidiBrowserContext.CloseAsync() is not implemented - fails with NotImplementedException",
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
   }
 ]
