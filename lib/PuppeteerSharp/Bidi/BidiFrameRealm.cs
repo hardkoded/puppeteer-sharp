@@ -66,6 +66,14 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         return _puppeteerUtil;
     }
 
+    protected override void ThrowIfDetached()
+    {
+        if (Frame.Detached)
+        {
+            throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
+        }
+    }
+
     protected override void Initialize()
     {
         base.Initialize();
