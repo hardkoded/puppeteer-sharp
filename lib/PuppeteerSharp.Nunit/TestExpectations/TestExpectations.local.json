@@ -28,6 +28,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "TODO It's failing on CI/CD",
+    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
     "platforms": ["darwin", "linux", "win32"],
