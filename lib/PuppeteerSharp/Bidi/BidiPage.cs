@@ -252,12 +252,26 @@ public class BidiPage : Page
             }
 
             // Automatically set secure flag for HTTPS URLs if not explicitly provided
+            var cookieToUse = cookie;
             if (!cookie.Secure.HasValue && normalizedUrl?.Scheme == "https")
             {
-                cookie.Secure = true;
+                // Create a copy to avoid mutating the input parameter
+                cookieToUse = new PuppeteerSharp.SetCookieParam
+                {
+                    Name = cookie.Name,
+                    Value = cookie.Value,
+                    Url = cookie.Url,
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Secure = true,
+                    HttpOnly = cookie.HttpOnly,
+                    Expires = cookie.Expires,
+                    SameSite = cookie.SameSite,
+                    PartitionKey = cookie.PartitionKey
+                };
             }
 
-            var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookie, domain);
+            var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookieToUse, domain);
 
             await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
             {
