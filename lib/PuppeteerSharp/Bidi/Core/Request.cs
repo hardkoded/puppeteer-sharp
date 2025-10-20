@@ -67,6 +67,7 @@ internal class Request : IDisposable
             {
                 redirect = redirect._redirect;
             }
+
             return redirect;
         }
     }
