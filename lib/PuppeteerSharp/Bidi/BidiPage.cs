@@ -256,7 +256,7 @@ public class BidiPage : Page
             if (!cookie.Secure.HasValue && normalizedUrl?.Scheme == "https")
             {
                 // Create a copy to avoid mutating the input parameter
-                cookieToUse = new PuppeteerSharp.SetCookieParam
+                cookieToUse = new CookieParam
                 {
                     Name = cookie.Name,
                     Value = cookie.Value,
@@ -267,7 +267,7 @@ public class BidiPage : Page
                     HttpOnly = cookie.HttpOnly,
                     Expires = cookie.Expires,
                     SameSite = cookie.SameSite,
-                    PartitionKey = cookie.PartitionKey
+                    PartitionKey = cookie.PartitionKey,
                 };
             }
 
