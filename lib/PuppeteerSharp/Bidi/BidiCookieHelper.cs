@@ -115,7 +115,7 @@ internal static class BidiCookieHelper
     /// </summary>
     private static bool TestUrlMatchCookieHostname(CookieParam cookie, Uri url)
     {
-        var cookieDomain = cookie.Domain.ToLowerInvariant();
+        var cookieDomain = cookie.Domain?.ToLowerInvariant() ?? string.Empty;
         var urlHostname = url.Host.ToLowerInvariant();
 
         if (cookieDomain == urlHostname)
