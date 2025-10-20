@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 {
     public class RootOptionTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work a button")]
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should work a button")]
         public async Task ShouldWorkAButton()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work an input")]
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should work an input")]
         public async Task ShouldWorkAnInput()
         {
             await Page.SetContentAsync("<input title='My Input' value='My Value'>");
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should work a menu")]
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should work a menu")]
         public async Task ShouldWorkAMenu()
         {
             await Page.SetContentAsync(@"
@@ -79,7 +79,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(snapshot, Is.EqualTo(nodeToCheck));
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should return null when the element is no longer in DOM")]
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should return null when the element is no longer in DOM")]
         public async Task ShouldReturnNullWhenTheElementIsNoLongerInDOM()
         {
             await Page.SetContentAsync("<button>My Button</button>");
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button }), Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {
             await Page.SetContentAsync("<div><button>My Button</button></div>");

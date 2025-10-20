@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
 {
     public class CreateCDPSessionTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should work")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should work")]
         public async Task ShouldWork()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -22,7 +22,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(foo, Is.EqualTo("bar"));
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should send events")]
         public async Task ShouldSendEvents()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(events, Has.Exactly(1).Items);
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(eventTask.Result.GetProperty("url")!.GetString(), Is.EqualTo("foo.js"));
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should be able to detach session")]
         public async Task ShouldBeAbleToDetachSession()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(exception!.Message, Does.Contain("Session closed."));
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not report created targets for custom CDP sessions")]
         public async Task ShouldNotReportCreatedTargetsForCustomCDPSessions()
         {
             var called = 0;
@@ -101,7 +101,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Page.BrowserContext.TargetCreated -= EventHandler;
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should throw nice errors")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should throw nice errors")]
         public async Task ShouldThrowNiceErrors()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(exception.Message, Does.Contain("ThisCommand.DoesNotExist"));
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should respect custom timeout")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should respect custom timeout")]
         public async Task ShouldRespectCustomTimeout()
         {
             var client = await Page.CreateCDPSessionAsync();
@@ -137,7 +137,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(exception!.Message, Does.Contain("Timeout of 50 ms exceeded"));
         }
 
-        [Test, Retry(2), PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
             => Assert.That(await Page.CreateCDPSessionAsync(), Is.Not.Null);
     }

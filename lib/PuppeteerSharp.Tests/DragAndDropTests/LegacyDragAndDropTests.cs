@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragIntercepted event when dragged")]
+        [Test, PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragIntercepted event when dragged")]
         public async Task ShouldEmitADragInterceptedEventWhenDragged()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -25,7 +25,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.That(await GetDragStateAsync(), Is.EqualTo(1));
         }
 
-        [Test, Retry(2), PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragEnter")]
+        [Test, PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragEnter")]
         public async Task ShouldEmitADragEnter()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.That(await GetDragStateAsync(), Is.EqualTo(12));
         }
 
-        [Test, Retry(2), PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragOver event")]
+        [Test, PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "should emit a dragOver event")]
         public async Task ShouldEmitADragOver()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.That(await GetDragStateAsync(), Is.EqualTo(123));
         }
 
-        [Test, Retry(2), PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "can be dropped")]
+        [Test, PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "can be dropped")]
         public async Task CanBeDropped()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");
@@ -73,7 +73,7 @@ namespace PuppeteerSharp.Tests.DragAndDropTests
             Assert.That(await GetDragStateAsync(), Is.EqualTo(12334));
         }
 
-        [Test, Retry(2), PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "can be dragged and dropped with a single function")]
+        [Test, PuppeteerTest("drag-and-drop.spec", "Legacy Drag n' Drop", "can be dragged and dropped with a single function")]
         public async Task CanBeDraggedAndDroppedWithASingleFunction()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/drag-and-drop.html");

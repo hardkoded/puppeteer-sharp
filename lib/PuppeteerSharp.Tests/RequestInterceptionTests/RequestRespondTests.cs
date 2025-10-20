@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should work")]
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         /// I found that status 422 is not available in all .NET runtimes (see https://github.com/dotnet/core/blob/4c4642d548074b3fbfd425541a968aadd75fea99/release-notes/2.1/Preview/api-diff/preview2/2.1-preview2_System.Net.md)
         /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
         /// </summary>
-        [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should work with status code 422")]
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should work with status code 422")]
         public async Task ShouldWorkReturnStatusPhrases()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
-        [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should redirect")]
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should redirect")]
         public async Task ShouldRedirect()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -90,7 +90,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should allow mocking binary responses")]
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should allow mocking binary responses")]
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -115,7 +115,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()), Is.True);
         }
 
-        [Test, Retry(2), PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);

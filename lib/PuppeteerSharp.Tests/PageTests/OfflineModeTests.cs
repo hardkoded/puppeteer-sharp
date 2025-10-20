@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class OfflineModeTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetOfflineModeAsync(true);
@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should emulate navigator.onLine")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setOfflineMode", "should emulate navigator.onLine")]
         public async Task ShouldEmulateNavigatorOnLine()
         {
             Assert.That(await Page.EvaluateExpressionAsync<bool>("window.navigator.onLine"), Is.True);

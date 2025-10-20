@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should work")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(Page.Url, Does.Contain("/frames/one-frame.html"));
         }
 
-        [Test, Retry(2), PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should fail when frame detaches")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Frame.waitForNavigation", "should fail when frame detaches")]
         public async Task ShouldFailWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");

@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.browser", "should return the correct browser instance")]
+        [Test, PuppeteerTest("page.spec", "Page Page.browser", "should return the correct browser instance")]
         public void ShouldReturnTheCorrectBrowserInstance() => Assert.That(Page.Browser, Is.SameAs(Browser));
     }
 }

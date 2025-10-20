@@ -93,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
                 var url = kv.Value.Url;
                 var text = kv.Value.Source;
                 styleSheetIdToCoverage.TryGetValue(styleSheetId, out var responseRanges);
-                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? new List<CoverageRange>());
+                var ranges = Coverage.ConvertToDisjointRanges(responseRanges ?? []);
                 coverage.Add(new CoverageEntry
                 {
                     Url = url,

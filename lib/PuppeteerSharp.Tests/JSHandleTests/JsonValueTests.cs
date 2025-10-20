@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class JsonValueTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(json, Is.EqualTo("foo"));
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work with dates")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work with dates")]
         public async Task ShouldWorkWithDates()
         {
             var dateHandle = await Page.EvaluateExpressionHandleAsync("new Date('2017-09-26T00:00:00.000Z')");
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(date, Is.EqualTo(new DateTime(2017, 9, 26)));
         }
 
-        [Test, Retry(2), PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should not throw for circular objects")]
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should not throw for circular objects")]
         public async Task ShouldNotThrowForCircularObjects()
         {
             var windowHandle = await Page.EvaluateFunctionHandleAsync(@"() => {

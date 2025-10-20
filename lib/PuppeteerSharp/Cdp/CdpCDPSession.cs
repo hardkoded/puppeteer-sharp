@@ -130,7 +130,7 @@ public class CdpCDPSession : CDPSession
         {
             Connection.MessageQueue.Enqueue(callback, obj);
         }
-        else if (obj.Method != null)
+        else if (obj.Method is not null && obj.Params is not null)
         {
             // If the message was set to not wait for callback, the message won't be in the callbacks dictionary
             // And it might have no method set.
@@ -149,7 +149,7 @@ public class CdpCDPSession : CDPSession
         CloseReason = closeReason;
         IsClosed = true;
 
-        foreach (var callback in _callbacks.Values.ToArray())
+        foreach (var callback in _callbacks.Values)
         {
             callback.TaskWrapper.TrySetException(new TargetClosedException(
                 $"Protocol error({callback.Method}): Target closed.",

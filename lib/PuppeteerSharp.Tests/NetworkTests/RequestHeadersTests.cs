@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestHeadersTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.Headers", "should work")]
+        [Test, PuppeteerTest("network.spec", "network Request.Headers", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);

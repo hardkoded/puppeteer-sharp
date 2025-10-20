@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests;
 
 public class TouchscreenPrototypeTapTests : PuppeteerPageBaseTest
 {
-    [Test, Retry(2), PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.tap", "should work")]
+    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.tap", "should work")]
     public async Task ShouldWork()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");

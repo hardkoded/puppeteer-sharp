@@ -13,7 +13,7 @@ public class BFCacheTests : PuppeteerPageBaseTest
         DefaultOptions.AcceptInsecureCerts = true;
     }
 
-    [Test, Retry(2), PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page")]
+    [Test, PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page")]
     public async Task CanNavigateToABFCachedPage()
     {
         Page.DefaultTimeout = 30_000;
@@ -25,7 +25,7 @@ public class BFCacheTests : PuppeteerPageBaseTest
         Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("BFCachednext"));
     }
 
-    [Test, Retry(2), PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page containing an OOPIF and a worker")]
+    [Test, PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page containing an OOPIF and a worker")]
     public async Task CanNavigateToABFCachedPageContainingAnOOPIFAndAWorker()
     {
         Page.DefaultTimeout = 30_000;

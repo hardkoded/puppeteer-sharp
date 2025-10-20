@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -63,6 +64,8 @@ public class CdpFrame : Frame
     public override IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
     internal FrameManager FrameManager { get; }
+
+    internal CdpPage CdpPage => Page as CdpPage;
 
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
@@ -114,7 +117,7 @@ public class CdpFrame : Frame
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
-                ReferrerPolicy = referrerPolicy ?? string.Empty,
+                ReferrerPolicy = ReferrerPolicyToProtocol(referrerPolicy),
                 FrameId = Id,
             }).ConfigureAwait(false);
 
@@ -316,13 +319,13 @@ public class CdpFrame : Frame
             MainRealm = new IsolatedWorld(
                 this,
                 null,
-                FrameManager.TimeoutSettings,
+                CdpPage.TimeoutSettings,
                 true);
 
             IsolatedRealm = new IsolatedWorld(
                 this,
                 null,
-                FrameManager.TimeoutSettings,
+                CdpPage.TimeoutSettings,
                 false);
         }
         else
@@ -335,4 +338,12 @@ public class CdpFrame : Frame
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
         => FrameManager.GetDeviceRequestPromptManager(Client);
+
+    // See https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy.
+    private static string ReferrerPolicyToProtocol(string referrerPolicy)
+    {
+        // Transform kebab-case to camelCase
+        return string.IsNullOrEmpty(referrerPolicy) ? null :
+            Regex.Replace(referrerPolicy, "-(.)", match => match.Groups[1].Value.ToUpperInvariant());
+    }
 }

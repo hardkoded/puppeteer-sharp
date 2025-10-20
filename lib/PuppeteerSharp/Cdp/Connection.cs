@@ -208,14 +208,14 @@ namespace PuppeteerSharp.Cdp
             Transport.StopReading();
             Disconnected?.Invoke(this, EventArgs.Empty);
 
-            foreach (var session in _sessions.Values.ToArray())
+            foreach (var session in _sessions.Values)
             {
                 session.Close(closeReason);
             }
 
             _sessions.Clear();
 
-            foreach (var response in _callbacks.Values.ToArray())
+            foreach (var response in _callbacks.Values)
             {
                 response.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed.",

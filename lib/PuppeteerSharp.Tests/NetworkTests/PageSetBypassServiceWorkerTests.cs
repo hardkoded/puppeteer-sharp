@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.NetworkTests;
 
 public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
 {
-    [Test, Retry(2), PuppeteerTest("network.spec", "network Page.setBypassServiceWorker", "bypass for network")]
+    [Test, PuppeteerTest("network.spec", "network Page.setBypassServiceWorker", "bypass for network")]
     public async Task BypassForNetwork()
     {
         var responses = new Dictionary<string, IResponse>();
