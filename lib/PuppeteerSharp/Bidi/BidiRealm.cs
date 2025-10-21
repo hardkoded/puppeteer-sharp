@@ -128,7 +128,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         => DeserializeResult<T>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
 
     internal override async Task EvaluateFunctionAsync(string script, params object[] args)
-        => DeserializeResult<JsonElement?>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
+    {
+        await EvaluateAsync(true, false, script, args).ConfigureAwait(false);
+    }
 
     protected virtual void Initialize()
     {
