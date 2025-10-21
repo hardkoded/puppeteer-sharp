@@ -206,10 +206,10 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateExpressionAsync(string script)
+        internal override async Task EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
+            await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
         internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -218,10 +218,10 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+        internal override async Task EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+            await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
         }
 
         internal void ClearContext()

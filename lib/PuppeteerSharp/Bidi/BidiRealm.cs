@@ -122,12 +122,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
         => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
 
-    internal override Task<JsonElement?> EvaluateExpressionAsync(string script) => throw new System.NotImplementedException();
+    internal override Task EvaluateExpressionAsync(string script) => throw new System.NotImplementedException();
 
     internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         => DeserializeResult<T>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
 
-    internal override async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+    internal override async Task EvaluateFunctionAsync(string script, params object[] args)
         => DeserializeResult<JsonElement?>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
 
     protected virtual void Initialize()
@@ -219,9 +219,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return default;
         }
 
-        if (typeof(T) == typeof(JsonElement?))
+        if (typeof(T) == typeof(object))
         {
-            return (T)(object)JsonSerializer.SerializeToElement(result);
+            return (T)result;
         }
 
         // Convert known types first
@@ -294,9 +294,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     private T DeserializeRemoteValueDictionary<T>(RemoteValueDictionary remoteValueDictionary)
     {
+        var type = typeof(T);
+
         // Create an instance of T
         var instance = Activator.CreateInstance<T>();
-        var type = typeof(T);
+
+        // Box the instance if it's a value type (struct) to properly handle property setting
+        object boxedInstance = instance;
 
         // Iterate through the dictionary and populate properties
         foreach (var entry in remoteValueDictionary)
@@ -323,12 +327,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     ?.MakeGenericMethod(property.PropertyType)
                     .Invoke(this, [value]);
 
-                // Set the property value
-                property.SetValue(instance, deserializedValue);
+                // Set the property value on the boxed instance
+                property.SetValue(boxedInstance, deserializedValue);
             }
         }
 
-        return instance;
+        // Unbox back to T
+        return (T)boxedInstance;
     }
 
     private async Task<ArgumentValue> FormatArgumentAsync(object arg)

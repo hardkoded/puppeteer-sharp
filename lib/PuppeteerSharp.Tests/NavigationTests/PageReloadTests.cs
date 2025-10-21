@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateFunctionAsync("() => (globalThis._foo = 10)");
             await Page.ReloadAsync();
-            Assert.That(await Page.EvaluateFunctionAsync("() => globalThis._foo"), Is.Null);
+            Assert.That(await Page.EvaluateFunctionAsync<int?>("() => globalThis._foo"), Is.Null);
         }
     }
 }

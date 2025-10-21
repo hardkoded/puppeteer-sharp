@@ -65,7 +65,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task EvaluateFunctionAsync(string script, params object[] args)
             => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
