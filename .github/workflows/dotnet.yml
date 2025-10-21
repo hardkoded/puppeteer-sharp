@@ -54,6 +54,10 @@ jobs:
             browser: FIREFOX
             mode: headless
             protocol: webdriverbidi
+          - os: ubuntu-latest
+            browser: FIREFOX
+            mode: headful
+            protocol: webdriverbidi
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core

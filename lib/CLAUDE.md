@@ -385,6 +385,26 @@ Test directory structure demonstrates comprehensive coverage:
 - wwwroot directory with test fixtures
 - Asset serving for test scenarios
 
+## Development Best Practices
+
+### Building and Running Tests
+
+When running tests, always build first and then use the `--no-build` flag to avoid rebuilding during test execution. This provides faster and more reliable test runs:
+
+```bash
+# Build the test project first
+dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+
+# Then run tests with --no-build flag
+dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
+
+# Can also chain them together
+dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj && dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
+```
+
+You can switch between CDP and Bidi by changing the PuppeteerTestAttribute.IsCdp property.
+You can switch between Chrome and Firefox by changing the PuppeteerTestAttribute.IsChrome property.
+
 ## Utilities and Helpers
 
 ### Helper Classes (`Helpers/`)

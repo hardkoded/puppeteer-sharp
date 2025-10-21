@@ -27,10 +27,10 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         [Test, PuppeteerTest("elementhandle.spec", "PuppeteerSharp", "should work headful")]
         public async Task ShouldWorkHeadful()
         {
-            await using var Browser = await Puppeteer.LaunchAsync(_headfulOptions);
-            await using var Page = await Browser.NewPageAsync();
-            await Page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
-            var elementHandle = await Page.QuerySelectorAsync("iframe");
+            await using var browser = await Puppeteer.LaunchAsync(_headfulOptions);
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
+            var elementHandle = await page.QuerySelectorAsync("iframe");
             var frame = await elementHandle.ContentFrameAsync();
             Assert.That(frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
         }
