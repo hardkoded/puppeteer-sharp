@@ -101,9 +101,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
     {
-        var handleImpl = handle as JSHandle;
-
-        if (handleImpl.Realm == this)
+        if (handle is JSHandle handleImpl && handleImpl.Realm == this)
         {
             return handle;
         }
@@ -113,10 +111,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return await transferredHandle.ConfigureAwait(false);
     }
 
-    internal async override Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
         => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
 
-    internal async override Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
         => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
@@ -141,7 +139,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             Dispose();
         };
 
-        realm.Updated += (_, __) =>
+        realm.Updated += (_, _) =>
         {
             InternalPuppeteerUtilHandle = null;
             TaskManager.RerunAll();
