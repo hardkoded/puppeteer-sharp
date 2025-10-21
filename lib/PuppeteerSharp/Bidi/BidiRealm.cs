@@ -131,6 +131,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         await EvaluateAsync(true, false, script, args).ConfigureAwait(false);
     }
 
+    protected virtual void ThrowIfDetached()
+    {
+        // Base implementation does nothing
+        // BidiFrameRealm will override this to check if frame is detached
+    }
+
     protected virtual void Initialize()
     {
         realm.Destroyed += (_, e) =>
@@ -162,6 +168,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     private async Task<EvaluateResultSuccess> EvaluateAsync(bool returnByValue, bool isExpression, string script, params object[] args)
     {
+        ThrowIfDetached();
         var sourceUrlComment = ExecutionUtils.GetSourceUrlComment();
         var resultOwnership = returnByValue
             ? ResultOwnership.None

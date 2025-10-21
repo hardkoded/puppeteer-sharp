@@ -71,6 +71,8 @@ internal class BrowsingContext : IDisposable
 
     public string Url { get; private set; }
 
+    public bool IsClosed => _reason != null;
+
     public Session Session => UserContext.Browser.Session;
 
     public IEnumerable<BrowsingContext> Children => _children.Values;

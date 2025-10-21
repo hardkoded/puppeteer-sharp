@@ -36,7 +36,7 @@ namespace PuppeteerSharp
         public virtual string Url { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public bool Detached { get; private set; }
+        public virtual bool Detached { get; private set; }
 
         /// <inheritdoc/>
         public abstract IPage Page { get; }

@@ -45,7 +45,8 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             // Make sure blocked iframe has functional execution context
             // @see https://github.com/GoogleChrome/puppeteer/issues/2709
             Assert.That(await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"), Is.EqualTo(3));
-            Assert.That(await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"), Is.EqualTo(5));
+            var frame = await Page.FirstChildFrameAsync();
+            Assert.That(await frame.EvaluateExpressionAsync<int>("2 + 3"), Is.EqualTo(5));
         }
     }
 }

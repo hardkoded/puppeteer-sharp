@@ -264,7 +264,8 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldThrowIfElementHandlesAreFromOtherFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var bodyHandle = await Page.FirstChildFrame().QuerySelectorAsync("body");
+            var frame = await Page.FirstChildFrameAsync();
+            var bodyHandle = await frame.QuerySelectorAsync("body");
             var exception = Assert.ThrowsAsync<PuppeteerException>(()
                 => Page.EvaluateFunctionAsync<string>("body => body.innerHTML", bodyHandle));
             Assert.That(exception.Message, Does.Contain("JSHandles can be evaluated only in the context they were created"));

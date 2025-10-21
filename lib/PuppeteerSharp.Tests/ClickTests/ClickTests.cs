@@ -334,7 +334,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.That(await frame.EvaluateExpressionAsync<string>("window.result"), Is.EqualTo("Clicked"));
@@ -352,7 +352,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             });
             await Page.SetContentAsync("<div style=\"width:100px;height:2000px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             await frame.QuerySelectorAsync("button").EvaluateFunctionAsync("button => button.style.setProperty('position', 'fixed')");
             await frame.ClickAsync("button");
             Assert.That(await frame.EvaluateExpressionAsync<string>("window.result"), Is.EqualTo("Clicked"));
@@ -365,7 +365,7 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.devicePixelRatio"), Is.EqualTo(5));
             await Page.SetContentAsync("<div style=\"width:100px;height:100px\">spacer</div>");
             await FrameUtils.AttachFrameAsync(Page, "button-test", TestConstants.ServerUrl + "/input/button.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var button = await frame.QuerySelectorAsync("button");
             await button.ClickAsync();
             Assert.That(await frame.EvaluateExpressionAsync<string>("window.result"), Is.EqualTo("Clicked"));

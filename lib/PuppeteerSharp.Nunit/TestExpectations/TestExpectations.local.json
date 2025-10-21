@@ -332,21 +332,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[crash] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[defaultbrowsercontext.spec] *",
     "platforms": [
       "darwin",
@@ -363,51 +348,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[browsercontext.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[device-request-prompt.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[diffstyle] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": [
       "darwin",
       "linux",
@@ -767,21 +707,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[frame.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[acceptInsecureCerts.spec] *",
     "platforms": [
       "darwin",
@@ -873,6 +798,36 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[jshandle.spec] *.evaluateHandle*",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[frame.spec] Frame.evaluate *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
+    "testIdPattern": "[frame.spec] Frame specs Frame Management *",
     "platforms": [
       "darwin",
       "linux",

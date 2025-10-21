@@ -309,7 +309,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 }", TestConstants.CrossProcessHttpPrefix);
             await Page.SetCookieAsync(new CookieParam { Name = "127-cookie", Value = "worst", Url = TestConstants.CrossProcessHttpPrefix });
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("localhost-cookie=best"));
-            Assert.That(await Page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo(string.Empty));
+            var frame = await Page.FirstChildFrameAsync();
+            Assert.That(await frame.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo(string.Empty));
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
             var cookie = cookies.First();
@@ -363,7 +364,8 @@ namespace PuppeteerSharp.Tests.CookiesTests
                     Url = TestConstants.CrossProcessHttpsPrefix + "/grid.html",
                     SameSite = SameSite.None,
                 });
-            Assert.That(await page.FirstChildFrame().EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("127-cookie=best"));
+            var frame = await page.FirstChildFrameAsync();
+            Assert.That(await frame.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("127-cookie=best"));
             var cookies = await page.GetCookiesAsync(TestConstants.CrossProcessHttpsPrefix + "/grid.html");
             Assert.That(cookies, Has.Exactly(1).Items);
             var cookie = cookies.First();
