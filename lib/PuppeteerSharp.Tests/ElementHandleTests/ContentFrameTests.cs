@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             var elementHandle = await Page.QuerySelectorAsync("#frame1");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.That(frame, Is.EqualTo(Page.FirstChildFrame()));
+            Assert.That(frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
         }
 
         [Test, PuppeteerTest("elementhandle.spec", "PuppeteerSharp", "should work headful")]
@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await Page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
             var elementHandle = await Page.QuerySelectorAsync("iframe");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.That(frame, Is.EqualTo(Page.FirstChildFrame()));
+            Assert.That(frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
         }
     }
 }

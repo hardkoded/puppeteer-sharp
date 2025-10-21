@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.FrameTests
         public async Task ShouldThrowForDetachedFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = Assert.ThrowsAsync<PuppeteerException>(
                 () => frame.EvaluateExpressionAsync("5 * 8"));

@@ -68,7 +68,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var result = await frame.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
             Assert.That(result, Is.EqualTo(15));
         }
@@ -100,7 +100,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(request.ContinueAsync(), exposeTask);
             await navTask;
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var result = await frame.EvaluateFunctionAsync<int>("() => globalThis.compute(3, 5)");
             Assert.That(result, Is.EqualTo(15));
         }
@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
             await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
 
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var result = await frame.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
             Assert.That(result, Is.EqualTo(15));
         }

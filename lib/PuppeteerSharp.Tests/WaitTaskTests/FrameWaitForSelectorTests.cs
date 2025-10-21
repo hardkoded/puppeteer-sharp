@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var otherFrame = Page.FirstChildFrame();
+            var otherFrame = await Page.FirstChildFrameAsync();
             var watchdog = Page.WaitForSelectorAsync("div");
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
@@ -100,7 +100,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.FirstChildFrame();
+            var frame1 = await Page.FirstChildFrameAsync();
             var frame2 = Page.Frames.ElementAt(2);
             var waitForSelectorPromise = frame2.WaitForSelectorAsync("div");
             await frame1.EvaluateFunctionAsync(AddElement, "div");
@@ -113,7 +113,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var waitTask = frame.WaitForSelectorAsync(".box");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitTask);
@@ -318,7 +318,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task XpathShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var waitPromise = frame.WaitForSelectorAsync("xpath/.//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitPromise);
