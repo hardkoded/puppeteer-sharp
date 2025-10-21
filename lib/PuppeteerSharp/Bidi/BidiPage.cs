@@ -96,7 +96,8 @@ public class BidiPage : Page
     public override Task EmulateTimezoneAsync(string timezoneId) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null) => throw new NotImplementedException();
+    public override Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null)
+        => _cdpEmulationManager.EmulateIdleStateAsync(idleOverrides);
 
     /// <inheritdoc />
     public override Task EmulateCPUThrottlingAsync(decimal? factor = null) => throw new NotImplementedException();
