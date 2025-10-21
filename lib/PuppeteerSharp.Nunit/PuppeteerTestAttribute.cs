@@ -22,8 +22,8 @@ namespace PuppeteerSharp.Nunit
         private static TestExpectation[] _localExpectations;
         private static TestExpectation[] _upstreamExpectations;
 
-        public static readonly bool IsChrome = false;
-        public static readonly bool IsCdp = false;
+        public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
+        public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
 
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
