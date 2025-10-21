@@ -16,13 +16,22 @@ namespace PuppeteerSharp.Tests
 
             while (stopwatch.ElapsedMilliseconds < timeoutMs)
             {
-                var frame = page.Frames.FirstOrDefault(f => f.ParentFrame == page.MainFrame);
-                if (frame != null)
+                try
                 {
-                    return frame;
+                    var frame = page.Frames.FirstOrDefault(f => f.ParentFrame == page.MainFrame);
+                    if (frame != null)
+                    {
+                        return frame;
+                    }
                 }
-
-                await Task.Delay(100).ConfigureAwait(false);
+                catch (Exception)
+                {
+                    // Ignore exceptions and continue polling
+                }
+                finally
+                {
+                    await Task.Delay(100).ConfigureAwait(false);
+                }
             }
 
             return null;
