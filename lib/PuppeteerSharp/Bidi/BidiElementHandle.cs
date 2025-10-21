@@ -20,6 +20,7 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.QueryHandlers;
 using WebDriverBiDi.Script;
@@ -50,5 +51,30 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
     public override Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths) => throw new System.NotImplementedException();
 
-    public override Task<IFrame> ContentFrameAsync() => throw new System.NotImplementedException();
+    public override async Task<IFrame> ContentFrameAsync()
+    {
+        var handle = await EvaluateFunctionHandleAsync(@"element => {
+            if (element instanceof HTMLIFrameElement || element instanceof HTMLFrameElement) {
+                return element.contentWindow;
+            }
+            return;
+        }").ConfigureAwait(false);
+
+        if (handle is not BidiJSHandle bidiHandle)
+        {
+            await handle.DisposeAsync().ConfigureAwait(false);
+            return null;
+        }
+
+        var value = bidiHandle.RemoteValue;
+        await handle.DisposeAsync().ConfigureAwait(false);
+
+        if (value.Type == "window" && value.Value is WindowProxyProperties windowProxy)
+        {
+            var contextId = windowProxy.Context;
+            return BidiFrame.BidiPage.Frames.FirstOrDefault(frame => frame.Id == contextId);
+        }
+
+        return null;
+    }
 }

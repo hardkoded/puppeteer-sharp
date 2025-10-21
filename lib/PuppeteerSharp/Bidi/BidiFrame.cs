@@ -59,6 +59,9 @@ public class BidiFrame : Frame
     public override string Url => BrowsingContext.Url;
 
     /// <inheritdoc />
+    public override bool Detached => BrowsingContext.IsClosed;
+
+    /// <inheritdoc />
     public override IPage Page => BidiPage;
 
     /// <inheritdoc />

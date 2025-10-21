@@ -108,7 +108,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var otherFrame = Page.FirstChildFrame();
+            var otherFrame = await Page.FirstChildFrameAsync();
             var watchdog = Page.WaitForSelectorAsync("aria/[role=\"button\"]");
             await otherFrame.EvaluateFunctionAsync(AddElement, "button");
             await Page.EvaluateFunctionAsync(AddElement, "button");

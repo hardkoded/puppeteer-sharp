@@ -45,7 +45,7 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 
             await Page.EvaluateExpressionAsync("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));");
 
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
 
             var divHandle = await frame.QuerySelectorAsync("div");
 
