@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             await page.GoToAsync($"{TestConstants.ServerUrl}/frame-example.html");
             var elementHandle = await page.QuerySelectorAsync("iframe");
             var frame = await elementHandle.ContentFrameAsync();
-            Assert.That(frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
+            Assert.That(frame, Is.EqualTo(await page.FirstChildFrameAsync()));
         }
     }
 }

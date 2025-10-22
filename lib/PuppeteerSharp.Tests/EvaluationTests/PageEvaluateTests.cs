@@ -196,12 +196,12 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for non-serializable objects")]
         public async Task ShouldReturnNullForNonSerializableObjects()
-            => Assert.That(await Page.EvaluateFunctionAsync("() => window"), Is.Null);
+            => Assert.That(await Page.EvaluateFunctionAsync<object>("() => window"), Is.Null);
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should fail for circular object")]
         public async Task ShouldFailForCircularObject()
         {
-            var result = await Page.EvaluateFunctionAsync(@"() => {
+            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
                 const a = {};
                 const b = {a};
                 a.b = b;
@@ -325,31 +325,6 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
             Assert.That(text, Is.EqualTo("42"));
         }
-
-#pragma warning disable NUnit2021 // Incompatible types for EqualTo constraint
-        [Test]
-        [Ignore("I'm not sure how this ever worked?")]
-        public async Task ShouldWorkWithoutGenerics()
-        {
-            Assert.That(await Page.EvaluateExpressionAsync("var obj = {}; obj;"), Is.Not.Null);
-            Assert.That(await Page.EvaluateExpressionAsync("[]"), Is.Not.Null);
-            Assert.That(await Page.EvaluateExpressionAsync("''"), Is.Not.Null);
-
-            var objectPopulated = await Page.EvaluateExpressionAsync("var obj = {a:1}; obj;");
-
-            Assert.That(objectPopulated, Is.Not.Null);
-            Assert.That(objectPopulated.Value.GetProperty("a").GetInt32(), Is.EqualTo(1));
-
-            var arrayPopulated = await Page.EvaluateExpressionAsync("[1]");
-            Assert.That(arrayPopulated.Value.EnumerateArray().ElementAt(0), Is.EqualTo(1));
-
-            Assert.That(await Page.EvaluateExpressionAsync("'1'"), Is.EqualTo("1"));
-            Assert.That(await Page.EvaluateExpressionAsync("1"), Is.EqualTo(1));
-            Assert.That(await Page.EvaluateExpressionAsync("11111111"), Is.EqualTo(11111111));
-            Assert.That(await Page.EvaluateExpressionAsync("11111111111111"), Is.EqualTo(11111111111111));
-            Assert.That(await Page.EvaluateExpressionAsync("1.1"), Is.EqualTo(1.1));
-        }
-#pragma warning restore NUnit2021 // Incompatible types for EqualTo constraint
 
         public class ComplexObjectTestClass
         {

@@ -87,13 +87,13 @@ namespace PuppeteerSharp
         public abstract Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
+        public Task EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script) => MainRealm.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) => MainRealm.EvaluateFunctionAsync<T>(script, args);

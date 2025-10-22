@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.That(await Page.EvaluateExpressionAsync("window.__injected"), Is.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int?>("window.__injected"), Is.Null);
 
             // By-pass CSP and try one more time.
             await Page.SetBypassCSPAsync(true);
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.PageTests
             {
                 Content = "window.__injected = 42;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.That(await Page.EvaluateExpressionAsync("window.__injected"), Is.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int?>("window.__injected"), Is.Null);
 
             // By-pass CSP and try one more time.
             await Page.SetBypassCSPAsync(true);

@@ -617,16 +617,16 @@ namespace PuppeteerSharp
             => MainFrame.TypeAsync(selector, text, options);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script)
-            => MainFrame.EvaluateExpressionAsync<JsonElement?>(script);
+        public Task EvaluateExpressionAsync(string script)
+            => MainFrame.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => MainFrame.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
-            => MainFrame.EvaluateFunctionAsync<JsonElement?>(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args)
+            => MainFrame.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)

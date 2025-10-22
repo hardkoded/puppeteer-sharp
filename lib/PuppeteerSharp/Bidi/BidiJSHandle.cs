@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 using WebDriverBiDi.Script;
@@ -53,7 +55,17 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         return new BidiJSHandle(value, realm);
     }
 
-    public override Task<T> JsonValueAsync<T>() => throw new System.NotImplementedException();
+    public override async Task<T> JsonValueAsync<T>()
+    {
+        // If it's a primitive value or doesn't have a handle, deserialize directly
+        if (IsPrimitiveValue || string.IsNullOrEmpty(Id))
+        {
+            return DeserializeValue<T>(RemoteValue.Value);
+        }
+
+        // Otherwise, use evaluation for objects with handles
+        return await EvaluateFunctionAsync<T>("value => value").ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public override string ToString()
@@ -76,5 +88,50 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 
         _disposed = true;
         await realm.DestroyHandlesAsync(this).ConfigureAwait(false);
+    }
+
+    private T DeserializeValue<T>(object value)
+    {
+        if (value is null)
+        {
+            return default;
+        }
+
+        if (typeof(T) == typeof(object))
+        {
+            return (T)value;
+        }
+
+        if (typeof(T) == typeof(string))
+        {
+            return (T)value;
+        }
+
+        if (typeof(T) == typeof(int))
+        {
+            return (T)(object)Convert.ToInt32(value, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(double))
+        {
+            return (T)(object)Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(bool))
+        {
+            return (T)(object)Convert.ToBoolean(value, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(decimal))
+        {
+            return (T)(object)Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(DateTime) && RemoteValue.Type == "date")
+        {
+            return (T)(object)DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
+        }
+
+        return (T)value;
     }
 }
