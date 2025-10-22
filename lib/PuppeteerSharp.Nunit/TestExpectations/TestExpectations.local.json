@@ -767,36 +767,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[jshandle.spec] *getProperties*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[jshandle.spec] *.getProperty*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[jshandle.spec] *.evaluateHandle*",
     "platforms": [
       "darwin",
@@ -873,36 +843,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[locator.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[mocha-utils] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[mouse.spec] *",
     "platforms": [
       "darwin",
       "linux",
@@ -1653,6 +1593,66 @@
   {
     "comment": "BidiBrowserContext.CloseAsync() is not implemented - fails with NotImplementedException",
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "BiDi does not track button state - browsers handle this internally",
+    "testIdPattern": "[mouse.spec] Mouse should throw if buttons are pressed incorrectly",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "BiDi issue with deleted window.Node - ReferenceError: Node is not defined",
+    "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
+    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
+    "testIdPattern": "[mouse.spec] Mouse should set modifier keys on click",
     "platforms": [
       "darwin",
       "linux",

@@ -30,17 +30,92 @@ namespace PuppeteerSharp.Bidi;
 
 internal class BidiMouse(BidiPage page) : Mouse
 {
+    private Point _lastMovePoint = new() { X = 0, Y = 0 };
+
     public override Task DropAsync(decimal x, decimal y, DragData data) => throw new NotImplementedException();
 
     public override Task DragAndDropAsync(decimal startX, decimal startY, decimal endX, decimal endY, int delay = 0) => throw new NotImplementedException();
 
-    public override Task ResetAsync() => throw new NotImplementedException();
+    public override async Task ResetAsync()
+    {
+        _lastMovePoint = new Point { X = 0, Y = 0 };
+        await page.BidiMainFrame.BrowsingContext.ReleaseActionsAsync().ConfigureAwait(false);
+    }
 
-    public override Task MoveAsync(decimal x, decimal y, MoveOptions options = null) => throw new NotImplementedException();
+    public override async Task MoveAsync(decimal x, decimal y, MoveOptions options = null)
+    {
+        var from = _lastMovePoint;
+        var to = new Point
+        {
+            X = Math.Round(x),
+            Y = Math.Round(y),
+        };
 
-    public override Task UpAsync(ClickOptions options = null) => throw new NotImplementedException();
+        var actions = new List<IPointerSourceAction>();
+        var steps = options?.Steps ?? 0;
 
-    public override Task WheelAsync(decimal deltaX, decimal deltaY) => throw new NotImplementedException();
+        for (var i = 0; i < steps; ++i)
+        {
+            actions.Add(new PointerMoveAction
+            {
+                X = (long)(from.X + ((to.X - from.X) * (i / (decimal)steps))),
+                Y = (long)(from.Y + ((to.Y - from.Y) * (i / (decimal)steps))),
+            });
+        }
+
+        actions.Add(new PointerMoveAction
+        {
+            X = (long)to.X,
+            Y = (long)to.Y,
+        });
+
+        _lastMovePoint = to;
+
+        var finalSource = new PointerSourceActions();
+        finalSource.Actions.AddRange(actions);
+
+        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([finalSource]).ConfigureAwait(false);
+    }
+
+    public override async Task DownAsync(ClickOptions options = null)
+    {
+        var actions = new List<IPointerSourceAction>
+        {
+            new PointerDownAction(GetBidiButton(options?.Button ?? MouseButton.Left)),
+        };
+
+        var finalSource = new PointerSourceActions();
+        finalSource.Actions.AddRange(actions);
+
+        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([finalSource]).ConfigureAwait(false);
+    }
+
+    public override async Task UpAsync(ClickOptions options = null)
+    {
+        var actions = new List<IPointerSourceAction>
+        {
+            new PointerUpAction(GetBidiButton(options?.Button ?? MouseButton.Left)),
+        };
+
+        var finalSource = new PointerSourceActions();
+        finalSource.Actions.AddRange(actions);
+
+        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([finalSource]).ConfigureAwait(false);
+    }
+
+    public override async Task WheelAsync(decimal deltaX, decimal deltaY)
+    {
+        var wheelSource = new WheelSourceActions();
+        wheelSource.Actions.Add(new WheelScrollAction
+        {
+            X = (ulong)_lastMovePoint.X,
+            Y = (ulong)_lastMovePoint.Y,
+            DeltaX = (long)deltaX,
+            DeltaY = (long)deltaY,
+        });
+
+        await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([wheelSource]).ConfigureAwait(false);
+    }
 
     public override Task<DragData> DragAsync(decimal startX, decimal startY, decimal endX, decimal endY) => throw new NotImplementedException();
 
@@ -48,13 +123,11 @@ internal class BidiMouse(BidiPage page) : Mouse
 
     public override Task DragOverAsync(decimal x, decimal y, DragData data) => throw new NotImplementedException();
 
-    public override Task DownAsync(ClickOptions options = null) => throw new NotImplementedException();
-
     public override async Task ClickAsync(decimal x, decimal y, ClickOptions options = null)
     {
         var actions = new List<IPointerSourceAction>
         {
-            new PointerMoveAction()
+            new PointerMoveAction
             {
                 X = (long)Math.Round(x),
                 Y = (long)Math.Round(y),
@@ -74,7 +147,7 @@ internal class BidiMouse(BidiPage page) : Mouse
 
         if (options?.Delay is > 0)
         {
-            actions.Add(new PauseAction()
+            actions.Add(new PauseAction
             {
                 Duration = TimeSpan.FromMilliseconds(options.Delay),
             });
@@ -88,7 +161,10 @@ internal class BidiMouse(BidiPage page) : Mouse
         await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([finalSource]).ConfigureAwait(false);
     }
 
-    protected override void Dispose(bool disposing) => throw new NotImplementedException();
+    protected override void Dispose(bool disposing)
+    {
+        // Nothing to dispose
+    }
 
     private long GetBidiButton(MouseButton optionsButton)
     {
@@ -102,5 +178,11 @@ internal class BidiMouse(BidiPage page) : Mouse
             _ => throw new ArgumentOutOfRangeException(nameof(optionsButton), $"Unsupported mouse button: {optionsButton}"),
         };
     }
-}
 
+    private struct Point
+    {
+        public decimal X { get; init; }
+
+        public decimal Y { get; init; }
+    }
+}
