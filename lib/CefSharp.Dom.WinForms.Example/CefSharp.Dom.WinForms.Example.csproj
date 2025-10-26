@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RuntimeIdentifier>$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\CefSharp.Dom.csproj" />
-    <PackageReference Include="CefSharp.WinForms.NETCore" Version="137.0.100" />
+    <PackageReference Include="CefSharp.WinForms.NETCore" Version="141.0.110" />
   </ItemGroup>
 
   <ItemGroup>

@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests
 
         protected Task WaitForError()
         {
-            var wrapper = new TaskCompletionSource<bool>(TaskContinuationOptions.RunContinuationsAsynchronously);
+            var wrapper = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void errorEvent(object sender, ErrorEventArgs e)
             {

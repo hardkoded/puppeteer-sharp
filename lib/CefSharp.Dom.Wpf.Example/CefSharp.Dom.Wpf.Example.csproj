@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <RuntimeIdentifier>$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
     <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PuppeteerSharp\CefSharp.Dom.csproj" />
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="137.0.100" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="141.0.110" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 

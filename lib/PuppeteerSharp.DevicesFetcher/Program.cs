@@ -11,7 +11,8 @@ namespace PuppeteerSharp.DevicesFetcher
 {
     class Program
     {
-        const string DEVICES_URL = "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
+        const string DEVICES_URL =
+            "https://raw.githubusercontent.com/puppeteer/puppeteer/master/src/common/DeviceDescriptors.ts";
 
         static readonly string deviceDescriptorsOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptors.cs";
         static readonly string deviceDescriptorNameOutput = "../../../../PuppeteerSharp/Mobile/DeviceDescriptorName.cs";

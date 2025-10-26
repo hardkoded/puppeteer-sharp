@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
 		<IsTestProject>true</IsTestProject>
@@ -38,7 +38,7 @@
 		</PackageReference>
 		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.10" />
     <PackageReference Include="Nito.AsyncEx.Context" Version="5.1.2" />
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="137.0.100" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="141.0.110" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\CefSharp.Dom.TestServer.csproj" />
