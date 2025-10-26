@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CefSharp.Dom.Helpers;
 using CefSharp.Dom.Helpers.Json;
@@ -109,7 +110,7 @@ namespace CefSharp.Dom
             {
                 Url = url,
                 Referrer = referrer ?? string.Empty,
-                ReferrerPolicy = referrerPolicy ?? string.Empty,
+                ReferrerPolicy = ReferrerPolicyToProtocol(referrerPolicy),
                 FrameId = frameId
             }).ConfigureAwait(false);
 
@@ -408,5 +409,13 @@ namespace CefSharp.Dom
         internal Task<Frame> GetFrameAsync(string frameId) => _asyncFrames.GetItemAsync(frameId);
 
         internal Task<Frame> TryGetFrameAsync(string frameId) => _asyncFrames.TryGetItemAsync(frameId);
+
+        // See https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy.
+        private static string ReferrerPolicyToProtocol(string referrerPolicy)
+        {
+            // Transform kebab-case to camelCase
+            return string.IsNullOrWhiteSpace(referrerPolicy) ? null :
+                Regex.Replace(referrerPolicy, "-(.)", match => match.Groups[1].Value.ToUpperInvariant());
+        }
     }
 }
