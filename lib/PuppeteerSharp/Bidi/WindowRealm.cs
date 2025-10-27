@@ -37,7 +37,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
 
     public override Session Session => Context.UserContext.Browser.Session;
 
-    public override ContextTarget Target => new(Context.Id); // TODO: Add sandbox
+    public override ContextTarget Target => new(Context.Id) { Sandbox = _sandbox };
 
     public string ExecutionContextId { get; set; }
 

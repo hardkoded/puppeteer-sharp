@@ -173,6 +173,11 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Input.PerformActionsAsync(param).ConfigureAwait(false);
     }
 
+    internal async Task ReleaseActionsAsync()
+    {
+        await Session.Driver.Input.ReleaseActionsAsync(new ReleaseActionsCommandParameters(Id)).ConfigureAwait(false);
+    }
+
     internal WindowRealm CreateWindowRealm(string sandbox = null)
     {
         var realm = WindowRealm.From(this, sandbox);

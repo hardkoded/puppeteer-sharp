@@ -41,7 +41,7 @@ internal abstract class Realm(BrowsingContext context, string id, string origin)
 
     public bool Disposed { get; private set; }
 
-    public virtual ContextTarget Target => new ContextTarget(Id);
+    public virtual ContextTarget Target => new(Id);
 
     public abstract Session Session { get; }
 

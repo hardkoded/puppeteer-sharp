@@ -379,7 +379,7 @@ Test directory structure demonstrates comprehensive coverage:
 - Protocol-specific expectations (CDP, WebDriver BiDi)
 - Headless mode variations (headless, headful, headless-shell)
 - Local and upstream expectation merging
-
+- Tests should always match the code in upstream. Tests should never be changed to match the code local code.
 #### Test Server (`PuppeteerSharp.TestServer/`)
 - ASP.NET Core server for hosting test pages
 - wwwroot directory with test fixtures
