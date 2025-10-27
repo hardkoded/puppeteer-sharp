@@ -203,7 +203,65 @@ namespace PuppeteerSharp
         public abstract Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
+        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+                string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await Helpers.AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var type = options.Type ?? "text/javascript";
+
+            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
+                @"async ({url, id, type, content}) => {
+                      return await new Promise((resolve, reject) => {
+                        const script = document.createElement('script');
+                        script.type = type;
+                        script.text = content;
+                        script.addEventListener(
+                          'error',
+                          event => {
+                            reject(new Error(event.message ?? 'Could not load script'));
+                          },
+                          {once: true}
+                        );
+                        if (id) {
+                          script.id = id;
+                        }
+                        if (url) {
+                          script.src = url;
+                          script.addEventListener(
+                            'load',
+                            () => {
+                              resolve(script);
+                            },
+                            {once: true}
+                          );
+                          document.head.appendChild(script);
+                        } else {
+                          document.head.appendChild(script);
+                          resolve(script);
+                        }
+                      });
+                    }",
+                new { url = options.Url, id = options.Id, type, content }).ConfigureAwait(false);
+
+            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+        }
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync(GetContentOptions options = null)
