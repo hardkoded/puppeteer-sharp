@@ -1664,5 +1664,20 @@
     "expectations": [
       "SKIP"
     ]
+  },
+  {
+    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
+    "testIdPattern": "[mouse.spec] Mouse should set ctrlKey on the wheel event",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
   }
 ]

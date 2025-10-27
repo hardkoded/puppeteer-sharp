@@ -118,11 +118,6 @@ public class CdpMouse : Mouse
         {
             options ??= new ClickOptions();
 
-            if (GetState().Buttons.HasFlag(options.Button))
-            {
-                throw new PuppeteerException($"{options.Button} is already pressed");
-            }
-
             updateState(new MouseTransaction.TransactionData
             {
                 Buttons = GetState().Buttons | options.Button,
@@ -148,11 +143,6 @@ public class CdpMouse : Mouse
         return WithTransactionAsync((updateState) =>
         {
             options ??= new ClickOptions();
-
-            if (!GetState().Buttons.HasFlag(options.Button))
-            {
-                throw new PuppeteerException($"{options.Button} is not pressed");
-            }
 
             updateState(new MouseTransaction.TransactionData
             {
@@ -279,7 +269,7 @@ public class CdpMouse : Mouse
     /// <inheritdoc/>
     public override Task ResetAsync()
     {
-        return _multipleActionsQueue.Enqueue(() =>
+        return _multipleActionsQueue.Enqueue(async () =>
         {
             var actions = new List<Task>();
             var state = GetState();
@@ -302,12 +292,13 @@ public class CdpMouse : Mouse
                 }
             }
 
+            // Wait for all button releases before moving
+            await Task.WhenAll(actions).ConfigureAwait(false);
+
             if (state.Position.X != 0 || state.Position.Y != 0)
             {
-                actions.Add(MoveAsync(0, 0));
+                await MoveAsync(0, 0).ConfigureAwait(false);
             }
-
-            return Task.WhenAll(actions);
         });
     }
 
