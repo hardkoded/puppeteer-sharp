@@ -39,6 +39,10 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Status = (HttpStatusCode)data.Status;
         Url = data.Url;
         _fromCache = data.FromCache;
+
+        // TODO: Implement SecurityDetails support when webdriverbidi-net library supports extensibility
+        // The upstream puppeteer implementation accesses a non-standard 'goog:securityDetails' property
+        // which is not yet exposed in the webdriverbidi-net library
     }
 
     // Internal constructor for synthetic responses (e.g., cached history navigation)
