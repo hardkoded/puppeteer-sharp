@@ -2135,13 +2135,6 @@
     "comment": "Wheel event is not supported"
   },
   {
-    "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
