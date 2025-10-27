@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
 
@@ -196,7 +197,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null)
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
@@ -220,45 +221,50 @@ namespace PuppeteerSharp
 
             if (!string.IsNullOrEmpty(options.Path))
             {
-                content = await Helpers.AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
                 content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
             }
 
-            var type = options.Type ?? "text/javascript";
-
             var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-                @"async ({url, id, type, content}) => {
-                      return await new Promise((resolve, reject) => {
-                        const script = document.createElement('script');
-                        script.type = type;
-                        script.text = content;
+                @"async (puppeteerUtil, url, id, type, content) => {
+                      const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                      const promise = createDeferredPromise();
+                      const script = document.createElement('script');
+                      script.type = type;
+                      script.text = content;
+                      if (url) {
+                        script.src = url;
                         script.addEventListener(
-                          'error',
-                          event => {
-                            reject(new Error(event.message ?? 'Could not load script'));
+                          'load',
+                          () => {
+                            return promise.resolve();
                           },
                           {once: true}
                         );
-                        if (id) {
-                          script.id = id;
-                        }
-                        if (url) {
-                          script.src = url;
-                          script.addEventListener(
-                            'load',
-                            () => {
-                              resolve(script);
-                            },
-                            {once: true}
-                          );
-                          document.head.appendChild(script);
-                        } else {
-                          document.head.appendChild(script);
-                          resolve(script);
-                        }
-                      });
+                        script.addEventListener(
+                          'error',
+                          event => {
+                            promise.reject(
+                              new Error(event.message ?? 'Could not load script')
+                            );
+                          },
+                          {once: true}
+                        );
+                      } else {
+                        promise.resolve();
+                      }
+                      if (id) {
+                        script.id = id;
+                      }
+                      document.head.appendChild(script);
+                      await promise;
+                      return script;
                     }",
-                new { url = options.Url, id = options.Id, type, content }).ConfigureAwait(false);
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
 
             return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
         }

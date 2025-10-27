@@ -214,7 +214,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         if (result.ResultType == EvaluateResultType.Exception)
         {
             // TODO: Improve text details
-            throw new EvaluateException(((EvaluateResultException)result).ExceptionDetails.Text);
+            throw new EvaluationFailedException(((EvaluateResultException)result).ExceptionDetails.Text);
         }
 
         return result as EvaluateResultSuccess;

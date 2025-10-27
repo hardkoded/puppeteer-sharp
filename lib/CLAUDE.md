@@ -14,6 +14,12 @@ You are allowed to run git commands to update these repositories locally.
 - Original Puppeteer repository: ../../puppeteer/puppeteer. Every time "upstream" is mentioned we are referring to this code.
 - Bidi Driver: ../../webdriverbidi-net/webdriverbidi-net
 
+## Upstream code structure
+
+- Code in upstream puppeteer-core/src/api/* are our abstract class. For instance our public abstract class Frame.
+- Code in upstream puppeteer-core/src/bidi/* are our Bidi* classes.
+- Code in upstream puppeteer-core/src/cdp/* are our Cdp* classes.
+
 ## Project Structure
 
 ```
@@ -380,6 +386,7 @@ Test directory structure demonstrates comprehensive coverage:
 - Headless mode variations (headless, headful, headless-shell)
 - Local and upstream expectation merging
 - Tests should always match the code in upstream. Tests should never be changed to match the code local code.
+
 #### Test Server (`PuppeteerSharp.TestServer/`)
 - ASP.NET Core server for hosting test pages
 - wwwroot directory with test fixtures
