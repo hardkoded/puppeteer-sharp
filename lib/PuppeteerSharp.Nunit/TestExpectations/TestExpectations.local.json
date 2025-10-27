@@ -1606,37 +1606,7 @@
     ]
   },
   {
-    "comment": "BiDi does not track button state - browsers handle this internally",
-    "testIdPattern": "[mouse.spec] Mouse should throw if buttons are pressed incorrectly",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "BiDi issue with deleted window.Node - ReferenceError: Node is not defined",
-    "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
+    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
     "platforms": [
       "darwin",
@@ -1651,7 +1621,7 @@
     ]
   },
   {
-    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
+    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
     "testIdPattern": "[mouse.spec] Mouse should set modifier keys on click",
     "platforms": [
       "darwin",
