@@ -57,7 +57,19 @@ public class BidiPage : Page
     public override Target Target { get; }
 
     /// <inheritdoc />
-    public override IFrame[] Frames { get; }
+    public override IFrame[] Frames
+    {
+        get
+        {
+            var frames = new List<IFrame> { BidiMainFrame };
+            for (var i = 0; i < frames.Count; i++)
+            {
+                frames.AddRange(frames[i].ChildFrames);
+            }
+
+            return frames.ToArray();
+        }
+    }
 
     /// <inheritdoc />
     public override WebWorker[] Workers { get; }
