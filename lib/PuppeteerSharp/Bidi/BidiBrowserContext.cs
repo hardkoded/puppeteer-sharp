@@ -99,7 +99,10 @@ public class BidiBrowserContext : BrowserContext
         UserContext userContext,
         BidiBrowserContextOptions options)
     {
-        var context = new BidiBrowserContext(browser, userContext, options);
+        var context = new BidiBrowserContext(browser, userContext, options)
+        {
+            Id = userContext.Id,
+        };
         context.Initialize();
         return context;
     }
