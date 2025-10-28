@@ -30,6 +30,8 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class UserContext : IDisposable
 {
+    public const string DEFAULT = "default";
+
     private readonly ConcurrentDictionary<string, BrowsingContext> _browsingContexts = new();
     private string _reason;
 

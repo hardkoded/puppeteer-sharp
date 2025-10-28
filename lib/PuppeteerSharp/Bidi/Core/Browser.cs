@@ -49,6 +49,8 @@ internal sealed class Browser(Session session) : IDisposable
 
     public string Reason { get; set; }
 
+    internal UserContext DefaultUserContext => _userContexts[UserContext.DEFAULT];
+
     internal ICollection<UserContext> UserContexts => _userContexts.Values;
 
     public static async Task<Browser> From(Session session)
