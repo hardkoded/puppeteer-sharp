@@ -37,6 +37,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiPage : Page
 {
     private readonly CdpEmulationManager _cdpEmulationManager;
+    private InternalNetworkConditions _emulatedNetworkConditions;
 
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -410,7 +411,24 @@ public class BidiPage : Page
     public override Task SetRequestInterceptionAsync(bool value) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetOfflineModeAsync(bool value) => throw new NotImplementedException();
+    public override async Task SetOfflineModeAsync(bool value)
+    {
+        if (!BidiBrowser.CdpSupported)
+        {
+            throw new NotSupportedException();
+        }
+
+        _emulatedNetworkConditions ??= new InternalNetworkConditions
+        {
+            Offline = false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
+
+        _emulatedNetworkConditions.Offline = value;
+        await ApplyNetworkConditionsAsync().ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => throw new NotImplementedException();
@@ -543,6 +561,24 @@ public class BidiPage : Page
         }
 
         return waitForNavigationTask.Result;
+    }
+
+    private async Task ApplyNetworkConditionsAsync()
+    {
+        if (_emulatedNetworkConditions == null)
+        {
+            return;
+        }
+
+        await BidiMainFrame.Client.SendAsync(
+            "Network.emulateNetworkConditions",
+            new Cdp.Messaging.NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            }).ConfigureAwait(false);
     }
 
     private void Initialize()
