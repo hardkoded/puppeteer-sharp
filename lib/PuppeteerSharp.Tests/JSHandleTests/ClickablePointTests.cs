@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class ClickablePointTests : PuppeteerPageBaseTest
     {
-        public ClickablePointTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.clickablePoint", "should work")]
         public async Task ShouldWork()
         {
