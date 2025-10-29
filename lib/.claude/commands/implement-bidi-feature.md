@@ -16,3 +16,4 @@ In order to do that you will need to:
  * You will have to implement the code as close as possible to the original code, but adapted to .NET idioms and practices.
  * As part of the task you will need to generate a document explaining the changes you made, and how they relate to the original PR.
  * You need to run related tests to ensure everything is working as expected.
+ * You will need to run the tests using the ENV variables BROWSER=FIREFOX and PROTOCOL=bidi
