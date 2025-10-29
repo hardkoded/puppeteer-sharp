@@ -40,7 +40,7 @@ public class BidiFrame : Frame
 
     internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
-        Client = new BidiCdpSession(this, parentPage.BidiBrowser.LoggerFactory);
+        Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;
