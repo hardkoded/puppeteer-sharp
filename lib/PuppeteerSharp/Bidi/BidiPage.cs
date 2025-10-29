@@ -162,7 +162,46 @@ public class BidiPage : Page
     public override Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetGeolocationAsync(GeolocationOption options) => throw new NotImplementedException();
+    public override async Task SetGeolocationAsync(GeolocationOption options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var longitude = options.Longitude;
+        var latitude = options.Latitude;
+        var accuracy = options.Accuracy;
+
+        if (longitude < -180 || longitude > 180)
+        {
+            throw new ArgumentException($"Invalid longitude '{longitude}': precondition -180 <= LONGITUDE <= 180 failed.");
+        }
+
+        if (latitude < -90 || latitude > 90)
+        {
+            throw new ArgumentException($"Invalid latitude '{latitude}': precondition -90 <= LATITUDE <= 90 failed.");
+        }
+
+        if (accuracy < 0)
+        {
+            throw new ArgumentException($"Invalid accuracy '{accuracy}': precondition 0 <= ACCURACY failed.");
+        }
+
+        var coordinates = new WebDriverBiDi.Emulation.GeolocationCoordinates((double)longitude, (double)latitude)
+        {
+            Accuracy = (double?)accuracy,
+        };
+
+        var commandParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters
+        {
+            Coordinates = coordinates,
+        };
+
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task SetJavaScriptEnabledAsync(bool enabled) => throw new NotImplementedException();
