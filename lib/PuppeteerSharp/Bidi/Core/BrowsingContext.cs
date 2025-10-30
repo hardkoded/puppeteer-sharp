@@ -65,8 +65,6 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
 
-    public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
-
     public UserContext UserContext { get; }
 
     public string Id { get; }
