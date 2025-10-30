@@ -71,7 +71,7 @@ internal class BrowsingContext : IDisposable
 
     public string Url { get; private set; }
 
-    public bool IsClosed => _reason != null;
+    public bool IsClosed { get; private set; }
 
     public Session Session => UserContext.Browser.Session;
 
@@ -107,6 +107,13 @@ internal class BrowsingContext : IDisposable
 
     public void Dispose()
     {
+        if (IsClosed)
+        {
+            return;
+        }
+
+        IsClosed = true;
+
         _reason ??= "Browser was disconnected, probably because the session ended.";
         OnClosed(_reason);
         foreach (var context in _children.Values)
@@ -223,7 +230,7 @@ internal class BrowsingContext : IDisposable
 
         Session.BrowsingContextContextDestroyed += (_, args) =>
         {
-            if (args.UserContextId != Id)
+            if (args.BrowsingContextId != Id)
             {
                 return;
             }
