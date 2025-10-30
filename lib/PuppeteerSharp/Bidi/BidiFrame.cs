@@ -579,6 +579,31 @@ public class BidiFrame : Frame
             var dialog = BidiDialog.From(args.UserPrompt);
             ((Page)Page).OnDialog(new DialogEventArgs(dialog));
         };
+
+        BrowsingContext.Log += (sender, args) =>
+        {
+            if (args.Type == "javascript")
+            {
+                var text = args.Text ?? string.Empty;
+                var messageLines = new List<string> { text };
+
+                var stackLines = new List<string>();
+                if (args.StackTrace != null)
+                {
+                    foreach (var frame in args.StackTrace.CallFrames)
+                    {
+                        stackLines.Add($"    at {(string.IsNullOrEmpty(frame.FunctionName) ? "<anonymous>" : frame.FunctionName)} ({frame.Url}:{frame.LineNumber + 1}:{frame.ColumnNumber + 1})");
+                        if (stackLines.Count >= 10)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                var fullStack = string.Join("\n", messageLines.Concat(stackLines));
+                BidiPage.OnPageError(new PageErrorEventArgs(fullStack));
+            }
+        };
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)

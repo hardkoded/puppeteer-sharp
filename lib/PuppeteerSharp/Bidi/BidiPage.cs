@@ -461,6 +461,8 @@ public class BidiPage : Page
         return page;
     }
 
+    internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
+
     /// <inheritdoc />
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
 
