@@ -65,6 +65,8 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
 
+    public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
+
     public UserContext UserContext { get; }
 
     public string Id { get; }
@@ -326,6 +328,16 @@ internal class BrowsingContext : IDisposable
             var userPrompt = Core.UserPrompt.From(this, args);
             OnUserPromptOpened(new UserPromptEventArgs(userPrompt));
         };
+
+        Session.LogEntryAdded += (_, args) =>
+        {
+            if (args.Source.Context != Id)
+            {
+                return;
+            }
+
+            OnLogEntry(args);
+        };
     }
 
     private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
@@ -352,4 +364,6 @@ internal class BrowsingContext : IDisposable
     private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
 
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
+
+    private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
 }

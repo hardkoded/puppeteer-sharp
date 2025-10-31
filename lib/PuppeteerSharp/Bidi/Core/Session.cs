@@ -68,6 +68,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs> BrowsingContextUserPromptClosed;
 
+    public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> LogEntryAdded;
+
     public BiDiDriver Driver { get; } = driver;
 
     public NewCommandResult Info { get; } = info;
@@ -118,6 +120,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.Network.OnResponseCompleted.AddObserver(OnNetworkResponseCompleted);
         Driver.BrowsingContext.OnUserPromptOpened.AddObserver(OnBrowsingContextUserPromptOpened);
         Driver.BrowsingContext.OnUserPromptClosed.AddObserver(OnBrowsingContextUserPromptClosed);
+        Driver.Log.OnEntryAdded.AddObserver(OnLogEntryAdded);
     }
 
     private void OnFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs info)
@@ -159,4 +162,6 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     private void OnBrowsingContextUserPromptOpened(WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs obj) => BrowsingContextUserPromptOpened?.Invoke(this, obj);
 
     private void OnBrowsingContextUserPromptClosed(WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs obj) => BrowsingContextUserPromptClosed?.Invoke(this, obj);
+
+    private void OnLogEntryAdded(WebDriverBiDi.Log.EntryAddedEventArgs obj) => LogEntryAdded?.Invoke(this, obj);
 }
