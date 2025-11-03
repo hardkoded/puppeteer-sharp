@@ -37,6 +37,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiPage : Page
 {
     private readonly CdpEmulationManager _cdpEmulationManager;
+    private InternalNetworkConditions _emulatedNetworkConditions;
 
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -57,7 +58,19 @@ public class BidiPage : Page
     public override Target Target { get; }
 
     /// <inheritdoc />
-    public override IFrame[] Frames { get; }
+    public override IFrame[] Frames
+    {
+        get
+        {
+            var frames = new List<IFrame> { BidiMainFrame };
+            for (var i = 0; i < frames.Count; i++)
+            {
+                frames.AddRange(frames[i].ChildFrames);
+            }
+
+            return [.. frames];
+        }
+    }
 
     /// <inheritdoc />
     public override WebWorker[] Workers { get; }
@@ -150,7 +163,46 @@ public class BidiPage : Page
     public override Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetGeolocationAsync(GeolocationOption options) => throw new NotImplementedException();
+    public override async Task SetGeolocationAsync(GeolocationOption options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var longitude = options.Longitude;
+        var latitude = options.Latitude;
+        var accuracy = options.Accuracy;
+
+        if (longitude < -180 || longitude > 180)
+        {
+            throw new ArgumentException($"Invalid longitude '{longitude}': precondition -180 <= LONGITUDE <= 180 failed.");
+        }
+
+        if (latitude < -90 || latitude > 90)
+        {
+            throw new ArgumentException($"Invalid latitude '{latitude}': precondition -90 <= LATITUDE <= 90 failed.");
+        }
+
+        if (accuracy < 0)
+        {
+            throw new ArgumentException($"Invalid accuracy '{accuracy}': precondition 0 <= ACCURACY failed.");
+        }
+
+        var coordinates = new WebDriverBiDi.Emulation.GeolocationCoordinates((double)longitude, (double)latitude)
+        {
+            Accuracy = (double?)accuracy,
+        };
+
+        var commandParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters
+        {
+            Coordinates = coordinates,
+        };
+
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task SetJavaScriptEnabledAsync(bool enabled) => throw new NotImplementedException();
@@ -359,7 +411,24 @@ public class BidiPage : Page
     public override Task SetRequestInterceptionAsync(bool value) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetOfflineModeAsync(bool value) => throw new NotImplementedException();
+    public override async Task SetOfflineModeAsync(bool value)
+    {
+        if (!BidiBrowser.CdpSupported)
+        {
+            throw new NotSupportedException();
+        }
+
+        _emulatedNetworkConditions ??= new InternalNetworkConditions
+        {
+            Offline = false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
+
+        _emulatedNetworkConditions.Offline = value;
+        await ApplyNetworkConditionsAsync().ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => throw new NotImplementedException();
@@ -391,6 +460,8 @@ public class BidiPage : Page
         page.Initialize();
         return page;
     }
+
+    internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
 
     /// <inheritdoc />
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
@@ -494,7 +565,29 @@ public class BidiPage : Page
         return waitForNavigationTask.Result;
     }
 
+    private async Task ApplyNetworkConditionsAsync()
+    {
+        if (_emulatedNetworkConditions == null)
+        {
+            return;
+        }
+
+        await BidiMainFrame.Client.SendAsync(
+            "Network.emulateNetworkConditions",
+            new Cdp.Messaging.NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            }).ConfigureAwait(false);
+    }
+
     private void Initialize()
     {
+        BidiMainFrame.BrowsingContext.Closed += (_, _) =>
+        {
+            OnClose();
+        };
     }
 }

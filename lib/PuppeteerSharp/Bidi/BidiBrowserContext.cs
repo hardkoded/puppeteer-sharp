@@ -99,7 +99,10 @@ public class BidiBrowserContext : BrowserContext
         UserContext userContext,
         BidiBrowserContextOptions options)
     {
-        var context = new BidiBrowserContext(browser, userContext, options);
+        var context = new BidiBrowserContext(browser, userContext, options)
+        {
+            Id = userContext.Id,
+        };
         context.Initialize();
         return context;
     }
@@ -119,26 +122,23 @@ public class BidiBrowserContext : BrowserContext
 
             // We need to wait for the DOMContentLoaded as the
             // browsingContext still may be navigating from the about:blank
-            browsingContext.DomContentLoaded += (o, eventArgs) =>
+            if (browsingContext.OriginalOpener == null)
             {
-                if (browsingContext.OriginalOpener == null)
+                return;
+            }
+
+            foreach (var context in UserContext.BrowsingContexts)
+            {
+                if (context.Id != browsingContext.OriginalOpener)
                 {
-                    return;
+                    continue;
                 }
 
-                foreach (var context in UserContext.BrowsingContexts)
+                if (_pages.TryGetValue(context, out var originalOpenerPage))
                 {
-                    if (context.Id != browsingContext.OriginalOpener)
-                    {
-                        continue;
-                    }
-
-                    if (_pages.TryGetValue(context, out var originalOpenerPage))
-                    {
-                        originalOpenerPage.OnPopup(page);
-                    }
+                    originalOpenerPage.OnPopup(page);
                 }
-            };
+            }
         };
     }
 

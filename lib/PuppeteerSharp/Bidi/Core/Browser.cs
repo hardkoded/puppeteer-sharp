@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Browser;
@@ -48,6 +49,8 @@ internal sealed class Browser(Session session) : IDisposable
     public bool IsClosed { get; set; }
 
     public string Reason { get; set; }
+
+    internal UserContext DefaultUserContext => _userContexts.TryGetValue(UserContext.DEFAULT, out var context) ? context : _userContexts.Values.FirstOrDefault();
 
     internal ICollection<UserContext> UserContexts => _userContexts.Values;
 

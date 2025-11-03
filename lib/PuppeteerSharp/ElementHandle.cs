@@ -1002,6 +1002,8 @@ namespace PuppeteerSharp
                     ? Math.Min(height - box.Y, box.Height)
                     : Math.Min(height, box.Height + box.Y),
                 0);
+            box.X = Math.Max(box.X, 0);
+            box.Y = Math.Max(box.Y, 0);
         }
     }
 }

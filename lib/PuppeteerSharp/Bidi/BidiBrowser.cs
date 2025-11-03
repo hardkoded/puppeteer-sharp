@@ -58,6 +58,9 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override ITarget Target => _target;
 
+    /// <inheritdoc/>
+    public override IBrowserContext DefaultContext => _browserContexts.FirstOrDefault(b => b.Id == BrowserCore.DefaultUserContext.Id);
+
     internal static string[] SubscribeModules { get; } =
     [
         "browsingContext",

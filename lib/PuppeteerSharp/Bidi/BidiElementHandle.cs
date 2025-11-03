@@ -36,6 +36,8 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
     /// </summary>
     public RemoteValue Value { get; } = value;
 
+    internal BidiJSHandle BidiJSHandle => Handle as BidiJSHandle;
+
     internal override Realm Realm => realm;
 
     internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
@@ -60,13 +62,13 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
             return;
         }").ConfigureAwait(false);
 
-        if (handle is not BidiJSHandle bidiHandle)
+        if (handle is not BidiElementHandle bidiHandle)
         {
             await handle.DisposeAsync().ConfigureAwait(false);
             return null;
         }
 
-        var value = bidiHandle.RemoteValue;
+        var value = bidiHandle.BidiJSHandle.RemoteValue;
         await handle.DisposeAsync().ConfigureAwait(false);
 
         if (value.Type == "window" && value.Value is WindowProxyProperties windowProxy)

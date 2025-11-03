@@ -65,13 +65,15 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
 
+    public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
+
     public UserContext UserContext { get; }
 
     public string Id { get; }
 
     public string Url { get; private set; }
 
-    public bool IsClosed => _reason != null;
+    public bool IsClosed { get; private set; }
 
     public Session Session => UserContext.Browser.Session;
 
@@ -107,6 +109,13 @@ internal class BrowsingContext : IDisposable
 
     public void Dispose()
     {
+        if (IsClosed)
+        {
+            return;
+        }
+
+        IsClosed = true;
+
         _reason ??= "Browser was disconnected, probably because the session ended.";
         OnClosed(_reason);
         foreach (var context in _children.Values)
@@ -223,7 +232,7 @@ internal class BrowsingContext : IDisposable
 
         Session.BrowsingContextContextDestroyed += (_, args) =>
         {
-            if (args.UserContextId != Id)
+            if (args.BrowsingContextId != Id)
             {
                 return;
             }
@@ -319,6 +328,16 @@ internal class BrowsingContext : IDisposable
             var userPrompt = Core.UserPrompt.From(this, args);
             OnUserPromptOpened(new UserPromptEventArgs(userPrompt));
         };
+
+        Session.LogEntryAdded += (_, args) =>
+        {
+            if (args.Source.Context != Id)
+            {
+                return;
+            }
+
+            OnLogEntry(args);
+        };
     }
 
     private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
@@ -345,4 +364,6 @@ internal class BrowsingContext : IDisposable
     private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
 
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
+
+    private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
 }
