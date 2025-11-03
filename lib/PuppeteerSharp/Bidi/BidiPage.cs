@@ -496,7 +496,14 @@ public class BidiPage : Page
         {
             if (options.CaptureBeyondViewport)
             {
-                box = options.Clip;
+                // Create a new box to avoid reference issues
+                box = new Clip
+                {
+                    X = options.Clip.X,
+                    Y = options.Clip.Y,
+                    Width = options.Clip.Width,
+                    Height = options.Clip.Height,
+                };
             }
             else
             {
