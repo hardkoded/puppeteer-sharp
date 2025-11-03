@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -214,7 +213,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         if (result.ResultType == EvaluateResultType.Exception)
         {
             // TODO: Improve text details
-            throw new EvaluateException(((EvaluateResultException)result).ExceptionDetails.Text);
+            throw new EvaluationFailedException(((EvaluateResultException)result).ExceptionDetails.Text);
         }
 
         return result as EvaluateResultSuccess;
