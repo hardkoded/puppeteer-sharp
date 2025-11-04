@@ -63,13 +63,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "TODO Review screenshots in firefox",
-    "testIdPattern": "[screenshot.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "[click.spec] Page.click should fire aux event on middle click",
     "platforms": ["win32"],
@@ -1022,21 +1015,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[page.spec] *Page.select*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[page.spec] *Page.setBypassCSP*",
     "platforms": [
       "darwin",
@@ -1083,21 +1061,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[page.spec] *Page.setUserAgent*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[page.spec] *Page.title*",
     "platforms": [
       "darwin",
       "linux",
@@ -1233,21 +1196,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[requestinterception.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[screenshot.spec] *",
     "platforms": [
       "darwin",
       "linux",
