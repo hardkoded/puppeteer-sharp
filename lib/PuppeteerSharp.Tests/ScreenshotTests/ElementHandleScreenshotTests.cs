@@ -118,7 +118,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(@"<!DOCTYPE html>
                 <div style='position: absolute;
                 top: 100px;
                 left: 100px;

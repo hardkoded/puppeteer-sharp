@@ -554,8 +554,8 @@ public class BidiPage : Page
             {
                 X = (double)box.X,
                 Y = (double)box.Y,
-                Width = (double)Math.Ceiling(box.Width),
-                Height = (double)Math.Ceiling(box.Height),
+                Width = (double)box.Width,
+                Height = (double)box.Height,
             };
         }
 

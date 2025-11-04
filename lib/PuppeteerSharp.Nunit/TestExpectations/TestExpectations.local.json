@@ -14,13 +14,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "BiDi screenshot: Height calculation issue with CSS transforms",
-    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "BiDi screenshot: Test fails on JSON evaluation (EvaluateExpressionAsync<JsonElement>), not screenshot itself",
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should capture full element when larger than viewport",
     "platforms": ["darwin", "linux", "win32"],
