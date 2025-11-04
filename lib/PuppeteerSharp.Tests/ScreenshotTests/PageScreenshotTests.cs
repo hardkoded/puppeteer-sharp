@@ -314,6 +314,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             await using var page = await Context.NewPageAsync();
+            // Make sure documentElement height is at least 11px.
+            await page.SetContentAsync("<div style=\"width: 11px; height: 11px;\"></div>");
             var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
