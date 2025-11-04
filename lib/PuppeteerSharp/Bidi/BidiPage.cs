@@ -491,12 +491,19 @@ public class BidiPage : Page
             throw new PuppeteerException("BiDi does not support 'scale' in 'clip'.");
         }
 
-        BoundingBox box;
+        BoundingBox box = null;
         if (options.Clip != null)
         {
             if (options.CaptureBeyondViewport)
             {
-                box = options.Clip;
+                // Create a new box to avoid reference issues
+                box = new Clip
+                {
+                    X = options.Clip.X,
+                    Y = options.Clip.Y,
+                    Width = options.Clip.Width,
+                    Height = options.Clip.Height,
+                };
             }
             else
             {
@@ -513,8 +520,13 @@ public class BidiPage : Page
                     ];
                 }").ConfigureAwait(false);
 
-                options.Clip.X += decimal.Floor(points[0]);
-                options.Clip.Y += decimal.Floor(points[1]);
+                box = new Clip
+                {
+                    X = options.Clip.X - points[0],
+                    Y = options.Clip.Y - points[1],
+                    Width = options.Clip.Width,
+                    Height = options.Clip.Height,
+                };
             }
         }
 
@@ -526,8 +538,7 @@ public class BidiPage : Page
             _ => "png",
         };
 
-        // TODO: Missing box
-        var data = await BidiMainFrame.BrowsingContext.CaptureScreenshotAsync(new ScreenshotParameters()
+        var parameters = new ScreenshotParameters()
         {
             Origin = options.CaptureBeyondViewport ? ScreenshotOrigin.Document : ScreenshotOrigin.Viewport,
             Format = new ImageFormat()
@@ -535,7 +546,20 @@ public class BidiPage : Page
                 Type = $"image/{fileType}",
                 Quality = options.Quality / 100,
             },
-        }).ConfigureAwait(false);
+        };
+
+        if (box != null)
+        {
+            parameters.Clip = new BoxClipRectangle
+            {
+                X = (double)box.X,
+                Y = (double)box.Y,
+                Width = (double)box.Width,
+                Height = (double)box.Height,
+            };
+        }
+
+        var data = await BidiMainFrame.BrowsingContext.CaptureScreenshotAsync(parameters).ConfigureAwait(false);
 
         return data;
     }

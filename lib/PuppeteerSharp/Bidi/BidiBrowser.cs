@@ -123,7 +123,7 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override Task<IPage> NewPageAsync() => throw new NotImplementedException();
+    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
 
     /// <inheritdoc />
     public override ITarget[] Targets()

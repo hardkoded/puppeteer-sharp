@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -76,9 +75,9 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-element-larger-than-viewport.png", screenshot), Is.True);
             var currentSize =
-                await Page.EvaluateExpressionAsync<JsonElement>("({ w: window.innerWidth, h: window.innerHeight })");
-            Assert.That(currentSize.GetProperty("w").GetInt32(), Is.EqualTo(500));
-            Assert.That(currentSize.GetProperty("h").GetInt32(), Is.EqualTo(500));
+                await Page.EvaluateExpressionAsync<int[]>("([window.innerWidth, window.innerHeight])");
+            Assert.That(currentSize[0], Is.EqualTo(500));
+            Assert.That(currentSize[1], Is.EqualTo(500));
         }
 
         [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should scroll element into view")]
@@ -119,7 +118,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 Width = 500,
                 Height = 500
             });
-            await Page.SetContentAsync(@"
+            await Page.SetContentAsync(@"<!DOCTYPE html>
                 <div style='position: absolute;
                 top: 100px;
                 left: 100px;
@@ -165,7 +164,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should work for an element with an offset")]
         public async Task ShouldWorkForAnElementWithAnOffset()
         {
-            await Page.SetContentAsync("<div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
+            await Page.SetContentAsync("<!DOCTYPE html><div style=\"position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;\"></div>");
             var elementHandle = await Page.QuerySelectorAsync("div");
             var screenshot = await elementHandle.ScreenshotDataAsync();
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot), Is.True);
