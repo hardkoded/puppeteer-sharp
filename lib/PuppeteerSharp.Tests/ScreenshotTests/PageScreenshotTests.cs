@@ -152,14 +152,14 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldClipElementsToTheViewport()
         {
             await using var page = await Context.NewPageAsync();
-            await page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
                 {
-                    X = 50,
-                    Y = 600,
+                    X = 25,
+                    Y = 25,
                     Width = 100,
                     Height = 100
                 }
