@@ -100,7 +100,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot), Is.True);
         }
 
-        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should use scale for clip")]
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should use scale for clip")]
         public async Task ShouldUseScaleForClip()
         {
             await using var page = await Context.NewPageAsync();
