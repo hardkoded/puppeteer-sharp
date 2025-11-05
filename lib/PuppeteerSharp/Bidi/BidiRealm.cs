@@ -195,19 +195,27 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
         EvaluateResult result;
 
-        if (isExpression)
+        try
         {
-            result = await realm.EvaluateAsync(
-                functionDeclaration,
-                true,
-                options).ConfigureAwait(false);
+            if (isExpression)
+            {
+                result = await realm.EvaluateAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
+            else
+            {
+                result = await realm.CallFunctionAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
         }
-        else
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
         {
-            result = await realm.CallFunctionAsync(
-                functionDeclaration,
-                true,
-                options).ConfigureAwait(false);
+            throw new TargetClosedException("Protocol error", "Target.detachedFromTarget");
         }
 
         if (result.ResultType == EvaluateResultType.Exception)

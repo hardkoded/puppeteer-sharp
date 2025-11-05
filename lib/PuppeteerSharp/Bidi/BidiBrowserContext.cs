@@ -55,7 +55,7 @@ public class BidiBrowserContext : BrowserContext
     public override Task ClearPermissionOverridesAsync() => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IPage[]> PagesAsync() => throw new System.NotImplementedException();
+    public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync()
@@ -194,6 +194,7 @@ public class BidiBrowserContext : BrowserContext
 
         page.Close += (_, _) =>
         {
+            _pages.TryRemove(page.BidiMainFrame.BrowsingContext, out _);
             if (_targets.TryRemove(page, out _))
             {
                 OnTargetDestroyed(new TargetChangedArgs(pageTarget));

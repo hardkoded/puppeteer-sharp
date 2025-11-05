@@ -145,7 +145,7 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
+    public override IBrowserContext[] BrowserContexts() => _browserContexts.ToArray();
 
     [SuppressMessage(
         "Reliability",

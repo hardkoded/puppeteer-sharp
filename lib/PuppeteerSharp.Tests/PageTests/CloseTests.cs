@@ -6,8 +6,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class CloseTests : PuppeteerPageBaseTest
     {
-        public CloseTests() : base() { }
-
         [Test, PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
