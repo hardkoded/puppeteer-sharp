@@ -612,6 +612,7 @@ public class BidiPage : Page
         BidiMainFrame.BrowsingContext.Closed += (_, _) =>
         {
             OnClose();
+            IsClosed = true;
         };
     }
 }
