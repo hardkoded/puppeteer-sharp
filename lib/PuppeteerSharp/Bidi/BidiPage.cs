@@ -38,6 +38,7 @@ public class BidiPage : Page
 {
     private readonly CdpEmulationManager _cdpEmulationManager;
     private InternalNetworkConditions _emulatedNetworkConditions;
+    private TaskCompletionSource<bool> _closedTcs;
 
     internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -92,6 +93,26 @@ public class BidiPage : Page
     /// <inheritdoc />
     protected override Browser Browser { get; }
 
+    private Task ClosedTask
+    {
+        get
+        {
+            if (_closedTcs == null)
+            {
+                _closedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                BidiMainFrame.BrowsingContext.Closed += ContextClosed;
+
+                void ContextClosed(object sender, ClosedEventArgs e)
+                {
+                    _closedTcs.TrySetException(new TargetClosedException("Target closed", "Browsing context closed"));
+                    BidiMainFrame.BrowsingContext.Closed -= ContextClosed;
+                }
+            }
+
+            return _closedTcs.Task;
+        }
+    }
+
     /// <inheritdoc />
     public override Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers) => throw new NotImplementedException();
 
@@ -142,10 +163,41 @@ public class BidiPage : Page
     public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
+    {
+        // TODO: Implement full network request monitoring for BiDi
+        // For now, this creates a task that will be faulted when the page closes
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+            new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+        if (ClosedTask.IsFaulted)
+        {
+            await ClosedTask.ConfigureAwait(false);
+        }
+
+        return await requestTcs.Task.ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
+    {
+        // TODO: Implement full network response monitoring for BiDi
+        // For now, this creates a task that will be faulted when the page closes
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout).ConfigureAwait(false);
+
+        if (ClosedTask.IsFaulted)
+        {
+            await ClosedTask.ConfigureAwait(false);
+        }
+
+        return await responseTcs.Task.ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null) => throw new NotImplementedException();
