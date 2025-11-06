@@ -139,7 +139,10 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var waitForNavigationTask = WaitForNavigationAsync(options);
+        var navOptions = options == null
+            ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
+            : options with { IgnoreSameDocumentNavigation = true };
+        var waitForNavigationTask = WaitForNavigationAsync(navOptions);
         var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
 
         try
