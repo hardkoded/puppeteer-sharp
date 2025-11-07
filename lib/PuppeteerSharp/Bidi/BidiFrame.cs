@@ -604,6 +604,20 @@ public class BidiFrame : Frame
                 BidiPage.OnPageError(new PageErrorEventArgs(fullStack));
             }
         };
+
+        // Wire up worker events
+        if (_realms.Default is BidiFrameRealm defaultFrameRealm)
+        {
+            defaultFrameRealm.WindowRealm.Worker += (sender, args) =>
+            {
+                var worker = BidiWebWorker.From(this, args.Realm);
+                args.Realm.Destroyed += (o, eventArgs) =>
+                {
+                    BidiPage.OnWorkerDestroyed(worker);
+                };
+                BidiPage.OnWorkerCreated(worker);
+            };
+        }
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)

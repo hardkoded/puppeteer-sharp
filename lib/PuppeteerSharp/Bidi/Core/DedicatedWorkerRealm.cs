@@ -20,20 +20,26 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
-internal class DedicatedWorkerRealm : Realm
+internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
 {
     private readonly ConcurrentSet<IDedicatedWorkerOwnerRealm> _owners = [];
+    private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
 
     private DedicatedWorkerRealm(BrowsingContext context, IDedicatedWorkerOwnerRealm owner, string id, string origin)
     : base(context, id, origin)
     {
         _owners.Add(owner);
     }
+
+    public event EventHandler<WorkerRealmEventArgs> Worker;
 
     public override Session Session => _owners.FirstOrDefault()?.Session;
 
@@ -44,8 +50,54 @@ internal class DedicatedWorkerRealm : Realm
         return realm;
     }
 
+    public override void Dispose()
+    {
+        foreach (var worker in _workers.Values)
+        {
+            worker.Dispose();
+        }
+
+        base.Dispose();
+    }
+
     private void Initialize()
     {
-        throw new System.NotImplementedException();
+        // Listen to realm destruction
+        Session.Driver.Script.OnRealmDestroyed.AddObserver(OnRealmDestroyed);
+
+        // Listen to nested worker creation
+        Session.Driver.Script.OnRealmCreated.AddObserver(OnDedicatedRealmCreated);
     }
+
+    private void OnRealmDestroyed(RealmDestroyedEventArgs args)
+    {
+        if (args.RealmId != Id)
+        {
+            return;
+        }
+
+        Dispose("Realm already destroyed.");
+    }
+
+    private void OnDedicatedRealmCreated(RealmCreatedEventArgs args)
+    {
+        if (args.Type != RealmType.DedicatedWorker)
+        {
+            return;
+        }
+
+        var dedicatedWorkerInfo = args.As<DedicatedWorkerRealmInfo>();
+
+        if (!dedicatedWorkerInfo.Owners.Contains(Id))
+        {
+            return;
+        }
+
+        var realm = DedicatedWorkerRealm.From(Context, this, dedicatedWorkerInfo.RealmId, dedicatedWorkerInfo.Origin);
+        _workers.TryAdd(realm.Id, realm);
+        realm.Destroyed += (sender, args) => _workers.TryRemove(realm.Id, out _);
+        OnWorker(realm);
+    }
+
+    private void OnWorker(DedicatedWorkerRealm realm) => Worker?.Invoke(this, new WorkerRealmEventArgs(realm));
 }

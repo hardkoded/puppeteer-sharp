@@ -20,19 +20,42 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
+using PuppeteerSharp.Bidi.Core;
 
 namespace PuppeteerSharp.Bidi;
 
 internal class BidiWebWorker : WebWorker
 {
-    public BidiWebWorker(string url) : base(url)
+    private readonly BidiFrame _frame;
+    private readonly BidiWorkerRealm _realm;
+
+    private BidiWebWorker(BidiFrame frame, DedicatedWorkerRealm realm) : base(realm.Origin)
     {
+        _frame = frame;
+        _realm = BidiWorkerRealm.From(realm, this);
     }
 
-    public override ICDPSession Client { get; }
+    public override ICDPSession Client => throw new NotSupportedException();
 
-    internal override IsolatedWorld World { get; }
+    public override Task CloseAsync()
+    {
+        // BiDi doesn't support closing workers directly
+        // Workers are closed when they terminate themselves or when the owning page/frame closes
+        throw new NotSupportedException("WebWorker.CloseAsync() is not supported in BiDi protocol");
+    }
 
-    public override Task CloseAsync() => throw new System.NotImplementedException();
+    internal static BidiWebWorker From(BidiFrame frame, DedicatedWorkerRealm realm)
+    {
+        return new BidiWebWorker(frame, realm);
+    }
+
+    internal override IsolatedWorld World => throw new NotSupportedException();
+
+    internal override Realm GetMainRealm() => _realm;
+
+    internal BidiFrame Frame => _frame;
+
+    internal TimeoutSettings TimeoutSettings => _frame.TimeoutSettings;
 }
