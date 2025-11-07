@@ -102,7 +102,11 @@ public class BidiBrowser : Browser
     public override Task<string> GetUserAgentAsync() => Task.FromResult(BrowserCore.Session.Info.Capabilities.UserAgent);
 
     /// <inheritdoc />
-    public override void Disconnect() => throw new NotImplementedException();
+    public override void Disconnect()
+    {
+        Driver.StopAsync().GetAwaiter().GetResult();
+        Detach();
+    }
 
     /// <inheritdoc />
     public override async Task CloseAsync()
@@ -141,7 +145,7 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override IBrowserContext[] BrowserContexts() => throw new NotImplementedException();
+    public override IBrowserContext[] BrowserContexts() => _browserContexts.ToArray();
 
     [SuppressMessage(
         "Reliability",
@@ -184,6 +188,15 @@ public class BidiBrowser : Browser
         foreach (var userContext in BrowserCore.UserContexts)
         {
             CreateBrowserContext(userContext);
+        }
+    }
+
+    private void Detach()
+    {
+        foreach (var context in _browserContexts)
+        {
+            context.TargetCreated -= (sender, args) => OnTargetCreated(args);
+            context.TargetDestroyed -= (sender, args) => OnTargetDestroyed(args);
         }
     }
 

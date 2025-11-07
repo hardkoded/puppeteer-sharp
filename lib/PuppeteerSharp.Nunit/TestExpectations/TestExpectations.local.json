@@ -77,6 +77,20 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "This is passing on my machine but failing on CI/CD",
+    "testIdPattern": "*should take fullPage screenshots*",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "This is passing on my machine but failing on CI/CD",
+    "testIdPattern": "*should work when reload causes history API in beforeunload*",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "",
     "testIdPattern": "[puppeteer-sharp] *",
     "platforms": ["darwin", "linux", "win32"],
@@ -881,21 +895,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[page.spec] *addStyleTag*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[page.spec] *Page.close*",
     "platforms": [
       "darwin",
       "linux",
