@@ -37,6 +37,11 @@ namespace PuppeteerSharp
         /// </summary>
         public abstract ICDPSession Client { get; }
 
+        /// <inheritdoc/>
+        Realm IEnvironment.MainRealm => GetMainRealm();
+
+        internal abstract IsolatedWorld World { get; }
+
         /// <summary>
         /// Executes a script in browser context.
         /// </summary>
@@ -95,11 +100,6 @@ namespace PuppeteerSharp
         /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
         public abstract Task CloseAsync();
 
-        internal abstract IsolatedWorld World { get; }
-
         internal virtual Realm GetMainRealm() => World;
-
-        /// <inheritdoc/>
-        Realm IEnvironment.MainRealm => GetMainRealm();
     }
 }

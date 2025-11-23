@@ -35,14 +35,24 @@ internal class BidiWebWorker : WebWorker
     {
         _frame = frame;
         _realm = BidiWorkerRealm.From(realm, this);
+        RealmId = realm.Id;
     }
 
     public override ICDPSession Client => throw new NotSupportedException();
 
+    internal override IsolatedWorld World => throw new NotSupportedException();
+
+    internal BidiFrame Frame => _frame;
+
+    internal TimeoutSettings TimeoutSettings => _frame.TimeoutSettings;
+
+    internal string RealmId { get; }
+
     public override Task CloseAsync()
     {
-        // BiDi doesn't support closing workers directly
-        // Workers are closed when they terminate themselves or when the owning page/frame closes
+        // BiDi doesn't support closing workers directly.
+        // Workers are closed when they terminate themselves or when the owning page/frame closes.
+        // This matches the upstream Puppeteer behavior where close() throws UnsupportedOperation.
         throw new NotSupportedException("WebWorker.CloseAsync() is not supported in BiDi protocol");
     }
 
@@ -51,11 +61,5 @@ internal class BidiWebWorker : WebWorker
         return new BidiWebWorker(frame, realm);
     }
 
-    internal override IsolatedWorld World => throw new NotSupportedException();
-
     internal override Realm GetMainRealm() => _realm;
-
-    internal BidiFrame Frame => _frame;
-
-    internal TimeoutSettings TimeoutSettings => _frame.TimeoutSettings;
 }
