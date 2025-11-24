@@ -519,6 +519,8 @@ public class BidiPage : Page
 
     internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
 
+    internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
+
     internal void OnWorkerCreated(BidiWebWorker worker)
     {
         _workers[worker.RealmId] = worker;

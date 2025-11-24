@@ -130,6 +130,18 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         await EvaluateAsync(true, false, script, args).ConfigureAwait(false);
     }
 
+    internal IJSHandle CreateHandle(RemoteValue remoteValue)
+    {
+        if (
+            remoteValue.Type is "node" or "window" &&
+            this is BidiFrameRealm)
+        {
+            return BidiElementHandle.From(remoteValue, this);
+        }
+
+        return BidiJSHandle.From(remoteValue, this);
+    }
+
     protected virtual void ThrowIfDetached()
     {
         // Base implementation does nothing

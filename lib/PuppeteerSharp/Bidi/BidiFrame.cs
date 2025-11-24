@@ -396,6 +396,50 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
 
+    private static ConsoleType ConvertConsoleMessageLevel(string method)
+    {
+        return method switch
+        {
+            "group" => ConsoleType.StartGroup,
+            "groupCollapsed" => ConsoleType.StartGroupCollapsed,
+            "groupEnd" => ConsoleType.EndGroup,
+            "log" => ConsoleType.Log,
+            "debug" => ConsoleType.Debug,
+            "info" => ConsoleType.Info,
+            "error" => ConsoleType.Error,
+            "warn" => ConsoleType.Warning,
+            "dir" => ConsoleType.Dir,
+            "dirxml" => ConsoleType.Dirxml,
+            "table" => ConsoleType.Table,
+            "trace" => ConsoleType.Trace,
+            "clear" => ConsoleType.Clear,
+            "assert" => ConsoleType.Assert,
+            "profile" => ConsoleType.Profile,
+            "profileEnd" => ConsoleType.ProfileEnd,
+            "count" => ConsoleType.Count,
+            "timeEnd" => ConsoleType.TimeEnd,
+            "verbose" => ConsoleType.Verbose,
+            "timeStamp" => ConsoleType.Timestamp,
+            _ => ConsoleType.Log,
+        };
+    }
+
+    private static ConsoleMessageLocation GetStackTraceLocation(WebDriverBiDi.Script.StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            var callFrame = stackTrace.CallFrames[0];
+            return new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            };
+        }
+
+        return null;
+    }
+
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
     {
         return ex is TimeoutException
@@ -582,7 +626,39 @@ public class BidiFrame : Frame
 
         BrowsingContext.Log += (sender, args) =>
         {
-            if (args.Type == "javascript")
+            if (Id != args.Source.Context)
+            {
+                return;
+            }
+
+            if (args.Type == "console")
+            {
+                var consoleArgs = args.Arguments;
+                var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
+
+                var text = string.Join(
+                    " ",
+                    handleArgs.Select(arg =>
+                    {
+                        if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                        {
+                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                        }
+
+                        return arg.ToString();
+                    })).Trim();
+
+                var location = GetStackTraceLocation(args.StackTrace);
+
+                var consoleMessage = new ConsoleMessage(
+                    ConvertConsoleMessageLevel(args.Method),
+                    text,
+                    handleArgs,
+                    location);
+
+                BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
+            }
+            else if (args.Type == "javascript")
             {
                 var text = args.Text ?? string.Empty;
                 var messageLines = new List<string> { text };
