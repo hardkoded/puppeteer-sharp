@@ -38,7 +38,7 @@ public class BidiFrame : Frame
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
     private readonly Realms _realms;
 
-    internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
+    private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
         ParentPage = parentPage;
@@ -604,6 +604,17 @@ public class BidiFrame : Frame
                 BidiPage.OnPageError(new PageErrorEventArgs(fullStack));
             }
         };
+
+        // Wire up worker events
+        BrowsingContext.Worker += (_, args) =>
+        {
+            var worker = BidiWebWorker.From(this, args.Realm);
+            args.Realm.Destroyed += (_, _) =>
+            {
+                BidiPage.OnWorkerDestroyed(worker);
+            };
+            BidiPage.OnWorkerCreated(worker);
+        };
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)
@@ -612,7 +623,7 @@ public class BidiFrame : Frame
         _frames.TryAdd(browsingContext, frame);
         ((BidiPage)Page).OnFrameAttached(new FrameEventArgs(frame));
 
-        browsingContext.Closed += (sender, args) =>
+        browsingContext.Closed += (_, _) =>
         {
             _frames.TryRemove(browsingContext, out var _);
         };

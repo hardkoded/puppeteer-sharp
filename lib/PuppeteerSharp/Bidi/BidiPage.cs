@@ -36,6 +36,7 @@ namespace PuppeteerSharp.Bidi;
 /// <inheritdoc />
 public class BidiPage : Page
 {
+    private readonly ConcurrentDictionary<string, BidiWebWorker> _workers = new();
     private readonly CdpEmulationManager _cdpEmulationManager;
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
@@ -74,7 +75,7 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override WebWorker[] Workers { get; }
+    public override WebWorker[] Workers => _workers.Values.ToArray();
 
     /// <inheritdoc />
     public override bool IsJavaScriptEnabled { get; }
@@ -518,6 +519,18 @@ public class BidiPage : Page
 
     internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
 
+    internal void OnWorkerCreated(BidiWebWorker worker)
+    {
+        _workers[worker.RealmId] = worker;
+        base.OnWorkerCreated(worker);
+    }
+
+    internal void OnWorkerDestroyed(BidiWebWorker worker)
+    {
+        _workers.TryRemove(worker.RealmId, out var _);
+        base.OnWorkerDestroyed(worker);
+    }
+
     /// <inheritdoc />
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
 
@@ -668,6 +681,25 @@ public class BidiPage : Page
         {
             OnClose();
             IsClosed = true;
+        };
+
+        // Track workers
+        WorkerCreated += (_, e) =>
+        {
+            var worker = e.Worker as BidiWebWorker;
+            if (worker != null)
+            {
+                _workers[worker.RealmId] = worker;
+            }
+        };
+
+        WorkerDestroyed += (_, e) =>
+        {
+            var worker = e.Worker as BidiWebWorker;
+            if (worker != null)
+            {
+                _workers.TryRemove(worker.RealmId, out var _);
+            }
         };
     }
 }

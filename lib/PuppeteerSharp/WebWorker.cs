@@ -38,7 +38,7 @@ namespace PuppeteerSharp
         public abstract ICDPSession Client { get; }
 
         /// <inheritdoc/>
-        Realm IEnvironment.MainRealm => World;
+        Realm IEnvironment.MainRealm => GetMainRealm();
 
         internal abstract IsolatedWorld World { get; }
 
@@ -99,5 +99,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
         public abstract Task CloseAsync();
+
+        internal virtual Realm GetMainRealm() => World;
     }
 }
