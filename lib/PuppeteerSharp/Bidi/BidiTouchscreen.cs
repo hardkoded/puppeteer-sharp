@@ -6,12 +6,16 @@ using WebDriverBiDi.Input;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiTouchscreen(BidiPage page) : Touchscreen
+internal class BidiTouchscreen(BidiPage page) : Touchscreen, IDisposable
 {
     private readonly PointerSourceActions _touchSource = new()
     {
-        PointerType = PointerType.Touch
+        Parameters = new PointerParameters
+        {
+            PointerType = WebDriverBiDi.Input.PointerType.Touch,
+        },
     };
+
     private readonly TaskQueue _actionsQueue = new();
 
     public override Task TouchStartAsync(decimal x, decimal y)
@@ -54,5 +58,11 @@ internal class BidiTouchscreen(BidiPage page) : Touchscreen
             await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
             _touchSource.Actions.Clear();
         });
+    }
+
+    public void Dispose()
+    {
+        _actionsQueue.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
