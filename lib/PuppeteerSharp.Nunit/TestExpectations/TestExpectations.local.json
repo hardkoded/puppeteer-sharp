@@ -339,21 +339,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[browsercontext.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[elementhandle.spec] *",
     "platforms": [
       "darwin",
@@ -1329,7 +1314,7 @@
     ]
   },
   {
-    "comment": "BidiBrowserContext.CloseAsync() is not implemented - fails with NotImplementedException",
+    "comment": "Firefox returns multiple user contexts by default - test checks for exactly 1 context at end",
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
     "platforms": [
       "darwin",
@@ -1337,10 +1322,11 @@
       "win32"
     ],
     "parameters": [
-      "webDriverBiDi"
+      "webDriverBiDi",
+      "firefox"
     ],
     "expectations": [
-      "SKIP"
+      "FAIL"
     ]
   },
   {

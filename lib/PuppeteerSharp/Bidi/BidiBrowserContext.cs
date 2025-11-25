@@ -20,12 +20,15 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Permissions;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -34,6 +37,7 @@ public class BidiBrowserContext : BrowserContext
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiPage> _pages = [];
     private readonly ConcurrentDictionary<BidiPage, BidiPageTargetInfo> _targets = new();
+    private readonly List<(string Origin, OverridePermission Permission)> _overrides = [];
 
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
     {
@@ -49,10 +53,69 @@ public class BidiBrowserContext : BrowserContext
     internal UserContext UserContext { get; }
 
     /// <inheritdoc />
-    public override Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions) => throw new System.NotImplementedException();
+    public override async Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions)
+    {
+        var permissionsSet = new HashSet<OverridePermission>(permissions);
+
+        // We need to set all permissions - grant the ones in the list, deny the rest
+        var tasks = new List<Task>();
+        foreach (OverridePermission permission in Enum.GetValues(typeof(OverridePermission)))
+        {
+            var state = permissionsSet.Contains(permission)
+                ? PermissionState.Granted
+                : PermissionState.Denied;
+
+            var permissionName = GetPermissionName(permission);
+
+            var task = UserContext.SetPermissionsAsync(origin, permissionName, state);
+            _overrides.Add((origin, permission));
+
+            // Denying some outdated permissions might fail, so we catch those errors
+            if (!permissionsSet.Contains(permission))
+            {
+                task = task.ContinueWith(
+                    t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            // Log the error but don't throw
+                            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
+                                .LogDebug(t.Exception, "Failed to deny permission {Permission}", permission);
+                        }
+                    },
+                    TaskScheduler.Default);
+            }
+
+            tasks.Add(task);
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task ClearPermissionOverridesAsync() => throw new System.NotImplementedException();
+    public override async Task ClearPermissionOverridesAsync()
+    {
+        var tasks = new List<Task>();
+        foreach (var (origin, permission) in _overrides.ToArray())
+        {
+            var permissionName = GetPermissionName(permission);
+            tasks.Add(UserContext.SetPermissionsAsync(origin, permissionName, PermissionState.Prompt)
+                .ContinueWith(
+                    t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            // Log the error but don't throw
+                            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
+                                .LogDebug(t.Exception, "Failed to reset permission {Permission}", permission);
+                        }
+                    },
+                    TaskScheduler.Default));
+        }
+
+        _overrides.Clear();
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
@@ -83,7 +146,25 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
-    public override Task CloseAsync() => throw new System.NotImplementedException();
+    public override async Task CloseAsync()
+    {
+        if (UserContext.Id == UserContext.DEFAULT)
+        {
+            throw new PuppeteerException("Default BrowserContext cannot be closed!");
+        }
+
+        try
+        {
+            await UserContext.RemoveAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            ((BidiBrowser)Browser).LoggerFactory?.CreateLogger<BidiBrowserContext>()
+                .LogDebug(ex, "Failed to close browser context");
+        }
+
+        _targets.Clear();
+    }
 
     /// <inheritdoc />
     public override ITarget[] Targets()
@@ -105,6 +186,28 @@ public class BidiBrowserContext : BrowserContext
         };
         context.Initialize();
         return context;
+    }
+
+    private static string GetPermissionName(OverridePermission permission)
+    {
+        return permission switch
+        {
+            OverridePermission.Geolocation => "geolocation",
+            OverridePermission.Midi => "midi",
+            OverridePermission.Notifications => "notifications",
+            OverridePermission.Camera => "camera",
+            OverridePermission.Microphone => "microphone",
+            OverridePermission.BackgroundSync => "background-sync",
+            OverridePermission.Sensors => "accelerometer",
+            OverridePermission.AccessibilityEvents => "accessibility-events",
+            OverridePermission.ClipboardReadWrite => "clipboard-read",
+            OverridePermission.PaymentHandler => "payment-handler",
+            OverridePermission.MidiSysex => "midi-sysex",
+            OverridePermission.IdleDetection => "idle-detection",
+            OverridePermission.PersistentStorage => "persistent-storage",
+            OverridePermission.LocalNetworkAccess => "local-network-access",
+            _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
+        };
     }
 
     private void Initialize()
