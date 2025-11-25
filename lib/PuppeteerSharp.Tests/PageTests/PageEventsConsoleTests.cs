@@ -150,16 +150,37 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
+                Page.GoToAsync(TestConstants.ServerUrl + "/consoletrace.html"));
 
             var args = await consoleTask.Task;
             Assert.That(args.Message.Text, Is.EqualTo("yellow"));
-            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Log));
+            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Trace));
             Assert.That(args.Message.Location, Is.EqualTo(new ConsoleMessageLocation
             {
-                URL = TestConstants.ServerUrl + "/consolelog.html",
-                LineNumber = 7,
-                ColumnNumber = 14
+                URL = TestConstants.ServerUrl + "/consoletrace.html",
+                LineNumber = 8,
+                ColumnNumber = 16,
+            }));
+            Assert.That(args.Message.StackTrace, Is.EqualTo(new[]
+            {
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 8,
+                    ColumnNumber = 16,
+                },
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 11,
+                    ColumnNumber = 8,
+                },
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 13,
+                    ColumnNumber = 6,
+                },
             }));
         }
 

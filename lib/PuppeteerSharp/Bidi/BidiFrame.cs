@@ -440,6 +440,21 @@ public class BidiFrame : Frame
         return null;
     }
 
+    private static IList<ConsoleMessageLocation> GetStackTrace(WebDriverBiDi.Script.StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            }).ToList();
+        }
+
+        return [];
+    }
+
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
     {
         return ex is TimeoutException
@@ -649,12 +664,14 @@ public class BidiFrame : Frame
                     })).Trim();
 
                 var location = GetStackTraceLocation(args.StackTrace);
+                var stackTrace = GetStackTrace(args.StackTrace);
 
                 var consoleMessage = new ConsoleMessage(
                     ConvertConsoleMessageLevel(args.Method),
                     text,
                     handleArgs,
-                    location);
+                    location,
+                    stackTrace);
 
                 BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
             }
