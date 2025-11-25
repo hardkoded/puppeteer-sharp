@@ -205,6 +205,14 @@ internal class BrowsingContext : IDisposable
     internal async Task ReloadAsync()
         => await Session.Driver.BrowsingContext.ReloadAsync(new ReloadCommandParameters(Id)).ConfigureAwait(false);
 
+    internal async Task<string> AddInterceptAsync(WebDriverBiDi.Network.AddInterceptCommandParameters options)
+    {
+        options.BrowsingContextIds ??= new List<string>();
+        options.BrowsingContextIds.Add(Id);
+        var result = await Session.Driver.Network.AddInterceptAsync(options).ConfigureAwait(false);
+        return result.InterceptId;
+    }
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
