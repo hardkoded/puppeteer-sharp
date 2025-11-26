@@ -1314,7 +1314,6 @@
     ]
   },
   {
-  {
     "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
     "platforms": [
