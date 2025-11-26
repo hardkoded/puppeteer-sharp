@@ -99,6 +99,11 @@ internal sealed class Browser(Session session) : IDisposable
         return CreateUserContext(result.UserContextId);
     }
 
+    public async Task RemoveInterceptAsync(string intercept)
+    {
+        await Session.Driver.Network.RemoveInterceptAsync(new WebDriverBiDi.Network.RemoveInterceptCommandParameters(intercept)).ConfigureAwait(false);
+    }
+
     private void Dispose(string reason)
     {
         _reason = reason;

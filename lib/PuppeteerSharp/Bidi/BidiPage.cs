@@ -30,6 +30,7 @@ using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -40,8 +41,9 @@ public class BidiPage : Page
     private readonly CdpEmulationManager _cdpEmulationManager;
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
+    private string _requestInterception;
 
-    internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
+    private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
         BrowserContext = browserContext;
         Browser = browserContext.Browser;
@@ -267,7 +269,16 @@ public class BidiPage : Page
     public override Task SetBypassCSPAsync(bool enabled) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetCacheEnabledAsync(bool enabled = true) => throw new NotImplementedException();
+    public override async Task SetCacheEnabledAsync(bool enabled = true)
+    {
+        var commandParameters = new SetCacheBehaviorCommandParameters
+        {
+            CacheBehavior = enabled ? CacheBehavior.Default : CacheBehavior.Bypass,
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Network.SetCacheBehaviorAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task EmulateMediaTypeAsync(MediaType type) => throw new NotImplementedException();
@@ -291,14 +302,14 @@ public class BidiPage : Page
             await BidiMainFrame.BrowsingContext.SetViewportAsync(
                 new SetViewportOptions()
                 {
-                    Viewport = viewport?.Width > 0 && viewport?.Height > 0
-                        ? new WebDriverBiDi.BrowsingContext.Viewport()
+                    Viewport = viewport is { Width: > 0, Height: > 0 }
+                        ? new Viewport()
                         {
                             Width = (ulong)viewport.Width,
                             Height = (ulong)viewport.Height,
                         }
                         : null,
-                    DevicePixelRatio = viewport?.DeviceScaleFactor,
+                    DevicePixelRatio = viewport.DeviceScaleFactor,
                 }).ConfigureAwait(false);
             Viewport = viewport;
             return;
@@ -398,7 +409,7 @@ public class BidiPage : Page
         }
         catch (Exception)
         {
-            return;
+            // Swallow.
         }
     }
 
@@ -464,7 +475,13 @@ public class BidiPage : Page
     public override Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetRequestInterceptionAsync(bool value) => throw new NotImplementedException();
+    public override async Task SetRequestInterceptionAsync(bool value)
+    {
+        _requestInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _requestInterception,
+            value).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task SetOfflineModeAsync(bool value)
@@ -677,6 +694,30 @@ public class BidiPage : Page
             }).ConfigureAwait(false);
     }
 
+    private async Task<string> ToggleInterceptionAsync(
+        InterceptPhase[] phases,
+        string interception,
+        bool expected)
+    {
+        if (expected && interception == null)
+        {
+            var options = new AddInterceptCommandParameters();
+            foreach (var phase in phases)
+            {
+                options.Phases.Add(phase);
+            }
+
+            return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+        }
+        else if (!expected && interception != null)
+        {
+            await BidiMainFrame.BrowsingContext.UserContext.Browser.RemoveInterceptAsync(interception).ConfigureAwait(false);
+            return null;
+        }
+
+        return interception;
+    }
+
     private void Initialize()
     {
         BidiMainFrame.BrowsingContext.Closed += (_, _) =>
@@ -688,8 +729,7 @@ public class BidiPage : Page
         // Track workers
         WorkerCreated += (_, e) =>
         {
-            var worker = e.Worker as BidiWebWorker;
-            if (worker != null)
+            if (e.Worker is BidiWebWorker worker)
             {
                 _workers[worker.RealmId] = worker;
             }
@@ -697,8 +737,7 @@ public class BidiPage : Page
 
         WorkerDestroyed += (_, e) =>
         {
-            var worker = e.Worker as BidiWebWorker;
-            if (worker != null)
+            if (e.Worker is BidiWebWorker worker)
             {
                 _workers.TryRemove(worker.RealmId, out var _);
             }
