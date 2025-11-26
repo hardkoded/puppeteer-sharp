@@ -218,7 +218,61 @@ public class BidiPage : Page
     public override Task SetBurstModeOffAsync() => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
+    {
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate));
+        }
+
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
+        {
+            if (predicate(e.Frame))
+            {
+                frameTcs.TrySetResult(e.Frame);
+                FrameNavigated -= FrameNavigatedEventListener;
+            }
+        }
+
+        void FrameAttachedEventListener(object sender, FrameEventArgs e)
+        {
+            if (predicate(e.Frame))
+            {
+                frameTcs.TrySetResult(e.Frame);
+                FrameAttached -= FrameAttachedEventListener;
+            }
+        }
+
+        FrameAttached += FrameAttachedEventListener;
+        FrameNavigated += FrameNavigatedEventListener;
+
+        var eventRace = Task.WhenAny(frameTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+        {
+            FrameAttached -= FrameAttachedEventListener;
+            FrameNavigated -= FrameNavigatedEventListener;
+            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
+        });
+
+        foreach (var frame in Frames)
+        {
+            if (predicate(frame))
+            {
+                return frame;
+            }
+        }
+
+        await eventRace.ConfigureAwait(false);
+
+        if (ClosedTask.IsFaulted)
+        {
+            await ClosedTask.ConfigureAwait(false);
+        }
+
+        return await frameTcs.Task.ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task SetGeolocationAsync(GeolocationOption options)

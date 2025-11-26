@@ -16,12 +16,18 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public OOPIFTests()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.Args =
-            [
-                "--site-per-process",
-                $"--remote-debugging-port={++_port}",
-                "--host-rules=\"MAP * 127.0.0.1\""
-            ];
+
+            // Only set Chrome-specific args when running with Chrome
+            // Firefox doesn't support --site-per-process and other Chrome-specific flags
+            if (TestConstants.IsChrome)
+            {
+                DefaultOptions.Args =
+                [
+                    "--site-per-process",
+                    $"--remote-debugging-port={++_port}",
+                    "--host-rules=\"MAP * 127.0.0.1\""
+                ];
+            }
         }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
