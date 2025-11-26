@@ -1112,7 +1112,7 @@ public class CdpPage : Page
 
     private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace)
     {
-        if (HasConsoleEventListeners)
+        if (!HasConsoleEventListeners)
         {
             await Task.WhenAll(values.Select(v =>
                 RemoteObjectHelper.ReleaseObjectAsync(Client, ((CdpJSHandle)v).RemoteObject, _logger))).ConfigureAwait(false);

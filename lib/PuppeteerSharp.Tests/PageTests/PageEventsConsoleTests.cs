@@ -247,14 +247,18 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleMessage>();
-            Page.Console += (_, e) =>
+
+            void ConsoleHandler(object sender, ConsoleEventArgs e)
             {
                 // Wait for the console.trace message specifically
                 if (e.Message.Type == ConsoleType.Trace)
                 {
                     consoleTask.TrySetResult(e.Message);
+                    Page.Console -= ConsoleHandler;
                 }
-            };
+            }
+
+            Page.Console += ConsoleHandler;
 
             await Task.WhenAll(
                 consoleTask.Task,
