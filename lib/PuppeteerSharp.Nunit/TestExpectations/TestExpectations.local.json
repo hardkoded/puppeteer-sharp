@@ -1314,21 +1314,6 @@
     ]
   },
   {
-    "comment": "Firefox returns multiple user contexts by default - test checks for exactly 1 context at end",
-    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi",
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
   {
     "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
