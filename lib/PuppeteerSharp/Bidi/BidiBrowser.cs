@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiBrowser : Browser
 {
     private readonly LaunchOptions _options;
-    private readonly ConcurrentSet<BidiBrowserContext> _browserContexts = [];
+    private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
     private bool _isClosed;
@@ -59,7 +60,7 @@ public class BidiBrowser : Browser
     public override ITarget Target => _target;
 
     /// <inheritdoc/>
-    public override IBrowserContext DefaultContext => _browserContexts.FirstOrDefault(b => b.Id == BrowserCore.DefaultUserContext.Id);
+    public override IBrowserContext DefaultContext => _browserContexts.TryGetValue(BrowserCore.DefaultUserContext, out var context) ? context : null;
 
     internal static string[] SubscribeModules { get; } =
     [
@@ -134,7 +135,7 @@ public class BidiBrowser : Browser
         =>
         [
             _target,
-            .. _browserContexts.SelectMany(context => context.Targets()).ToArray()
+            .. BrowserContexts().SelectMany(context => ((BidiBrowserContext)context).Targets()).ToArray()
         ];
 
     /// <inheritdoc />
@@ -145,7 +146,12 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override IBrowserContext[] BrowserContexts() => _browserContexts.ToArray();
+    public override IBrowserContext[] BrowserContexts() =>
+        BrowserCore.UserContexts
+            .Select(userContext => _browserContexts.TryGetValue(userContext, out var context) ? context : null)
+            .Where(context => context != null)
+            .Cast<IBrowserContext>()
+            .ToArray();
 
     [SuppressMessage(
         "Reliability",
@@ -193,9 +199,10 @@ public class BidiBrowser : Browser
 
     private void Detach()
     {
-        foreach (var context in _browserContexts)
+        foreach (var context in _browserContexts.Values)
         {
             context.TargetCreated -= (sender, args) => OnTargetCreated(args);
+            context.TargetChanged -= (sender, args) => OnTargetChanged(args);
             context.TargetDestroyed -= (sender, args) => OnTargetDestroyed(args);
         }
     }
@@ -207,9 +214,10 @@ public class BidiBrowser : Browser
             userContext,
             new BidiBrowserContextOptions() { DefaultViewport = _options.DefaultViewport, });
 
-        _browserContexts.Add(browserContext);
+        _browserContexts.TryAdd(userContext, browserContext);
 
         browserContext.TargetCreated += (sender, args) => OnTargetCreated(args);
+        browserContext.TargetChanged += (sender, args) => OnTargetChanged(args);
         browserContext.TargetDestroyed += (sender, args) => OnTargetDestroyed(args);
 
         return browserContext;
