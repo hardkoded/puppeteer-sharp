@@ -21,11 +21,15 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -34,12 +38,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 {
     private readonly Request _request;
     private readonly BidiRequestInterception _interception = new();
+    private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
+    private Payload _continueRequestOverrides = new();
+    private ResponseData _responseForRequest;
+    private RequestAbortErrorCode _abortErrorReason;
+    private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+    private bool _isInterceptResolutionHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
     {
         _request = request;
         Frame = frame;
-        RedirectChainList = [];
+        RedirectChainList = redirect?.RedirectChainList ?? [];
         Requests.AddItem(request, this);
     }
 
@@ -47,11 +57,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     // We need to move this to a place where we can control its lifecycle.
     internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } = new("Request {0} not found");
 
-    internal override Payload ContinueRequestOverrides { get; }
+    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
 
-    internal override ResponseData ResponseForRequest { get; }
+    internal override ResponseData ResponseForRequest => _responseForRequest;
 
-    internal override RequestAbortErrorCode AbortErrorReason { get; }
+    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     internal BidiPage BidiPage => (BidiPage)Frame.Page;
 
@@ -61,24 +71,131 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0 || UserAgentHeaders.Values.Count != 0;
 
-    /// <inheritdoc />
-    public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
-    {
-        // Merge the original request headers with extra headers and user agent headers
-        var mergedHeaders = GetMergedHeaders(payloadOverrides?.Headers);
-        var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
+    private bool InterceptionEnabled => _request.IsBlocked;
 
-        await _request.ContinueRequestAsync(
-            url: payloadOverrides?.Url,
-            method: payloadOverrides?.Method?.ToString(),
-            headers: bidiHeaders?.Count > 0 ? bidiHeaders : null).ConfigureAwait(false);
+    private InterceptResolutionState InterceptResolutionState
+    {
+        get
+        {
+            if (!InterceptionEnabled)
+            {
+                return new InterceptResolutionState(InterceptResolutionAction.Disabled);
+            }
+
+            return _isInterceptResolutionHandled
+                ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
+                : _interceptResolutionState;
+        }
     }
 
     /// <inheritdoc />
-    public override Task RespondAsync(ResponseData response, int? priority = null) => throw new NotImplementedException();
+    public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
+    {
+        if (!InterceptionEnabled)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (_isInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+
+        if (priority is null)
+        {
+            await ContinueInternalAsync(payloadOverrides).ConfigureAwait(false);
+            return;
+        }
+
+        _continueRequestOverrides = payloadOverrides;
+
+        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        {
+            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Continue, priority);
+            return;
+        }
+
+        if (priority == _interceptResolutionState.Priority)
+        {
+            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort ||
+                _interceptResolutionState.Action == InterceptResolutionAction.Respond)
+            {
+                return;
+            }
+
+            _interceptResolutionState.Action = InterceptResolutionAction.Continue;
+        }
+    }
 
     /// <inheritdoc />
-    public override Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null) => throw new NotImplementedException();
+    public override async Task RespondAsync(ResponseData response, int? priority = null)
+    {
+        if (response == null)
+        {
+            throw new ArgumentNullException(nameof(response));
+        }
+
+        if (!InterceptionEnabled)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (_isInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+
+        if (priority is null)
+        {
+            await RespondInternalAsync(response).ConfigureAwait(false);
+            return;
+        }
+
+        _responseForRequest = response;
+
+        if (_interceptResolutionState.Priority is null || priority > _interceptResolutionState.Priority)
+        {
+            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Respond, priority);
+            return;
+        }
+
+        if (priority == _interceptResolutionState.Priority)
+        {
+            if (_interceptResolutionState.Action == InterceptResolutionAction.Abort)
+            {
+                return;
+            }
+
+            _interceptResolutionState.Action = InterceptResolutionAction.Respond;
+        }
+    }
+
+    /// <inheritdoc />
+    public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
+    {
+        if (!InterceptionEnabled)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (_isInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+
+        if (priority is null)
+        {
+            await AbortInternalAsync().ConfigureAwait(false);
+            return;
+        }
+
+        _abortErrorReason = errorCode;
+
+        if (_interceptResolutionState.Priority is null || priority >= _interceptResolutionState.Priority)
+        {
+            _interceptResolutionState = new InterceptResolutionState(InterceptResolutionAction.Abort, priority);
+        }
+    }
 
     /// <inheritdoc />
     public override Task<string> FetchPostDataAsync() => throw new NotImplementedException();
@@ -92,31 +209,63 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal override async Task FinalizeInterceptionsAsync()
     {
+        // First, run any handlers registered via the handler list
         foreach (var handler in _interception.Handlers)
         {
             await handler().ConfigureAwait(false);
         }
 
         _interception.Handlers.Clear();
+
+        // Then run any handlers registered via EnqueueInterceptionAction
+        foreach (var handler in _interceptHandlers)
+        {
+            await handler(this).ConfigureAwait(false);
+        }
+
+        _interceptHandlers.Clear();
+
+        // Finally, handle the intercept resolution state
+        switch (InterceptResolutionState.Action)
+        {
+            case InterceptResolutionAction.Abort:
+                await AbortInternalAsync().ConfigureAwait(false);
+                return;
+            case InterceptResolutionAction.Respond:
+                if (_responseForRequest is null)
+                {
+                    throw new PuppeteerException("Response is missing for the interception");
+                }
+
+                await RespondInternalAsync(_responseForRequest).ConfigureAwait(false);
+                return;
+            case InterceptResolutionAction.Continue:
+                await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
+                break;
+        }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler) => throw new NotImplementedException();
+    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+        => _interceptHandlers.Add(pendingHandler);
 
-    private static List<WebDriverBiDi.Network.Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
+    private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
     {
         if (headers == null || headers.Count == 0)
         {
             return null;
         }
 
-        var bidiHeaders = new List<WebDriverBiDi.Network.Header>();
+        var bidiHeaders = new List<Header>();
         foreach (var kvp in headers)
         {
-            bidiHeaders.Add(new WebDriverBiDi.Network.Header(kvp.Key, kvp.Value));
+            bidiHeaders.Add(new Header(kvp.Key.ToLowerInvariant(), kvp.Value));
         }
 
         return bidiHeaders;
     }
+
+    private static string GetReasonPhrase(int statusCode)
+        => HttpStatusTextHelper.GetStatusText(statusCode);
 
     private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
     {
@@ -144,11 +293,147 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             foreach (var kvp in overrideHeaders)
             {
-                headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+                // Handle null values by removing the header
+                if (kvp.Value == null)
+                {
+                    headers.Remove(kvp.Key.ToLowerInvariant());
+                }
+                else
+                {
+                    headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+                }
             }
         }
 
         return headers;
+    }
+
+    private async Task ContinueInternalAsync(Payload overrides = null)
+    {
+        _isInterceptResolutionHandled = true;
+
+        try
+        {
+            // Merge the original request headers with extra headers and user agent headers
+            var mergedHeaders = HasInternalHeaderOverwrite || overrides?.Headers != null
+                ? GetMergedHeaders(overrides?.Headers)
+                : null;
+
+            var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
+
+            BytesValue body = null;
+            if (overrides?.PostData != null)
+            {
+                body = BytesValue.FromBase64String(Convert.ToBase64String(Encoding.UTF8.GetBytes(overrides.PostData)));
+            }
+
+            await _request.ContinueRequestAsync(
+                url: overrides?.Url,
+                method: overrides?.Method?.ToString(),
+                headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
+                body: body).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            _isInterceptResolutionHandled = false;
+
+            // In certain cases, protocol will return the error if the request was already canceled
+            // or the page was closed. We should tolerate these errors.
+        }
+    }
+
+    private async Task AbortInternalAsync()
+    {
+        _isInterceptResolutionHandled = true;
+
+        try
+        {
+            await _request.FailRequestAsync().ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            _isInterceptResolutionHandled = false;
+
+            // In certain cases, protocol will return the error if the request was already canceled
+            // or the page was closed. We should tolerate these errors.
+        }
+    }
+
+    private async Task RespondInternalAsync(ResponseData response)
+    {
+        _isInterceptResolutionHandled = true;
+
+        try
+        {
+            var responseHeaders = new List<Header>();
+
+            if (response.Headers != null)
+            {
+                foreach (var keyValuePair in response.Headers)
+                {
+                    if (keyValuePair.Value == null)
+                    {
+                        continue;
+                    }
+
+                    if (keyValuePair.Value is ICollection values)
+                    {
+                        foreach (var val in values)
+                        {
+                            responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), val.ToString()));
+                        }
+                    }
+                    else
+                    {
+                        responseHeaders.Add(new Header(keyValuePair.Key.ToLowerInvariant(), keyValuePair.Value.ToString()));
+                    }
+                }
+            }
+
+            // Check if the content-length header exists
+            var hasContentLength = false;
+            foreach (var header in responseHeaders)
+            {
+                if (header.Name.Equals("content-length", StringComparison.OrdinalIgnoreCase))
+                {
+                    hasContentLength = true;
+                    break;
+                }
+            }
+
+            // Add content-length if not present and we have body data
+            if (!hasContentLength && response.BodyData != null)
+            {
+                responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
+            }
+
+            if (response.ContentType != null)
+            {
+                responseHeaders.Add(new Header("content-type", response.ContentType));
+            }
+
+            var statusCode = response.Status != null ? (int)response.Status : 200;
+            var reasonPhrase = GetReasonPhrase(statusCode);
+
+            BytesValue body = null;
+            if (response.BodyData != null)
+            {
+                body = BytesValue.FromByteArray(response.BodyData);
+            }
+
+            await _request.ProvideResponseAsync(
+                statusCode: (uint)statusCode,
+                reasonPhrase: reasonPhrase,
+                headers: responseHeaders.Count > 0 ? responseHeaders : null,
+                body: body).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            _isInterceptResolutionHandled = false;
+
+            // In certain cases, protocol will return the error if the request was already canceled
+            // or the page was closed. We should tolerate these errors.
+        }
     }
 
     private void Initialize()
@@ -159,39 +444,35 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var httpRequest = From(request, Frame as BidiFrame, this);
             RedirectChainList.Add(this);
 
-            request.Success += (sender, e) =>
+            request.Success += (_, _) =>
             {
                 BidiPage.OnRequestFinished(new RequestEventArgs(httpRequest));
             };
 
-            request.Success += (sender, e) =>
+            request.Error += (_, args) =>
             {
-                BidiPage.OnRequestFinished(new RequestEventArgs(httpRequest));
-            };
-
-            request.Error += (o, args) =>
-            {
+                httpRequest.FailureText = args.Error;
                 BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
             };
 
             _ = httpRequest.FinalizeInterceptionsAsync();
         };
 
-        _request.Success += (sender, e) =>
+        _request.Success += (_, e) =>
         {
             Response = BidiHttpResponse.From(e.Response, this, BidiPage.BidiBrowser.CdpSupported);
         };
 
-        _request.Success += (sender, args) =>
+        _request.Error += (_, args) =>
         {
-            Response = BidiHttpResponse.From(args.Response, this, BidiPage.BidiBrowser.CdpSupported);
+            FailureText = args.Error;
         };
 
         _request.Authenticate += HandleAuthentication;
 
         BidiPage.OnRequest(this);
 
-        if (HasInternalHeaderOverwrite)
+        if (HasInternalHeaderOverwrite && InterceptionEnabled)
         {
             _interception.Handlers.Add(async () =>
             {
@@ -207,6 +488,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private void HandleAuthentication(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        // TODO: Implement authentication handling
     }
 }
