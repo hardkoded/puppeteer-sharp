@@ -62,7 +62,17 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0 || UserAgentHeaders.Values.Count != 0;
 
     /// <inheritdoc />
-    public override Task ContinueAsync(Payload payloadOverrides = null, int? priority = null) => throw new NotImplementedException();
+    public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
+    {
+        // Merge the original request headers with extra headers and user agent headers
+        var mergedHeaders = GetMergedHeaders(payloadOverrides?.Headers);
+        var bidiHeaders = ConvertToBidiHeaders(mergedHeaders);
+
+        await _request.ContinueRequestAsync(
+            url: payloadOverrides?.Url,
+            method: payloadOverrides?.Method?.ToString(),
+            headers: bidiHeaders?.Count > 0 ? bidiHeaders : null).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task RespondAsync(ResponseData response, int? priority = null) => throw new NotImplementedException();
@@ -80,13 +90,66 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         return request;
     }
 
-    internal override Task FinalizeInterceptionsAsync()
+    internal override async Task FinalizeInterceptionsAsync()
     {
-        // TODO: Implement this
-        return Task.CompletedTask;
+        foreach (var handler in _interception.Handlers)
+        {
+            await handler().ConfigureAwait(false);
+        }
+
+        _interception.Handlers.Clear();
     }
 
     internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler) => throw new NotImplementedException();
+
+    private static List<WebDriverBiDi.Network.Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
+    {
+        if (headers == null || headers.Count == 0)
+        {
+            return null;
+        }
+
+        var bidiHeaders = new List<WebDriverBiDi.Network.Header>();
+        foreach (var kvp in headers)
+        {
+            bidiHeaders.Add(new WebDriverBiDi.Network.Header(kvp.Key, kvp.Value));
+        }
+
+        return bidiHeaders;
+    }
+
+    private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
+    {
+        // Start with the original request headers
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in _request.Headers)
+        {
+            headers[header.Name.ToLowerInvariant()] = header.Value.Value;
+        }
+
+        // Add extra HTTP headers from the page
+        foreach (var kvp in ExtraHttpHeaders)
+        {
+            headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+        }
+
+        // Add user agent headers from the page
+        foreach (var kvp in UserAgentHeaders)
+        {
+            headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+        }
+
+        // Apply any override headers from the payload
+        if (overrideHeaders != null)
+        {
+            foreach (var kvp in overrideHeaders)
+            {
+                headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+        }
+
+        return headers;
+    }
 
     private void Initialize()
     {
