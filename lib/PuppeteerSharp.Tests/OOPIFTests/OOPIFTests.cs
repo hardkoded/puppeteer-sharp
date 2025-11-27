@@ -397,7 +397,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
 
-        [Test, PuppeteerTest("oopif.spec", "waitForFrame", "OOPIF: should expose events within OOPIFs")]
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should expose events within OOPIFs")]
         public async Task OOPIFShouldExposeEventsWithinOOPIFs()
         {
             // Setup our session listeners to observe OOPIF activity.
