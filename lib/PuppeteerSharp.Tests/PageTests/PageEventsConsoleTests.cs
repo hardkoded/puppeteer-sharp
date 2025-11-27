@@ -297,7 +297,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         // @see https://github.com/puppeteer/puppeteer/issues/3865
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "ex")]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -317,12 +317,10 @@ namespace PuppeteerSharp.Tests.PageTests
                 // 3. After that, remove the iframe.
                 frame.remove();
             }");
-            // 4. The target will always be the last one.
-#pragma warning disable CS0618 // Type or member is obsolete
-            var targets = Page.BrowserContext.Targets();
-            var popupTarget = targets.Last(t => t != Page.Target);
-#pragma warning restore CS0618 // Type or member is obsolete
+            // 4. Find the popup target - filter by page type first since targets can include frames/workers
+            var popupTarget = await FindPopupTargetAsync(Page);
             // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
+            Assert.That(popupTarget, Is.Not.Null, "Popup target should be found");
             Assert.That(await popupTarget.PageAsync(), Is.Not.EqualTo(Page));
         }
     }
