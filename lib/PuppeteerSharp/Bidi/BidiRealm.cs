@@ -311,6 +311,18 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     {
         var type = typeof(T);
 
+        // Handle nullable value types (e.g., Point?)
+        var underlyingType = Nullable.GetUnderlyingType(type);
+        if (underlyingType != null)
+        {
+            // Recursively deserialize to the underlying type and convert back to nullable
+            var deserializedValue = typeof(BidiRealm)
+                .GetMethod(nameof(DeserializeRemoteValueDictionary), BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.MakeGenericMethod(underlyingType)
+                .Invoke(this, [remoteValueDictionary]);
+            return (T)deserializedValue;
+        }
+
         // Create an instance of T
         var instance = Activator.CreateInstance<T>();
 
