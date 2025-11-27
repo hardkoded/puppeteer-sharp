@@ -21,6 +21,8 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -74,6 +76,8 @@ internal class Request : IDisposable
 
     public string Url => _eventArgs.Request.Url;
 
+    public IList<ReadOnlyHeader> Headers => _eventArgs.Request.Headers;
+
     public WebDriverBiDi.Network.ResponseData Response => _response;
 
     public bool HasError => _error != null;
@@ -88,6 +92,20 @@ internal class Request : IDisposable
     public void Dispose()
     {
         IsDisposed = true;
+    }
+
+    internal async Task ContinueRequestAsync(
+        string url = null,
+        string method = null,
+        List<Header> headers = null)
+    {
+        var commandParams = new ContinueRequestCommandParameters(Id)
+        {
+            Url = url,
+            Method = method,
+            Headers = headers,
+        };
+        await Session.Driver.Network.ContinueRequestAsync(commandParams).ConfigureAwait(false);
     }
 
     private void Initialize()

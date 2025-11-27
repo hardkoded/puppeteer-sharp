@@ -42,6 +42,7 @@ public class BidiPage : Page
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
+    private string _userAgentInterception;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -287,7 +288,45 @@ public class BidiPage : Page
     public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null) => throw new NotImplementedException();
+    public override async Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null)
+    {
+        if (!BidiBrowser.CdpSupported && userAgentData != null)
+        {
+            throw new PuppeteerException("Current Browser does not support `userAgentMetadata`");
+        }
+
+        var enable = !string.IsNullOrEmpty(userAgent);
+
+        // Update the UserAgentHeaders dictionary
+        UserAgentHeaders.Clear();
+        if (enable)
+        {
+            UserAgentHeaders["User-Agent"] = userAgent;
+        }
+
+        // Toggle network interception for BeforeRequestSent phase
+        _userAgentInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _userAgentInterception,
+            enable).ConfigureAwait(false);
+
+        // Override navigator.userAgent in JavaScript for all frames
+        var overrideNavigatorUserAgent = @"(userAgent) => {
+            Object.defineProperty(navigator, 'userAgent', {
+                value: userAgent,
+                configurable: true,
+            });
+        }";
+
+        var frames = Frames;
+        var tasks = new List<Task>(frames.Length);
+        foreach (var frame in frames)
+        {
+            tasks.Add(frame.EvaluateFunctionAsync(overrideNavigatorUserAgent, userAgent));
+        }
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task SetViewportAsync(ViewPortOptions viewport)
