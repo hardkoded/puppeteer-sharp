@@ -202,7 +202,17 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
-        var request = new BidiHttpRequest(bidiRequest, frame, redirect) { Url = bidiRequest.Url, };
+        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in bidiRequest.Headers)
+        {
+            headers[header.Name] = header.Value.Value;
+        }
+
+        var request = new BidiHttpRequest(bidiRequest, frame, redirect)
+        {
+            Url = bidiRequest.Url,
+            Headers = headers,
+        };
         request.Initialize();
         return request;
     }
