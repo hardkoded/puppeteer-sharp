@@ -53,6 +53,34 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         Requests.AddItem(request, this);
     }
 
+    /// <summary>
+    /// Gets the merged headers including extra HTTP headers and user agent headers.
+    /// </summary>
+    public override Dictionary<string, string> Headers
+    {
+        get
+        {
+            // Callers should not be allowed to mutate internal structure.
+            var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var header in _request.Headers)
+            {
+                headers[header.Name.ToLowerInvariant()] = header.Value.Value;
+            }
+
+            foreach (var kvp in ExtraHttpHeaders)
+            {
+                headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+
+            foreach (var kvp in UserAgentHeaders)
+            {
+                headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+
+            return headers;
+        }
+    }
+
     // TODO: I don't like having this static field at all. This will cause memory leaks for sure.
     // We need to move this to a place where we can control its lifecycle.
     internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } = new("Request {0} not found");
@@ -202,17 +230,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
-        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var header in bidiRequest.Headers)
-        {
-            headers[header.Name] = header.Value.Value;
-        }
-
-        var request = new BidiHttpRequest(bidiRequest, frame, redirect)
-        {
-            Url = bidiRequest.Url,
-            Headers = headers,
-        };
+        var request = new BidiHttpRequest(bidiRequest, frame, redirect) { Url = bidiRequest.Url, };
         request.Initialize();
         return request;
     }
@@ -279,24 +297,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
     {
-        // Start with the original request headers
-        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var header in _request.Headers)
-        {
-            headers[header.Name.ToLowerInvariant()] = header.Value.Value;
-        }
-
-        // Add extra HTTP headers from the page
-        foreach (var kvp in ExtraHttpHeaders)
-        {
-            headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
-        }
-
-        // Add user agent headers from the page
-        foreach (var kvp in UserAgentHeaders)
-        {
-            headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
-        }
+        // Start with the merged headers (original + extra + user agent)
+        var headers = new Dictionary<string, string>(Headers, StringComparer.OrdinalIgnoreCase);
 
         // Apply any override headers from the payload
         if (overrideHeaders != null)
@@ -487,11 +489,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             _interception.Handlers.Add(async () =>
             {
                 await ContinueAsync(
-                new Payload()
-                {
-                    Headers = Headers,
-                },
-                0).ConfigureAwait(false);
+                    new Payload
+                    {
+                        Headers = Headers,
+                    },
+                    0).ConfigureAwait(false);
             });
         }
     }
