@@ -42,6 +42,9 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Url = data.Url;
         FromCache = data.FromCache;
 
+        // BiDi doesn't provide remote address information
+        RemoteAddress = new RemoteAddress { IP = string.Empty, Port = -1 };
+
         // Convert headers
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)

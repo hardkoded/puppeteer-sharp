@@ -230,7 +230,17 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
-        var request = new BidiHttpRequest(bidiRequest, frame, redirect) { Url = bidiRequest.Url, };
+        var isNavigationRequest = bidiRequest.Navigation != null;
+        var request = new BidiHttpRequest(bidiRequest, frame, redirect)
+        {
+            Url = bidiRequest.Url,
+            Method = new System.Net.Http.HttpMethod(bidiRequest.Method),
+            IsNavigationRequest = isNavigationRequest,
+
+            // For BiDi without CDP support, we can infer the resource type from the navigation property.
+            // Navigation requests are Document type, otherwise we default to Other.
+            ResourceType = isNavigationRequest ? ResourceType.Document : ResourceType.Other,
+        };
         request.Initialize();
         return request;
     }

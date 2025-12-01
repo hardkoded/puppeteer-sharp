@@ -72,6 +72,8 @@ internal class Request : IDisposable
 
     public string Url => _eventArgs.Request.Url;
 
+    public string Method => _eventArgs.Request.Method;
+
     public IList<ReadOnlyHeader> Headers => _eventArgs.Request.Headers;
 
     public WebDriverBiDi.Network.ResponseData Response => _response;
