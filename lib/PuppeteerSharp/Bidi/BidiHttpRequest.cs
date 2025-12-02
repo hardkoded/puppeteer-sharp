@@ -228,7 +228,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override Task<string> FetchPostDataAsync() => throw new NotImplementedException();
 
-    internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
+    internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null, bool emitRequestEvent = true)
     {
         var isNavigationRequest = bidiRequest.Navigation != null;
         var request = new BidiHttpRequest(bidiRequest, frame, redirect)
@@ -241,7 +241,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             // Navigation requests are Document type, otherwise we default to Other.
             ResourceType = isNavigationRequest ? ResourceType.Document : ResourceType.Other,
         };
-        request.Initialize();
+        request.Initialize(emitRequestEvent);
         return request;
     }
 
@@ -458,12 +458,15 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private void Initialize()
+    private void Initialize(bool emitRequestEvent)
     {
         _request.Redirect += (sender, e) =>
         {
             var request = e.Request;
-            var httpRequest = From(request, Frame as BidiFrame, this);
+
+            // Propagate emitRequestEvent to redirects - if the initial request was a duplicate,
+            // its entire redirect chain should also not emit events.
+            var httpRequest = From(request, Frame as BidiFrame, this, emitRequestEvent);
             RedirectChainList.Add(this);
 
             request.Success += (_, _) =>
@@ -492,7 +495,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Authenticate += HandleAuthentication;
 
-        BidiPage.OnRequest(this);
+        if (emitRequestEvent)
+        {
+            BidiPage.OnRequest(this);
+        }
+        else if (InterceptionEnabled)
+        {
+            // For duplicate requests that don't emit the event, automatically continue them
+            // to prevent the request from hanging.
+            _interception.Handlers.Add(async () =>
+            {
+                await ContinueAsync().ConfigureAwait(false);
+            });
+        }
 
         if (HasInternalHeaderOverwrite && InterceptionEnabled)
         {

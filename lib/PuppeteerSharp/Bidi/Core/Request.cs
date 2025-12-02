@@ -84,6 +84,8 @@ internal class Request : IDisposable
 
     public string ErrorText => _error;
 
+    public ulong RedirectCount => _eventArgs.RedirectCount;
+
     private string Id => _eventArgs.Request.RequestId;
 
     private Session Session => _browsingContext.UserContext.Browser.Session;
