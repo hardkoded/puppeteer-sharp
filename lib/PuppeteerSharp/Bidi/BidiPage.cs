@@ -43,6 +43,7 @@ public class BidiPage : Page
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
     private string _userAgentInterception;
+    private string _extraHeadersInterception;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -118,7 +119,26 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers) => throw new NotImplementedException();
+    public override async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+    {
+        // Clear existing extra headers
+        ExtraHttpHeaders.Clear();
+
+        // Add the new headers (normalized to lowercase keys as per upstream)
+        if (headers != null)
+        {
+            foreach (var kvp in headers)
+            {
+                ExtraHttpHeaders[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+        }
+
+        // Toggle network interception for BeforeRequestSent phase
+        _extraHeadersInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _extraHeadersInterception,
+            !ExtraHttpHeaders.IsEmpty).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task AuthenticateAsync(Credentials credentials) => throw new NotImplementedException();
@@ -191,19 +211,42 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
     {
-        // TODO: Implement full network response monitoring for BiDi
-        // For now, this creates a task that will be faulted when the page closes
         var timeout = options?.Timeout ?? DefaultTimeout;
         var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout).ConfigureAwait(false);
-
-        if (ClosedTask.IsFaulted)
+        async void ResponseHandler(object sender, ResponseCreatedEventArgs e)
         {
-            await ClosedTask.ConfigureAwait(false);
+            try
+            {
+                if (await predicate(e.Response).ConfigureAwait(false))
+                {
+                    responseTcs.TrySetResult(e.Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                responseTcs.TrySetException(ex);
+            }
         }
 
-        return await responseTcs.Task.ConfigureAwait(false);
+        Response += ResponseHandler;
+
+        try
+        {
+            await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+                new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+            if (ClosedTask.IsFaulted)
+            {
+                await ClosedTask.ConfigureAwait(false);
+            }
+
+            return await responseTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            Response -= ResponseHandler;
+        }
     }
 
     /// <inheritdoc />
