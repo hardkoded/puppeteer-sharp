@@ -29,6 +29,25 @@ namespace PuppeteerSharp.Bidi;
 
 internal static class BidiDeserializer
 {
+    public static object Deserialize(RemoteValue value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        return value.Type switch
+        {
+            "undefined" => null,
+            "null" => null,
+            "string" => value.Value,
+            "number" => DeserializeNumber(value.Value),
+            "boolean" => value.Value,
+            "bigint" => value.Value != null ? Convert.ToInt64(value.Value, CultureInfo.InvariantCulture) : null,
+            _ => null,
+        };
+    }
+
     public static object ToPrettyPrint(this RemoteValue value)
     {
         if (value is null)

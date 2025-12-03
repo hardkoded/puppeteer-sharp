@@ -44,6 +44,7 @@ public class BidiPage : Page
     private string _requestInterception;
     private string _userAgentInterception;
     private string _extraHeadersInterception;
+    private bool _isJavaScriptEnabled = true;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
@@ -82,7 +83,7 @@ public class BidiPage : Page
     public override WebWorker[] Workers => _workers.Values.ToArray();
 
     /// <inheritdoc />
-    public override bool IsJavaScriptEnabled { get; }
+    public override bool IsJavaScriptEnabled => _isJavaScriptEnabled;
 
     /// <inheritdoc/>
     public override IFrame MainFrame => BidiMainFrame;
@@ -307,10 +308,25 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task SetJavaScriptEnabledAsync(bool enabled) => throw new NotImplementedException();
+    public override async Task SetJavaScriptEnabledAsync(bool enabled)
+    {
+        var commandParameters = new WebDriverBiDi.Emulation.SetScriptingEnabledCommandParameters(enabled)
+        {
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetScriptingEnabledAsync(commandParameters).ConfigureAwait(false);
+        _isJavaScriptEnabled = enabled;
+    }
 
     /// <inheritdoc />
-    public override Task SetBypassCSPAsync(bool enabled) => throw new NotImplementedException();
+    public override async Task SetBypassCSPAsync(bool enabled)
+    {
+        // TODO: handle CDP-specific cases such as MPArch.
+        await BidiMainFrame.Client.SendAsync(
+            "Page.setBypassCSP",
+            new Cdp.Messaging.PageSetBypassCSPRequest { Enabled = enabled }).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task SetCacheEnabledAsync(bool enabled = true)
@@ -617,6 +633,8 @@ public class BidiPage : Page
     }
 
     internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
+
+    internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
 
     internal void OnWorkerCreated(BidiWebWorker worker)
     {
