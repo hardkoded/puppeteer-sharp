@@ -233,7 +233,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(failedRequests, Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Page.setRequestInterception", "should be abortable with custom error codes")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should be abortable with custom error codes")]
         public async Task ShouldBeAbortableWithCustomErrorCodes()
         {
             await Page.SetRequestInterceptionAsync(true);
