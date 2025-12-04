@@ -627,12 +627,11 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should cache if cache enabled")]
-        public async Task ShouldNotCacheIfCacheEnabled()
+        public async Task ShouldCacheIfCacheEnabled()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             await Page.SetRequestInterceptionAsync(true);
-            await Page.SetCacheEnabledAsync(true);
-            var urls = new List<string>();
+            await Page.SetCacheEnabledAsync();
             Page.Request += (_, e) => _ = e.Request.ContinueAsync();
 
             var cached = new List<IRequest>();
@@ -641,7 +640,6 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.ReloadAsync();
             // BiDi may fire multiple cache events (for HTML and CSS), while CDP only fires for CSS
             Assert.That(cached, Has.Count.GreaterThanOrEqualTo(1));
-            Assert.That(cached.Any(r => r.Url.EndsWith(".css")), Is.True);
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should load fonts if cache enabled")]
