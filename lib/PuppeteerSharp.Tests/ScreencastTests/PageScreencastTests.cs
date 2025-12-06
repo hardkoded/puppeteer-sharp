@@ -5,7 +5,7 @@ namespace PuppeteerSharp.Tests.ScreencastTests
 {
     public class PageScreencastTests : PuppeteerBrowserContextBaseTest
     {
-        [Test]
+        [Test, PuppeteerTest("puppeteer-sharp", "Screencast", "can start screencast")]
         public async Task CanStartScreencast()
         {
             await using var page = await Context.NewPageAsync();
