@@ -99,13 +99,22 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0 || UserAgentHeaders.Values.Count != 0;
 
-    private bool InterceptionEnabled => _request.IsBlocked;
+    /// <summary>
+    /// Gets whether network interception is enabled at the page level.
+    /// This is used to verify that the user has called SetRequestInterceptionAsync(true).
+    /// </summary>
+    private bool PageLevelInterceptionEnabled => BidiPage.IsNetworkInterceptionEnabled;
+
+    /// <summary>
+    /// Gets whether this specific request can be intercepted (i.e., is blocked by the browser).
+    /// </summary>
+    private bool CanBeIntercepted => _request.IsBlocked;
 
     private InterceptResolutionState InterceptResolutionState
     {
         get
         {
-            if (!InterceptionEnabled)
+            if (!CanBeIntercepted)
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }
@@ -119,7 +128,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
     {
-        if (!InterceptionEnabled)
+        // First verify that page-level interception is enabled
+        if (!PageLevelInterceptionEnabled)
         {
             throw new PuppeteerException("Request Interception is not enabled!");
         }
@@ -127,6 +137,12 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         if (_isInterceptResolutionHandled)
         {
             throw new PuppeteerException("Request is already handled!");
+        }
+
+        // If this specific request is not blocked, return early (don't throw)
+        if (!CanBeIntercepted)
+        {
+            return;
         }
 
         if (priority is null)
@@ -163,7 +179,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             throw new ArgumentNullException(nameof(response));
         }
 
-        if (!InterceptionEnabled)
+        // First verify that page-level interception is enabled
+        if (!PageLevelInterceptionEnabled)
         {
             throw new PuppeteerException("Request Interception is not enabled!");
         }
@@ -171,6 +188,12 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         if (_isInterceptResolutionHandled)
         {
             throw new PuppeteerException("Request is already handled!");
+        }
+
+        // If this specific request is not blocked, return early (don't throw)
+        if (!CanBeIntercepted)
+        {
+            return;
         }
 
         if (priority is null)
@@ -201,7 +224,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
-        if (!InterceptionEnabled)
+        // First verify that page-level interception is enabled
+        if (!PageLevelInterceptionEnabled)
         {
             throw new PuppeteerException("Request Interception is not enabled!");
         }
@@ -209,6 +233,12 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         if (_isInterceptResolutionHandled)
         {
             throw new PuppeteerException("Request is already handled!");
+        }
+
+        // If this specific request is not blocked, return early (don't throw)
+        if (!CanBeIntercepted)
+        {
+            return;
         }
 
         if (priority is null)
@@ -499,7 +529,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             BidiPage.OnRequest(this);
         }
-        else if (InterceptionEnabled)
+        else if (CanBeIntercepted)
         {
             // For duplicate requests that don't emit the event, automatically continue them
             // to prevent the request from hanging.
@@ -509,7 +539,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             });
         }
 
-        if (HasInternalHeaderOverwrite && InterceptionEnabled)
+        if (HasInternalHeaderOverwrite && CanBeIntercepted)
         {
             _interception.Handlers.Add(async () =>
             {

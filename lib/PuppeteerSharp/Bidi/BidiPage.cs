@@ -96,6 +96,8 @@ public class BidiPage : Page
 
     internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
+    internal bool IsNetworkInterceptionEnabled => _requestInterception != null;
+
     /// <inheritdoc />
     protected override Browser Browser { get; }
 
@@ -164,27 +166,50 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var navOptions = options == null
-            ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
-            : options with { IgnoreSameDocumentNavigation = true };
-        var waitForNavigationTask = WaitForNavigationAsync(navOptions);
-        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+        // When interception is enabled on Firefox BiDi, the browser doesn't send
+        // BeforeRequestSent events for reload commands, which causes the request
+        // to hang indefinitely. Work around this by temporarily disabling interception,
+        // performing the reload, and re-enabling interception.
+        // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948
+        var isFirefox = BidiBrowser.BrowserName.Contains("Firefox", StringComparison.OrdinalIgnoreCase);
+        var hadInterception = IsNetworkInterceptionEnabled;
+
+        if (hadInterception && isFirefox)
+        {
+            await SetRequestInterceptionAsync(false).ConfigureAwait(false);
+        }
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("no such history entry"))
+            var navOptions = options == null
+                ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
+                : options with { IgnoreSameDocumentNavigation = true };
+            var waitForNavigationTask = WaitForNavigationAsync(navOptions);
+            var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+
+            try
             {
-                return null;
+                await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("no such history entry"))
+                {
+                    return null;
+                }
+
+                throw new NavigationException(ex.Message, ex);
             }
 
-            throw new NavigationException(ex.Message, ex);
+            return waitForNavigationTask.Result;
         }
-
-        return waitForNavigationTask.Result;
+        finally
+        {
+            if (hadInterception && isFirefox)
+            {
+                await SetRequestInterceptionAsync(true).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -805,7 +830,8 @@ public class BidiPage : Page
                 options.Phases.Add(phase);
             }
 
-            return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+            var interceptId = await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+            return interceptId;
         }
         else if (!expected && interception != null)
         {
