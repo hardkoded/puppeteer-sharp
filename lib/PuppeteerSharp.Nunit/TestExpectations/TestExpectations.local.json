@@ -64,7 +64,7 @@
   },
   {
     "comment": "TODO Review screencasts in firefox",
-    "testIdPattern": "[screencast.spec] *",
+    "testIdPattern": "[puppeteer-sharp] Screencast*",
     "platforms": ["linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
