@@ -53,7 +53,7 @@ namespace PuppeteerSharp
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <inheritdoc/>
-        public bool IsConnected => !Connection.IsClosed;
+        public virtual bool IsConnected => !Connection.IsClosed;
 
         /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
