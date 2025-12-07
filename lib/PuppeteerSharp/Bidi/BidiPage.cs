@@ -42,7 +42,6 @@ public class BidiPage : Page
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
-    private string _userAgentInterception;
     private string _extraHeadersInterception;
     private bool _isJavaScriptEnabled = true;
 
@@ -383,35 +382,7 @@ public class BidiPage : Page
 
         var enable = !string.IsNullOrEmpty(userAgent);
 
-        // Update the UserAgentHeaders dictionary
-        UserAgentHeaders.Clear();
-        if (enable)
-        {
-            UserAgentHeaders["User-Agent"] = userAgent;
-        }
-
-        // Toggle network interception for BeforeRequestSent phase
-        _userAgentInterception = await ToggleInterceptionAsync(
-            [InterceptPhase.BeforeRequestSent],
-            _userAgentInterception,
-            enable).ConfigureAwait(false);
-
-        // Override navigator.userAgent in JavaScript for all frames
-        var overrideNavigatorUserAgent = @"(userAgent) => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: userAgent,
-                configurable: true,
-            });
-        }";
-
-        var frames = Frames;
-        var tasks = new List<Task>(frames.Length);
-        foreach (var frame in frames)
-        {
-            tasks.Add(frame.EvaluateFunctionAsync(overrideNavigatorUserAgent, userAgent));
-        }
-
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+        await BidiMainFrame.BrowsingContext.SetUserAgentAsync(enable ? userAgent : null).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
