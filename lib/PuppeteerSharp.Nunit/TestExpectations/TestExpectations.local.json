@@ -1237,5 +1237,21 @@
     "expectations": [
       "SKIP"
     ]
+  },
+  {
+    "comment": "Firefox BiDi doesn't support multiple sessions on the same browser",
+    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
   }
 ]
