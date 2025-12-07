@@ -57,6 +57,9 @@ public class BidiBrowser : Browser
     public override bool IsClosed => _isClosed;
 
     /// <inheritdoc />
+    public override bool IsConnected => !BrowserCore.IsDisconnected;
+
+    /// <inheritdoc />
     public override ITarget Target => _target;
 
     /// <inheritdoc/>
