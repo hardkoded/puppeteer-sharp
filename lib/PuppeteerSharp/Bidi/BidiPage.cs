@@ -171,7 +171,9 @@ public class BidiPage : Page
         // to hang indefinitely. Work around this by temporarily disabling interception,
         // performing the reload, and re-enabling interception.
         // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948
-        var isFirefox = BidiBrowser.BrowserName.Contains("Firefox", StringComparison.OrdinalIgnoreCase);
+#pragma warning disable CA2249 // IndexOf is needed for .NET Standard 2.0 compatibility
+        var isFirefox = BidiBrowser.BrowserName.IndexOf("Firefox", StringComparison.OrdinalIgnoreCase) >= 0;
+#pragma warning restore CA2249
         var hadInterception = IsNetworkInterceptionEnabled;
 
         if (hadInterception && isFirefox)
