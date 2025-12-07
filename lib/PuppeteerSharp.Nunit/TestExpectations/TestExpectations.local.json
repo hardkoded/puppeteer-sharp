@@ -1,5 +1,12 @@
 [
   {
+    "comment": "Test depends on ConnectAsync which is not implemented for BiDi yet - see [connect.spec] expectations",
+    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[network.spec] PuppeteerSharp network*",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -96,21 +103,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[browser.spec] *Browser.isConnected*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
