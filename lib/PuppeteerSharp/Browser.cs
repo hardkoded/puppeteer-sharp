@@ -47,13 +47,13 @@ namespace PuppeteerSharp
         public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext { get; protected set; }
+        public virtual IBrowserContext DefaultContext { get; protected set; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <inheritdoc/>
-        public bool IsConnected => !Connection.IsClosed;
+        public virtual bool IsConnected => !Connection.IsClosed;
 
         /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);

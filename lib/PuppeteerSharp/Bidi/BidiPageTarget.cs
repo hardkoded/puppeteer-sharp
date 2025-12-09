@@ -33,17 +33,15 @@ internal class BidiPageTarget(BidiPage page) : Target
 
     public override ITarget Opener => throw new InvalidOperationException();
 
-    internal override Browser Browser { get; }
+    internal override Browser Browser => (Browser)page.BrowserContext.Browser;
 
-    internal override BrowserContext BrowserContext => BidiBrowserContext;
-
-    internal BidiBrowserContext BidiBrowserContext { get; }
+    internal override BrowserContext BrowserContext => (BrowserContext)page.BrowserContext;
 
     public override Task<IPage> PageAsync() => Task.FromResult<IPage>(page);
 
     public override Task<IPage> AsPageAsync()
 #pragma warning disable CA2000
-        => Task.FromResult(BidiPage.From(BidiBrowserContext, page.BidiMainFrame.BrowsingContext) as IPage);
+        => Task.FromResult(BidiPage.From((BidiBrowserContext)page.BrowserContext, page.BidiMainFrame.BrowsingContext) as IPage);
 #pragma warning restore CA2000
 
     public override Task<ICDPSession> CreateCDPSessionAsync()

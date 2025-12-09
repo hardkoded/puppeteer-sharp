@@ -30,15 +30,22 @@ using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
 public class BidiPage : Page
 {
+    private readonly ConcurrentDictionary<string, BidiWebWorker> _workers = new();
     private readonly CdpEmulationManager _cdpEmulationManager;
+    private InternalNetworkConditions _emulatedNetworkConditions;
+    private TaskCompletionSource<bool> _closedTcs;
+    private string _requestInterception;
+    private string _extraHeadersInterception;
+    private bool _isJavaScriptEnabled = true;
 
-    internal BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
+    private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
     {
         BrowserContext = browserContext;
         Browser = browserContext.Browser;
@@ -57,13 +64,25 @@ public class BidiPage : Page
     public override Target Target { get; }
 
     /// <inheritdoc />
-    public override IFrame[] Frames { get; }
+    public override IFrame[] Frames
+    {
+        get
+        {
+            var frames = new List<IFrame> { BidiMainFrame };
+            for (var i = 0; i < frames.Count; i++)
+            {
+                frames.AddRange(frames[i].ChildFrames);
+            }
+
+            return [.. frames];
+        }
+    }
 
     /// <inheritdoc />
-    public override WebWorker[] Workers { get; }
+    public override WebWorker[] Workers => _workers.Values.ToArray();
 
     /// <inheritdoc />
-    public override bool IsJavaScriptEnabled { get; }
+    public override bool IsJavaScriptEnabled => _isJavaScriptEnabled;
 
     /// <inheritdoc/>
     public override IFrame MainFrame => BidiMainFrame;
@@ -76,11 +95,52 @@ public class BidiPage : Page
 
     internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
+    internal bool IsNetworkInterceptionEnabled => _requestInterception != null;
+
     /// <inheritdoc />
     protected override Browser Browser { get; }
 
+    private Task ClosedTask
+    {
+        get
+        {
+            if (_closedTcs == null)
+            {
+                _closedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                BidiMainFrame.BrowsingContext.Closed += ContextClosed;
+
+                void ContextClosed(object sender, ClosedEventArgs e)
+                {
+                    _closedTcs.TrySetException(new TargetClosedException("Target closed", "Browsing context closed"));
+                    BidiMainFrame.BrowsingContext.Closed -= ContextClosed;
+                }
+            }
+
+            return _closedTcs.Task;
+        }
+    }
+
     /// <inheritdoc />
-    public override Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers) => throw new NotImplementedException();
+    public override async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+    {
+        // Clear existing extra headers
+        ExtraHttpHeaders.Clear();
+
+        // Add the new headers (normalized to lowercase keys as per upstream)
+        if (headers != null)
+        {
+            foreach (var kvp in headers)
+            {
+                ExtraHttpHeaders[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+        }
+
+        // Toggle network interception for BeforeRequestSent phase
+        _extraHeadersInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _extraHeadersInterception,
+            !ExtraHttpHeaders.IsEmpty).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task AuthenticateAsync(Credentials credentials) => throw new NotImplementedException();
@@ -105,34 +165,116 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var waitForNavigationTask = WaitForNavigationAsync(options);
-        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+        // When interception is enabled on Firefox BiDi, the browser doesn't send
+        // BeforeRequestSent events for reload commands, which causes the request
+        // to hang indefinitely. Work around this by temporarily disabling interception,
+        // performing the reload, and re-enabling interception.
+        // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948
+#pragma warning disable CA2249 // IndexOf is needed for .NET Standard 2.0 compatibility
+        var isFirefox = BidiBrowser.BrowserName.IndexOf("Firefox", StringComparison.OrdinalIgnoreCase) >= 0;
+#pragma warning restore CA2249
+        var hadInterception = IsNetworkInterceptionEnabled;
+
+        if (hadInterception && isFirefox)
+        {
+            await SetRequestInterceptionAsync(false).ConfigureAwait(false);
+        }
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("no such history entry"))
+            var navOptions = options == null
+                ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
+                : options with { IgnoreSameDocumentNavigation = true };
+            var waitForNavigationTask = WaitForNavigationAsync(navOptions);
+            var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+
+            try
             {
-                return null;
+                await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("no such history entry"))
+                {
+                    return null;
+                }
+
+                throw new NavigationException(ex.Message, ex);
             }
 
-            throw new NavigationException(ex.Message, ex);
+            return waitForNavigationTask.Result;
         }
-
-        return waitForNavigationTask.Result;
+        finally
+        {
+            if (hadInterception && isFirefox)
+            {
+                await SetRequestInterceptionAsync(true).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc />
     public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
+    {
+        // TODO: Implement full network request monitoring for BiDi
+        // For now, this creates a task that will be faulted when the page closes
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+            new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+        if (ClosedTask.IsFaulted)
+        {
+            await ClosedTask.ConfigureAwait(false);
+        }
+
+        return await requestTcs.Task.ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
+    {
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        async void ResponseHandler(object sender, ResponseCreatedEventArgs e)
+        {
+            try
+            {
+                if (await predicate(e.Response).ConfigureAwait(false))
+                {
+                    responseTcs.TrySetResult(e.Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                responseTcs.TrySetException(ex);
+            }
+        }
+
+        Response += ResponseHandler;
+
+        try
+        {
+            await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+                new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+            if (ClosedTask.IsFaulted)
+            {
+                await ClosedTask.ConfigureAwait(false);
+            }
+
+            return await responseTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            Response -= ResponseHandler;
+        }
+    }
 
     /// <inheritdoc />
     public override Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null) => throw new NotImplementedException();
@@ -150,16 +292,79 @@ public class BidiPage : Page
     public override Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetGeolocationAsync(GeolocationOption options) => throw new NotImplementedException();
+    public override async Task SetGeolocationAsync(GeolocationOption options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var longitude = options.Longitude;
+        var latitude = options.Latitude;
+        var accuracy = options.Accuracy;
+
+        if (longitude < -180 || longitude > 180)
+        {
+            throw new ArgumentException($"Invalid longitude '{longitude}': precondition -180 <= LONGITUDE <= 180 failed.");
+        }
+
+        if (latitude < -90 || latitude > 90)
+        {
+            throw new ArgumentException($"Invalid latitude '{latitude}': precondition -90 <= LATITUDE <= 90 failed.");
+        }
+
+        if (accuracy < 0)
+        {
+            throw new ArgumentException($"Invalid accuracy '{accuracy}': precondition 0 <= ACCURACY failed.");
+        }
+
+        var coordinates = new WebDriverBiDi.Emulation.GeolocationCoordinates((double)longitude, (double)latitude)
+        {
+            Accuracy = (double?)accuracy,
+        };
+
+        var commandParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters
+        {
+            Coordinates = coordinates,
+        };
+
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task SetJavaScriptEnabledAsync(bool enabled) => throw new NotImplementedException();
+    public override async Task SetJavaScriptEnabledAsync(bool enabled)
+    {
+        var commandParameters = new WebDriverBiDi.Emulation.SetScriptingEnabledCommandParameters(enabled)
+        {
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetScriptingEnabledAsync(commandParameters).ConfigureAwait(false);
+        _isJavaScriptEnabled = enabled;
+    }
 
     /// <inheritdoc />
-    public override Task SetBypassCSPAsync(bool enabled) => throw new NotImplementedException();
+    public override async Task SetBypassCSPAsync(bool enabled)
+    {
+        // TODO: handle CDP-specific cases such as MPArch.
+        await BidiMainFrame.Client.SendAsync(
+            "Page.setBypassCSP",
+            new Cdp.Messaging.PageSetBypassCSPRequest { Enabled = enabled }).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task SetCacheEnabledAsync(bool enabled = true) => throw new NotImplementedException();
+    public override async Task SetCacheEnabledAsync(bool enabled = true)
+    {
+        var commandParameters = new SetCacheBehaviorCommandParameters
+        {
+            CacheBehavior = enabled ? CacheBehavior.Default : CacheBehavior.Bypass,
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Network.SetCacheBehaviorAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task EmulateMediaTypeAsync(MediaType type) => throw new NotImplementedException();
@@ -168,7 +373,17 @@ public class BidiPage : Page
     public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null) => throw new NotImplementedException();
+    public override async Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null)
+    {
+        if (!BidiBrowser.CdpSupported && userAgentData != null)
+        {
+            throw new PuppeteerException("Current Browser does not support `userAgentMetadata`");
+        }
+
+        var enable = !string.IsNullOrEmpty(userAgent);
+
+        await BidiMainFrame.BrowsingContext.SetUserAgentAsync(enable ? userAgent : null).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task SetViewportAsync(ViewPortOptions viewport)
@@ -183,14 +398,14 @@ public class BidiPage : Page
             await BidiMainFrame.BrowsingContext.SetViewportAsync(
                 new SetViewportOptions()
                 {
-                    Viewport = viewport?.Width > 0 && viewport?.Height > 0
-                        ? new WebDriverBiDi.BrowsingContext.Viewport()
+                    Viewport = viewport is { Width: > 0, Height: > 0 }
+                        ? new Viewport()
                         {
                             Width = (ulong)viewport.Width,
                             Height = (ulong)viewport.Height,
                         }
                         : null,
-                    DevicePixelRatio = viewport?.DeviceScaleFactor,
+                    DevicePixelRatio = viewport.DeviceScaleFactor,
                 }).ConfigureAwait(false);
             Viewport = viewport;
             return;
@@ -290,7 +505,7 @@ public class BidiPage : Page
         }
         catch (Exception)
         {
-            return;
+            // Swallow.
         }
     }
 
@@ -356,10 +571,33 @@ public class BidiPage : Page
     public override Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task SetRequestInterceptionAsync(bool value) => throw new NotImplementedException();
+    public override async Task SetRequestInterceptionAsync(bool value)
+    {
+        _requestInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _requestInterception,
+            value).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
-    public override Task SetOfflineModeAsync(bool value) => throw new NotImplementedException();
+    public override async Task SetOfflineModeAsync(bool value)
+    {
+        if (!BidiBrowser.CdpSupported)
+        {
+            throw new NotSupportedException();
+        }
+
+        _emulatedNetworkConditions ??= new InternalNetworkConditions
+        {
+            Offline = false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
+
+        _emulatedNetworkConditions.Offline = value;
+        await ApplyNetworkConditionsAsync().ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => throw new NotImplementedException();
@@ -392,6 +630,22 @@ public class BidiPage : Page
         return page;
     }
 
+    internal new void OnPageError(PageErrorEventArgs e) => base.OnPageError(e);
+
+    internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
+
+    internal void OnWorkerCreated(BidiWebWorker worker)
+    {
+        _workers[worker.RealmId] = worker;
+        base.OnWorkerCreated(worker);
+    }
+
+    internal void OnWorkerDestroyed(BidiWebWorker worker)
+    {
+        _workers.TryRemove(worker.RealmId, out var _);
+        base.OnWorkerDestroyed(worker);
+    }
+
     /// <inheritdoc />
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
 
@@ -420,12 +674,19 @@ public class BidiPage : Page
             throw new PuppeteerException("BiDi does not support 'scale' in 'clip'.");
         }
 
-        BoundingBox box;
+        BoundingBox box = null;
         if (options.Clip != null)
         {
             if (options.CaptureBeyondViewport)
             {
-                box = options.Clip;
+                // Create a new box to avoid reference issues
+                box = new Clip
+                {
+                    X = options.Clip.X,
+                    Y = options.Clip.Y,
+                    Width = options.Clip.Width,
+                    Height = options.Clip.Height,
+                };
             }
             else
             {
@@ -442,8 +703,13 @@ public class BidiPage : Page
                     ];
                 }").ConfigureAwait(false);
 
-                options.Clip.X += decimal.Floor(points[0]);
-                options.Clip.Y += decimal.Floor(points[1]);
+                box = new Clip
+                {
+                    X = options.Clip.X - points[0],
+                    Y = options.Clip.Y - points[1],
+                    Width = options.Clip.Width,
+                    Height = options.Clip.Height,
+                };
             }
         }
 
@@ -455,8 +721,7 @@ public class BidiPage : Page
             _ => "png",
         };
 
-        // TODO: Missing box
-        var data = await BidiMainFrame.BrowsingContext.CaptureScreenshotAsync(new ScreenshotParameters()
+        var parameters = new ScreenshotParameters()
         {
             Origin = options.CaptureBeyondViewport ? ScreenshotOrigin.Document : ScreenshotOrigin.Viewport,
             Format = new ImageFormat()
@@ -464,7 +729,20 @@ public class BidiPage : Page
                 Type = $"image/{fileType}",
                 Quality = options.Quality / 100,
             },
-        }).ConfigureAwait(false);
+        };
+
+        if (box != null)
+        {
+            parameters.Clip = new BoxClipRectangle
+            {
+                X = (double)box.X,
+                Y = (double)box.Y,
+                Width = (double)box.Width,
+                Height = (double)box.Height,
+            };
+        }
+
+        var data = await BidiMainFrame.BrowsingContext.CaptureScreenshotAsync(parameters).ConfigureAwait(false);
 
         return data;
     }
@@ -494,7 +772,72 @@ public class BidiPage : Page
         return waitForNavigationTask.Result;
     }
 
+    private async Task ApplyNetworkConditionsAsync()
+    {
+        if (_emulatedNetworkConditions == null)
+        {
+            return;
+        }
+
+        await BidiMainFrame.Client.SendAsync(
+            "Network.emulateNetworkConditions",
+            new Cdp.Messaging.NetworkEmulateNetworkConditionsRequest
+            {
+                Offline = _emulatedNetworkConditions.Offline,
+                Latency = _emulatedNetworkConditions.Latency,
+                UploadThroughput = _emulatedNetworkConditions.Upload,
+                DownloadThroughput = _emulatedNetworkConditions.Download,
+            }).ConfigureAwait(false);
+    }
+
+    private async Task<string> ToggleInterceptionAsync(
+        InterceptPhase[] phases,
+        string interception,
+        bool expected)
+    {
+        if (expected && interception == null)
+        {
+            var options = new AddInterceptCommandParameters();
+            foreach (var phase in phases)
+            {
+                options.Phases.Add(phase);
+            }
+
+            var interceptId = await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+            return interceptId;
+        }
+        else if (!expected && interception != null)
+        {
+            await BidiMainFrame.BrowsingContext.UserContext.Browser.RemoveInterceptAsync(interception).ConfigureAwait(false);
+            return null;
+        }
+
+        return interception;
+    }
+
     private void Initialize()
     {
+        BidiMainFrame.BrowsingContext.Closed += (_, _) =>
+        {
+            OnClose();
+            IsClosed = true;
+        };
+
+        // Track workers
+        WorkerCreated += (_, e) =>
+        {
+            if (e.Worker is BidiWebWorker worker)
+            {
+                _workers[worker.RealmId] = worker;
+            }
+        };
+
+        WorkerDestroyed += (_, e) =>
+        {
+            if (e.Worker is BidiWebWorker worker)
+            {
+                _workers.TryRemove(worker.RealmId, out var _);
+            }
+        };
     }
 }

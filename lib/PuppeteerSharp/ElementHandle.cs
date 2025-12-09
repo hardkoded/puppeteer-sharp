@@ -472,24 +472,53 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<string[]> SelectAsync(params string[] values)
-            => BindIsolatedHandleAsync<string[], ElementHandle>(handle => handle.EvaluateFunctionAsync<string[]>(
-                @"(element, values) =>
-                    {
-                        if (element.nodeName.toLowerCase() !== 'select')
-                            throw new Error('Element is not a <select> element.');
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
 
-                        const options = Array.from(element.options);
-                        element.value = undefined;
-                        for (const option of options) {
-                            option.selected = values.includes(option.value);
-                            if (option.selected && !element.multiple)
-                                break;
+            foreach (var value in values)
+            {
+                if (value == null)
+                {
+                    throw new ArgumentException($"Values must be strings. Found value \"null\" of type \"null\"");
+                }
+            }
+
+            return BindIsolatedHandleAsync<string[], ElementHandle>(handle => handle.EvaluateFunctionAsync<string[]>(
+                @"(element, vals) => {
+                    const values = new Set(vals);
+                    if (!(element instanceof HTMLSelectElement)) {
+                        throw new Error('Element is not a <select> element.');
+                    }
+
+                    const selectedValues = new Set();
+                    if (!element.multiple) {
+                        for (const option of element.options) {
+                            option.selected = false;
                         }
-                        element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                        element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                        return options.filter(option => option.selected).map(option => option.value);
-                    }",
+                        for (const option of element.options) {
+                            if (values.has(option.value)) {
+                                option.selected = true;
+                                selectedValues.add(option.value);
+                                break;
+                            }
+                        }
+                    } else {
+                        for (const option of element.options) {
+                            option.selected = values.has(option.value);
+                            if (option.selected) {
+                                selectedValues.add(option.value);
+                            }
+                        }
+                    }
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                    return [...selectedValues.values()];
+                }",
                 new object[] { values }));
+        }
 
         /// <inheritdoc/>
         public Task<DragData> DragAsync(decimal x, decimal y)
@@ -1002,6 +1031,8 @@ namespace PuppeteerSharp
                     ? Math.Min(height - box.Y, box.Height)
                     : Math.Min(height, box.Height + box.Y),
                 0);
+            box.X = Math.Max(box.X, 0);
+            box.Y = Math.Max(box.Y, 0);
         }
     }
 }

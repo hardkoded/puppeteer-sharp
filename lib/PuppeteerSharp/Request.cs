@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         public string PostData { get; internal init; }
 
         /// <inheritdoc/>
-        public Dictionary<string, string> Headers { get; internal init; }
+        public virtual Dictionary<string, string> Headers { get; protected set; }
 
         /// <inheritdoc/>
         public string Url { get; internal init; }

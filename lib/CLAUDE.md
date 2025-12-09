@@ -397,20 +397,27 @@ Test directory structure demonstrates comprehensive coverage:
 ### Building and Running Tests
 
 When running tests, always build first and then use the `--no-build` flag to avoid rebuilding during test execution. This provides faster and more reliable test runs:
+Always be explicit with the browser and protocol you want to test using ENV variables BROWSER=FIREFOX|CHROME and PROTOCOL=bidi|cdp
+
+**IMPORTANT: Chrome should ALWAYS use CDP protocol. Firefox can use either CDP or BiDi.**
 
 ```bash
-# Build the test project first
-dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+# Build the test project first with Firefox and BiDi
+BROWSER=FIREFOX PROTOCOL=bidi dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 
 # Then run tests with --no-build flag
-dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
+BROWSER=FIREFOX PROTOCOL=bidi dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
 
-# Can also chain them together
-dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj && dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
+# Chrome should ALWAYS use CDP protocol
+BROWSER=CHROME PROTOCOL=cdp dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj && BROWSER=CHROME PROTOCOL=cdp dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
+
+# Firefox should ALWAYS use bidi protocol
+BROWSER=FIREFOX PROTOCOL=bidi dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj && BROWSER=FIREFOX PROTOCOL=cdp dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~TestName" --no-build -- NUnit.TestOutputXml=TestResults
 ```
 
 You can switch between CDP and Bidi by changing the PuppeteerTestAttribute.IsCdp property.
 You can switch between Chrome and Firefox by changing the PuppeteerTestAttribute.IsChrome property.
+If you are fixing one single test, then you must run the entire test suite to confirm that you didn't break other tests.
 
 ## Utilities and Helpers
 

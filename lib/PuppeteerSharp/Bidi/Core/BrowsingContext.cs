@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Emulation;
 using WebDriverBiDi.Input;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -65,13 +66,15 @@ internal class BrowsingContext : IDisposable
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
 
+    public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
+
     public UserContext UserContext { get; }
 
     public string Id { get; }
 
     public string Url { get; private set; }
 
-    public bool IsClosed => _reason != null;
+    public bool IsClosed { get; private set; }
 
     public Session Session => UserContext.Browser.Session;
 
@@ -107,6 +110,13 @@ internal class BrowsingContext : IDisposable
 
     public void Dispose()
     {
+        if (IsClosed)
+        {
+            return;
+        }
+
+        IsClosed = true;
+
         _reason ??= "Browser was disconnected, probably because the session ended.";
         OnClosed(_reason);
         foreach (var context in _children.Values)
@@ -196,6 +206,24 @@ internal class BrowsingContext : IDisposable
     internal async Task ReloadAsync()
         => await Session.Driver.BrowsingContext.ReloadAsync(new ReloadCommandParameters(Id)).ConfigureAwait(false);
 
+    internal async Task<string> AddInterceptAsync(WebDriverBiDi.Network.AddInterceptCommandParameters options)
+    {
+        options.BrowsingContextIds ??= new List<string>();
+        options.BrowsingContextIds.Add(Id);
+        var result = await Session.Driver.Network.AddInterceptAsync(options).ConfigureAwait(false);
+        return result.InterceptId;
+    }
+
+    internal async Task SetUserAgentAsync(string userAgent)
+    {
+        var parameters = new SetUserAgentOverrideCommandParameters
+        {
+            UserAgent = userAgent,
+            Contexts = [Id],
+        };
+        await Session.Driver.Emulation.SetUserAgentOverrideAsync(parameters).ConfigureAwait(false);
+    }
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
@@ -223,7 +251,7 @@ internal class BrowsingContext : IDisposable
 
         Session.BrowsingContextContextDestroyed += (_, args) =>
         {
-            if (args.UserContextId != Id)
+            if (args.BrowsingContextId != Id)
             {
                 return;
             }
@@ -319,6 +347,16 @@ internal class BrowsingContext : IDisposable
             var userPrompt = Core.UserPrompt.From(this, args);
             OnUserPromptOpened(new UserPromptEventArgs(userPrompt));
         };
+
+        Session.LogEntryAdded += (_, args) =>
+        {
+            if (args.Source.Context != Id)
+            {
+                return;
+            }
+
+            OnLogEntry(args);
+        };
     }
 
     private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
@@ -345,4 +383,6 @@ internal class BrowsingContext : IDisposable
     private void OnWorker(DedicatedWorkerRealm args) => Worker?.Invoke(this, new WorkerRealmEventArgs(args));
 
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
+
+    private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
 }

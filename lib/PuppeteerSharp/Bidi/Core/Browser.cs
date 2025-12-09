@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Browser;
@@ -47,7 +48,11 @@ internal sealed class Browser(Session session) : IDisposable
 
     public bool IsClosed { get; set; }
 
+    public bool IsDisconnected => Reason != null;
+
     public string Reason { get; set; }
+
+    internal UserContext DefaultUserContext => _userContexts.TryGetValue(UserContext.DEFAULT, out var context) ? context : _userContexts.Values.FirstOrDefault();
 
     internal ICollection<UserContext> UserContexts => _userContexts.Values;
 
@@ -94,6 +99,11 @@ internal sealed class Browser(Session session) : IDisposable
     {
         var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
         return CreateUserContext(result.UserContextId);
+    }
+
+    public async Task RemoveInterceptAsync(string intercept)
+    {
+        await Session.Driver.Network.RemoveInterceptAsync(new WebDriverBiDi.Network.RemoveInterceptCommandParameters(intercept)).ConfigureAwait(false);
     }
 
     private void Dispose(string reason)

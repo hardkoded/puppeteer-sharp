@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -131,6 +130,18 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         await EvaluateAsync(true, false, script, args).ConfigureAwait(false);
     }
 
+    internal IJSHandle CreateHandle(RemoteValue remoteValue)
+    {
+        if (
+            remoteValue.Type is "node" or "window" &&
+            this is BidiFrameRealm)
+        {
+            return BidiElementHandle.From(remoteValue, this);
+        }
+
+        return BidiJSHandle.From(remoteValue, this);
+    }
+
     protected virtual void ThrowIfDetached()
     {
         // Base implementation does nothing
@@ -196,19 +207,27 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
         EvaluateResult result;
 
-        if (isExpression)
+        try
         {
-            result = await realm.EvaluateAsync(
-                functionDeclaration,
-                true,
-                options).ConfigureAwait(false);
+            if (isExpression)
+            {
+                result = await realm.EvaluateAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
+            else
+            {
+                result = await realm.CallFunctionAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
         }
-        else
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
         {
-            result = await realm.CallFunctionAsync(
-                functionDeclaration,
-                true,
-                options).ConfigureAwait(false);
+            throw new TargetClosedException("Protocol error", "Target.detachedFromTarget");
         }
 
         if (result.ResultType == EvaluateResultType.Exception)
@@ -408,6 +427,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 return LocalValue.Array(list.Select(el => el as LocalValue).ToList());
             case BidiJSHandle objectHandle:
+                // If the handle doesn't have a valid handle ID (e.g., from console log args),
+                // serialize its value directly instead of using it as a remote reference
+                if (string.IsNullOrEmpty(objectHandle.Id))
+                {
+                    return SerializeRemoteValue(objectHandle.RemoteValue);
+                }
+
                 return objectHandle.RemoteValue.ToRemoteReference();
             case BidiElementHandle elementHandle:
                 return elementHandle.Value.ToRemoteReference();
@@ -416,5 +442,63 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
 
         return null;
+    }
+
+    private LocalValue SerializeRemoteValue(RemoteValue remoteValue)
+    {
+        return remoteValue.Type switch
+        {
+            "undefined" => LocalValue.Undefined,
+            "null" => LocalValue.Null,
+            "string" => LocalValue.String((string)remoteValue.Value),
+            "number" => remoteValue.Value switch
+            {
+                long l => LocalValue.Number(l),
+                double d when double.IsPositiveInfinity(d) => LocalValue.Infinity,
+                double d when double.IsNegativeInfinity(d) => LocalValue.NegativeInfinity,
+                double d when double.IsNaN(d) => LocalValue.NaN,
+                double d => LocalValue.Number(d),
+                _ => LocalValue.Number(Convert.ToDouble(remoteValue.Value, CultureInfo.InvariantCulture)),
+            },
+            "boolean" => LocalValue.Boolean((bool)remoteValue.Value),
+            "bigint" => LocalValue.BigInt(BigInteger.Parse((string)remoteValue.Value, CultureInfo.InvariantCulture)),
+            "array" => SerializeRemoteValueArray(remoteValue.Value),
+            "object" => SerializeRemoteValueObject(remoteValue.Value),
+            _ => throw new PuppeteerException($"Cannot serialize RemoteValue of type '{remoteValue.Type}' without a handle"),
+        };
+    }
+
+    private LocalValue SerializeRemoteValueArray(object value)
+    {
+        var items = new List<LocalValue>();
+        if (value is IEnumerable<RemoteValue> remoteValues)
+        {
+            foreach (var item in remoteValues)
+            {
+                items.Add(SerializeRemoteValue(item));
+            }
+        }
+
+        return LocalValue.Array(items);
+    }
+
+    private LocalValue SerializeRemoteValueObject(object value)
+    {
+        var dict = new Dictionary<string, LocalValue>();
+        if (value is RemoteValueDictionary remoteDict)
+        {
+            foreach (var kvp in remoteDict)
+            {
+                var key = kvp.Key switch
+                {
+                    string s => s,
+                    _ => kvp.Key.ToString(),
+                };
+                var val = SerializeRemoteValue(kvp.Value);
+                dict[key] = val;
+            }
+        }
+
+        return LocalValue.Object(dict);
     }
 }

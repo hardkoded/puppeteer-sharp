@@ -11,23 +11,30 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var defaultContext = Browser.BrowserContexts()[0];
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            Assert.That(Browser.BrowserContexts().Length, Is.GreaterThanOrEqualTo(1));
+        }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should not be able to close default context")]
+        public void ShouldNotBeAbleToCloseDefaultContext()
+        {
+            var defaultContext = Browser.DefaultContext;
+            Assert.That(defaultContext, Is.Not.Null);
             var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
-            Assert.That(Browser.DefaultContext, Is.SameAs(defaultContext));
             Assert.That(exception!.Message, Does.Contain("cannot be closed"));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new incognito context")]
-        public async Task ShouldCreateNewIncognitoContext()
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new context")]
+        public async Task ShouldCreateNewContext()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            var contextCount = Browser.BrowserContexts().Length;
+            Assert.That(contextCount, Is.GreaterThanOrEqualTo(1));
             var context = await Browser.CreateBrowserContextAsync();
-            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount + 1));
             Assert.That(Browser.BrowserContexts(), Does.Contain(context));
             await context.CloseAsync();
             Assert.That(context.IsClosed, Is.True);
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should close all belonging targets once closing context")]
@@ -86,6 +93,9 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            var contextCount = Browser.BrowserContexts().Length;
+
             // Create two incognito contexts.
             var context1 = await Browser.CreateBrowserContextAsync();
             var context2 = await Browser.CreateBrowserContextAsync();
@@ -126,7 +136,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
             Assert.That(context1.IsClosed, Is.True);
             Assert.That(context2.IsClosed, Is.True);
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")]
@@ -149,12 +159,13 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
         public async Task ShouldProvideAContextId()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            Assert.That(Browser.BrowserContexts()[0].Id, Is.Null);
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            var contextCount = Browser.BrowserContexts().Length;
+            Assert.That(contextCount, Is.GreaterThanOrEqualTo(1));
 
             await using var context = await Browser.CreateBrowserContextAsync();
-            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
-            Assert.That(Browser.BrowserContexts()[1].Id, Is.Not.Null);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount + 1));
+            Assert.That(context.Id, Is.Not.Null);
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]

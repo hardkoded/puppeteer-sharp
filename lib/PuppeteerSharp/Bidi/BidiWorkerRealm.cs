@@ -21,32 +21,39 @@
 //  * SOFTWARE.
 
 using System.Threading.Tasks;
+using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings)
+internal class BidiWorkerRealm : BidiRealm
 {
-    private readonly WindowRealm _realm = realm;
+    private readonly DedicatedWorkerRealm _realm;
+    private readonly BidiWebWorker _worker;
     private readonly TaskQueue _puppeteerUtilQueue = new();
     private IJSHandle _puppeteerUtil;
 
-    internal override IEnvironment Environment => frame;
-
-    internal BidiFrame Frame => frame;
-
-    internal WindowRealm WindowRealm => _realm;
-
-    public static BidiFrameRealm From(WindowRealm realm, BidiFrame frame)
+    private BidiWorkerRealm(DedicatedWorkerRealm realm, BidiWebWorker worker)
+        : base(realm, worker.TimeoutSettings)
     {
-        var frameRealm = new BidiFrameRealm(realm, frame);
-        frameRealm.Initialize();
-        return frameRealm;
+        _realm = realm;
+        _worker = worker;
+    }
+
+    internal override IEnvironment Environment => _worker;
+
+    internal BidiWebWorker Worker => _worker;
+
+    public static BidiWorkerRealm From(DedicatedWorkerRealm realm, BidiWebWorker worker)
+    {
+        var workerRealm = new BidiWorkerRealm(realm, worker);
+        workerRealm.Initialize();
+        return workerRealm;
     }
 
     public override async Task<IJSHandle> GetPuppeteerUtilAsync()
     {
-        var scriptInjector = frame.BrowsingContext.Session.ScriptInjector;
+        var scriptInjector = _realm.Session.ScriptInjector;
 
         await _puppeteerUtilQueue.Enqueue(async () =>
         {
@@ -65,25 +72,20 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
                     _puppeteerUtil == null).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
-        return _puppeteerUtil;
-    }
 
-    protected override void ThrowIfDetached()
-    {
-        if (Frame.Detached)
-        {
-            throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
-        }
+        return _puppeteerUtil;
     }
 
     protected override void Initialize()
     {
         base.Initialize();
 
-        _realm.Updated += (_, __) =>
+        _realm.Destroyed += (sender, args) => Dispose();
+        _realm.Updated += (sender, args) =>
         {
-            (Environment as Frame)?.ClearDocumentHandle();
+            // Reset PuppeteerUtil when the realm is updated
             _puppeteerUtil = null;
+            TaskManager.RerunAll();
         };
     }
 }
