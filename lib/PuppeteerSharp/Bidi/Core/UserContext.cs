@@ -24,12 +24,16 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Permissions;
 
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class UserContext : IDisposable
 {
+    public const string DEFAULT = "default";
+
     private readonly ConcurrentDictionary<string, BrowsingContext> _browsingContexts = new();
     private string _reason;
 
@@ -89,6 +93,30 @@ internal class UserContext : IDisposable
         }
 
         return browsingContext;
+    }
+
+    public async Task RemoveAsync()
+    {
+        try
+        {
+            await Session.Driver.Browser.RemoveUserContextAsync(new RemoveUserContextCommandParameters(Id)).ConfigureAwait(false);
+        }
+        finally
+        {
+            Dispose("User context already closed.");
+        }
+    }
+
+    public async Task SetPermissionsAsync(
+        string origin,
+        string permissionName,
+        PermissionState state)
+    {
+        await Session.Driver.Permissions.SetPermissionAsync(
+            new SetPermissionCommandParameters(permissionName, state, origin)
+            {
+                UserContextId = Id,
+            }).ConfigureAwait(false);
     }
 
     private void Initialize()

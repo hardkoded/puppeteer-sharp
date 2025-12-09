@@ -968,13 +968,6 @@
     "comment": "In BiDi currently more events than needed are fired (because target is updated more often). We probably need to adjust the test as the behavior is not broken per se"
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should wait for a target",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2133,13 +2126,6 @@
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"],
     "comment": "Wheel event is not supported"
-  },
-  {
-    "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",

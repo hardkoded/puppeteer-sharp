@@ -21,6 +21,8 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebDriverBiDi.Network;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -52,10 +54,6 @@ internal class Request : IDisposable
 
     public string Navigation => _eventArgs.NavigationId;
 
-    public string Id => _eventArgs.Request.RequestId;
-
-    public Session Session => _browsingContext.UserContext.Browser.Session;
-
     public FetchTimingInfo Timings { get; private set; }
 
     public Request LastRedirect
@@ -74,9 +72,23 @@ internal class Request : IDisposable
 
     public string Url => _eventArgs.Request.Url;
 
+    public string Method => _eventArgs.Request.Method;
+
+    public IList<ReadOnlyHeader> Headers => _eventArgs.Request.Headers;
+
     public WebDriverBiDi.Network.ResponseData Response => _response;
 
     public bool HasError => _error != null;
+
+    public bool IsBlocked => _eventArgs.IsBlocked;
+
+    public string ErrorText => _error;
+
+    public ulong RedirectCount => _eventArgs.RedirectCount;
+
+    private string Id => _eventArgs.Request.RequestId;
+
+    private Session Session => _browsingContext.UserContext.Browser.Session;
 
     public static Request From(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
@@ -90,16 +102,54 @@ internal class Request : IDisposable
         IsDisposed = true;
     }
 
+    internal async Task ContinueRequestAsync(
+        string url = null,
+        string method = null,
+        List<Header> headers = null,
+        BytesValue body = null)
+    {
+        var commandParams = new ContinueRequestCommandParameters(Id)
+        {
+            Url = url,
+            Method = method,
+            Headers = headers,
+            Body = body,
+        };
+        await Session.Driver.Network.ContinueRequestAsync(commandParams).ConfigureAwait(false);
+    }
+
+    internal async Task FailRequestAsync()
+    {
+        var commandParams = new FailRequestCommandParameters(Id);
+        await Session.Driver.Network.FailRequestAsync(commandParams).ConfigureAwait(false);
+    }
+
+    internal async Task ProvideResponseAsync(
+        uint? statusCode = null,
+        string reasonPhrase = null,
+        List<Header> headers = null,
+        BytesValue body = null)
+    {
+        var commandParams = new ProvideResponseCommandParameters(Id)
+        {
+            StatusCode = statusCode,
+            ReasonPhrase = reasonPhrase,
+            Headers = headers,
+            Body = body,
+        };
+        await Session.Driver.Network.ProvideResponseAsync(commandParams).ConfigureAwait(false);
+    }
+
     private void Initialize()
     {
-        _browsingContext.Closed += (sender, args) =>
+        _browsingContext.Closed += (_, args) =>
         {
             _error = args.Reason;
             OnError(_error);
             Dispose();
         };
 
-        Session.NetworkBeforeRequestSent += (sender, args) =>
+        Session.NetworkBeforeRequestSent += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id ||
                args.Request.RequestId != Id ||
@@ -113,7 +163,7 @@ internal class Request : IDisposable
             Dispose();
         };
 
-        Session.NetworkAuthRequired += (sender, args) =>
+        Session.NetworkAuthRequired += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id || !args.IsBlocked)
             {
@@ -123,7 +173,7 @@ internal class Request : IDisposable
             OnAuthenticate();
         };
 
-        Session.NetworkFetchError += (sender, args) =>
+        Session.NetworkFetchError += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id || args.Request.RequestId != Id || args.RedirectCount != _eventArgs.RedirectCount)
             {
@@ -135,7 +185,7 @@ internal class Request : IDisposable
             Dispose();
         };
 
-        Session.NetworkResponseComplete += (sender, args) =>
+        Session.NetworkResponseComplete += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id ||
                 args.Request.RequestId != Id ||

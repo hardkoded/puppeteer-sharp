@@ -38,7 +38,7 @@ public class BidiFrame : Frame
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
     private readonly Realms _realms;
 
-    internal BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
+    private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
         ParentPage = parentPage;
@@ -396,6 +396,65 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
 
+    private static ConsoleType ConvertConsoleMessageLevel(string method)
+    {
+        return method switch
+        {
+            "group" => ConsoleType.StartGroup,
+            "groupCollapsed" => ConsoleType.StartGroupCollapsed,
+            "groupEnd" => ConsoleType.EndGroup,
+            "log" => ConsoleType.Log,
+            "debug" => ConsoleType.Debug,
+            "info" => ConsoleType.Info,
+            "error" => ConsoleType.Error,
+            "warn" => ConsoleType.Warning,
+            "dir" => ConsoleType.Dir,
+            "dirxml" => ConsoleType.Dirxml,
+            "table" => ConsoleType.Table,
+            "trace" => ConsoleType.Trace,
+            "clear" => ConsoleType.Clear,
+            "assert" => ConsoleType.Assert,
+            "profile" => ConsoleType.Profile,
+            "profileEnd" => ConsoleType.ProfileEnd,
+            "count" => ConsoleType.Count,
+            "timeEnd" => ConsoleType.TimeEnd,
+            "verbose" => ConsoleType.Verbose,
+            "timeStamp" => ConsoleType.Timestamp,
+            _ => ConsoleType.Log,
+        };
+    }
+
+    private static ConsoleMessageLocation GetStackTraceLocation(WebDriverBiDi.Script.StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            var callFrame = stackTrace.CallFrames[0];
+            return new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            };
+        }
+
+        return null;
+    }
+
+    private static IList<ConsoleMessageLocation> GetStackTrace(WebDriverBiDi.Script.StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            }).ToList();
+        }
+
+        return [];
+    }
+
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
     {
         return ex is TimeoutException
@@ -579,6 +638,76 @@ public class BidiFrame : Frame
             var dialog = BidiDialog.From(args.UserPrompt);
             ((Page)Page).OnDialog(new DialogEventArgs(dialog));
         };
+
+        BrowsingContext.Log += (sender, args) =>
+        {
+            if (Id != args.Source.Context)
+            {
+                return;
+            }
+
+            if (args.Type == "console")
+            {
+                var consoleArgs = args.Arguments;
+                var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
+
+                var text = string.Join(
+                    " ",
+                    handleArgs.Select(arg =>
+                    {
+                        if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
+                        {
+                            return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                        }
+
+                        return arg.ToString();
+                    })).Trim();
+
+                var location = GetStackTraceLocation(args.StackTrace);
+                var stackTrace = GetStackTrace(args.StackTrace);
+
+                var consoleMessage = new ConsoleMessage(
+                    ConvertConsoleMessageLevel(args.Method),
+                    text,
+                    handleArgs,
+                    location,
+                    stackTrace);
+
+                BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
+            }
+            else if (args.Type == "javascript")
+            {
+                var text = args.Text ?? string.Empty;
+                var messageLines = new List<string> { text };
+
+                var stackLines = new List<string>();
+                if (args.StackTrace != null)
+                {
+                    foreach (var frame in args.StackTrace.CallFrames)
+                    {
+                        stackLines.Add($"    at {(string.IsNullOrEmpty(frame.FunctionName) ? "<anonymous>" : frame.FunctionName)} ({frame.Url}:{frame.LineNumber + 1}:{frame.ColumnNumber + 1})");
+                        if (stackLines.Count >= 10)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                var fullStack = string.Join("\n", messageLines.Concat(stackLines));
+                BidiPage.OnPageError(new PageErrorEventArgs(fullStack));
+            }
+        };
+
+        // Wire up worker events
+        BrowsingContext.Worker += (_, args) =>
+        {
+            var worker = BidiWebWorker.From(this, args.Realm);
+            args.Realm.Destroyed += (_, _) =>
+            {
+                BidiPage.OnWorkerDestroyed(worker);
+            };
+            BidiPage.OnWorkerCreated(worker);
+        };
     }
 
     private void CreateFrameTarget(BrowsingContext browsingContext)
@@ -587,7 +716,7 @@ public class BidiFrame : Frame
         _frames.TryAdd(browsingContext, frame);
         ((BidiPage)Page).OnFrameAttached(new FrameEventArgs(frame));
 
-        browsingContext.Closed += (sender, args) =>
+        browsingContext.Closed += (_, _) =>
         {
             _frames.TryRemove(browsingContext, out var _);
         };

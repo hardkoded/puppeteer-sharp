@@ -124,16 +124,19 @@ namespace PuppeteerSharp.Nunit
             // Join local and upstream in one variable
             var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
 
+            var testIdStr = ToString();
+
             foreach (var expectation in allExpectations)
             {
-                if (expectation.TestIdRegex.IsMatch(ToString()))
+                if (expectation.TestIdRegex.IsMatch(testIdStr))
                 {
-                    if (expectation.Platforms.Contains(currentExpectationPlatform) &&
-                        expectation.Parameters.All(parameters.Contains) &&
-                        (
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                    var platformMatch = expectation.Platforms.Contains(currentExpectationPlatform);
+                    var paramsMatch = expectation.Parameters.All(parameters.Contains);
+                    var expMatch = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
                             expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout)))
+                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+
+                    if (platformMatch && paramsMatch && expMatch)
                     {
                         output = expectation;
                         return true;

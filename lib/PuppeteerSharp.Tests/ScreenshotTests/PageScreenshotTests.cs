@@ -100,7 +100,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-clip-rect.png", screenshot), Is.True);
         }
 
-        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should use scale for clip")]
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should use scale for clip")]
         public async Task ShouldUseScaleForClip()
         {
             await using var page = await Context.NewPageAsync();
@@ -152,14 +152,14 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldClipElementsToTheViewport()
         {
             await using var page = await Context.NewPageAsync();
-            await page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
                 {
-                    X = 50,
-                    Y = 600,
+                    X = 25,
+                    Y = 25,
                     Width = 100,
                     Height = 100
                 }
@@ -314,6 +314,8 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
         public async Task ShouldWorkWithOddClipSizeOnRetinaDisplays()
         {
             await using var page = await Context.NewPageAsync();
+            // Make sure documentElement height is at least 11px.
+            await page.SetContentAsync("<div style=\"width: 11px; height: 11px;\"></div>");
             var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Clip = new Clip
