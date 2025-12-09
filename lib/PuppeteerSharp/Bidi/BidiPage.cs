@@ -160,7 +160,8 @@ public class BidiPage : Page
         => _cdpEmulationManager.EmulateIdleStateAsync(idleOverrides);
 
     /// <inheritdoc />
-    public override Task EmulateCPUThrottlingAsync(decimal? factor = null) => throw new NotImplementedException();
+    public override Task EmulateCPUThrottlingAsync(decimal? factor = null)
+        => _cdpEmulationManager.EmulateCPUThrottlingAsync(factor);
 
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
