@@ -132,6 +132,11 @@ public class BidiFrame : Frame
         {
             throw;
         }
+        catch (PuppeteerException ex) when (ex.Message == "Navigating frame was detached")
+        {
+            // Convert frame detachment to NavigationException for GoToAsync
+            throw new NavigationException(ex.Message, url, ex);
+        }
         catch (Exception ex)
         {
             throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
@@ -145,242 +150,246 @@ public class BidiFrame : Frame
     {
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
-        async Task<Navigation> WaitForEventNavigationAsync()
+        // Setup frame detachment handler at the outer level to race with the entire navigation
+        var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        void OnFrameDetached(object sender, ClosedEventArgs args)
         {
-            // Wait for navigation or history updated event
-            var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var historyUpdatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            void OnNavigation(object sender, BrowserContextNavigationEventArgs args)
-            {
-                navigationTcs.TrySetResult(args.Navigation);
-            }
-
-            void OnHistoryUpdated(object sender, EventArgs args)
-            {
-                historyUpdatedTcs.TrySetResult(true);
-            }
-
-            BrowsingContext.Navigation += OnNavigation;
-            BrowsingContext.HistoryUpdated += OnHistoryUpdated;
-
-            try
-            {
-                // Wait for either event
-                var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task).ConfigureAwait(false);
-
-                if (completedTask == historyUpdatedTcs.Task)
-                {
-                    var delay = Task.Delay(100);
-                    await Task.WhenAny(navigationTcs.Task, delay).ConfigureAwait(false);
-
-                    if (!navigationTcs.Task.IsCompleted)
-                    {
-                        return null;
-                    }
-                }
-
-                var navigation = navigationTcs.Task.Result;
-
-                // Collect child frames for detachment tracking
-                var childFrames = ChildFrames.Cast<BidiFrame>().ToList();
-                var childFrameDetachedTasks = childFrames.Select(frame =>
-                {
-                    var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    void OnClosed(object sender, ClosedEventArgs args) => tcs.TrySetResult(true);
-                    frame.BrowsingContext.Closed += OnClosed;
-
-                    // Clean up handler when task completes
-                    tcs.Task.ContinueWith(_ => frame.BrowsingContext.Closed -= OnClosed, TaskScheduler.Default);
-                    return tcs.Task;
-                }).ToList();
-
-                // Wait for load events first
-                var waitForLoadTask = WaitForLoadAsync(options);
-
-                // Setup fragment, failed, and aborted event handlers
-                Task<bool> waitForFragmentTask;
-                if (navigation.FragmentReceived)
-                {
-                    waitForFragmentTask = Task.FromResult(true);
-                }
-                else
-                {
-                    var fragmentTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    void OnFragment(object sender, NavigationEventArgs args) => fragmentTcs.TrySetResult(true);
-                    navigation.Fragment += OnFragment;
-                    waitForFragmentTask = fragmentTcs.Task;
-                    _ = waitForFragmentTask.ContinueWith(_ => navigation.Fragment -= OnFragment, TaskScheduler.Default);
-                }
-
-                var failedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                navigation.Failed += OnFailed;
-                var waitForFailedTask = failedTcs.Task;
-                _ = waitForFailedTask.ContinueWith(_ => navigation.Failed -= OnFailed, TaskScheduler.Default);
-
-                var abortedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                navigation.Aborted += OnAborted;
-                var waitForAbortedTask = abortedTcs.Task;
-                _ = waitForAbortedTask.ContinueWith(_ => navigation.Aborted -= OnAborted, TaskScheduler.Default);
-
-                // Setup frame detachment handler
-                var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-                BrowsingContext.Closed += OnFrameDetached;
-                var frameDetachedTask = frameDetachedTcs.Task;
-                _ = frameDetachedTask.ContinueWith(_ => BrowsingContext.Closed -= OnFrameDetached, TaskScheduler.Default);
-
-                // Create a task that waits for load, then child frames to detach
-                var waitForLoadAndChildFramesTask = Task.Run(async () =>
-                {
-                    await waitForLoadTask.ConfigureAwait(false);
-
-                    if (childFrameDetachedTasks.Count > 0)
-                    {
-                        await Task.WhenAll(childFrameDetachedTasks).ConfigureAwait(false);
-                    }
-                });
-
-                // Race between (load+childFrames) and fragment/failed/aborted/frameDetached
-                // Any of these events can complete the navigation
-                await Task.WhenAny(
-                    waitForLoadAndChildFramesTask,
-                    waitForFragmentTask,
-                    waitForFailedTask,
-                    waitForAbortedTask,
-                    frameDetachedTask).ConfigureAwait(false);
-
-                // If the frame was detached, the exception will be thrown here
-                if (frameDetachedTask.IsCompleted && frameDetachedTask.IsFaulted)
-                {
-                    await frameDetachedTask.ConfigureAwait(false);
-                }
-
-                // Wait for request to be created if we don't have one yet
-                if (navigation.Request == null)
-                {
-                    var requestCreatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    void OnRequestCreated(object sender, Core.RequestEventArgs args) => requestCreatedTcs.TrySetResult(true);
-
-                    navigation.RequestCreated += OnRequestCreated;
-
-                    // Wait up to 1 second for request to be created
-                    // If it doesn't happen, it means this is a cached/history navigation
-                    var requestCreatedTask = requestCreatedTcs.Task;
-                    var delay = Task.Delay(1000);
-                    await Task.WhenAny(requestCreatedTask, delay).ConfigureAwait(false);
-
-                    navigation.RequestCreated -= OnRequestCreated;
-                }
-
-                // Wait for request completion if navigation has a request
-                if (navigation.Request != null)
-                {
-                    await WaitForRequestFinishedAsync(navigation.Request).ConfigureAwait(false);
-                }
-
-                return navigation;
-
-                void OnAborted(object sender, NavigationEventArgs args) => abortedTcs.TrySetResult(true);
-
-                void OnFrameDetached(object sender, ClosedEventArgs args)
-                {
-                    frameDetachedTcs.TrySetException(new TargetClosedException("Frame detached."));
-                }
-
-                void OnFailed(object sender, NavigationEventArgs args) => failedTcs.TrySetResult(true);
-            }
-            finally
-            {
-                BrowsingContext.Navigation -= OnNavigation;
-                BrowsingContext.HistoryUpdated -= OnHistoryUpdated;
-            }
+            frameDetachedTcs.TrySetException(new PuppeteerException("Navigating frame was detached"));
         }
 
-        var waitForEventNavigationTask = WaitForEventNavigationAsync();
-        var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
+        BrowsingContext.Closed += OnFrameDetached;
 
-        var waitForResponse = new Func<Task<IResponse>>(async () =>
+        try
         {
-            await Task.WhenAll(waitForEventNavigationTask, waitForNetworkIdleTask).ConfigureAwait(false);
-            var navigation = waitForEventNavigationTask.Result;
-
-            // Navigation might be null
-            if (navigation == null)
+            async Task<Navigation> WaitForEventNavigationAsync()
             {
-                return null;
+                // Wait for navigation or history updated event
+                var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var historyUpdatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                void OnNavigation(object sender, BrowserContextNavigationEventArgs args)
+                {
+                    navigationTcs.TrySetResult(args.Navigation);
+                }
+
+                void OnHistoryUpdated(object sender, EventArgs args)
+                {
+                    historyUpdatedTcs.TrySetResult(true);
+                }
+
+                BrowsingContext.Navigation += OnNavigation;
+                BrowsingContext.HistoryUpdated += OnHistoryUpdated;
+
+                try
+                {
+                    // Wait for either event
+                    var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task).ConfigureAwait(false);
+
+                    if (completedTask == historyUpdatedTcs.Task)
+                    {
+                        var delay = Task.Delay(100);
+                        await Task.WhenAny(navigationTcs.Task, delay).ConfigureAwait(false);
+
+                        if (!navigationTcs.Task.IsCompleted)
+                        {
+                            return null;
+                        }
+                    }
+
+                    var navigation = navigationTcs.Task.Result;
+
+                    // Collect child frames for detachment tracking
+                    var childFrames = ChildFrames.Cast<BidiFrame>().ToList();
+                    var childFrameDetachedTasks = childFrames.Select(frame =>
+                    {
+                        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                        void OnClosed(object sender, ClosedEventArgs args) => tcs.TrySetResult(true);
+                        frame.BrowsingContext.Closed += OnClosed;
+
+                        // Clean up handler when task completes
+                        tcs.Task.ContinueWith(_ => frame.BrowsingContext.Closed -= OnClosed, TaskScheduler.Default);
+                        return tcs.Task;
+                    }).ToList();
+
+                    // Wait for load events first
+                    var waitForLoadTask = WaitForLoadAsync(options);
+
+                    // Setup fragment, failed, and aborted event handlers
+                    Task<bool> waitForFragmentTask;
+                    if (navigation.FragmentReceived)
+                    {
+                        waitForFragmentTask = Task.FromResult(true);
+                    }
+                    else
+                    {
+                        var fragmentTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                        void OnFragment(object sender, NavigationEventArgs args) => fragmentTcs.TrySetResult(true);
+                        navigation.Fragment += OnFragment;
+                        waitForFragmentTask = fragmentTcs.Task;
+                        _ = waitForFragmentTask.ContinueWith(_ => navigation.Fragment -= OnFragment, TaskScheduler.Default);
+                    }
+
+                    var failedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    navigation.Failed += OnFailed;
+                    var waitForFailedTask = failedTcs.Task;
+                    _ = waitForFailedTask.ContinueWith(_ => navigation.Failed -= OnFailed, TaskScheduler.Default);
+
+                    var abortedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    navigation.Aborted += OnAborted;
+                    var waitForAbortedTask = abortedTcs.Task;
+                    _ = waitForAbortedTask.ContinueWith(_ => navigation.Aborted -= OnAborted, TaskScheduler.Default);
+
+                    // Create a task that waits for load, then child frames to detach
+                    var waitForLoadAndChildFramesTask = Task.Run(async () =>
+                    {
+                        await waitForLoadTask.ConfigureAwait(false);
+
+                        if (childFrameDetachedTasks.Count > 0)
+                        {
+                            await Task.WhenAll(childFrameDetachedTasks).ConfigureAwait(false);
+                        }
+                    });
+
+                    // Race between (load+childFrames) and fragment/failed/aborted
+                    // Any of these events can complete the navigation
+                    await Task.WhenAny(
+                        waitForLoadAndChildFramesTask,
+                        waitForFragmentTask,
+                        waitForFailedTask,
+                        waitForAbortedTask).ConfigureAwait(false);
+
+                    // Wait for request to be created if we don't have one yet
+                    if (navigation.Request == null)
+                    {
+                        var requestCreatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                        void OnRequestCreated(object sender, Core.RequestEventArgs args) => requestCreatedTcs.TrySetResult(true);
+
+                        navigation.RequestCreated += OnRequestCreated;
+
+                        // Wait up to 1 second for request to be created
+                        // If it doesn't happen, it means this is a cached/history navigation
+                        var requestCreatedTask = requestCreatedTcs.Task;
+                        var delay = Task.Delay(1000);
+                        await Task.WhenAny(requestCreatedTask, delay).ConfigureAwait(false);
+
+                        navigation.RequestCreated -= OnRequestCreated;
+                    }
+
+                    // Wait for request completion if navigation has a request
+                    if (navigation.Request != null)
+                    {
+                        await WaitForRequestFinishedAsync(navigation.Request).ConfigureAwait(false);
+                    }
+
+                    return navigation;
+
+                    void OnAborted(object sender, NavigationEventArgs args) => abortedTcs.TrySetResult(true);
+
+                    void OnFailed(object sender, NavigationEventArgs args) => failedTcs.TrySetResult(true);
+                }
+                finally
+                {
+                    BrowsingContext.Navigation -= OnNavigation;
+                    BrowsingContext.HistoryUpdated -= OnHistoryUpdated;
+                }
             }
 
-            // If there's no request associated with this navigation after waiting,
-            // it means this is either:
-            // 1. A special URL like about:blank (no network request) - return null
-            // 2. A cached history navigation (GoBack/GoForward) - create synthetic response
-            // See: https://github.com/w3c/webdriver-bidi/issues/502
-            var request = navigation.Request;
+            var waitForEventNavigationTask = WaitForEventNavigationAsync();
+            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
-            if (request == null)
+            var waitForResponse = new Func<Task<IResponse>>(async () =>
             {
-                var url = BrowsingContext.Url;
+                await Task.WhenAll(waitForEventNavigationTask, waitForNetworkIdleTask).ConfigureAwait(false);
+                var navigation = waitForEventNavigationTask.Result;
 
-                // Special URLs like about:blank don't have network requests
-                if (url.StartsWith("about:", StringComparison.OrdinalIgnoreCase) ||
-                    url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                // Navigation might be null
+                if (navigation == null)
                 {
                     return null;
                 }
 
-                // For cached history navigations, create a synthetic response
-                return BidiHttpResponse.FromCachedNavigation(url);
-            }
+                // If there's no request associated with this navigation after waiting,
+                // it means this is either:
+                // 1. A special URL like about:blank (no network request) - return null
+                // 2. A cached history navigation (GoBack/GoForward) - create synthetic response
+                // See: https://github.com/w3c/webdriver-bidi/issues/502
+                var request = navigation.Request;
 
-            var lastRequest = request.LastRedirect ?? request;
-
-            // Try to get the BidiHttpRequest wrapper
-            if (BidiHttpRequest.Requests.TryGetValue(lastRequest, out var httpRequest))
-            {
-                return httpRequest?.Response;
-            }
-
-            // If not found (e.g., history navigation), check if the Core.Request has a response
-            // and create a BidiHttpResponse from it
-            if (lastRequest.Response != null)
-            {
-                // For history navigations, create the BidiHttpRequest wrapper
-                // It might already have a response or the Success event might have already fired
-                var bidiRequest = BidiHttpRequest.From(lastRequest, this, null);
-
-                // If the response isn't set yet (because Success event already fired before handler was attached),
-                // we need to trigger the response creation manually
-                if (bidiRequest.Response == null)
+                if (request == null)
                 {
-                    // Create the response directly since the Success event was missed
-                    var response = BidiHttpResponse.From(lastRequest.Response, bidiRequest, BidiPage.BidiBrowser.CdpSupported);
-                    return response;
+                    var url = BrowsingContext.Url;
+
+                    // Special URLs like about:blank don't have network requests
+                    if (url.StartsWith("about:", StringComparison.OrdinalIgnoreCase) ||
+                        url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return null;
+                    }
+
+                    // For cached history navigations, create a synthetic response
+                    return BidiHttpResponse.FromCachedNavigation(url);
                 }
 
-                return bidiRequest.Response;
+                var lastRequest = request.LastRedirect ?? request;
+
+                // Try to get the BidiHttpRequest wrapper
+                if (BidiHttpRequest.Requests.TryGetValue(lastRequest, out var httpRequest))
+                {
+                    return httpRequest?.Response;
+                }
+
+                // If not found (e.g., history navigation), check if the Core.Request has a response
+                // and create a BidiHttpResponse from it
+                if (lastRequest.Response != null)
+                {
+                    // For history navigations, create the BidiHttpRequest wrapper
+                    // It might already have a response or the Success event might have already fired
+                    var bidiRequest = BidiHttpRequest.From(lastRequest, this, null);
+
+                    // If the response isn't set yet (because Success event already fired before handler was attached),
+                    // we need to trigger the response creation manually
+                    if (bidiRequest.Response == null)
+                    {
+                        // Create the response directly since the Success event was missed
+                        var response = BidiHttpResponse.From(lastRequest.Response, bidiRequest, BidiPage.BidiBrowser.CdpSupported);
+                        return response;
+                    }
+
+                    return bidiRequest.Response;
+                }
+
+                return null;
+            });
+
+            var waitForResponseTask = waitForResponse();
+
+            // Handle cancellation token if provided
+            var tasksToRace = new List<Task> { waitForResponseTask, frameDetachedTcs.Task };
+
+            if (options?.CancellationToken.HasValue == true)
+            {
+                var cancellationToken = options.CancellationToken.Value;
+                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+                tasksToRace.Add(cancellationTcs.Task);
             }
 
-            return null;
-        });
+            var completedTask = await Task.WhenAny(tasksToRace).WithTimeout(timeout).ConfigureAwait(false);
 
-        var waitForResponseTask = waitForResponse();
+            // Check if frame was detached - re-throw the exception if so
+            if (frameDetachedTcs.Task.IsCompleted)
+            {
+                await frameDetachedTcs.Task.ConfigureAwait(false);
+            }
 
-        // Handle cancellation token if provided
-        var tasksToRace = new List<Task> { waitForResponseTask };
-
-        if (options?.CancellationToken.HasValue == true)
-        {
-            var cancellationToken = options.CancellationToken.Value;
-            var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
-            tasksToRace.Add(cancellationTcs.Task);
+            var result = await waitForResponseTask.ConfigureAwait(false);
+            return result;
         }
-
-        await Task.WhenAny(tasksToRace).WithTimeout(timeout).ConfigureAwait(false);
-
-        var result = waitForResponseTask.Result;
-        return result;
+        finally
+        {
+            BrowsingContext.Closed -= OnFrameDetached;
+        }
     }
 
     internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
