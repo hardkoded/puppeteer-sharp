@@ -214,7 +214,95 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null) => throw new NotImplementedException();
+    public override async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
+    {
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var idleTime = options?.IdleTime ?? 500;
+
+        var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var idleTimer = new System.Timers.Timer { Interval = idleTime, AutoReset = false };
+
+        idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
+
+        var inflightRequests = 0;
+        var requestLock = new object();
+
+        void Evaluate()
+        {
+            idleTimer.Stop();
+
+            lock (requestLock)
+            {
+                if (inflightRequests == 0)
+                {
+                    idleTimer.Start();
+                }
+            }
+        }
+
+        void RequestEventListener(object sender, RequestEventArgs e)
+        {
+            lock (requestLock)
+            {
+                inflightRequests++;
+            }
+
+            Evaluate();
+        }
+
+        void RequestFinishedEventListener(object sender, RequestEventArgs e)
+        {
+            lock (requestLock)
+            {
+                inflightRequests = Math.Max(0, inflightRequests - 1);
+            }
+
+            Evaluate();
+        }
+
+        void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
+        {
+            lock (requestLock)
+            {
+                inflightRequests = Math.Max(0, inflightRequests - 1);
+            }
+
+            Evaluate();
+        }
+
+        void Cleanup()
+        {
+            idleTimer.Stop();
+            idleTimer.Dispose();
+
+            Request -= RequestEventListener;
+            RequestFinished -= RequestFinishedEventListener;
+            RequestFailed -= RequestFinishedEventListener;
+            Response -= ResponseEventListener;
+        }
+
+        Request += RequestEventListener;
+        RequestFinished += RequestFinishedEventListener;
+        RequestFailed += RequestFinishedEventListener;
+        Response += ResponseEventListener;
+
+        Evaluate();
+
+        await Task.WhenAny(networkIdleTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+        {
+            Cleanup();
+
+            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
+        }).ConfigureAwait(false);
+
+        Cleanup();
+
+        if (ClosedTask.IsFaulted)
+        {
+            await ClosedTask.ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc />
     public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
