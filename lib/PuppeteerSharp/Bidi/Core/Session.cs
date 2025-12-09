@@ -64,6 +64,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public event EventHandler<ResponseCompletedEventArgs> NetworkResponseComplete;
 
+    public event EventHandler<ResponseStartedEventArgs> NetworkResponseStarted;
+
     public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptOpenedEventArgs> BrowsingContextUserPromptOpened;
 
     public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs> BrowsingContextUserPromptClosed;
@@ -117,6 +119,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.Network.OnBeforeRequestSent.AddObserver(OnBeforeRequestSent);
         Driver.Network.OnAuthRequired.AddObserver(OnNetworkAuthRequired);
         Driver.Network.OnFetchError.AddObserver(OnNetworkFetchError);
+        Driver.Network.OnResponseStarted.AddObserver(OnNetworkResponseStarted);
         Driver.Network.OnResponseCompleted.AddObserver(OnNetworkResponseCompleted);
         Driver.BrowsingContext.OnUserPromptOpened.AddObserver(OnBrowsingContextUserPromptOpened);
         Driver.BrowsingContext.OnUserPromptClosed.AddObserver(OnBrowsingContextUserPromptClosed);
@@ -136,6 +139,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     }
 
     private void OnNetworkResponseCompleted(ResponseCompletedEventArgs obj) => NetworkResponseComplete?.Invoke(this, obj);
+
+    private void OnNetworkResponseStarted(ResponseStartedEventArgs obj) => NetworkResponseStarted?.Invoke(this, obj);
 
     private void OnNetworkFetchError(FetchErrorEventArgs obj) => NetworkFetchError?.Invoke(this, obj);
 

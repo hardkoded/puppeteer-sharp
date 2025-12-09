@@ -42,7 +42,7 @@ public class BidiPage : Page
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
-    private string _userAgentInterception;
+    private string _extraHeadersInterception;
     private bool _isJavaScriptEnabled = true;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
@@ -95,6 +95,8 @@ public class BidiPage : Page
 
     internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
+    internal bool IsNetworkInterceptionEnabled => _requestInterception != null;
+
     /// <inheritdoc />
     protected override Browser Browser { get; }
 
@@ -119,7 +121,26 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers) => throw new NotImplementedException();
+    public override async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
+    {
+        // Clear existing extra headers
+        ExtraHttpHeaders.Clear();
+
+        // Add the new headers (normalized to lowercase keys as per upstream)
+        if (headers != null)
+        {
+            foreach (var kvp in headers)
+            {
+                ExtraHttpHeaders[kvp.Key.ToLowerInvariant()] = kvp.Value;
+            }
+        }
+
+        // Toggle network interception for BeforeRequestSent phase
+        _extraHeadersInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.BeforeRequestSent],
+            _extraHeadersInterception,
+            !ExtraHttpHeaders.IsEmpty).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task AuthenticateAsync(Credentials credentials) => throw new NotImplementedException();
@@ -144,27 +165,52 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        var navOptions = options == null
-            ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
-            : options with { IgnoreSameDocumentNavigation = true };
-        var waitForNavigationTask = WaitForNavigationAsync(navOptions);
-        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+        // When interception is enabled on Firefox BiDi, the browser doesn't send
+        // BeforeRequestSent events for reload commands, which causes the request
+        // to hang indefinitely. Work around this by temporarily disabling interception,
+        // performing the reload, and re-enabling interception.
+        // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948
+#pragma warning disable CA2249 // IndexOf is needed for .NET Standard 2.0 compatibility
+        var isFirefox = BidiBrowser.BrowserName.IndexOf("Firefox", StringComparison.OrdinalIgnoreCase) >= 0;
+#pragma warning restore CA2249
+        var hadInterception = IsNetworkInterceptionEnabled;
+
+        if (hadInterception && isFirefox)
+        {
+            await SetRequestInterceptionAsync(false).ConfigureAwait(false);
+        }
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("no such history entry"))
+            var navOptions = options == null
+                ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
+                : options with { IgnoreSameDocumentNavigation = true };
+            var waitForNavigationTask = WaitForNavigationAsync(navOptions);
+            var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+
+            try
             {
-                return null;
+                await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("no such history entry"))
+                {
+                    return null;
+                }
+
+                throw new NavigationException(ex.Message, ex);
             }
 
-            throw new NavigationException(ex.Message, ex);
+            return waitForNavigationTask.Result;
         }
-
-        return waitForNavigationTask.Result;
+        finally
+        {
+            if (hadInterception && isFirefox)
+            {
+                await SetRequestInterceptionAsync(true).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -192,19 +238,42 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> WaitForResponseAsync(Func<IResponse, Task<bool>> predicate, WaitForOptions options = null)
     {
-        // TODO: Implement full network response monitoring for BiDi
-        // For now, this creates a task that will be faulted when the page closes
         var timeout = options?.Timeout ?? DefaultTimeout;
         var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout).ConfigureAwait(false);
-
-        if (ClosedTask.IsFaulted)
+        async void ResponseHandler(object sender, ResponseCreatedEventArgs e)
         {
-            await ClosedTask.ConfigureAwait(false);
+            try
+            {
+                if (await predicate(e.Response).ConfigureAwait(false))
+                {
+                    responseTcs.TrySetResult(e.Response);
+                }
+            }
+            catch (Exception ex)
+            {
+                responseTcs.TrySetException(ex);
+            }
         }
 
-        return await responseTcs.Task.ConfigureAwait(false);
+        Response += ResponseHandler;
+
+        try
+        {
+            await Task.WhenAny(responseTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+                new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+            if (ClosedTask.IsFaulted)
+            {
+                await ClosedTask.ConfigureAwait(false);
+            }
+
+            return await responseTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            Response -= ResponseHandler;
+        }
     }
 
     /// <inheritdoc />
@@ -313,35 +382,7 @@ public class BidiPage : Page
 
         var enable = !string.IsNullOrEmpty(userAgent);
 
-        // Update the UserAgentHeaders dictionary
-        UserAgentHeaders.Clear();
-        if (enable)
-        {
-            UserAgentHeaders["User-Agent"] = userAgent;
-        }
-
-        // Toggle network interception for BeforeRequestSent phase
-        _userAgentInterception = await ToggleInterceptionAsync(
-            [InterceptPhase.BeforeRequestSent],
-            _userAgentInterception,
-            enable).ConfigureAwait(false);
-
-        // Override navigator.userAgent in JavaScript for all frames
-        var overrideNavigatorUserAgent = @"(userAgent) => {
-            Object.defineProperty(navigator, 'userAgent', {
-                value: userAgent,
-                configurable: true,
-            });
-        }";
-
-        var frames = Frames;
-        var tasks = new List<Task>(frames.Length);
-        foreach (var frame in frames)
-        {
-            tasks.Add(frame.EvaluateFunctionAsync(overrideNavigatorUserAgent, userAgent));
-        }
-
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+        await BidiMainFrame.BrowsingContext.SetUserAgentAsync(enable ? userAgent : null).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -762,7 +803,8 @@ public class BidiPage : Page
                 options.Phases.Add(phase);
             }
 
-            return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+            var interceptId = await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
+            return interceptId;
         }
         else if (!expected && interception != null)
         {
