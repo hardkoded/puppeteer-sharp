@@ -367,7 +367,7 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task EmulateMediaTypeAsync(MediaType type) => throw new NotImplementedException();
+    public override Task EmulateMediaTypeAsync(MediaType type) => _cdpEmulationManager.EmulateMediaTypeAsync(type);
 
     /// <inheritdoc />
     public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) => throw new NotImplementedException();
