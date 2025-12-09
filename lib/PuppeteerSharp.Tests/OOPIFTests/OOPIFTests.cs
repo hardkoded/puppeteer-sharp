@@ -17,16 +17,23 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
 
-            // Only set Chrome-specific args when running with Chrome
-            // Firefox doesn't support --site-per-process and other Chrome-specific flags
             if (TestConstants.IsChrome)
             {
+                // Chrome-specific args for OOPIF testing
                 DefaultOptions.Args =
                 [
                     "--site-per-process",
                     $"--remote-debugging-port={++_port}",
-                    "--host-rules=\"MAP * 127.0.0.1\""
+                    "--host-resolver-rules=MAP mainframe 127.0.0.1,MAP inner-frame1.test 127.0.0.1,MAP inner-frame2.test 127.0.0.1,MAP oopifdomain 127.0.0.1"
                 ];
+            }
+            else
+            {
+                // Firefox: use network.dns.localDomains pref to resolve test domains
+                DefaultOptions.ExtraPrefsFirefox = new()
+                {
+                    ["network.dns.localDomains"] = "mainframe,inner-frame1.test,inner-frame2.test,oopifdomain"
+                };
             }
         }
 
@@ -257,7 +264,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public async Task ShouldReportOopifFrames()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("oopif.html"));
-            await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/dynamic-oopif.html");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             var frame = await frameTask.WithTimeout();
             Assert.That((await GetIframesAsync()), Has.Length.EqualTo(1));
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
