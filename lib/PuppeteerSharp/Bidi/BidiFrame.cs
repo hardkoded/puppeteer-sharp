@@ -38,10 +38,6 @@ public class BidiFrame : Frame
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
     private readonly Realms _realms;
 
-    // Track URLs for initial requests to deduplicate Firefox's speculative/parallel requests.
-    // Firefox may send multiple beforeRequestSent events with different request IDs for the same URL.
-    private readonly ConcurrentDictionary<string, bool> _initialRequestUrls = new();
-
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
@@ -598,24 +594,7 @@ public class BidiFrame : Frame
 
         BrowsingContext.Request += (sender, args) =>
         {
-            // Firefox may send duplicate beforeRequestSent events with different request IDs
-            // for speculative/parallel loading of the same resource. We only emit the Page.Request
-            // event once per URL, but we still need to handle all blocked requests.
-            var emitRequestEvent = true;
-            if (args.Request.RedirectCount == 0)
-            {
-                // For initial requests (not redirects), deduplicate by URL
-                if (_initialRequestUrls.ContainsKey(args.Request.Url))
-                {
-                    emitRequestEvent = false;
-                }
-                else
-                {
-                    _initialRequestUrls.TryAdd(args.Request.Url, true);
-                }
-            }
-
-            var httpRequest = BidiHttpRequest.From(args.Request, this, emitRequestEvent: emitRequestEvent);
+            var httpRequest = BidiHttpRequest.From(args.Request, this);
 
             args.Request.Success += (o, eventArgs) =>
             {
@@ -632,9 +611,6 @@ public class BidiFrame : Frame
 
         BrowsingContext.Navigation += (sender, args) =>
         {
-            // Clear the URL deduplication tracking for new navigation
-            _initialRequestUrls.Clear();
-
             if (args.Navigation.FragmentReceived)
             {
                 ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
