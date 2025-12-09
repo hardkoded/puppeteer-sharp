@@ -98,9 +98,6 @@ public class BidiFrame : Frame
     public override Task<IElementHandle> AddStyleTagAsync(AddTagOptions options) => throw new System.NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<IElementHandle> AddScriptTagAsync(AddTagOptions options) => throw new System.NotImplementedException();
-
-    /// <inheritdoc />
     public override async Task SetContentAsync(string html, NavigationOptions options = null)
     {
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
