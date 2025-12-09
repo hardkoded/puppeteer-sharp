@@ -106,21 +106,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[browser.spec] *should not return child_process for remote browser*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation*should work with clicking on anchor links",
     "platforms": [
       "darwin",
@@ -182,21 +167,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *should navigate to page with iframe and networkidle0*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] *should navigate to empty page with networkidle2*",
     "platforms": [
       "darwin",
       "linux",
@@ -1254,6 +1224,22 @@
       "win32"
     ],
     "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi doesn't support multiple sessions on the same browser",
+    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
       "webDriverBiDi"
     ],
     "expectations": [
