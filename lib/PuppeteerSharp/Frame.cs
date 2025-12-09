@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
 
@@ -196,14 +197,77 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null)
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
         public abstract Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
+        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+                string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                      const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                      const promise = createDeferredPromise();
+                      const script = document.createElement('script');
+                      script.type = type;
+                      script.text = content;
+                      if (url) {
+                        script.src = url;
+                        script.addEventListener(
+                          'load',
+                          () => {
+                            return promise.resolve();
+                          },
+                          {once: true}
+                        );
+                        script.addEventListener(
+                          'error',
+                          event => {
+                            promise.reject(
+                              new Error(event.message ?? 'Could not load script')
+                            );
+                          },
+                          {once: true}
+                        );
+                      } else {
+                        promise.resolve();
+                      }
+                      if (id) {
+                        script.id = id;
+                      }
+                      document.head.appendChild(script);
+                      await promise;
+                      return script;
+                    }",
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+        }
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync(GetContentOptions options = null)
