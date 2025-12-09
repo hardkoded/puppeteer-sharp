@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -30,15 +32,26 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
 {
     private readonly WebDriverBiDi.Network.ResponseData _data;
     private readonly BidiHttpRequest _request;
-    private readonly bool _fromCache;
 
     private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {
         _data = data;
         _request = request;
+        Request = request;
         Status = (HttpStatusCode)data.Status;
+        StatusText = data.StatusText;
         Url = data.Url;
-        _fromCache = data.FromCache;
+        FromCache = data.FromCache;
+
+        // BiDi doesn't provide remote address information
+        RemoteAddress = new RemoteAddress { IP = string.Empty, Port = -1 };
+
+        // Convert headers
+        Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in data.Headers)
+        {
+            Headers[header.Name] = header.Value.Value;
+        }
     }
 
     // Internal constructor for synthetic responses (e.g., cached history navigation)
@@ -48,14 +61,14 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         _request = null;
         Url = url;
         Status = status;
-        _fromCache = fromCache;
+        FromCache = fromCache;
     }
 
     /// <inheritdoc />
-    public override bool FromCache => _fromCache;
+    public override bool FromCache { get; }
 
     /// <inheritdoc />
-    public override ValueTask<byte[]> BufferAsync() => throw new System.NotImplementedException();
+    public override ValueTask<byte[]> BufferAsync() => throw new NotImplementedException();
 
     internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {

@@ -1127,15 +1127,23 @@ public class CdpPage : Page
                 : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
         });
         var location = new ConsoleMessageLocation();
+        var stackTraceLocations = new List<ConsoleMessageLocation>();
         if (stackTrace?.CallFrames?.Length > 0)
         {
-            var callFrame = stackTrace.CallFrames[0];
-            location.URL = callFrame.URL;
-            location.LineNumber = callFrame.LineNumber;
-            location.ColumnNumber = callFrame.ColumnNumber;
+            foreach (var callFrame in stackTrace.CallFrames)
+            {
+                stackTraceLocations.Add(new ConsoleMessageLocation
+                {
+                    URL = callFrame.URL,
+                    LineNumber = callFrame.LineNumber,
+                    ColumnNumber = callFrame.ColumnNumber,
+                });
+            }
+
+            location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
+        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations);
         OnConsole(new ConsoleEventArgs(consoleMessage));
     }
 

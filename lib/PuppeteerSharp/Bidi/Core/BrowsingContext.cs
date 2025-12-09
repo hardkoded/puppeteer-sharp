@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Emulation;
 using WebDriverBiDi.Input;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -211,6 +212,16 @@ internal class BrowsingContext : IDisposable
         options.BrowsingContextIds.Add(Id);
         var result = await Session.Driver.Network.AddInterceptAsync(options).ConfigureAwait(false);
         return result.InterceptId;
+    }
+
+    internal async Task SetUserAgentAsync(string userAgent)
+    {
+        var parameters = new SetUserAgentOverrideCommandParameters
+        {
+            UserAgent = userAgent,
+            Contexts = [Id],
+        };
+        await Session.Driver.Emulation.SetUserAgentOverrideAsync(parameters).ConfigureAwait(false);
     }
 
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);

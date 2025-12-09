@@ -62,10 +62,12 @@ public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) :
     internal BidiFrame Frame { get; set; } = bidiFrame;
 
     /// <inheritdoc />
-    public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null) => throw new NotImplementedException();
+    public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
+        => throw new PuppeteerException("CDP support is required for this feature. The current browser does not support CDP.");
 
     /// <inheritdoc />
-    public Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null) => throw new NotImplementedException();
+    public Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        => throw new PuppeteerException("CDP support is required for this feature. The current browser does not support CDP.");
 
     /// <inheritdoc />
     public Task DetachAsync() => throw new NotImplementedException();

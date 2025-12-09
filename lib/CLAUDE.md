@@ -410,6 +410,7 @@ BROWSER=FIREFOX PROTOCOL=bidi dotnet build PuppeteerSharp.Tests/PuppeteerSharp.T
 
 You can switch between CDP and Bidi by changing the PuppeteerTestAttribute.IsCdp property.
 You can switch between Chrome and Firefox by changing the PuppeteerTestAttribute.IsChrome property.
+If you are fixing one single test, then you must run the entire test suite to confirm that you didn't break other tests.
 
 ## Utilities and Helpers
 
