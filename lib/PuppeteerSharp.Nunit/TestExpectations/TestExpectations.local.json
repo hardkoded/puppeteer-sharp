@@ -1,5 +1,12 @@
 [
   {
+    "comment": "Test uses CDP-specific WaitEvent with Page.loadEventFired which is not supported in BiDi",
+    "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "Firefox BiDi sends duplicate beforeRequestSent events with different request IDs for speculative/parallel loading during navigation",
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
     "platforms": ["darwin", "linux", "win32"],
@@ -953,37 +960,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[requestinterception-experimental.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[target.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[tracing.spec] *",
     "platforms": [
       "darwin",
       "linux",

@@ -20,7 +20,6 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
@@ -28,6 +27,7 @@ namespace PuppeteerSharp.Bidi;
 internal class BidiFrameTarget : Target
 {
     private readonly BidiFrame _frame;
+    private BidiPage _page;
 
     internal BidiFrameTarget(BidiFrame frame)
     {
@@ -36,15 +36,22 @@ internal class BidiFrameTarget : Target
 
     public override string Url => _frame.Url;
 
-    public override TargetType Type { get; }
+    public override TargetType Type => TargetType.Page;
 
-    public override ITarget Opener { get; }
+    public override ITarget Opener => throw new PuppeteerException("Not supported");
 
-    internal override BrowserContext BrowserContext { get; }
+    internal override BrowserContext BrowserContext => (BrowserContext)_frame.Page.BrowserContext;
 
-    internal override Browser Browser { get; }
+    internal override Browser Browser => (Browser)BrowserContext.Browser;
 
-    public override Task<IPage> AsPageAsync() => throw new NotImplementedException();
+    public override Task<IPage> PageAsync()
+    {
+        _page ??= BidiPage.From((BidiBrowserContext)_frame.Page.BrowserContext, _frame.BrowsingContext);
+        return Task.FromResult<IPage>(_page);
+    }
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new NotImplementedException();
+    public override Task<IPage> AsPageAsync()
+        => Task.FromResult(BidiPage.From((BidiBrowserContext)_frame.Page.BrowserContext, _frame.BrowsingContext) as IPage);
+
+    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
 }
