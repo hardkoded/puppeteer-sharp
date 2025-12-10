@@ -26,17 +26,17 @@ namespace PuppeteerSharp.Bidi;
 
 internal class BidiBrowserTarget(BidiBrowser bidiBrowser) : Target
 {
-    public override string Url { get; }
+    public override string Url => string.Empty;
 
     public override TargetType Type => TargetType.Browser;
 
-    public override ITarget Opener { get; }
+    public override ITarget Opener => throw new PuppeteerException("Not supported");
 
-    internal override BrowserContext BrowserContext { get; }
+    internal override BrowserContext BrowserContext => (BrowserContext)bidiBrowser.DefaultContext;
 
     internal override Browser Browser => bidiBrowser;
 
-    public override Task<IPage> AsPageAsync() => throw new System.NotImplementedException();
+    public override Task<IPage> AsPageAsync() => throw new PuppeteerException("Not supported");
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new System.NotImplementedException();
+    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
 }

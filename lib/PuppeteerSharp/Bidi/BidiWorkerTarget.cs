@@ -20,29 +20,30 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
 
 internal class BidiWorkerTarget : Target
 {
+    private readonly BidiWebWorker _worker;
+
     public BidiWorkerTarget(BidiWebWorker bidiWorker)
     {
-        throw new NotImplementedException();
+        _worker = bidiWorker;
     }
 
-    public override string Url { get; }
+    public override string Url => _worker.Url;
 
-    public override TargetType Type { get; }
+    public override TargetType Type => TargetType.Other;
 
-    public override ITarget Opener { get; }
+    public override ITarget Opener => throw new PuppeteerException("Not supported");
 
-    internal override BrowserContext BrowserContext { get; }
+    internal override BrowserContext BrowserContext => (BrowserContext)_worker.Frame.Page.BrowserContext;
 
-    internal override Browser Browser { get; }
+    internal override Browser Browser => (Browser)BrowserContext.Browser;
 
-    public override Task<IPage> AsPageAsync() => throw new NotImplementedException();
+    public override Task<IPage> AsPageAsync() => throw new PuppeteerException("Not supported");
 
-    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new NotImplementedException();
+    public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
 }
