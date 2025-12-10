@@ -39,7 +39,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             });
             await Page.GoToAsync(TestConstants.HttpsPrefix + "/mixedcontent.html", new NavigationOptions
             {
-                WaitUntil = new[] { WaitUntilNavigation.Load }
+                WaitUntil = [WaitUntilNavigation.Load]
             });
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
             // Make sure blocked iframe has functional execution context
