@@ -219,20 +219,42 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
     {
-        // TODO: Implement full network request monitoring for BiDi
-        // For now, this creates a task that will be faulted when the page closes
         var timeout = options?.Timeout ?? DefaultTimeout;
         var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
-            new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
-
-        if (ClosedTask.IsFaulted)
+        void RequestHandler(object sender, RequestEventArgs e)
         {
-            await ClosedTask.ConfigureAwait(false);
+            try
+            {
+                if (predicate(e.Request))
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            }
+            catch (Exception ex)
+            {
+                requestTcs.TrySetException(ex);
+            }
         }
 
-        return await requestTcs.Task.ConfigureAwait(false);
+        Request += RequestHandler;
+
+        try
+        {
+            await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+                new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+
+            if (ClosedTask.IsFaulted)
+            {
+                await ClosedTask.ConfigureAwait(false);
+            }
+
+            return await requestTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            Request -= RequestHandler;
+        }
     }
 
     /// <inheritdoc />
