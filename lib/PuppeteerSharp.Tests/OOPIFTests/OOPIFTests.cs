@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
                 [
                     "--site-per-process",
                     $"--remote-debugging-port={++_port}",
-                    "--host-resolver-rules=MAP mainframe 127.0.0.1,MAP inner-frame1.test 127.0.0.1,MAP inner-frame2.test 127.0.0.1,MAP oopifdomain 127.0.0.1"
+                    "--host-rules=\"MAP * 127.0.0.1\""
                 ];
             }
             else
