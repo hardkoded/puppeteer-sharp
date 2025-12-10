@@ -16,7 +16,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             DefaultOptions.AcceptInsecureCerts = true;
         }
 
-        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts Response.securityDetails", "Should Work")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts Response.securityDetails", "should work")]
         public async Task ShouldWork()
         {
             // Checking for the TLS socket is it is in upstreams proves to be flaky in .NET Framework.
