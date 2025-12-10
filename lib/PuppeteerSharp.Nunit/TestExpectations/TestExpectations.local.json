@@ -1191,5 +1191,37 @@
     "expectations": [
       "SKIP"
     ]
+  },
+  {
+    "comment": "FrameElementAsync times out for OOPIF frames in Firefox BiDi due to script evaluation issues",
+    "testIdPattern": "[oopif.spec] OOPIF should load oopif iframes with subresources and request interception",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi doesn't fire navigation/historyUpdated events for same-document (hash) navigations in OOPIFs",
+    "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP iframes",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
   }
 ]
