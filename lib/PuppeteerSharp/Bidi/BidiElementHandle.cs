@@ -62,16 +62,17 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
             return;
         }").ConfigureAwait(false);
 
-        if (handle is not BidiElementHandle bidiHandle)
+        // Get the RemoteValue from either BidiJSHandle or BidiElementHandle (which wraps BidiJSHandle)
+        RemoteValue value = handle switch
         {
-            await handle.DisposeAsync().ConfigureAwait(false);
-            return null;
-        }
+            BidiElementHandle bidiElement => bidiElement.BidiJSHandle.RemoteValue,
+            BidiJSHandle bidiJsHandle => bidiJsHandle.RemoteValue,
+            _ => null,
+        };
 
-        var value = bidiHandle.BidiJSHandle.RemoteValue;
         await handle.DisposeAsync().ConfigureAwait(false);
 
-        if (value.Type == "window" && value.Value is WindowProxyProperties windowProxy)
+        if (value?.Type == "window" && value.Value is WindowProxyProperties windowProxy)
         {
             var contextId = windowProxy.Context;
             return BidiFrame.BidiPage.Frames.FirstOrDefault(frame => frame.Id == contextId);
