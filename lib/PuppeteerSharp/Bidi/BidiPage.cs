@@ -308,13 +308,25 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
     {
-        // TODO: Implement full network request monitoring for BiDi
-        // For now, this creates a task that will be faulted when the page closes
         var timeout = options?.Timeout ?? DefaultTimeout;
         var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
 
+        void RequestEventListener(object sender, RequestEventArgs e)
+        {
+            if (predicate(e.Request))
+            {
+                requestTcs.TrySetResult(e.Request);
+                Request -= RequestEventListener;
+            }
+        }
+
+        Request += RequestEventListener;
+
         await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
-            new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+        {
+            Request -= RequestEventListener;
+            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
+        }).ConfigureAwait(false);
 
         if (ClosedTask.IsFaulted)
         {
@@ -639,7 +651,8 @@ public class BidiPage : Page
     public override Task SetDragInterceptionAsync(bool enabled) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<Dictionary<string, decimal>> MetricsAsync() => throw new NotImplementedException();
+    public override Task<Dictionary<string, decimal>> MetricsAsync()
+        => throw new NotSupportedException("Metrics is not supported in BiDi protocol");
 
     /// <inheritdoc />
     public override Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args) => throw new NotImplementedException();
