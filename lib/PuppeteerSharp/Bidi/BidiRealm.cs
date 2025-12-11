@@ -251,6 +251,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return (T)result;
         }
 
+        // Handle JsonElement? - return default since BiDi doesn't use JsonElement
+        if (typeof(T) == typeof(JsonElement?))
+        {
+            return default;
+        }
+
         // Convert known types first
         if (typeof(T) == typeof(int))
         {
