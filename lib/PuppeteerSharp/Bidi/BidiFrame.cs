@@ -183,7 +183,6 @@ public class BidiFrame : Frame
 
                 try
                 {
-                    // Wait for either event
                     var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task).ConfigureAwait(false);
 
                     if (completedTask == historyUpdatedTcs.Task)
