@@ -334,7 +334,7 @@ public class BidiPage : Page
         }
         finally
         {
-            Request -= RequestHandler;
+            Request -= RequestEventListener;
         }
     }
 
