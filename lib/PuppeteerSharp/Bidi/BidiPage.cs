@@ -320,6 +320,8 @@ public class BidiPage : Page
             }
         }
 
+        Request += RequestEventListener;
+
         try
         {
             await Task.WhenAny(requestTcs.Task, ClosedTask).WithTimeout(timeout, t =>
