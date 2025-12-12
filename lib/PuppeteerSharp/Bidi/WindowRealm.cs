@@ -30,14 +30,15 @@ namespace PuppeteerSharp.Bidi;
 
 internal class WindowRealm(BrowsingContext browsingContext, string sandbox = null) : Core.Realm(browsingContext, string.Empty, string.Empty), IDedicatedWorkerOwnerRealm
 {
-    private readonly string _sandbox = sandbox;
     private readonly ConcurrentDictionary<string, DedicatedWorkerRealm> _workers = [];
 
     public event EventHandler<WorkerRealmEventArgs> Worker;
 
+    public string Sandbox { get; } = sandbox;
+
     public override Session Session => Context.UserContext.Browser.Session;
 
-    public override ContextTarget Target => new(Context.Id) { Sandbox = _sandbox };
+    public override ContextTarget Target => new(Context.Id) { Sandbox = Sandbox };
 
     public string ExecutionContextId { get; set; }
 
@@ -94,7 +95,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
     {
         if (args.Type != RealmType.Window ||
             args.As<WindowRealmInfo>().BrowsingContext != Context.Id ||
-            args.As<WindowRealmInfo>().Sandbox != _sandbox)
+            args.As<WindowRealmInfo>().Sandbox != Sandbox)
         {
             return;
         }
