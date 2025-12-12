@@ -904,8 +904,8 @@
     ]
   },
   {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[queryselector.spec] *",
+    "comment": "Custom query handlers not yet supported in BiDi",
+    "testIdPattern": "[queryselector.spec] QueryAll *",
     "platforms": [
       "darwin",
       "linux",
