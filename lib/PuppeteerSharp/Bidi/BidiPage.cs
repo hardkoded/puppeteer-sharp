@@ -311,22 +311,16 @@ public class BidiPage : Page
         var timeout = options?.Timeout ?? DefaultTimeout;
         var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        void RequestHandler(object sender, RequestEventArgs e)
+        void RequestEventListener(object sender, RequestEventArgs e)
         {
-            try
+            if (predicate(e.Request))
             {
-                if (predicate(e.Request))
-                {
-                    requestTcs.TrySetResult(e.Request);
-                }
-            }
-            catch (Exception ex)
-            {
-                requestTcs.TrySetException(ex);
+                requestTcs.TrySetResult(e.Request);
+                Request -= RequestEventListener;
             }
         }
 
-        Request += RequestHandler;
+        Request += RequestEventListener;
 
         try
         {
@@ -342,7 +336,7 @@ public class BidiPage : Page
         }
         finally
         {
-            Request -= RequestHandler;
+            Request -= RequestEventListener;
         }
     }
 
@@ -715,7 +709,8 @@ public class BidiPage : Page
     public override Task SetDragInterceptionAsync(bool enabled) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<Dictionary<string, decimal>> MetricsAsync() => throw new NotImplementedException();
+    public override Task<Dictionary<string, decimal>> MetricsAsync()
+        => throw new NotSupportedException("Metrics is not supported in BiDi protocol");
 
     /// <inheritdoc />
     public override Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args) => throw new NotImplementedException();
