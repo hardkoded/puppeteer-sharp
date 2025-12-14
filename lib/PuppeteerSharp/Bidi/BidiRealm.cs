@@ -283,6 +283,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return (T)(object)Convert.ToDecimal(result, CultureInfo.InvariantCulture);
         }
 
+        // Handle JsonElement - serialize the result to JSON and parse it back as JsonElement
+        if (typeof(T) == typeof(JsonElement))
+        {
+            var json = JsonSerializer.Serialize(result);
+            using var document = JsonDocument.Parse(json);
+            return (T)(object)document.RootElement.Clone();
+        }
+
         if (result is RemoteValueDictionary remoteValueDictionary)
         {
             return DeserializeRemoteValueDictionary<T>(remoteValueDictionary);

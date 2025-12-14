@@ -52,6 +52,7 @@ public class BidiPage : Page
         BidiMainFrame = BidiFrame.From(this, null, browsingContext);
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
         Mouse = new BidiMouse(this);
+        Keyboard = new BidiKeyboard(this);
     }
 
     /// <inheritdoc />
@@ -529,7 +530,8 @@ public class BidiPage : Page
     public override Task EmulateMediaTypeAsync(MediaType type) => _cdpEmulationManager.EmulateMediaTypeAsync(type);
 
     /// <inheritdoc />
-    public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features) => throw new NotImplementedException();
+    public override Task EmulateMediaFeaturesAsync(IEnumerable<MediaFeatureValue> features)
+        => _cdpEmulationManager.EmulateMediaFeaturesAsync(features);
 
     /// <inheritdoc />
     public override async Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null)
