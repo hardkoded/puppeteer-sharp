@@ -165,8 +165,9 @@ internal class BrowsingContext : IDisposable
 
     internal async Task SetViewportAsync(SetViewportOptions options = null)
     {
-        var parameters = new SetViewportCommandParameters(Id)
+        var parameters = new SetViewportCommandParameters()
         {
+            BrowsingContextId = Id,
             Viewport = options?.Viewport != null
                 ? new Viewport() { Width = options.Viewport.Width, Height = options.Viewport.Height }
                 : null,
