@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Test uses CDP-specific Wa/itEvent with Page.loadEventFired which is not supported in BiDi",
+    "comment": "Test uses CDP-specific WaitEvent with Page.loadEventFired which is not supported in BiDi",
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
