@@ -154,7 +154,36 @@ public class BidiPage : Page
     public override Task EmulateVisionDeficiencyAsync(VisionDeficiency type) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task EmulateTimezoneAsync(string timezoneId) => throw new NotImplementedException();
+    public override async Task EmulateTimezoneAsync(string timezoneId)
+    {
+        // CDP requires `GMT` prefix before timezone offset, while BiDi does not. Remove the
+        // `GMT` for interop between CDP and BiDi.
+        if (timezoneId?.StartsWith("GMT", StringComparison.Ordinal) == true)
+        {
+            timezoneId = timezoneId.Substring(3);
+        }
+
+        try
+        {
+            var commandParameters = new WebDriverBiDi.Emulation.SetTimeZoneOverrideCommandParameters()
+            {
+                TimeZone = timezoneId,
+                Contexts = [BidiMainFrame.BrowsingContext.Id],
+            };
+
+            await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetTimeZoneOverrideAsync(commandParameters).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // BiDi throws an error if the timezone ID is invalid
+            if (ex.Message.Contains("invalid argument") || ex.Message.Contains("timezone"))
+            {
+                throw new PuppeteerException($"Invalid timezone ID: {timezoneId}", ex);
+            }
+
+            throw;
+        }
+    }
 
     /// <inheritdoc />
     public override Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null)
