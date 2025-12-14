@@ -1398,7 +1398,7 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "comment": "Firefox does not support CDP through BiDi, so emulateMediaFeatures (which relies on CDP) cannot work"
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaType should work",
