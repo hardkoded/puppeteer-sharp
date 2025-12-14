@@ -387,6 +387,10 @@ Test directory structure demonstrates comprehensive coverage:
 - Local and upstream expectation merging
 - Tests should always match the code in upstream. Tests should never be changed to match the code local code.
 
+**IMPORTANT: Test Expectations Files Rules:**
+- `TestExpectations.upstream.json`: This file should NEVER be edited unless syncing with the upstream Puppeteer project. It contains expectations that match the upstream Puppeteer test expectations.
+- `TestExpectations.local.json`: Use this file for local overrides and PuppeteerSharp-specific test expectations. Add entries here to skip or mark tests that fail due to .NET-specific issues or features not yet implemented.
+
 #### Test Server (`PuppeteerSharp.TestServer/`)
 - ASP.NET Core server for hosting test pages
 - wwwroot directory with test fixtures
