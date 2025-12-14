@@ -1,6 +1,6 @@
 [
   {
-    "comment": "Test uses CDP-specific WaitEvent with Page.loadEventFired which is not supported in BiDi",
+    "comment": "Test uses CDP-specific Wa/itEvent with Page.loadEventFired which is not supported in BiDi",
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -695,21 +695,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[keyboard.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[launcher.spec] *",
     "platforms": [
       "darwin",
@@ -961,21 +946,6 @@
     ],
     "expectations": [
       "FAIL"
-    ]
-  },
-  {
-    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
-    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
     ]
   },
   {

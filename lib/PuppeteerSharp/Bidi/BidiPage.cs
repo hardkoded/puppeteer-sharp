@@ -52,6 +52,7 @@ public class BidiPage : Page
         BidiMainFrame = BidiFrame.From(this, null, browsingContext);
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
         Mouse = new BidiMouse(this);
+        Keyboard = new BidiKeyboard(this);
     }
 
     /// <inheritdoc />
