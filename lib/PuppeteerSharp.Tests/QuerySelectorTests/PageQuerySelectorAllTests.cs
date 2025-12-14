@@ -14,7 +14,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$$", "should query existing elements")]
         public async Task ShouldQueryExistingElements()
         {
-            await Page.SetContentAsync("<div>A</div><br/><div>B</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<div>A</div>
+          <br />
+          <div>B</div>"));
             var elements = await Page.QuerySelectorAllAsync("div");
             Assert.That(elements, Has.Length.EqualTo(2));
             var tasks = elements.Select(element => Page.EvaluateFunctionAsync<string>("e => e.textContent", element));
