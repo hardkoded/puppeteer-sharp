@@ -234,6 +234,17 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
     }
 
+    internal async Task SetFilesAsync(WebDriverBiDi.Script.SharedReference element, string[] files)
+    {
+        var parameters = new SetFilesCommandParameters(Id, element);
+        foreach (var file in files)
+        {
+            parameters.Files.Add(file);
+        }
+
+        await Session.Driver.Input.SetFilesAsync(parameters).ConfigureAwait(false);
+    }
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
