@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Emulation;
 using WebDriverBiDi.Input;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
@@ -65,6 +66,8 @@ internal class BrowsingContext : IDisposable
     public event EventHandler HistoryUpdated;
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
+
+    public event EventHandler<FileDialogOpenedEventArgs> FileDialogOpened;
 
     public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
 
@@ -378,6 +381,16 @@ internal class BrowsingContext : IDisposable
 
             OnLogEntry(args);
         };
+
+        Session.InputFileDialogOpened += (_, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            OnFileDialogOpened(args);
+        };
     }
 
     private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
@@ -406,4 +419,6 @@ internal class BrowsingContext : IDisposable
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
 
     private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
+
+    private void OnFileDialogOpened(FileDialogOpenedEventArgs args) => FileDialogOpened?.Invoke(this, args);
 }
