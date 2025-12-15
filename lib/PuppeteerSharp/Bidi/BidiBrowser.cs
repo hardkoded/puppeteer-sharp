@@ -38,6 +38,11 @@ namespace PuppeteerSharp.Bidi;
 /// </summary>
 public class BidiBrowser : Browser
 {
+    /// <summary>
+    /// Time in milliseconds for process to exit gracefully.
+    /// </summary>
+    private const int CloseTimeout = 5000;
+
     private readonly LaunchOptions _options;
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
@@ -58,6 +63,9 @@ public class BidiBrowser : Browser
 
     /// <inheritdoc />
     public override bool IsConnected => !BrowserCore.IsDisconnected;
+
+    /// <inheritdoc />
+    public override string WebSocketEndpoint => Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null;
 
     /// <inheritdoc />
     public override ITarget Target => _target;
@@ -115,19 +123,51 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task CloseAsync()
     {
+        if (_isClosed)
+        {
+            return;
+        }
+
         _isClosed = true;
         try
         {
-            await BrowserCore.CloseAsync().ConfigureAwait(false);
+            try
+            {
+                await BrowserCore.CloseAsync().ConfigureAwait(false);
+
+                if (Launcher != null)
+                {
+                    // Notify process that exit is expected, but should be enforced if it
+                    // doesn't occur within the close timeout.
+                    var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
+                    await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                try
+                {
+                    await Driver.StopAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to stop driver");
+                }
+
+                Detach();
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to close connection");
+            _logger.LogError(ex, "Failed to close browser");
+
+            if (Launcher != null)
+            {
+                await Launcher.KillAsync().ConfigureAwait(false);
+            }
         }
-        finally
-        {
-            await Driver.StopAsync().ConfigureAwait(false);
-        }
+
+        OnClosed();
     }
 
     /// <inheritdoc />
