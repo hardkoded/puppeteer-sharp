@@ -26,6 +26,11 @@ namespace PuppeteerSharp
         public const string Fast4G = "Fast 4G";
 
         /// <summary>
+        /// Emulates the offline mode. Shortcut for <see cref="IPage.SetOfflineModeAsync(bool)"/>.
+        /// </summary>
+        public bool Offline { get; set; }
+
+        /// <summary>
         /// Download speed (bytes/s), `-1` to disable.
         /// </summary>
         public double Download { get; set; } = -1;

@@ -792,7 +792,38 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions) => throw new NotImplementedException();
+    public override async Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
+    {
+        if (!BidiBrowser.CdpSupported)
+        {
+            // WebDriver BiDi supports only offline mode
+            if (networkConditions != null &&
+                !networkConditions.Offline &&
+                (networkConditions.Upload >= 0 ||
+                 networkConditions.Download >= 0 ||
+                 networkConditions.Latency > 0))
+            {
+                throw new PuppeteerException("Network throttling is not supported in this browser with WebDriver BiDi");
+            }
+
+            await BidiMainFrame.BrowsingContext.SetOfflineModeAsync(networkConditions?.Offline ?? false).ConfigureAwait(false);
+            return;
+        }
+
+        _emulatedNetworkConditions ??= new InternalNetworkConditions
+        {
+            Offline = networkConditions?.Offline ?? false,
+            Upload = -1,
+            Download = -1,
+            Latency = 0,
+        };
+
+        _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
+        _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
+        _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
+        _emulatedNetworkConditions.Offline = networkConditions?.Offline ?? false;
+        await ApplyNetworkConditionsAsync().ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override async Task<CookieParam[]> GetCookiesAsync(params string[] urls)

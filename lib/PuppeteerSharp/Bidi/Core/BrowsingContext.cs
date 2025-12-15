@@ -224,6 +224,16 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Emulation.SetUserAgentOverrideAsync(parameters).ConfigureAwait(false);
     }
 
+    internal async Task SetOfflineModeAsync(bool enabled)
+    {
+        var parameters = new SetNetworkConditionsCommandParameters
+        {
+            NetworkConditions = enabled ? new NetworkConditionsOffline() : null,
+            Contexts = [Id],
+        };
+        await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
+    }
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
