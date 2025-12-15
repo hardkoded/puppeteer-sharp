@@ -151,7 +151,8 @@ public class BidiPage : Page
         => await BidiMainFrame.BrowsingContext.ActivateAsync().ConfigureAwait(false);
 
     /// <inheritdoc />
-    public override Task EmulateVisionDeficiencyAsync(VisionDeficiency type) => throw new NotImplementedException();
+    public override Task EmulateVisionDeficiencyAsync(VisionDeficiency type)
+        => _cdpEmulationManager.EmulateVisionDeficiencyAsync(type);
 
     /// <inheritdoc />
     public override async Task EmulateTimezoneAsync(string timezoneId)
