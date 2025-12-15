@@ -442,9 +442,12 @@ internal class BidiExposedFunction : IAsyncDisposable
 
     private BidiFrame FindFrame(string contextId)
     {
-        var frames = new List<BidiFrame> { _frame };
-        foreach (var frame in frames)
+        var queue = new Queue<BidiFrame>();
+        queue.Enqueue(_frame);
+
+        while (queue.Count > 0)
         {
+            var frame = queue.Dequeue();
             if (frame.Id == contextId)
             {
                 return frame;
@@ -452,7 +455,7 @@ internal class BidiExposedFunction : IAsyncDisposable
 
             foreach (var childFrame in frame.ChildFrames.Cast<BidiFrame>())
             {
-                frames.Add(childFrame);
+                queue.Enqueue(childFrame);
             }
         }
 
