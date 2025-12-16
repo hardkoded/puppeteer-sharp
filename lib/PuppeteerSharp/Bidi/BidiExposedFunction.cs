@@ -130,6 +130,13 @@ internal class BidiExposedFunction : IAsyncDisposable
             return JsonSerializer.Deserialize(jsonElement.GetRawText(), targetType);
         }
 
+        // Handle RemoteValueDictionary to JsonElement conversion
+        if (targetType == typeof(JsonElement) && arg is RemoteValueDictionary remoteDict)
+        {
+            var jsonString = BidiRealm.SerializeRemoteValueDictionaryToJson(remoteDict);
+            return JsonDocument.Parse(jsonString).RootElement.Clone();
+        }
+
         return arg;
     }
 
