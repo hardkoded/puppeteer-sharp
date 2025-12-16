@@ -43,13 +43,13 @@ public class BidiBrowser : Browser
     /// </summary>
     private const int CloseTimeout = 5000;
 
-    private readonly LaunchOptions _options;
+    private readonly IBrowserOptions _options;
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
     private bool _isClosed;
 
-    private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
+    private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory)
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
@@ -200,9 +200,20 @@ public class BidiBrowser : Browser
         "Reliability",
         "CA2000:Dispose objects before losing scope",
         Justification = "We return the session, the browser needs to dispose the session")]
-    internal static async Task<BidiBrowser> CreateAsync(
+    internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
+        ILoggerFactory loggerFactory,
+        LauncherBase launcher)
+        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher);
+
+    [SuppressMessage(
+        "Reliability",
+        "CA2000:Dispose objects before losing scope",
+        Justification = "We return the session, the browser needs to dispose the session")]
+    internal static async Task<BidiBrowser> CreateAsync(
+        BiDiDriver driver,
+        IBrowserOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher)
     {

@@ -155,13 +155,43 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
             }
 
+            var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                ? options.BrowserWSEndpoint
+                : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
+
+            if (options.Protocol == ProtocolType.WebdriverBiDi)
+            {
+                return await ConnectBidiAsync(browserWSEndpoint, options).ConfigureAwait(false);
+            }
+
+            return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
+        }
+
+        private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
+        {
+            BiDiDriver driver = null;
+            try
+            {
+                driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+                await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+                return await BidiBrowser.CreateAsync(driver, options, _loggerFactory, null).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (driver != null)
+                {
+                    await driver.StopAsync().ConfigureAwait(false);
+                }
+
+                throw new ProcessException("Failed to create connection", ex);
+            }
+        }
+
+        private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
+        {
             Connection connection = null;
             try
             {
-                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
-                    ? options.BrowserWSEndpoint
-                    : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
-
                 connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
