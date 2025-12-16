@@ -419,6 +419,10 @@ You can switch between CDP and Bidi by changing the PuppeteerTestAttribute.IsCdp
 You can switch between Chrome and Firefox by changing the PuppeteerTestAttribute.IsChrome property.
 If you are fixing one single test, then you must run the entire test suite to confirm that you didn't break other tests.
 
+### Verification Before Completion
+
+**CRITICAL: Never claim a task is complete without verifying the build succeeds.** Always run `dotnet build PuppeteerSharp/PuppeteerSharp.csproj` before saying you are done. This project targets multiple frameworks (netstandard2.0 and net8.0), and code that compiles on one may fail on another. The test project only builds for net8.0, so passing test builds does NOT guarantee the main library builds correctly.
+
 ## Utilities and Helpers
 
 ### Helper Classes (`Helpers/`)

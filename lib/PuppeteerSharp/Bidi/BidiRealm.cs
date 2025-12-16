@@ -229,7 +229,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 default:
                     if (c < ' ')
                     {
-                        sb.Append(CultureInfo.InvariantCulture, $"\\u{(int)c:X4}");
+                        sb.Append("\\u");
+                        sb.Append(((int)c).ToString("X4", CultureInfo.InvariantCulture));
                     }
                     else
                     {
