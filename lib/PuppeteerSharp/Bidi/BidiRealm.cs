@@ -84,9 +84,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         var entries = new List<string>();
         foreach (var kvp in dict)
         {
-            var key = kvp.Key?.ToString() ?? string.Empty;
+            var key = ExtractKeyString(kvp.Key);
             var valueJson = SerializeRemoteValueToJson(kvp.Value);
-            entries.Add($"{JsonSerializer.Serialize(key)}:{valueJson}");
+            entries.Add($"{EscapeJsonString(key)}:{valueJson}");
         }
 
         return "{" + string.Join(",", entries) + "}";
@@ -176,13 +176,81 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         };
     }
 
+    private static string ExtractKeyString(object key)
+    {
+        if (key == null)
+        {
+            return string.Empty;
+        }
+
+        // If the key is a RemoteValue, extract its actual value
+        if (key is RemoteValue remoteValue)
+        {
+            return remoteValue.Value?.ToString() ?? string.Empty;
+        }
+
+        return key.ToString();
+    }
+
+    private static string EscapeJsonString(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "\"\"";
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.Append('"');
+        foreach (var c in value)
+        {
+            switch (c)
+            {
+                case '"':
+                    sb.Append("\\\"");
+                    break;
+                case '\\':
+                    sb.Append("\\\\");
+                    break;
+                case '\b':
+                    sb.Append("\\b");
+                    break;
+                case '\f':
+                    sb.Append("\\f");
+                    break;
+                case '\n':
+                    sb.Append("\\n");
+                    break;
+                case '\r':
+                    sb.Append("\\r");
+                    break;
+                case '\t':
+                    sb.Append("\\t");
+                    break;
+                default:
+                    if (c < ' ')
+                    {
+                        sb.Append(CultureInfo.InvariantCulture, $"\\u{(int)c:X4}");
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+
+                    break;
+            }
+        }
+
+        sb.Append('"');
+        return sb.ToString();
+    }
+
     private static string SerializeRemoteValueToJson(RemoteValue remoteValue)
     {
         return remoteValue.Type switch
         {
             "undefined" => "null",
             "null" => "null",
-            "string" => JsonSerializer.Serialize((string)remoteValue.Value),
+            "string" => EscapeJsonString((string)remoteValue.Value),
             "number" => remoteValue.Value switch
             {
                 long l => l.ToString(CultureInfo.InvariantCulture),
@@ -193,7 +261,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 _ => Convert.ToDouble(remoteValue.Value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture),
             },
             "boolean" => (bool)remoteValue.Value ? "true" : "false",
-            "bigint" => JsonSerializer.Serialize(remoteValue.Value.ToString()),
+            "bigint" => EscapeJsonString(remoteValue.Value.ToString()),
             "array" => SerializeRemoteValueArrayToJson(remoteValue.Value),
             "object" => remoteValue.Value is RemoteValueDictionary d
                 ? SerializeRemoteValueDictionaryToJson(d)
