@@ -71,6 +71,7 @@ public class BidiBrowser : Browser
         "network",
         "log",
         "script",
+        "input",
     ];
 
     internal static string[] SubscribeCdpEvents { get; } =

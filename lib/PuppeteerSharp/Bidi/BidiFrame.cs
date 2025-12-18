@@ -389,6 +389,13 @@ public class BidiFrame : Frame
         return parentFrame;
     }
 
+    internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
+    {
+        await BrowsingContext.SetFilesAsync(
+            element.Value.ToSharedReference(),
+            files).ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
 

@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Input;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Session;
 
@@ -71,6 +72,8 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     public event EventHandler<WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs> BrowsingContextUserPromptClosed;
 
     public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> LogEntryAdded;
+
+    public event EventHandler<FileDialogOpenedEventArgs> InputFileDialogOpened;
 
     public BiDiDriver Driver { get; } = driver;
 
@@ -124,6 +127,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
         Driver.BrowsingContext.OnUserPromptOpened.AddObserver(OnBrowsingContextUserPromptOpened);
         Driver.BrowsingContext.OnUserPromptClosed.AddObserver(OnBrowsingContextUserPromptClosed);
         Driver.Log.OnEntryAdded.AddObserver(OnLogEntryAdded);
+        Driver.Input.OnFileDialogOpened.AddObserver(OnInputFileDialogOpened);
     }
 
     private void OnFragmentNavigated(WebDriverBiDi.BrowsingContext.NavigationEventArgs info)
@@ -169,4 +173,6 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
     private void OnBrowsingContextUserPromptClosed(WebDriverBiDi.BrowsingContext.UserPromptClosedEventArgs obj) => BrowsingContextUserPromptClosed?.Invoke(this, obj);
 
     private void OnLogEntryAdded(WebDriverBiDi.Log.EntryAddedEventArgs obj) => LogEntryAdded?.Invoke(this, obj);
+
+    private void OnInputFileDialogOpened(FileDialogOpenedEventArgs obj) => InputFileDialogOpened?.Invoke(this, obj);
 }
