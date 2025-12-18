@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Emulation;
 using WebDriverBiDi.Input;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
 
@@ -65,6 +66,8 @@ internal class BrowsingContext : IDisposable
     public event EventHandler HistoryUpdated;
 
     public event EventHandler<UserPromptEventArgs> UserPrompt;
+
+    public event EventHandler<FileDialogOpenedEventArgs> FileDialogOpened;
 
     public event EventHandler<WebDriverBiDi.Log.EntryAddedEventArgs> Log;
 
@@ -234,6 +237,17 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
     }
 
+    internal async Task SetFilesAsync(WebDriverBiDi.Script.SharedReference element, string[] files)
+    {
+        var parameters = new SetFilesCommandParameters(Id, element);
+        foreach (var file in files)
+        {
+            parameters.Files.Add(file);
+        }
+
+        await Session.Driver.Input.SetFilesAsync(parameters).ConfigureAwait(false);
+    }
+
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
 
     private void Initialize()
@@ -367,6 +381,16 @@ internal class BrowsingContext : IDisposable
 
             OnLogEntry(args);
         };
+
+        Session.InputFileDialogOpened += (_, args) =>
+        {
+            if (args.BrowsingContextId != Id)
+            {
+                return;
+            }
+
+            OnFileDialogOpened(args);
+        };
     }
 
     private void OnNavigation(BrowserContextNavigationEventArgs args) => Navigation?.Invoke(this, args);
@@ -395,4 +419,6 @@ internal class BrowsingContext : IDisposable
     private void OnUserPromptOpened(UserPromptEventArgs args) => UserPrompt?.Invoke(this, args);
 
     private void OnLogEntry(WebDriverBiDi.Log.EntryAddedEventArgs args) => Log?.Invoke(this, args);
+
+    private void OnFileDialogOpened(FileDialogOpenedEventArgs args) => FileDialogOpened?.Invoke(this, args);
 }
