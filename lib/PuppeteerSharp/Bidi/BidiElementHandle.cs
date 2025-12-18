@@ -20,6 +20,7 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.QueryHandlers;
@@ -51,7 +52,24 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
         return new BidiElementHandle(value, realm);
     }
 
-    public override Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths) => throw new System.NotImplementedException();
+    public override async Task UploadFileAsync(bool resolveFilePaths, params string[] filePaths)
+    {
+        // Resolve file paths to absolute paths if needed
+        if (resolveFilePaths)
+        {
+            filePaths = filePaths.Select(file =>
+            {
+                if (Path.IsPathRooted(file))
+                {
+                    return file;
+                }
+
+                return Path.GetFullPath(file);
+            }).ToArray();
+        }
+
+        await BidiFrame.SetFilesAsync(this, filePaths).ConfigureAwait(false);
+    }
 
     public override async Task<IFrame> ContentFrameAsync()
     {

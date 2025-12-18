@@ -25,12 +25,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Input;
 using WebDriverBiDi.Network;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -413,7 +416,42 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null) => throw new NotImplementedException();
+    public override async Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null)
+    {
+        var timeout = options?.Timeout ?? DefaultTimeout;
+        var fileChooserTcs = new TaskCompletionSource<FileChooser>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        void FileDialogOpenedHandler(object sender, FileDialogOpenedEventArgs e)
+        {
+            if (e.Element == null)
+            {
+                return;
+            }
+
+            var element = CreateElementHandleFromSharedReference(e.Element);
+            var chooser = new FileChooser(element, e.IsMultiple);
+            fileChooserTcs.TrySetResult(chooser);
+        }
+
+        BidiMainFrame.BrowsingContext.FileDialogOpened += FileDialogOpenedHandler;
+
+        try
+        {
+            await Task.WhenAny(fileChooserTcs.Task, ClosedTask).WithTimeout(timeout, t =>
+                new TimeoutException($"Waiting for `FileChooser` failed: {t.TotalMilliseconds}ms exceeded")).ConfigureAwait(false);
+
+            if (ClosedTask.IsFaulted)
+            {
+                await ClosedTask.ConfigureAwait(false);
+            }
+
+            return await fileChooserTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            BidiMainFrame.BrowsingContext.FileDialogOpened -= FileDialogOpenedHandler;
+        }
+    }
 
     /// <inheritdoc />
     public override Task<IResponse> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
@@ -1036,6 +1074,20 @@ public class BidiPage : Page
         }
 
         return interception;
+    }
+
+    private BidiElementHandle CreateElementHandleFromSharedReference(SharedReference sharedReference)
+    {
+        // Create a RemoteValue from the SharedReference using JSON deserialization
+        var json = JsonSerializer.Serialize(new
+        {
+            type = "node",
+            sharedId = sharedReference.SharedId,
+            handle = sharedReference.Handle,
+        });
+
+        var remoteValue = JsonSerializer.Deserialize<RemoteValue>(json);
+        return new BidiElementHandle(remoteValue, (BidiFrameRealm)BidiMainFrame.MainRealm);
     }
 
     private void Initialize()
