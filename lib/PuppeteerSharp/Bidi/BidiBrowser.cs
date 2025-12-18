@@ -42,16 +42,21 @@ public class BidiBrowser : Browser
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
+    private readonly string _webSocketEndpoint;
     private bool _isClosed;
 
-    private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
+    private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
         BrowserCore = browserCore;
+        _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
         LoggerFactory = loggerFactory;
     }
+
+    /// <inheritdoc />
+    public override string WebSocketEndpoint => _webSocketEndpoint;
 
     /// <inheritdoc />
     public override bool IsClosed => _isClosed;
@@ -165,7 +170,8 @@ public class BidiBrowser : Browser
         BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory,
-        LauncherBase launcher)
+        LauncherBase launcher,
+        string webSocketEndpoint)
     {
         var session = await Session.FromAsync(
             driver,
@@ -187,7 +193,7 @@ public class BidiBrowser : Browser
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory) { Launcher = launcher };
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher };
         browser.InitializeAsync();
         return browser;
     }

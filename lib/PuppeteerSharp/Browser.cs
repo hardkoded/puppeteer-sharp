@@ -35,7 +35,7 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <inheritdoc/>
-        public string WebSocketEndpoint => Connection.Url;
+        public virtual string WebSocketEndpoint => Connection.Url;
 
         /// <inheritdoc/>
         public SupportedBrowser BrowserType { get; protected init; }

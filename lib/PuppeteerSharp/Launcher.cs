@@ -92,9 +92,10 @@ namespace PuppeteerSharp
                 {
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
+                        var bidiEndpoint = Process.EndPoint + "/session";
                         var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
-                        await driver.StartAsync(Process.EndPoint + "/session").ConfigureAwait(false);
-                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
+                        await driver.StartAsync(bidiEndpoint).ConfigureAwait(false);
+                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process, bidiEndpoint).ConfigureAwait(false);
                     }
                     else
                     {
@@ -155,13 +156,46 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
             }
 
+            var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
+                ? options.BrowserWSEndpoint
+                : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
+
+            if (options.Protocol == ProtocolType.WebdriverBiDi)
+            {
+                return await ConnectBidiAsync(browserWSEndpoint, options).ConfigureAwait(false);
+            }
+
+            return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
+        }
+
+        private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
+        {
+            try
+            {
+                var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+                await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+                return await BidiBrowser.CreateAsync(
+                    driver,
+                    new LaunchOptions
+                    {
+                        AcceptInsecureCerts = options.AcceptInsecureCerts,
+                        DefaultViewport = options.DefaultViewport,
+                    },
+                    _loggerFactory,
+                    null,
+                    browserWSEndpoint).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw new ProcessException("Failed to create BiDi connection", ex);
+            }
+        }
+
+        private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
+        {
             Connection connection = null;
             try
             {
-                var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
-                    ? options.BrowserWSEndpoint
-                    : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
-
                 connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
