@@ -126,7 +126,9 @@ public class BidiFrame : Frame
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            // - If any task fails/is canceled, immediately throw (don't wait for other tasks)
+            // - If all tasks succeed, return when all have completed
+            await new[] { waitForNavigationTask, navigationTask }.WhenAllFailFast().ConfigureAwait(false);
         }
         catch (NavigationException)
         {
