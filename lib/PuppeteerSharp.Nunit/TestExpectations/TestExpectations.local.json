@@ -874,5 +874,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "BiDi throws WebDriverBiDiException instead of TargetClosedException when browser is closed",
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should reject all promises when browser is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
