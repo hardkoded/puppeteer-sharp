@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Script;
+using BidiLocator = WebDriverBiDi.BrowsingContext.Locator;
 using Request = PuppeteerSharp.Bidi.Core.Request;
 
 namespace PuppeteerSharp.Bidi;
@@ -403,6 +405,13 @@ public class BidiFrame : Frame
         await BrowsingContext.SetFilesAsync(
             element.Value.ToSharedReference(),
             files).ConfigureAwait(false);
+    }
+
+    internal async Task<IList<RemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
+    {
+        return await BrowsingContext.LocateNodesAsync(
+            locator,
+            [element.Value.ToSharedReference()]).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
