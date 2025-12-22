@@ -244,7 +244,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new PuppeteerException($"Failed to fetch browser webSocket url from {browserURL}.", ex);
+                throw new ProcessException($"Failed to fetch browser webSocket url from {browserURL}.", ex);
             }
         }
 
