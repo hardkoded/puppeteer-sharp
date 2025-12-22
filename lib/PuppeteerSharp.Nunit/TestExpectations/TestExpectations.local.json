@@ -8,6 +8,13 @@
   },
   {
     "comment": "ExposeFunctionAsync is not implemented in BiDi yet",
+    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should work independently of `exposeFunction",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "ExposeFunctionAsync is not implemented in BiDi yet",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -231,21 +238,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[navigation.spec] *timeout*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[ariaqueryhandler.spec] *",
     "platforms": [
       "darwin",
       "linux",

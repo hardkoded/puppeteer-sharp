@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Emulation;
@@ -246,6 +247,21 @@ internal class BrowsingContext : IDisposable
         }
 
         await Session.Driver.Input.SetFilesAsync(parameters).ConfigureAwait(false);
+    }
+
+    internal async Task<IList<RemoteValue>> LocateNodesAsync(Locator locator, SharedReference[] startNodes)
+    {
+        var parameters = new LocateNodesCommandParameters(Id, locator);
+        if (startNodes?.Length > 0)
+        {
+            foreach (var node in startNodes)
+            {
+                parameters.ContextNodes.Add(node);
+            }
+        }
+
+        var result = await Session.Driver.BrowsingContext.LocateNodesAsync(parameters).ConfigureAwait(false);
+        return result.Nodes.ToList();
     }
 
     protected virtual void OnBrowsingContextCreated(BidiBrowsingContextEventArgs e) => BrowsingContextCreated?.Invoke(this, e);
