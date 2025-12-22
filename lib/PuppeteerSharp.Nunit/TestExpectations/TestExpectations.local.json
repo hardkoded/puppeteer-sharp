@@ -860,5 +860,12 @@
     "expectations": [
       "FAIL"
     ]
+  },
+  {
+    "comment": "BiDi driver doesn't support custom transport factories",
+    "testIdPattern": "[launcher.spec] Launcher specs Browser.close should support custom transport",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
