@@ -79,6 +79,19 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
     }
 
+    internal static string SerializeRemoteValueDictionaryToJson(RemoteValueDictionary dict)
+    {
+        var entries = new List<string>();
+        foreach (var kvp in dict)
+        {
+            var key = ExtractKeyString(kvp.Key);
+            var valueJson = SerializeRemoteValueToJson(kvp.Value);
+            entries.Add($"{EscapeJsonString(key)}:{valueJson}");
+        }
+
+        return "{" + string.Join(",", entries) + "}";
+    }
+
     internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
     {
         try
@@ -161,6 +174,112 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             InternalPuppeteerUtilHandle = null;
             TaskManager.RerunAll();
         };
+    }
+
+    private static string ExtractKeyString(object key)
+    {
+        if (key == null)
+        {
+            return string.Empty;
+        }
+
+        // If the key is a RemoteValue, extract its actual value
+        if (key is RemoteValue remoteValue)
+        {
+            return remoteValue.Value?.ToString() ?? string.Empty;
+        }
+
+        return key.ToString();
+    }
+
+    private static string EscapeJsonString(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return "\"\"";
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.Append('"');
+        foreach (var c in value)
+        {
+            switch (c)
+            {
+                case '"':
+                    sb.Append("\\\"");
+                    break;
+                case '\\':
+                    sb.Append("\\\\");
+                    break;
+                case '\b':
+                    sb.Append("\\b");
+                    break;
+                case '\f':
+                    sb.Append("\\f");
+                    break;
+                case '\n':
+                    sb.Append("\\n");
+                    break;
+                case '\r':
+                    sb.Append("\\r");
+                    break;
+                case '\t':
+                    sb.Append("\\t");
+                    break;
+                default:
+                    if (c < ' ')
+                    {
+                        sb.Append("\\u");
+                        sb.Append(((int)c).ToString("X4", CultureInfo.InvariantCulture));
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+
+                    break;
+            }
+        }
+
+        sb.Append('"');
+        return sb.ToString();
+    }
+
+    private static string SerializeRemoteValueToJson(RemoteValue remoteValue)
+    {
+        return remoteValue.Type switch
+        {
+            "undefined" => "null",
+            "null" => "null",
+            "string" => EscapeJsonString((string)remoteValue.Value),
+            "number" => remoteValue.Value switch
+            {
+                long l => l.ToString(CultureInfo.InvariantCulture),
+                double d when double.IsPositiveInfinity(d) => "null",
+                double d when double.IsNegativeInfinity(d) => "null",
+                double d when double.IsNaN(d) => "null",
+                double d => d.ToString(CultureInfo.InvariantCulture),
+                _ => Convert.ToDouble(remoteValue.Value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture),
+            },
+            "boolean" => (bool)remoteValue.Value ? "true" : "false",
+            "bigint" => EscapeJsonString(remoteValue.Value.ToString()),
+            "array" => SerializeRemoteValueArrayToJson(remoteValue.Value),
+            "object" => remoteValue.Value is RemoteValueDictionary d
+                ? SerializeRemoteValueDictionaryToJson(d)
+                : "{}",
+            _ => "null",
+        };
+    }
+
+    private static string SerializeRemoteValueArrayToJson(object value)
+    {
+        if (value is not IEnumerable<RemoteValue> remoteValues)
+        {
+            return "[]";
+        }
+
+        var items = remoteValues.Select(SerializeRemoteValueToJson);
+        return "[" + string.Join(",", items) + "]";
     }
 
     private IJSHandle CreateHandleAsync(EvaluateResultSuccess evaluateResult)
@@ -293,6 +412,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
         if (result is RemoteValueDictionary remoteValueDictionary)
         {
+            // Special handling for JsonElement since it's a struct with read-only properties
+            if (typeof(T) == typeof(JsonElement))
+            {
+                var jsonString = SerializeRemoteValueDictionaryToJson(remoteValueDictionary);
+                return (T)(object)JsonDocument.Parse(jsonString).RootElement.Clone();
+            }
+
             return DeserializeRemoteValueDictionary<T>(remoteValueDictionary);
         }
 
@@ -463,11 +589,46 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return objectHandle.RemoteValue.ToRemoteReference();
             case BidiElementHandle elementHandle:
                 return elementHandle.Value.ToRemoteReference();
-
-                // TODO: Cover the rest of the cases
         }
 
-        return null;
+        // Handle arbitrary objects by serializing their properties
+        return await SerializeObjectToLocalValueAsync(arg).ConfigureAwait(false);
+    }
+
+    private async Task<LocalValue> SerializeObjectToLocalValueAsync(object obj)
+    {
+        if (obj == null)
+        {
+            return LocalValue.Null;
+        }
+
+        var type = obj.GetType();
+
+        // Skip primitive types and strings (they should be handled before this)
+        if (type.IsPrimitive || obj is string)
+        {
+            return LocalValue.Null;
+        }
+
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var dict = new Dictionary<string, LocalValue>();
+
+        foreach (var prop in properties)
+        {
+            try
+            {
+                var value = prop.GetValue(obj);
+                var formattedValue = await FormatArgumentAsync(value).ConfigureAwait(false);
+                var propertyName = JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
+                dict[propertyName] = formattedValue as LocalValue ?? LocalValue.Null;
+            }
+            catch
+            {
+                // Skip properties that can't be read
+            }
+        }
+
+        return LocalValue.Object(dict);
     }
 
     private LocalValue SerializeRemoteValue(RemoteValue remoteValue)

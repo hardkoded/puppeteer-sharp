@@ -41,6 +41,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiPage : Page
 {
     private readonly ConcurrentDictionary<string, BidiWebWorker> _workers = new();
+    private readonly ConcurrentDictionary<string, BidiExposedFunction> _exposedFunctions = new();
     private readonly CdpEmulationManager _cdpEmulationManager;
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
@@ -1009,7 +1010,17 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+    protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+    {
+        if (_exposedFunctions.ContainsKey(name))
+        {
+            throw new PuppeteerException(
+                $"Failed to add page binding with name {name}: globalThis['{name}'] already exists!");
+        }
+
+        var exposedFunction = await BidiExposedFunction.FromAsync(BidiMainFrame, name, puppeteerFunction).ConfigureAwait(false);
+        _exposedFunctions.TryAdd(name, exposedFunction);
+    }
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
     {

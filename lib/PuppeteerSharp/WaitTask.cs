@@ -228,6 +228,15 @@ namespace PuppeteerSharp
                 return null;
             }
 
+            // This can happen if the execution context changes between creating the poller
+            // and calling start() on it. The poller handle becomes stale before initialization
+            // completes. This is a race condition in BiDi protocol when navigations occur.
+            // This is not upstream.
+            if (exception.Message.Contains("Polling never started"))
+            {
+                return null;
+            }
+
             return exception;
         }
 
