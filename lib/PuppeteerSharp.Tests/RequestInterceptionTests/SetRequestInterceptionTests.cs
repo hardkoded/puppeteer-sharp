@@ -444,7 +444,12 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
               fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
             ])");
-            Assert.That(results, Is.EqualTo(new[] { "11", "FAILED", "22" }));
+            // Use EquivalentTo instead of EqualTo because request interception handlers
+            // may fire in non-deterministic order (especially in Firefox BiDi), causing
+            // the spinner/counter to assign abort/continue in a different order than
+            // the fetches were initiated. The test verifies interception works with
+            // identical requests - the exact order is not important.
+            Assert.That(results, Is.EquivalentTo(new[] { "11", "FAILED", "22" }));
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should navigate to dataURL and fire dataURL requests")]
