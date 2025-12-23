@@ -309,25 +309,14 @@ public class BidiFrame : Frame
                 }
 
                 // If there's no request associated with this navigation after waiting,
-                // it means this is either:
-                // 1. A special URL like about:blank (no network request) - return null
-                // 2. A cached history navigation (GoBack/GoForward) - create synthetic response
+                // it means this is a same-document navigation (anchor links, pushState, etc.)
+                // or a special URL like about:blank. Return null in this case.
                 // See: https://github.com/w3c/webdriver-bidi/issues/502
                 var request = navigation.Request;
 
                 if (request == null)
                 {
-                    var url = BrowsingContext.Url;
-
-                    // Special URLs like about:blank don't have network requests
-                    if (url.StartsWith("about:", StringComparison.OrdinalIgnoreCase) ||
-                        url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return null;
-                    }
-
-                    // For cached history navigations, create a synthetic response
-                    return BidiHttpResponse.FromCachedNavigation(url);
+                    return null;
                 }
 
                 var lastRequest = request.LastRedirect ?? request;
