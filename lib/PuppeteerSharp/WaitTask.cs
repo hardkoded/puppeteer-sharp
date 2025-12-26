@@ -143,7 +143,8 @@ namespace PuppeteerSharp
                 }
 
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
-                await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
+                // Using void to not await the start promise - matches upstream behavior
+                await _poller.EvaluateFunctionAsync("poller => { void poller.start(); }").ConfigureAwait(false);
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
                 _result.TrySetResult(success);
@@ -241,9 +242,9 @@ namespace PuppeteerSharp
                 return null;
             }
 
-            // This can happen in BiDi when a realm update triggers a rerun
-            // while a previous rerun was still in progress.
-            if (exception.Message.Contains("Polling never started"))
+            // Errors coming from WebDriver BiDi. TODO: Adjust messages after
+            // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
+            if (exception.Message.Contains("DiscardedBrowsingContextError") || exception.Message.Contains("Polling never started"))
             {
                 return null;
             }

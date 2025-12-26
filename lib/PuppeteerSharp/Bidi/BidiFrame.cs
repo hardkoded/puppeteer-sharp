@@ -310,10 +310,6 @@ public class BidiFrame : Frame
                     return null;
                 }
 
-                // If there's no request associated with this navigation after waiting,
-                // it means this is a same-document navigation (anchor links, pushState, etc.)
-                // or a special URL like about:blank. Return null in this case.
-                // See: https://github.com/w3c/webdriver-bidi/issues/502
                 var request = navigation.Request;
 
                 if (request == null)

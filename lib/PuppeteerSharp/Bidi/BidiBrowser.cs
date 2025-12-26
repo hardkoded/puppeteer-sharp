@@ -47,13 +47,15 @@ public class BidiBrowser : Browser
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
+    private readonly string _webSocketEndpoint;
     private bool _isClosed;
 
-    private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory)
+    private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
         BrowserCore = browserCore;
+        _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
         LoggerFactory = loggerFactory;
     }
@@ -65,7 +67,7 @@ public class BidiBrowser : Browser
     public override bool IsConnected => !BrowserCore.IsDisconnected;
 
     /// <inheritdoc />
-    public override string WebSocketEndpoint => Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null;
+    public override string WebSocketEndpoint => _webSocketEndpoint ?? (Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null);
 
     /// <inheritdoc />
     public override ITarget Target => _target;
@@ -206,7 +208,14 @@ public class BidiBrowser : Browser
         LaunchOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher)
-        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher);
+        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
+
+    internal static Task<BidiBrowser> CreateAsync(
+        BiDiDriver driver,
+        ConnectOptions options,
+        ILoggerFactory loggerFactory,
+        LauncherBase launcher)
+        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
 
     [SuppressMessage(
         "Reliability",
@@ -216,7 +225,8 @@ public class BidiBrowser : Browser
         BiDiDriver driver,
         IBrowserOptions options,
         ILoggerFactory loggerFactory,
-        LauncherBase launcher)
+        LauncherBase launcher,
+        string webSocketEndpoint)
     {
         var session = await Session.FromAsync(
             driver,
@@ -238,7 +248,7 @@ public class BidiBrowser : Browser
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory) { Launcher = launcher };
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher };
         browser.InitializeAsync();
         return browser;
     }
