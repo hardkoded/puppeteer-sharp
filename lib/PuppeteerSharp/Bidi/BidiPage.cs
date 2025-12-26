@@ -200,52 +200,27 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
-        // When interception is enabled on Firefox BiDi, the browser doesn't send
-        // BeforeRequestSent events for reload commands, which causes the request
-        // to hang indefinitely. Work around this by temporarily disabling interception,
-        // performing the reload, and re-enabling interception.
-        // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948
-#pragma warning disable CA2249 // IndexOf is needed for .NET Standard 2.0 compatibility
-        var isFirefox = BidiBrowser.BrowserName.IndexOf("Firefox", StringComparison.OrdinalIgnoreCase) >= 0;
-#pragma warning restore CA2249
-        var hadInterception = IsNetworkInterceptionEnabled;
-
-        if (hadInterception && isFirefox)
-        {
-            await SetRequestInterceptionAsync(false).ConfigureAwait(false);
-        }
+        var navOptions = options == null
+            ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
+            : options with { IgnoreSameDocumentNavigation = true };
+        var waitForNavigationTask = WaitForNavigationAsync(navOptions);
+        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
 
         try
         {
-            var navOptions = options == null
-                ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
-                : options with { IgnoreSameDocumentNavigation = true };
-            var waitForNavigationTask = WaitForNavigationAsync(navOptions);
-            var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
-
-            try
-            {
-                await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("no such history entry"))
-                {
-                    return null;
-                }
-
-                throw new NavigationException(ex.Message, ex);
-            }
-
-            return waitForNavigationTask.Result;
+            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
         }
-        finally
+        catch (Exception ex)
         {
-            if (hadInterception && isFirefox)
+            if (ex.Message.Contains("no such history entry"))
             {
-                await SetRequestInterceptionAsync(true).ConfigureAwait(false);
+                return null;
             }
+
+            throw new NavigationException(ex.Message, ex);
         }
+
+        return waitForNavigationTask.Result;
     }
 
     /// <inheritdoc />

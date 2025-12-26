@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         private bool _isDisposed;
         private IJSHandle _poller;
         private bool _terminated;
+        private CancellationTokenSource _rerunCts;
 
         internal WaitTask(
             Realm realm,
@@ -76,12 +77,18 @@ namespace PuppeteerSharp
             }
 
             _cts.Dispose();
+            _rerunCts?.Dispose();
 
             _isDisposed = true;
         }
 
         internal async Task RerunAsync()
         {
+            // Cancel any previous rerun
+            _rerunCts?.Cancel();
+            _rerunCts?.Dispose();
+            var rerunCts = _rerunCts = new CancellationTokenSource();
+
             try
             {
                 if (_pollingInterval.HasValue)
@@ -144,6 +151,12 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                // If this rerun was cancelled, don't process the error
+                if (rerunCts.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
@@ -224,6 +237,13 @@ namespace PuppeteerSharp
             // This is a different message coming from Firefox in the same situation.
             // This is not upstream.
             if (exception.Message.Contains("Could not find object with given id"))
+            {
+                return null;
+            }
+
+            // This can happen in BiDi when a realm update triggers a rerun
+            // while a previous rerun was still in progress.
+            if (exception.Message.Contains("Polling never started"))
             {
                 return null;
             }

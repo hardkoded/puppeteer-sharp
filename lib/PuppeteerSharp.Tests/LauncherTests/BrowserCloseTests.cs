@@ -5,9 +5,9 @@ using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.LauncherTests
 {
-    public class BrowserCloseTests : PuppeteerBrowserBaseTest
+    public class BrowserCloseTests : PuppeteerBaseTest
     {
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should terminate network waiters")]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Browser.close", "should terminate network waiters")]
         public async Task ShouldTerminateNetworkWaiters()
         {
             await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());

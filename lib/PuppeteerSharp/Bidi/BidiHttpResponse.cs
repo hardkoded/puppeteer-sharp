@@ -64,6 +64,25 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         FromCache = fromCache;
     }
 
+    // Constructor for creating response from raw data without a request
+    // Used for Firefox reload workaround when we capture the response directly
+    private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data)
+    {
+        _data = data;
+        _request = null;
+        Status = (HttpStatusCode)data.Status;
+        StatusText = data.StatusText;
+        Url = data.Url;
+        FromCache = data.FromCache;
+        RemoteAddress = new RemoteAddress { IP = string.Empty, Port = -1 };
+
+        Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in data.Headers)
+        {
+            Headers[header.Name] = header.Value.Value;
+        }
+    }
+
     /// <inheritdoc />
     public override bool FromCache { get; }
 
@@ -82,6 +101,13 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     internal static BidiHttpResponse FromCachedNavigation(string url)
     {
         return new BidiHttpResponse(url, HttpStatusCode.OK, fromCache: true);
+    }
+
+    // Creates a response from raw ResponseData when we don't have a tracked request
+    // Used for Firefox reload workaround when we capture the response directly
+    internal static BidiHttpResponse FromResponseData(WebDriverBiDi.Network.ResponseData data)
+    {
+        return new BidiHttpResponse(data);
     }
 
     private void Initialize()

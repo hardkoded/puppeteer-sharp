@@ -35,6 +35,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "comment": "Firefox BiDi doesn't send BeforeRequestSent events for reload commands when interception is enabled. See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948",
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "Firefox BiDi sends duplicate beforeRequestSent events with different request IDs for speculative/parallel loading during navigation",
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
     "platforms": ["darwin", "linux", "win32"],
@@ -159,21 +166,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation*should work with clicking on anchor links",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
@@ -582,37 +574,7 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[launcher.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[locator.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[click.spec] *",
     "platforms": [
       "darwin",
       "linux",
@@ -807,21 +769,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[launcher.spec] PuppeteerSharp *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[puppeteer-sharp.spec.ts] PuppeteerSharp *",
     "platforms": [
       "darwin",
@@ -912,5 +859,26 @@
     "expectations": [
       "FAIL"
     ]
+  },
+  {
+    "comment": "BiDi driver doesn't support custom transport factories",
+    "testIdPattern": "[launcher.spec] Launcher specs Browser.close should support custom transport",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "BiDi driver doesn't support custom WebSocket factories",
+    "testIdPattern": "[launcher.spec] PuppeteerSharp should support custom websocket",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "BiDi throws WebDriverBiDiException instead of TargetClosedException when browser is closed",
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should reject all promises when browser is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
