@@ -92,10 +92,9 @@ namespace PuppeteerSharp
                 {
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
-                        var bidiEndpoint = Process.EndPoint + "/session";
                         var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
-                        await driver.StartAsync(bidiEndpoint).ConfigureAwait(false);
-                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process, bidiEndpoint).ConfigureAwait(false);
+                        await driver.StartAsync(Process.EndPoint + "/session").ConfigureAwait(false);
+                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
                     }
                     else
                     {
@@ -170,24 +169,21 @@ namespace PuppeteerSharp
 
         private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
         {
+            BiDiDriver driver = null;
             try
             {
-                var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+                driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
                 await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
-                return await BidiBrowser.CreateAsync(
-                    driver,
-                    new LaunchOptions
-                    {
-                        AcceptInsecureCerts = options.AcceptInsecureCerts,
-                        DefaultViewport = options.DefaultViewport,
-                    },
-                    _loggerFactory,
-                    null,
-                    browserWSEndpoint).ConfigureAwait(false);
+                return await BidiBrowser.CreateAsync(driver, options, _loggerFactory, null).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                throw new ProcessException("Failed to create BiDi connection", ex);
+                if (driver != null)
+                {
+                    await driver.StopAsync().ConfigureAwait(false);
+                }
+
+                throw new ProcessException("Failed to create connection", ex);
             }
         }
 

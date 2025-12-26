@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Script;
+using BidiLocator = WebDriverBiDi.BrowsingContext.Locator;
 using Request = PuppeteerSharp.Bidi.Core.Request;
 
 namespace PuppeteerSharp.Bidi;
@@ -308,12 +310,6 @@ public class BidiFrame : Frame
                     return null;
                 }
 
-                // If there's no request associated with this navigation after waiting,
-                // return null. This matches upstream behavior where:
-                // 1. Same-document navigations (fragment/anchor links) have no network request
-                // 2. Special URLs like about:blank have no network request
-                // 3. History navigations (GoBack/GoForward) may have no request
-                // See: https://github.com/w3c/webdriver-bidi/issues/502
                 var request = navigation.Request;
 
                 if (request == null)
@@ -394,6 +390,13 @@ public class BidiFrame : Frame
         await BrowsingContext.SetFilesAsync(
             element.Value.ToSharedReference(),
             files).ConfigureAwait(false);
+    }
+
+    internal async Task<IList<RemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
+    {
+        return await BrowsingContext.LocateNodesAsync(
+            locator,
+            [element.Value.ToSharedReference()]).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

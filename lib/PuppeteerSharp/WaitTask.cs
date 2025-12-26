@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         private bool _isDisposed;
         private IJSHandle _poller;
         private bool _terminated;
+        private CancellationTokenSource _rerunCts;
 
         internal WaitTask(
             Realm realm,
@@ -76,12 +77,18 @@ namespace PuppeteerSharp
             }
 
             _cts.Dispose();
+            _rerunCts?.Dispose();
 
             _isDisposed = true;
         }
 
         internal async Task RerunAsync()
         {
+            // Cancel any previous rerun
+            _rerunCts?.Cancel();
+            _rerunCts?.Dispose();
+            var rerunCts = _rerunCts = new CancellationTokenSource();
+
             try
             {
                 if (_pollingInterval.HasValue)
@@ -145,6 +152,12 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                // If this rerun was cancelled, don't process the error
+                if (rerunCts.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
@@ -231,7 +244,7 @@ namespace PuppeteerSharp
 
             // Errors coming from WebDriver BiDi. TODO: Adjust messages after
             // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
-            if (exception.Message.Contains("DiscardedBrowsingContextError"))
+            if (exception.Message.Contains("DiscardedBrowsingContextError") || exception.Message.Contains("Polling never started"))
             {
                 return null;
             }

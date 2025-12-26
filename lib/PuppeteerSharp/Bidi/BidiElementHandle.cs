@@ -20,10 +20,12 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.QueryHandlers;
+using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
@@ -97,5 +99,16 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
         }
 
         return null;
+    }
+
+    internal async IAsyncEnumerable<IElementHandle> QueryAXTreeAsync(string name, string role)
+    {
+        var locator = new AccessibilityLocator { Name = name, Role = role };
+        var results = await BidiFrame.LocateNodesAsync(this, locator).ConfigureAwait(false);
+
+        foreach (var node in results)
+        {
+            yield return new BidiElementHandle(node, realm);
+        }
     }
 }

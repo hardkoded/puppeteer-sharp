@@ -88,7 +88,7 @@ namespace PuppeteerSharp.QueryHandlers
             return null;
         }
 
-        internal async Task<IElementHandle> WaitForAsync(
+        internal virtual async Task<IElementHandle> WaitForAsync(
             Frame frame,
             ElementHandle element,
             string selector,
