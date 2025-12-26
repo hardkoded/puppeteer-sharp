@@ -20,6 +20,7 @@ namespace PuppeteerSharp
         private bool _isDisposed;
         private IJSHandle _poller;
         private bool _terminated;
+        private CancellationTokenSource _rerunCts;
 
         internal WaitTask(
             Realm realm,
@@ -76,12 +77,18 @@ namespace PuppeteerSharp
             }
 
             _cts.Dispose();
+            _rerunCts?.Dispose();
 
             _isDisposed = true;
         }
 
         internal async Task RerunAsync()
         {
+            // Cancel any previous rerun
+            _rerunCts?.Cancel();
+            _rerunCts?.Dispose();
+            var rerunCts = _rerunCts = new CancellationTokenSource();
+
             try
             {
                 if (_pollingInterval.HasValue)
@@ -136,7 +143,8 @@ namespace PuppeteerSharp
                 }
 
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
-                await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
+                // Using void to not await the start promise - matches upstream behavior
+                await _poller.EvaluateFunctionAsync("poller => { void poller.start(); }").ConfigureAwait(false);
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
                 _result.TrySetResult(success);
@@ -144,6 +152,12 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                // If this rerun was cancelled, don't process the error
+                if (rerunCts.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
@@ -224,6 +238,13 @@ namespace PuppeteerSharp
             // This is a different message coming from Firefox in the same situation.
             // This is not upstream.
             if (exception.Message.Contains("Could not find object with given id"))
+            {
+                return null;
+            }
+
+            // Errors coming from WebDriver BiDi. TODO: Adjust messages after
+            // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
+            if (exception.Message.Contains("DiscardedBrowsingContextError") || exception.Message.Contains("Polling never started"))
             {
                 return null;
             }

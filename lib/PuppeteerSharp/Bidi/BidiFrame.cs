@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Script;
+using BidiLocator = WebDriverBiDi.BrowsingContext.Locator;
 using Request = PuppeteerSharp.Bidi.Core.Request;
 
 namespace PuppeteerSharp.Bidi;
@@ -310,26 +312,11 @@ public class BidiFrame : Frame
                     return null;
                 }
 
-                // If there's no request associated with this navigation after waiting,
-                // it means this is either:
-                // 1. A special URL like about:blank (no network request) - return null
-                // 2. A cached history navigation (GoBack/GoForward) - create synthetic response
-                // See: https://github.com/w3c/webdriver-bidi/issues/502
                 var request = navigation.Request;
 
                 if (request == null)
                 {
-                    var url = BrowsingContext.Url;
-
-                    // Special URLs like about:blank don't have network requests
-                    if (url.StartsWith("about:", StringComparison.OrdinalIgnoreCase) ||
-                        url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return null;
-                    }
-
-                    // For cached history navigations, create a synthetic response
-                    return BidiHttpResponse.FromCachedNavigation(url);
+                    return null;
                 }
 
                 var lastRequest = request.LastRedirect ?? request;
@@ -405,6 +392,13 @@ public class BidiFrame : Frame
         await BrowsingContext.SetFilesAsync(
             element.Value.ToSharedReference(),
             files).ConfigureAwait(false);
+    }
+
+    internal async Task<IList<RemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
+    {
+        return await BrowsingContext.LocateNodesAsync(
+            locator,
+            [element.Value.ToSharedReference()]).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

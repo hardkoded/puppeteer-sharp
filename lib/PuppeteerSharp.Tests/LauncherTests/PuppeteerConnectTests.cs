@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 BrowserWSEndpoint = Browser.WebSocketEndpoint,
                 Protocol = ((Browser)Browser).Protocol,
             };
-            var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
@@ -35,8 +35,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to close remote browser")]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {
-            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
-            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
             });
@@ -155,8 +155,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to the same page simultaneously")]
         public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
         {
-            var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
-            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
+            await using var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = browserOne.WebSocketEndpoint,
                 Protocol = ((Browser)browserOne).Protocol,
@@ -176,7 +176,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             Assert.That(await page1.EvaluateExpressionAsync<int>("7 * 8"), Is.EqualTo(56));
             Assert.That(await page2.EvaluateExpressionAsync<int>("7 * 6"), Is.EqualTo(42));
-            await browserOne.CloseAsync();
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect")]

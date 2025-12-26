@@ -38,17 +38,24 @@ namespace PuppeteerSharp.Bidi;
 /// </summary>
 public class BidiBrowser : Browser
 {
-    private readonly LaunchOptions _options;
+    /// <summary>
+    /// Time in milliseconds for process to exit gracefully.
+    /// </summary>
+    private const int CloseTimeout = 5000;
+
+    private readonly IBrowserOptions _options;
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
+    private readonly string _webSocketEndpoint;
     private bool _isClosed;
 
-    private BidiBrowser(Core.Browser browserCore, LaunchOptions options, ILoggerFactory loggerFactory)
+    private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
         BrowserCore = browserCore;
+        _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
         LoggerFactory = loggerFactory;
     }
@@ -58,6 +65,9 @@ public class BidiBrowser : Browser
 
     /// <inheritdoc />
     public override bool IsConnected => !BrowserCore.IsDisconnected;
+
+    /// <inheritdoc />
+    public override string WebSocketEndpoint => _webSocketEndpoint ?? (Launcher?.EndPoint != null ? Launcher.EndPoint + "/session" : null);
 
     /// <inheritdoc />
     public override ITarget Target => _target;
@@ -116,19 +126,51 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task CloseAsync()
     {
+        if (_isClosed)
+        {
+            return;
+        }
+
         _isClosed = true;
         try
         {
-            await BrowserCore.CloseAsync().ConfigureAwait(false);
+            try
+            {
+                await BrowserCore.CloseAsync().ConfigureAwait(false);
+
+                if (Launcher != null)
+                {
+                    // Notify process that exit is expected, but should be enforced if it
+                    // doesn't occur within the close timeout.
+                    var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
+                    await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                try
+                {
+                    await Driver.StopAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to stop driver");
+                }
+
+                Detach();
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to close connection");
+            _logger.LogError(ex, "Failed to close browser");
+
+            if (Launcher != null)
+            {
+                await Launcher.KillAsync().ConfigureAwait(false);
+            }
         }
-        finally
-        {
-            await Driver.StopAsync().ConfigureAwait(false);
-        }
+
+        OnClosed();
     }
 
     /// <inheritdoc />
@@ -161,11 +203,30 @@ public class BidiBrowser : Browser
         "Reliability",
         "CA2000:Dispose objects before losing scope",
         Justification = "We return the session, the browser needs to dispose the session")]
-    internal static async Task<BidiBrowser> CreateAsync(
+    internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher)
+        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
+
+    internal static Task<BidiBrowser> CreateAsync(
+        BiDiDriver driver,
+        ConnectOptions options,
+        ILoggerFactory loggerFactory,
+        LauncherBase launcher)
+        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
+
+    [SuppressMessage(
+        "Reliability",
+        "CA2000:Dispose objects before losing scope",
+        Justification = "We return the session, the browser needs to dispose the session")]
+    internal static async Task<BidiBrowser> CreateAsync(
+        BiDiDriver driver,
+        IBrowserOptions options,
+        ILoggerFactory loggerFactory,
+        LauncherBase launcher,
+        string webSocketEndpoint)
     {
         var session = await Session.FromAsync(
             driver,
@@ -187,7 +248,7 @@ public class BidiBrowser : Browser
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory) { Launcher = launcher };
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher };
         browser.InitializeAsync();
         return browser;
     }
