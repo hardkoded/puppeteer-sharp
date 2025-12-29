@@ -117,7 +117,9 @@ public class BidiFrame : Frame
             }",
             html).ConfigureAwait(false);
 
-        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(timeout).ConfigureAwait(false);
+        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
+            timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -492,7 +494,9 @@ public class BidiFrame : Frame
         }
 
         // TODO: Check frame detached event.
-        return Task.WhenAll(tasks).WithTimeout(timeout);
+        return Task.WhenAll(tasks).WithTimeout(
+            timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
     }
 
     private Task WaitForNetworkIdleAsync(NavigationOptions options)
