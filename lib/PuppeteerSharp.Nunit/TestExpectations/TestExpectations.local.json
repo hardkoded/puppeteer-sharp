@@ -133,6 +133,20 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "TODO Review screencasts in firefox",
+    "testIdPattern": "[puppeteer-sharp] Screencast*",
+    "platforms": ["linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "TODO Review screenshots in firefox",
+    "testIdPattern": "[screenshot.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "[click.spec] Page.click should fire aux event on middle click",
     "platforms": ["win32"],
