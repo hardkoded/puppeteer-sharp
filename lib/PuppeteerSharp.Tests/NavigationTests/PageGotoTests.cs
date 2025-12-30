@@ -182,7 +182,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("SSL_ERROR_UNKNOWN"));
+                // Firefox can return different SSL errors depending on CDP vs BiDi
+                Assert.That(exception.Message, Does.Match("SSL_ERROR_UNKNOWN|MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT"));
             }
         }
 
@@ -197,7 +198,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("SSL_ERROR_UNKNOWN"));
+                // Firefox can return different SSL errors depending on CDP vs BiDi
+                Assert.That(exception.Message, Does.Match("SSL_ERROR_UNKNOWN|MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT"));
             }
         }
 
