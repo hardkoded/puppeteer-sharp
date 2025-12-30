@@ -228,6 +228,7 @@ public class BidiPage : Page
     {
         var timeout = options?.Timeout ?? DefaultTimeout;
         var idleTime = options?.IdleTime ?? 500;
+        var concurrency = options?.Concurrency ?? 0;
 
         var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -244,7 +245,7 @@ public class BidiPage : Page
 
             lock (requestLock)
             {
-                if (inflightRequests == 0)
+                if (inflightRequests <= concurrency)
                 {
                     idleTimer.Start();
                 }
