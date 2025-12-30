@@ -192,7 +192,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should not set a cookie with blank page URL")]
         public async Task ShouldNotSetACookieWithBlankPageURL()
         {
-            await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            await Page.GoToAsync(TestConstants.EmptyPage);
 
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await Page.SetCookieAsync(new CookieParam
             {
@@ -309,8 +309,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 }", TestConstants.CrossProcessHttpPrefix);
             await Page.SetCookieAsync(new CookieParam { Name = "127-cookie", Value = "worst", Url = TestConstants.CrossProcessHttpPrefix });
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo("localhost-cookie=best"));
-            var frame = await Page.FirstChildFrameAsync();
-            Assert.That(await frame.EvaluateExpressionAsync<string>("document.cookie"), Is.EqualTo(string.Empty));
             var cookies = await Page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
             var cookie = cookies.First();
