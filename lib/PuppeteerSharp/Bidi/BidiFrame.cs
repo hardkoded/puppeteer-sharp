@@ -501,8 +501,37 @@ public class BidiFrame : Frame
 
     private Task WaitForNetworkIdleAsync(NavigationOptions options)
     {
-        // TODO: Complete this method.
-        return Task.CompletedTask;
+        var waitUntil = options?.WaitUntil ?? [WaitUntilNavigation.Load];
+
+        // Determine concurrency based on WaitUntil navigation options
+        // networkidle0 = wait until there are 0 active connections
+        // networkidle2 = wait until there are at most 2 active connections
+        int? concurrency = null;
+        foreach (var condition in waitUntil)
+        {
+            switch (condition)
+            {
+                case WaitUntilNavigation.Networkidle0:
+                    concurrency = concurrency.HasValue ? Math.Min(0, concurrency.Value) : 0;
+                    break;
+                case WaitUntilNavigation.Networkidle2:
+                    concurrency = concurrency.HasValue ? Math.Min(2, concurrency.Value) : 2;
+                    break;
+            }
+        }
+
+        // If no network idle condition was specified, return completed task
+        if (!concurrency.HasValue)
+        {
+            return Task.CompletedTask;
+        }
+
+        return BidiPage.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
+        {
+            IdleTime = 500,
+            Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
+            Concurrency = concurrency.Value,
+        });
     }
 
     private async Task WaitForRequestFinishedAsync(Request request)
