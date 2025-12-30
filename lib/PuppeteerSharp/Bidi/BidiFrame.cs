@@ -117,7 +117,9 @@ public class BidiFrame : Frame
             }",
             html).ConfigureAwait(false);
 
-        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(timeout).ConfigureAwait(false);
+        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
+            timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -128,7 +130,9 @@ public class BidiFrame : Frame
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            // - If any task fails/is canceled, immediately throw (don't wait for other tasks)
+            // - If all tasks succeed, return when all have completed
+            await new[] { waitForNavigationTask, navigationTask }.WhenAllFailFast().ConfigureAwait(false);
         }
         catch (NavigationException)
         {
@@ -490,7 +494,9 @@ public class BidiFrame : Frame
         }
 
         // TODO: Check frame detached event.
-        return Task.WhenAll(tasks).WithTimeout(timeout);
+        return Task.WhenAll(tasks).WithTimeout(
+            timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
     }
 
     private Task WaitForNetworkIdleAsync(NavigationOptions options)
