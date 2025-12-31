@@ -229,6 +229,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         {
             throw new TargetClosedException("Protocol error", "Target.detachedFromTarget");
         }
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("no such handle"))
+        {
+            throw new PuppeteerException("Could not serialize referenced object", ex);
+        }
 
         if (result.ResultType == EvaluateResultType.Exception)
         {
@@ -248,7 +253,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
         if (typeof(T) == typeof(object))
         {
-            return (T)result;
+            // When requesting object type, we need to deserialize complex types properly
+            return (T)DeserializeToObject(result);
         }
 
         // Handle JsonElement? - return default since BiDi doesn't use JsonElement
@@ -387,6 +393,106 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
         // Unbox back to T
         return (T)boxedInstance;
+    }
+
+    /// <summary>
+    /// Deserializes a BiDi result value to a plain .NET object.
+    /// Handles RemoteValueDictionary, RemoteValue, and primitive types.
+    /// Returns null for the entire result if circular references are detected.
+    /// </summary>
+    private object DeserializeToObject(object value)
+    {
+        var hasCircularRef = false;
+        var result = DeserializeToObjectInternal(value, ref hasCircularRef);
+
+        // If circular references were detected, return null for the entire result
+        // This matches CDP behavior where circular objects cannot be serialized
+        if (hasCircularRef)
+        {
+            return null;
+        }
+
+        return result;
+    }
+
+    private object DeserializeToObjectInternal(object value, ref bool hasCircularRef)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        // Handle RemoteValueDictionary (represents objects/maps)
+        if (value is RemoteValueDictionary dict)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (var entry in dict)
+            {
+                var key = entry.Key?.ToString();
+                if (string.IsNullOrEmpty(key))
+                {
+                    continue;
+                }
+
+                var remoteValue = entry.Value;
+
+                // If RemoteValue has no value, it's a circular reference or unresolvable reference
+                if (!remoteValue.HasValue)
+                {
+                    hasCircularRef = true;
+                    result[key] = null;
+                }
+                else
+                {
+                    result[key] = DeserializeToObjectInternal(remoteValue.Value, ref hasCircularRef);
+                }
+            }
+
+            return result;
+        }
+
+        // Handle RemoteValue directly (for nested values)
+        if (value is RemoteValue remoteVal)
+        {
+            // If RemoteValue has no value, it's a circular reference
+            if (!remoteVal.HasValue)
+            {
+                hasCircularRef = true;
+                return null;
+            }
+
+            return DeserializeToObjectInternal(remoteVal.Value, ref hasCircularRef);
+        }
+
+        // Handle IEnumerable for arrays (but not strings)
+        if (value is IEnumerable enumerable && value is not string)
+        {
+            var list = new List<object>();
+            foreach (var item in enumerable)
+            {
+                if (item is RemoteValue rv)
+                {
+                    if (!rv.HasValue)
+                    {
+                        hasCircularRef = true;
+                        list.Add(null);
+                    }
+                    else
+                    {
+                        list.Add(DeserializeToObjectInternal(rv.Value, ref hasCircularRef));
+                    }
+                }
+                else
+                {
+                    list.Add(DeserializeToObjectInternal(item, ref hasCircularRef));
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        // For primitive types (string, numbers, bool, etc.), return as-is
+        return value;
     }
 
     private async Task<ArgumentValue> FormatArgumentAsync(object arg)
