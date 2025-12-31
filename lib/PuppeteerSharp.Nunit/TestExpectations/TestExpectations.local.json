@@ -63,6 +63,13 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "TODO Review screencasts in firefox",
+    "testIdPattern": "[puppeteer-sharp] Screencast*",
+    "platforms": ["linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "TODO Review screenshots in firefox",
     "testIdPattern": "[screenshot.spec] *",
     "platforms": ["darwin", "linux", "win32"],
