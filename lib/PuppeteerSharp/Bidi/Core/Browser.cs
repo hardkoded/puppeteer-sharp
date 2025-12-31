@@ -77,7 +77,7 @@ internal sealed class Browser(Session session) : IDisposable
 
     public void Dispose()
     {
-        if (!_disposed)
+        if (_disposed)
         {
             return;
         }
