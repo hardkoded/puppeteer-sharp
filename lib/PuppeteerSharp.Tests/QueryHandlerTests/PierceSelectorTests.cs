@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Browser.ClearCustomQueryHandlers();
         }
 
-        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find first element in shadow")]
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find first element in shadow")]
         public async Task ShouldFindFirstElementInShadow()
         {
             var div = await Page.QuerySelectorAsync("pierce/.foo");
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(text, Is.EqualTo("Hello"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find all elements in shadow")]
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find all elements in shadow")]
         public async Task ShouldFindAllElementsInShadow()
         {
             var divs = await Page.QuerySelectorAllAsync("pierce/.foo");
@@ -61,7 +61,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(string.Join(" ", text), Is.EqualTo("Hello World"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find first child element")]
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find first child element")]
         public async Task ShouldFindFirstChildElement()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");
@@ -72,7 +72,7 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests
             Assert.That(text, Is.EqualTo("Hello"));
         }
 
-        [Test, Retry(2), PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find all child elements")]
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests Pierce selectors", "should find all child elements")]
         public async Task ShouldFindAllChildElements()
         {
             var parentElement = await Page.QuerySelectorAsync("html > div");

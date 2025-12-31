@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestPostDataTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work")]
+        [Test, PuppeteerTest("network.spec", "network Request.postData", "should work")]
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -19,14 +19,38 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("{\"foo\":\"bar\"}"));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
+        [Test, PuppeteerTest("network.spec", "PuppeteerSharp network Request.postData", "should work plain text")]
+        public async Task ShouldWorkPlainText()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
+            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: 'Hello, world!'})");
+            var request = await requestTask.WithTimeout();
+            Assert.That(request, Is.Not.Null);
+            Assert.That(request.PostData, Is.EqualTo("Hello, world!"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "PuppeteerSharp network Request.postData", "should work with low surrogate")]
+        public async Task ShouldWorkWithLowSurrogate()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            var requestTask = Page.WaitForRequestAsync((request) => !TestUtils.IsFavicon(request));
+            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: 'Hello, world!\uDD71'})");
+            var request = await requestTask.WithTimeout();
+            Assert.That(request, Is.Not.Null);
+            Assert.That(request.PostData, Is.EqualTo("Hello, world!\uFFFD"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(response.Request.PostData, Is.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
+        [Test, PuppeteerTest("network.spec", "network Request.postData", "should work with blobs")]
         public async Task ShouldWorkWithBlobs()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

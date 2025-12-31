@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.TouchScreenTests;
 
 public class TouchscreenPrototypeTouchMoveTests : PuppeteerPageBaseTest
 {
-    [Test, Retry(2), PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work")]
+    [Test, PuppeteerTest("touchscreen.spec", "Touchscreen Touchscreen.prototype.touchMove", "should work")]
     public async Task ShouldWork()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/input/touchscreen.html");

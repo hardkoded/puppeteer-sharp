@@ -309,7 +309,7 @@ namespace PuppeteerSharp
                 return document.querySelectorAll('iframe, frame');
             }").ConfigureAwait(false);
 
-            await foreach (var iframe in list.TransposeIterableHandleAsync())
+            await foreach (var iframe in list.TransposeIterableHandleAsync().ConfigureAwait(false))
             {
                 var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
                 if (frame?.Id == Id)

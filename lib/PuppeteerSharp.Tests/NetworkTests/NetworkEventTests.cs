@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.Request")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.Request")]
         public async Task PageEventsRequest()
         {
             var requests = new List<IRequest>();
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests[0].Frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
         public async Task PageEventsRequestServedFromCache()
         {
             var cached = new List<string>();
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.Response")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.Response")]
         public async Task PageEventsResponse()
         {
             var responses = new List<IResponse>();
@@ -59,7 +59,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(remoteAddress.Port, Is.EqualTo(TestConstants.Port));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFailed")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFailed")]
         public async Task PageEventsRequestFailed()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(failedRequests[0].Frame, Is.Not.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFinished")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFinished")]
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<IRequest>();
@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests[0].Frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should fire events in proper order")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "should fire events in proper order")]
         public async Task ShouldFireEventsInProperOrder()
         {
             var events = new List<string>();
@@ -120,7 +120,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(events.ToArray(), Is.EqualTo(new[] { "request", "response", "requestfinished" }));
         }
 
-        [Test, Retry(2), PuppeteerTest("network.spec", "network Network Events", "should support redirects")]
+        [Test, PuppeteerTest("network.spec", "network Network Events", "should support redirects")]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();

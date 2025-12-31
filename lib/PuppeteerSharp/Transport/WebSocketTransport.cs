@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Transport
         /// <param name="client">The web socket.</param>
         /// <param name="scheduler">The scheduler to use for long-running tasks.</param>
         /// <param name="queueRequests">Indicates whether requests should be queued.</param>
-        private WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
+        protected WebSocketTransport(WebSocket client, TransportTaskScheduler scheduler, bool queueRequests)
         {
             if (scheduler == null)
             {

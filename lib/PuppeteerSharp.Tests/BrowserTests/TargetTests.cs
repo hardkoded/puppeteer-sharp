@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("browser.spec", "Browser.target", "should return browser target")]
+        [Test, PuppeteerTest("browser.spec", "Browser.target", "should return browser target")]
         public void ShouldReturnBrowserTarget()
             => Assert.That(Browser.Target.Type, Is.EqualTo(TargetType.Browser));
     }

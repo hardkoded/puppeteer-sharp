@@ -160,11 +160,15 @@ namespace PuppeteerSharp
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return RuntimeInformation.OSArchitecture == Architecture.X64 ? Platform.Win64 : Platform.Win32;
+                return RuntimeInformation.OSArchitecture == Architecture.X64 ||
+                       (RuntimeInformation.OSArchitecture == Architecture.Arm64 && IsWindows11()) ? Platform.Win64 : Platform.Win32;
             }
 
             return Platform.Unknown;
         }
+
+        internal static bool IsWindows11()
+            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version.Build >= 22000;
 
         internal static string GetBrowsersLocation()
         {
@@ -209,10 +213,11 @@ namespace PuppeteerSharp
 
         private static void ExtractTar(string zipPath, string folderPath)
         {
+            var compression = zipPath.EndsWith("xz", StringComparison.InvariantCulture) ? "J" : "j";
             new DirectoryInfo(folderPath).Create();
             using var process = new Process();
             process.StartInfo.FileName = "tar";
-            process.StartInfo.Arguments = $"-xvjf \"{zipPath}\" -C \"{folderPath}\"";
+            process.StartInfo.Arguments = $"-xv{compression}f \"{zipPath}\" -C \"{folderPath}\"";
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.Start();
@@ -433,7 +438,7 @@ namespace PuppeteerSharp
             {
                 ExecuteSetup(archivePath, outputPath);
             }
-            else if (archivePath.EndsWith(".tar.bz2", StringComparison.OrdinalIgnoreCase))
+            else if (archivePath.Contains(".tar."))
             {
                 ExtractTar(archivePath, outputPath);
             }

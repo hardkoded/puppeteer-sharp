@@ -99,7 +99,8 @@ jobs:
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
-          dotnet test -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
+          dotnet tool update -g dotnet-retest
+          dotnet retest --verbosity normal -- -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
     - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       env:
@@ -107,5 +108,6 @@ jobs:
         HEADLESS_MODE: ${{ matrix.mode }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
-        dotnet test -s test.runsettings --blame-hang-timeout 300000
+        dotnet tool update -g dotnet-retest
+        dotnet retest --verbosity normal -- -s test.runsettings --blame-hang-timeout 300000
 

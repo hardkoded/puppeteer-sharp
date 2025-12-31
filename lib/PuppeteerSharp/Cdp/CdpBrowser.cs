@@ -143,15 +143,7 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override IBrowserContext[] BrowserContexts()
-    {
-        var contexts = _contexts.Values.ToArray<IBrowserContext>();
-
-        var allContexts = new IBrowserContext[contexts.Length + 1];
-        allContexts[0] = DefaultContext;
-        contexts.CopyTo(allContexts, 1);
-        return allContexts;
-    }
+    public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
 
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,

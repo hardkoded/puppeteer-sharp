@@ -19,9 +19,7 @@ namespace PuppeteerSharp
     {
         private ElementHandle _isolatedHandle;
 
-        internal ElementHandle(
-            IsolatedWorld world,
-            RemoteObject remoteObject) : base(world, remoteObject)
+        internal ElementHandle()
         {
         }
 
@@ -243,7 +241,7 @@ namespace PuppeteerSharp
 
                 var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
                 var result = new List<IElementHandle>();
-                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector))
+                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector).ConfigureAwait(false))
                 {
                     result.Add(item);
                 }

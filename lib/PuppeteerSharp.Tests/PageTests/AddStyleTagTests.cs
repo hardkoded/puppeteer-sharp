@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw an error if no options are provided")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw an error if no options are provided")]
         public void ShouldThrowAnErrorIfNoOptionsAreProvided()
         {
             var exception = Assert.ThrowsAsync<ArgumentException>(()
@@ -20,7 +20,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Is.EqualTo("Provide options with a `Url`, `Path` or `Content` property"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a url")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a url")]
         public async Task ShouldWorkWithAUrl()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Is.EqualTo("rgb(255, 0, 0)"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw an error if loading from url fail")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw an error if loading from url fail")]
         public async Task ShouldThrowAnErrorIfLoadingFromUrlFail()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Contain("Could not load style"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a path")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with a path")]
         public async Task ShouldWorkWithAPath()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Is.EqualTo("rgb(255, 0, 0)"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should include sourcemap when path is provided")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should include sourcemap when path is provided")]
         public async Task ShouldIncludeSourcemapWhenPathIsProvided()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -64,7 +64,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(styleContent, Does.Contain(Path.Combine("Assets", "injectedstyle.css")));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with content")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should work with content")]
         public async Task ShouldWorkWithContent()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -75,7 +75,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Is.EqualTo("rgb(0, 128, 0)"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with content to the CSP page")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with content to the CSP page")]
         public async Task ShouldThrowWhenAddedWithContentToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");
@@ -87,7 +87,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception, Is.Not.Null);
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with URL to the CSP page")]
+        [Test, PuppeteerTest("page.spec", "Page Page.addStyleTag", "should throw when added with URL to the CSP page")]
         public async Task ShouldThrowWhenAddedWithURLToTheCSPPage()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/csp.html");

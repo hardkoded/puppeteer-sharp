@@ -31,7 +31,7 @@ namespace PuppeteerSharp.QueryHandlers
                 return _querySelectorAll;
             }
 
-            set
+            init
             {
                 _querySelectorAll = value;
             }
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.QueryHandlers
                 return _querySelector;
             }
 
-            set
+            init
             {
                 _querySelector = value;
             }
@@ -166,7 +166,7 @@ namespace PuppeteerSharp.QueryHandlers
                 new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)))
                 .ConfigureAwait(false);
 
-            await foreach (var item in handle.TransposeIterableHandleAsync())
+            await foreach (var item in handle.TransposeIterableHandleAsync().ConfigureAwait(false))
             {
                 yield return item;
             }

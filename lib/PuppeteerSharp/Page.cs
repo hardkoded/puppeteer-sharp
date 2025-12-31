@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Timers;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -43,14 +41,10 @@ namespace PuppeteerSharp
 
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
-        private readonly ConcurrentSet<IRequest> _requests = new();
-        private readonly TaskCompletionSource<bool> _closeTaskCompletionSource =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal Page(TaskQueue screenshotTaskQueue)
         {
             _screenshotTaskQueue = screenshotTaskQueue;
-            Request += (_, e) => _requests.Add(e.Request);
         }
 
         /// <inheritdoc/>
@@ -188,6 +182,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract bool IsJavaScriptEnabled { get; }
 
+        /// <summary>
+        /// Timeout settings.
+        /// </summary>
+        public TimeoutSettings TimeoutSettings { get; set; } = new();
+
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
@@ -210,11 +209,6 @@ namespace PuppeteerSharp
         internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
 
         /// <summary>
-        /// Timeout settings.
-        /// </summary>
-        protected TimeoutSettings TimeoutSettings { get; set; } = new();
-
-        /// <summary>
         /// Whether the <see cref="Console"/> event has listeners.
         /// </summary>
         protected bool HasConsoleEventListeners => Console?.GetInvocationList().Length == 0;
@@ -233,9 +227,6 @@ namespace PuppeteerSharp
         /// Screenshot burst mode options.
         /// </summary>
         protected ScreenshotOptions ScreenshotBurstModeOptions { get; set; }
-
-        private int NumRequestsInProgress
-            => _requests.Count(r => r.Response == null);
 
         /// <inheritdoc/>
         public abstract Task SetGeolocationAsync(GeolocationOption options);
@@ -692,58 +683,7 @@ namespace PuppeteerSharp
             => MainFrame.WaitForNavigationAsync(options);
 
         /// <inheritdoc/>
-        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
-        {
-            var timeout = options?.Timeout ?? DefaultTimeout;
-            var idleTime = options?.IdleTime ?? 500;
-
-            var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            var idleTimer = new Timer { Interval = idleTime, };
-
-            idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
-
-            void Evaluate()
-            {
-                idleTimer.Stop();
-
-                if (NumRequestsInProgress <= (options?.Concurrency ?? 0))
-                {
-                    idleTimer.Start();
-                }
-            }
-
-            void RequestEventListener(object sender, RequestEventArgs e) => Evaluate();
-            void ResponseEventListener(object sender, ResponseCreatedEventArgs e) => Evaluate();
-
-            void Cleanup()
-            {
-                idleTimer.Stop();
-                idleTimer.Dispose();
-
-                Request -= RequestEventListener;
-                Response -= ResponseEventListener;
-            }
-
-            Request += RequestEventListener;
-            Response += ResponseEventListener;
-
-            Evaluate();
-
-            await Task.WhenAny(networkIdleTcs.Task, _closeTaskCompletionSource.Task).WithTimeout(timeout, t =>
-            {
-                Cleanup();
-
-                return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-            }).ConfigureAwait(false);
-
-            Cleanup();
-
-            if (_closeTaskCompletionSource.Task.IsFaulted)
-            {
-                await _closeTaskCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
+        public abstract Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null);
 
         /// <inheritdoc/>
         public Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null)
@@ -945,11 +885,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Raises the <see cref="Close"/> event.
         /// </summary>
-        protected void OnClose()
-        {
-            _closeTaskCompletionSource?.TrySetException(new TargetClosedException("Target closed", "Session closed"));
-            Close?.Invoke(this, EventArgs.Empty);
-        }
+        protected void OnClose() => Close?.Invoke(this, EventArgs.Empty);
 
         /// <summary>
         /// Raises the <see cref="Console"/> event.

@@ -37,12 +37,17 @@ public class CdpElementHandle : ElementHandle
 
     internal CdpElementHandle(
         IsolatedWorld world,
-        RemoteObject remoteObject) : base(world, remoteObject)
+        RemoteObject remoteObject)
     {
         Handle = new CdpJSHandle(world, remoteObject);
         Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
         _cdpFrame = Realm.Frame as CdpFrame;
     }
+
+    /// <inheritdoc />
+    public override RemoteObject RemoteObject => Handle.RemoteObject;
+
+    internal override IsolatedWorld Realm => Handle.Realm;
 
     /// <summary>
     /// Logger.

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace PuppeteerSharp.PageCoverage
 {
     internal class JSCoverage
     {
-        private readonly Dictionary<string, string> _scriptURLs = new();
-        private readonly Dictionary<string, string> _scriptSources = new();
+        private readonly ConcurrentDictionary<string, string> _scriptURLs = new();
+        private readonly ConcurrentDictionary<string, string> _scriptSources = new();
         private readonly ILogger _logger;
 
         private CDPSession _client;
@@ -19,6 +20,7 @@ namespace PuppeteerSharp.PageCoverage
         private bool _resetOnNavigation;
         private bool _reportAnonymousScripts;
         private bool _includeRawScriptCoverage;
+        private bool _useBlockCoverage;
 
         public JSCoverage(CDPSession client)
         {
@@ -41,6 +43,7 @@ namespace PuppeteerSharp.PageCoverage
             _resetOnNavigation = options.ResetOnNavigation;
             _reportAnonymousScripts = options.ReportAnonymousScripts;
             _includeRawScriptCoverage = options.IncludeRawScriptCoverage;
+            _useBlockCoverage = options.UseBlockCoverage;
             _enabled = true;
             _scriptURLs.Clear();
             _scriptSources.Clear();
@@ -52,7 +55,7 @@ namespace PuppeteerSharp.PageCoverage
                 _client.SendAsync("Profiler.startPreciseCoverage", new ProfilerStartPreciseCoverageRequest
                 {
                     CallCount = _includeRawScriptCoverage,
-                    Detailed = true,
+                    Detailed = _useBlockCoverage,
                 }),
                 _client.SendAsync("Debugger.enable"),
                 _client.SendAsync("Debugger.setSkipAllPauses", new DebuggerSetSkipAllPausesRequest { Skip = true }));
@@ -90,7 +93,7 @@ namespace PuppeteerSharp.PageCoverage
                     continue;
                 }
 
-                var flattenRanges = entry.Functions.SelectMany(f => f.Ranges).ToList();
+                var flattenRanges = entry.Functions.SelectMany(f => f.Ranges);
                 var ranges = Coverage.ConvertToDisjointRanges(flattenRanges);
                 coverage.Add(new JSCoverageEntry
                 {
@@ -140,8 +143,8 @@ namespace PuppeteerSharp.PageCoverage
                 {
                     ScriptId = scriptParseResponse.ScriptId,
                 }).ConfigureAwait(false);
-                _scriptURLs.Add(scriptParseResponse.ScriptId, scriptParseResponse.Url);
-                _scriptSources.Add(scriptParseResponse.ScriptId, response.ScriptSource);
+                _scriptURLs.TryAdd(scriptParseResponse.ScriptId, scriptParseResponse.Url);
+                _scriptSources.TryAdd(scriptParseResponse.ScriptId, response.ScriptSource);
             }
             catch (Exception ex)
             {

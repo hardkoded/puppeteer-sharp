@@ -208,14 +208,14 @@ namespace PuppeteerSharp.Cdp
             Transport.StopReading();
             Disconnected?.Invoke(this, EventArgs.Empty);
 
-            foreach (var session in _sessions.Values.ToArray())
+            foreach (var session in _sessions.Values)
             {
                 session.Close(closeReason);
             }
 
             _sessions.Clear();
 
-            foreach (var response in _callbacks.Values.ToArray())
+            foreach (var response in _callbacks.Values)
             {
                 response.TaskWrapper.TrySetException(new TargetClosedException(
                     $"Protocol error({response.Method}): Target closed.",
@@ -303,10 +303,10 @@ namespace PuppeteerSharp.Cdp
         private void ProcessIncomingMessage(ConnectionResponse obj)
         {
             var method = obj.Method;
-            var param = obj.Params?.ToObject<ConnectionResponseParams>();
 
             if (method == "Target.attachedToTarget")
             {
+                var param = obj.Params?.ToObject<ConnectionResponseParams>();
                 var sessionId = param.SessionId;
                 var session = new CdpCDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
                 _sessions.AddItem(sessionId, session);
@@ -320,6 +320,7 @@ namespace PuppeteerSharp.Cdp
             }
             else if (method == "Target.detachedFromTarget")
             {
+                var param = obj.Params?.ToObject<ConnectionResponseParams>();
                 var sessionId = param.SessionId;
                 if (_sessions.TryRemove(sessionId, out var session) && !session.IsClosed)
                 {

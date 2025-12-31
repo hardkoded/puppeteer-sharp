@@ -7,7 +7,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetUserAgentTests : PuppeteerPageBaseTest
     {
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work")]
         public async Task ShouldWork()
         {
             Assert.That(await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"), Does.Contain("Mozilla"));
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
             Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("Mozilla"));
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.PageTests
               FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should emulate device user-agent")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should emulate device user-agent")]
         public async Task ShouldSimulateDeviceUserAgent()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/mobile.html");
@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
         }
 
-        [Test, Retry(2), PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with additional userAgentMetdata")]
         public async Task ShouldWorkWithAdditionalUserAgentMetadata()
         {
             await Page.SetUserAgentAsync(
