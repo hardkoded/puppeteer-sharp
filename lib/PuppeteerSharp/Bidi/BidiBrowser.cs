@@ -260,10 +260,39 @@ public class BidiBrowser : Browser
         {
             CreateBrowserContext(userContext);
         }
+
+        // Subscribe to browserCore disconnected event
+        BrowserCore.Disconnected += OnBrowserCoreDisconnected;
+
+        // Subscribe to process exit event if we have a launcher
+        if (Launcher?.Process != null)
+        {
+            Launcher.Process.Exited += OnProcessExited;
+        }
+    }
+
+    private void OnBrowserCoreDisconnected(object sender, ClosedEventArgs e)
+    {
+        _isClosed = true;
+        OnDisconnected();
+    }
+
+    private void OnProcessExited(object sender, EventArgs e)
+    {
+        BrowserCore.Dispose();
     }
 
     private void Detach()
     {
+        // Unsubscribe from browser core events
+        BrowserCore.Disconnected -= OnBrowserCoreDisconnected;
+
+        // Unsubscribe from process exit event
+        if (Launcher?.Process != null)
+        {
+            Launcher.Process.Exited -= OnProcessExited;
+        }
+
         foreach (var context in _browserContexts.Values)
         {
             context.TargetCreated -= (sender, args) => OnTargetCreated(args);

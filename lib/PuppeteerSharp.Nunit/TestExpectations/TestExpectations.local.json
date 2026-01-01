@@ -1,5 +1,19 @@
 [
   {
+    "comment": "Firefox BiDi doesn't support browserURL connection because it doesn't expose the /json/version CDP endpoint. https://bugzilla.mozilla.org/show_bug.cgi?id=1862018",
+    "testIdPattern": "[connect.spec] Puppeteer.connect should be able to connect using browserUrl, with and without trailing slash",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi only supports one session per browser - cannot connect to an already-connected browser. https://bugzilla.mozilla.org/show_bug.cgi?id=1862018",
+    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "Test uses CDP-specific WaitEvent with Page.loadEventFired which is not supported in BiDi",
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
     "platforms": ["darwin", "linux", "win32"],
@@ -61,13 +75,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Test depends on ConnectAsync which is not implemented for BiDi yet - see [connect.spec] expectations",
-    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] PuppeteerSharp network*",
@@ -180,36 +187,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[connect.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[emulation.spec] *Page.emulate *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
@@ -409,21 +386,6 @@
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[evaluation.spec] *Page.removeScriptToEvaluateOnNewDocument*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[fixtures.spec] *",
     "platforms": [
       "darwin",
       "linux",
