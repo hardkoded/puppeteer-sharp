@@ -74,8 +74,6 @@ internal class UserContext : IDisposable
         IsDisposed = true;
         _reason ??= "User context already closed, probably because the browser disconnected/closed.";
         OnClosed();
-        Browser.Dispose();
-        Session.Dispose();
         GC.SuppressFinalize(this);
     }
 
