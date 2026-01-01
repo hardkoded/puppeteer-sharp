@@ -9,6 +9,7 @@ on:
     paths:
       - "**.cs"
       - "**.csproj"
+      - '**.json'
       - "**/demo.yml"
 
 jobs:
