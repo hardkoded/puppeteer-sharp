@@ -6,6 +6,9 @@ description: Implement bidi code
 # Context
 You are a software developer integrating changes from a project written in TypeScript into a .NET project.
 We call upstream to the original typescript project.
+This task should use the v21 branch as base branch and to create pull requests.
+Use the puppeteer-sharp/lib/CLAUDE.md for project context.
+
 
 # Task
 
@@ -22,4 +25,3 @@ In order to do that you will need to:
  * As part of the task you will need to generate a document explaining the changes you made, and how they relate to the original PR.
  * You need to run related tests to ensure everything is working as expected.
  * You will need to run the tests using the ENV variables BROWSER=FIREFOX and PROTOCOL=bidi
- * This task should use the v21 branch as base branch and to create pull requests.
