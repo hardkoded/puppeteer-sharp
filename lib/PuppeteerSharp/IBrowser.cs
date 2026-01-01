@@ -80,11 +80,6 @@ namespace PuppeteerSharp
         int DefaultWaitForTimeout { get; set; }
 
         /// <summary>
-        /// Gets or Sets whether to ignore HTTPS errors during navigation.
-        /// </summary>
-        bool AcceptInsecureCerts { get; set; }
-
-        /// <summary>
         /// Gets a value indicating if the browser is closed.
         /// </summary>
         bool IsClosed { get; }

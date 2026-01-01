@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -16,7 +17,7 @@ namespace PuppeteerSharp
     /// </summary>
     /// <param name="context">Execution context.</param>
     /// <returns>Resolved argument.</returns>
-    public delegate Task<object> LazyArg(ExecutionContext context);
+    public delegate Task<object> LazyArg(IPuppeteerUtilWrapper context);
 
     internal class IsolatedWorld : Realm, IDisposable, IAsyncDisposable
     {
@@ -36,7 +37,7 @@ namespace PuppeteerSharp
             Frame = frame;
             Worker = worker;
             IsMainWorld = isMainWorld;
-            _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
+            _logger = Client.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
             FrameUpdated();
@@ -49,7 +50,9 @@ namespace PuppeteerSharp
 
         internal Frame Frame { get; }
 
-        internal CDPSession Client => Frame?.Client ?? Worker?.Client;
+        internal ICDPSession Client => Frame?.Client ?? Worker?.Client;
+
+        internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
@@ -130,12 +133,13 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (ICdpHandle)handle;
+            if (((JSHandle)cdpHandle).Realm == this)
             {
                 return handle;
             }
 
-            if (handle.RemoteObject.ObjectId == null)
+            if (cdpHandle.RemoteObject.ObjectId == null)
             {
                 return handle;
             }
@@ -144,7 +148,7 @@ namespace PuppeteerSharp
                 "DOM.describeNode",
                 new DomDescribeNodeRequest
                 {
-                    ObjectId = handle.RemoteObject.ObjectId,
+                    ObjectId = cdpHandle.RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
 
             var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId).ConfigureAwait(false);
@@ -154,14 +158,15 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (ICdpHandle)handle;
+            if (((JSHandle)cdpHandle).Realm == this)
             {
                 return handle;
             }
 
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = ((JSHandle)handle).RemoteObject.ObjectId,
+                ObjectId = cdpHandle.RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
@@ -201,10 +206,10 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateExpressionAsync(string script)
+        internal override async Task EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
+            await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
         internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -213,10 +218,10 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+        internal override async Task EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+            await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
         }
 
         internal void ClearContext()

@@ -27,12 +27,6 @@ namespace PuppeteerSharp
         ITarget Opener { get; }
 
         /// <summary>
-        /// Gets the target identifier.
-        /// </summary>
-        /// <value>The target identifier.</value>
-        string TargetId { get; }
-
-        /// <summary>
         /// Gets the type. It will be <see cref="PuppeteerSharp.TargetInfo.Type"/>.
         /// Can be `"page"`, `"background_page"`, `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
         /// </summary>

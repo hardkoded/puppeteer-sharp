@@ -31,9 +31,15 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "QueryAll", "$$ should query existing elements")]
         public async Task QuerySelectorAllShouldQueryExistingElements()
         {
-            await Page.SetContentAsync("<html><body><div>A</div><br/><div>B</div></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var elements = await html.QuerySelectorAllAsync("allArray/div");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+          <body>
+            <div>A</div>
+            <br />
+            <div>B</div>
+          </body>
+        </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var elements = await htmlEl.QuerySelectorAllAsync("allArray/div");
             Assert.That(elements, Has.Length.EqualTo(2));
             var tasks = elements.Select((element) =>
               Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element)
@@ -44,16 +50,22 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "QueryAll", "$$ should return empty array for non-existing elements")]
         public async Task QuerySelectorAllShouldReturnEmptyArrayForNonExistingElements()
         {
-            await Page.SetContentAsync("<html><body><span>A</span><br/><span>B</span></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var elements = await html.QuerySelectorAllAsync("allArray/div");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+          <body>
+            <span>A</span><br /><span>B</span>
+          </body>
+        </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var elements = await htmlEl.QuerySelectorAllAsync("allArray/div");
             Assert.That(elements, Is.Empty);
         }
 
         [Test, PuppeteerTest("queryselector.spec", "QueryAll", "$$eval should work")]
         public async Task QuerySelectorAllEvalShouldWork()
         {
-            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<div>hello</div>
+          <div>beautiful</div>
+          <div>world!</div>"));
             var divsCount = await Page.QuerySelectorAllHandleAsync("allArray/div")
                 .EvaluateFunctionAsync<int>("(divs) => divs.length");
 
@@ -63,7 +75,9 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "QueryAll", "$$eval should accept extra arguments")]
         public async Task QuerySelectorAllEvalShouldAcceptExtraArguments()
         {
-            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<div>hello</div>
+          <div>beautiful</div>
+          <div>world!</div>"));
             var divsCount = await Page.QuerySelectorAllHandleAsync("allArray/div")
                 .EvaluateFunctionAsync<int>("(divs, two, three) => divs.length + two + three", 2, 3);
 
@@ -73,7 +87,10 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "QueryAll", "$$eval should accept ElementHandles as arguments")]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
-            await Page.SetContentAsync("<section>2</section><section>2</section><section>1</section><div>3</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<section>2</section>
+          <section>2</section>
+          <section>1</section>
+          <div>3</div>"));
             var divHandle = await Page.QuerySelectorAsync("div");
             var text = await Page.QuerySelectorAllHandleAsync("allArray/section")
                 .EvaluateFunctionAsync<int>(@"(sections, div) =>

@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
+    // We won't change the name just because WebDriver has a namespace with the same name.
+#pragma warning disable CA1724
     /// <inheritdoc/>
     public abstract class Browser : IBrowser
+#pragma warning disable CA1724
     {
         /// <inheritdoc/>
         public event EventHandler Closed;
@@ -30,7 +35,7 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <inheritdoc/>
-        public string WebSocketEndpoint => Connection.Url;
+        public virtual string WebSocketEndpoint => Connection.Url;
 
         /// <inheritdoc/>
         public SupportedBrowser BrowserType { get; protected init; }
@@ -39,22 +44,19 @@ namespace PuppeteerSharp
         public Process Process => Launcher?.Process;
 
         /// <inheritdoc/>
-        public bool AcceptInsecureCerts { get; set; }
-
-        /// <inheritdoc/>
         public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext { get; protected set; }
+        public virtual IBrowserContext DefaultContext { get; protected set; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <inheritdoc/>
-        public bool IsConnected => !Connection.IsClosed;
+        public virtual bool IsConnected => !Connection.IsClosed;
 
         /// <inheritdoc/>
-        public ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+        public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
@@ -65,6 +67,8 @@ namespace PuppeteerSharp
         internal LauncherBase Launcher { get; init; }
 
         internal Func<Target, bool> IsPageTargetFunc { get; init; }
+
+        internal abstract ProtocolType Protocol { get; }
 
         /// <inheritdoc/>
         public abstract Task<IPage> NewPageAsync();
@@ -148,16 +152,16 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(queryHandler));
             }
 
-            Connection.CustomQuerySelectorRegistry.RegisterCustomQueryHandler(name, queryHandler);
+            CustomQuerySelectorRegistry.Default.RegisterCustomQueryHandler(name, queryHandler);
         }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)
-            => Connection.CustomQuerySelectorRegistry.UnregisterCustomQueryHandler(name);
+            => CustomQuerySelectorRegistry.Default.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
-            => Connection.CustomQuerySelectorRegistry.ClearCustomQueryHandlers();
+            => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
         /// <inheritdoc />
         public void Dispose()
@@ -174,6 +178,7 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             // On disposal, the browser doesn't get closed. It gets disconnected.
+            // TODO: See a better way to handle this instead of checking for BidiBrowser.
             if (Launcher == null)
             {
                 Disconnect();
@@ -188,7 +193,7 @@ namespace PuppeteerSharp
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => Connection.CustomQuerySelectorRegistry.GetCustomQueryHandlerNames();
+            => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was

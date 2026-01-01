@@ -95,11 +95,6 @@ namespace PuppeteerSharp.Cdp
 
         internal AsyncMessageQueue MessageQueue { get; }
 
-        // The connection is a good place to keep the state of custom queries and injectors.
-        // Although I consider that the Browser class would be a better place for this,
-        // The connection is being shared between all the components involved in one browser instance
-        internal CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
-
         internal ScriptInjector ScriptInjector { get; } = new();
 
         internal int ProtocolTimeout { get; }
@@ -268,7 +263,7 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 var response = e.Message;
-                ConnectionResponse obj = null;
+                ConnectionResponse obj;
 
                 if (response.Length > 0 && Delay > 0)
                 {
@@ -341,8 +336,8 @@ namespace PuppeteerSharp.Cdp
             }
             else if (obj.Id.HasValue)
             {
-                // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it
+                // If we get the object we are waiting for we return it.
+                // If not we add this to the list, sooner or later someone will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     MessageQueue.Enqueue(callback, obj);

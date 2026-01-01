@@ -117,7 +117,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             {
                 window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
             }");
-            var response = await Page.ReloadAsync();
+            await Page.ReloadAsync();
             Assert.That(await Page.EvaluateFunctionAsync<int>("() => 1"), Is.EqualTo(1));
         }
 
@@ -163,7 +163,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("invalid URL"));
+                Assert.That(exception.Message, Does.Contain("NS_ERROR_MALFORMED_URI"));
             }
         }
 
@@ -182,7 +182,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("SSL_ERROR_UNKNOWN"));
+                // Firefox can return different SSL errors depending on CDP vs BiDi
+                Assert.That(exception.Message, Does.Match("SSL_ERROR_UNKNOWN|MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT"));
             }
         }
 
@@ -197,7 +198,8 @@ namespace PuppeteerSharp.Tests.NavigationTests
             }
             else
             {
-                Assert.That(exception.Message, Does.Contain("SSL_ERROR_UNKNOWN"));
+                // Firefox can return different SSL errors depending on CDP vs BiDi
+                Assert.That(exception.Message, Does.Match("SSL_ERROR_UNKNOWN|MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT"));
             }
         }
 
@@ -223,7 +225,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             var exception = Assert.ThrowsAsync<NavigationException>(async ()
                 => await Page.GoToAsync(TestConstants.EmptyPage, new NavigationOptions { Timeout = 1 }));
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding default maximum navigation timeout")]
@@ -233,7 +235,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
 
             Page.DefaultNavigationTimeout = 1;
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding default maximum timeout")]
@@ -243,7 +245,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Server.SetRoute("/empty.html", _ => Task.Delay(-1));
             Page.DefaultTimeout = 1;
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should prioritize default navigation timeout over default timeout")]
@@ -254,7 +256,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Page.DefaultTimeout = 0;
             Page.DefaultNavigationTimeout = 1;
             var exception = Assert.ThrowsAsync<NavigationException>(async () => await Page.GoToAsync(TestConstants.EmptyPage));
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should disable timeout when its set to 0")]

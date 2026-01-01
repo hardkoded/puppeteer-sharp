@@ -117,8 +117,8 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
             await Page.SelectAsync("select", "blue", "black", "magenta");
             await Page.SelectAsync("select");
-            Assert.That(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<bool>(
-                "select => Array.from(select.options).every(option => !option.selected)"), Is.True);
+            Assert.That(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<string>(
+                "select => Array.from(select.options).filter(option => option.selected)[0].value"), Is.EqualTo(""));
         }
     }
 }

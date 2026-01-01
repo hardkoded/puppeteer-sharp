@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="IExecutionContext"/>
-    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
+    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable, IPuppeteerUtilWrapper
     {
         internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
         private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
@@ -101,7 +102,8 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
-        internal async Task<IJSHandle> GetPuppeteerUtilAsync()
+        /// <inheritdoc />
+        public async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
             {
@@ -117,7 +119,7 @@ namespace PuppeteerSharp
 
                             await InstallGlobalBindingAsync(new Binding(
                                 "__ariaQuerySelector",
-                                (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
+                                (Func<IElementHandle, string, Task<IElementHandle>>)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"].QueryOneAsync))
                                 .ConfigureAwait(false);
                             _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
                         },
@@ -284,7 +286,7 @@ namespace PuppeteerSharp
 
                     break;
 
-                case IJSHandle objectHandle:
+                case ICdpHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
 

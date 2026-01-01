@@ -16,16 +16,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool Disposed { get; protected set; }
 
-        /// <inheritdoc/>
-        public abstract RemoteObject RemoteObject { get; }
-
         internal Func<Task> DisposeAction { get; set; }
 
-        internal abstract IsolatedWorld Realm { get; }
+        internal abstract Realm Realm { get; }
 
         internal Frame Frame => Realm.Environment as Frame;
-
-        internal string Id => RemoteObject.ObjectId;
 
         /// <inheritdoc/>
         public virtual Task<IJSHandle> GetPropertyAsync(string propertyName)

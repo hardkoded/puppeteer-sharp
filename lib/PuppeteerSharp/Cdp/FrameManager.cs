@@ -24,12 +24,12 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, bool acceptInsecureCerts, TimeoutSettings timeoutSettings)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(acceptInsecureCerts, this, client.Connection.LoggerFactory);
+            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
@@ -86,18 +86,18 @@ namespace PuppeteerSharp.Cdp
             return context;
         }
 
-        internal void OnAttachedToTarget(TargetChangedArgs e)
+        internal void OnAttachedToTarget(CdpTarget target)
         {
-            if (e.TargetInfo.Type != TargetType.IFrame)
+            if (target.TargetInfo.Type != TargetType.IFrame)
             {
                 return;
             }
 
-            var frame = GetFrame(e.TargetInfo.TargetId);
-            frame?.UpdateClient(e.Target.Session);
+            var frame = GetFrame(target.TargetInfo.TargetId);
+            frame?.UpdateClient(target.Session);
 
-            e.Target.Session.MessageReceived += Client_MessageReceived;
-            _ = InitializeAsync(e.Target.Session);
+            target.Session.MessageReceived += Client_MessageReceived;
+            _ = InitializeAsync(target.Session);
         }
 
         internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
@@ -340,7 +340,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            var context = new ExecutionContext(frame.Client ?? Client, contextPayload, world);
+            var context = new ExecutionContext((CDPSession)frame.Client ?? Client, contextPayload, world);
             world.SetContext(context);
 
             var key = $"{session.Id}:{contextPayload.Id}";

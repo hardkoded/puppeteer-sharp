@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
 
             var frame1 = Page.MainFrame;
-            var frame2 = Page.FirstChildFrame();
+            var frame2 = await Page.FirstChildFrameAsync();
 
             await frame1.EvaluateExpressionAsync("window.FOO = 'foo'");
             await frame2.EvaluateExpressionAsync("window.FOO = 'bar'");
@@ -31,7 +31,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
 
             var frame1 = Page.MainFrame;
-            var frame2 = Page.FirstChildFrame();
+            var frame2 = await Page.FirstChildFrameAsync();
 
             Assert.That(await frame1.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo(""));
             Assert.That(await frame2.EvaluateExpressionAsync<string>("document.body.textContent.trim()"), Is.EqualTo("Hi, I'm frame"));

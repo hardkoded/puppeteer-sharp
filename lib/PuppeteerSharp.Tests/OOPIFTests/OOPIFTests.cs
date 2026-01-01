@@ -16,12 +16,25 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public OOPIFTests()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.Args =
-            [
-                "--site-per-process",
-                $"--remote-debugging-port={++_port}",
-                "--host-rules=\"MAP * 127.0.0.1\""
-            ];
+
+            if (TestConstants.IsChrome)
+            {
+                // Chrome-specific args for OOPIF testing
+                DefaultOptions.Args =
+                [
+                    "--site-per-process",
+                    $"--remote-debugging-port={++_port}",
+                    "--host-rules=\"MAP * 127.0.0.1\""
+                ];
+            }
+            else
+            {
+                // Firefox: use network.dns.localDomains pref to resolve test domains
+                DefaultOptions.ExtraPrefsFirefox = new()
+                {
+                    ["network.dns.localDomains"] = "mainframe,inner-frame1.test,inner-frame2.test,oopifdomain"
+                };
+            }
         }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
@@ -251,7 +264,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public async Task ShouldReportOopifFrames()
         {
             var frameTask = Page.WaitForFrameAsync((frame) => frame.Url.EndsWith("oopif.html"));
-            await Page.GoToAsync($"http://mainframe:{TestConstants.Port}/dynamic-oopif.html");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
             var frame = await frameTask.WithTimeout();
             Assert.That((await GetIframesAsync()), Has.Length.EqualTo(1));
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
@@ -391,7 +404,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
 
-        [Test, PuppeteerTest("oopif.spec", "waitForFrame", "OOPIF: should expose events within OOPIFs")]
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should expose events within OOPIFs")]
         public async Task OOPIFShouldExposeEventsWithinOOPIFs()
         {
             // Setup our session listeners to observe OOPIF activity.

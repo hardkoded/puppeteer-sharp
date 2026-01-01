@@ -525,10 +525,6 @@ namespace PuppeteerSharp
                             throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
                     }
-                    else
-                    {
-                        options.FromSurface ??= true;
-                    }
 
                     if (options.Clip != null && options.FullPage)
                     {
@@ -621,16 +617,16 @@ namespace PuppeteerSharp
             => MainFrame.TypeAsync(selector, text, options);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script)
-            => MainFrame.EvaluateExpressionAsync<JsonElement?>(script);
+        public Task EvaluateExpressionAsync(string script)
+            => MainFrame.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => MainFrame.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
-            => MainFrame.EvaluateFunctionAsync<JsonElement?>(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args)
+            => MainFrame.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -789,72 +785,55 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Dispose resources.
+        /// Raises the <see cref="Dialog"/> event.
         /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
+        /// <param name="e">Dialog event args.</param>
+        internal void OnDialog(DialogEventArgs e)
         {
-            Mouse.Dispose();
-            _ = DisposeAsync();
+            Dialog?.Invoke(this, e);
         }
 
         /// <summary>
         /// Raises the <see cref="FrameAttached"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="FrameNavigated"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+        internal void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="FrameDetached"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameDetached(FrameEventArgs e) => FrameDetached?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="RequestFailed"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+        internal void OnFrameDetached(FrameEventArgs e) => FrameDetached?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="RequestFinished"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
 
         /// <summary>
-        /// Raises the <see cref="Response"/> event.
+        /// Raises the <see cref="RequestFailed"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="RequestServedFromCache"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
 
         /// <summary>
-        /// Raises the <see cref="DOMContentLoaded"/> event.
+        /// Raises the <see cref="Response"/> event.
         /// </summary>
-        protected void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Raises the <see cref="Load"/> event.
-        /// </summary>
-        protected void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+        /// <param name="e">Event arguments.</param>
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Request"/> event.
         /// </summary>
         /// <param name="request">Request object.</param>
-        protected void OnRequest(IRequest request)
+        internal void OnRequest(IRequest request)
         {
             if (request == null)
             {
@@ -868,6 +847,32 @@ namespace PuppeteerSharp
             }
 
             Request?.Invoke(this, new RequestEventArgs(request));
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DOMContentLoaded"/> event.
+        /// </summary>
+        internal void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="Load"/> event.
+        /// </summary>
+        internal void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="FrameNavigated"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Mouse.Dispose();
+            _ = DisposeAsync();
         }
 
         /// <summary>

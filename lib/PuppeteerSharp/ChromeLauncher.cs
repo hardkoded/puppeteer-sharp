@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
@@ -27,9 +25,6 @@ namespace PuppeteerSharp
 
             Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
         }
-
-        /// <inheritdoc />
-        public override Task<string> GetDefaultBuildIdAsync() => Task.FromResult(Chrome.DefaultBuildId);
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
@@ -63,7 +58,7 @@ namespace PuppeteerSharp
 
             var chromiumArguments = new List<string>(
             [
-                    "--allow-pre-commit-input",
+                "--allow-pre-commit-input",
                 "--disable-background-networking",
                 "--disable-background-timer-throttling",
                 "--disable-backgrounding-occluded-windows",

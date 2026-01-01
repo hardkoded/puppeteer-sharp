@@ -62,7 +62,10 @@ namespace PuppeteerSharp.Cdp
 
         public CdpHttpResponse NavigationResponse => (CdpHttpResponse)_navigationRequest?.Response;
 
-        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(
+            _timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"),
+            _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
 
