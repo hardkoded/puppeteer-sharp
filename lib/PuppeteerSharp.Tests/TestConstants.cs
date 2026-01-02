@@ -42,7 +42,9 @@ namespace PuppeteerSharp.Tests
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
             HeadlessMode = PuppeteerTestAttribute.Headless,
-            Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
+            Browser = IsChrome
+                ? PuppeteerTestAttribute.Headless == HeadlessMode.Shell ? SupportedBrowser.ChromeHeadlessShell : SupportedBrowser.Chrome
+                : SupportedBrowser.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
             LogProcess = true,
