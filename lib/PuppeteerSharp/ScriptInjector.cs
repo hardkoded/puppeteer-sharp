@@ -13,6 +13,8 @@ namespace PuppeteerSharp
         private readonly List<string> _amendments = new();
         private bool _updated = false;
 
+        internal static ScriptInjector Default { get; } = new();
+
         public void Append(string statement) => Update(() => _amendments.Add(statement));
 
         public void Pop(string statement) => Update(() => _amendments.Remove(statement));
