@@ -127,34 +127,42 @@ internal sealed class Browser(Session session) : IDisposable
         await SyncBrowsingContextsAsync().ConfigureAwait(false);
     }
 
-    private Task SyncBrowsingContextsAsync()
+    private async Task SyncBrowsingContextsAsync()
     {
         // In case contexts are created or destroyed during `getTree`, we use this
         // set to detect them.
         var contextIds = new ConcurrentSet<string>();
 
-        Session.Driver.BrowsingContext.OnContextCreated.AddObserver(info =>
+        void OnContextCreated(object sender, BrowsingContextEventArgs info)
         {
             contextIds.Add(info.BrowsingContextId);
-        });
-        var tree = Session.Driver.BrowsingContext.GetTreeAsync(new GetTreeCommandParameters());
-        var contexts = tree.Result.ContextTree;
-
-        // Simulating events so contexts are created naturally.
-        foreach (var info in contexts)
-        {
-            if (!contextIds.Contains(info.BrowsingContextId))
-            {
-                Session.OnBrowsingContextContextCreated(new BrowsingContextEventArgs(info));
-            }
-
-            foreach (var child in info.Children)
-            {
-                contexts.Add(child);
-            }
         }
 
-        return Task.CompletedTask;
+        Session.BrowsingContextContextCreated += OnContextCreated;
+
+        try
+        {
+            var tree = await Session.Driver.BrowsingContext.GetTreeAsync(new GetTreeCommandParameters()).ConfigureAwait(false);
+            var contexts = tree.ContextTree;
+
+            // Simulating events so contexts are created naturally.
+            foreach (var info in contexts)
+            {
+                if (!contextIds.Contains(info.BrowsingContextId))
+                {
+                    Session.OnBrowsingContextContextCreated(new BrowsingContextEventArgs(info));
+                }
+
+                foreach (var child in info.Children)
+                {
+                    contexts.Add(child);
+                }
+            }
+        }
+        finally
+        {
+            Session.BrowsingContextContextCreated -= OnContextCreated;
+        }
     }
 
     private async Task SyncUserContextsAsync()

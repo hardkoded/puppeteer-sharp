@@ -636,14 +636,30 @@ public class BidiFrame : Frame
         BrowsingContext.Request += (sender, args) =>
         {
             var httpRequest = BidiHttpRequest.From(args.Request, this);
+            var successFired = false;
+            var errorFired = false;
 
             args.Request.Success += (o, eventArgs) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (successFired)
+                {
+                    return;
+                }
+
+                successFired = true;
                 ((BidiPage)Page).OnRequestFinished(new RequestEventArgs(httpRequest));
             };
 
             args.Request.Error += (o, eventArgs) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (errorFired)
+                {
+                    return;
+                }
+
+                errorFired = true;
                 ((BidiPage)Page).OnRequestFailed(new RequestEventArgs(httpRequest));
             };
 

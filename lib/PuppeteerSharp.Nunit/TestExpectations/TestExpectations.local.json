@@ -415,21 +415,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[network.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[page.spec] *addStyleTag*",
     "platforms": [
       "darwin",
@@ -706,5 +691,33 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "BiDi does not provide RemoteAddress information. Test fails on IP address validation. Matches upstream [network.spec] network Response.remoteAddress * expectation",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi does not send network events for cached stylesheets. https://bugzilla.mozilla.org/show_bug.cgi?id=1879438",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi does not provide RemoteAddress information. Test fails on redirect chain RemoteAddress.Port validation. Matches upstream [network.spec] network Response.remoteAddress * expectation",
+    "testIdPattern": "[network.spec] network Network Events should support redirects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for speculative/parallel loading during navigation, causing duplicate RequestFailed events",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]

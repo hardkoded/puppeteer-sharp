@@ -497,13 +497,30 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var httpRequest = From(request, Frame as BidiFrame, this);
             RedirectChainList.Add(this);
 
+            var successFired = false;
+            var errorFired = false;
+
             request.Success += (_, _) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (successFired)
+                {
+                    return;
+                }
+
+                successFired = true;
                 BidiPage.OnRequestFinished(new RequestEventArgs(httpRequest));
             };
 
             request.Error += (_, args) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (errorFired)
+                {
+                    return;
+                }
+
+                errorFired = true;
                 httpRequest.FailureText = args.Error;
                 BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
             };
