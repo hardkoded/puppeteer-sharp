@@ -30,6 +30,7 @@ using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
+using WebDriverBiDi.Session;
 using CloseCommandParameters = WebDriverBiDi.Browser.CloseCommandParameters;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -95,9 +96,27 @@ internal sealed class Browser(Session session) : IDisposable
         Session?.Dispose();
     }
 
-    public async Task<UserContext> CreateUserContextAsync()
+    public async Task<UserContext> CreateUserContextAsync(BrowserContextOptions options = null)
     {
-        var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        var commandParams = new CreateUserContextCommandParameters();
+
+        if (options?.ProxyServer != null)
+        {
+            var proxyConfig = new ManualProxyConfiguration
+            {
+                HttpProxy = options.ProxyServer,
+                SslProxy = options.ProxyServer,
+            };
+
+            if (options.ProxyBypassList != null)
+            {
+                proxyConfig.NoProxyAddresses = [.. options.ProxyBypassList];
+            }
+
+            commandParams.Proxy = proxyConfig;
+        }
+
+        var result = await Session.Driver.Browser.CreateUserContextAsync(commandParams).ConfigureAwait(false);
         return CreateUserContext(result.UserContextId);
     }
 
