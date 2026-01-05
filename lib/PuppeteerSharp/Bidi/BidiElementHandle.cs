@@ -43,7 +43,7 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
     internal override Realm Realm => realm;
 
-    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
 
     internal BidiFrame BidiFrame => realm.Environment as BidiFrame;
 

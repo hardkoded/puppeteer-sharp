@@ -95,7 +95,7 @@ namespace PuppeteerSharp.Cdp
 
         internal AsyncMessageQueue MessageQueue { get; }
 
-        internal ScriptInjector ScriptInjector { get; } = new();
+        internal ScriptInjector ScriptInjector => ScriptInjector.Default;
 
         internal int ProtocolTimeout { get; }
 
