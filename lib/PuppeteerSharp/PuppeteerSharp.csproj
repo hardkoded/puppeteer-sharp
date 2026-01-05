@@ -26,6 +26,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
     <AnalysisLevel>8.0-Recommended</AnalysisLevel>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
@@ -53,5 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
