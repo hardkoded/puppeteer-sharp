@@ -299,3 +299,5 @@ samples/PupppeterSharpAspNetFrameworkSample/PupppeterSharpAspNetFrameworkSample/
 # Visual Studio Code user config directory
 .vscode/
 tools/github-ops/.env
+lib/PuppeteerSharp.TestServer/testKey.pem
+lib/PuppeteerSharp.TestServer/testCert.cer

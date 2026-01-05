@@ -26,6 +26,29 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <summary>
+        /// Gets the CDP connection associated with this browser context.
+        /// This can be used to send CDP commands directly to the browser.
+        /// Returns <c>null</c> for non-CDP contexts (e.g., BiDi contexts).
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// var context = browser.DefaultBrowserContext;
+        /// var connection = context.Connection;
+        /// if (connection != null)
+        /// {
+        ///     await connection.SendAsync("Storage.clearDataForOrigin", new
+        ///     {
+        ///         origin = "https://example.com",
+        ///         storageTypes = "cookies"
+        ///     });
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        ICDPConnection Connection { get; }
+
+        /// <summary>
         /// Browser Context Id.
         /// </summary>
         string Id { get; }

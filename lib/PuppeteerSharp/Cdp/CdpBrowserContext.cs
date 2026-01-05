@@ -43,6 +43,9 @@ public class CdpBrowserContext : BrowserContext
     }
 
     /// <inheritdoc/>
+    public override ICDPConnection Connection => _connection;
+
+    /// <inheritdoc/>
     public override ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
     /// <inheritdoc/>

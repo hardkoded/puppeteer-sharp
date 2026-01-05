@@ -18,6 +18,9 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <inheritdoc/>
+        public abstract ICDPConnection Connection { get; }
+
+        /// <inheritdoc/>
         public string Id { get; protected init; }
 
         /// <inheritdoc/>
