@@ -1171,7 +1171,7 @@ namespace PuppeteerSharp
         /// <remarks>
         /// This method is experimental.
         /// </remarks>
-        Task<WindowId> WindowIdAsync();
+        Task<string> WindowIdAsync();
 
         /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Touchscreen"/> to tap in the center of the element.

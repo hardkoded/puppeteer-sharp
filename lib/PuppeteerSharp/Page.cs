@@ -421,7 +421,7 @@ namespace PuppeteerSharp
         public abstract Task ResizeAsync(ResizeOptions options);
 
         /// <inheritdoc/>
-        public abstract Task<WindowId> WindowIdAsync();
+        public abstract Task<string> WindowIdAsync();
 
         /// <inheritdoc/>
         public Task EmulateAsync(DeviceDescriptor options)

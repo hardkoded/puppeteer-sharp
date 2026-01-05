@@ -404,17 +404,17 @@ public class CdpPage : Page
         var windowId = await WindowIdAsync().ConfigureAwait(false);
         await PrimaryTargetClient.SendAsync("Browser.setContentsSize", new BrowserSetContentsSizeRequest
         {
-            WindowId = int.Parse(windowId.Value, CultureInfo.InvariantCulture),
+            WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
             Width = options.ContentWidth,
             Height = options.ContentHeight,
         }).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public override async Task<WindowId> WindowIdAsync()
+    public override async Task<string> WindowIdAsync()
     {
         var response = await PrimaryTargetClient.SendAsync<BrowserGetWindowForTargetResponse>("Browser.getWindowForTarget").ConfigureAwait(false);
-        return new WindowId(response.WindowId.ToString(CultureInfo.InvariantCulture));
+        return response.WindowId.ToString(CultureInfo.InvariantCulture);
     }
 
     /// <inheritdoc/>
