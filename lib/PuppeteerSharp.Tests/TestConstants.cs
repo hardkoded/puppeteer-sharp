@@ -45,7 +45,6 @@ namespace PuppeteerSharp.Tests
             Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
-            LogProcess = true,
 #if NETCOREAPP
             EnqueueTransportMessages = false
 #else
