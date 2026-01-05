@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with bitness and wow64")]
+        [Test, PuppeteerTest("puppeteer-sharp", "Page Page.setUserAgent", "should work with bitness and wow64")]
         public async Task ShouldWorkWithBitnessAndWow64()
         {
             await Page.SetUserAgentAsync(
