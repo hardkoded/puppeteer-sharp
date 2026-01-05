@@ -1155,6 +1155,25 @@ namespace PuppeteerSharp
         Task SetViewportAsync(ViewPortOptions viewport);
 
         /// <summary>
+        /// Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+        /// </summary>
+        /// <param name="options">Resize options specifying the content width and height.</param>
+        /// <returns>A task that completes when the resize is complete.</returns>
+        /// <remarks>
+        /// This method is experimental.
+        /// </remarks>
+        Task ResizeAsync(ResizeOptions options);
+
+        /// <summary>
+        /// Gets the window ID for this page.
+        /// </summary>
+        /// <returns>A task that resolves to the window ID.</returns>
+        /// <remarks>
+        /// This method is experimental.
+        /// </remarks>
+        Task<WindowId> WindowIdAsync();
+
+        /// <summary>
         /// Fetches an element with <paramref name="selector"/>, scrolls it into view if needed, and then uses <see cref="Touchscreen"/> to tap in the center of the element.
         /// </summary>
         /// <param name="selector">A selector to search for element to tap. If there are multiple elements satisfying the selector, the first will be clicked.</param>

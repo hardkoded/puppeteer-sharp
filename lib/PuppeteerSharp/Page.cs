@@ -418,6 +418,12 @@ namespace PuppeteerSharp
         public abstract Task SetViewportAsync(ViewPortOptions viewport);
 
         /// <inheritdoc/>
+        public abstract Task ResizeAsync(ResizeOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task<WindowId> WindowIdAsync();
+
+        /// <inheritdoc/>
         public Task EmulateAsync(DeviceDescriptor options)
         {
             if (options == null)
