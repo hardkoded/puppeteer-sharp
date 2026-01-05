@@ -10,6 +10,7 @@ namespace PuppeteerSharp.QueryHandlers
     {
         private static readonly string[] _customQuerySeparators = new[] { "=", "/" };
 
+        private readonly object _lock = new();
         private readonly Dictionary<string, (string RegisterScript, QueryHandler Handler)> _queryHandlers = new();
 
         private readonly Regex _customQueryHandlerNameRegex = new("[a-zA-Z]+$", RegexOptions.Compiled);
@@ -33,11 +34,6 @@ namespace PuppeteerSharp.QueryHandlers
             if (InternalQueryHandlers.ContainsKey(name))
             {
                 throw new PuppeteerException($"A query handler named \"{name}\" already exists");
-            }
-
-            if (_queryHandlers.ContainsKey(name))
-            {
-                throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
             }
 
             var isValidName = _customQueryHandlerNameRegex.IsMatch(name);
@@ -78,14 +74,30 @@ namespace PuppeteerSharp.QueryHandlers
                 }});
             }}";
 
-            _queryHandlers.Add(name, (registerScript, internalHandler));
+            lock (_lock)
+            {
+                if (_queryHandlers.ContainsKey(name))
+                {
+                    throw new PuppeteerException($"A custom query handler named \"{name}\" already exists");
+                }
+
+                _queryHandlers.Add(name, (registerScript, internalHandler));
+            }
+
             ScriptInjector.Default.Append(registerScript);
         }
 
         internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
         {
+            // Take a snapshot of custom handlers to avoid holding lock during iteration
+            KeyValuePair<string, (string RegisterScript, QueryHandler Handler)>[] customHandlers;
+            lock (_lock)
+            {
+                customHandlers = _queryHandlers.ToArray();
+            }
+
             // Check custom handlers first, then internal handlers (matching upstream order)
-            foreach (var kv in _queryHandlers)
+            foreach (var kv in customHandlers)
             {
                 foreach (var separator in _customQuerySeparators)
                 {
@@ -117,20 +129,40 @@ namespace PuppeteerSharp.QueryHandlers
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => _queryHandlers.Keys;
+        {
+            lock (_lock)
+            {
+                return _queryHandlers.Keys.ToArray();
+            }
+        }
 
         internal void UnregisterCustomQueryHandler(string name)
         {
-            if (_queryHandlers.TryGetValue(name, out var handler))
+            string registerScript = null;
+            lock (_lock)
             {
-                ScriptInjector.Default.Pop(handler.RegisterScript);
-                _queryHandlers.Remove(name);
+                if (_queryHandlers.TryGetValue(name, out var handler))
+                {
+                    registerScript = handler.RegisterScript;
+                    _queryHandlers.Remove(name);
+                }
+            }
+
+            if (registerScript != null)
+            {
+                ScriptInjector.Default.Pop(registerScript);
             }
         }
 
         internal void ClearCustomQueryHandlers()
         {
-            foreach (var name in _queryHandlers.Keys.ToArray())
+            string[] names;
+            lock (_lock)
+            {
+                names = _queryHandlers.Keys.ToArray();
+            }
+
+            foreach (var name in names)
             {
                 UnregisterCustomQueryHandler(name);
             }

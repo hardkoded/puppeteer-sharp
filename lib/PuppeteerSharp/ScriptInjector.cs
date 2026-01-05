@@ -10,18 +10,37 @@ namespace PuppeteerSharp
     internal class ScriptInjector
     {
         private static string _injectedSource;
+        private readonly object _lock = new();
         private readonly List<string> _amendments = new();
         private bool _updated = false;
 
         internal static ScriptInjector Default { get; } = new();
 
-        public void Append(string statement) => Update(() => _amendments.Add(statement));
+        public void Append(string statement)
+        {
+            lock (_lock)
+            {
+                _amendments.Add(statement);
+                _updated = true;
+            }
+        }
 
-        public void Pop(string statement) => Update(() => _amendments.Remove(statement));
+        public void Pop(string statement)
+        {
+            lock (_lock)
+            {
+                _amendments.Remove(statement);
+                _updated = true;
+            }
+        }
 
         public string Get()
         {
-            var amendments = string.Concat(_amendments.Select(statement => $"({statement})(module.exports.default);"));
+            string amendments;
+            lock (_lock)
+            {
+                amendments = string.Concat(_amendments.Select(statement => $"({statement})(module.exports.default);"));
+            }
 
             return $@"(() => {{
                 const module = {{}};
@@ -33,12 +52,21 @@ namespace PuppeteerSharp
 
         public async Task InjectAsync(Func<string, Task> inject, bool force = false)
         {
-            if (_updated || force)
+            bool shouldInject;
+            lock (_lock)
+            {
+                shouldInject = _updated || force;
+            }
+
+            if (shouldInject)
             {
                 await inject(Get()).ConfigureAwait(false);
             }
 
-            _updated = false;
+            lock (_lock)
+            {
+                _updated = false;
+            }
         }
 
         private static string GetInjectedSource()
@@ -55,12 +83,6 @@ namespace PuppeteerSharp
             }
 
             return _injectedSource;
-        }
-
-        private void Update(Action callback)
-        {
-            callback();
-            _updated = true;
         }
     }
 }
