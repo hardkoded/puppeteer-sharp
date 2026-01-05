@@ -94,6 +94,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
+        /// <remarks>
+        /// This property is obsolete and has no effect. It will be removed in a future version.
+        /// </remarks>
+        [Obsolete("This property has no effect and will be removed in a future version.")]
         public bool LogProcess { get; set; }
 
         /// <summary>
