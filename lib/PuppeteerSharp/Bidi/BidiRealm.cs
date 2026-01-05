@@ -170,9 +170,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         // - They are sealed
         // - Their name contains "AnonymousType"
         // - They have CompilerGeneratedAttribute
+#if NET8_0_OR_GREATER
+        var nameContainsAnonymousType = type.Name.Contains("AnonymousType", StringComparison.Ordinal);
+#else
+        var nameContainsAnonymousType = type.Name.IndexOf("AnonymousType", StringComparison.Ordinal) >= 0;
+#endif
         return type.IsGenericType &&
                type.IsSealed &&
-               type.Name.Contains("AnonymousType", StringComparison.Ordinal) &&
+               nameContainsAnonymousType &&
                type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length > 0;
     }
 
@@ -183,7 +188,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return name;
         }
 
-        return char.ToLowerInvariant(name[0]) + name[1..];
+        return char.ToLowerInvariant(name[0]) + name.Substring(1);
     }
 
     private IJSHandle CreateHandleAsync(EvaluateResultSuccess evaluateResult)
