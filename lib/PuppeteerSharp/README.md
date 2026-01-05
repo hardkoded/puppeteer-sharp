@@ -1,8 +1,5 @@
 # Puppeteer Sharp
 
-[![NuGet](https://buildstats.info/nuget/PuppeteerSharp)](https://www.nuget.org/packages/PuppeteerSharp/)
-[![Build status](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/dotnet.yml/badge.svg)](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/dotnet.yml)
-
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/puppeteer/puppeteer).
 
 ## What is Puppeteer Sharp?
