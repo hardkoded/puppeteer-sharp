@@ -291,6 +291,7 @@ Thumbs.db
 
 # ignore local cert
 /lib/PuppeteerSharp.TestServer/testCert.cer
+/lib/PuppeteerSharp.TestServer/testKey.pem
 /lib/PuppeteerSharp.Tests/Screenshots/
 
 demos/PuppeteerSharpPdfDemo/google.pdf
