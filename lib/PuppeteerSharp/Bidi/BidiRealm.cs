@@ -255,7 +255,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
         {
-            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+            // Check if the frame is actually detached (page closed) vs navigation/reload
+            if (this is BidiFrameRealm frameRealm && frameRealm.Frame.Detached)
+            {
+                throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+            }
+
+            throw new EvaluationFailedException($"Protocol error ({ex.Message})", ex);
         }
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such handle"))
