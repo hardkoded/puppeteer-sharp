@@ -163,6 +163,34 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         };
     }
 
+    private static bool IsAnonymousType(Type type)
+    {
+        // Anonymous types in C# have specific characteristics:
+        // - They are generic types
+        // - They are sealed
+        // - Their name contains "AnonymousType"
+        // - They have CompilerGeneratedAttribute
+#if NET8_0_OR_GREATER
+        var nameContainsAnonymousType = type.Name.Contains("AnonymousType", StringComparison.Ordinal);
+#else
+        var nameContainsAnonymousType = type.Name.IndexOf("AnonymousType", StringComparison.Ordinal) >= 0;
+#endif
+        return type.IsGenericType &&
+               type.IsSealed &&
+               nameContainsAnonymousType &&
+               type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length > 0;
+    }
+
+    private static string ToCamelCase(string name)
+    {
+        if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
+        {
+            return name;
+        }
+
+        return char.ToLowerInvariant(name[0]) + name.Substring(1);
+    }
+
     private IJSHandle CreateHandleAsync(EvaluateResultSuccess evaluateResult)
     {
         var result = evaluateResult.Result;
@@ -227,7 +255,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
         {
-            throw new TargetClosedException("Protocol error", "Target.detachedFromTarget");
+            // Check if the frame is actually detached (page closed) vs navigation/reload
+            if (this is BidiFrameRealm frameRealm && frameRealm.Frame.Detached)
+            {
+                throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+            }
+
+            throw new EvaluationFailedException($"Protocol error ({ex.Message})", ex);
         }
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such handle"))
@@ -289,10 +323,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return (T)(object)Convert.ToDecimal(result, CultureInfo.InvariantCulture);
         }
 
-        // Handle JsonElement - serialize the result to JSON and parse it back as JsonElement
+        // Handle JsonElement - deserialize the result to plain object first, then serialize to JSON
         if (typeof(T) == typeof(JsonElement))
         {
-            var json = JsonSerializer.Serialize(result);
+            var deserializedResult = DeserializeToObject(result);
+            var json = JsonSerializer.Serialize(deserializedResult);
             using var document = JsonDocument.Parse(json);
             return (T)(object)document.RootElement.Clone();
         }
@@ -491,6 +526,15 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             return list.ToArray();
         }
 
+        // Check for non-serializable BiDi types like WindowProxyProperties
+        // These types should be treated as non-serializable and return null
+        // to match the behavior of CDP (which returns null for window objects)
+        var valueType = value.GetType();
+        if (valueType.Namespace?.StartsWith("WebDriverBiDi", StringComparison.Ordinal) == true)
+        {
+            return null;
+        }
+
         // For primitive types (string, numbers, bool, etc.), return as-is
         return value;
     }
@@ -559,6 +603,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 return LocalValue.Array(list.Select(el => el as LocalValue).ToList());
             case BidiJSHandle objectHandle:
+                ValidateHandle(objectHandle);
+
                 // If the handle doesn't have a valid handle ID (e.g., from console log args),
                 // serialize its value directly instead of using it as a remote reference
                 if (string.IsNullOrEmpty(objectHandle.Id))
@@ -568,12 +614,76 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 return objectHandle.RemoteValue.ToRemoteReference();
             case BidiElementHandle elementHandle:
+                ValidateHandle(elementHandle.BidiJSHandle);
                 return elementHandle.Value.ToRemoteReference();
+        }
 
-                // TODO: Cover the rest of the cases
+        // Handle plain objects (anonymous types, POCOs, etc.) by serializing them as BiDi objects
+        if (arg.GetType().IsClass || IsAnonymousType(arg.GetType()))
+        {
+            return SerializePlainObject(arg);
         }
 
         return null;
+    }
+
+    private void ValidateHandle(BidiJSHandle handle)
+    {
+        if (handle.Realm != this)
+        {
+            if (handle.Realm is not BidiFrameRealm || this is not BidiFrameRealm)
+            {
+                throw new PuppeteerException(
+                    "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa.");
+            }
+
+            if (handle.Realm.Environment != Environment)
+            {
+                throw new PuppeteerException(
+                    "JSHandles can be evaluated only in the context they were created!");
+            }
+        }
+
+        if (handle.Disposed)
+        {
+            throw new PuppeteerException("JSHandle is disposed!");
+        }
+    }
+
+    private LocalValue SerializePlainObject(object arg)
+    {
+        var dict = new Dictionary<string, LocalValue>();
+        var properties = arg.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var prop in properties)
+        {
+            var value = prop.GetValue(arg);
+            var key = ToCamelCase(prop.Name);
+            dict[key] = SerializeValue(value);
+        }
+
+        return LocalValue.Object(dict);
+    }
+
+    private LocalValue SerializeValue(object value)
+    {
+        return value switch
+        {
+            null => LocalValue.Null,
+            string s => LocalValue.String(s),
+            bool b => LocalValue.Boolean(b),
+            int i => LocalValue.Number(i),
+            long l => LocalValue.Number(l),
+            float f => LocalValue.Number(f),
+            double d when double.IsPositiveInfinity(d) => LocalValue.Infinity,
+            double d when double.IsNegativeInfinity(d) => LocalValue.NegativeInfinity,
+            double d when double.IsNaN(d) => LocalValue.NaN,
+            double d => LocalValue.Number(d),
+            decimal m => LocalValue.Number(m),
+            BigInteger big => LocalValue.BigInt(big),
+            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value),
+            _ => LocalValue.Null,
+        };
     }
 
     private LocalValue SerializeRemoteValue(RemoteValue remoteValue)

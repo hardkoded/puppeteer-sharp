@@ -81,7 +81,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public Browser Browser { get; private set; }
 
-    internal ScriptInjector ScriptInjector { get; } = new();
+    internal ScriptInjector ScriptInjector => ScriptInjector.Default;
 
     public static async Task<Session> FromAsync(BiDiDriver driver, NewCommandParameters capabilities, ILoggerFactory loggerFactory)
     {

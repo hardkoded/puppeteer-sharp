@@ -30,8 +30,6 @@ namespace PuppeteerSharp.Bidi;
 
 internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
 {
-    private bool _disposed;
-
     public RemoteValue RemoteValue { get; } = value;
 
     public bool IsPrimitiveValue
@@ -81,12 +79,12 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
     /// <inheritdoc/>
     public override async ValueTask DisposeAsync()
     {
-        if (_disposed)
+        if (Disposed)
         {
             return;
         }
 
-        _disposed = true;
+        Disposed = true;
         await realm.DestroyHandlesAsync(this).ConfigureAwait(false);
     }
 
