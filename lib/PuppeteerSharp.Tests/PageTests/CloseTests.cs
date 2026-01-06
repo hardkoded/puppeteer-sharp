@@ -30,7 +30,11 @@ namespace PuppeteerSharp.Tests.PageTests
             );
 
             Assert.That(exception.Message, Does.Contain("Protocol error"));
-            Assert.That(exception.CloseReason, Is.EqualTo("Target.detachedFromTarget"));
+            Assert.That(
+                exception.CloseReason,
+                PuppeteerTestAttribute.IsCdp
+                    ? Is.EqualTo("Target.detachedFromTarget")
+                    : Is.EqualTo("Browsing context closed"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]

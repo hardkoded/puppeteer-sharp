@@ -190,21 +190,6 @@
   },
   {
     "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[evaluation.spec] *should throw*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
     "testIdPattern": "[evaluation.spec] *exposed*",
     "platforms": [
       "darwin",
@@ -561,36 +546,6 @@
     ],
     "expectations": [
       "FAIL"
-    ]
-  },
-  {
-    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation - NEEDS KEYBOARD",
-    "testIdPattern": "[mouse.spec] Mouse should set modifier keys on click",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "BiDi Keyboard not implemented yet - requires BidiKeyboard implementation",
-    "testIdPattern": "[mouse.spec] Mouse should set ctrlKey on the wheel event",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
     ]
   },
   {

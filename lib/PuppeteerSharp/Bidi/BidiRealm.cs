@@ -255,7 +255,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
         {
-            throw new TargetClosedException("Protocol error", "Target.detachedFromTarget");
+            // Check if the frame is actually detached (page closed) vs navigation/reload
+            if (this is BidiFrameRealm frameRealm && frameRealm.Frame.Detached)
+            {
+                throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+            }
+
+            throw new EvaluationFailedException($"Protocol error ({ex.Message})", ex);
         }
         catch (WebDriverBiDi.WebDriverBiDiException ex)
             when (ex.Message.Contains("no such handle"))
@@ -597,6 +603,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 return LocalValue.Array(list.Select(el => el as LocalValue).ToList());
             case BidiJSHandle objectHandle:
+                ValidateHandle(objectHandle);
+
                 // If the handle doesn't have a valid handle ID (e.g., from console log args),
                 // serialize its value directly instead of using it as a remote reference
                 if (string.IsNullOrEmpty(objectHandle.Id))
@@ -606,6 +614,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 return objectHandle.RemoteValue.ToRemoteReference();
             case BidiElementHandle elementHandle:
+                ValidateHandle(elementHandle.BidiJSHandle);
                 return elementHandle.Value.ToRemoteReference();
         }
 
@@ -616,6 +625,29 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
 
         return null;
+    }
+
+    private void ValidateHandle(BidiJSHandle handle)
+    {
+        if (handle.Realm != this)
+        {
+            if (handle.Realm is not BidiFrameRealm || this is not BidiFrameRealm)
+            {
+                throw new PuppeteerException(
+                    "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa.");
+            }
+
+            if (handle.Realm.Environment != Environment)
+            {
+                throw new PuppeteerException(
+                    "JSHandles can be evaluated only in the context they were created!");
+            }
+        }
+
+        if (handle.Disposed)
+        {
+            throw new PuppeteerException("JSHandle is disposed!");
+        }
     }
 
     private LocalValue SerializePlainObject(object arg)
