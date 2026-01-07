@@ -629,5 +629,33 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi doesn't support fetching post data from requests - PuppeteerSharp-specific test",
+    "testIdPattern": "[network.spec] network Request.postData should work plain text",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi doesn't support fetching post data from requests - PuppeteerSharp-specific test",
+    "testIdPattern": "[network.spec] network Request.postData should work with low surrogate",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox CDP doesn't support fetching post data - PuppeteerSharp-specific test matching upstream pattern for 'should work'",
+    "testIdPattern": "[network.spec] network Request.postData should work plain text",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Firefox CDP doesn't support fetching post data - PuppeteerSharp-specific test matching upstream pattern for 'should work'",
+    "testIdPattern": "[network.spec] network Request.postData should work with low surrogate",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
   }
 ]
