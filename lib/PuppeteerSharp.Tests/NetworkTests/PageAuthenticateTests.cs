@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class PageAuthenticateTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should work")]
+        [Test, PuppeteerTest("network.spec", "network It lo", "should work")]
         public async Task ShouldWork()
         {
             Server.SetAuth("/empty.html", "user", "pass");
