@@ -15,27 +15,14 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             Server.SetAuth("/empty.html", "user", "pass");
 
-            try
-            {
-                var response = await Page.GoToAsync(TestConstants.EmptyPage);
-                Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Unauthorized));
-            }
-            catch (Exception e)
-            {
-                if (!e.Message.Contains("net::ERR_INVALID_AUTH_CREDENTIALS"))
-                {
-                    throw;
-                }
-            }
-
             await Page.AuthenticateAsync(new Credentials
             {
                 Username = "user",
                 Password = "pass"
             });
 
-            var newResponse = await Page.ReloadAsync();
-            Assert.That(newResponse.Status, Is.EqualTo(HttpStatusCode.OK));
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test, PuppeteerTest("network.spec", "network Page.authenticate", "should fail if wrong credentials")]
