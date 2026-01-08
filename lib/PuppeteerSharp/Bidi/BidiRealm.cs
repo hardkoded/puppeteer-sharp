@@ -181,6 +181,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length > 0;
     }
 
+    /// <summary>
+    /// Checks if a RemoteValue represents a null or undefined JavaScript value.
+    /// These types have HasValue=false but are valid values, not circular references.
+    /// </summary>
+    private static bool IsNullOrUndefinedType(RemoteValue remoteValue)
+        => remoteValue.Type is "null" or "undefined";
+
     private static string ToCamelCase(string name)
     {
         if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
@@ -404,8 +411,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 var remoteValue = entry.Value;
 
-                // Null and undefined types have HasValue=false but are not circular references
-                if (remoteValue.Type is "null" or "undefined")
+                if (IsNullOrUndefinedType(remoteValue))
                 {
                     dict[key] = null;
                 }
@@ -445,9 +451,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
             if (property != null && property.CanWrite)
             {
-                // Handle null and undefined types explicitly
-                if (remoteValue.Type is "null" or "undefined")
+                if (IsNullOrUndefinedType(remoteValue))
                 {
+                    property.SetValue(boxedInstance, null);
+                }
+                else if (!remoteValue.HasValue)
+                {
+                    // Circular reference - set to null
                     property.SetValue(boxedInstance, null);
                 }
                 else
@@ -512,8 +522,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
                 var remoteValue = entry.Value;
 
-                // Null and undefined types have HasValue=false but are not circular references
-                if (remoteValue.Type is "null" or "undefined")
+                if (IsNullOrUndefinedType(remoteValue))
                 {
                     result[key] = null;
                 }
@@ -535,8 +544,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         // Handle RemoteValue directly (for nested values)
         if (value is RemoteValue remoteVal)
         {
-            // Null and undefined types have HasValue=false but are not circular references
-            if (remoteVal.Type is "null" or "undefined")
+            if (IsNullOrUndefinedType(remoteVal))
             {
                 return null;
             }
@@ -559,8 +567,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             {
                 if (item is RemoteValue rv)
                 {
-                    // Null and undefined types have HasValue=false but are not circular references
-                    if (rv.Type is "null" or "undefined")
+                    if (IsNullOrUndefinedType(rv))
                     {
                         list.Add(null);
                     }
