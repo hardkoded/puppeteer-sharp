@@ -46,6 +46,7 @@ public class BidiPage : Page
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
     private string _extraHeadersInterception;
+    private string _authInterception;
     private bool _isJavaScriptEnabled = true;
 
     private BidiPage(BidiBrowserContext browserContext, BrowsingContext browsingContext) : base(browserContext.ScreenshotTaskQueue)
@@ -99,7 +100,10 @@ public class BidiPage : Page
 
     internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
-    internal bool IsNetworkInterceptionEnabled => _requestInterception != null;
+    internal bool IsNetworkInterceptionEnabled =>
+        _requestInterception != null || _extraHeadersInterception != null || _authInterception != null;
+
+    internal Credentials Credentials { get; private set; }
 
     /// <inheritdoc />
     protected override Browser Browser { get; }
@@ -147,7 +151,15 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task AuthenticateAsync(Credentials credentials) => throw new NotImplementedException();
+    public override async Task AuthenticateAsync(Credentials credentials)
+    {
+        _authInterception = await ToggleInterceptionAsync(
+            [InterceptPhase.AuthRequired],
+            _authInterception,
+            credentials != null).ConfigureAwait(false);
+
+        Credentials = credentials;
+    }
 
     /// <inheritdoc />
     public override async Task BringToFrontAsync()

@@ -44,6 +44,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     private RequestAbortErrorCode _abortErrorReason;
     private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
     private bool _isInterceptResolutionHandled;
+    private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
     {
@@ -497,13 +498,30 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             var httpRequest = From(request, Frame as BidiFrame, this);
             RedirectChainList.Add(this);
 
+            var successFired = false;
+            var errorFired = false;
+
             request.Success += (_, _) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (successFired)
+                {
+                    return;
+                }
+
+                successFired = true;
                 BidiPage.OnRequestFinished(new RequestEventArgs(httpRequest));
             };
 
             request.Error += (_, args) =>
             {
+                // Emulate 'once' behavior - only fire once
+                if (errorFired)
+                {
+                    return;
+                }
+
+                errorFired = true;
                 httpRequest.FailureText = args.Error;
                 BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
             };
@@ -539,8 +557,20 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private void HandleAuthentication(object sender, EventArgs e)
+    private async void HandleAuthentication(object sender, EventArgs e)
     {
-        // TODO: Implement authentication handling
+        var credentials = BidiPage.Credentials;
+
+        if (credentials != null && !_authenticationHandled)
+        {
+            _authenticationHandled = true;
+            await _request.ContinueWithAuthAsync(
+                ContinueWithAuthActionType.ProvideCredentials,
+                new AuthCredentials(credentials.Username, credentials.Password)).ConfigureAwait(false);
+        }
+        else
+        {
+            await _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel).ConfigureAwait(false);
+        }
     }
 }

@@ -140,6 +140,21 @@ internal class Request : IDisposable
         await Session.Driver.Network.ProvideResponseAsync(commandParams).ConfigureAwait(false);
     }
 
+    internal async Task ContinueWithAuthAsync(ContinueWithAuthActionType action, AuthCredentials credentials = null)
+    {
+        var commandParams = new ContinueWithAuthCommandParameters(Id)
+        {
+            Action = action,
+        };
+
+        if (action == ContinueWithAuthActionType.ProvideCredentials && credentials != null)
+        {
+            commandParams.Credentials = credentials;
+        }
+
+        await Session.Driver.Network.ContinueWithAuthAsync(commandParams).ConfigureAwait(false);
+    }
+
     private void Initialize()
     {
         _browsingContext.Closed += (_, args) =>
