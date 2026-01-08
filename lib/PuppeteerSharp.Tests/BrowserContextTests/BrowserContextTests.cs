@@ -181,5 +181,28 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
             await context.CloseAsync();
         }
+
+        [Test]
+        public async Task ShouldExposeConnection()
+        {
+            var context = await Browser.CreateBrowserContextAsync();
+            Assert.That(context.Connection, Is.Not.Null);
+            Assert.That(context.Connection, Is.InstanceOf<ICDPConnection>());
+
+            // Verify that we can use the connection to send CDP commands
+            var version = await context.Connection.SendAsync<dynamic>("Browser.getVersion");
+            Assert.That(version, Is.Not.Null);
+            Assert.That(version.GetProperty("product").GetString(), Does.Contain("Chrome").Or.Contains("Chromium"));
+
+            await context.CloseAsync();
+        }
+
+        [Test]
+        public async Task DefaultContextShouldExposeConnection()
+        {
+            var defaultContext = Browser.DefaultContext;
+            Assert.That(defaultContext.Connection, Is.Not.Null);
+            Assert.That(defaultContext.Connection, Is.InstanceOf<ICDPConnection>());
+        }
     }
 }
