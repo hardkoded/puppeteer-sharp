@@ -97,7 +97,71 @@ public class BidiFrame : Frame
     internal TimeoutSettings TimeoutSettings => BidiPage.TimeoutSettings;
 
     /// <inheritdoc />
-    public override Task<IElementHandle> AddStyleTagAsync(AddTagOptions options) => throw new System.NotImplementedException();
+    public override async Task<IElementHandle> AddStyleTagAsync(AddTagOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+            string.IsNullOrEmpty(options.Content))
+        {
+            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+        }
+
+        var content = options.Content;
+
+        if (!string.IsNullOrEmpty(options.Path))
+        {
+            content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+            content += "/*# sourceURL=" + options.Path.Replace("\n", string.Empty) + "*/";
+        }
+
+        var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
+            @"async (puppeteerUtil, url, id, type, content) => {
+                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                  const promise = createDeferredPromise();
+                  let element;
+                  if (!url) {
+                    element = document.createElement('style');
+                    element.appendChild(document.createTextNode(content));
+                  } else {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = url;
+                    element = link;
+                  }
+                  element.addEventListener(
+                    'load',
+                    () => {
+                      promise.resolve();
+                    },
+                    {once: true}
+                  );
+                  element.addEventListener(
+                    'error',
+                    event => {
+                      promise.reject(
+                        new Error(
+                          event.message ?? 'Could not load style'
+                        )
+                      );
+                    },
+                    {once: true}
+                  );
+                  document.head.appendChild(element);
+                  await promise;
+                  return element;
+                }",
+            new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+            options.Url,
+            options.Id,
+            options.Type,
+            content).ConfigureAwait(false);
+
+        return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+    }
 
     /// <inheritdoc />
     public override async Task SetContentAsync(string html, NavigationOptions options = null)
