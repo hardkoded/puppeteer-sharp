@@ -35,6 +35,8 @@ namespace PuppeteerSharp.Bidi.Core;
 internal class BrowsingContext : IDisposable
 {
     private readonly ConcurrentDictionary<string, BrowsingContext> _children = new();
+    private readonly List<string> _childrenOrder = new();
+    private readonly object _childrenLock = new();
     private readonly ConcurrentDictionary<string, Request> _requests = new();
     private string _reason;
     private Navigation _navigation;
@@ -82,7 +84,25 @@ internal class BrowsingContext : IDisposable
 
     public Session Session => UserContext.Browser.Session;
 
-    public IEnumerable<BrowsingContext> Children => _children.Values;
+    public IEnumerable<BrowsingContext> Children
+    {
+        get
+        {
+            lock (_childrenLock)
+            {
+                var result = new List<BrowsingContext>(_childrenOrder.Count);
+                foreach (var id in _childrenOrder)
+                {
+                    if (_children.TryGetValue(id, out var child))
+                    {
+                        result.Add(child);
+                    }
+                }
+
+                return result;
+            }
+        }
+    }
 
     public WindowRealm DefaultRealm { get; }
 
@@ -279,11 +299,19 @@ internal class BrowsingContext : IDisposable
 
             var browsingContext = From(UserContext, this, args.BrowsingContextId, args.Url, args.OriginalOpener);
 
-            _children.TryAdd(args.UserContextId, browsingContext);
+            lock (_childrenLock)
+            {
+                _children.TryAdd(browsingContext.Id, browsingContext);
+                _childrenOrder.Add(browsingContext.Id);
+            }
 
             browsingContext.Closed += (_, _) =>
             {
-                _children.TryRemove(browsingContext.Id, out _);
+                lock (_childrenLock)
+                {
+                    _children.TryRemove(browsingContext.Id, out _);
+                    _childrenOrder.Remove(browsingContext.Id);
+                }
             };
 
             OnBrowsingContextCreated(new BidiBrowsingContextEventArgs(browsingContext));
