@@ -115,7 +115,7 @@ public class BidiFrame : Frame
         if (!string.IsNullOrEmpty(options.Path))
         {
             content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-            content += "/*# sourceURL=" + options.Path.Replace("\n", string.Empty) + "*/";
+            content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
         }
 
         var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
