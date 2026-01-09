@@ -659,6 +659,8 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return LocalValue.Number(longValue);
             case float floatValue:
                 return LocalValue.Number(floatValue);
+            case IDictionary dictionary:
+                return await SerializeDictionaryAsync(dictionary).ConfigureAwait(false);
             case IEnumerable enumerable:
                 var list = new List<ArgumentValue>();
                 foreach (var item in enumerable)
@@ -725,6 +727,25 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             var value = prop.GetValue(arg);
             var key = ToCamelCase(prop.Name);
             dict[key] = SerializeValue(value);
+        }
+
+        return LocalValue.Object(dict);
+    }
+
+    private async Task<LocalValue> SerializeDictionaryAsync(IDictionary dictionary)
+    {
+        var dict = new Dictionary<string, LocalValue>();
+        foreach (DictionaryEntry entry in dictionary)
+        {
+            var key = entry.Key?.ToString();
+            if (key == null)
+            {
+                continue;
+            }
+
+            // Recursively serialize the value using FormatArgumentAsync
+            var serializedValue = await FormatArgumentAsync(entry.Value).ConfigureAwait(false);
+            dict[key] = serializedValue as LocalValue ?? LocalValue.Null;
         }
 
         return LocalValue.Object(dict);
