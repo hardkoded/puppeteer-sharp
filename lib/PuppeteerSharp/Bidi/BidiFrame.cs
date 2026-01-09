@@ -57,8 +57,8 @@ public class BidiFrame : Frame
     /// <inheritdoc />
     public override IReadOnlyCollection<IFrame> ChildFrames =>
         BrowsingContext.Children
-            .Where(child => _frames.ContainsKey(child))
-            .Select(child => _frames[child])
+            .Select(child => _frames.TryGetValue(child, out var frame) ? frame : null)
+            .Where(frame => frame is not null)
             .Cast<IFrame>()
             .ToList();
 

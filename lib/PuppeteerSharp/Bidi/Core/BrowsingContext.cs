@@ -90,10 +90,16 @@ internal class BrowsingContext : IDisposable
         {
             lock (_childrenLock)
             {
-                return _childrenOrder
-                    .Where(id => _children.ContainsKey(id))
-                    .Select(id => _children[id])
-                    .ToList();
+                var result = new List<BrowsingContext>(_childrenOrder.Count);
+                foreach (var id in _childrenOrder)
+                {
+                    if (_children.TryGetValue(id, out var child))
+                    {
+                        result.Add(child);
+                    }
+                }
+
+                return result;
             }
         }
     }
