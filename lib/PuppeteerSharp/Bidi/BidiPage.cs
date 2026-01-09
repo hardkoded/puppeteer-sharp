@@ -771,19 +771,44 @@ public class BidiPage : Page
         => throw new NotSupportedException("Metrics is not supported in BiDi protocol");
 
     /// <inheritdoc />
-    public override Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args) => throw new NotImplementedException();
+    public override async Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
+    {
+        var expression = EvaluationExpression(pageFunction, args);
+        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(expression)
+        {
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        var result = await BidiMainFrame.BrowsingContext.Session.Driver.Script.AddPreloadScriptAsync(commandParameters).ConfigureAwait(false);
+        return new NewDocumentScriptEvaluation(result.PreloadScriptId);
+    }
 
     /// <inheritdoc />
     public override Task RemoveExposedFunctionAsync(string name) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier) => throw new NotImplementedException();
+    public override async Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
+    {
+        var commandParameters = new WebDriverBiDi.Script.RemovePreloadScriptCommandParameters(identifier);
+        await BidiMainFrame.BrowsingContext.Session.Driver.Script.RemovePreloadScriptAsync(commandParameters).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public override Task SetBypassServiceWorkerAsync(bool bypass) => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public override Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression) => throw new NotImplementedException();
+    public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
+    {
+        // Wrap the expression in a function so it can be used as a preload script
+        var functionExpression = $"() => {{{expression}}}";
+        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(functionExpression)
+        {
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        var result = await BidiMainFrame.BrowsingContext.Session.Driver.Script.AddPreloadScriptAsync(commandParameters).ConfigureAwait(false);
+        return new NewDocumentScriptEvaluation(result.PreloadScriptId);
+    }
 
     /// <inheritdoc />
     public override Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle) => throw new NotImplementedException();
@@ -998,6 +1023,16 @@ public class BidiPage : Page
 
     /// <inheritdoc />
     protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+
+    /// <summary>
+    /// Creates an evaluation expression for preload scripts.
+    /// Similar to upstream's evaluationExpression function which wraps the function
+    /// so it can be executed as a preload script.
+    /// </summary>
+    private static string EvaluationExpression(string fun, params object[] args)
+    {
+        return $"() => {{{BindingUtils.EvaluationString(fun, args)}}}";
+    }
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)
     {
