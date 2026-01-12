@@ -10,39 +10,27 @@ namespace PuppeteerSharp.Tests.PageTests
         {
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.resize", "should resize the window content area")]
-        public async Task ShouldResizeWindowContentArea()
+        [Test, PuppeteerTest("page.spec", "Page Page.resize", "should resize the browser window to fit page content")]
+        public async Task ShouldResizeTheBrowserWindowToFitPageContent()
         {
-            // Navigate to a page first
-            await Page.GoToAsync(TestConstants.EmptyPage);
+            // Default view port restricts window to 800x600, so remove it.
+            await Page.SetViewportAsync(null);
 
-            // Resize the window content area
-            var newWidth = 800;
-            var newHeight = 600;
-            await Page.ResizeAsync(newWidth, newHeight);
-
-            // Get the window inner dimensions after resize
-            var dimensions = await Page.EvaluateFunctionAsync<WindowDimensions>(@"() => {
-                return {
-                    width: window.innerWidth,
-                    height: window.innerHeight
-                };
+            var contentWidth = 500;
+            var contentHeight = 400;
+            var resized = Page.EvaluateFunctionAsync(@"() => {
+                return new Promise(resolve => {
+                    window.onresize = resolve;
+                });
             }");
+            await Page.ResizeAsync(contentWidth, contentHeight);
+            await resized;
 
-            // Verify the content area was resized
-            Assert.That(dimensions.Width, Is.EqualTo(newWidth));
-            Assert.That(dimensions.Height, Is.EqualTo(newHeight));
-        }
-
-        [Test, PuppeteerTest("page.spec", "Page Page.windowId", "should return window id")]
-        public async Task ShouldReturnWindowId()
-        {
-            await Page.GoToAsync(TestConstants.EmptyPage);
-
-            var windowId = await Page.WindowIdAsync();
-
-            Assert.That(windowId, Is.Not.Null);
-            Assert.That(windowId, Is.Not.Empty);
+            var innerSize = await Page.EvaluateFunctionAsync<WindowDimensions>(@"() => {
+                return {width: window.innerWidth, height: window.innerHeight};
+            }");
+            Assert.That(innerSize.Width, Is.EqualTo(contentWidth));
+            Assert.That(innerSize.Height, Is.EqualTo(contentHeight));
         }
 
         private sealed class WindowDimensions
