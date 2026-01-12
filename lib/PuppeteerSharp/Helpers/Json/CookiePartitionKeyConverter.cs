@@ -18,6 +18,12 @@ namespace PuppeteerSharp.Helpers.Json
             Type objectType,
             JsonSerializerOptions options)
         {
+            // Handle both string format (for user serialization) and object format (from CDP)
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                return reader.GetString();
+            }
+
             JsonNode? node = JsonNode.Parse(ref reader);
 
             return node?["topLevelSite"]?.GetValue<string>() ?? null;
@@ -29,12 +35,15 @@ namespace PuppeteerSharp.Helpers.Json
             string value,
             JsonSerializerOptions options)
         {
-            if (value != null && writer != null)
+            // Write as a simple string for user serialization/deserialization
+            // This allows cookies to be easily saved to and loaded from files
+            if (value != null)
             {
-                writer.WriteStartObject("partitionKey");
-                writer.WriteString("topLevelSite", value);
-                writer.WriteBoolean("hasCrossSiteAncestor", false);
-                writer.WriteEndObject();
+                writer.WriteStringValue(value);
+            }
+            else
+            {
+                writer.WriteNullValue();
             }
         }
     }

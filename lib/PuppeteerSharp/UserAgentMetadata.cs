@@ -40,5 +40,15 @@ namespace PuppeteerSharp
         /// Mobile.
         /// </summary>
         public bool Mobile { get; set; }
+
+        /// <summary>
+        /// Bitness (e.g., "32" or "64").
+        /// </summary>
+        public string Bitness { get; set; }
+
+        /// <summary>
+        /// True if on Windows and WOW64 (Windows 32-bit on Windows 64-bit).
+        /// </summary>
+        public bool? Wow64 { get; set; }
     }
 }

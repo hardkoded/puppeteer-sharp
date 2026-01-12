@@ -9,19 +9,19 @@ PuppeteerSharp is a C# library for automating Chromium-based browsers and Firefo
 
 ## Goal
 
-The goal of this project is to be a port of the popular Node.js Puppeteer library to .NET.
+The goal of this project is to port the popular Node.js Puppeteer library to .NET.
 Everything in PuppeteerSharp is inspired by the original Puppeteer library, but adapted to C# idioms and .NET practices.
 
 ## External Sources:
-These external sources are referenced or used as inspiration in the codebase. Feel free to explore them for deeper understanding.
-You are allowed to run git commands to update these repositories locally.
+These external sources are referenced or used as inspiration in the codebase. Feel free to explore them for a deeper understanding.
+You may run git commands to update these repositories locally.
 
-- Original Puppeteer repository: https://github.com/puppeteer/puppeteer/. Every time "upstream" is mentioned we are referring to this code.
+- Original Puppeteer repository: https://github.com/puppeteer/puppeteer/. Every time "upstream" is mentioned, we are referring to this code.
 - Bidi Driver: https://github.com/webdriverbidi-net/webdriverbidi-net
 
 ## Upstream code structure
 
-- Code in upstream puppeteer-core/src/api/* are our abstract class. For instance our public abstract class Frame.
+- Code in upstream puppeteer-core/src/api/* are our abstract class. For instanc,e our public abstract class Frame.
 - Code in upstream puppeteer-core/src/bidi/* are our Bidi* classes.
 - Code in upstream puppeteer-core/src/cdp/* are our Cdp* classes.
 
@@ -391,6 +391,16 @@ Test directory structure demonstrates comprehensive coverage:
 - Headless mode variations (headless, headful, headless-shell)
 - Local and upstream expectation merging
 - Tests should always match the code in upstream. Tests should never be changed to match the code local code.
+
+#### Upstream matching
+
+All our tests have this attribute `[Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should take fullPage screenshots")]`
+This helps us link a test with the upstream test:
+ * The first argument is the file upstream without the extension.
+ * The second argument is the concatenation of `describe`s in upstream. In the example above it means that the test is inside two describes `Screenshots` and `Page.screenshot`.
+ * The third argument is the test name.
+
+You shouldn't create tests that don't match upstream unless explicitly requested. In that case, the first argument should be `puppeteer-sharp`.
 
 **IMPORTANT: Test Expectations Files Rules:**
 - `TestExpectations.upstream.json`: This file should NEVER be edited unless syncing with the upstream Puppeteer project. It contains expectations that match the upstream Puppeteer test expectations.
