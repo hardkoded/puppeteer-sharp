@@ -103,7 +103,7 @@ public class CdpBrowser : Browser
     internal ITargetManager TargetManager { get; }
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
     public override ITarget[] Targets()
@@ -180,11 +180,12 @@ public class CdpBrowser : Browser
         }
     }
 
-    internal async Task<IPage> CreatePageInContextAsync(string contextId)
+    internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
+            Background = options?.Background ?? false,
         };
 
         if (contextId != null)

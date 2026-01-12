@@ -5,5 +5,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public string Url { get; set; }
 
         public object BrowserContextId { get; set; }
+
+        public bool Background { get; set; }
     }
 }
