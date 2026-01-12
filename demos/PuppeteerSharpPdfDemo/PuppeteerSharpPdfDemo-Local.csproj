@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0;net471</TargetFrameworks>
+    <TargetFrameworks>net10.0;net471</TargetFrameworks>
     <LangVersion>12</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
