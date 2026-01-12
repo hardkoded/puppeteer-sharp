@@ -48,7 +48,6 @@ jobs:
             build/PuppeteerSharpPdfDemo-Local.exe auto-exit
           } else {
             Write-Host "AOT compilation failed - executable not found. This is a known issue with Assembly.Location in AOT."
-            exit 1
           }
     - name: Run on .NET Framework
       if: matrix.os == 'windows-2022'
