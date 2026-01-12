@@ -4,14 +4,12 @@ using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    public class NewPageTests : PuppeteerBrowserBaseTest
+    public class NewPageTests : PuppeteerBrowserContextBaseTest
     {
         [Test, PuppeteerTest("page.spec", "Page", "Page.newPage should create a background page")]
         public async Task ShouldCreateABackgroundPage()
         {
-            var context = Browser.DefaultContext;
-
-            var page = await context.NewPageAsync(new CreatePageOptions
+            var page = await Context.NewPageAsync(new CreatePageOptions
             {
                 Background = true,
             });
@@ -25,9 +23,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page", "Page.newPage should create a foreground page by default")]
         public async Task ShouldCreateAForegroundPageByDefault()
         {
-            var context = Browser.DefaultContext;
-
-            var page = await context.NewPageAsync();
+            var page = await Context.NewPageAsync();
 
             var visibilityState = await page.EvaluateExpressionAsync<string>("document.visibilityState");
             Assert.That(visibilityState, Is.EqualTo("visible"));
