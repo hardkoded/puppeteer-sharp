@@ -18,7 +18,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "stable_145.0.2";
+        public const string DefaultBuildId = "nightly_148.0a1";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
@@ -401,6 +401,11 @@ namespace PuppeteerSharp.BrowserData
                 // Enable Remote Agent
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1544393
                 ["remote.enabled"] = true,
+
+                // Automatically dismiss file pickers
+                // Required for WebDriver BiDi file picker handling
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=2005673
+                ["remote.bidi.dismiss_file_pickers.enabled"] = true,
 
                 // Don"t do network connections for mitm priming
                 ["security.certerrors.mitm.priming.enabled"] = false,

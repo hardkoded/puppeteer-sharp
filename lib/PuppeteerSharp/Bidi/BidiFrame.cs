@@ -38,6 +38,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiFrame : Frame
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
+    private readonly ConcurrentDictionary<string, ExposableFunction> _exposedFunctions = new();
     private readonly Realms _realms;
 
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
@@ -470,6 +471,40 @@ public class BidiFrame : Frame
         return await BrowsingContext.LocateNodesAsync(
             locator,
             [element.Value.ToSharedReference()]).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Exposes a .NET function that can be called from the browser.
+    /// </summary>
+    /// <param name="name">The name of the function to expose.</param>
+    /// <param name="apply">The delegate to invoke when the function is called.</param>
+    /// <returns>A task that completes when the function is exposed.</returns>
+    internal async Task ExposeFunctionAsync(string name, Delegate apply)
+    {
+        if (_exposedFunctions.ContainsKey(name))
+        {
+            throw new PuppeteerException(
+                $"Failed to add page binding with name {name}: globalThis['{name}'] already exists!");
+        }
+
+        var exposable = await ExposableFunction.FromAsync(this, name, apply).ConfigureAwait(false);
+        _exposedFunctions.TryAdd(name, exposable);
+    }
+
+    /// <summary>
+    /// Removes an exposed function.
+    /// </summary>
+    /// <param name="name">The name of the function to remove.</param>
+    /// <returns>A task that completes when the function is removed.</returns>
+    internal async Task RemoveExposedFunctionAsync(string name)
+    {
+        if (!_exposedFunctions.TryRemove(name, out var exposedFunction))
+        {
+            throw new PuppeteerException(
+                $"Failed to remove page binding with name {name}: window['{name}'] does not exist!");
+        }
+
+        await exposedFunction.DisposeAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
