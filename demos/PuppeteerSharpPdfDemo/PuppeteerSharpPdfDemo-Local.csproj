@@ -6,6 +6,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PublishAot>true</PublishAot>
+    <!-- IL3000: Assembly.Location in PuppeteerSharp has fallback handling for single-file/AOT -->
+    <NoWarn>$(NoWarn);IL3000</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\PuppeteerSharp\PuppeteerSharp.csproj" />

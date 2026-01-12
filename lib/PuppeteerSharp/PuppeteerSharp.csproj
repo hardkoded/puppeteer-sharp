@@ -28,6 +28,10 @@
     <AnalysisLevel>10.0-Recommended</AnalysisLevel>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <!-- IL3000: Assembly.Location returns empty in single-file/AOT - code has fallback handling in GetBrowsersLocation() -->
+    <NoWarn>$(NoWarn);IL3000</NoWarn>
+  </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
