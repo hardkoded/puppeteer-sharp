@@ -314,6 +314,26 @@ public class CdpPage : Page
         });
     }
 
+    /// <inheritdoc />
+    public override async Task<string> WindowIdAsync()
+    {
+        var response = await PrimaryTargetClient.SendAsync<BrowserGetWindowForTargetResponse>(
+            "Browser.getWindowForTarget").ConfigureAwait(false);
+        return response.WindowId.ToString(CultureInfo.InvariantCulture);
+    }
+
+    /// <inheritdoc />
+    public override async Task ResizeAsync(int contentWidth, int contentHeight)
+    {
+        var windowId = await WindowIdAsync().ConfigureAwait(false);
+        await PrimaryTargetClient.SendAsync("Browser.setContentsSize", new BrowserSetContentsSizeRequest
+        {
+            WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
+            Width = contentWidth,
+            Height = contentHeight,
+        }).ConfigureAwait(false);
+    }
+
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
