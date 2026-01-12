@@ -185,7 +185,7 @@ public class CdpBrowser : Browser
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
-            Background = options?.Background ?? false,
+            Background = options?.Background,
         };
 
         if (contextId != null)

@@ -21,6 +21,6 @@ namespace PuppeteerSharp
         /// <remarks>
         /// Defaults to false.
         /// </remarks>
-        public bool Background { get; set; }
+        public bool? Background { get; set; }
     }
 }

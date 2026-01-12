@@ -6,6 +6,6 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         public object BrowserContextId { get; set; }
 
-        public bool Background { get; set; }
+        public bool? Background { get; set; }
     }
 }
