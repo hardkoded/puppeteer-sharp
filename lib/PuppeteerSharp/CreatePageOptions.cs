@@ -6,12 +6,12 @@ namespace PuppeteerSharp
     public class CreatePageOptions
     {
         /// <summary>
-        /// The type of page to create. Defaults to "tab".
+        /// The type of page to create. Defaults to <see cref="CreatePageType.Tab"/>.
         /// </summary>
-        public string Type { get; set; } = "tab";
+        public CreatePageType Type { get; set; } = CreatePageType.Tab;
 
         /// <summary>
-        /// Window bounds for creating a new window. Only applies when Type is "window".
+        /// Window bounds for creating a new window. Only applies when Type is <see cref="CreatePageType.Window"/>.
         /// </summary>
         public WindowBounds WindowBounds { get; set; }
 
