@@ -96,6 +96,12 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task CloseAsync();
 
+        /// <inheritdoc />
+        public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <inheritdoc />
+        public abstract Task SetWindowBoundsAsync(string windowId, WindowBounds bounds);
+
         /// <inheritdoc/>
         public async Task<ITarget> WaitForTargetAsync(Func<ITarget, bool> predicate, WaitForOptions options = null)
         {

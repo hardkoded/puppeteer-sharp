@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -143,6 +144,36 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
+            "Browser.getWindowBounds",
+            new BrowserGetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
+            }).ConfigureAwait(false);
+
+        return ConvertToWindowBounds(response.Bounds);
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds bounds)
+    {
+        if (bounds == null)
+        {
+            throw new ArgumentNullException(nameof(bounds));
+        }
+
+        await Connection.SendAsync(
+            "Browser.setWindowBounds",
+            new BrowserSetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
+                Bounds = ConvertToBrowserWindowBounds(bounds),
+            }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
 
     internal static async Task<CdpBrowser> CreateAsync(
@@ -211,6 +242,54 @@ public class CdpBrowser : Browser
             BrowserContextId = contextId,
         }).ConfigureAwait(false);
         _contexts.TryRemove(contextId, out var _);
+    }
+
+    private static WindowBounds ConvertToWindowBounds(BrowserWindowBounds bounds)
+    {
+        return new WindowBounds
+        {
+            Left = bounds.Left,
+            Top = bounds.Top,
+            Width = bounds.Width,
+            Height = bounds.Height,
+            WindowState = ConvertToWindowState(bounds.WindowState),
+        };
+    }
+
+    private static BrowserWindowBounds ConvertToBrowserWindowBounds(WindowBounds bounds)
+    {
+        return new BrowserWindowBounds
+        {
+            Left = bounds.Left,
+            Top = bounds.Top,
+            Width = bounds.Width,
+            Height = bounds.Height,
+            WindowState = ConvertToWindowStateString(bounds.WindowState),
+        };
+    }
+
+    private static WindowState? ConvertToWindowState(string state)
+    {
+        return state switch
+        {
+            "normal" => PuppeteerSharp.WindowState.Normal,
+            "minimized" => PuppeteerSharp.WindowState.Minimized,
+            "maximized" => PuppeteerSharp.WindowState.Maximized,
+            "fullscreen" => PuppeteerSharp.WindowState.Fullscreen,
+            _ => null,
+        };
+    }
+
+    private static string ConvertToWindowStateString(WindowState? state)
+    {
+        return state switch
+        {
+            PuppeteerSharp.WindowState.Normal => "normal",
+            PuppeteerSharp.WindowState.Minimized => "minimized",
+            PuppeteerSharp.WindowState.Maximized => "maximized",
+            PuppeteerSharp.WindowState.Fullscreen => "fullscreen",
+            _ => "normal",
+        };
     }
 
     private Task AttachAsync()
