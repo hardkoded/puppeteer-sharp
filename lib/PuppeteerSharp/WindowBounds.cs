@@ -26,7 +26,7 @@ namespace PuppeteerSharp
         public int? Height { get; set; }
 
         /// <summary>
-        /// The window state. Default to normal.
+        /// The window state. Defaults to normal.
         /// </summary>
         public WindowState? WindowState { get; set; }
     }
