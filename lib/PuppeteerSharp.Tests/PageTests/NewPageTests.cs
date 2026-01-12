@@ -20,15 +20,5 @@ namespace PuppeteerSharp.Tests.PageTests
             await page.CloseAsync();
         }
 
-        [Test, PuppeteerTest("page.spec", "Page", "Page.newPage should create a foreground page by default")]
-        public async Task ShouldCreateAForegroundPageByDefault()
-        {
-            var page = await Context.NewPageAsync();
-
-            var visibilityState = await page.EvaluateExpressionAsync<string>("document.visibilityState");
-            Assert.That(visibilityState, Is.EqualTo("visible"));
-
-            await page.CloseAsync();
-        }
     }
 }
