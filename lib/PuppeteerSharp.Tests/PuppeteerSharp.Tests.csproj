@@ -25,7 +25,7 @@
 	<Import Project="../Common/CommonProps.props" />
 	<ItemGroup>
 		<ProjectReference Include="..\PuppeteerSharp.TestServer\PuppeteerSharp.TestServer.csproj" />
-		<ProjectReferenc1e Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
+		<ProjectReference Include="..\PuppeteerSharp\PuppeteerSharp.csproj" />
 		<ProjectReference Include="..\PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj" />
 	</ItemGroup>
 	<ItemGroup>
