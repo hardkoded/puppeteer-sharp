@@ -82,8 +82,9 @@ namespace PuppeteerSharp
         public CookiePriority? Priority { get; set; }
 
         /// <summary>
-        /// True if cookie is SameParty. Supported only in Chrome.
+        /// Always ignored.
         /// </summary>
+        [System.Obsolete("SameParty cookie attribute is deprecated and always ignored.")]
         public bool? SameParty { get; set; }
 
         /// <summary>
