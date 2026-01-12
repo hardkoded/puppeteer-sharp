@@ -146,11 +146,21 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
     {
+        if (string.IsNullOrEmpty(windowId))
+        {
+            throw new ArgumentException("Window ID cannot be null or empty.", nameof(windowId));
+        }
+
+        if (!int.TryParse(windowId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var windowIdInt))
+        {
+            throw new ArgumentException($"Invalid window ID format: {windowId}", nameof(windowId));
+        }
+
         var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
             "Browser.getWindowBounds",
             new BrowserGetWindowBoundsRequest
             {
-                WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
+                WindowId = windowIdInt,
             }).ConfigureAwait(false);
 
         return ConvertToWindowBounds(response.Bounds);
@@ -159,6 +169,16 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task SetWindowBoundsAsync(string windowId, WindowBounds bounds)
     {
+        if (string.IsNullOrEmpty(windowId))
+        {
+            throw new ArgumentException("Window ID cannot be null or empty.", nameof(windowId));
+        }
+
+        if (!int.TryParse(windowId, NumberStyles.Integer, CultureInfo.InvariantCulture, out var windowIdInt))
+        {
+            throw new ArgumentException($"Invalid window ID format: {windowId}", nameof(windowId));
+        }
+
         if (bounds == null)
         {
             throw new ArgumentNullException(nameof(bounds));
@@ -168,7 +188,7 @@ public class CdpBrowser : Browser
             "Browser.setWindowBounds",
             new BrowserSetWindowBoundsRequest
             {
-                WindowId = int.Parse(windowId, CultureInfo.InvariantCulture),
+                WindowId = windowIdInt,
                 Bounds = ConvertToBrowserWindowBounds(bounds),
             }).ConfigureAwait(false);
     }
