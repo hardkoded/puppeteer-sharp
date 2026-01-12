@@ -17,10 +17,8 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// Whether to create the page in the background.
+        /// When not set or null, the page is created in the foreground.
         /// </summary>
-        /// <remarks>
-        /// Defaults to false.
-        /// </remarks>
         public bool? Background { get; set; }
     }
 }
