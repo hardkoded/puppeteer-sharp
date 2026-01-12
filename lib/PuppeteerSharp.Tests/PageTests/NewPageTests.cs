@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class NewPageTests : PuppeteerBrowserContextBaseTest
     {
-        [Test, PuppeteerTest("page.spec", "Page", "Page.newPage should create a background page")]
+        [Test, PuppeteerTest("page.spec", "Page Page.newPage", "should create a background page")]
         public async Task ShouldCreateABackgroundPage()
         {
             var page = await Context.NewPageAsync(new CreatePageOptions
