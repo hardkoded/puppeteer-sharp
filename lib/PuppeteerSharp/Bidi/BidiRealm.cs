@@ -767,6 +767,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             double d => LocalValue.Number(d),
             decimal m => LocalValue.Number(m),
             BigInteger big => LocalValue.BigInt(big),
+            IJSHandle => throw new PuppeteerException("Unable to make function call. Are you passing a nested JSHandle?"),
             _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value),
             _ => LocalValue.Null,
         };
