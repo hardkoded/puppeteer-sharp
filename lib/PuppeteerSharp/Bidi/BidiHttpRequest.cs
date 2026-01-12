@@ -311,6 +311,17 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             case InterceptResolutionAction.Continue:
                 await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
                 break;
+            case InterceptResolutionAction.None:
+                // When no explicit action was set but the request is blocked,
+                // we need to continue it to allow the browser to proceed.
+                // This happens when interception is enabled but no handler called
+                // ContinueAsync, AbortAsync, or RespondAsync.
+                if (CanBeIntercepted)
+                {
+                    await ContinueInternalAsync().ConfigureAwait(false);
+                }
+
+                break;
         }
     }
 
