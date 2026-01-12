@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <OutputType>Library</OutputType>
     <LangVersion>12</LangVersion>
+    <NoWarn>ASPDEPR004;ASPDEPR008</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="testCert.cer">
