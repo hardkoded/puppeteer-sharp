@@ -277,7 +277,7 @@ internal class BrowsingContext : IDisposable
         {
             foreach (var node in startNodes)
             {
-                parameters.ContextNodes.Add(node);
+                parameters.StartNodes.Add(node);
             }
         }
 

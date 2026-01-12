@@ -140,7 +140,7 @@ internal class ExposableFunction : IAsyncDisposable
     {
         var channel = new ChannelValue(new ChannelProperties(_channel)
         {
-            ResultOwnership = ResultOwnership.Root,
+            Ownership = ResultOwnership.Root,
         });
 
         // Subscribe to script.message events

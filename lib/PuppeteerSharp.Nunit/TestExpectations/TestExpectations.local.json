@@ -21,41 +21,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "WebDriverBiDi 0.0.39 has a bug where ChannelProperties uses 'resultOwnership' instead of 'ownership'. Fixed in local source, waiting for NuGet update.",
-    "testIdPattern": "[page.spec] Page Page.exposeFunction *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriverBiDi 0.0.39 has a bug where ChannelProperties uses 'resultOwnership' instead of 'ownership'. Fixed in local source, waiting for NuGet update.",
-    "testIdPattern": "[page.spec] Page Page.removeExposedFunction *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriverBiDi 0.0.39 has a bug where ChannelProperties uses 'resultOwnership' instead of 'ownership'. Fixed in local source, waiting for NuGet update.",
-    "testIdPattern": "[evaluation.spec] * exposed *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriverBiDi 0.0.39 has a bug where ChannelProperties uses 'resultOwnership' instead of 'ownership'. Fixed in local source, waiting for NuGet update.",
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should work independently of `exposeFunction",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "WebDriverBiDi 0.0.39 has a bug where ChannelProperties uses 'resultOwnership' instead of 'ownership'. Fixed in local source, waiting for NuGet update.",
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "Custom query handlers are not yet fully implemented in BiDi",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries *",
     "platforms": ["darwin", "linux", "win32"],
