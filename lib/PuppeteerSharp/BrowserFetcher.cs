@@ -178,7 +178,9 @@ namespace PuppeteerSharp
 
             if (!assemblyDirectory.Exists || !File.Exists(Path.Combine(assemblyDirectory.FullName, assemblyName)))
             {
+#pragma warning disable IL3000 // Avoid accessing Assembly file path when publishing as a single file - fallback handling exists below
                 var assemblyLocation = assembly.Location;
+#pragma warning restore IL3000
 
                 if (string.IsNullOrEmpty(assemblyLocation))
                 {
