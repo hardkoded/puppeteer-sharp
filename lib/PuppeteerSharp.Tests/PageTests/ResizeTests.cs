@@ -16,9 +16,6 @@ namespace PuppeteerSharp.Tests.PageTests
             // Navigate to a page first
             await Page.GoToAsync(TestConstants.EmptyPage);
 
-            // Get the initial viewport size
-            var initialViewport = Page.Viewport;
-
             // Resize the window content area
             var newWidth = 800;
             var newHeight = 600;
