@@ -402,6 +402,11 @@ namespace PuppeteerSharp.BrowserData
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1544393
                 ["remote.enabled"] = true,
 
+                // Automatically dismiss file pickers
+                // Required for WebDriver BiDi file picker handling
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=2005673
+                ["remote.bidi.dismiss_file_pickers.enabled"] = true,
+
                 // Don"t do network connections for mitm priming
                 ["security.certerrors.mitm.priming.enabled"] = false,
 
