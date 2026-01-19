@@ -257,7 +257,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     }
 
     /// <inheritdoc />
-    public override Task<string> FetchPostDataAsync() => throw new NotImplementedException();
+    public override Task<string> FetchPostDataAsync() => _request.FetchPostDataAsync();
 
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
@@ -267,6 +267,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             Url = bidiRequest.Url,
             Method = new System.Net.Http.HttpMethod(bidiRequest.Method),
             IsNavigationRequest = isNavigationRequest,
+            HasPostData = bidiRequest.HasPostData,
 
             // For BiDi without CDP support, we can infer the resource type from the navigation property.
             // Navigation requests are Document type, otherwise we default to Other.
@@ -275,6 +276,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         request.Initialize();
         return request;
     }
+
+    internal Task<byte[]> GetResponseContentAsync() => _request.GetResponseContentAsync();
 
     internal override async Task FinalizeInterceptionsAsync()
     {
