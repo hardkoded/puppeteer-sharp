@@ -413,11 +413,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         try
         {
             await _request.FailRequestAsync().ConfigureAwait(false);
-
-            // The browser will send a network.fetchError event with the actual error text
-            // (e.g., "NS_ERROR_ABORT" for Firefox, "net::ERR_FAILED" for Chrome).
-            // The Error event handler in Initialize() will set FailureText from that event.
-            // We don't set FailureText here to allow the browser's error text to be used.
         }
         catch (Exception)
         {
