@@ -478,7 +478,7 @@ public class BidiFrame : Frame
                 tasksToRace.Add(userCancellationTcs.Task);
             }
 
-            var completedTask = await Task.WhenAny(tasksToRace).ConfigureAwait(false);
+            await Task.WhenAny(tasksToRace).ConfigureAwait(false);
 
             // Check if frame was detached or timeout occurred - re-throw the exception if so
             if (frameDetachedTcs.Task.IsCompleted)
