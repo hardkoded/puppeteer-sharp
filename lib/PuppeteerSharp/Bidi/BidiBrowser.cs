@@ -238,6 +238,12 @@ public class BidiBrowser : Browser
                     {
                         AcceptInsecureCertificates = options.AcceptInsecureCerts,
                         AdditionalCapabilities = { ["webSocketUrl"] = true, },
+
+                        // Tell the browser not to auto-handle prompts so we can handle them via the Dialog API.
+                        UnhandledPromptBehavior = new UserPromptHandler
+                        {
+                            Default = UserPromptHandlerType.Ignore,
+                        },
                     },
                 },
             },
