@@ -257,7 +257,7 @@ public class BidiFrame : Frame
         BrowsingContext.Closed += OnFrameDetached;
 
         // Register timeout to also complete the frame detached task to unblock any waits
-        var timeoutRegistration = timeoutToken.Register(() =>
+        using var timeoutRegistration = timeoutToken.Register(() =>
             frameDetachedTcs.TrySetException(new TimeoutException($"Navigation timeout of {timeout}ms exceeded")));
 
         // Setup load event listeners BEFORE waiting for navigation to avoid race conditions
@@ -491,7 +491,6 @@ public class BidiFrame : Frame
         }
         finally
         {
-            timeoutRegistration.Dispose();
             BrowsingContext.Closed -= OnFrameDetached;
             cleanupLoadListeners();
         }
