@@ -42,6 +42,21 @@ public class BidiPage : Page
 {
     private readonly ConcurrentDictionary<string, BidiWebWorker> _workers = new();
     private readonly CdpEmulationManager _cdpEmulationManager;
+    private readonly TaskQueue _requestInterceptionQueue = new();
+
+    // Track URLs that have fired the RequestServedFromCache event to deduplicate Firefox's duplicate events.
+    // Cleared on navigation start.
+    private readonly ConcurrentDictionary<string, bool> _cacheEventsFired = new();
+
+    // Track URLs that have fired the RequestFailed event to deduplicate Firefox's duplicate events.
+    private readonly ConcurrentDictionary<string, bool> _failedEventsFired = new();
+
+    // Track URLs that have fired the Request event to deduplicate Firefox's duplicate events.
+    // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for speculative/parallel loading.
+    private readonly ConcurrentDictionary<string, bool> _requestEventsFired = new();
+
+    // Flag to track if we're currently navigating. Only deduplicate requests during navigation.
+    private volatile bool _isNavigating;
     private InternalNetworkConditions _emulatedNetworkConditions;
     private TaskCompletionSource<bool> _closedTcs;
     private string _requestInterception;
@@ -104,6 +119,13 @@ public class BidiPage : Page
         _requestInterception != null || _extraHeadersInterception != null || _authInterception != null;
 
     internal Credentials Credentials { get; private set; }
+
+    /// <summary>
+    /// Gets the task queue used to serialize request interception handling.
+    /// This ensures that user-provided request handlers run sequentially across
+    /// concurrent requests, matching JavaScript's single-threaded behavior.
+    /// </summary>
+    internal TaskQueue RequestInterceptionQueue => _requestInterceptionQueue;
 
     /// <inheritdoc />
     protected override Browser Browser { get; }
@@ -212,6 +234,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
+        // Clear the events trackers on navigation to allow fresh events
+        ClearEventTrackers();
+
         var navOptions = options == null
             ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
             : options with { IgnoreSameDocumentNavigation = true };
@@ -220,7 +245,9 @@ public class BidiPage : Page
 
         try
         {
-            await Task.WhenAll(waitForNavigationTask, navigationTask).ConfigureAwait(false);
+            // Use WhenAllFailFast to fail immediately if any task fails (like Promise.all in JS)
+            // This ensures timeout exceptions propagate immediately instead of waiting for all tasks
+            await new[] { waitForNavigationTask, navigationTask }.WhenAllFailFast().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -920,6 +947,60 @@ public class BidiPage : Page
         base.OnWorkerDestroyed(worker);
     }
 
+    /// <summary>
+    /// Attempts to mark a URL as having fired the RequestServedFromCache event.
+    /// Returns true if this is the first time marking the URL, false if already marked.
+    /// This is used to deduplicate Firefox BiDi's duplicate BeforeRequestSent events.
+    /// </summary>
+    internal bool TryMarkCacheEventFired(string url) => _cacheEventsFired.TryAdd(url, true);
+
+    /// <summary>
+    /// Attempts to mark a URL as having fired the RequestFailed event.
+    /// Returns true if this is the first time marking the URL, false if already marked.
+    /// This is used to deduplicate Firefox BiDi's duplicate BeforeRequestSent events.
+    /// </summary>
+    internal bool TryMarkFailedEventFired(string url) => _failedEventsFired.TryAdd(url, true);
+
+    /// <summary>
+    /// Attempts to mark a URL as having fired the Request event.
+    /// Returns true if this is the first time marking the URL, false if already marked.
+    /// This is used to deduplicate Firefox BiDi's duplicate BeforeRequestSent events.
+    /// Only deduplicates during navigation. After navigation completes, all requests are allowed.
+    /// </summary>
+    internal bool TryMarkRequestEventFired(string url)
+    {
+        // Only deduplicate during navigation. After navigation, allow all requests.
+        if (!_isNavigating)
+        {
+            return true;
+        }
+
+        return _requestEventsFired.TryAdd(url, true);
+    }
+
+    /// <summary>
+    /// Clears the event deduplication trackers and starts navigation mode.
+    /// Called on navigation start to allow fresh events with deduplication.
+    /// </summary>
+    internal void ClearEventTrackers()
+    {
+        _cacheEventsFired.Clear();
+        _failedEventsFired.Clear();
+        _requestEventsFired.Clear();
+        _isNavigating = true;
+    }
+
+    /// <summary>
+    /// Ends navigation mode and clears the request event tracker.
+    /// Called after navigation completes to allow subsequent fetch/XHR calls
+    /// to the same URLs without being filtered as duplicates.
+    /// </summary>
+    internal void EndNavigationAndClearTracker()
+    {
+        _isNavigating = false;
+        _requestEventsFired.Clear();
+    }
+
     /// <inheritdoc />
     protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
 
@@ -1024,6 +1105,17 @@ public class BidiPage : Page
     /// <inheritdoc />
     protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
 
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _requestInterceptionQueue.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
     /// <summary>
     /// Creates an evaluation expression for preload scripts.
     /// Similar to upstream's evaluationExpression function which wraps the function
@@ -1087,8 +1179,7 @@ public class BidiPage : Page
                 options.Phases.Add(phase);
             }
 
-            var interceptId = await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
-            return interceptId;
+            return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
         }
         else if (!expected && interception != null)
         {

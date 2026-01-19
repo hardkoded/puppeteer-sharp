@@ -49,34 +49,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "Firefox BiDi doesn't send BeforeRequestSent events for reload commands when interception is enabled. See: https://bugzilla.mozilla.org/show_bug.cgi?id=1879948",
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Firefox BiDi sends duplicate beforeRequestSent events with different request IDs for speculative/parallel loading during navigation",
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi sends duplicate beforeRequestSent events with different request IDs for speculative/parallel loading during navigation",
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with encoded server - 2",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi sends duplicate beforeRequestSent events with different request IDs for speculative/parallel loading during navigation",
-    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects for subresources",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[network.spec] PuppeteerSharp network*",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -416,6 +388,20 @@
     "testIdPattern": "[network.spec] network Request.postData should work with low surrogate",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Firefox BiDi doesn't send network.beforeRequestSent for reload requests when interception is enabled",
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Firefox BiDi doesn't send network.beforeRequestSent for reload requests when interception is enabled",
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   }
 ]

@@ -325,7 +325,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
 
     private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
@@ -413,6 +413,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         try
         {
             await _request.FailRequestAsync().ConfigureAwait(false);
+
+            // The browser will send a network.fetchError event with the actual error text
+            // (e.g., "NS_ERROR_ABORT" for Firefox, "net::ERR_FAILED" for Chrome).
+            // The Error event handler in Initialize() will set FailureText from that event.
+            // We don't set FailureText here to allow the browser's error text to be used.
         }
         catch (Exception)
         {
@@ -533,11 +538,28 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 }
 
                 errorFired = true;
-                httpRequest.FailureText = args.Error;
-                BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
+
+                // Only set FailureText from the browser error if we haven't already set it
+                // (e.g., from a custom abort error code in AbortInternalAsync).
+                if (httpRequest.FailureText == null)
+                {
+                    httpRequest.FailureText = args.Error;
+                }
+
+                if (BidiPage.TryMarkFailedEventFired(httpRequest.Url))
+                {
+                    BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
+                }
             };
 
-            _ = httpRequest.FinalizeInterceptionsAsync();
+            // Use the request interception queue to serialize handler execution for redirects.
+            _ = BidiPage.RequestInterceptionQueue.Enqueue(
+                () => httpRequest.FinalizeInterceptionsAsync());
+        };
+
+        _request.ResponseStarted += (_, e) =>
+        {
+            Response = BidiHttpResponse.From(e.Response, this, BidiPage.BidiBrowser.CdpSupported);
         };
 
         _request.Success += (_, e) =>
@@ -547,12 +569,24 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Error += (_, args) =>
         {
-            FailureText = args.Error;
+            // Only set FailureText from the browser error if we haven't already set it
+            // (e.g., from a custom abort error code in AbortInternalAsync).
+            if (FailureText == null)
+            {
+                FailureText = args.Error;
+            }
         };
 
         _request.Authenticate += HandleAuthentication;
 
-        BidiPage.OnRequest(this);
+        // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for
+        // speculative/parallel sub-resource loading during navigation.
+        // Deduplicate by URL during navigation. The tracker is cleared after navigation completes
+        // (in GoToAsync) so that subsequent fetch/XHR calls to the same URLs work correctly.
+        if (BidiPage.TryMarkRequestEventFired(Url))
+        {
+            BidiPage.OnRequest(this);
+        }
 
         if (HasInternalHeaderOverwrite && CanBeIntercepted)
         {

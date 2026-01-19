@@ -189,8 +189,9 @@ internal class BrowsingContext : IDisposable
 
     internal async Task SetViewportAsync(SetViewportOptions options = null)
     {
-        var parameters = new SetViewportCommandParameters(Id)
+        var parameters = new SetViewportCommandParameters()
         {
+            BrowsingContextId = Id,
             Viewport = options?.Viewport != null
                 ? new Viewport() { Width = options.Viewport.Width, Height = options.Viewport.Height }
                 : null,
@@ -227,8 +228,14 @@ internal class BrowsingContext : IDisposable
     internal async Task TraverseHistoryAsync(int delta)
         => await Session.Driver.BrowsingContext.TraverseHistoryAsync(new TraverseHistoryCommandParameters(Id, delta)).ConfigureAwait(false);
 
-    internal async Task ReloadAsync()
-        => await Session.Driver.BrowsingContext.ReloadAsync(new ReloadCommandParameters(Id)).ConfigureAwait(false);
+    internal async Task ReloadAsync(bool? ignoreCache = null)
+    {
+        var parameters = new ReloadCommandParameters(Id)
+        {
+            IgnoreCache = ignoreCache,
+        };
+        await Session.Driver.BrowsingContext.ReloadAsync(parameters).ConfigureAwait(false);
+    }
 
     internal async Task<string> AddInterceptAsync(WebDriverBiDi.Network.AddInterceptCommandParameters options)
     {
@@ -276,7 +283,7 @@ internal class BrowsingContext : IDisposable
         {
             foreach (var node in startNodes)
             {
-                parameters.ContextNodes.Add(node);
+                parameters.StartNodes.Add(node);
             }
         }
 
