@@ -597,20 +597,23 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private async void HandleAuthentication(object sender, EventArgs e)
+    private void HandleAuthentication(object sender, EventArgs e)
     {
         var credentials = BidiPage.Credentials;
 
         if (credentials != null && !_authenticationHandled)
         {
             _authenticationHandled = true;
-            await _request.ContinueWithAuthAsync(
+
+            // Fire-and-forget (matches upstream's `void` pattern)
+            _ = _request.ContinueWithAuthAsync(
                 ContinueWithAuthActionType.ProvideCredentials,
-                new AuthCredentials(credentials.Username, credentials.Password)).ConfigureAwait(false);
+                new AuthCredentials(credentials.Username, credentials.Password));
         }
         else
         {
-            await _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel).ConfigureAwait(false);
+            // Fire-and-forget (matches upstream's `void` pattern)
+            _ = _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel);
         }
     }
 }
