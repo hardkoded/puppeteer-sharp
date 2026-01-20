@@ -35,6 +35,8 @@ internal class Request : IDisposable
     private string _error;
     private Request _redirect;
     private WebDriverBiDi.Network.ResponseData _response;
+    private Task<byte[]> _responseContentPromise;
+    private Task<string> _requestBodyPromise;
 
     private Request(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
@@ -90,6 +92,9 @@ internal class Request : IDisposable
     public ulong RedirectCount => _eventArgs.RedirectCount;
 
     public WebDriverBiDi.Network.InitiatorType? InitiatorType => _eventArgs.Initiator?.Type;
+
+    public bool HasPostData => (_eventArgs.Request.BodySize ?? 0) > 0;
+
 
     private string Id => _eventArgs.Request.RequestId;
 
@@ -158,6 +163,61 @@ internal class Request : IDisposable
         }
 
         await Session.Driver.Network.ContinueWithAuthAsync(commandParams).ConfigureAwait(false);
+    }
+
+    internal async Task<string> FetchPostDataAsync()
+    {
+        if (!HasPostData)
+        {
+            return null;
+        }
+
+        _requestBodyPromise ??= FetchPostDataInternalAsync();
+        return await _requestBodyPromise.ConfigureAwait(false);
+    }
+
+    internal async Task<byte[]> GetResponseContentAsync()
+    {
+        _responseContentPromise ??= GetResponseContentInternalAsync();
+        return await _responseContentPromise.ConfigureAwait(false);
+    }
+
+    private async Task<string> FetchPostDataInternalAsync()
+    {
+        var commandParams = new GetDataCommandParameters(Id)
+        {
+            DataType = DataType.Request,
+        };
+
+        var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
+
+        if (result.Bytes.Type == BytesValueType.String)
+        {
+            return result.Bytes.Value;
+        }
+
+        // Base64 encoding - decode to string
+        return System.Text.Encoding.UTF8.GetString(result.Bytes.ValueAsByteArray);
+    }
+
+    private async Task<byte[]> GetResponseContentInternalAsync()
+    {
+        try
+        {
+            var commandParams = new GetDataCommandParameters(Id)
+            {
+                DataType = DataType.Response,
+            };
+
+            var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
+            return result.Bytes.ValueAsByteArray;
+        }
+        catch (WebDriverBiDi.WebDriverBiDiException ex) when (ex.Message.Contains("No resource with given identifier found"))
+        {
+            throw new PuppeteerException(
+                "Could not load response body for this request. This might happen if the request is a preflight request.",
+                ex);
+        }
     }
 
     private void Initialize()
