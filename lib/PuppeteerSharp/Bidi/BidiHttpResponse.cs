@@ -87,7 +87,15 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     public override bool FromCache { get; }
 
     /// <inheritdoc />
-    public override ValueTask<byte[]> BufferAsync() => throw new NotImplementedException();
+    public override async ValueTask<byte[]> BufferAsync()
+    {
+        if (_request == null)
+        {
+            throw new PuppeteerException("Response body is not available for this response type.");
+        }
+
+        return await _request.GetResponseContentAsync().ConfigureAwait(false);
+    }
 
     internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {
