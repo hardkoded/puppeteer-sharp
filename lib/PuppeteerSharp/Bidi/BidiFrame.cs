@@ -243,7 +243,10 @@ public class BidiFrame : Frame
 
         // Create a cancellation token that will trigger timeout for the ENTIRE operation
         // This ensures all nested waits (including the initial navigation/historyUpdated wait) are bounded
-        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout));
+        // A timeout of 0 means "no timeout" (infinite wait), so we don't set a timeout in that case
+        using var timeoutCts = timeout > 0
+            ? new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout))
+            : new CancellationTokenSource();
         var timeoutToken = timeoutCts.Token;
 
         // Setup frame detachment handler at the outer level to race with the entire navigation
@@ -257,8 +260,11 @@ public class BidiFrame : Frame
         BrowsingContext.Closed += OnFrameDetached;
 
         // Register timeout to also complete the frame detached task to unblock any waits
-        using var timeoutRegistration = timeoutToken.Register(() =>
-            frameDetachedTcs.TrySetException(new TimeoutException($"Navigation timeout of {timeout}ms exceeded")));
+        // Only register if we have a timeout (timeout > 0)
+        CancellationTokenRegistration? timeoutRegistration = timeout > 0
+            ? timeoutToken.Register(() =>
+                frameDetachedTcs.TrySetException(new TimeoutException($"Navigation timeout of {timeout}ms exceeded")))
+            : null;
 
         // Setup load event listeners BEFORE waiting for navigation to avoid race conditions
         // This ensures we capture Load/DOMContentLoaded events even if they fire quickly after navigation starts
@@ -491,6 +497,7 @@ public class BidiFrame : Frame
         }
         finally
         {
+            timeoutRegistration?.Dispose();
             BrowsingContext.Closed -= OnFrameDetached;
             cleanupLoadListeners();
         }
