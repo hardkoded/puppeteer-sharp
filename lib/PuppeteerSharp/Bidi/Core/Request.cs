@@ -95,7 +95,6 @@ internal class Request : IDisposable
 
     public bool HasPostData => (_eventArgs.Request.BodySize ?? 0) > 0;
 
-
     private string Id => _eventArgs.Request.RequestId;
 
     private Session Session => _browsingContext.UserContext.Browser.Session;
