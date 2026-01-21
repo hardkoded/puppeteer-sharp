@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
@@ -173,27 +174,37 @@ public class BidiFrame : Frame
     {
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
-        // Wait for load and network idle events
-        var waitForLoadTask = WaitForLoadAsync(options);
+        // Setup load event listeners before setting content to avoid race conditions
+        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options);
         var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
 
-        // Set the frame content using JavaScript, similar to CDP implementation
-        await EvaluateFunctionAsync(
-            @"html => {
-                document.open();
-                document.write(html);
-                document.close();
-            }",
-            html).ConfigureAwait(false);
+        try
+        {
+            // Set the frame content using JavaScript, similar to CDP implementation
+            await EvaluateFunctionAsync(
+                @"html => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }",
+                html).ConfigureAwait(false);
 
-        await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
-            timeout,
-            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+            await Task.WhenAll(waitForLoadTask, waitForNetworkIdleTask).WithTimeout(
+                timeout,
+                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded")).ConfigureAwait(false);
+        }
+        finally
+        {
+            cleanupLoadListeners();
+        }
     }
 
     /// <inheritdoc />
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
     {
+        // Clear the events trackers on navigation start to allow fresh events
+        BidiPage.ClearEventTrackers();
+
         var waitForNavigationTask = WaitForNavigationAsync(options);
         var navigationTask = NavigateAsync(url);
 
@@ -217,6 +228,11 @@ public class BidiFrame : Frame
             throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
         }
 
+        // End navigation mode and clear the request events tracker after navigation completes.
+        // This ensures duplicate sub-resource requests during navigation are filtered,
+        // while subsequent fetch/XHR calls are not deduplicated.
+        BidiPage.EndNavigationAndClearTracker();
+
         return waitForNavigationTask.Result;
     }
 
@@ -224,6 +240,14 @@ public class BidiFrame : Frame
     public override async Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null)
     {
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
+
+        // Create a cancellation token that will trigger timeout for the ENTIRE operation
+        // This ensures all nested waits (including the initial navigation/historyUpdated wait) are bounded
+        // A timeout of 0 means "no timeout" (infinite wait), so we don't set a timeout in that case
+        using var timeoutCts = timeout > 0
+            ? new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout))
+            : new CancellationTokenSource();
+        var timeoutToken = timeoutCts.Token;
 
         // Setup frame detachment handler at the outer level to race with the entire navigation
         var frameDetachedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -235,9 +259,20 @@ public class BidiFrame : Frame
 
         BrowsingContext.Closed += OnFrameDetached;
 
+        // Register timeout to also complete the frame detached task to unblock any waits
+        // Only register if we have a timeout (timeout > 0)
+        CancellationTokenRegistration? timeoutRegistration = timeout > 0
+            ? timeoutToken.Register(() =>
+                frameDetachedTcs.TrySetException(new TimeoutException($"Navigation timeout of {timeout}ms exceeded")))
+            : null;
+
+        // Setup load event listeners BEFORE waiting for navigation to avoid race conditions
+        // This ensures we capture Load/DOMContentLoaded events even if they fire quickly after navigation starts
+        var (waitForLoadTask, cleanupLoadListeners) = SetupLoadEventListeners(options);
+
         try
         {
-            async Task<Navigation> WaitForEventNavigationAsync()
+            async Task<Navigation> WaitForEventNavigationAsync(CancellationToken cancellationToken)
             {
                 // Wait for navigation or history updated event
                 var navigationTcs = new TaskCompletionSource<Navigation>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -256,14 +291,25 @@ public class BidiFrame : Frame
                 BrowsingContext.Navigation += OnNavigation;
                 BrowsingContext.HistoryUpdated += OnHistoryUpdated;
 
+                // Create a task that completes when cancellation is requested (timeout)
+                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using var cancellationRegistration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+
                 try
                 {
-                    var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task).ConfigureAwait(false);
+                    // Race between navigation, historyUpdated, and timeout
+                    var completedTask = await Task.WhenAny(navigationTcs.Task, historyUpdatedTcs.Task, cancellationTcs.Task).ConfigureAwait(false);
+
+                    // Check if we timed out
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     if (completedTask == historyUpdatedTcs.Task)
                     {
-                        var delay = Task.Delay(100);
+                        var delay = Task.Delay(100, cancellationToken);
                         await Task.WhenAny(navigationTcs.Task, delay).ConfigureAwait(false);
+
+                        // Check again after the delay
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         if (!navigationTcs.Task.IsCompleted)
                         {
@@ -285,9 +331,6 @@ public class BidiFrame : Frame
                         tcs.Task.ContinueWith(_ => frame.BrowsingContext.Closed -= OnClosed, TaskScheduler.Default);
                         return tcs.Task;
                     }).ToList();
-
-                    // Wait for load events first
-                    var waitForLoadTask = WaitForLoadAsync(options);
 
                     // Setup fragment, failed, and aborted event handlers
                     Task<bool> waitForFragmentTask;
@@ -315,23 +358,28 @@ public class BidiFrame : Frame
                     _ = waitForAbortedTask.ContinueWith(_ => navigation.Aborted -= OnAborted, TaskScheduler.Default);
 
                     // Create a task that waits for load, then child frames to detach
-                    var waitForLoadAndChildFramesTask = Task.Run(async () =>
-                    {
-                        await waitForLoadTask.ConfigureAwait(false);
-
-                        if (childFrameDetachedTasks.Count > 0)
+                    var waitForLoadAndChildFramesTask = Task.Run(
+                        async () =>
                         {
-                            await Task.WhenAll(childFrameDetachedTasks).ConfigureAwait(false);
-                        }
-                    });
+                            await waitForLoadTask.ConfigureAwait(false);
 
-                    // Race between (load+childFrames) and fragment/failed/aborted
+                            if (childFrameDetachedTasks.Count > 0)
+                            {
+                                await Task.WhenAll(childFrameDetachedTasks).ConfigureAwait(false);
+                            }
+                        },
+                        cancellationToken);
+
+                    // Race between (load+childFrames) and fragment/failed/aborted and timeout
                     // Any of these events can complete the navigation
                     await Task.WhenAny(
                         waitForLoadAndChildFramesTask,
                         waitForFragmentTask,
                         waitForFailedTask,
-                        waitForAbortedTask).ConfigureAwait(false);
+                        waitForAbortedTask,
+                        cancellationTcs.Task).ConfigureAwait(false);
+
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     // Wait for request to be created if we don't have one yet
                     if (navigation.Request == null)
@@ -344,16 +392,17 @@ public class BidiFrame : Frame
                         // Wait up to 1 second for request to be created
                         // If it doesn't happen, it means this is a cached/history navigation
                         var requestCreatedTask = requestCreatedTcs.Task;
-                        var delay = Task.Delay(1000);
-                        await Task.WhenAny(requestCreatedTask, delay).ConfigureAwait(false);
+                        var delay = Task.Delay(1000, cancellationToken);
+                        await Task.WhenAny(requestCreatedTask, delay, cancellationTcs.Task).ConfigureAwait(false);
 
                         navigation.RequestCreated -= OnRequestCreated;
+                        cancellationToken.ThrowIfCancellationRequested();
                     }
 
                     // Wait for request completion if navigation has a request
                     if (navigation.Request != null)
                     {
-                        await WaitForRequestFinishedAsync(navigation.Request).ConfigureAwait(false);
+                        await WaitForRequestFinishedAsync(navigation.Request, cancellationToken).ConfigureAwait(false);
                     }
 
                     return navigation;
@@ -369,12 +418,13 @@ public class BidiFrame : Frame
                 }
             }
 
-            var waitForEventNavigationTask = WaitForEventNavigationAsync();
-            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options);
+            var waitForEventNavigationTask = WaitForEventNavigationAsync(timeoutToken);
+            var waitForNetworkIdleTask = WaitForNetworkIdleAsync(options, timeoutToken);
 
             var waitForResponse = new Func<Task<IResponse>>(async () =>
             {
-                await Task.WhenAll(waitForEventNavigationTask, waitForNetworkIdleTask).ConfigureAwait(false);
+                // Use WhenAllFailFast to fail immediately if any task fails (like Promise.all in JS)
+                await new[] { waitForEventNavigationTask, waitForNetworkIdleTask }.WhenAllFailFast().ConfigureAwait(false);
                 var navigation = waitForEventNavigationTask.Result;
 
                 // Navigation might be null
@@ -423,20 +473,20 @@ public class BidiFrame : Frame
 
             var waitForResponseTask = waitForResponse();
 
-            // Handle cancellation token if provided
+            // Handle user-provided cancellation token if provided
             var tasksToRace = new List<Task> { waitForResponseTask, frameDetachedTcs.Task };
 
             if (options?.CancellationToken.HasValue == true)
             {
-                var cancellationToken = options.CancellationToken.Value;
-                var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
-                tasksToRace.Add(cancellationTcs.Task);
+                var userCancellationToken = options.CancellationToken.Value;
+                var userCancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                userCancellationToken.Register(() => userCancellationTcs.TrySetCanceled(userCancellationToken));
+                tasksToRace.Add(userCancellationTcs.Task);
             }
 
-            var completedTask = await Task.WhenAny(tasksToRace).WithTimeout(timeout).ConfigureAwait(false);
+            await Task.WhenAny(tasksToRace).ConfigureAwait(false);
 
-            // Check if frame was detached - re-throw the exception if so
+            // Check if frame was detached or timeout occurred - re-throw the exception if so
             if (frameDetachedTcs.Task.IsCompleted)
             {
                 await frameDetachedTcs.Task.ConfigureAwait(false);
@@ -447,7 +497,9 @@ public class BidiFrame : Frame
         }
         finally
         {
+            timeoutRegistration?.Dispose();
             BrowsingContext.Closed -= OnFrameDetached;
+            cleanupLoadListeners();
         }
     }
 
@@ -541,34 +593,57 @@ public class BidiFrame : Frame
             : new PuppeteerException("Navigation failed: " + ex.Message, ex);
     }
 
-    private Task WaitForLoadAsync(NavigationOptions options)
+    /// <summary>
+    /// Sets up load event listeners early to avoid race conditions.
+    /// Returns a task that completes when all load events fire, and a cleanup action.
+    /// </summary>
+    private (Task WaitTask, Action Cleanup) SetupLoadEventListeners(NavigationOptions options)
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 
         List<Task> tasks = new();
+        var cleanupActions = new List<Action>();
 
         if (waitUntil.Contains(WaitUntilNavigation.Load))
         {
-            var loadTcs = new TaskCompletionSource<bool>();
-            BrowsingContext.Load += (sender, args) => loadTcs.TrySetResult(true);
+            var loadTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void OnLoad(object sender, EventArgs args) => loadTcs.TrySetResult(true);
+            BrowsingContext.Load += OnLoad;
             tasks.Add(loadTcs.Task);
+            cleanupActions.Add(() => BrowsingContext.Load -= OnLoad);
         }
 
         if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
         {
-            var domContentLoadedTcs = new TaskCompletionSource<bool>();
-            BrowsingContext.DomContentLoaded += (sender, args) => domContentLoadedTcs.TrySetResult(true);
+            var domContentLoadedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            void OnDomContentLoaded(object sender, EventArgs args) => domContentLoadedTcs.TrySetResult(true);
+            BrowsingContext.DomContentLoaded += OnDomContentLoaded;
             tasks.Add(domContentLoadedTcs.Task);
+            cleanupActions.Add(() => BrowsingContext.DomContentLoaded -= OnDomContentLoaded);
         }
 
-        // TODO: Check frame detached event.
-        return Task.WhenAll(tasks).WithTimeout(
-            timeout,
-            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"));
+        var waitTask = tasks.Count > 0
+            ? Task.WhenAll(tasks).WithTimeout(
+                timeout,
+                t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"))
+            : Task.CompletedTask;
+
+        void Cleanup()
+        {
+            foreach (var action in cleanupActions)
+            {
+                action();
+            }
+        }
+
+        return (waitTask, Cleanup);
     }
 
-    private Task WaitForNetworkIdleAsync(NavigationOptions options)
+    private Task WaitForNetworkIdleAsync(NavigationOptions options) =>
+        WaitForNetworkIdleAsync(options, CancellationToken.None);
+
+    private async Task WaitForNetworkIdleAsync(NavigationOptions options, CancellationToken cancellationToken)
     {
         var waitUntil = options?.WaitUntil ?? [WaitUntilNavigation.Load];
 
@@ -592,18 +667,25 @@ public class BidiFrame : Frame
         // If no network idle condition was specified, return completed task
         if (!concurrency.HasValue)
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        return BidiPage.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
+        var networkIdleTask = BidiPage.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions
         {
             IdleTime = 500,
             Timeout = options?.Timeout ?? TimeoutSettings.Timeout,
             Concurrency = concurrency.Value,
         });
+
+        // Race with cancellation token
+        var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+
+        await Task.WhenAny(networkIdleTask, cancellationTcs.Task).ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
     }
 
-    private async Task WaitForRequestFinishedAsync(Request request)
+    private async Task WaitForRequestFinishedAsync(Request request, CancellationToken cancellationToken)
     {
         if (request == null)
         {
@@ -620,7 +702,7 @@ public class BidiFrame : Frame
         // If this is a redirect, recursively wait for the redirect to complete
         if (request.LastRedirect != null)
         {
-            await WaitForRequestFinishedAsync(request.LastRedirect).ConfigureAwait(false);
+            await WaitForRequestFinishedAsync(request.LastRedirect, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -628,6 +710,7 @@ public class BidiFrame : Frame
         var successTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var errorTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var redirectTcs = new TaskCompletionSource<Request>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var cancellationTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         void OnSuccess(object sender, ResponseEventArgs args) => successTcs.TrySetResult(true);
         void OnError(object sender, Core.ErrorEventArgs args) => errorTcs.TrySetResult(true);
@@ -637,15 +720,19 @@ public class BidiFrame : Frame
         request.Error += OnError;
         request.Redirect += OnRedirect;
 
+        using var registration = cancellationToken.Register(() => cancellationTcs.TrySetCanceled(cancellationToken));
+
         try
         {
-            var completedTask = await Task.WhenAny(successTcs.Task, errorTcs.Task, redirectTcs.Task).ConfigureAwait(false);
+            var completedTask = await Task.WhenAny(successTcs.Task, errorTcs.Task, redirectTcs.Task, cancellationTcs.Task).ConfigureAwait(false);
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // If we got a redirect, recursively wait for it to finish
             if (completedTask == redirectTcs.Task)
             {
                 var redirectRequest = await redirectTcs.Task.ConfigureAwait(false);
-                await WaitForRequestFinishedAsync(redirectRequest).ConfigureAwait(false);
+                await WaitForRequestFinishedAsync(redirectRequest, cancellationToken).ConfigureAwait(false);
             }
         }
         finally
@@ -673,7 +760,18 @@ public class BidiFrame : Frame
                 return;
             }
 
-            throw new NavigationException($"Failed to navigate to {url}. {ex.Message}", url, ex);
+            if (ex.Message.Contains("navigation canceled"))
+            {
+                return;
+            }
+
+            if (ex.Message.Contains("Navigation was aborted by another navigation"))
+            {
+                return;
+            }
+
+            // The browser error message is passed through as-is (e.g., "NS_ERROR_ABORT" for Firefox).
+            throw new NavigationException($"{ex.Message} at {url}", url, ex);
         }
     }
 
@@ -705,34 +803,13 @@ public class BidiFrame : Frame
         BrowsingContext.Request += (sender, args) =>
         {
             var httpRequest = BidiHttpRequest.From(args.Request, this);
-            var successFired = false;
-            var errorFired = false;
+            SetupRequestHandlers(args.Request, httpRequest);
 
-            args.Request.Success += (o, eventArgs) =>
-            {
-                // Emulate 'once' behavior - only fire once
-                if (successFired)
-                {
-                    return;
-                }
-
-                successFired = true;
-                ((BidiPage)Page).OnRequestFinished(new RequestEventArgs(httpRequest));
-            };
-
-            args.Request.Error += (o, eventArgs) =>
-            {
-                // Emulate 'once' behavior - only fire once
-                if (errorFired)
-                {
-                    return;
-                }
-
-                errorFired = true;
-                ((BidiPage)Page).OnRequestFailed(new RequestEventArgs(httpRequest));
-            };
-
-            _ = httpRequest.FinalizeInterceptionsAsync();
+            // Use the request interception queue to serialize handler execution.
+            // This ensures user-provided handlers run sequentially across concurrent
+            // requests, matching JavaScript's single-threaded event handling behavior.
+            _ = ((BidiPage)Page).RequestInterceptionQueue.Enqueue(
+                () => httpRequest.FinalizeInterceptionsAsync());
         };
 
         BrowsingContext.Navigation += (sender, args) =>
@@ -845,6 +922,40 @@ public class BidiFrame : Frame
         browsingContext.Closed += (_, _) =>
         {
             _frames.TryRemove(browsingContext, out var _);
+        };
+    }
+
+    private void SetupRequestHandlers(Core.Request coreRequest, BidiHttpRequest httpRequest)
+    {
+        var successFired = false;
+        var errorFired = false;
+
+        coreRequest.Success += (o, eventArgs) =>
+        {
+            // Emulate 'once' behavior - only fire once
+            if (successFired)
+            {
+                return;
+            }
+
+            successFired = true;
+            ((BidiPage)Page).OnRequestFinished(new RequestEventArgs(httpRequest));
+        };
+
+        coreRequest.Error += (o, eventArgs) =>
+        {
+            // Emulate 'once' behavior - only fire once
+            if (errorFired)
+            {
+                return;
+            }
+
+            errorFired = true;
+
+            if (BidiPage.TryMarkFailedEventFired(httpRequest.Url))
+            {
+                ((BidiPage)Page).OnRequestFailed(new RequestEventArgs(httpRequest));
+            }
         };
     }
 

@@ -20,26 +20,20 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using PuppeteerSharp.Helpers.Json;
+using System;
+using System.Threading.Tasks;
 
-namespace PuppeteerSharp.Cdp.Messaging;
+namespace PuppeteerSharp;
 
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json.Serialization;
-
-internal class Request
+/// <summary>
+/// Internal interface for requests that support interception.
+/// Implemented by both CDP and BiDi request types.
+/// </summary>
+internal interface IInterceptableRequest
 {
-    public HttpMethod Method { get; set; }
-
-    [JsonConverter(typeof(LowSurrogateConverter))]
-    public string PostData { get; set; }
-
-    public Dictionary<string, string> Headers { get; set; } = [];
-
-    public string Url { get; set; }
-
-    public string UrlFragment { get; set; }
-
-    public bool? HasPostData { get; set; }
+    /// <summary>
+    /// Enqueues an interception action to be executed when the request is finalized.
+    /// </summary>
+    /// <param name="pendingHandler">The handler to execute.</param>
+    void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler);
 }

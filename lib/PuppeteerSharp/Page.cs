@@ -841,9 +841,12 @@ namespace PuppeteerSharp
             }
 
             // Run tasks one after the other
-            foreach (var subscriber in _requestInterceptionTask)
+            if (request is IInterceptableRequest interceptableRequest)
             {
-                (request as CdpHttpRequest)?.EnqueueInterceptionAction(subscriber);
+                foreach (var subscriber in _requestInterceptionTask)
+                {
+                    interceptableRequest.EnqueueInterceptionAction(subscriber);
+                }
             }
 
             Request?.Invoke(this, new RequestEventArgs(request));

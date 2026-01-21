@@ -39,7 +39,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
         InterceptionId = interceptionId;
         _allowInterception = allowInterception;
-        Url = data.Request.Url;
+        Url = data.Request.Url + (data.Request.UrlFragment ?? string.Empty);
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
         PostData = data.Request.PostData;
@@ -280,7 +280,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
 
     private Header[] HeadersArray(Dictionary<string, string> headers)

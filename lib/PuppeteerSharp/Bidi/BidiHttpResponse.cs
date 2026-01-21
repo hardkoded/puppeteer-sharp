@@ -30,8 +30,8 @@ namespace PuppeteerSharp.Bidi;
 /// <inheritdoc />
 public class BidiHttpResponse : Response<BidiHttpRequest>
 {
-    private readonly WebDriverBiDi.Network.ResponseData _data;
     private readonly BidiHttpRequest _request;
+    private WebDriverBiDi.Network.ResponseData _data;
 
     private BidiHttpResponse(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {
@@ -99,6 +99,14 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
 
     internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {
+        var existingResponse = request.Response;
+        if (existingResponse != null)
+        {
+            // Update existing response data with up-to-date data.
+            existingResponse._data = data;
+            return existingResponse;
+        }
+
         var response = new BidiHttpResponse(data, request, cdpSupported);
         response.Initialize();
         return response;
@@ -123,7 +131,14 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         if (_data.FromCache)
         {
             _request.FromMemoryCache = true;
-            ((Page)_request.Frame.Page).OnRequestServedFromCache(new RequestEventArgs(_request));
+
+            // Only fire RequestServedFromCache if this URL hasn't already been reported.
+            // Firefox BiDi can send duplicate BeforeRequestSent events with different request IDs,
+            // each getting its own BidiHttpRequest, but we should only report the cache event once per URL.
+            if (_request.BidiPage.TryMarkCacheEventFired(_request.Url))
+            {
+                ((Page)_request.Frame.Page).OnRequestServedFromCache(new RequestEventArgs(_request));
+            }
         }
 
         _request.BidiPage.OnResponse(new ResponseCreatedEventArgs(this));

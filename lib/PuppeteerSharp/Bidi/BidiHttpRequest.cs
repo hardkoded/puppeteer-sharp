@@ -314,10 +314,21 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             case InterceptResolutionAction.Continue:
                 await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
                 break;
+            case InterceptResolutionAction.None:
+                // When no explicit action was set but the request is blocked,
+                // we need to continue it to allow the browser to proceed.
+                // This happens when interception is enabled but no handler called
+                // ContinueAsync, AbortAsync, or RespondAsync.
+                if (CanBeIntercepted)
+                {
+                    await ContinueInternalAsync().ConfigureAwait(false);
+                }
+
+                break;
         }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
 
     private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
@@ -525,11 +536,28 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 }
 
                 errorFired = true;
-                httpRequest.FailureText = args.Error;
-                BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
+
+                // Only set FailureText from the browser error if we haven't already set it
+                // (e.g., from a custom abort error code in AbortInternalAsync).
+                if (httpRequest.FailureText == null)
+                {
+                    httpRequest.FailureText = args.Error;
+                }
+
+                if (BidiPage.TryMarkFailedEventFired(httpRequest.Url))
+                {
+                    BidiPage.OnRequestFailed(new RequestEventArgs(httpRequest));
+                }
             };
 
-            _ = httpRequest.FinalizeInterceptionsAsync();
+            // Use the request interception queue to serialize handler execution for redirects.
+            _ = BidiPage.RequestInterceptionQueue.Enqueue(
+                () => httpRequest.FinalizeInterceptionsAsync());
+        };
+
+        _request.ResponseStarted += (_, e) =>
+        {
+            Response = BidiHttpResponse.From(e.Response, this, BidiPage.BidiBrowser.CdpSupported);
         };
 
         _request.Success += (_, e) =>
@@ -539,12 +567,24 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
         _request.Error += (_, args) =>
         {
-            FailureText = args.Error;
+            // Only set FailureText from the browser error if we haven't already set it
+            // (e.g., from a custom abort error code in AbortInternalAsync).
+            if (FailureText == null)
+            {
+                FailureText = args.Error;
+            }
         };
 
         _request.Authenticate += HandleAuthentication;
 
-        BidiPage.OnRequest(this);
+        // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for
+        // speculative/parallel sub-resource loading during navigation.
+        // Deduplicate by URL during navigation. The tracker is cleared after navigation completes
+        // (in GoToAsync) so that subsequent fetch/XHR calls to the same URLs work correctly.
+        if (BidiPage.TryMarkRequestEventFired(Url))
+        {
+            BidiPage.OnRequest(this);
+        }
 
         if (HasInternalHeaderOverwrite && CanBeIntercepted)
         {
@@ -560,20 +600,23 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
-    private async void HandleAuthentication(object sender, EventArgs e)
+    private void HandleAuthentication(object sender, EventArgs e)
     {
         var credentials = BidiPage.Credentials;
 
         if (credentials != null && !_authenticationHandled)
         {
             _authenticationHandled = true;
-            await _request.ContinueWithAuthAsync(
+
+            // Fire-and-forget (matches upstream's `void` pattern)
+            _ = _request.ContinueWithAuthAsync(
                 ContinueWithAuthActionType.ProvideCredentials,
-                new AuthCredentials(credentials.Username, credentials.Password)).ConfigureAwait(false);
+                new AuthCredentials(credentials.Username, credentials.Password));
         }
         else
         {
-            await _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel).ConfigureAwait(false);
+            // Fire-and-forget (matches upstream's `void` pattern)
+            _ = _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel);
         }
     }
 }

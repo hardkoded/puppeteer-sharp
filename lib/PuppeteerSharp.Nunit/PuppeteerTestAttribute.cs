@@ -132,14 +132,26 @@ namespace PuppeteerSharp.Nunit
                 {
                     var platformMatch = expectation.Platforms.Contains(currentExpectationPlatform);
                     var paramsMatch = expectation.Parameters.All(parameters.Contains);
-                    var expMatch = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
 
-                    if (platformMatch && paramsMatch && expMatch)
+                    if (platformMatch && paramsMatch)
                     {
-                        output = expectation;
-                        return true;
+                        // If expectation contains PASS, don't skip - return early to prevent
+                        // subsequent FAIL/SKIP expectations from matching
+                        if (expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Pass))
+                        {
+                            output = null;
+                            return false;
+                        }
+
+                        var expMatch = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+
+                        if (expMatch)
+                        {
+                            output = expectation;
+                            return true;
+                        }
                     }
                 }
             }

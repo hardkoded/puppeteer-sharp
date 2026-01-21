@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebDriverBiDi.Network;
 
@@ -51,6 +52,8 @@ internal class Request : IDisposable
     public event EventHandler Authenticate;
 
     internal event EventHandler<ResponseEventArgs> Success;
+
+    internal event EventHandler<ResponseEventArgs> ResponseStarted;
 
     public bool IsDisposed { get; set; }
 
@@ -87,6 +90,8 @@ internal class Request : IDisposable
     public string ErrorText => _error;
 
     public ulong RedirectCount => _eventArgs.RedirectCount;
+
+    public WebDriverBiDi.Network.InitiatorType? InitiatorType => _eventArgs.Initiator?.Type;
 
     public bool HasPostData => (_eventArgs.Request.BodySize ?? 0) > 0;
 
@@ -226,8 +231,20 @@ internal class Request : IDisposable
         Session.NetworkBeforeRequestSent += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id ||
-               args.Request.RequestId != Id ||
-               args.RedirectCount != _eventArgs.RedirectCount + 1)
+               args.Request.RequestId != Id)
+            {
+                return;
+            }
+
+            // This is a workaround to detect if a beforeRequestSent is for a request
+            // sent after continueWithAuth. Currently, only emitted in Firefox.
+            var previousRequestHasAuth = _eventArgs.Request.Headers.Any(
+                header => header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase));
+            var newRequestHasAuth = args.Request.Headers.Any(
+                header => header.Name.Equals("authorization", StringComparison.OrdinalIgnoreCase));
+            var isAfterAuth = newRequestHasAuth && !previousRequestHasAuth;
+
+            if (args.RedirectCount != _eventArgs.RedirectCount + 1 && !isAfterAuth)
             {
                 return;
             }
@@ -259,6 +276,20 @@ internal class Request : IDisposable
             Dispose();
         };
 
+        Session.NetworkResponseStarted += (_, args) =>
+        {
+            if (args.BrowsingContextId != _browsingContext.Id ||
+                args.Request.RequestId != Id ||
+                _eventArgs.RedirectCount != args.RedirectCount)
+            {
+                return;
+            }
+
+            _response = args.Response;
+            Timings = args.Request.Timings;
+            OnResponseStarted(new ResponseEventArgs(_response));
+        };
+
         Session.NetworkResponseComplete += (_, args) =>
         {
             if (args.BrowsingContextId != _browsingContext.Id ||
@@ -283,6 +314,8 @@ internal class Request : IDisposable
     }
 
     private void OnSuccess(ResponseEventArgs responseEventArgs) => Success?.Invoke(this, responseEventArgs);
+
+    private void OnResponseStarted(ResponseEventArgs responseEventArgs) => ResponseStarted?.Invoke(this, responseEventArgs);
 
     private void OnAuthenticate() => Authenticate?.Invoke(this, EventArgs.Empty);
 

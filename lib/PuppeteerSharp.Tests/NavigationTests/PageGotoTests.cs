@@ -456,9 +456,9 @@ namespace PuppeteerSharp.Tests.NavigationTests
             };
             var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage + "#hash"));
             Assert.That(requests, Has.Exactly(1).Items);
-            Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage + "#hash"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work with self requesting page")]
