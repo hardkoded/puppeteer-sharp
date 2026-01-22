@@ -302,3 +302,4 @@ tools/github-ops/.env
 lib/.claude/settings.local.json
 lib/.claude/settings.local.json
 .nuget/
+.claude/*local*.*
