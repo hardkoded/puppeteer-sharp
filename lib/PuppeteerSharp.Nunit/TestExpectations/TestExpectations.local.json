@@ -35,13 +35,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "Custom query handlers are not yet fully implemented in BiDi",
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "Test launches a new headful browser which times out in BiDi",
     "testIdPattern": "[elementhandle.spec] PuppeteerSharp should work headful",
     "platforms": ["darwin", "linux", "win32"],
