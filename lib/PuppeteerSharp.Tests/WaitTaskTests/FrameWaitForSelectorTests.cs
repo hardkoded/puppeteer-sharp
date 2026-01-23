@@ -329,11 +329,15 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
-            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor?.WaitForStartPollingAsync();
             await Page.SetContentAsync("<div style='display: block;'></div>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
-            await startedPolling;
+            if (startedPolling != null)
+            {
+                await startedPolling;
+            }
+
             Assert.That(divHidden, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.That(await waitForXPath.WithTimeout(), Is.True);

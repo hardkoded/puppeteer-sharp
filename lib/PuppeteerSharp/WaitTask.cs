@@ -249,6 +249,14 @@ namespace PuppeteerSharp
                 return null;
             }
 
+            // BiDi error when a handle from previous context is used after navigation.
+            // We should retry in the new context.
+            if (exception.Message.Contains("no such handle") ||
+                exception.Message.Contains("Could not serialize referenced object"))
+            {
+                return null;
+            }
+
             return exception;
         }
 

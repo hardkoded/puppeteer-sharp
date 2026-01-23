@@ -152,7 +152,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     {
         realm.Destroyed += (_, e) =>
         {
-            TaskManager.TerminateAll(new PuppeteerException(e.Reason));
+            // Always use "frame got detached" message for consistency with upstream
+            // The e.Reason might be "Browsing context already closed." or similar
+            TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
             Dispose();
         };
 
