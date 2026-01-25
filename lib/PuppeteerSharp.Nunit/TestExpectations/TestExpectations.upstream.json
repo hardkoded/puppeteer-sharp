@@ -884,11 +884,11 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
-    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
+    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1862018 - Requires multiple session support"
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.overridePermissions should deny permission when not listed",
