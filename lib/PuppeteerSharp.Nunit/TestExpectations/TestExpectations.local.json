@@ -35,7 +35,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "We have a different test that needs to run on windows",
+    "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
     "parameters": [],
@@ -178,99 +178,6 @@
       "win32"
     ],
     "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[ChromeLauncher.test.ts] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[NetworkManager.test.ts] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[puppeteer-sharp.spec.ts] PuppeteerSharp *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi doesn't support multiple sessions on the same browser",
-    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "FrameElementAsync times out for OOPIF frames in Firefox BiDi due to script evaluation issues",
-    "testIdPattern": "[oopif.spec] OOPIF should load oopif iframes with subresources and request interception",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi doesn't fire navigation/historyUpdated events for same-document (hash) navigations in OOPIFs",
-    "testIdPattern": "[oopif.spec] OOPIF should support frames within OOP iframes",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
       "webDriverBiDi"
     ],
     "expectations": [

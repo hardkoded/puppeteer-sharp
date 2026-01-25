@@ -205,6 +205,26 @@ public class BidiFrame : Frame
         // Clear the events trackers on navigation start to allow fresh events
         BidiPage.ClearEventTrackers();
 
+        // Check if this is a same-document (fragment) navigation.
+        // Firefox BiDi doesn't reliably fire navigation/historyUpdated events for
+        // fragment navigations in OOPIFs, so we handle them specially.
+        // See: https://bugzilla.mozilla.org/show_bug.cgi?id=1862018
+        if (IsSameDocumentNavigation(Url, url))
+        {
+            try
+            {
+                await NavigateAsync(url).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                throw RewriteNavigationError(ex, url, options?.Timeout ?? TimeoutSettings.NavigationTimeout);
+            }
+
+            // For same-document navigations, there's no response
+            BidiPage.EndNavigationAndClearTracker();
+            return null;
+        }
+
         var waitForNavigationTask = WaitForNavigationAsync(options);
         var navigationTask = NavigateAsync(url);
 
@@ -584,6 +604,37 @@ public class BidiFrame : Frame
         }
 
         return [];
+    }
+
+    /// <summary>
+    /// Determines if navigating from currentUrl to targetUrl is a same-document navigation.
+    /// Same-document navigations occur when only the fragment (hash) portion of the URL changes.
+    /// Firefox BiDi doesn't reliably fire navigation events for these in OOPIFs.
+    /// </summary>
+    private static bool IsSameDocumentNavigation(string currentUrl, string targetUrl)
+    {
+        if (string.IsNullOrEmpty(currentUrl) || string.IsNullOrEmpty(targetUrl))
+        {
+            return false;
+        }
+
+        // Parse both URLs to compare their non-fragment parts
+        if (!Uri.TryCreate(currentUrl, UriKind.Absolute, out var currentUri) ||
+            !Uri.TryCreate(targetUrl, UriKind.Absolute, out var targetUri))
+        {
+            return false;
+        }
+
+        // Compare everything except the fragment
+        // GetLeftPart(UriPartial.Query) returns scheme + authority + path + query (everything except fragment)
+        var currentWithoutFragment = currentUri.GetLeftPart(UriPartial.Query);
+        var targetWithoutFragment = targetUri.GetLeftPart(UriPartial.Query);
+
+        // It's a same-document navigation if:
+        // 1. The non-fragment parts are identical
+        // 2. The target URL has a fragment (otherwise it would be a regular navigation)
+        return string.Equals(currentWithoutFragment, targetWithoutFragment, StringComparison.Ordinal)
+            && !string.IsNullOrEmpty(targetUri.Fragment);
     }
 
     private PuppeteerException RewriteNavigationError(Exception ex, string url, int timeoutSettingsNavigationTimeout)
