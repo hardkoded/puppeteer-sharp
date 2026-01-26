@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi;
@@ -12,6 +13,8 @@ using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
 using WebDriverBiDi;
+using BidiTransport = WebDriverBiDi.Protocol.Transport;
+using CdpConnection = PuppeteerSharp.Cdp.Connection;
 
 namespace PuppeteerSharp
 {
@@ -85,20 +88,19 @@ namespace PuppeteerSharp
 
                 await Process.StartAsync().ConfigureAwait(false);
 
-                Connection connection = null;
+                CdpConnection connection = null;
                 IBrowser browser = null;
 
                 try
                 {
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
-                        var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
-                        await driver.StartAsync(Process.EndPoint + "/session").ConfigureAwait(false);
+                        var driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
                         browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
                     }
                     else
                     {
-                        connection = await Connection
+                        connection = await CdpConnection
                             .Create(Process.EndPoint, options, _loggerFactory)
                             .ConfigureAwait(false);
 
@@ -167,13 +169,46 @@ namespace PuppeteerSharp
             return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
         }
 
+        private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
+        {
+            if (options.TransportFactory != null)
+            {
+                var transport = await options.TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None).ConfigureAwait(false);
+                BiDiDriver driver = null;
+                try
+                {
+                    var puppeteerConnection = new PuppeteerConnection(transport);
+                    var bidiTransport = new BidiTransport(puppeteerConnection);
+                    driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
+                    await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+                    return driver;
+                }
+                catch
+                {
+                    if (driver != null)
+                    {
+                        await driver.StopAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        transport.Dispose();
+                    }
+
+                    throw;
+                }
+            }
+
+            var defaultDriver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
+            await defaultDriver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+            return defaultDriver;
+        }
+
         private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
         {
             BiDiDriver driver = null;
             try
             {
-                driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
-                await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+                driver = await CreateBidiDriverAsync(browserWSEndpoint, options).ConfigureAwait(false);
                 return await BidiBrowser.CreateAsync(driver, options, _loggerFactory, null).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -189,10 +224,10 @@ namespace PuppeteerSharp
 
         private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
         {
-            Connection connection = null;
+            CdpConnection connection = null;
             try
             {
-                connection = await Connection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
+                connection = await CdpConnection.Create(browserWSEndpoint, options, _loggerFactory).ConfigureAwait(false);
 
                 var version = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
 
