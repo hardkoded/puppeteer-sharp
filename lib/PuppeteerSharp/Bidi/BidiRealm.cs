@@ -277,6 +277,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         {
             throw new PuppeteerException("Could not serialize referenced object", ex);
         }
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("are both null"))
+        {
+            // This happens when the browser closes while a command is pending
+            // The command result is null because the connection closed
+            throw new TargetClosedException($"Protocol error ({ex.Message})", ex.Message);
+        }
 
         if (result.ResultType == EvaluateResultType.Exception)
         {

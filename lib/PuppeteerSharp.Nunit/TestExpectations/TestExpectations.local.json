@@ -185,22 +185,8 @@
     ]
   },
   {
-    "comment": "BiDi driver doesn't support custom transport factories",
-    "testIdPattern": "[launcher.spec] Launcher specs Browser.close should support custom transport",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "BiDi driver doesn't support custom WebSocket factories",
     "testIdPattern": "[launcher.spec] PuppeteerSharp should support custom websocket",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "BiDi throws WebDriverBiDiException instead of TargetClosedException when browser is closed",
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should reject all promises when browser is closed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
