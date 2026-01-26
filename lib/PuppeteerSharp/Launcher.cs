@@ -174,11 +174,28 @@ namespace PuppeteerSharp
             if (options.TransportFactory != null)
             {
                 var transport = await options.TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None).ConfigureAwait(false);
-                var puppeteerConnection = new PuppeteerConnection(transport);
-                var bidiTransport = new BidiTransport(puppeteerConnection);
-                var driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
-                await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
-                return driver;
+                BiDiDriver driver = null;
+                try
+                {
+                    var puppeteerConnection = new PuppeteerConnection(transport);
+                    var bidiTransport = new BidiTransport(puppeteerConnection);
+                    driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
+                    await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
+                    return driver;
+                }
+                catch
+                {
+                    if (driver != null)
+                    {
+                        await driver.StopAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        transport.Dispose();
+                    }
+
+                    throw;
+                }
             }
 
             var defaultDriver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));

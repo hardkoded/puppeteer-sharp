@@ -282,7 +282,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         {
             // This happens when the browser closes while a command is pending
             // The command result is null because the connection closed
-            throw new TargetClosedException($"Protocol error ({ex.Message})", ex.Message);
+            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
         }
 
         if (result.ResultType == EvaluateResultType.Exception)

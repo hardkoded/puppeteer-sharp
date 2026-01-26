@@ -75,9 +75,17 @@ internal class PuppeteerConnection : BidiConnection
         await _transport.SendAsync(data).ConfigureAwait(false);
     }
 
-    private void OnTransportMessageReceived(object sender, MessageReceivedEventArgs e)
+    private async void OnTransportMessageReceived(object sender, MessageReceivedEventArgs e)
     {
-        OnDataReceived.NotifyObserversAsync(new ConnectionDataReceivedEventArgs(e.Message)).GetAwaiter().GetResult();
+        try
+        {
+            await OnDataReceived.NotifyObserversAsync(new ConnectionDataReceivedEventArgs(e.Message)).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Exceptions during message processing are logged by the BiDi driver
+            // We swallow them here to prevent crashing the transport receive loop
+        }
     }
 
     private void OnTransportClosed(object sender, TransportClosedEventArgs e)
