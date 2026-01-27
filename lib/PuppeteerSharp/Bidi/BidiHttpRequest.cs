@@ -268,10 +268,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             Method = new System.Net.Http.HttpMethod(bidiRequest.Method),
             IsNavigationRequest = isNavigationRequest,
             HasPostData = bidiRequest.HasPostData,
-
-            // For BiDi without CDP support, we can infer the resource type from the navigation property.
-            // Navigation requests are Document type, otherwise we default to Other.
-            ResourceType = isNavigationRequest ? ResourceType.Document : ResourceType.Other,
+            ResourceType = MapDestinationToResourceType(bidiRequest.Destination, isNavigationRequest),
         };
         request.Initialize();
         return request;
@@ -349,6 +346,35 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private static string GetReasonPhrase(int statusCode)
         => HttpStatusTextHelper.GetStatusText(statusCode);
+
+    private static ResourceType MapDestinationToResourceType(string destination, bool isNavigationRequest)
+    {
+        // Navigation requests are always Document type
+        if (isNavigationRequest)
+        {
+            return ResourceType.Document;
+        }
+
+        // Map BiDi destination to ResourceType based on the Fetch spec
+        // https://fetch.spec.whatwg.org/#concept-request-destination
+        return destination switch
+        {
+            "document" or "frame" or "iframe" => ResourceType.Document,
+            "style" => ResourceType.StyleSheet,
+            "script" => ResourceType.Script,
+            "image" => ResourceType.Image,
+            "font" => ResourceType.Font,
+            "audio" or "video" => ResourceType.Media,
+            "track" => ResourceType.TextTrack,
+            "manifest" => ResourceType.Manifest,
+            "worker" or "sharedworker" or "serviceworker" => ResourceType.Other,
+            "xslt" => ResourceType.Other,
+            "json" => ResourceType.Fetch,
+            "report" => ResourceType.Ping,
+            "" => ResourceType.Other, // Empty string is for generic requests
+            _ => ResourceType.Other,
+        };
+    }
 
     private Dictionary<string, string> GetMergedHeaders(Dictionary<string, string> overrideHeaders)
     {

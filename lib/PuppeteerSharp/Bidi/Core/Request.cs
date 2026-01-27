@@ -93,6 +93,8 @@ internal class Request : IDisposable
 
     public WebDriverBiDi.Network.InitiatorType? InitiatorType => _eventArgs.Initiator?.Type;
 
+    public string Destination => _eventArgs.Request.Destination;
+
     public bool HasPostData => (_eventArgs.Request.BodySize ?? 0) > 0;
 
     private string Id => _eventArgs.Request.RequestId;

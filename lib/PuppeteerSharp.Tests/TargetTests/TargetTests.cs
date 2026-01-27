@@ -225,9 +225,13 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Test, PuppeteerTest("target.spec", "Target", "should not crash while redirecting if original request was missed")]
         public async Task ShouldNotCrashWhileRedirectingIfOriginalRequestWasMissed()
         {
+            var serverResponseTcs = new TaskCompletionSource<HttpResponse>();
             var serverResponseEnd = new TaskCompletionSource<bool>();
-            var serverResponse = (HttpResponse)null;
-            Server.SetRoute("/one-style.css", context => { serverResponse = context.Response; return serverResponseEnd.Task; });
+            Server.SetRoute("/one-style.css", context =>
+            {
+                serverResponseTcs.TrySetResult(context.Response);
+                return serverResponseEnd.Task;
+            });
             // Open a new page. Use window.open to connect to the page later.
             await Task.WhenAll(
               Page.EvaluateFunctionHandleAsync("url => window.open(url)", TestConstants.ServerUrl + "/one-style.html"),
@@ -236,11 +240,14 @@ namespace PuppeteerSharp.Tests.TargetTests
             // Connect to the opened page.
             var target = await Context.WaitForTargetAsync(t => t.Url.Contains("one-style.html"));
             var newPage = await target.PageAsync();
+            var loadEvent = new TaskCompletionSource<bool>();
+            newPage.Load += (_, _) => loadEvent.TrySetResult(true);
             // Issue a redirect.
+            var serverResponse = await serverResponseTcs.Task;
             serverResponse.Redirect("/injectedstyle.css");
             serverResponseEnd.SetResult(true);
             // Wait for the new page to load.
-            await WaitEvent(newPage.Client, "Page.loadEventFired");
+            await loadEvent.Task;
             // Cleanup.
             await newPage.CloseAsync();
         }

@@ -70,8 +70,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses[0].FromCache, Is.False);
             Assert.That(responses[0].FromServiceWorker, Is.False);
             Assert.That(responses[0].Request, Is.Not.Null);
+        }
 
-            var remoteAddress = responses[0].RemoteAddress;
+        [Test, PuppeteerTest("network.spec", "network Response.remoteAddress", "should work")]
+        public async Task ResponseRemoteAddressShouldWork()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var remoteAddress = response.RemoteAddress;
             // Either IPv6 or IPv4, depending on environment.
             Assert.That(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1", Is.True);
             Assert.That(remoteAddress.Port, Is.EqualTo(TestConstants.Port));
@@ -107,7 +112,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
             else
             {
-                Assert.That(failedRequests[0].FailureText, Is.EqualTo("NS_ERROR_FAILURE"));
+                Assert.That(failedRequests[0].FailureText, Is.EqualTo("NS_ERROR_ABORT"));
             }
 
             Assert.That(failedRequests[0].Frame, Is.Not.Null);
@@ -190,6 +195,19 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }));
 
             // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.That(redirectChain, Has.Exactly(1).Items);
+            Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Response.remoteAddress", "should support redirects")]
+        public async Task ResponseRemoteAddressShouldSupportRedirects()
+        {
+            Server.SetRedirect("/foo.html", "/empty.html");
+            const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
+            var response = await Page.GoToAsync(FOO_URL);
+
+            // Check redirect chain remote address
             var redirectChain = response.Request.RedirectChain;
             Assert.That(redirectChain, Has.Exactly(1).Items);
             Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));
