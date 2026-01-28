@@ -67,7 +67,7 @@ namespace PuppeteerSharp
         internal Func<Target, bool> IsPageTargetFunc { get; init; }
 
         /// <inheritdoc/>
-        public abstract Task<IPage> NewPageAsync();
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
