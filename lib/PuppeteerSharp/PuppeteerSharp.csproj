@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
@@ -25,8 +25,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
-    <AnalysisLevel>8.0-Recommended</AnalysisLevel>
+    <AnalysisLevel>10.0-Recommended</AnalysisLevel>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <!-- IL3000: Assembly.Location returns empty in single-file/AOT - code has fallback handling in GetBrowsersLocation() -->
+    <NoWarn>$(NoWarn);IL3000</NoWarn>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
