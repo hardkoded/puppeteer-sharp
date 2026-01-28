@@ -811,7 +811,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task RemoveExposedFunctionAsync(string name) => throw new NotImplementedException();
+    public override Task RemoveExposedFunctionAsync(string name)
+        => BidiMainFrame.RemoveExposedFunctionAsync(name);
 
     /// <inheritdoc />
     public override async Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
@@ -1103,7 +1104,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        => BidiMainFrame.ExposeFunctionAsync(name, puppeteerFunction);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

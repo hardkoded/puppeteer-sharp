@@ -39,6 +39,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiFrame : Frame
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
+    private readonly ConcurrentDictionary<string, ExposableFunction> _exposedFunctions = new();
     private readonly Realms _realms;
 
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
@@ -528,6 +529,38 @@ public class BidiFrame : Frame
         parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext);
         parentFrame.Initialize();
         return parentFrame;
+    }
+
+    /// <summary>
+    /// Exposes a function to the page's JavaScript context.
+    /// </summary>
+    /// <param name="name">The name of the function.</param>
+    /// <param name="puppeteerFunction">The function to expose.</param>
+    /// <returns>A task that resolves when the function has been exposed.</returns>
+    internal async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+    {
+        if (_exposedFunctions.ContainsKey(name))
+        {
+            throw new PuppeteerException($"Failed to add page binding with name {name}: globalThis['{name}'] already exists!");
+        }
+
+        var exposable = await ExposableFunction.FromAsync(this, name, puppeteerFunction).ConfigureAwait(false);
+        _exposedFunctions[name] = exposable;
+    }
+
+    /// <summary>
+    /// Removes an exposed function from the page.
+    /// </summary>
+    /// <param name="name">The name of the function to remove.</param>
+    /// <returns>A task that resolves when the function has been removed.</returns>
+    internal async Task RemoveExposedFunctionAsync(string name)
+    {
+        if (!_exposedFunctions.TryRemove(name, out var exposedFunction))
+        {
+            throw new PuppeteerException($"Failed to remove page binding with name {name}: window['{name}'] does not exist!");
+        }
+
+        await exposedFunction.DisposeAsync().ConfigureAwait(false);
     }
 
     internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
