@@ -871,7 +871,7 @@ public class BidiFrame : Frame
             CreateFrameTarget(args.BrowsingContext);
         };
 
-        BrowsingContext.Closed += async (sender, args) =>
+        BrowsingContext.Closed += (sender, args) =>
         {
             foreach (var session in BidiCdpSession.Sessions)
             {
@@ -882,16 +882,12 @@ public class BidiFrame : Frame
             }
 
             // Dispose all exposed functions to prevent memory leaks
+            // Use fire-and-forget pattern to avoid async event handler issues
             foreach (var kvp in _exposedFunctions)
             {
-                try
-                {
-                    await kvp.Value.DisposeAsync().ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore errors during cleanup - frame is closing anyway
-                }
+                _ = kvp.Value.DisposeAsync().AsTask().ContinueWith(
+                    _ => { },
+                    TaskScheduler.Default);
             }
 
             _exposedFunctions.Clear();

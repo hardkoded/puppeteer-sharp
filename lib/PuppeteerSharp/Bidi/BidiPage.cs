@@ -639,18 +639,29 @@ public class BidiPage : Page
 
         if (!BidiBrowser.CdpSupported)
         {
-            await BidiMainFrame.BrowsingContext.SetViewportAsync(
-                new SetViewportOptions()
-                {
-                    Viewport = viewport is { Width: > 0, Height: > 0 }
-                        ? new Viewport()
-                        {
-                            Width = (ulong)viewport.Width,
-                            Height = (ulong)viewport.Height,
-                        }
-                        : null,
-                    DevicePixelRatio = viewport.DeviceScaleFactor,
-                }).ConfigureAwait(false);
+            // Set the screen orientation based on IsLandscape
+            var screenOrientation = viewport.IsLandscape
+                ? new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Landscape,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.LandscapePrimary)
+                : new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Portrait,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.PortraitPrimary);
+
+            await Task.WhenAll(
+                BidiMainFrame.BrowsingContext.SetViewportAsync(
+                    new SetViewportOptions()
+                    {
+                        Viewport = viewport is { Width: > 0, Height: > 0 }
+                            ? new Viewport()
+                            {
+                                Width = (ulong)viewport.Width,
+                                Height = (ulong)viewport.Height,
+                            }
+                            : null,
+                        DevicePixelRatio = viewport.DeviceScaleFactor,
+                    }),
+                BidiMainFrame.BrowsingContext.SetScreenOrientationOverrideAsync(screenOrientation)).ConfigureAwait(false);
             Viewport = viewport;
             return;
         }
