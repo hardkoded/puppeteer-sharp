@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using WebDriverBiDi;
@@ -45,6 +46,7 @@ internal class ExposableFunction : IAsyncDisposable
     private readonly string _channel;
     private readonly List<(BidiFrame Frame, string ScriptId)> _scripts = new();
     private EventObserver<ScriptMessageEventArgs> _observer;
+    private int _disposed;
 
     private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction)
     {
@@ -74,12 +76,15 @@ internal class ExposableFunction : IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        // Unsubscribe from messages
-        if (_observer != null)
+        // Ensure we only dispose once using atomic operation
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
         {
-            _observer.Unobserve();
-            _observer = null;
+            return;
         }
+
+        // Unsubscribe from messages using atomic exchange
+        var observer = Interlocked.Exchange(ref _observer, null);
+        observer?.Unobserve();
 
         // Remove preload scripts and delete the function from globalThis
         foreach (var (frame, scriptId) in _scripts)
@@ -175,97 +180,112 @@ internal class ExposableFunction : IAsyncDisposable
 
     private async void HandleMessage(ScriptMessageEventArgs message)
     {
-        if (message.ChannelId != _channel)
-        {
-            return;
-        }
-
-        var realm = GetRealm(message.Source);
-        if (realm == null)
-        {
-            // Unrelated message
-            return;
-        }
-
-        // Create a handle for the data (which is [resolve, reject, args])
-        var dataHandle = BidiJSHandle.From(message.Data, realm);
-
+        // Wrap entire method body in try-catch since async void can't propagate exceptions
         try
         {
-            // Get the args from the data
-            var argsHandle = await dataHandle.EvaluateFunctionHandleAsync("([, , args]) => args").ConfigureAwait(false);
-
-            // Get all properties (array indices)
-            var properties = await argsHandle.GetPropertiesAsync().ConfigureAwait(false);
-            var args = new List<object>();
-
-            foreach (var kvp in properties.OrderBy(p => int.TryParse(p.Key, out var i) ? i : int.MaxValue))
+            // Check if disposed
+            if (_disposed == 1)
             {
-                var handle = kvp.Value;
-
-                // Element handles are passed as is, everything else as JSON value
-                if (handle is BidiElementHandle elementHandle)
-                {
-                    args.Add(elementHandle);
-                }
-                else
-                {
-                    args.Add(await handle.JsonValueAsync<object>().ConfigureAwait(false));
-                }
-            }
-
-            // Call the puppeteer function
-            object result;
-            try
-            {
-                result = await InvokeFunctionAsync(args.ToArray()).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                // Unwrap TargetInvocationException to get the actual exception
-                var actualException = ex is System.Reflection.TargetInvocationException tie && tie.InnerException != null
-                    ? tie.InnerException
-                    : ex;
-
-                // Reject with error
-                try
-                {
-                    await dataHandle.EvaluateFunctionAsync(
-                        @"([, reject], name, message, stack) => {
-                            const error = new Error(message);
-                            error.name = name;
-                            if (stack) {
-                                error.stack = stack;
-                            }
-                            reject(error);
-                        }",
-                        actualException.GetType().Name,
-                        actualException.Message,
-                        actualException.StackTrace ?? string.Empty).ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Ignore errors when rejecting
-                }
-
                 return;
             }
 
-            // Resolve with result
+            if (message.ChannelId != _channel)
+            {
+                return;
+            }
+
+            var realm = GetRealm(message.Source);
+            if (realm == null)
+            {
+                // Unrelated message
+                return;
+            }
+
+            // Create a handle for the data (which is [resolve, reject, args])
+            var dataHandle = BidiJSHandle.From(message.Data, realm);
+
             try
             {
-                await dataHandle.EvaluateFunctionAsync(
-                    "([resolve], result) => { resolve(result); }",
-                    result).ConfigureAwait(false);
+                // Get the args from the data
+                var argsHandle = await dataHandle.EvaluateFunctionHandleAsync("([, , args]) => args").ConfigureAwait(false);
+
+                // Get all properties (array indices)
+                var properties = await argsHandle.GetPropertiesAsync().ConfigureAwait(false);
+                var args = new List<object>();
+
+                foreach (var kvp in properties.OrderBy(p => int.TryParse(p.Key, out var i) ? i : int.MaxValue))
+                {
+                    var handle = kvp.Value;
+
+                    // Element handles are passed as is, everything else as JSON value
+                    if (handle is BidiElementHandle elementHandle)
+                    {
+                        args.Add(elementHandle);
+                    }
+                    else
+                    {
+                        args.Add(await handle.JsonValueAsync<object>().ConfigureAwait(false));
+                    }
+                }
+
+                // Call the puppeteer function
+                object result;
+                try
+                {
+                    result = await InvokeFunctionAsync(args.ToArray()).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    // Unwrap TargetInvocationException to get the actual exception
+                    var actualException = ex is System.Reflection.TargetInvocationException tie && tie.InnerException != null
+                        ? tie.InnerException
+                        : ex;
+
+                    // Reject with error
+                    try
+                    {
+                        await dataHandle.EvaluateFunctionAsync(
+                            @"([, reject], name, message, stack) => {
+                                const error = new Error(message);
+                                error.name = name;
+                                if (stack) {
+                                    error.stack = stack;
+                                }
+                                reject(error);
+                            }",
+                            actualException.GetType().Name,
+                            actualException.Message,
+                            actualException.StackTrace ?? string.Empty).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Ignore errors when rejecting
+                    }
+
+                    return;
+                }
+
+                // Resolve with result
+                try
+                {
+                    await dataHandle.EvaluateFunctionAsync(
+                        "([resolve], result) => { resolve(result); }",
+                        result).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore errors when resolving
+                }
             }
-            catch
+            finally
             {
-                // Ignore errors when resolving
+                await dataHandle.DisposeAsync().ConfigureAwait(false);
             }
         }
-        finally
+        catch
         {
-            await dataHandle.DisposeAsync().ConfigureAwait(false);
+            // Swallow any exceptions in async void handler to prevent crashes
+            // Errors are expected when the page/frame is closed during callback execution
         }
     }
 
@@ -285,6 +305,15 @@ internal class ExposableFunction : IAsyncDisposable
             else if (parameters[i].HasDefaultValue)
             {
                 convertedArgs[i] = parameters[i].DefaultValue;
+            }
+            else if (!parameters[i].ParameterType.IsValueType || Nullable.GetUnderlyingType(parameters[i].ParameterType) != null)
+            {
+                // Reference types and nullable value types can accept null
+                convertedArgs[i] = null;
+            }
+            else
+            {
+                throw new ArgumentException($"Missing required argument for parameter '{parameters[i].Name}' at index {i}");
             }
         }
 
@@ -324,15 +353,24 @@ internal class ExposableFunction : IAsyncDisposable
             return doc.RootElement.Clone();
         }
 
-        // Handle numeric conversions
-        if (targetType == typeof(int) && arg is long longVal)
+        // Handle numeric conversions with overflow checking
+        if (targetType == typeof(int))
         {
-            return (int)longVal;
-        }
+            if (arg is long longVal)
+            {
+                checked
+                {
+                    return (int)longVal;
+                }
+            }
 
-        if (targetType == typeof(int) && arg is double doubleVal)
-        {
-            return (int)doubleVal;
+            if (arg is double doubleVal)
+            {
+                checked
+                {
+                    return (int)doubleVal;
+                }
+            }
         }
 
         if (targetType == typeof(double) && arg is long longVal2)

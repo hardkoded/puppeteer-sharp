@@ -557,7 +557,7 @@ public class BidiFrame : Frame
     {
         if (!_exposedFunctions.TryRemove(name, out var exposedFunction))
         {
-            throw new PuppeteerException($"Failed to remove page binding with name {name}: window['{name}'] does not exist!");
+            throw new PuppeteerException($"Failed to remove page binding with name {name}: globalThis['{name}'] does not exist!");
         }
 
         await exposedFunction.DisposeAsync().ConfigureAwait(false);
@@ -871,7 +871,7 @@ public class BidiFrame : Frame
             CreateFrameTarget(args.BrowsingContext);
         };
 
-        BrowsingContext.Closed += (sender, args) =>
+        BrowsingContext.Closed += async (sender, args) =>
         {
             foreach (var session in BidiCdpSession.Sessions)
             {
@@ -880,6 +880,21 @@ public class BidiFrame : Frame
                     session.OnClose();
                 }
             }
+
+            // Dispose all exposed functions to prevent memory leaks
+            foreach (var kvp in _exposedFunctions)
+            {
+                try
+                {
+                    await kvp.Value.DisposeAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ignore errors during cleanup - frame is closing anyway
+                }
+            }
+
+            _exposedFunctions.Clear();
 
             ((BidiPage)Page).OnFrameDetached(new FrameEventArgs(this));
         };
