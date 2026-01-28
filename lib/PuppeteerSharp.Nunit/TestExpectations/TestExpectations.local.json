@@ -14,13 +14,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "Test uses CDP-specific WaitEvent with Page.loadEventFired which is not supported in BiDi",
-    "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "ExposeFunctionAsync is not implemented in BiDi yet",
     "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should work independently of `exposeFunction",
     "platforms": ["darwin", "linux", "win32"],
@@ -190,34 +183,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
-  },
-  {
-    "comment": "BiDi does not provide RemoteAddress information. Test fails on IP address validation. Matches upstream [network.spec] network Response.remoteAddress * expectation",
-    "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi does not send network events for cached stylesheets. https://bugzilla.mozilla.org/show_bug.cgi?id=1879438",
-    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "BiDi does not provide RemoteAddress information. Test fails on redirect chain RemoteAddress.Port validation. Matches upstream [network.spec] network Response.remoteAddress * expectation",
-    "testIdPattern": "[network.spec] network Network Events should support redirects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for speculative/parallel loading during navigation, causing duplicate RequestFailed events",
-    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "comment": "Firefox BiDi doesn't support network.getData with DataType.Request - only DataType.Response is supported",
