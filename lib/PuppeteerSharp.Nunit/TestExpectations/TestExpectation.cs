@@ -82,6 +82,8 @@ public class TestExpectation
         Headless,
         [EnumMember(Value = "headful")]
         Headful,
+        [EnumMember(Value = "pipe")]
+        Pipe,
     }
 
     [JsonConverter(typeof(JsonStringEnumMemberConverter<TestExpectationPlatform>))]

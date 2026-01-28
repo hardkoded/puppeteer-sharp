@@ -265,6 +265,16 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
     }
 
+    internal async Task SetScreenOrientationOverrideAsync(ScreenOrientation screenOrientation)
+    {
+        var parameters = new SetScreenOrientationOverrideCommandParameters
+        {
+            ScreenOrientation = screenOrientation,
+            Contexts = [Id],
+        };
+        await Session.Driver.Emulation.SetScreenOrientationOverrideAsync(parameters).ConfigureAwait(false);
+    }
+
     internal async Task SetFilesAsync(WebDriverBiDi.Script.SharedReference element, string[] files)
     {
         var parameters = new SetFilesCommandParameters(Id, element);

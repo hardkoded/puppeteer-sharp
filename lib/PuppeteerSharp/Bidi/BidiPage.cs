@@ -639,18 +639,29 @@ public class BidiPage : Page
 
         if (!BidiBrowser.CdpSupported)
         {
-            await BidiMainFrame.BrowsingContext.SetViewportAsync(
-                new SetViewportOptions()
-                {
-                    Viewport = viewport is { Width: > 0, Height: > 0 }
-                        ? new Viewport()
-                        {
-                            Width = (ulong)viewport.Width,
-                            Height = (ulong)viewport.Height,
-                        }
-                        : null,
-                    DevicePixelRatio = viewport.DeviceScaleFactor,
-                }).ConfigureAwait(false);
+            // Set the screen orientation based on IsLandscape
+            var screenOrientation = viewport.IsLandscape
+                ? new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Landscape,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.LandscapePrimary)
+                : new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Portrait,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.PortraitPrimary);
+
+            await Task.WhenAll(
+                BidiMainFrame.BrowsingContext.SetViewportAsync(
+                    new SetViewportOptions()
+                    {
+                        Viewport = viewport is { Width: > 0, Height: > 0 }
+                            ? new Viewport()
+                            {
+                                Width = (ulong)viewport.Width,
+                                Height = (ulong)viewport.Height,
+                            }
+                            : null,
+                        DevicePixelRatio = viewport.DeviceScaleFactor,
+                    }),
+                BidiMainFrame.BrowsingContext.SetScreenOrientationOverrideAsync(screenOrientation)).ConfigureAwait(false);
             Viewport = viewport;
             return;
         }
@@ -811,7 +822,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task RemoveExposedFunctionAsync(string name) => throw new NotImplementedException();
+    public override Task RemoveExposedFunctionAsync(string name)
+        => BidiMainFrame.RemoveExposedFunctionAsync(name);
 
     /// <inheritdoc />
     public override async Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
@@ -1103,7 +1115,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        => BidiMainFrame.ExposeFunctionAsync(name, puppeteerFunction);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
