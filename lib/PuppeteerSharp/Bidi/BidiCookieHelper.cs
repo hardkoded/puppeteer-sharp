@@ -45,6 +45,7 @@ internal static class BidiCookieHelper
             SameSite = ConvertSameSiteBidiToPuppeteer(bidiCookie.SameSite),
             Expires = bidiCookie.EpochExpires.HasValue ? (double)bidiCookie.EpochExpires.Value / 1000 : -1,
             Session = !bidiCookie.EpochExpires.HasValue || bidiCookie.EpochExpires.Value == 0,
+            SourceScheme = CookieSourceScheme.Unset,
         };
 
     /// <summary>

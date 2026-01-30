@@ -900,11 +900,9 @@ public class BidiFrame : Frame
             var httpRequest = BidiHttpRequest.From(args.Request, this);
             SetupRequestHandlers(args.Request, httpRequest);
 
-            // Use the request interception queue to serialize handler execution.
-            // This ensures user-provided handlers run sequentially across concurrent
-            // requests, matching JavaScript's single-threaded event handling behavior.
-            _ = ((BidiPage)Page).RequestInterceptionQueue.Enqueue(
-                () => httpRequest.FinalizeInterceptionsAsync());
+            // Call finalizeInterceptions directly like upstream does.
+            // Using fire-and-forget pattern matching upstream's `void httpRequest.finalizeInterceptions()`.
+            _ = httpRequest.FinalizeInterceptionsAsync();
         };
 
         BrowsingContext.Navigation += (sender, args) =>
@@ -927,6 +925,7 @@ public class BidiFrame : Frame
 
         BrowsingContext.DomContentLoaded += (sender, args) =>
         {
+            OnLoadingStarted();
             ((Page)Page).OnDOMContentLoaded();
             ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
         };
