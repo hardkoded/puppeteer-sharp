@@ -1091,7 +1091,8 @@ public class BidiPage : Page
 
         if (!string.IsNullOrEmpty(file))
         {
-            await System.IO.File.WriteAllBytesAsync(file, data).ConfigureAwait(false);
+            using var fs = AsyncFileHelper.CreateStream(file, System.IO.FileMode.Create);
+            await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
         }
 
         return data;
