@@ -138,5 +138,40 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi does not support Tagged/Accessible PDF - upstream has FAIL/PASS but we skip since it always fails",
+    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: connection issues when reconnecting to browser - fails with 'Failed to create connection'",
+    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: connection issues when connecting to remote browser - fails with 'Failed to create connection'",
+    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: RequestServedFromCache event not properly tracked",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: Flaky test - cooperative request interception priority handling",
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively * by priority",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]
