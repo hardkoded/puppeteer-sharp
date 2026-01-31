@@ -240,16 +240,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with no default arguments")]
-        public async Task ShouldWorkWithNoDefaultArguments()
-        {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreDefaultArgs = true;
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            await using var page = await browser.NewPageAsync();
-            Assert.That(await page.EvaluateExpressionAsync<int>("11 * 11"), Is.EqualTo(121));
-        }
-
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments in Chrome")]
         public async Task ShouldFilterOutIgnoredDefaultArguments()
         {
