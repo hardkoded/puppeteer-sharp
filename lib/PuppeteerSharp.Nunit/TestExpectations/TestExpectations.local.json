@@ -173,12 +173,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Chrome headless-shell: OOPIF test flaky in CI due to compositor timing issue (crbug.com/1334119)",
-    "testIdPattern": "[oopif.spec] OOPIF should provide access to elements",
-    "platforms": ["linux", "win32"],
-    "parameters": ["chrome-headless-shell"],
-    "expectations": ["FAIL"]
   }
 ]

@@ -221,7 +221,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             {
                 // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
                 // the upstream is fixed.
-                // TLDR: when we dispatch events ot the frame the compositor might
+                // TLDR: when we dispatch events to the frame the compositor might
                 // not be up-to-date yet resulting in a misclick (the iframe element
                 // becomes the event target instead of the content inside the iframe).
                 // The solution is to use InsertVisualCallback on the backend but that causes
@@ -233,7 +233,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
 
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frameTask = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame);
+            var frameTask = Page.WaitForFrameAsync((frame) => Page.Frames.ToList().IndexOf(frame) == 1);
             await FrameUtils.AttachFrameAsync(
               Page,
               "frame1",
