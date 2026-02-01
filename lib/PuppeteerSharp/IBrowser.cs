@@ -234,5 +234,20 @@ namespace PuppeteerSharp
         /// Clears all registered handlers.
         /// </summary>
         void ClearCustomQueryHandlers();
+
+        /// <summary>
+        /// Gets the bounds of the specified window.
+        /// </summary>
+        /// <param name="windowId">The window ID to get bounds for.</param>
+        /// <returns>A task that resolves to the window bounds.</returns>
+        Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <summary>
+        /// Sets the bounds of the specified window.
+        /// </summary>
+        /// <param name="windowId">The window ID to set bounds for.</param>
+        /// <param name="bounds">The window bounds to set.</param>
+        /// <returns>A task that resolves when the bounds have been set.</returns>
+        Task SetWindowBoundsAsync(string windowId, WindowBounds bounds);
     }
 }

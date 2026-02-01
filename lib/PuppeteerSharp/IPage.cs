@@ -1482,5 +1482,22 @@ namespace PuppeteerSharp
         /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
         /// <returns>A task that resolves when the message is sent to the browser.</returns>
         Task SetBypassServiceWorkerAsync(bool bypass);
+
+        /// <summary>
+        /// Gets the window ID for the browser window that this page is in.
+        /// </summary>
+        /// <returns>A task that resolves to the window ID as a string.</returns>
+        Task<string> WindowIdAsync();
+
+        /// <summary>
+        /// Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+        /// </summary>
+        /// <param name="contentWidth">The desired width of the content area in pixels.</param>
+        /// <param name="contentHeight">The desired height of the content area in pixels.</param>
+        /// <returns>A task that resolves when the window has been resized.</returns>
+        /// <remarks>
+        /// This is an experimental feature.
+        /// </remarks>
+        Task ResizeAsync(int contentWidth, int contentHeight);
     }
 }
