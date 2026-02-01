@@ -12,10 +12,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>20.2.5</PackageVersion>
-    <ReleaseVersion>20.2.5</ReleaseVersion>
-    <AssemblyVersion>20.2.5</AssemblyVersion>
-    <FileVersion>20.2.5</FileVersion>
+    <PackageVersion>20.2.6</PackageVersion>
+    <ReleaseVersion>20.2.6</ReleaseVersion>
+    <AssemblyVersion>20.2.6</AssemblyVersion>
+    <FileVersion>20.2.6</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <DebugType>embedded</DebugType>
@@ -26,6 +26,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
     <AnalysisLevel>8.0-Recommended</AnalysisLevel>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
@@ -53,5 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
