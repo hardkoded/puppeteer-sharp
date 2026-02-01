@@ -426,12 +426,20 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 headers: bidiHeaders?.Count > 0 ? bidiHeaders : null,
                 body: body).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             _isInterceptResolutionHandled = false;
 
-            // In certain cases, protocol will return the error if the request was already canceled
-            // or the page was closed. We should tolerate these errors.
+            // Only swallow specific protocol errors that are safe to ignore.
+            // Match upstream's handleError behavior.
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
+                (bidiEx.Message.Contains("Invalid request id") ||
+                 bidiEx.Message.Contains("no such request")))
+            {
+                return;
+            }
+
+            throw;
         }
     }
 
@@ -443,12 +451,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             await _request.FailRequestAsync().ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             _isInterceptResolutionHandled = false;
 
-            // In certain cases, protocol will return the error if the request was already canceled
-            // or the page was closed. We should tolerate these errors.
+            // Only swallow specific protocol errors that are safe to ignore.
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
+                (bidiEx.Message.Contains("Invalid request id") ||
+                 bidiEx.Message.Contains("no such request")))
+            {
+                return;
+            }
+
+            throw;
         }
     }
 
@@ -520,12 +535,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 headers: responseHeaders.Count > 0 ? responseHeaders : null,
                 body: body).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             _isInterceptResolutionHandled = false;
 
-            // In certain cases, protocol will return the error if the request was already canceled
-            // or the page was closed. We should tolerate these errors.
+            // Only swallow specific protocol errors that are safe to ignore.
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
+                (bidiEx.Message.Contains("Invalid request id") ||
+                 bidiEx.Message.Contains("no such request")))
+            {
+                return;
+            }
+
+            throw;
         }
     }
 

@@ -569,9 +569,8 @@ public class BidiPage : Page
         var commandParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters
         {
             Coordinates = coordinates,
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
-
-        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(commandParameters).ConfigureAwait(false);
     }
@@ -639,18 +638,29 @@ public class BidiPage : Page
 
         if (!BidiBrowser.CdpSupported)
         {
-            await BidiMainFrame.BrowsingContext.SetViewportAsync(
-                new SetViewportOptions()
-                {
-                    Viewport = viewport is { Width: > 0, Height: > 0 }
-                        ? new Viewport()
-                        {
-                            Width = (ulong)viewport.Width,
-                            Height = (ulong)viewport.Height,
-                        }
-                        : null,
-                    DevicePixelRatio = viewport.DeviceScaleFactor,
-                }).ConfigureAwait(false);
+            // Set the screen orientation based on IsLandscape
+            var screenOrientation = viewport.IsLandscape
+                ? new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Landscape,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.LandscapePrimary)
+                : new WebDriverBiDi.Emulation.ScreenOrientation(
+                    WebDriverBiDi.Emulation.ScreenOrientationNatural.Portrait,
+                    WebDriverBiDi.Emulation.ScreenOrientationType.PortraitPrimary);
+
+            await Task.WhenAll(
+                BidiMainFrame.BrowsingContext.SetViewportAsync(
+                    new SetViewportOptions()
+                    {
+                        Viewport = viewport is { Width: > 0, Height: > 0 }
+                            ? new Viewport()
+                            {
+                                Width = (ulong)viewport.Width,
+                                Height = (ulong)viewport.Height,
+                            }
+                            : null,
+                        DevicePixelRatio = viewport.DeviceScaleFactor,
+                    }),
+                BidiMainFrame.BrowsingContext.SetScreenOrientationOverrideAsync(screenOrientation)).ConfigureAwait(false);
             Viewport = viewport;
             return;
         }
@@ -811,7 +821,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    public override Task RemoveExposedFunctionAsync(string name) => throw new NotImplementedException();
+    public override Task RemoveExposedFunctionAsync(string name)
+        => BidiMainFrame.RemoveExposedFunctionAsync(name);
 
     /// <inheritdoc />
     public override async Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
@@ -1002,7 +1013,90 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override Task<byte[]> PdfInternalAsync(string file, PdfOptions options) => throw new NotImplementedException();
+    protected override async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
+    {
+        Debug.Assert(options != null, nameof(options) + " != null");
+
+        // BiDi uses centimeters, PaperFormat is in inches
+        // 1 inch = 2.54 cm
+        const double inchesToCm = 2.54;
+
+        // Default to Letter size (8.5 x 11 inches = 21.59 x 27.94 cm)
+        var paperWidth = (double)PaperFormat.Letter.Width * inchesToCm;
+        var paperHeight = (double)PaperFormat.Letter.Height * inchesToCm;
+
+        if (options.Format != null)
+        {
+            paperWidth = (double)options.Format.Width * inchesToCm;
+            paperHeight = (double)options.Format.Height * inchesToCm;
+        }
+        else
+        {
+            if (options.Width != null)
+            {
+                paperWidth = ConvertPrintParameterToCentimeters(options.Width);
+            }
+
+            if (options.Height != null)
+            {
+                paperHeight = ConvertPrintParameterToCentimeters(options.Height);
+            }
+        }
+
+        var marginTop = ConvertPrintParameterToCentimeters(options.MarginOptions.Top);
+        var marginLeft = ConvertPrintParameterToCentimeters(options.MarginOptions.Left);
+        var marginBottom = ConvertPrintParameterToCentimeters(options.MarginOptions.Bottom);
+        var marginRight = ConvertPrintParameterToCentimeters(options.MarginOptions.Right);
+
+        // Wait for fonts to be ready
+        await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
+            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+
+        var pageRanges = new List<object>();
+        if (!string.IsNullOrEmpty(options.PageRanges))
+        {
+            foreach (var range in options.PageRanges.Split(','))
+            {
+                pageRanges.Add(range.Trim());
+            }
+        }
+
+        var printOptions = new PrintCommandParameters(BidiMainFrame.BrowsingContext.Id)
+        {
+            Background = options.PrintBackground,
+            Orientation = options.Landscape ? PrintOrientation.Landscape : PrintOrientation.Portrait,
+            Page = new PrintPageParameters
+            {
+                Width = paperWidth,
+                Height = paperHeight,
+            },
+            Margins = new PrintMarginParameters
+            {
+                Top = marginTop,
+                Bottom = marginBottom,
+                Left = marginLeft,
+                Right = marginRight,
+            },
+            Scale = (double)options.Scale,
+            ShrinkToFit = !options.PreferCSSPageSize,
+        };
+
+        if (pageRanges.Count > 0)
+        {
+            printOptions.PageRanges.AddRange(pageRanges);
+        }
+
+        var base64Data = await BidiMainFrame.BrowsingContext.PrintAsync(printOptions).ConfigureAwait(false);
+        var data = Convert.FromBase64String(base64Data);
+
+        if (!string.IsNullOrEmpty(file))
+        {
+            using var fs = AsyncFileHelper.CreateStream(file, System.IO.FileMode.Create);
+            await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
+        }
+
+        return data;
+    }
 
     /// <inheritdoc />
     protected override async Task<string> PerformScreenshotAsync(ScreenshotType type, ScreenshotOptions options)
@@ -1103,7 +1197,8 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction) => throw new NotImplementedException();
+    protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+        => BidiMainFrame.ExposeFunctionAsync(name, puppeteerFunction);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -1121,6 +1216,64 @@ public class BidiPage : Page
     /// Similar to upstream's evaluationExpression function which wraps the function
     /// so it can be executed as a preload script.
     /// </summary>
+    private static double ConvertPrintParameterToCentimeters(object parameter)
+    {
+        if (parameter == null)
+        {
+            return 0;
+        }
+
+        // Conversion factors to pixels
+        const double pxPerInch = 96;
+        const double pxPerCm = 37.8;
+        const double pxPerMm = 3.78;
+
+        double pixels;
+        if (parameter is decimal or int or double or float)
+        {
+            // Treat numbers as pixel values
+            pixels = Convert.ToDouble(parameter, System.Globalization.CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            var text = parameter.ToString();
+            var unit = text.Length > 2 ? text.Substring(text.Length - 2).ToLowerInvariant() : string.Empty;
+            string valueText;
+
+            double? pxPerUnit = unit switch
+            {
+                "px" => 1,
+                "in" => pxPerInch,
+                "cm" => pxPerCm,
+                "mm" => pxPerMm,
+                _ => null,
+            };
+
+            if (pxPerUnit.HasValue)
+            {
+                valueText = text.Substring(0, text.Length - 2);
+            }
+            else
+            {
+                // Unknown unit, treat as pixels
+                pxPerUnit = 1;
+                valueText = text;
+            }
+
+            if (double.TryParse(valueText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var number))
+            {
+                pixels = number * pxPerUnit.Value;
+            }
+            else
+            {
+                throw new ArgumentException($"Failed to parse parameter value: '{text}'", nameof(parameter));
+            }
+        }
+
+        // Convert pixels to centimeters
+        return pixels / pxPerCm;
+    }
+
     private static string EvaluationExpression(string fun, params object[] args)
     {
         return $"() => {{{BindingUtils.EvaluationString(fun, args)}}}";

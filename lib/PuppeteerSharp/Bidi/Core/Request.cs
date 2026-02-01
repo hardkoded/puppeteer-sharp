@@ -213,7 +213,9 @@ internal class Request : IDisposable
             var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
             return result.Bytes.ValueAsByteArray;
         }
-        catch (WebDriverBiDi.WebDriverBiDiException ex) when (ex.Message.Contains("No resource with given identifier found"))
+        catch (WebDriverBiDi.WebDriverBiDiException ex) when (
+            ex.Message.Contains("No resource with given identifier found") ||
+            ex.Message.Contains("no such network data"))
         {
             throw new PuppeteerException(
                 "Could not load response body for this request. This might happen if the request is a preflight request.",

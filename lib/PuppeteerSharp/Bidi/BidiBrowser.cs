@@ -208,14 +208,14 @@ public class BidiBrowser : Browser
         LaunchOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher)
-        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
+        => CreateAsync(driver, options, loggerFactory, launcher, null);
 
     internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         ConnectOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher)
-        => CreateAsync(driver, (IBrowserOptions)options, loggerFactory, launcher, null);
+        => CreateAsync(driver, options, loggerFactory, launcher, null);
 
     [SuppressMessage(
         "Reliability",
@@ -253,6 +253,24 @@ public class BidiBrowser : Browser
             session.Info.Capabilities.BrowserName.ToLowerInvariant().Contains("firefox")
                 ? SubscribeModules
                 : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
+
+        // Add data collectors for request and response bodies.
+        // This enables network.getData to return response/request bodies.
+        // Data collectors might not be implemented for specific data types, so create them
+        // separately and ignore protocol errors.
+        foreach (var dataType in new[] { WebDriverBiDi.Network.DataType.Request, WebDriverBiDi.Network.DataType.Response })
+        {
+            try
+            {
+                // Buffer size of 20 MB is equivalent to CDP
+                await driver.Network.AddDataCollectorAsync(
+                    new WebDriverBiDi.Network.AddDataCollectorCommandParameters(20_000_000, dataType)).ConfigureAwait(false);
+            }
+            catch (WebDriverBiDi.WebDriverBiDiException)
+            {
+                // Ignore errors - data collectors might not be supported for all data types
+            }
+        }
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher };
         browser.InitializeAsync();

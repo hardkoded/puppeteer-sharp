@@ -39,6 +39,7 @@ namespace PuppeteerSharp.Bidi;
 public class BidiFrame : Frame
 {
     private readonly ConcurrentDictionary<BrowsingContext, BidiFrame> _frames = new();
+    private readonly ConcurrentDictionary<string, ExposableFunction> _exposedFunctions = new();
     private readonly Realms _realms;
 
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
@@ -530,6 +531,38 @@ public class BidiFrame : Frame
         return parentFrame;
     }
 
+    /// <summary>
+    /// Exposes a function to the page's JavaScript context.
+    /// </summary>
+    /// <param name="name">The name of the function.</param>
+    /// <param name="puppeteerFunction">The function to expose.</param>
+    /// <returns>A task that resolves when the function has been exposed.</returns>
+    internal async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
+    {
+        if (_exposedFunctions.ContainsKey(name))
+        {
+            throw new PuppeteerException($"Failed to add page binding with name {name}: globalThis['{name}'] already exists!");
+        }
+
+        var exposable = await ExposableFunction.FromAsync(this, name, puppeteerFunction).ConfigureAwait(false);
+        _exposedFunctions[name] = exposable;
+    }
+
+    /// <summary>
+    /// Removes an exposed function from the page.
+    /// </summary>
+    /// <param name="name">The name of the function to remove.</param>
+    /// <returns>A task that resolves when the function has been removed.</returns>
+    internal async Task RemoveExposedFunctionAsync(string name)
+    {
+        if (!_exposedFunctions.TryRemove(name, out var exposedFunction))
+        {
+            throw new PuppeteerException($"Failed to remove page binding with name {name}: globalThis['{name}'] does not exist!");
+        }
+
+        await exposedFunction.DisposeAsync().ConfigureAwait(false);
+    }
+
     internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
     {
         await BrowsingContext.SetFilesAsync(
@@ -848,6 +881,17 @@ public class BidiFrame : Frame
                 }
             }
 
+            // Dispose all exposed functions to prevent memory leaks
+            // Use fire-and-forget pattern to avoid async event handler issues
+            foreach (var kvp in _exposedFunctions)
+            {
+                _ = kvp.Value.DisposeAsync().AsTask().ContinueWith(
+                    _ => { },
+                    TaskScheduler.Default);
+            }
+
+            _exposedFunctions.Clear();
+
             ((BidiPage)Page).OnFrameDetached(new FrameEventArgs(this));
         };
 
@@ -856,11 +900,9 @@ public class BidiFrame : Frame
             var httpRequest = BidiHttpRequest.From(args.Request, this);
             SetupRequestHandlers(args.Request, httpRequest);
 
-            // Use the request interception queue to serialize handler execution.
-            // This ensures user-provided handlers run sequentially across concurrent
-            // requests, matching JavaScript's single-threaded event handling behavior.
-            _ = ((BidiPage)Page).RequestInterceptionQueue.Enqueue(
-                () => httpRequest.FinalizeInterceptionsAsync());
+            // Call finalizeInterceptions directly like upstream does.
+            // Using fire-and-forget pattern matching upstream's `void httpRequest.finalizeInterceptions()`.
+            _ = httpRequest.FinalizeInterceptionsAsync();
         };
 
         BrowsingContext.Navigation += (sender, args) =>
@@ -883,6 +925,7 @@ public class BidiFrame : Frame
 
         BrowsingContext.DomContentLoaded += (sender, args) =>
         {
+            OnLoadingStarted();
             ((Page)Page).OnDOMContentLoaded();
             ((Page)Page).OnFrameNavigated(new FrameNavigatedEventArgs(this, NavigationType.Navigation));
         };

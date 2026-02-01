@@ -1,33 +1,5 @@
 [
   {
-    "comment": "Firefox BiDi doesn't support browserURL connection because it doesn't expose the /json/version CDP endpoint. https://bugzilla.mozilla.org/show_bug.cgi?id=1862018",
-    "testIdPattern": "[connect.spec] Puppeteer.connect should be able to connect using browserUrl, with and without trailing slash",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi only supports one session per browser - cannot connect to an already-connected browser. https://bugzilla.mozilla.org/show_bug.cgi?id=1862018",
-    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "ExposeFunctionAsync is not implemented in BiDi yet",
-    "testIdPattern": "[ariaqueryhandler.spec] AriaQueryHandler waitForSelector (aria) should work independently of `exposeFunction",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "ExposeFunctionAsync is not implemented in BiDi yet",
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
@@ -133,51 +105,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[evaluation.spec] *exposed*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[page.spec] *Page.exposeFunction*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "This is part of organizing the webdriver bidi implementation, We will remove it one by one",
-    "testIdPattern": "[page.spec] *Page.removeExposedFunction*",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
     "comment": "BiDi driver doesn't support custom WebSocket factories",
     "testIdPattern": "[launcher.spec] PuppeteerSharp should support custom websocket",
     "platforms": ["darwin", "linux", "win32"],
@@ -210,6 +137,48 @@
     "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi does not support Tagged/Accessible PDF - upstream has FAIL/PASS but we skip since it always fails",
+    "testIdPattern": "[pdf.spec] Page.pdf can print to PDF with accessible",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: connection issues when reconnecting to browser - fails with 'Failed to create connection'",
+    "testIdPattern": "[browser.spec] Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: connection issues when connecting to remote browser - fails with 'Failed to create connection'",
+    "testIdPattern": "[browser.spec] Browser.process should not return child_process for remote browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: RequestServedFromCache event not properly tracked",
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Firefox BiDi: Flaky test - cooperative request interception priority handling",
+    "testIdPattern": "[requestinterception-experimental.spec] cooperative request interception Page.setRequestInterception should cooperatively * by priority",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Chrome headless-shell: OOPIF test flaky in CI due to compositor timing issue (crbug.com/1334119)",
+    "testIdPattern": "[oopif.spec] OOPIF should provide access to elements",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome-headless-shell"],
     "expectations": ["FAIL"]
   }
 ]

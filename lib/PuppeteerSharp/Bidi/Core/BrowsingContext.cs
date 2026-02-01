@@ -187,6 +187,12 @@ internal class BrowsingContext : IDisposable
         return (await Session.Driver.BrowsingContext.CaptureScreenshotAsync(parameters).ConfigureAwait(false)).Data;
     }
 
+    internal async Task<string> PrintAsync(PrintCommandParameters options)
+    {
+        options.BrowsingContextId = Id;
+        return (await Session.Driver.BrowsingContext.PrintAsync(options).ConfigureAwait(false)).Data;
+    }
+
     internal async Task SetViewportAsync(SetViewportOptions options = null)
     {
         var parameters = new SetViewportCommandParameters()
@@ -263,6 +269,16 @@ internal class BrowsingContext : IDisposable
             Contexts = [Id],
         };
         await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
+    }
+
+    internal async Task SetScreenOrientationOverrideAsync(ScreenOrientation screenOrientation)
+    {
+        var parameters = new SetScreenOrientationOverrideCommandParameters
+        {
+            ScreenOrientation = screenOrientation,
+            Contexts = [Id],
+        };
+        await Session.Driver.Emulation.SetScreenOrientationOverrideAsync(parameters).ConfigureAwait(false);
     }
 
     internal async Task SetFilesAsync(WebDriverBiDi.Script.SharedReference element, string[] files)
@@ -392,6 +408,8 @@ internal class BrowsingContext : IDisposable
                 return;
             }
 
+            // Update URL when history is updated (e.g., via history.pushState/replaceState)
+            Url = args.Url;
             OnHistoryUpdated();
         };
 
