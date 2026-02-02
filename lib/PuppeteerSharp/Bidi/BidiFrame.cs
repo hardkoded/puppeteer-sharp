@@ -900,9 +900,12 @@ public class BidiFrame : Frame
             var httpRequest = BidiHttpRequest.From(args.Request, this);
             SetupRequestHandlers(args.Request, httpRequest);
 
-            // Call finalizeInterceptions directly like upstream does.
-            // Using fire-and-forget pattern matching upstream's `void httpRequest.finalizeInterceptions()`.
-            _ = httpRequest.FinalizeInterceptionsAsync();
+            // Use the request interception queue to serialize handler execution.
+            // This ensures that the first request (with user handlers) is processed
+            // before any duplicate requests (e.g., Firefox BiDi speculative loading),
+            // preventing duplicates from racing to the server without proper headers.
+            _ = BidiPage.RequestInterceptionQueue.Enqueue(
+                () => httpRequest.FinalizeInterceptionsAsync());
         };
 
         BrowsingContext.Navigation += (sender, args) =>
