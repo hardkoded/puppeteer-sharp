@@ -840,7 +840,23 @@ namespace PuppeteerSharp
                 return;
             }
 
-            // Run tasks one after the other
+            EnqueueInterceptorHandlers(request);
+            Request?.Invoke(this, new RequestEventArgs(request));
+        }
+
+        /// <summary>
+        /// Enqueues registered interceptor handlers for the request without firing the Request event.
+        /// This is used for duplicate requests (e.g., Firefox BiDi speculative loading) where we need
+        /// to run the handlers but don't want to notify the user multiple times.
+        /// </summary>
+        /// <param name="request">Request object.</param>
+        internal void EnqueueInterceptorHandlers(IRequest request)
+        {
+            if (request == null)
+            {
+                return;
+            }
+
             if (request is IInterceptableRequest interceptableRequest)
             {
                 foreach (var subscriber in _requestInterceptionTask)
@@ -848,9 +864,14 @@ namespace PuppeteerSharp
                     interceptableRequest.EnqueueInterceptionAction(subscriber);
                 }
             }
-
-            Request?.Invoke(this, new RequestEventArgs(request));
         }
+
+        /// <summary>
+        /// Raises the <see cref="Request"/> event without enqueueing handlers.
+        /// Used when handlers have already been enqueued separately.
+        /// </summary>
+        /// <param name="e">Request event arguments.</param>
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="DOMContentLoaded"/> event.

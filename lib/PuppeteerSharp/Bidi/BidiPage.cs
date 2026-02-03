@@ -51,6 +51,9 @@ public class BidiPage : Page
     // Track URLs that have fired the RequestFailed event to deduplicate Firefox's duplicate events.
     private readonly ConcurrentDictionary<string, bool> _failedEventsFired = new();
 
+    // Track URLs that have fired the Response event to deduplicate Firefox's duplicate events.
+    private readonly ConcurrentDictionary<string, bool> _responseEventsFired = new();
+
     // Track URLs that have fired the Request event to deduplicate Firefox's duplicate events.
     // Firefox BiDi sends duplicate BeforeRequestSent events with different request IDs for speculative/parallel loading.
     private readonly ConcurrentDictionary<string, bool> _requestEventsFired = new();
@@ -973,6 +976,23 @@ public class BidiPage : Page
     internal bool TryMarkFailedEventFired(string url) => _failedEventsFired.TryAdd(url, true);
 
     /// <summary>
+    /// Attempts to mark a URL as having fired the Response event.
+    /// Returns true if this is the first time marking the URL, false if already marked.
+    /// This is used to deduplicate Firefox BiDi's duplicate BeforeRequestSent events.
+    /// Only deduplicates during navigation.
+    /// </summary>
+    internal bool TryMarkResponseEventFired(string url)
+    {
+        // Only deduplicate during navigation. After navigation, allow all responses.
+        if (!_isNavigating)
+        {
+            return true;
+        }
+
+        return _responseEventsFired.TryAdd(url, true);
+    }
+
+    /// <summary>
     /// Attempts to mark a URL as having fired the Request event.
     /// Returns true if this is the first time marking the URL, false if already marked.
     /// This is used to deduplicate Firefox BiDi's duplicate BeforeRequestSent events.
@@ -997,6 +1017,7 @@ public class BidiPage : Page
     {
         _cacheEventsFired.Clear();
         _failedEventsFired.Clear();
+        _responseEventsFired.Clear();
         _requestEventsFired.Clear();
         _isNavigating = true;
     }
