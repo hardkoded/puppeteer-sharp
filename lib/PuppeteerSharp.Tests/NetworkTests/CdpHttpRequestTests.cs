@@ -6,12 +6,13 @@ using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class CdpHttpRequestTests
     {
-        [Test]
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should reconstruct postData from postDataEntries")]
         public void ShouldReconstructPostDataFromPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -46,7 +47,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("part1part2"));
         }
 
-        [Test]
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should fallback to postData if postDataEntries is missing")]
         public void ShouldFallbackToPostDataIfPostDataEntriesIsMissing()
         {
             var client = Substitute.For<CDPSession>();
@@ -77,7 +78,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("originalData"));
         }
 
-        [Test]
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle multi-byte characters in postDataEntries")]
         public void ShouldHandleMultiByteCharactersInPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -121,7 +122,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo(multiByteString));
         }
 
-        [Test]
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle empty postDataEntries")]
         public void ShouldHandleEmptyPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -152,7 +153,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.Null);
         }
 
-        [Test]
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle null bytes in postDataEntries")]
         public void ShouldHandleNullBytesInPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
