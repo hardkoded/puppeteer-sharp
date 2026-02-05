@@ -51,6 +51,8 @@ namespace PuppeteerSharp
                 "MediaRouter",
                 "OptimizationHints",
                 "ProcessPerSiteUpToMainFrameThreshold",
+                "IPH_ReadingModePageActionLabel",
+                "ReadAnythingOmniboxChip",
             };
 
             disabledFeatures.AddRange(userDisabledFeatures);
