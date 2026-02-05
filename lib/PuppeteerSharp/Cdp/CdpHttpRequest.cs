@@ -51,22 +51,44 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             {
                 if (entry.Bytes != null)
                 {
-                    buffers.Add(Convert.FromBase64String(entry.Bytes));
+                    try
+                    {
+                        buffers.Add(Convert.FromBase64String(entry.Bytes));
+                    }
+                    catch (FormatException ex)
+                    {
+                        _logger.LogWarning(ex, "Invalid base64 data in PostDataEntry, skipping entry");
+                    }
                 }
             }
 
             // Concatenate all buffers
-            var totalLength = buffers.Sum(b => b.Length);
-            var mergedBuffer = new byte[totalLength];
-            var offset = 0;
-            foreach (var buffer in buffers)
+            if (buffers.Count > 0)
             {
-                Buffer.BlockCopy(buffer, 0, mergedBuffer, offset, buffer.Length);
-                offset += buffer.Length;
-            }
+                var totalLength = buffers.Sum(b => b.Length);
+                var mergedBuffer = new byte[totalLength];
+                var offset = 0;
+                foreach (var buffer in buffers)
+                {
+                    Buffer.BlockCopy(buffer, 0, mergedBuffer, offset, buffer.Length);
+                    offset += buffer.Length;
+                }
 
-            // Decode to string
-            PostData = Encoding.UTF8.GetString(mergedBuffer);
+                // Decode to string
+                try
+                {
+                    PostData = Encoding.UTF8.GetString(mergedBuffer);
+                }
+                catch (DecoderFallbackException ex)
+                {
+                    _logger.LogWarning(ex, "Invalid UTF-8 data in PostDataEntries, using fallback");
+                    PostData = Encoding.UTF8.GetString(mergedBuffer, 0, mergedBuffer.Length);
+                }
+            }
+            else
+            {
+                PostData = null;
+            }
         }
         else
         {

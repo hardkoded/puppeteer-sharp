@@ -28,7 +28,7 @@ namespace PuppeteerSharp.Cdp.Messaging;
 internal class PostDataEntry
 {
     /// <summary>
-    /// Gets or sets the bytes in base64 format.
+    /// Gets or sets the bytes in base64 format. May be null.
     /// </summary>
     public string Bytes { get; set; }
 }
