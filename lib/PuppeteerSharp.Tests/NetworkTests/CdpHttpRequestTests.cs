@@ -188,5 +188,76 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             Assert.That(request.PostData, Is.EqualTo("part1part2"));
         }
+
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle invalid base64 in postDataEntries")]
+        public void ShouldHandleInvalidBase64InPostDataEntries()
+        {
+            var client = Substitute.For<CDPSession>();
+            var frame = Substitute.For<IFrame>();
+            var data = new RequestWillBeSentResponse
+            {
+                RequestId = "requestId",
+                LoaderId = "loaderId",
+                Type = ResourceType.Document,
+                Request = new Request
+                {
+                    Url = "http://example.com",
+                    Method = HttpMethod.Post,
+                    Headers = new Dictionary<string, string>(),
+                    PostDataEntries = new[]
+                    {
+                        new PostDataEntry { Bytes = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("part1")) },
+                        new PostDataEntry { Bytes = "invalid-base64!@#$" },
+                        new PostDataEntry { Bytes = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("part2")) }
+                    }
+                }
+            };
+
+            var request = new CdpHttpRequest(
+                client,
+                frame,
+                "interceptionId",
+                true,
+                data,
+                new List<IRequest>(),
+                NullLoggerFactory.Instance);
+
+            Assert.That(request.PostData, Is.EqualTo("part1part2"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should prioritize postDataEntries over postData")]
+        public void ShouldPrioritizePostDataEntriesOverPostData()
+        {
+            var client = Substitute.For<CDPSession>();
+            var frame = Substitute.For<IFrame>();
+            var data = new RequestWillBeSentResponse
+            {
+                RequestId = "requestId",
+                LoaderId = "loaderId",
+                Type = ResourceType.Document,
+                Request = new Request
+                {
+                    Url = "http://example.com",
+                    Method = HttpMethod.Post,
+                    Headers = new Dictionary<string, string>(),
+                    PostData = "legacyData",
+                    PostDataEntries = new[]
+                    {
+                        new PostDataEntry { Bytes = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("entriesData")) }
+                    }
+                }
+            };
+
+            var request = new CdpHttpRequest(
+                client,
+                frame,
+                "interceptionId",
+                true,
+                data,
+                new List<IRequest>(),
+                NullLoggerFactory.Instance);
+
+            Assert.That(request.PostData, Is.EqualTo("entriesData"));
+        }
     }
 }

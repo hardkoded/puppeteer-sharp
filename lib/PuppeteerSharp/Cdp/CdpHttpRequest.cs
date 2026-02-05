@@ -47,43 +47,25 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         if (data.Request.PostDataEntries is { Length: > 0 })
         {
             var buffers = new List<byte[]>();
-            foreach (var entry in data.Request.PostDataEntries)
+            foreach (var entry in data.Request.PostDataEntries.Where(entry => entry.Bytes != null))
             {
-                if (entry.Bytes != null)
+                try
                 {
-                    try
-                    {
-                        buffers.Add(Convert.FromBase64String(entry.Bytes));
-                    }
-                    catch (FormatException ex)
-                    {
-                        _logger.LogWarning(ex, "Invalid base64 data in PostDataEntry, skipping entry");
-                    }
+                    buffers.Add(Convert.FromBase64String(entry.Bytes));
+                }
+                catch (FormatException ex)
+                {
+                    _logger.LogWarning(ex, "Invalid base64 data in PostDataEntry, skipping entry");
                 }
             }
 
             // Concatenate all buffers
             if (buffers.Count > 0)
             {
-                var totalLength = buffers.Sum(b => b.Length);
-                var mergedBuffer = new byte[totalLength];
-                var offset = 0;
-                foreach (var buffer in buffers)
-                {
-                    Buffer.BlockCopy(buffer, 0, mergedBuffer, offset, buffer.Length);
-                    offset += buffer.Length;
-                }
+                var mergedBuffer = buffers.SelectMany(b => b).ToArray();
 
-                // Decode to string
-                try
-                {
-                    PostData = Encoding.UTF8.GetString(mergedBuffer);
-                }
-                catch (DecoderFallbackException ex)
-                {
-                    _logger.LogWarning(ex, "Invalid UTF-8 data in PostDataEntries, using fallback");
-                    PostData = Encoding.UTF8.GetString(mergedBuffer, 0, mergedBuffer.Length);
-                }
+                // Decode to string using default UTF-8 replacement behavior for invalid sequences
+                PostData = Encoding.UTF8.GetString(mergedBuffer);
             }
             else
             {
