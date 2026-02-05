@@ -17,6 +17,13 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly bool _hidden;
         private readonly string _role;
         private readonly bool _ignored;
+        private readonly string _description;
+        private readonly string _roledescription;
+        private readonly bool _busy;
+        private readonly string _live;
+        private readonly bool _modal;
+        private readonly bool _hasErrormessage;
+        private readonly bool _hasDetails;
         private bool? _cachedHasFocusableChild;
 
         private AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
@@ -26,11 +33,18 @@ namespace PuppeteerSharp.PageAccessibility
             _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
             _ignored = payload.Ignored;
+            _description = payload.Description != null ? payload.Description.Value.ToObject<string>() : null;
 
             _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
             _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
             Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            _busy = payload.Properties?.FirstOrDefault(p => p.Name == "busy")?.Value.Value.ToObject<bool>() == true;
+            _live = payload.Properties?.FirstOrDefault(p => p.Name == "live")?.Value.Value.ToObject<string>();
+            _modal = payload.Properties?.FirstOrDefault(p => p.Name == "modal")?.Value.Value.ToObject<bool>() == true;
+            _roledescription = payload.Properties?.FirstOrDefault(p => p.Name == "roledescription")?.Value.Value.ToObject<string>();
+            _hasErrormessage = payload.Properties?.Any(p => p.Name == "errormessage") == true;
+            _hasDetails = payload.Properties?.Any(p => p.Name == "details") == true;
         }
 
         public List<AXNode> Children { get; } = new();
@@ -179,13 +193,19 @@ namespace PuppeteerSharp.PageAccessibility
                 return true;
             }
 
+            // Nodes with these properties are interesting
+            if (_busy || (_live != null && _live != "off") || _modal || _hasErrormessage || _hasDetails || _roledescription != null)
+            {
+                return true;
+            }
+
             // A non focusable child of a control is not interesting
             if (insideControl)
             {
                 return false;
             }
 
-            return IsLeafNode() && !string.IsNullOrEmpty(_name);
+            return IsLeafNode() && (!string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description));
         }
 
         internal SerializedAXNode Serialize()
@@ -245,6 +265,12 @@ namespace PuppeteerSharp.PageAccessibility
                 HasPopup = GetIfNotFalse(properties.GetValue("haspopup")?.ToObject<string>()),
                 Invalid = GetIfNotFalse(properties.GetValue("invalid")?.ToObject<string>()),
                 Orientation = GetIfNotFalse(properties.GetValue("orientation")?.ToObject<string>()),
+                Busy = properties.GetValue("busy")?.ToObject<bool>() ?? false,
+                Atomic = properties.GetValue("atomic")?.ToObject<bool>() ?? false,
+                Live = properties.GetValue("live")?.ToObject<string>(),
+                Relevant = properties.GetValue("relevant")?.ToObject<string>(),
+                Errormessage = properties.GetValue("errormessage")?.ToObject<string>(),
+                Details = properties.GetValue("details")?.ToObject<string>(),
             };
 
             return node;

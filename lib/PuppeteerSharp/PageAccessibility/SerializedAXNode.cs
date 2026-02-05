@@ -139,6 +139,36 @@ namespace PuppeteerSharp.PageAccessibility
         public string Orientation { get; set; }
 
         /// <summary>
+        /// Whether the node is <see href="https://www.w3.org/TR/wai-aria/#aria-busy">busy</see>.
+        /// </summary>
+        public bool Busy { get; set; }
+
+        /// <summary>
+        /// Whether the live region is <see href="https://www.w3.org/TR/wai-aria/#aria-atomic">atomic</see>.
+        /// </summary>
+        public bool Atomic { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-live">live</see> status of the node.
+        /// </summary>
+        public string Live { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-relevant">relevant</see> changes for the live region.
+        /// </summary>
+        public string Relevant { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-errormessage">error message</see> for the node.
+        /// </summary>
+        public string Errormessage { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-details">details</see> for the node.
+        /// </summary>
+        public string Details { get; set; }
+
+        /// <summary>
         /// Child nodes of this node, if any.
         /// </summary>
         public SerializedAXNode[] Children { get; set; }
@@ -172,6 +202,12 @@ namespace PuppeteerSharp.PageAccessibility
                     Level == other.Level &&
                     ValueMin == other.ValueMin &&
                     ValueMax == other.ValueMax &&
+                    Busy == other.Busy &&
+                    Atomic == other.Atomic &&
+                    Live == other.Live &&
+                    Relevant == other.Relevant &&
+                    Errormessage == other.Errormessage &&
+                    Details == other.Details &&
                     (Children == other.Children || Children.SequenceEqual(other.Children)));
 
         /// <inheritdoc/>
@@ -203,6 +239,12 @@ namespace PuppeteerSharp.PageAccessibility
                 Level.GetHashCode() ^
                 ValueMin.GetHashCode() ^
                 ValueMax.GetHashCode() ^
+                Busy.GetHashCode() ^
+                Atomic.GetHashCode() ^
+                Live.GetHashCode() ^
+                Relevant.GetHashCode() ^
+                Errormessage.GetHashCode() ^
+                Details.GetHashCode() ^
                 Children.GetHashCode();
     }
 }

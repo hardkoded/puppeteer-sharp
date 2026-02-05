@@ -403,6 +403,93 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should capture new accessibility properties and not prune them")]
+        public async Task ShouldCaptureNewAccessibilityPropertiesAndNotPruneThem()
+        {
+            await Page.SetContentAsync(@"
+                <div role=""alert"" aria-busy=""true"">This is an alert</div>
+                <div aria-live=""polite"" aria-atomic=""true"" aria-relevant=""additions text"">
+                  This is polite live region
+                </div>
+                <div aria-modal=""true"" role=""dialog"" aria-roledescription=""My Modal"">
+                  Modal content
+                </div>
+                <div id=""error"">Error message</div>
+                <input aria-invalid=""true"" aria-errormessage=""error"" value=""invalid input"">
+                <div id=""details"">Additional details</div>
+                <div aria-details=""details"">Element with details</div>
+                <div aria-description=""This is a description""></div>
+            ");
+
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+
+            Assert.AreEqual("RootWebArea", snapshot.Role);
+            Assert.IsNotNull(snapshot.Children);
+            Assert.AreEqual(8, snapshot.Children.Length);
+
+            // Alert with busy
+            var alert = snapshot.Children[0];
+            Assert.AreEqual("alert", alert.Role);
+            Assert.AreEqual(string.Empty, alert.Name);
+            Assert.IsTrue(alert.Busy);
+            Assert.AreEqual("assertive", alert.Live);
+            Assert.IsTrue(alert.Atomic);
+            Assert.AreEqual(1, alert.Children.Length);
+            Assert.AreEqual("StaticText", alert.Children[0].Role);
+            Assert.AreEqual("This is an alert", alert.Children[0].Name);
+
+            // Live region with atomic and relevant
+            var liveRegion = snapshot.Children[1];
+            Assert.AreEqual("generic", liveRegion.Role);
+            Assert.AreEqual(string.Empty, liveRegion.Name);
+            Assert.AreEqual("polite", liveRegion.Live);
+            Assert.IsTrue(liveRegion.Atomic);
+            Assert.AreEqual("additions text", liveRegion.Relevant);
+            Assert.AreEqual(1, liveRegion.Children.Length);
+            Assert.AreEqual("StaticText", liveRegion.Children[0].Role);
+            Assert.AreEqual("This is polite live region", liveRegion.Children[0].Name);
+
+            // Modal dialog with roledescription
+            var modal = snapshot.Children[2];
+            Assert.AreEqual("dialog", modal.Role);
+            Assert.AreEqual(string.Empty, modal.Name);
+            Assert.IsTrue(modal.Modal);
+            Assert.AreEqual("My Modal", modal.RoleDescription);
+            Assert.AreEqual(1, modal.Children.Length);
+            Assert.AreEqual("StaticText", modal.Children[0].Role);
+            Assert.AreEqual("Modal content", modal.Children[0].Name);
+
+            // Error message text
+            var errorText = snapshot.Children[3];
+            Assert.AreEqual("StaticText", errorText.Role);
+            Assert.AreEqual("Error message", errorText.Name);
+
+            // Input with errormessage
+            var input = snapshot.Children[4];
+            Assert.AreEqual("textbox", input.Role);
+            Assert.AreEqual("invalid input", input.Value);
+            Assert.AreEqual("true", input.Invalid);
+            Assert.AreEqual("error", input.Errormessage);
+
+            // Details text
+            var detailsText = snapshot.Children[5];
+            Assert.AreEqual("StaticText", detailsText.Role);
+            Assert.AreEqual("Additional details", detailsText.Name);
+
+            // Element with details reference
+            var elementWithDetails = snapshot.Children[6];
+            Assert.AreEqual("generic", elementWithDetails.Role);
+            Assert.AreEqual("details", elementWithDetails.Details);
+            Assert.AreEqual(1, elementWithDetails.Children.Length);
+            Assert.AreEqual("StaticText", elementWithDetails.Children[0].Role);
+            Assert.AreEqual("Element with details", elementWithDetails.Children[0].Name);
+
+            // Element with description
+            var elementWithDescription = snapshot.Children[7];
+            Assert.AreEqual("generic", elementWithDescription.Role);
+            Assert.AreEqual("This is a description", elementWithDescription.Description);
+        }
+
         private SerializedAXNode FindFocusedNode(SerializedAXNode serializedAXNode)
         {
             if (serializedAXNode.Focused)
