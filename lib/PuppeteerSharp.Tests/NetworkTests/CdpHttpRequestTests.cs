@@ -12,7 +12,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class CdpHttpRequestTests
     {
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should reconstruct postData from postDataEntries")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should reconstruct postData from postDataEntries")]
         public void ShouldReconstructPostDataFromPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -47,7 +47,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("part1part2"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should fallback to postData if postDataEntries is missing")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should fallback to postData if postDataEntries is missing")]
         public void ShouldFallbackToPostDataIfPostDataEntriesIsMissing()
         {
             var client = Substitute.For<CDPSession>();
@@ -78,7 +78,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("originalData"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle multi-byte characters in postDataEntries")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should handle multi-byte characters in postDataEntries")]
         public void ShouldHandleMultiByteCharactersInPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -122,7 +122,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo(multiByteString));
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle empty postDataEntries")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should handle empty postDataEntries")]
         public void ShouldHandleEmptyPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -153,7 +153,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.Null);
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle null bytes in postDataEntries")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should handle null bytes in postDataEntries")]
         public void ShouldHandleNullBytesInPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -189,7 +189,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("part1part2"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should handle invalid base64 in postDataEntries")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should handle invalid base64 in postDataEntries")]
         public void ShouldHandleInvalidBase64InPostDataEntries()
         {
             var client = Substitute.For<CDPSession>();
@@ -225,7 +225,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.PostData, Is.EqualTo("part1part2"));
         }
 
-        [Test, PuppeteerTest("network.spec", "network CdpHttpRequest", "should prioritize postDataEntries over postData")]
+        [Test, PuppeteerTest("network.spec", "CdpHttpRequest", "should prioritize postDataEntries over postData")]
         public void ShouldPrioritizePostDataEntriesOverPostData()
         {
             var client = Substitute.For<CDPSession>();
