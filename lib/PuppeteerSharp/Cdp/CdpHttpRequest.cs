@@ -42,7 +42,41 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         Url = data.Request.Url;
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = data.Request.PostData;
+
+        // Reconstruct PostData from PostDataEntries if available, otherwise use PostData
+        if (data.Request.PostDataEntries is { Length: > 0 })
+        {
+            var buffers = new List<byte[]>();
+            foreach (var entry in data.Request.PostDataEntries.Where(entry => entry.Bytes != null))
+            {
+                try
+                {
+                    buffers.Add(Convert.FromBase64String(entry.Bytes));
+                }
+                catch (FormatException ex)
+                {
+                    _logger.LogWarning(ex, "Invalid base64 data in PostDataEntry, skipping entry");
+                }
+            }
+
+            // Concatenate all buffers
+            if (buffers.Count > 0)
+            {
+                var mergedBuffer = buffers.SelectMany(b => b).ToArray();
+
+                // Decode to string using default UTF-8 replacement behavior for invalid sequences
+                PostData = Encoding.UTF8.GetString(mergedBuffer);
+            }
+            else
+            {
+                PostData = null;
+            }
+        }
+        else
+        {
+            PostData = data.Request.PostData;
+        }
+
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
