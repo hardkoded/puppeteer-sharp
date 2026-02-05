@@ -20,26 +20,15 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
-using PuppeteerSharp.Helpers.Json;
-
 namespace PuppeteerSharp.Cdp.Messaging;
 
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json.Serialization;
-
-internal class Request
+/// <summary>
+/// Post data entry for a request.
+/// </summary>
+internal class PostDataEntry
 {
-    public HttpMethod Method { get; set; }
-
-    [JsonConverter(typeof(LowSurrogateConverter))]
-    public string PostData { get; set; }
-
-    public PostDataEntry[] PostDataEntries { get; set; }
-
-    public Dictionary<string, string> Headers { get; set; } = [];
-
-    public string Url { get; set; }
-
-    public bool? HasPostData { get; set; }
+    /// <summary>
+    /// Gets or sets the bytes in base64 format.
+    /// </summary>
+    public string Bytes { get; set; }
 }
