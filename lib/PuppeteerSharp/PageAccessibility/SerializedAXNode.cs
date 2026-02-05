@@ -161,7 +161,7 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// The <see href="https://www.w3.org/TR/wai-aria/#aria-errormessage">error message</see> for the node.
         /// </summary>
-        public string Errormessage { get; set; }
+        public string ErrorMessage { get; set; }
 
         /// <summary>
         /// The <see href="https://www.w3.org/TR/wai-aria/#aria-details">details</see> for the node.
@@ -206,7 +206,7 @@ namespace PuppeteerSharp.PageAccessibility
                     Atomic == other.Atomic &&
                     Live == other.Live &&
                     Relevant == other.Relevant &&
-                    Errormessage == other.Errormessage &&
+                    ErrorMessage == other.ErrorMessage &&
                     Details == other.Details &&
                     (Children == other.Children || Children.SequenceEqual(other.Children)));
 
@@ -243,7 +243,7 @@ namespace PuppeteerSharp.PageAccessibility
                 Atomic.GetHashCode() ^
                 Live.GetHashCode() ^
                 Relevant.GetHashCode() ^
-                Errormessage.GetHashCode() ^
+                ErrorMessage.GetHashCode() ^
                 Details.GetHashCode() ^
                 Children.GetHashCode();
     }

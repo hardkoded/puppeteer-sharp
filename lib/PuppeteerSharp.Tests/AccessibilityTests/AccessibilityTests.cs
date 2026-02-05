@@ -469,7 +469,7 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.AreEqual("textbox", input.Role);
             Assert.AreEqual("invalid input", input.Value);
             Assert.AreEqual("true", input.Invalid);
-            Assert.AreEqual("error", input.Errormessage);
+            Assert.AreEqual("error", input.ErrorMessage);
 
             // Details text
             var detailsText = snapshot.Children[5];

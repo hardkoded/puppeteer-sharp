@@ -205,7 +205,7 @@ namespace PuppeteerSharp.PageAccessibility
                 return false;
             }
 
-            return IsLeafNode() && (!string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description));
+            return IsLeafNode() && HasNameOrDescription();
         }
 
         internal SerializedAXNode Serialize()
@@ -269,11 +269,16 @@ namespace PuppeteerSharp.PageAccessibility
                 Atomic = properties.GetValue("atomic")?.ToObject<bool>() ?? false,
                 Live = properties.GetValue("live")?.ToObject<string>(),
                 Relevant = properties.GetValue("relevant")?.ToObject<string>(),
-                Errormessage = properties.GetValue("errormessage")?.ToObject<string>(),
+                ErrorMessage = properties.GetValue("errormessage")?.ToObject<string>(),
                 Details = properties.GetValue("details")?.ToObject<string>(),
             };
 
             return node;
+        }
+
+        private bool HasNameOrDescription()
+        {
+            return !string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description);
         }
 
         private bool IsPlainTextField()
