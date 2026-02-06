@@ -387,10 +387,8 @@ internal class BrowsingContext : IDisposable
                 }
             }
 
-            if (_navigation is { IsDisposed: false })
-            {
-                return;
-            }
+            // Dispose old navigation if exists - a new navigation has started
+            _navigation?.Dispose();
 
             _navigation = Core.Navigation.From(this);
 

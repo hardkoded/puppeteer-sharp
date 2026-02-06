@@ -393,7 +393,7 @@ public class BidiFrame : Frame
 
                     // Race between (load+childFrames) and fragment/failed/aborted and timeout
                     // Any of these events can complete the navigation
-                    await Task.WhenAny(
+                    var navCompletedTask = await Task.WhenAny(
                         waitForLoadAndChildFramesTask,
                         waitForFragmentTask,
                         waitForFailedTask,
@@ -402,8 +402,11 @@ public class BidiFrame : Frame
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    // Wait for request to be created if we don't have one yet
-                    if (navigation.Request == null)
+                    // If navigation failed or was aborted, don't wait for request - navigation is done
+                    var navigationEnded = navCompletedTask == waitForFailedTask || navCompletedTask == waitForAbortedTask;
+
+                    // Wait for request to be created if we don't have one yet and navigation hasn't ended
+                    if (navigation.Request == null && !navigationEnded)
                     {
                         var requestCreatedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                         void OnRequestCreated(object sender, Core.RequestEventArgs args) => requestCreatedTcs.TrySetResult(true);
@@ -420,8 +423,8 @@ public class BidiFrame : Frame
                         cancellationToken.ThrowIfCancellationRequested();
                     }
 
-                    // Wait for request completion if navigation has a request
-                    if (navigation.Request != null)
+                    // Wait for request completion if navigation has a request and navigation hasn't ended
+                    if (navigation.Request != null && !navigationEnded)
                     {
                         await WaitForRequestFinishedAsync(navigation.Request, cancellationToken).ConfigureAwait(false);
                     }

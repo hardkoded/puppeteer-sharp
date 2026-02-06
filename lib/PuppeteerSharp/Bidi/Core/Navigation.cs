@@ -108,6 +108,12 @@ internal class Navigation
 
     private void HandleNavigation(WebDriverBiDi.BrowsingContext.NavigationEventArgs args, Action action)
     {
+        // Skip if this navigation is already disposed
+        if (IsDisposed)
+        {
+            return;
+        }
+
         if (args.BrowsingContextId != _browsingContext.Id || !Matches(args.NavigationId))
         {
             return;
