@@ -48,6 +48,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             };
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             Assert.That(cached, Is.Empty);
+            await Task.Delay(1000);
             await Page.ReloadAsync();
             Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
         }
