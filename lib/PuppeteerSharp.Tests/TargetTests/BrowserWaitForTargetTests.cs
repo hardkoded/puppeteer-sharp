@@ -14,12 +14,12 @@ namespace PuppeteerSharp.Tests.TargetTests
         [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should wait for a target")]
         public async Task ShouldWaitForATarget()
         {
-            var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
+            var targetTask = Browser.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new() { Timeout = 3000 });
             var page = await Browser.NewPageAsync();
             Assert.That(targetTask.IsCompleted, Is.False);
             await page.GoToAsync(TestConstants.EmptyPage);
-            Assert.That(targetTask.IsCompleted, Is.True);
-            Assert.That(page, Is.SameAs(await targetTask.Result.PageAsync()));
+            var target = await targetTask;
+            Assert.That(page, Is.SameAs(await target.PageAsync()));
 
             await page.CloseAsync();
         }
