@@ -38,18 +38,22 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
         public async Task PageEventsRequestServedFromCache()
         {
+            // Use a fresh browser context to avoid shared HTTP cache from prior tests.
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+
             var cached = new List<string>();
-            Page.RequestServedFromCache += (_, e) =>
+            page.RequestServedFromCache += (_, e) =>
             {
                 if (!TestUtils.IsFavicon(e.Request))
                 {
                     cached.Add(e.Request.Url.Split('/').Last());
                 }
             };
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            await page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             Assert.That(cached, Is.Empty);
             await Task.Delay(1000);
-            await Page.ReloadAsync();
+            await page.ReloadAsync();
             Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
         }
 
