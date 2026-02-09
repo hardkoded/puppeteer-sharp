@@ -59,6 +59,11 @@ namespace PuppeteerSharp
             EnsureSingleLaunchOrConnect();
             _browser = options.Browser;
 
+            if (options.Browser == SupportedBrowser.Firefox)
+            {
+                options.Protocol = ProtocolType.WebdriverBiDi;
+            }
+
             var executable = options.ExecutablePath;
             if (executable == null)
             {
