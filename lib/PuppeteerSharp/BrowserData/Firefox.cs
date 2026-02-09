@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using PuppeteerSharp.Helpers;
@@ -123,13 +122,25 @@ namespace PuppeteerSharp.BrowserData
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
-                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});"));
+                defaultPreferences.Select(i => $"user_pref(\"{EscapeJsonString(i.Key)}\", {SerializePreferenceValue(i.Value)});"));
 
             BackupFile(userPath);
             BackupFile(prefsPath);
             File.WriteAllText(userPath, lines);
             File.WriteAllText(prefsPath, string.Empty);
         }
+
+        private static string SerializePreferenceValue(object value)
+            => value switch
+            {
+                string s => $"\"{EscapeJsonString(s)}\"",
+                bool b => b ? "true" : "false",
+                int n => n.ToString(CultureInfo.InvariantCulture),
+                _ => value?.ToString() ?? "null",
+            };
+
+        private static string EscapeJsonString(string s)
+            => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
         private static void BackupFile(string userPath)
         {
