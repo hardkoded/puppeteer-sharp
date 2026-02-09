@@ -24,7 +24,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         client.MessageReceived += Raise.EventWith(
@@ -107,7 +107,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         await manager.SetRequestInterceptionAsync(true);
@@ -191,7 +191,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         var requests = new List<IRequest>();
@@ -286,7 +286,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         var finishedRequests = new List<IRequest>();
@@ -396,7 +396,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();
@@ -483,7 +483,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();
@@ -581,7 +581,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(true, frameManagerMock, loggerFactory);
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();

@@ -302,3 +302,7 @@ samples/PupppeterSharpAspNetFrameworkSample/PupppeterSharpAspNetFrameworkSample/
 # Visual Studio Code user config directory
 .vscode/
 tools/github-ops/.env
+lib/.claude/settings.local.json
+lib/.claude/settings.local.json
+.nuget/
+.claude/*local*.*

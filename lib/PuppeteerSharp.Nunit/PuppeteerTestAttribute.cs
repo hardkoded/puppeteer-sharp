@@ -21,9 +21,10 @@ namespace PuppeteerSharp.Nunit
     {
         private static TestExpectation[] _localExpectations;
         private static TestExpectation[] _upstreamExpectations;
+
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
-        // TODO: Change implementation when we implement Webdriver Bidi
-        public static readonly bool IsCdp = true;
+        public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
+
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
             (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
@@ -123,19 +124,36 @@ namespace PuppeteerSharp.Nunit
             // Join local and upstream in one variable
             var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
 
+            var testIdStr = ToString();
+
             foreach (var expectation in allExpectations)
             {
-                if (expectation.TestIdRegex.IsMatch(ToString()))
+                if (expectation.TestIdRegex.IsMatch(testIdStr))
                 {
-                    if (expectation.Platforms.Contains(currentExpectationPlatform) &&
-                        expectation.Parameters.All(parameters.Contains) &&
-                        (
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout)))
+                    var platformMatch = expectation.Platforms.Contains(currentExpectationPlatform);
+                    var paramsMatch = expectation.Parameters.All(parameters.Contains);
+
+                    if (platformMatch && paramsMatch)
                     {
-                        output = expectation;
-                        return true;
+                        // If expectation contains FAIL, SKIP, or TIMEOUT, skip the test.
+                        // This handles flaky tests marked as ["FAIL", "PASS"] - we skip them
+                        // rather than running and failing CI.
+                        var shouldSkip = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+
+                        if (shouldSkip)
+                        {
+                            output = expectation;
+                            return true;
+                        }
+
+                        // If expectation contains only PASS, don't skip - run the test
+                        if (expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Pass))
+                        {
+                            output = null;
+                            return false;
+                        }
                     }
                 }
             }

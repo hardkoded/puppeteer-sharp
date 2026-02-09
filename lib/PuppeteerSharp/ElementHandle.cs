@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
@@ -14,13 +13,13 @@ using PuppeteerSharp.QueryHandlers;
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="PuppeteerSharp.IElementHandle" />
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public abstract class ElementHandle : JSHandle, IElementHandle
     {
         private ElementHandle _isolatedHandle;
 
-        internal ElementHandle()
+        internal ElementHandle(JSHandle handle)
         {
+            Handle = handle;
         }
 
         /// <inheritdoc/>
@@ -31,17 +30,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Base handle.
         /// </summary>
-        protected JSHandle Handle { get; init; }
+        internal JSHandle Handle { get; }
 
         /// <summary>
         /// Element's page.
         /// </summary>
         protected abstract Page Page { get; }
 
-        private string DebuggerDisplay =>
-            string.IsNullOrEmpty(RemoteObject.ClassName)
-                ? ToString()
-                : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
+        /// <inheritdoc/>
+        public override string ToString() => Handle.ToString();
 
         /// <inheritdoc/>
         public Task ScreenshotAsync(string file) => ScreenshotAsync(file, new ElementScreenshotOptions());
@@ -454,8 +451,9 @@ namespace PuppeteerSharp
             => BindIsolatedHandleAsync<bool, ElementHandle>(async handle =>
             {
                 await handle.AssertConnectedElementAsync().ConfigureAwait(false);
-                var svgHandle = await AsSVGElementHandleAsync(this).ConfigureAwait(false);
-                var target = svgHandle == null ? handle : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var svgHandle = await AsSVGElementHandleAsync(handle).ConfigureAwait(false);
+                var ownerSVGElement = svgHandle == null ? null : await svgHandle.GetOwnerSVGElementAsync().ConfigureAwait(false);
+                var target = ownerSVGElement ?? handle;
 
                 return await target.Realm.EvaluateFunctionAsync<bool>(
                     @"async (element, threshold) => {
@@ -474,24 +472,53 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<string[]> SelectAsync(params string[] values)
-            => BindIsolatedHandleAsync<string[], ElementHandle>(handle => handle.EvaluateFunctionAsync<string[]>(
-                @"(element, values) =>
-                    {
-                        if (element.nodeName.toLowerCase() !== 'select')
-                            throw new Error('Element is not a <select> element.');
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
 
-                        const options = Array.from(element.options);
-                        element.value = undefined;
-                        for (const option of options) {
-                            option.selected = values.includes(option.value);
-                            if (option.selected && !element.multiple)
-                                break;
+            foreach (var value in values)
+            {
+                if (value == null)
+                {
+                    throw new ArgumentException($"Values must be strings. Found value \"null\" of type \"null\"");
+                }
+            }
+
+            return BindIsolatedHandleAsync<string[], ElementHandle>(handle => handle.EvaluateFunctionAsync<string[]>(
+                @"(element, vals) => {
+                    const values = new Set(vals);
+                    if (!(element instanceof HTMLSelectElement)) {
+                        throw new Error('Element is not a <select> element.');
+                    }
+
+                    const selectedValues = new Set();
+                    if (!element.multiple) {
+                        for (const option of element.options) {
+                            option.selected = false;
                         }
-                        element.dispatchEvent(new Event('input', { 'bubbles': true }));
-                        element.dispatchEvent(new Event('change', { 'bubbles': true }));
-                        return options.filter(option => option.selected).map(option => option.value);
-                    }",
+                        for (const option of element.options) {
+                            if (values.has(option.value)) {
+                                option.selected = true;
+                                selectedValues.add(option.value);
+                                break;
+                            }
+                        }
+                    } else {
+                        for (const option of element.options) {
+                            option.selected = values.has(option.value);
+                            if (option.selected) {
+                                selectedValues.add(option.value);
+                            }
+                        }
+                    }
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.dispatchEvent(new Event('change', { bubbles: true }));
+                    return [...selectedValues.values()];
+                }",
                 new object[] { values }));
+        }
 
         /// <inheritdoc/>
         public Task<DragData> DragAsync(decimal x, decimal y)
@@ -664,6 +691,20 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override Task<T> JsonValueAsync<T>()
             => BindIsolatedHandleAsync<T, ElementHandle>(element => element.Handle.JsonValueAsync<T>());
+
+        /// <inheritdoc />
+        public override async ValueTask DisposeAsync()
+        {
+            if (Disposed)
+            {
+                return;
+            }
+
+            Disposed = true;
+
+            await Handle.DisposeAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
@@ -990,6 +1031,8 @@ namespace PuppeteerSharp
                     ? Math.Min(height - box.Y, box.Height)
                     : Math.Min(height, box.Height + box.Y),
                 0);
+            box.X = Math.Max(box.X, 0);
+            box.Y = Math.Max(box.Y, 0);
         }
     }
 }

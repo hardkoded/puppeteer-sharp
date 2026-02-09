@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,39 +31,52 @@ using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Cdp;
 
-/// <inheritdoc />
-public class CdpElementHandle : ElementHandle
+/// <inheritdoc cref="ElementHandle" />
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public class CdpElementHandle : ElementHandle, ICdpHandle
 {
     private readonly CdpFrame _cdpFrame;
 
     internal CdpElementHandle(
         IsolatedWorld world,
-        RemoteObject remoteObject)
+#pragma warning disable CA2000
+        RemoteObject remoteObject) : base(new CdpJSHandle(world, remoteObject))
+#pragma warning restore CA2000
     {
-        Handle = new CdpJSHandle(world, remoteObject);
-        Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
-        _cdpFrame = Realm.Frame as CdpFrame;
+        Logger = world.CdpCDPSession.Connection.LoggerFactory.CreateLogger(GetType());
+        _cdpFrame = IsolatedWorld.Frame as CdpFrame;
     }
 
-    /// <inheritdoc />
-    public override RemoteObject RemoteObject => Handle.RemoteObject;
+    /// <summary>
+    /// CDP Remote object.
+    /// </summary>
+    public RemoteObject RemoteObject => ((CdpJSHandle)Handle).RemoteObject;
 
-    internal override IsolatedWorld Realm => Handle.Realm;
+    /// <inheritdoc/>
+    internal override Realm Realm => Handle.Realm;
 
     /// <summary>
     /// Logger.
     /// </summary>
     internal ILogger Logger { get; }
 
-    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry =>
-        Client.Connection.CustomQuerySelectorRegistry;
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
+
+    internal string Id => RemoteObject.ObjectId;
 
     /// <inheritdoc/>
     protected override Page Page => _cdpFrame.FrameManager.Page;
 
-    private CDPSession Client => Handle.Realm.Environment.Client;
+    private IsolatedWorld IsolatedWorld => (IsolatedWorld)Realm;
+
+    private ICDPSession Client => Handle.Realm.Environment.Client;
 
     private FrameManager FrameManager => _cdpFrame.FrameManager;
+
+    private string DebuggerDisplay =>
+        string.IsNullOrEmpty(RemoteObject.ClassName)
+            ? ToString()
+            : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
     /// <inheritdoc/>
     public override async Task<IFrame> ContentFrameAsync()
@@ -147,20 +161,6 @@ public class CdpElementHandle : ElementHandle
 
                 return handle;
             });
-
-    /// <inheritdoc />
-    public override async ValueTask DisposeAsync()
-    {
-        if (Disposed)
-        {
-            return;
-        }
-
-        Disposed = true;
-
-        await Handle.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
-    }
 
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();

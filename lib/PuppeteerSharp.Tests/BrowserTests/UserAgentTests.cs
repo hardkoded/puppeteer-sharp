@@ -6,11 +6,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
 {
     public class UserAgentTests : PuppeteerBrowserBaseTest
     {
-        public UserAgentTests() : base()
-        {
-        }
-
-        [Test, PuppeteerTest("browser.spec", "Browser.userAgent", "should include WebKit")]
+        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.userAgent", "should include WebKit")]
         public async Task ShouldIncludeWebKit()
         {
             var userAgent = await Browser.GetUserAgentAsync();

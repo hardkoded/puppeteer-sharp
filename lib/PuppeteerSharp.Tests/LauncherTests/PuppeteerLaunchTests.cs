@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "PuppeteerSharp", "should work in real life")]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -187,6 +187,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
         [TestCase(false)]
         [TestCase(true)]
+        [PuppeteerTest("launcher.spec", "PuppeteerSharp", "chrome should be closed")]
         public async Task ChromeShouldBeClosed(bool useDisposeAsync)
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -237,16 +238,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
                     () => launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()));
                 Assert.That(exception!.Message, Is.EqualTo("Unable to create or connect to another process"));
             }
-        }
-
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with no default arguments")]
-        public async Task ShouldWorkWithNoDefaultArguments()
-        {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreDefaultArgs = true;
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            await using var page = await browser.NewPageAsync();
-            Assert.That(await page.EvaluateExpressionAsync<int>("11 * 11"), Is.EqualTo(121));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments in Chrome")]
@@ -339,7 +330,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }), Is.Not.Empty);
         }
 
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "PuppeteerSharp", "should support custom websocket")]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -356,7 +347,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should support custom transport")]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;

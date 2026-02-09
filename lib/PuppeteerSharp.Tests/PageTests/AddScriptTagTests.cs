@@ -8,10 +8,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class AddScriptTagTests : PuppeteerPageBaseTest
     {
-        public AddScriptTagTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("page.spec", "Page Page.addScriptTag", "should throw an error if no options are provided")]
         public void ShouldThrowAnErrorIfNoOptionsAreProvided()
         {

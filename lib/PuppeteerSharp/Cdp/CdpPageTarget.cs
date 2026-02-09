@@ -9,7 +9,6 @@ namespace PuppeteerSharp.Cdp
     /// </summary>
     public class CdpPageTarget : CdpTarget
     {
-        private readonly bool _acceptInsecureCerts;
         private readonly ViewPortOptions _defaultViewport;
         private readonly TaskQueue _screenshotTaskQueue;
 
@@ -19,12 +18,10 @@ namespace PuppeteerSharp.Cdp
             BrowserContext context,
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
-            bool acceptInsecureCerts,
             ViewPortOptions defaultViewport,
             TaskQueue screenshotTaskQueue)
             : base(targetInfo, (CdpCDPSession)session, (CdpBrowserContext)context, targetManager, sessionFactory, screenshotTaskQueue)
         {
-            _acceptInsecureCerts = acceptInsecureCerts;
             _defaultViewport = defaultViewport;
             _screenshotTaskQueue = screenshotTaskQueue;
             PageTask = null;
@@ -42,7 +39,6 @@ namespace PuppeteerSharp.Cdp
                 PageTask = CdpPage.CreateAsync(
                     session,
                     this,
-                    _acceptInsecureCerts,
                     _defaultViewport,
                     _screenshotTaskQueue);
             }

@@ -9,20 +9,14 @@ using PuppeteerSharp.Media;
 
 namespace PuppeteerSharp
 {
-    internal class EmulationManager
+    internal class CdpEmulationManager(ICDPSession client)
     {
         private readonly ConcurrentSet<CDPSession> _secondaryClients = [];
-        private readonly ILogger _logger;
-        private CDPSession _client;
+        private readonly ILogger _logger = client.LoggerFactory.CreateLogger<CdpEmulationManager>();
+        private ICDPSession _client = client;
         private bool _emulatingMobile;
         private bool _hasTouch;
         private ViewPortOptions _viewport;
-
-        public EmulationManager(CDPSession client)
-        {
-            _client = client;
-            _logger = client.Connection.LoggerFactory.CreateLogger<EmulationManager>();
-        }
 
         public bool JavascriptEnabled { get; private set; } = true;
 
@@ -36,7 +30,7 @@ namespace PuppeteerSharp
         {
             _secondaryClients.Add(client);
             await ApplyViewportAsync(client).ConfigureAwait(false);
-            client.Disconnected += (sender, e) => _secondaryClients.Remove(client);
+            client.Disconnected += (_, _) => _secondaryClients.Remove(client);
         }
 
         internal async Task EmulateTimezoneAsync(string timezoneId)
@@ -173,7 +167,7 @@ namespace PuppeteerSharp
             });
         }
 
-        private async Task ApplyViewportAsync(CDPSession client)
+        private async Task ApplyViewportAsync(ICDPSession client)
         {
             var viewport = _viewport;
             if (viewport == null)

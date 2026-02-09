@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -32,10 +34,10 @@ namespace PuppeteerSharp
         public string Name { get; private set; }
 
         /// <inheritdoc/>
-        public string Url { get; private set; } = string.Empty;
+        public virtual string Url { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public bool Detached { get; private set; }
+        public virtual bool Detached { get; private set; }
 
         /// <inheritdoc/>
         public abstract IPage Page { get; }
@@ -47,7 +49,7 @@ namespace PuppeteerSharp
         public string Id { get; internal set; }
 
         /// <inheritdoc/>
-        public abstract CDPSession Client { get; protected set; }
+        public abstract ICDPSession Client { get; protected set; }
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => MainRealm;
@@ -58,9 +60,9 @@ namespace PuppeteerSharp
 
         internal List<string> LifecycleEvents { get; } = new();
 
-        internal Realm MainRealm { get; set; }
+        internal virtual Realm MainRealm { get; set; }
 
-        internal Realm IsolatedRealm { get; set; }
+        internal virtual Realm IsolatedRealm { get; set; }
 
         internal IsolatedWorld MainWorld => MainRealm as IsolatedWorld;
 
@@ -86,13 +88,13 @@ namespace PuppeteerSharp
         public abstract Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
+        public Task EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script) => MainRealm.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) => MainRealm.EvaluateFunctionAsync<T>(script, args);
@@ -111,7 +113,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = Client.Connection.CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
             return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
         }
 
@@ -195,14 +197,77 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null)
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
         public abstract Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
+        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+                string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                      const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                      const promise = createDeferredPromise();
+                      const script = document.createElement('script');
+                      script.type = type;
+                      script.text = content;
+                      if (url) {
+                        script.src = url;
+                        script.addEventListener(
+                          'load',
+                          () => {
+                            return promise.resolve();
+                          },
+                          {once: true}
+                        );
+                        script.addEventListener(
+                          'error',
+                          event => {
+                            promise.reject(
+                              new Error(event.message ?? 'Could not load script')
+                            );
+                          },
+                          {once: true}
+                        );
+                      } else {
+                        promise.resolve();
+                      }
+                      if (id) {
+                        script.id = id;
+                      }
+                      document.head.appendChild(script);
+                      await promise;
+                      return script;
+                    }",
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+        }
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync(GetContentOptions options = null)

@@ -26,6 +26,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>12</LangVersion>
     <AnalysisLevel>8.0-Recommended</AnalysisLevel>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
@@ -44,10 +45,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="WebDriverBiDi-Relaxed" Version="0.0.40-beta.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />

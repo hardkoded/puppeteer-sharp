@@ -102,5 +102,27 @@ namespace PuppeteerSharp.Tests
                 .ToLower()
                 .Replace(" ", string.Empty)
                 .Replace(".", string.Empty);
+
+        /// <summary>
+        /// Wraps the given body content in a proper HTML5 document structure
+        /// to avoid quirks mode when using page.SetContentAsync().
+        /// This is equivalent to the html template function in upstream Puppeteer tests.
+        /// </summary>
+        /// <param name="bodyContent">The content to place inside the body element.</param>
+        /// <returns>A complete HTML5 document string.</returns>
+        public static string Html(string bodyContent)
+        {
+            return $@"<!DOCTYPE html>
+<html lang=""en"">
+  <head>
+    <meta charset=""UTF-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+    <title>My test page</title>
+  </head>
+  <body>
+    {bodyContent}
+  </body>
+</html>";
+        }
     }
 }

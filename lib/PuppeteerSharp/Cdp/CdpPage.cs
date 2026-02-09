@@ -45,7 +45,7 @@ public class CdpPage : Page
 {
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
-    private readonly EmulationManager _emulationManager;
+    private readonly CdpEmulationManager _emulationManager;
     private readonly ILogger _logger;
     private readonly Task _closedFinishedTask;
     private readonly ConcurrentDictionary<string, Binding> _bindings = new();
@@ -56,8 +56,7 @@ public class CdpPage : Page
     private CdpPage(
         CdpCDPSession client,
         CdpTarget target,
-        TaskQueue screenshotTaskQueue,
-        bool acceptInsecureCerts) : base(screenshotTaskQueue)
+        TaskQueue screenshotTaskQueue) : base(screenshotTaskQueue)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -70,9 +69,9 @@ public class CdpPage : Page
         Tracing = new Tracing(client);
         Coverage = new Coverage(client);
 
-        _emulationManager = new EmulationManager(client);
+        _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, acceptInsecureCerts, TimeoutSettings);
+        FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
 
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
@@ -328,24 +327,26 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle)
     {
+        var handle = (CdpJSHandle)prototypeHandle;
+
         if (prototypeHandle == null)
         {
             throw new ArgumentNullException(nameof(prototypeHandle));
         }
 
-        if (prototypeHandle.Disposed)
+        if (handle.Disposed)
         {
             throw new PuppeteerException("Prototype JSHandle is disposed!");
         }
 
-        if (prototypeHandle.RemoteObject.ObjectId == null)
+        if (handle.RemoteObject.ObjectId == null)
         {
             throw new PuppeteerException("Prototype JSHandle must not be referencing primitive value");
         }
 
         var response = await Client.SendAsync<RuntimeQueryObjectsResponse>(
                 "Runtime.queryObjects",
-                new RuntimeQueryObjectsRequest { PrototypeObjectId = prototypeHandle.RemoteObject.ObjectId, })
+                new RuntimeQueryObjectsRequest { PrototypeObjectId = handle.RemoteObject.ObjectId, })
             .ConfigureAwait(false);
 
         var context = await FrameManager.MainFrame.MainWorld.GetExecutionContextAsync().ConfigureAwait(false);
@@ -695,7 +696,7 @@ public class CdpPage : Page
         else
         {
             await PrimaryTargetClient.Connection
-                .SendAsync("Target.closeTarget", new TargetCloseTargetRequest { TargetId = Target.TargetId, })
+                .SendAsync("Target.closeTarget", new TargetCloseTargetRequest { TargetId = PrimaryTarget.TargetId, })
                 .ConfigureAwait(false);
 
             // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
@@ -707,11 +708,10 @@ public class CdpPage : Page
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,
-        bool acceptInsecureCerts,
         ViewPortOptions defaultViewPort,
         TaskQueue screenshotTaskQueue)
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue, acceptInsecureCerts);
+        var page = new CdpPage(client, target, screenshotTaskQueue);
 
         try
         {
@@ -900,7 +900,7 @@ public class CdpPage : Page
         await using (stack.ConfigureAwait(false))
         {
             Debug.Assert(options != null, nameof(options) + " != null");
-
+            options.FromSurface ??= true;
             var clip = options.Clip;
             var captureBeyondViewport = options.CaptureBeyondViewport;
 
@@ -973,7 +973,7 @@ public class CdpPage : Page
     {
         var session = e.Session as CDPSession;
         Debug.Assert(session != null, nameof(session) + " != null");
-        FrameManager.OnAttachedToTarget(new TargetChangedArgs { Target = session.Target });
+        FrameManager.OnAttachedToTarget(session.Target);
 
         if (session.Target.Type == TargetType.Worker)
         {
@@ -1083,7 +1083,7 @@ public class CdpPage : Page
 
     private void OnDetachedFromTarget(object sender, TargetChangedArgs e)
     {
-        var sessionId = e.Target.Session?.Id;
+        var sessionId = ((CdpTarget)e.Target).Session?.Id;
         if (sessionId != null && _workers.TryRemove(sessionId, out var worker))
         {
             OnWorkerDestroyed(worker);
@@ -1115,25 +1115,35 @@ public class CdpPage : Page
         if (HasConsoleEventListeners)
         {
             await Task.WhenAll(values.Select(v =>
-                RemoteObjectHelper.ReleaseObjectAsync(Client, v.RemoteObject, _logger))).ConfigureAwait(false);
+                RemoteObjectHelper.ReleaseObjectAsync(Client, ((CdpJSHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
             return;
         }
 
         var tokens = values.Select(i =>
-            i.RemoteObject.ObjectId != null || i.RemoteObject.Type == RemoteObjectType.Object
+        {
+            var handle = (CdpJSHandle)i;
+            return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
-                : RemoteObjectHelper.ValueFromRemoteObject<object>(i.RemoteObject)?.ToString() ?? "null");
-
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+        });
         var location = new ConsoleMessageLocation();
+        var stackTraceLocations = new List<ConsoleMessageLocation>();
         if (stackTrace?.CallFrames?.Length > 0)
         {
-            var callFrame = stackTrace.CallFrames[0];
-            location.URL = callFrame.URL;
-            location.LineNumber = callFrame.LineNumber;
-            location.ColumnNumber = callFrame.ColumnNumber;
+            foreach (var callFrame in stackTrace.CallFrames)
+            {
+                stackTraceLocations.Add(new ConsoleMessageLocation
+                {
+                    URL = callFrame.URL,
+                    LineNumber = callFrame.LineNumber,
+                    ColumnNumber = callFrame.ColumnNumber,
+                });
+            }
+
+            location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location);
+        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations);
         OnConsole(new ConsoleEventArgs(consoleMessage));
     }
 

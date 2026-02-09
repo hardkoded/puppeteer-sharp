@@ -11,6 +11,7 @@ on:
     paths:
     - '**.yml'
     - '**.cs'
+    - '**.json'
     - '**.csproj'
     - '**.runsettings'
 
@@ -19,7 +20,7 @@ env:
 
 jobs:
   build:
-    name: build-${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}
+    name: ${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -28,33 +29,35 @@ jobs:
           - os: ubuntu-latest
             browser: CHROME
             mode: headless
+            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headful
+            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headless-shell
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headless
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headful
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headful
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless-shell
-          - os: windows-latest
+            protocol: cdp
+          - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
-          - os: windows-latest
+            protocol: webdriverbidi
+          - os: ubuntu-latest
             browser: FIREFOX
             mode: headful
+            protocol: webdriverbidi
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -82,7 +85,7 @@ jobs:
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Check formatting
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' && matrix.protocol == 'cdp' }}
       run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes --exclude-diagnostics CA1865
     - name: Build
       working-directory: lib
@@ -95,6 +98,7 @@ jobs:
       env:
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
+        PROTOCOL: ${{ matrix.protocol }}
       run: |
           Xvfb :1 -screen 5 1024x768x8 &
           export DISPLAY=:1.5
@@ -106,6 +110,7 @@ jobs:
       env:
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
+        PROTOCOL: ${{ matrix.protocol }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet tool update -g dotnet-retest

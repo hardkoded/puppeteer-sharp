@@ -18,7 +18,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequest()
         {
             var requests = new List<IRequest>();
-            Page.Request += (_, e) => requests.Add(e.Request);
+            Page.Request += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+            };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(requests, Has.Exactly(1).Items);
             Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
@@ -32,11 +38,22 @@ namespace PuppeteerSharp.Tests.NetworkTests
         [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
         public async Task PageEventsRequestServedFromCache()
         {
+            // Use a fresh browser context to avoid shared HTTP cache from prior tests.
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+
             var cached = new List<string>();
-            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request.Url.Split('/').Last());
-            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
+            page.RequestServedFromCache += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    cached.Add(e.Request.Url.Split('/').Last());
+                }
+            };
+            await page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
             Assert.That(cached, Is.Empty);
-            await Page.ReloadAsync();
+            await Task.Delay(1000);
+            await page.ReloadAsync();
             Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
         }
 
@@ -44,7 +61,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsResponse()
         {
             var responses = new List<IResponse>();
-            Page.Response += (_, e) => responses.Add(e.Response);
+            Page.Response += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Response.Request))
+                {
+                    responses.Add(e.Response);
+                }
+            };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(responses, Has.Exactly(1).Items);
             Assert.That(responses[0].Url, Is.EqualTo(TestConstants.EmptyPage));
@@ -52,8 +75,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(responses[0].FromCache, Is.False);
             Assert.That(responses[0].FromServiceWorker, Is.False);
             Assert.That(responses[0].Request, Is.Not.Null);
+        }
 
-            var remoteAddress = responses[0].RemoteAddress;
+        [Test, PuppeteerTest("network.spec", "network Response.remoteAddress", "should work")]
+        public async Task ResponseRemoteAddressShouldWork()
+        {
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var remoteAddress = response.RemoteAddress;
             // Either IPv6 or IPv4, depending on environment.
             Assert.That(remoteAddress.IP == "[::1]" || remoteAddress.IP == "127.0.0.1", Is.True);
             Assert.That(remoteAddress.Port, Is.EqualTo(TestConstants.Port));
@@ -89,7 +117,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }
             else
             {
-                Assert.That(failedRequests[0].FailureText, Is.EqualTo("NS_ERROR_FAILURE"));
+                Assert.That(failedRequests[0].FailureText, Is.EqualTo("NS_ERROR_ABORT"));
             }
 
             Assert.That(failedRequests[0].Frame, Is.Not.Null);
@@ -99,7 +127,13 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task PageEventsRequestFinished()
         {
             var requests = new List<IRequest>();
-            Page.RequestFinished += (_, e) => requests.Add(e.Request);
+            Page.RequestFinished += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+            };
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(requests, Has.Exactly(1).Items);
             Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
@@ -117,21 +151,45 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Page.Response += (_, _) => events.Add("response");
             Page.RequestFinished += (_, _) => events.Add("requestfinished");
             await Page.GoToAsync(TestConstants.EmptyPage);
-            Assert.That(events.ToArray(), Is.EqualTo(new[] { "request", "response", "requestfinished" }));
+            // Events can sneak in after the page has navigated (e.g., favicon requests)
+            Assert.That(events.Take(3).ToArray(), Is.EqualTo(new[] { "request", "response", "requestfinished" }));
         }
 
         [Test, PuppeteerTest("network.spec", "network Network Events", "should support redirects")]
         public async Task ShouldSupportRedirects()
         {
             var events = new List<string>();
-            Page.Request += (_, e) => events.Add($"{e.Request.Method} {e.Request.Url}");
-            Page.Response += (_, e) => events.Add($"{(int)e.Response.Status} {e.Response.Url}");
-            Page.RequestFinished += (_, e) => events.Add($"DONE {e.Request.Url}");
-            Page.RequestFailed += (_, e) => events.Add($"FAIL {e.Request.Url}");
+            Page.Request += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"{e.Request.Method} {e.Request.Url}");
+                }
+            };
+            Page.Response += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Response.Request))
+                {
+                    events.Add($"{(int)e.Response.Status} {e.Response.Url}");
+                }
+            };
+            Page.RequestFinished += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"DONE {e.Request.Url}");
+                }
+            };
+            Page.RequestFailed += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    events.Add($"FAIL {e.Request.Url}");
+                }
+            };
             Server.SetRedirect("/foo.html", "/empty.html");
             const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
-            System.Console.WriteLine(string.Concat(events, ','));
             Assert.That(events.ToArray(), Is.EqualTo(new[] {
                 $"GET {FOO_URL}",
                 $"302 {FOO_URL}",
@@ -142,6 +200,19 @@ namespace PuppeteerSharp.Tests.NetworkTests
             }));
 
             // Check redirect chain
+            var redirectChain = response.Request.RedirectChain;
+            Assert.That(redirectChain, Has.Exactly(1).Items);
+            Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Response.remoteAddress", "should support redirects")]
+        public async Task ResponseRemoteAddressShouldSupportRedirects()
+        {
+            Server.SetRedirect("/foo.html", "/empty.html");
+            const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
+            var response = await Page.GoToAsync(FOO_URL);
+
+            // Check redirect chain remote address
             var redirectChain = response.Request.RedirectChain;
             Assert.That(redirectChain, Has.Exactly(1).Items);
             Assert.That(redirectChain[0].Url, Does.Contain("/foo.html"));

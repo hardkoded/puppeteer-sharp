@@ -39,5 +39,7 @@ internal class Request
 
     public string Url { get; set; }
 
+    public string UrlFragment { get; set; }
+
     public bool? HasPostData { get; set; }
 }

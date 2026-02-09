@@ -240,7 +240,7 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private bool IsPageTargetBecomingPrimary(Target target, TargetInfo newTargetInfo)
+        private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo)
             => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
 
         private async Task SilentDetachAsync(CDPSession session, ICDPConnection parentConnection)

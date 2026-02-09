@@ -116,6 +116,29 @@ public class CdpCDPSession : CDPSession
             : null;
     }
 
+    /// <inheritdoc />
+    public override void Close(string closeReason)
+    {
+        if (IsClosed)
+        {
+            return;
+        }
+
+        CloseReason = closeReason;
+        IsClosed = true;
+
+        foreach (var callback in _callbacks.Values.ToArray())
+        {
+            callback.TaskWrapper.TrySetException(new TargetClosedException(
+                $"Protocol error({callback.Method}): Target closed.",
+                closeReason));
+        }
+
+        _callbacks.Clear();
+        OnDisconnected();
+        Connection = null;
+    }
+
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
     internal int GetMessageId() => Interlocked.Increment(ref _lastId);
@@ -137,27 +160,5 @@ public class CdpCDPSession : CDPSession
             var method = obj.Method;
             OnMessageReceived(new MessageEventArgs { MessageID = method, MessageData = (JsonElement)obj.Params });
         }
-    }
-
-    internal override void Close(string closeReason)
-    {
-        if (IsClosed)
-        {
-            return;
-        }
-
-        CloseReason = closeReason;
-        IsClosed = true;
-
-        foreach (var callback in _callbacks.Values)
-        {
-            callback.TaskWrapper.TrySetException(new TargetClosedException(
-                $"Protocol error({callback.Method}): Target closed.",
-                closeReason));
-        }
-
-        _callbacks.Clear();
-        OnDisconnected();
-        Connection = null;
     }
 }
