@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.FrameTests
 {
     public class FrameEvaluateTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("frame.spec", "Frame.evaluate", "should throw for detached frames")]
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.evaluate", "should throw for detached frames")]
         public async Task ShouldThrowForDetachedFrames()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);

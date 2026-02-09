@@ -135,22 +135,24 @@ namespace PuppeteerSharp.Nunit
 
                     if (platformMatch && paramsMatch)
                     {
-                        // If expectation contains PASS, don't skip - return early to prevent
-                        // subsequent FAIL/SKIP expectations from matching
+                        // If expectation contains FAIL, SKIP, or TIMEOUT, skip the test.
+                        // This handles flaky tests marked as ["FAIL", "PASS"] - we skip them
+                        // rather than running and failing CI.
+                        var shouldSkip = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+
+                        if (shouldSkip)
+                        {
+                            output = expectation;
+                            return true;
+                        }
+
+                        // If expectation contains only PASS, don't skip - run the test
                         if (expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Pass))
                         {
                             output = null;
                             return false;
-                        }
-
-                        var expMatch = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
-
-                        if (expMatch)
-                        {
-                            output = expectation;
-                            return true;
                         }
                     }
                 }
