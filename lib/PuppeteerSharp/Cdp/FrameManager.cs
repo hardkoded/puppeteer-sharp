@@ -118,7 +118,6 @@ namespace PuppeteerSharp.Cdp
                 _frameTreeHandled.TrySetResult(true);
                 _frameTreeHandled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var networkInitTask = NetworkManager.AddClientAsync(client);
-                var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 var autoAttachTask = client != Client
                     ? client.SendAsync("Target.setAutoAttach", new TargetSetAutoAttachRequest
                     {
@@ -128,8 +127,11 @@ namespace PuppeteerSharp.Cdp
                     })
                     : Task.CompletedTask;
 
+                // Page.enable must be sent before Page.getFrameTree to ensure frame events are received
+                await client.SendAsync("Page.enable").ConfigureAwait(false);
+
+                var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 await Task.WhenAll(
-                    client.SendAsync("Page.enable"),
                     getFrameTreeTask,
                     autoAttachTask).ConfigureAwait(false);
 

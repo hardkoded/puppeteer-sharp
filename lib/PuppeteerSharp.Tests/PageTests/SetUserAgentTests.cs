@@ -82,5 +82,42 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("3.1"));
             Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
         }
+
+        [Test, PuppeteerTest("puppeteer-sharp", "Page Page.setUserAgent", "should work with bitness and wow64")]
+        public async Task ShouldWorkWithBitnessAndWow64()
+        {
+            await Page.SetUserAgentAsync(
+                "MockBrowser",
+                new UserAgentMetadata
+                {
+                    Architecture = "x86",
+                    Mobile = false,
+                    Model = "Mockbook",
+                    Platform = "Windows",
+                    PlatformVersion = "10.0.0",
+                    Bitness = "64",
+                    Wow64 = false,
+                });
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var uaData = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
+                return navigator.userAgentData.getHighEntropyValues([
+                  'architecture',
+                  'bitness',
+                  'model',
+                  'platform',
+                  'platformVersion',
+                  'wow64',
+                ]);
+            }");
+
+            Assert.That(uaData.GetProperty("architecture").GetString(), Is.EqualTo("x86"));
+            Assert.That(uaData.GetProperty("bitness").GetString(), Is.EqualTo("64"));
+            Assert.That(uaData.GetProperty("model").GetString(), Is.EqualTo("Mockbook"));
+            Assert.That(uaData.GetProperty("platform").GetString(), Is.EqualTo("Windows"));
+            Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("10.0.0"));
+            Assert.That(uaData.GetProperty("wow64").GetBoolean(), Is.False);
+        }
     }
 }

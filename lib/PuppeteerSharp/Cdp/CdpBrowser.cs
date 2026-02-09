@@ -134,8 +134,8 @@ public class CdpBrowser : Browser
             "Target.createBrowserContext",
             new TargetCreateBrowserContextRequest
             {
-                ProxyServer = options?.ProxyServer ?? string.Empty,
-                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? []),
+                ProxyServer = options?.ProxyServer,
+                ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
         _contexts.TryAdd(response.BrowserContextId, context);
