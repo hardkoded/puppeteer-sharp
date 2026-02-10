@@ -23,7 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
@@ -36,7 +36,7 @@ internal class UserContext : IDisposable
     public const string DEFAULT = "default";
 
     private readonly ConcurrentDictionary<string, BrowsingContext> _browsingContexts = new();
-    private readonly ConcurrentQueue<string> _filteredEvents = new();
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<BrowsingContext>> _pendingContexts = new();
     private string _reason;
 
     private UserContext(Browser browser, string id)
@@ -84,21 +84,41 @@ internal class UserContext : IDisposable
         var createParams = new CreateCommandParameters(contextType) { UserContextId = Id };
         var result = await Session.Driver.BrowsingContext.CreateAsync(createParams).ConfigureAwait(false);
 
-        _browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext);
-
-        if (browsingContext is null)
+        if (_browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext))
         {
-            var knownKeys = string.Join(", ", _browsingContexts.Keys);
-            var allFiltered = _filteredEvents.ToArray();
-            var filtered = string.Join("; ", allFiltered.Skip(Math.Max(0, allFiltered.Length - 10)));
-            throw new PuppeteerException(
-                $"The WebDriver BiDi implementation is failing to create a browsing context correctly. " +
-                $"Expected context '{result.BrowsingContextId}' in UserContext '{Id}'. " +
-                $"Known contexts: [{knownKeys}]. " +
-                $"Recently filtered events: [{filtered}].");
+            return browsingContext;
         }
 
-        return browsingContext;
+        // The contextCreated event may not have been processed yet (e.g. Firefox
+        // can send the command response before the event). Wait for it briefly.
+        var tcs = new TaskCompletionSource<BrowsingContext>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _pendingContexts.TryAdd(result.BrowsingContextId, tcs);
+
+        try
+        {
+            // Check again in case the event arrived between our first check and registering the waiter.
+            if (_browsingContexts.TryGetValue(result.BrowsingContextId, out browsingContext))
+            {
+                return browsingContext;
+            }
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            cts.Token.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: false);
+
+            return await tcs.Task.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            var knownKeys = string.Join(", ", _browsingContexts.Keys);
+            throw new PuppeteerException(
+                $"Timed out waiting for browsing context creation event. " +
+                $"Expected context '{result.BrowsingContextId}' in UserContext '{Id}'. " +
+                $"Known contexts: [{knownKeys}].");
+        }
+        finally
+        {
+            _pendingContexts.TryRemove(result.BrowsingContextId, out _);
+        }
     }
 
     public async Task RemoveAsync()
@@ -137,13 +157,11 @@ internal class UserContext : IDisposable
     {
         if (info.Parent != null)
         {
-            _filteredEvents.Enqueue($"parent-filtered: ctx={info.BrowsingContextId}, parent={info.Parent}, userCtx={info.UserContextId}");
             return;
         }
 
         if (info.UserContextId != Id)
         {
-            _filteredEvents.Enqueue($"userCtx-filtered: ctx={info.BrowsingContextId}, eventUserCtx={info.UserContextId}, thisUserCtx={Id}");
             return;
         }
 
@@ -157,6 +175,11 @@ internal class UserContext : IDisposable
         _browsingContexts.TryAdd(browsingContext.Id, browsingContext);
 
         browsingContext.Closed += (sender, args) => _browsingContexts.TryRemove(browsingContext.Id, out _);
+
+        if (_pendingContexts.TryRemove(browsingContext.Id, out var tcs))
+        {
+            tcs.TrySetResult(browsingContext);
+        }
 
         OnBrowsingContext(browsingContext);
     }
