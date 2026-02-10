@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
@@ -35,6 +36,7 @@ internal class UserContext : IDisposable
     public const string DEFAULT = "default";
 
     private readonly ConcurrentDictionary<string, BrowsingContext> _browsingContexts = new();
+    private readonly ConcurrentQueue<string> _filteredEvents = new();
     private string _reason;
 
     private UserContext(Browser browser, string id)
@@ -86,8 +88,14 @@ internal class UserContext : IDisposable
 
         if (browsingContext is null)
         {
+            var knownKeys = string.Join(", ", _browsingContexts.Keys);
+            var allFiltered = _filteredEvents.ToArray();
+            var filtered = string.Join("; ", allFiltered.Skip(Math.Max(0, allFiltered.Length - 10)));
             throw new PuppeteerException(
-                "The WebDriver BiDi implementation is failing to create a browsing context correctly.");
+                $"The WebDriver BiDi implementation is failing to create a browsing context correctly. " +
+                $"Expected context '{result.BrowsingContextId}' in UserContext '{Id}'. " +
+                $"Known contexts: [{knownKeys}]. " +
+                $"Recently filtered events: [{filtered}].");
         }
 
         return browsingContext;
@@ -129,11 +137,13 @@ internal class UserContext : IDisposable
     {
         if (info.Parent != null)
         {
+            _filteredEvents.Enqueue($"parent-filtered: ctx={info.BrowsingContextId}, parent={info.Parent}, userCtx={info.UserContextId}");
             return;
         }
 
         if (info.UserContextId != Id)
         {
+            _filteredEvents.Enqueue($"userCtx-filtered: ctx={info.BrowsingContextId}, eventUserCtx={info.UserContextId}, thisUserCtx={Id}");
             return;
         }
 
