@@ -15,15 +15,18 @@ namespace PuppeteerSharpPdfDemo
             Puppeteer.ExtraJsonSerializerContext = DemoJsonSerializationContext.Default;
 #endif
 
-            var options = new LaunchOptions 
-            { 
+            var isFirefox = args.Any(arg => arg == "firefox");
+            var browserType = isFirefox ? SupportedBrowser.Firefox : SupportedBrowser.Chrome;
+
+            var options = new LaunchOptions
+            {
                 Headless = true,
-                Browser = SupportedBrowser.Firefox
+                Browser = browserType
             };
 
-            Console.WriteLine("Downloading Firefox");
+            Console.WriteLine($"Downloading {browserType}");
 
-            var browserFetcher = new BrowserFetcher(SupportedBrowser.Firefox);
+            var browserFetcher = new BrowserFetcher(browserType);
             await browserFetcher.DownloadAsync();
 
             await using var browser = await Puppeteer.LaunchAsync(options);
@@ -32,7 +35,7 @@ namespace PuppeteerSharpPdfDemo
             Console.WriteLine("Evaluating page content");
             var bodyContent = await page.EvaluateFunctionAsync<string>(
                 @"() => {
-                    document.body.innerHTML = '<h1>Hello from PuppeteerSharp Firefox!</h1>';
+                    document.body.innerHTML = '<h1>Hello from PuppeteerSharp!</h1>';
                     return document.body.innerText;
                 }");
             Console.WriteLine($"Body content: {bodyContent}");
