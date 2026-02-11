@@ -50,4 +50,4 @@ jobs:
       continue-on-error: ${{ matrix.browser == 'firefox' }}
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net471
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net481
