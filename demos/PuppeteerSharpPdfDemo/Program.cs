@@ -30,7 +30,11 @@ namespace PuppeteerSharpPdfDemo
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
 
-            await page.GoToAsync("https://www.mabl.com", WaitUntilNavigation.DOMContentLoaded);
+            await page.GoToAsync("https://www.mabl.com", new NavigationOptions
+            {
+                Timeout = 120_000,
+                WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded },
+            });
 
             Console.WriteLine("Checking page content");
             var bodyContent = await page.EvaluateFunctionAsync<string>("() => document.body.innerText");
