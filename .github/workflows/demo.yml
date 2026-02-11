@@ -46,6 +46,7 @@ jobs:
           build/PuppeteerSharpPdfDemo-Local.exe auto-exit
     - name: Run on .NET Framework
       if: matrix.os == 'windows-2022'
+      continue-on-error: true # Firefox+BiDi WebSocket fails on .NET Framework due to WinHTTP-based ClientWebSocket limitations
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
           dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net471
