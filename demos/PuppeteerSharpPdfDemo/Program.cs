@@ -26,11 +26,11 @@ namespace PuppeteerSharpPdfDemo
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Firefox);
             await browserFetcher.DownloadAsync();
 
-            Console.WriteLine("Navigating google");
+            Console.WriteLine("Navigating to mabl.com");
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
 
-            await page.GoToAsync("https://www.google.com", WaitUntilNavigation.DOMContentLoaded);
+            await page.GoToAsync("https://www.mabl.com", WaitUntilNavigation.DOMContentLoaded);
 
             Console.WriteLine("Checking page content");
             var bodyContent = await page.EvaluateFunctionAsync<string>("() => document.body.innerText");
