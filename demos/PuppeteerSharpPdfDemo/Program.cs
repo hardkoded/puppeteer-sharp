@@ -18,11 +18,11 @@ namespace PuppeteerSharpPdfDemo
 
             var options = new LaunchOptions 
             { 
-                Headless = false,
+                Headless = true,
                 Browser = SupportedBrowser.Firefox
             };
 
-            Console.WriteLine("Downloading chromium");
+            Console.WriteLine("Downloading Firefox");
 
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Firefox);
             await browserFetcher.DownloadAsync();
