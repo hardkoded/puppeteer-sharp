@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -31,12 +30,11 @@ namespace PuppeteerSharpPdfDemo
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
 
-            await page.GoToAsync("https://www.google.com");
+            await page.GoToAsync("https://www.google.com", WaitUntilNavigation.DOMContentLoaded);
 
-            Console.WriteLine("Generating PDF");
-            await page.PdfAsync(Path.Combine(Directory.GetCurrentDirectory(), "google.pdf"));
-
-            Console.WriteLine("Export completed");
+            Console.WriteLine("Checking page content");
+            var bodyContent = await page.EvaluateFunctionAsync<string>("() => document.body.innerText");
+            Console.WriteLine($"Body has {bodyContent.Length} characters");
 
 #if NET8_0_OR_GREATER
             // AOT Test
