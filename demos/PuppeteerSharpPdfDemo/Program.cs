@@ -16,15 +16,11 @@ namespace PuppeteerSharpPdfDemo
             Puppeteer.ExtraJsonSerializerContext = DemoJsonSerializationContext.Default;
 #endif
 
-            var options = new LaunchOptions 
-            { 
-                Headless = true,
-                Browser = SupportedBrowser.Firefox
-            };
+            var options = new LaunchOptions { Headless = true };
 
-            Console.WriteLine("Downloading Firefox");
+            Console.WriteLine("Downloading chromium");
 
-            var browserFetcher = new BrowserFetcher(SupportedBrowser.Firefox);
+            var browserFetcher = new BrowserFetcher();
             await browserFetcher.DownloadAsync();
 
             Console.WriteLine("Navigating google");
