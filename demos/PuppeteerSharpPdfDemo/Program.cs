@@ -38,9 +38,10 @@ namespace PuppeteerSharpPdfDemo
             Console.WriteLine($"Body content: {bodyContent}");
 
 #if NET8_0_OR_GREATER
-            // AOT Test
-            var result = await page.EvaluateFunctionAsync<TestClass>("test => test", new TestClass { Name = "Dario"});
-            Console.WriteLine($"Name evaluated to {result.Name}");
+            // AOT Test - serialize TestClass as argument, return a string to avoid
+            // reflection-based deserialization which is not yet AOT-compatible in BiDi
+            var result = await page.EvaluateFunctionAsync<string>("test => test.Name", new TestClass { Name = "Dario"});
+            Console.WriteLine($"Name evaluated to {result}");
 #endif
             if (!args.Any(arg => arg == "auto-exit"))
             {
