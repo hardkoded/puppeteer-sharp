@@ -26,19 +26,16 @@ namespace PuppeteerSharpPdfDemo
             var browserFetcher = new BrowserFetcher(SupportedBrowser.Firefox);
             await browserFetcher.DownloadAsync();
 
-            Console.WriteLine("Navigating to mabl.com");
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
 
-            await page.GoToAsync("https://www.mabl.com", new NavigationOptions
-            {
-                Timeout = 120_000,
-                WaitUntil = new[] { WaitUntilNavigation.DOMContentLoaded },
-            });
-
-            Console.WriteLine("Checking page content");
-            var bodyContent = await page.EvaluateFunctionAsync<string>("() => document.body.innerText");
-            Console.WriteLine($"Body has {bodyContent.Length} characters");
+            Console.WriteLine("Evaluating page content");
+            var bodyContent = await page.EvaluateFunctionAsync<string>(
+                @"() => {
+                    document.body.innerHTML = '<h1>Hello from PuppeteerSharp Firefox!</h1>';
+                    return document.body.innerText;
+                }");
+            Console.WriteLine($"Body content: {bodyContent}");
 
 #if NET8_0_OR_GREATER
             // AOT Test
