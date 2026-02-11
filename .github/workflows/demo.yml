@@ -14,11 +14,12 @@ on:
 jobs:
   build:
 
-    name: Demo Project
+    name: Demo Project (${{ matrix.os }}, ${{ matrix.browser }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [windows-2022, macos-latest]
+        browser: [chrome, firefox]
     env:
       DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
 
@@ -37,15 +38,16 @@ jobs:
     - name: Run on .NET
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net8.0
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net8.0
     - name: Run with AOT
       if: matrix.os == 'windows-2022'
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build  -f net8.0
-          build/PuppeteerSharpPdfDemo-Local.exe auto-exit
+          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build -f net8.0
+          build/PuppeteerSharpPdfDemo-Local.exe auto-exit ${{ matrix.browser }}
     - name: Run on .NET Framework
       if: matrix.os == 'windows-2022'
+      continue-on-error: ${{ matrix.browser == 'firefox' }}
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit -f net471
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net481
