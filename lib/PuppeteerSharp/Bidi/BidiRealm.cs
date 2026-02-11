@@ -23,7 +23,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -295,7 +294,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return result as EvaluateResultSuccess;
     }
 
-    private T DeserializeResult<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties)] T>(object result)
+    private T DeserializeResult<T>(object result)
     {
         if (result is null)
         {
@@ -391,7 +390,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return (T)result;
     }
 
-    private T DeserializeRemoteValueDictionary<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties)] T>(RemoteValueDictionary remoteValueDictionary)
+    private T DeserializeRemoteValueDictionary<T>(RemoteValueDictionary remoteValueDictionary)
     {
         var type = typeof(T);
 
