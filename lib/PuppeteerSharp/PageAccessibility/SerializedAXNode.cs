@@ -139,6 +139,36 @@ namespace PuppeteerSharp.PageAccessibility
         public string Orientation { get; set; }
 
         /// <summary>
+        /// Whether the node is <see href="https://www.w3.org/TR/wai-aria/#aria-busy">busy</see>.
+        /// </summary>
+        public bool Busy { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-live">live</see> status of the node.
+        /// </summary>
+        public string Live { get; set; }
+
+        /// <summary>
+        /// Whether the live region is <see href="https://www.w3.org/TR/wai-aria/#aria-atomic">atomic</see>.
+        /// </summary>
+        public bool Atomic { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-relevant">relevant</see> changes for the live region.
+        /// </summary>
+        public string Relevant { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-errormessage">error message</see> for the node.
+        /// </summary>
+        public string Errormessage { get; set; }
+
+        /// <summary>
+        /// The <see href="https://www.w3.org/TR/wai-aria/#aria-details">details</see> for the node.
+        /// </summary>
+        public string Details { get; set; }
+
+        /// <summary>
         /// Child nodes of this node, if any.
         /// </summary>
         public SerializedAXNode[] Children { get; set; }
@@ -158,6 +188,12 @@ namespace PuppeteerSharp.PageAccessibility
                     AutoComplete == other.AutoComplete &&
                     HasPopup == other.HasPopup &&
                     Orientation == other.Orientation &&
+                    Busy == other.Busy &&
+                    Live == other.Live &&
+                    Atomic == other.Atomic &&
+                    Relevant == other.Relevant &&
+                    Errormessage == other.Errormessage &&
+                    Details == other.Details &&
                     Disabled == other.Disabled &&
                     Expanded == other.Expanded &&
                     Focused == other.Focused &&
@@ -189,6 +225,12 @@ namespace PuppeteerSharp.PageAccessibility
                 AutoComplete.GetHashCode() ^
                 HasPopup.GetHashCode() ^
                 Orientation.GetHashCode() ^
+                Busy.GetHashCode() ^
+                Live.GetHashCode() ^
+                Atomic.GetHashCode() ^
+                Relevant.GetHashCode() ^
+                Errormessage.GetHashCode() ^
+                Details.GetHashCode() ^
                 Disabled.GetHashCode() ^
                 Expanded.GetHashCode() ^
                 Focused.GetHashCode() ^
