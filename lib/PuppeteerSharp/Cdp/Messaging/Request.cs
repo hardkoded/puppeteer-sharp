@@ -42,4 +42,6 @@ internal class Request
     public string UrlFragment { get; set; }
 
     public bool? HasPostData { get; set; }
+
+    public PostDataEntry[] PostDataEntries { get; set; }
 }
