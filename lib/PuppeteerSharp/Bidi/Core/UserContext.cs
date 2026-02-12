@@ -82,12 +82,30 @@ internal class UserContext : IDisposable
         var createParams = new CreateCommandParameters(contextType) { UserContextId = Id };
         var result = await Session.Driver.BrowsingContext.CreateAsync(createParams).ConfigureAwait(false);
 
-        _browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext);
-
-        if (browsingContext is null)
+        if (_browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext))
         {
-            throw new PuppeteerException(
-                "The WebDriver BiDi implementation is failing to create a browsing context correctly.");
+            return browsingContext;
+        }
+
+        // Some browsers (e.g. Firefox) may not deliver the browsingContext.contextCreated
+        // event before the browsingContext.create command response, or may not deliver it
+        // at all. Create the context directly from the command result as a fallback.
+        browsingContext = BrowsingContext.From(
+            this,
+            null,
+            result.BrowsingContextId,
+            "about:blank",
+            null);
+
+        if (_browsingContexts.TryAdd(browsingContext.Id, browsingContext))
+        {
+            browsingContext.Closed += (sender, args) => _browsingContexts.TryRemove(browsingContext.Id, out _);
+            OnBrowsingContext(browsingContext);
+        }
+        else
+        {
+            // The event handler added it between our check and now; use that one.
+            _browsingContexts.TryGetValue(result.BrowsingContextId, out browsingContext);
         }
 
         return browsingContext;

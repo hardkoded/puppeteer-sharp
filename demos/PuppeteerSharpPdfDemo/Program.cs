@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
@@ -16,28 +15,36 @@ namespace PuppeteerSharpPdfDemo
             Puppeteer.ExtraJsonSerializerContext = DemoJsonSerializationContext.Default;
 #endif
 
-            var options = new LaunchOptions { Headless = true };
+            var isFirefox = args.Any(arg => arg == "firefox");
+            var browserType = isFirefox ? SupportedBrowser.Firefox : SupportedBrowser.Chrome;
 
-            Console.WriteLine("Downloading chromium");
+            var options = new LaunchOptions
+            {
+                Headless = true,
+                Browser = browserType
+            };
 
-            var browserFetcher = new BrowserFetcher();
+            Console.WriteLine($"Downloading {browserType}");
+
+            var browserFetcher = new BrowserFetcher(browserType);
             await browserFetcher.DownloadAsync();
 
-            Console.WriteLine("Navigating google");
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
 
-            await page.GoToAsync("https://www.google.com");
-
-            Console.WriteLine("Generating PDF");
-            await page.PdfAsync(Path.Combine(Directory.GetCurrentDirectory(), "google.pdf"));
-
-            Console.WriteLine("Export completed");
+            Console.WriteLine("Evaluating page content");
+            var bodyContent = await page.EvaluateFunctionAsync<string>(
+                @"() => {
+                    document.body.innerHTML = '<h1>Hello from PuppeteerSharp!</h1>';
+                    return document.body.innerText;
+                }");
+            Console.WriteLine($"Body content: {bodyContent}");
 
 #if NET8_0_OR_GREATER
-            // AOT Test
-            var result = await page.EvaluateFunctionAsync<TestClass>("test => test", new TestClass { Name = "Dario"});
-            Console.WriteLine($"Name evaluated to {result.Name}");
+            // AOT Test - serialize TestClass as argument, return a string to avoid
+            // reflection-based deserialization which is not yet AOT-compatible in BiDi
+            var result = await page.EvaluateFunctionAsync<string>("test => test.Name", new TestClass { Name = "Dario"});
+            Console.WriteLine($"Name evaluated to {result}");
 #endif
             if (!args.Any(arg => arg == "auto-exit"))
             {
