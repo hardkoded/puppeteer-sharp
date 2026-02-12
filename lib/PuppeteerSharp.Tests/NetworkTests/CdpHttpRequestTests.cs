@@ -6,13 +6,14 @@ using NSubstitute;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.NetworkTests;
 
 [TestFixture]
 public class CdpHttpRequestTests
 {
-    [Test]
+    [Test, PuppeteerTest("HTTPRequest.test.ts", "CdpHTTPRequest", "should reconstruct postData from postDataEntries")]
     public void ShouldReconstructPostDataFromPostDataEntries()
     {
         var client = Substitute.For<CDPSession>();
@@ -46,7 +47,7 @@ public class CdpHttpRequestTests
         Assert.That(request.PostData, Is.EqualTo("part1part2"));
     }
 
-    [Test]
+    [Test, PuppeteerTest("HTTPRequest.test.ts", "CdpHTTPRequest", "should fallback to postData if postDataEntries is missing")]
     public void ShouldFallbackToPostDataIfPostDataEntriesIsMissing()
     {
         var client = Substitute.For<CDPSession>();
