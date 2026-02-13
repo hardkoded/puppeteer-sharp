@@ -112,17 +112,10 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "Browser.setContentsSize is not available in Chrome 138. Remove when Chrome is updated to a version that supports it.",
-    "testIdPattern": "[page.spec] Page Page.resize *",
+    "comment": "Chrome 145 changed CORS error message for private address space. Test uses about:blank -> localhost which triggers different error than upstream's domain1.test -> domain2.test",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "cdp"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Resize is not yet supported in WebDriver BiDi",
-    "testIdPattern": "[page.spec] Page Page.resize *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   }
 ]
