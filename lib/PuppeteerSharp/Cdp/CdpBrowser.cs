@@ -145,6 +145,27 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
 
+    /// <inheritdoc/>
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
+            "Browser.getWindowBounds",
+            new BrowserGetWindowBoundsRequest { WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture) }).ConfigureAwait(false);
+        return response.Bounds;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
+    {
+        await Connection.SendAsync(
+            "Browser.setWindowBounds",
+            new BrowserSetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
+                Bounds = windowBounds,
+            }).ConfigureAwait(false);
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,

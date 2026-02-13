@@ -267,6 +267,9 @@ namespace PuppeteerSharp
         public abstract Task ResizeAsync(int contentWidth, int contentHeight);
 
         /// <inheritdoc/>
+        public abstract Task<string> WindowIdAsync();
+
+        /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => MainFrame.EvaluateExpressionHandleAsync(script);
 

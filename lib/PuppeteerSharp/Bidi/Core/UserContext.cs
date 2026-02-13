@@ -160,7 +160,8 @@ internal class UserContext : IDisposable
             null,
             info.BrowsingContextId,
             info.Url,
-            info.OriginalOpener);
+            info.OriginalOpener,
+            info.ClientWindowId);
 
         _browsingContexts.TryAdd(browsingContext.Id, browsingContext);
 
