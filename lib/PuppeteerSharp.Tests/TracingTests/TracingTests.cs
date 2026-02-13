@@ -59,11 +59,11 @@ namespace PuppeteerSharp.Tests.TracingTests
         {
             await Page.Tracing.StartAsync(new TracingOptions
             {
-                Screenshots = true,
                 Path = _file,
                 Categories = new List<string>
                 {
-                    "disabled-by-default-v8.cpu_profiler.hires"
+                    "-*",
+                    "disabled-by-default-devtools.timeline.frame",
                 }
             });
 
@@ -73,11 +73,14 @@ namespace PuppeteerSharp.Tests.TracingTests
 
             using var document = JsonDocument.Parse(jsonString);
             var root = document.RootElement;
-            var metadata = root.GetProperty("metadata");
-            var traceConfig = metadata.GetProperty("trace-config");
-
-            var traceConfigString = traceConfig.GetString();
-            Assert.That(traceConfigString, Does.Contain("disabled-by-default-v8.cpu_profiler.hires"));
+            var traceEvents = root.GetProperty("traceEvents");
+            foreach (var traceEvent in traceEvents.EnumerateArray())
+            {
+                if (traceEvent.TryGetProperty("cat", out var cat))
+                {
+                    Assert.That(cat.GetString(), Is.Not.EqualTo("toplevel"));
+                }
+            }
         }
 
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should run with default categories")]

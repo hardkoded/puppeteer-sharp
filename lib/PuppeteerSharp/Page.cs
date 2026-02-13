@@ -264,6 +264,9 @@ namespace PuppeteerSharp
             => MainFrame.WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
+        public abstract Task ResizeAsync(int contentWidth, int contentHeight);
+
+        /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => MainFrame.EvaluateExpressionHandleAsync(script);
 

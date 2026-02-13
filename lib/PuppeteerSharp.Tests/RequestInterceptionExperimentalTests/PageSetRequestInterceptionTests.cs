@@ -666,12 +666,15 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var requests = new List<IRequest>();
         Page.AddRequestInterceptor(request =>
         {
-            requests.Add(request);
+            if (!request.Url.Contains("favicon.ico"))
+            {
+                requests.Add(request);
+            }
+
             return request.ContinueAsync(new Payload(), 0);
         });
         var response =
-            await Page.GoToAsync(
-                $"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
+            await Page.GoToAsync($"{TestConstants.ServerUrl}/style-404.html");
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(requests, Has.Count.EqualTo(2));
         Assert.That(requests[1].Response.Status, Is.EqualTo(HttpStatusCode.NotFound));

@@ -227,6 +227,10 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
+    public override Task ResizeAsync(int contentWidth, int contentHeight)
+        => throw new NotSupportedException("Resize is not yet supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null)
         => _cdpEmulationManager.EmulateIdleStateAsync(idleOverrides);
 

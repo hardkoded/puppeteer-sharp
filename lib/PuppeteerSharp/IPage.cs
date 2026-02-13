@@ -1450,6 +1450,17 @@ namespace PuppeteerSharp
         Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
 
         /// <summary>
+        /// Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+        /// </summary>
+        /// <param name="contentWidth">The desired width of the content area in pixels.</param>
+        /// <param name="contentHeight">The desired height of the content area in pixels.</param>
+        /// <returns>A task that resolves when the resize operation is complete.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task ResizeAsync(int contentWidth, int contentHeight);
+
+        /// <summary>
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
         /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
         /// The interception is resolved to the highest-priority resolution.
