@@ -395,6 +395,22 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
+    public override async Task ResizeAsync(int contentWidth, int contentHeight)
+    {
+        var response = await PrimaryTargetClient.SendAsync<BrowserGetWindowForTargetResponse>(
+            "Browser.getWindowForTarget").ConfigureAwait(false);
+
+        await PrimaryTargetClient.SendAsync(
+            "Browser.setContentsSize",
+            new BrowserSetContentsSizeRequest
+            {
+                WindowId = response.WindowId,
+                Width = contentWidth,
+                Height = contentHeight,
+            }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
         => FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
 

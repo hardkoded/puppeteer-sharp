@@ -110,5 +110,19 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Browser.setContentsSize is not available in Chrome 138. Remove when Chrome is updated to a version that supports it.",
+    "testIdPattern": "[page.spec] Page Page.resize *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Resize is not yet supported in WebDriver BiDi",
+    "testIdPattern": "[page.spec] Page Page.resize *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
