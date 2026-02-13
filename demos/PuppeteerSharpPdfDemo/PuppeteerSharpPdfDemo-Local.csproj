@@ -6,6 +6,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PublishAot>true</PublishAot>
+    <!-- PuppeteerSharp is not fully AOT/trim-compatible yet; suppress analysis errors -->
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <NoWarn>$(NoWarn);IL3000;IL3050;IL3053</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\lib\PuppeteerSharp\PuppeteerSharp.csproj" />
