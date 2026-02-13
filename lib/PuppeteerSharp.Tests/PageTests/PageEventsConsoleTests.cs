@@ -186,18 +186,18 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
         public async Task ShouldTriggerCorrectLog()
         {
-            // Navigate to about:blank first (different origin than the test server)
-            await Page.GoToAsync(TestConstants.AboutBlank);
+            // Navigate to localhost (one origin)
+            await Page.GoToAsync(TestConstants.EmptyPage);
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
             Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
-            // Fetch from a different origin to trigger CORS error
+            // Fetch from 127.0.0.1 (different origin) to trigger CORS error
             await Task.WhenAll(
                 messageTask.Task,
                 Page.EvaluateFunctionAsync(
                     "async url => await fetch(url).catch(() => {})",
-                    TestConstants.EmptyPage));
+                    $"{TestConstants.CrossProcessUrl}/empty.html"));
 
             var message = await messageTask.Task;
             Assert.That(message.Text, Does.Contain("Access-Control-Allow-Origin"));

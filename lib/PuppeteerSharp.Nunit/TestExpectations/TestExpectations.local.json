@@ -110,12 +110,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Chrome 145 changed CORS error message for private address space. Test uses about:blank -> localhost which triggers different error than upstream's domain1.test -> domain2.test",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "cdp"],
-    "expectations": ["FAIL"]
   }
 ]
