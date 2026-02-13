@@ -83,6 +83,15 @@ namespace PuppeteerSharp
         public abstract IBrowserContext[] BrowserContexts();
 
         /// <inheritdoc/>
+        public abstract Task<ScreenInfo[]> ScreensAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<ScreenInfo> AddScreenAsync(AddScreenParams @params);
+
+        /// <inheritdoc/>
+        public abstract Task RemoveScreenAsync(string screenId);
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync()
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
