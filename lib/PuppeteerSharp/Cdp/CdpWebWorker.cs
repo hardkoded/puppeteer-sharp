@@ -92,22 +92,35 @@ public class CdpWebWorker : WebWorker
         switch (_targetType)
         {
             case TargetType.ServiceWorker:
-            case TargetType.SharedWorker:
-                // For service and shared workers we need to close the target and detach to allow
-                // the worker to stop.
-                await CdpCDPSession.Connection.SendAsync(
-                    "Target.closeTarget",
-                    new TargetCloseTargetRequest()
-                    {
-                        TargetId = _id,
-                    }).ConfigureAwait(false);
+                if (CdpCDPSession.Connection != null)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
 
-                await CdpCDPSession.Connection.SendAsync(
-                    "Target.detachFromTarget",
-                    new TargetDetachFromTargetRequest()
-                    {
-                        SessionId = Client.Id,
-                    }).ConfigureAwait(false);
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest()
+                        {
+                            SessionId = Client.Id,
+                        }).ConfigureAwait(false);
+                }
+
+                break;
+            case TargetType.SharedWorker:
+                if (CdpCDPSession.Connection != null)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
+                }
+
                 break;
             default:
                 await EvaluateFunctionAsync(@"() => {

@@ -541,10 +541,14 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             var requests = new List<IRequest>();
             Page.Request += async (_, e) =>
             {
-                requests.Add(e.Request);
+                if (!e.Request.Url.Contains("favicon.ico"))
+                {
+                    requests.Add(e.Request);
+                }
+
                 await e.Request.ContinueAsync();
             };
-            var response = await Page.GoToAsync($"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
+            var response = await Page.GoToAsync($"{TestConstants.ServerUrl}/style-404.html");
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(requests, Has.Count.EqualTo(2));
 
