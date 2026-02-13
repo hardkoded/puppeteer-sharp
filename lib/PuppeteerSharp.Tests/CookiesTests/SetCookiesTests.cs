@@ -134,7 +134,6 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Value = "123456",
                 Domain = "localhost",
                 Path = "/",
-                SameParty = false,
                 Expires = -1,
                 HttpOnly = false,
                 Secure = false,
