@@ -71,7 +71,7 @@ namespace PuppeteerSharp
         internal abstract ProtocolType Protocol { get; }
 
         /// <inheritdoc/>
-        public abstract Task<IPage> NewPageAsync();
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
