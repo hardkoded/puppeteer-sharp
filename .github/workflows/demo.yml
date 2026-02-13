@@ -21,7 +21,7 @@ jobs:
         os: [windows-2022, macos-latest]
         browser: [chrome, firefox]
     env:
-      DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
+      DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
     steps:
     - uses: actions/checkout@v2
@@ -38,12 +38,12 @@ jobs:
     - name: Run on .NET
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net8.0
+          dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net10.0
     - name: Run with AOT
       if: matrix.os == 'windows-2022'
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
-          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build -f net8.0
+          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -r win-x64 -o build -f net10.0
           build/PuppeteerSharpPdfDemo-Local.exe auto-exit ${{ matrix.browser }}
     - name: Run on .NET Framework
       if: matrix.os == 'windows-2022'
