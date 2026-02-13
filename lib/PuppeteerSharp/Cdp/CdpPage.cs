@@ -397,17 +397,25 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task ResizeAsync(int contentWidth, int contentHeight)
     {
-        var response = await PrimaryTargetClient.SendAsync<BrowserGetWindowForTargetResponse>(
-            "Browser.getWindowForTarget").ConfigureAwait(false);
+        var windowId = await WindowIdAsync().ConfigureAwait(false);
 
         await PrimaryTargetClient.SendAsync(
             "Browser.setContentsSize",
             new BrowserSetContentsSizeRequest
             {
-                WindowId = response.WindowId,
+                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
                 Width = contentWidth,
                 Height = contentHeight,
             }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<string> WindowIdAsync()
+    {
+        var response = await PrimaryTargetClient.SendAsync<BrowserGetWindowForTargetResponse>(
+            "Browser.getWindowForTarget").ConfigureAwait(false);
+
+        return response.WindowId.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
     /// <inheritdoc/>

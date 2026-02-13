@@ -41,13 +41,14 @@ internal class BrowsingContext : IDisposable
     private string _reason;
     private Navigation _navigation;
 
-    private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
+    private BrowsingContext(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener, string clientWindow)
     {
         UserContext = userContext;
         Parent = parent;
         Id = id;
         Url = url;
         OriginalOpener = originalOpener;
+        WindowId = clientWindow;
 
         DefaultRealm = CreateWindowRealm();
     }
@@ -106,6 +107,8 @@ internal class BrowsingContext : IDisposable
 
     public WindowRealm DefaultRealm { get; }
 
+    public string WindowId { get; }
+
     internal string OriginalOpener { get; }
 
     internal BrowsingContext Top
@@ -125,9 +128,9 @@ internal class BrowsingContext : IDisposable
 
     private BrowsingContext Parent { get; }
 
-    public static BrowsingContext From(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener)
+    public static BrowsingContext From(UserContext userContext, BrowsingContext parent, string id, string url, string originalOpener, string clientWindow = null)
     {
-        var context = new BrowsingContext(userContext, parent, id, url, originalOpener);
+        var context = new BrowsingContext(userContext, parent, id, url, originalOpener, clientWindow);
         context.Initialize();
         return context;
     }

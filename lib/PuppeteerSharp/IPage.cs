@@ -1461,6 +1461,15 @@ namespace PuppeteerSharp
         Task ResizeAsync(int contentWidth, int contentHeight);
 
         /// <summary>
+        /// Returns the page's window ID.
+        /// </summary>
+        /// <returns>A task that resolves to the window ID string.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task<string> WindowIdAsync();
+
+        /// <summary>
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
         /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
         /// The interception is resolved to the highest-priority resolution.

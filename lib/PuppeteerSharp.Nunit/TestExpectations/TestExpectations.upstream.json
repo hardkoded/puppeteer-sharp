@@ -7,6 +7,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported by Firefox"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "headful"],
+    "expectations": ["FAIL"],
+    "comment": "Different dimensions on Windows for headful"
+  },
+  {
     "testIdPattern": "[bfcache.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
