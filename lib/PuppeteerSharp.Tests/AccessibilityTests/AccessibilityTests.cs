@@ -113,42 +113,22 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
-            // This object has more children than in upstream.
-            // Because upstream uses `toMatchObject` which stops going deeper if the element has not Children.
-            Assert.That(
-                FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-                {
-                    InterestingOnly = false
-                })),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "",
-                    Value = "hi",
-                    Focused = true,
-                    Multiline = true,
-                    Children = new SerializedAXNode[]
-                    {
-                        new() {
-                            Role = "generic",
-                            Name = "",
-                            Children = new SerializedAXNode[]
-                            {
-                                new() {
-                                    Role = "StaticText",
-                                    Name = "hi",
-                                    Children = new SerializedAXNode[]
-                                    {
-                                        new()
-                                        {
-                                            Role = "InlineTextBox",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }));
+            // Upstream uses toMatchObject (partial matching), so we assert individual properties
+            var focusedNode = FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                InterestingOnly = false
+            }));
+            Assert.That(focusedNode.Role, Is.EqualTo("textbox"));
+            Assert.That(focusedNode.Name, Is.EqualTo(""));
+            Assert.That(focusedNode.Value, Is.EqualTo("hi"));
+            Assert.That(focusedNode.Focused, Is.True);
+            Assert.That(focusedNode.Multiline, Is.True);
+            Assert.That(focusedNode.Children, Has.Length.EqualTo(1));
+            Assert.That(focusedNode.Children[0].Role, Is.EqualTo("generic"));
+            Assert.That(focusedNode.Children[0].Name, Is.EqualTo(""));
+            Assert.That(focusedNode.Children[0].Children, Has.Length.EqualTo(1));
+            Assert.That(focusedNode.Children[0].Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(focusedNode.Children[0].Children[0].Name, Is.EqualTo("hi"));
         }
 
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "get snapshots while the tree is re-calculated")]

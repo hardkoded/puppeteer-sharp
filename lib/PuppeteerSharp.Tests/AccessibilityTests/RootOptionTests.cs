@@ -91,46 +91,34 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
         [Test, PuppeteerTest("accessibility.spec", "root option", "should support the interestingOnly option")]
         public async Task ShouldSupportTheInterestingOnlyOption()
         {
-            await Page.SetContentAsync("<div><button>My Button</button></div>");
-            var div = await Page.QuerySelectorAsync("div");
+            await Page.SetContentAsync("<div><button>My Button</button></div><div class=\"uninteresting\"></div>");
+            var div = await Page.QuerySelectorAsync("div.uninteresting");
             Assert.That(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
             {
                 Root = div
             }), Is.Null);
-            Assert.That(
-                await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-                {
-                    Root = div,
-                    InterestingOnly = false
-                }),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "generic",
-                    Name = "",
-                    Children = new[]
-                    {
-                        new SerializedAXNode
-                        {
-                            Role = "button",
-                            Name = "My Button",
-                            Children = new[]
-                            {
-                                new SerializedAXNode
-                                {
-                                    Role = "StaticText",
-                                    Name = "My Button",
-                                    Children = new SerializedAXNode[]
-                                    {
-                                        new()
-                                        {
-                                            Role = "InlineTextBox",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }));
+
+            var divWithButton = await Page.QuerySelectorAsync("div");
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                Root = divWithButton
+            });
+            Assert.That(snapshot.Name, Is.EqualTo("My Button"));
+            Assert.That(snapshot.Role, Is.EqualTo("button"));
+
+            var fullSnapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                Root = divWithButton,
+                InterestingOnly = false
+            });
+            Assert.That(fullSnapshot.Role, Is.EqualTo("generic"));
+            Assert.That(fullSnapshot.Name, Is.EqualTo(""));
+            Assert.That(fullSnapshot.Children, Has.Length.EqualTo(1));
+            Assert.That(fullSnapshot.Children[0].Role, Is.EqualTo("button"));
+            Assert.That(fullSnapshot.Children[0].Name, Is.EqualTo("My Button"));
+            Assert.That(fullSnapshot.Children[0].Children, Has.Length.EqualTo(1));
+            Assert.That(fullSnapshot.Children[0].Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(fullSnapshot.Children[0].Children[0].Name, Is.EqualTo("My Button"));
         }
     }
 }
