@@ -111,7 +111,7 @@ public class CdpFrame : Frame
             throw new NavigationException(ex.Message, ex);
         }
 
-        return watcher.NavigationResponse;
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
 
         async Task NavigateAsync()
         {
@@ -149,7 +149,7 @@ public class CdpFrame : Frame
 
         await raceTask.ConfigureAwait(false);
 
-        return watcher.NavigationResponse;
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
