@@ -224,6 +224,13 @@ namespace PuppeteerSharp.Cdp
         internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
         /// <summary>
+        /// Enqueues a no-op task on the message processing queue so that all
+        /// previously enqueued CDP events are guaranteed to be processed once
+        /// the returned task completes.
+        /// </summary>
+        internal Task DrainPendingMessagesAsync() => _callbackQueue.Enqueue(() => Task.CompletedTask);
+
+        /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
         /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
         /// </summary>
