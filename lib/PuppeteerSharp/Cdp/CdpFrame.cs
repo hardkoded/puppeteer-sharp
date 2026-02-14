@@ -111,7 +111,11 @@ public class CdpFrame : Frame
             throw new NavigationException(ex.Message, ex);
         }
 
-        return watcher.NavigationResponse;
+        // Drain pending CDP events to ensure network events (request/response)
+        // are processed before reading the navigation response. This compensates
+        // for PuppeteerSharp's serialized event processing via TaskQueue.
+        await ((CDPSession)Client).Connection.DrainPendingMessagesAsync().ConfigureAwait(false);
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
 
         async Task NavigateAsync()
         {
@@ -149,7 +153,11 @@ public class CdpFrame : Frame
 
         await raceTask.ConfigureAwait(false);
 
-        return watcher.NavigationResponse;
+        // Drain pending CDP events to ensure network events (request/response)
+        // are processed before reading the navigation response. This compensates
+        // for PuppeteerSharp's serialized event processing via TaskQueue.
+        await ((CDPSession)Client).Connection.DrainPendingMessagesAsync().ConfigureAwait(false);
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
