@@ -77,9 +77,13 @@ internal class UserContext : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task<BrowsingContext> CreateBrowserContextAsync(CreateType contextType)
+    public async Task<BrowsingContext> CreateBrowserContextAsync(CreateType contextType, bool? background = null)
     {
-        var createParams = new CreateCommandParameters(contextType) { UserContextId = Id };
+        var createParams = new CreateCommandParameters(contextType)
+        {
+            UserContextId = Id,
+            IsCreatedInBackground = background,
+        };
         var result = await Session.Driver.BrowsingContext.CreateAsync(createParams).ConfigureAwait(false);
 
         if (_browsingContexts.TryGetValue(result.BrowsingContextId, out var browsingContext))
