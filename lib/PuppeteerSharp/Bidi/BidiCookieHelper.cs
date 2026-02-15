@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Storage;
@@ -209,3 +211,5 @@ internal static class BidiCookieHelper
         };
     }
 }
+
+#endif

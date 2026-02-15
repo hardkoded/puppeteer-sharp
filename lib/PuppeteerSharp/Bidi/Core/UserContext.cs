@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -179,3 +181,5 @@ internal class UserContext : IDisposable
 
     private void OnClosed() => Closed?.Invoke(this, new ClosedEventArgs(_reason));
 }
+
+#endif

@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -30,3 +32,5 @@ internal class NavigationEventArgs(string url)
 
     public DateTime Timestamp { get; set; } = DateTime.Now;
 }
+
+#endif
