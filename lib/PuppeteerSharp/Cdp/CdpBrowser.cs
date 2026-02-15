@@ -207,9 +207,20 @@ public class CdpBrowser : Browser
 
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
+        var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
+        var windowBounds = options?.Type == "window" ? options.WindowBounds : null;
+
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
+            Left = windowBounds?.Left,
+            Top = windowBounds?.Top,
+            Width = windowBounds?.Width,
+            Height = windowBounds?.Height,
+            WindowState = windowBounds?.WindowState,
+
+            // Works around crbug.com/454825274.
+            NewWindow = hasTargets && options?.Type == "window" ? true : null,
             Background = options?.Background,
         };
 

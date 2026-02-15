@@ -123,8 +123,12 @@ public class BidiBrowserContext : BrowserContext
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
+        var type = options?.Type == "window"
+            ? WebDriverBiDi.BrowsingContext.CreateType.Window
+            : WebDriverBiDi.BrowsingContext.CreateType.Tab;
+
         var context = await UserContext.CreateBrowserContextAsync(
-            WebDriverBiDi.BrowsingContext.CreateType.Tab,
+            type,
             background: options?.Background).ConfigureAwait(false);
 
         if (!_pages.TryGetValue(context, out var page))
