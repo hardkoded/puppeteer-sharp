@@ -166,6 +166,26 @@ public class CdpBrowser : Browser
             }).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo[]> ScreensAsync()
+    {
+        var response = await Connection.SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos").ConfigureAwait(false);
+        return response.ScreenInfos;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
+    {
+        var response = await Connection.SendAsync<EmulationAddScreenResponse>("Emulation.addScreen", @params).ConfigureAwait(false);
+        return response.ScreenInfo;
+    }
+
+    /// <inheritdoc/>
+    public override async Task RemoveScreenAsync(string screenId)
+    {
+        await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
@@ -206,11 +226,21 @@ public class CdpBrowser : Browser
         }
     }
 
-    internal async Task<IPage> CreatePageInContextAsync(string contextId)
+    internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
+        var hasTargets = Targets().Any(t => t.BrowserContext is CdpBrowserContext ctx && ctx.Id == contextId);
+        var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
+
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
+            Left = windowBounds?.Left,
+            Top = windowBounds?.Top,
+            Width = windowBounds?.Width,
+            Height = windowBounds?.Height,
+            WindowState = windowBounds?.WindowState,
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
+            Background = options?.Background,
         };
 
         if (contextId != null)

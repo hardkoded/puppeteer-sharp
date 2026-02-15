@@ -110,5 +110,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Background page creation not supported in current Chrome headless version",
+    "testIdPattern": "[page.spec] Page Page.newPage should create a background page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headless"],
+    "expectations": ["FAIL"]
   }
 ]

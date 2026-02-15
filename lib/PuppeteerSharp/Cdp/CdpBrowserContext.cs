@@ -59,6 +59,9 @@ public class CdpBrowserContext : BrowserContext
     public override Task<IPage> NewPageAsync() => _browser.CreatePageInContextAsync(Id);
 
     /// <inheritdoc/>
+    public override Task<IPage> NewPageAsync(CreatePageOptions options) => _browser.CreatePageInContextAsync(Id, options);
+
+    /// <inheritdoc/>
     public override Task CloseAsync()
     {
         if (Id == null)

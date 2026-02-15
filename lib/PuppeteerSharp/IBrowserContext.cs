@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <summary>
-        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync"/>.
+        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync()"/>.
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetCreated;
 
@@ -57,6 +57,13 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
         Task<IPage> NewPageAsync();
+
+        /// <summary>
+        /// Creates a new page with the specified options.
+        /// </summary>
+        /// <param name="options">The options for creating the page.</param>
+        /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
+        Task<IPage> NewPageAsync(CreatePageOptions options);
 
         /// <summary>
         /// Overrides the browser context permissions.

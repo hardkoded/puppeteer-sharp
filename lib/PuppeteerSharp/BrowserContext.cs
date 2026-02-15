@@ -43,6 +43,9 @@ namespace PuppeteerSharp
         public abstract Task<IPage> NewPageAsync();
 
         /// <inheritdoc/>
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options);
+
+        /// <inheritdoc/>
         public abstract Task CloseAsync();
 
         /// <inheritdoc/>

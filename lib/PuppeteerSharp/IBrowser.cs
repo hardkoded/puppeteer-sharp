@@ -244,5 +244,27 @@ namespace PuppeteerSharp
         /// <param name="windowBounds">The bounds to set.</param>
         /// <returns>A task that resolves when the bounds have been set.</returns>
         Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
+
+        /// <summary>
+        /// Gets a list of <see cref="ScreenInfo"/> objects.
+        /// </summary>
+        /// <returns>A task that resolves to an array of screen information objects.</returns>
+        Task<ScreenInfo[]> ScreensAsync();
+
+        /// <summary>
+        /// Adds a new screen with specified parameters and returns a <see cref="ScreenInfo"/> object, including the new screen's ID.
+        /// </summary>
+        /// <param name="params">The parameters for the new screen.</param>
+        /// <returns>A task that resolves to the added screen information.</returns>
+        /// <remarks>Only supported in headless mode.</remarks>
+        Task<ScreenInfo> AddScreenAsync(AddScreenParams @params);
+
+        /// <summary>
+        /// Removes the screen associated with the given screen ID, unless it is the primary screen.
+        /// </summary>
+        /// <param name="screenId">The ID of the screen to remove.</param>
+        /// <returns>A task that completes when the screen is removed.</returns>
+        /// <remarks>Only supported in headless mode. Fails if the primary screen ID is specified.</remarks>
+        Task RemoveScreenAsync(string screenId);
     }
 }
