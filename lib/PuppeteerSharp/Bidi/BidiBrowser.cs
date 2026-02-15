@@ -178,6 +178,18 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
 
+    /// <inheritdoc/>
+    public override Task<ScreenInfo[]> ScreensAsync()
+        => throw new NotSupportedException("Screens is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc/>
+    public override Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
+        => throw new NotSupportedException("AddScreen is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc/>
+    public override Task RemoveScreenAsync(string screenId)
+        => throw new NotSupportedException("RemoveScreen is not supported in WebDriver BiDi.");
+
     /// <inheritdoc />
     public override ITarget[] Targets()
         =>
