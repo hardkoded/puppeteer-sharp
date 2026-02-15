@@ -98,8 +98,8 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         public async Task ShouldSupportFramesWithinOopFrames()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var frame1Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame == Page.MainFrame);
-            var frame2Task = Page.WaitForFrameAsync((frame) => frame != Page.MainFrame && frame.ParentFrame != Page.MainFrame);
+            var frame1Task = Page.WaitForFrameAsync((frame) => frame.Url.Contains("/frames/one-frame.html"));
+            var frame2Task = Page.WaitForFrameAsync((frame) => frame.Url.Contains("/frames/frame.html"));
 
             await FrameUtils.AttachFrameAsync(
               Page,
