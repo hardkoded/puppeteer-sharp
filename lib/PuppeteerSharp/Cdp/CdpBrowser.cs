@@ -145,6 +145,26 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
 
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo[]> ScreensAsync()
+    {
+        var response = await Connection.SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos").ConfigureAwait(false);
+        return response.ScreenInfos;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
+    {
+        var response = await Connection.SendAsync<EmulationAddScreenResponse>("Emulation.addScreen", @params).ConfigureAwait(false);
+        return response.ScreenInfo;
+    }
+
+    /// <inheritdoc/>
+    public override async Task RemoveScreenAsync(string screenId)
+    {
+        await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
