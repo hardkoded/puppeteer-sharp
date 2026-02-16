@@ -134,7 +134,9 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Value = "123456",
                 Domain = "localhost",
                 Path = "/",
+#pragma warning disable CS0618 // SameParty is deprecated
                 SameParty = false,
+#pragma warning restore CS0618
                 Expires = -1,
                 HttpOnly = false,
                 Secure = false,
