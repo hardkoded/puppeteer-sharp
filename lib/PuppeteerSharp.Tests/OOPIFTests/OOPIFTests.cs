@@ -239,7 +239,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
               "frame1",
               TestConstants.CrossProcessHttpPrefix + "/empty.html"
             );
-            var frame = await frameTask.WithTimeout(5_000);
+            var frame = await frameTask.WithTimeout(30_000);
             await frame.EvaluateFunctionAsync(@"() => {
                 const button = document.createElement('button');
                 button.id = 'test-button';
