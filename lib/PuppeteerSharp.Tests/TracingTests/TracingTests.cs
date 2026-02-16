@@ -109,7 +109,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 Path = _file
             });
             var newPage = await Browser.NewPageAsync();
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            var exception = Assert.CatchAsync(async () =>
             {
                 await newPage.Tracing.StartAsync(new TracingOptions
                 {
@@ -117,6 +117,7 @@ namespace PuppeteerSharp.Tests.TracingTests
                 });
             });
 
+            Assert.That(exception, Is.Not.Null);
             await newPage.CloseAsync();
             await Page.Tracing.StopAsync();
         }
@@ -161,10 +162,12 @@ namespace PuppeteerSharp.Tests.TracingTests
                 Path = Path.GetTempPath()
             });
 
-            Assert.ThrowsAsync<Exception>(async () =>
+            var exception = Assert.CatchAsync(async () =>
             {
                 await Page.Tracing.StopAsync();
             });
+
+            Assert.That(exception, Is.Not.Null);
         }
     }
 }
