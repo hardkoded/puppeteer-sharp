@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
     /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>.
     /// </summary>
-    public interface IBrowserContext
+    public interface IBrowserContext : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Raised when the url of a target changes
@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <summary>
-        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync"/>.
+        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync(CreatePageOptions)"/>.
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetCreated;
 
@@ -55,8 +55,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page.
         /// </summary>
+        /// <param name="options">Options for creating the page.</param>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
-        Task<IPage> NewPageAsync();
+        Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <summary>
         /// Overrides the browser context permissions.

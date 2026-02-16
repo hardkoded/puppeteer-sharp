@@ -4,14 +4,10 @@ using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
-namespace PuppeteerSharp.Tests.PageTests
+namespace PuppeteerSharp.Tests.NavigationTests
 {
     public class PageWaitForNavigationTests : PuppeteerPageBaseTest
     {
-        public PageWaitForNavigationTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work")]
         public async Task ShouldWork()
         {
@@ -26,14 +22,11 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(response.Url, Does.Contain("grid.html"));
         }
 
-        [Test, PuppeteerTest("navigation.spec", "Page.waitForNavigation", "should work with both domcontentloaded and load")]
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should work with both domcontentloaded and load")]
         public async Task ShouldWorkWithBothDomcontentloadedAndLoad()
         {
             var responseCompleted = new TaskCompletionSource<bool>();
-            Server.SetRoute("/one-style.css", _ =>
-            {
-                return responseCompleted.Task;
-            });
+            Server.SetRoute("/one-style.css", _ => responseCompleted.Task);
 
             var waitForRequestTask = Server.WaitForRequest("/one-style.css");
             var navigationTask = Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
@@ -151,19 +144,13 @@ namespace PuppeteerSharp.Tests.PageTests
             var frameAttachedTaskSource = new TaskCompletionSource<IFrame>();
             Page.FrameAttached += (_, e) =>
             {
-                frameAttachedTaskSource.SetResult(e.Frame);
+                if (e.Frame.ParentFrame != null)
+                {
+                    frameAttachedTaskSource.SetResult(e.Frame);
+                }
             };
 
             var frame = await frameAttachedTaskSource.Task;
-            var frameNavigatedTaskSource = new TaskCompletionSource<bool>();
-            Page.FrameNavigated += (_, e) =>
-            {
-                if (e.Frame == frame)
-                {
-                    frameNavigatedTaskSource.TrySetResult(true);
-                }
-            };
-            await frameNavigatedTaskSource.Task;
             await Task.WhenAll(
                 frame.EvaluateFunctionAsync("() => window.stop()"),
                 navigationTask

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.PageAccessibility
@@ -23,7 +24,7 @@ namespace PuppeteerSharp.PageAccessibility
             {
                 var node = await _client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
                 {
-                    ObjectId = options.Root.RemoteObject.ObjectId,
+                    ObjectId = ((CdpElementHandle)options.Root).RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
                 backendNodeId = node.Node.BackendNodeId;
             }
@@ -32,7 +33,9 @@ namespace PuppeteerSharp.PageAccessibility
             var needle = defaultRoot;
             if (backendNodeId != null)
             {
-                needle = defaultRoot.Find(node => node.Payload.BackendDOMNodeId.GetInt32().Equals(backendNodeId.Value.GetInt32()));
+                needle = defaultRoot.Find(node =>
+                    node.Payload.BackendDOMNodeId.ValueKind == JsonValueKind.Number &&
+                    node.Payload.BackendDOMNodeId.GetInt32() == backendNodeId.Value.GetInt32());
                 if (needle == null)
                 {
                     return null;
@@ -46,12 +49,9 @@ namespace PuppeteerSharp.PageAccessibility
 
             var interestingNodes = new List<AXNode>();
             CollectInterestingNodes(interestingNodes, defaultRoot, false);
-            if (!interestingNodes.Contains(needle))
-            {
-                return null;
-            }
 
-            return SerializeTree(needle, interestingNodes)[0];
+            var result = SerializeTree(needle, interestingNodes);
+            return result.Length > 0 ? result[0] : null;
         }
 
         internal void UpdateClient(CDPSession client) => _client = client;

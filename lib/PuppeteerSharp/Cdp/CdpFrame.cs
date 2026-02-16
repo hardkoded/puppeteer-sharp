@@ -55,7 +55,7 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    public sealed override CDPSession Client { get; protected set; }
+    public sealed override ICDPSession Client { get; protected set; }
 
     /// <inheritdoc/>
     public override IPage Page => FrameManager.Page;
@@ -68,6 +68,8 @@ public class CdpFrame : Frame
     internal CdpPage CdpPage => Page as CdpPage;
 
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+
+    internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
     /// <inheritdoc/>
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
@@ -109,7 +111,7 @@ public class CdpFrame : Frame
             throw new NavigationException(ex.Message, ex);
         }
 
-        return watcher.NavigationResponse;
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
 
         async Task NavigateAsync()
         {
@@ -147,7 +149,7 @@ public class CdpFrame : Frame
 
         await raceTask.ConfigureAwait(false);
 
-        return watcher.NavigationResponse;
+        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -241,72 +243,6 @@ public class CdpFrame : Frame
         return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
     }
 
-    /// <inheritdoc/>
-    public override async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
-    {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
-        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
-            string.IsNullOrEmpty(options.Content))
-        {
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
-        }
-
-        var content = options.Content;
-
-        if (!string.IsNullOrEmpty(options.Path))
-        {
-            content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-            content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
-        }
-
-        var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-            @"async (puppeteerUtil, url, id, type, content) => {
-                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
-                  const promise = createDeferredPromise();
-                  const script = document.createElement('script');
-                  script.type = type;
-                  script.text = content;
-                  if (url) {
-                    script.src = url;
-                    script.addEventListener(
-                      'load',
-                      () => {
-                        return promise.resolve();
-                      },
-                      {once: true}
-                    );
-                    script.addEventListener(
-                      'error',
-                      event => {
-                        promise.reject(
-                          new Error(event.message ?? 'Could not load script')
-                        );
-                      },
-                      {once: true}
-                    );
-                  } else {
-                    promise.resolve();
-                  }
-                  if (id) {
-                    script.id = id;
-                  }
-                  document.head.appendChild(script);
-                  await promise;
-                  return script;
-                }",
-            new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-            options.Url,
-            options.Id,
-            options.Type,
-            content).ConfigureAwait(false);
-
-        return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
-    }
-
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
     {
         Client = client;
@@ -337,7 +273,7 @@ public class CdpFrame : Frame
 
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
-        => FrameManager.GetDeviceRequestPromptManager(Client);
+        => FrameManager.GetDeviceRequestPromptManager(CdpCDPSession);
 
     // See https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy.
     private static string ReferrerPolicyToProtocol(string referrerPolicy)

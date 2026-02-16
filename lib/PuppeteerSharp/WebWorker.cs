@@ -35,13 +35,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// The CDP session client the WebWorker belongs to.
         /// </summary>
-        public abstract CDPSession Client { get; }
+        public abstract ICDPSession Client { get; }
 
         /// <inheritdoc/>
-        CDPSession IEnvironment.Client => Client;
-
-        /// <inheritdoc/>
-        Realm IEnvironment.MainRealm => World;
+        Realm IEnvironment.MainRealm => GetMainRealm();
 
         internal abstract IsolatedWorld World { get; }
 
@@ -68,7 +65,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+        public async Task EvaluateFunctionAsync(string script, params object[] args)
             => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -102,5 +99,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
         public abstract Task CloseAsync();
+
+        internal virtual Realm GetMainRealm() => World;
     }
 }

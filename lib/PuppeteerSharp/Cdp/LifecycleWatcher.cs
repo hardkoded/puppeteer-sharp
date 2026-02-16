@@ -26,6 +26,7 @@ namespace PuppeteerSharp.Cdp
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
         private bool _swapped;
+        private TaskCompletionSource<bool> _navigationResponseReceived;
 
         public LifecycleWatcher(
             NetworkManager networkManager,
@@ -53,6 +54,8 @@ namespace PuppeteerSharp.Cdp
             frame.FrameSwappedByActivation += FrameSwapped;
             frame.FrameDetached += OnFrameDetached;
             _networkManager.Request += OnRequest;
+            _networkManager.Response += OnResponse;
+            _networkManager.RequestFailed += OnRequestFailed;
             CheckLifecycleComplete();
         }
 
@@ -60,11 +63,23 @@ namespace PuppeteerSharp.Cdp
 
         public Task<bool> NewDocumentNavigationTask => _newDocumentNavigationTaskWrapper.Task;
 
-        public CdpHttpResponse NavigationResponse => (CdpHttpResponse)_navigationRequest?.Response;
-
-        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(_timeout, cancellationToken: _terminationCancellationToken.Token);
+        public Task TerminationTask => _terminationTaskWrapper.Task.WithTimeout(
+            _timeout,
+            t => new TimeoutException($"Navigation timeout of {t.TotalMilliseconds} ms exceeded"),
+            _terminationCancellationToken.Token);
 
         public Task LifecycleTask => _lifecycleTaskWrapper.Task;
+
+        public async Task<IResponse> NavigationResponseAsync()
+        {
+            // Continue with a possibly null response.
+            if (_navigationResponseReceived != null)
+            {
+                await _navigationResponseReceived.Task.ConfigureAwait(false);
+            }
+
+            return _navigationRequest?.Response;
+        }
 
         public void Dispose()
         {
@@ -74,6 +89,8 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= FrameSwapped;
             _networkManager.Request -= OnRequest;
+            _networkManager.Response -= OnResponse;
+            _networkManager.RequestFailed -= OnRequestFailed;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
@@ -92,6 +109,7 @@ namespace PuppeteerSharp.Cdp
             if (e.Type == NavigationType.BackForwardCacheRestore)
             {
                 FrameSwapped(sender, EventArgs.Empty);
+                return;
             }
 
             CheckLifecycleComplete();
@@ -155,6 +173,37 @@ namespace PuppeteerSharp.Cdp
             }
 
             _navigationRequest = e.Request;
+
+            // Resolve previous navigation response in case there are multiple
+            // navigation requests reported by the backend. This generally should not
+            // happen but it looks like it's possible.
+            _navigationResponseReceived?.TrySetResult(true);
+            _navigationResponseReceived = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            if (e.Request.Response != null)
+            {
+                _navigationResponseReceived.TrySetResult(true);
+            }
+        }
+
+        private void OnResponse(object sender, ResponseCreatedEventArgs e)
+        {
+            if (_navigationRequest?.Id != e.Response.Request.Id)
+            {
+                return;
+            }
+
+            _navigationResponseReceived?.TrySetResult(true);
+        }
+
+        private void OnRequestFailed(object sender, RequestEventArgs e)
+        {
+            if (_navigationRequest?.Id != e.Request.Id)
+            {
+                return;
+            }
+
+            _navigationResponseReceived?.TrySetResult(true);
         }
 
         private void NavigatedWithinDocument(object sender, EventArgs e)

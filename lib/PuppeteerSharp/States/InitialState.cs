@@ -3,17 +3,14 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.States
 {
-    internal class InitialState : State
+    internal class InitialState(StateManager stateManager) : State(stateManager)
     {
-        public InitialState(StateManager stateManager) : base(stateManager)
-        {
-        }
+        public override Task StartAsync(LauncherBase p)
+            => StateManager.Starting.EnterFromAsync(p, this, TimeSpan.Zero);
 
-        public override Task StartAsync(LauncherBase p) => StateManager.Starting.EnterFromAsync(p, this, TimeSpan.Zero);
-
-        public override Task ExitAsync(LauncherBase p, TimeSpan timeout)
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout)
         {
-            StateManager.Exited.EnterFromAsync(p, this);
+            StateManager.Exited.EnterFromAsync(launcher, this);
             return Task.CompletedTask;
         }
 
@@ -23,11 +20,7 @@ namespace PuppeteerSharp.States
             return Task.CompletedTask;
         }
 
-        public override Task WaitForExitAsync(LauncherBase p) => Task.FromException(InvalidOperation("wait for exit"));
-
-        private Exception InvalidOperation(string v)
-        {
-            throw new NotImplementedException();
-        }
+        public override Task WaitForExitAsync(LauncherBase p)
+            => Task.FromException(new InvalidOperationException("wait for exit"));
     }
 }

@@ -39,10 +39,10 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
         InterceptionId = interceptionId;
         _allowInterception = allowInterception;
-        Url = data.Request.Url;
+        Url = data.Request.Url + (data.Request.UrlFragment ?? string.Empty);
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = data.Request.PostData;
+        PostData = ReconstructPostData(data.Request);
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
@@ -280,8 +280,32 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
+
+    private static string ReconstructPostData(Messaging.Request request)
+    {
+        if (request.PostDataEntries is { Length: > 0 })
+        {
+            var buffers = request.PostDataEntries
+                .Where(entry => entry.Bytes != null)
+                .Select(entry => Convert.FromBase64String(entry.Bytes))
+                .ToArray();
+
+            var totalLength = buffers.Sum(b => b.Length);
+            var merged = new byte[totalLength];
+            var offset = 0;
+            foreach (var buffer in buffers)
+            {
+                Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
+                offset += buffer.Length;
+            }
+
+            return Encoding.UTF8.GetString(merged);
+        }
+
+        return request.PostData;
+    }
 
     private Header[] HeadersArray(Dictionary<string, string> headers)
         => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();

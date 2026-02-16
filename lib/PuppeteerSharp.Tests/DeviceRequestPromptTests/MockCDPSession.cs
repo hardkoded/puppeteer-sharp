@@ -53,6 +53,11 @@ public class MockCDPSession : ICDPSession
     public TargetType TargetType { get; }
     public Task DetachAsync() => Task.CompletedTask;
 
+    public void Close(string closeReason)
+    {
+
+    }
+
     internal void OnMessage(ConnectionResponse obj)
         => MessageReceived?.Invoke(this, new MessageEventArgs
         {

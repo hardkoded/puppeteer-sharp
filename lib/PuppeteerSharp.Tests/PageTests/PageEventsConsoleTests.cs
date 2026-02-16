@@ -11,26 +11,46 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
         public async Task ShouldWork()
         {
-            ConsoleMessage message = null;
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
-            void EventHandler(object sender, ConsoleEventArgs e)
-            {
-                message = e.Message;
-                Page.Console -= EventHandler;
-            }
+            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
-            Page.Console += EventHandler;
+            await Task.WhenAll(
+                messageTask.Task,
+                Page.EvaluateFunctionAsync(@"() => {
+                    return console.log('hello', 5, {foo: 'bar'});
+                }"));
 
-            await Page.EvaluateExpressionAsync("console.log('hello', 5, {foo: 'bar'})");
-
-            var obj = new Dictionary<string, string> { { "foo", "bar" } };
+            var message = await messageTask.Task;
 
             Assert.That(message.Text, Is.EqualTo("hello 5 JSHandle@object"));
             Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
+            Assert.That(message.Args.Count, Is.EqualTo(3));
 
             Assert.That(await message.Args[0].JsonValueAsync<string>(), Is.EqualTo("hello"));
             Assert.That(await message.Args[1].JsonValueAsync<int>(), Is.EqualTo(5));
-            Assert.That(await message.Args[2].JsonValueAsync<Dictionary<string, string>>(), Is.EqualTo(obj));
+
+            // Third argument is an object {foo: "bar"}
+            // CDP returns a JsonElement, BiDi returns RemoteValueDictionary
+            // Use a property accessor to extract and verify the value
+            var fooProperty = await message.Args[2].GetPropertyAsync("foo");
+            Assert.That(await fooProperty.JsonValueAsync<string>(), Is.EqualTo("bar"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work on script call right after navigation")]
+        public async Task ShouldWorkOnScriptCallRightAfterNavigation()
+        {
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+
+            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
+
+            await Task.WhenAll(
+                messageTask.Task,
+                // Firefox prints warn if <!DOCTYPE html> is not present
+                Page.GoToAsync("data:text/html,<!DOCTYPE html><script>console.log('SOME_LOG_MESSAGE');</script>"));
+
+            var message = await messageTask.Task;
+            Assert.That(message.Text, Is.EqualTo("SOME_LOG_MESSAGE"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
@@ -40,10 +60,8 @@ namespace PuppeteerSharp.Tests.PageTests
 
             Page.Console += (_, e) => messages.Add(e.Message);
 
+            // All console events will be reported before `page.evaluate` is finished.
             await Page.EvaluateFunctionAsync(@"() => {
-              // A pair of time/timeEnd generates only one Console API call.
-              console.time('calling console.time');
-              console.timeEnd('calling console.time');
               console.trace('calling console.trace');
               console.dir('calling console.dir');
               console.warn('calling console.warn');
@@ -55,7 +73,6 @@ namespace PuppeteerSharp.Tests.PageTests
                 .Select(_ => _.Type)
                 .ToArray(), Is.EqualTo(new[]
             {
-                ConsoleType.TimeEnd,
                 ConsoleType.Trace,
                 ConsoleType.Dir,
                 ConsoleType.Warning,
@@ -63,10 +80,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 ConsoleType.Log
             }));
 
-            Assert.That(messages[0].Text, Does.Contain("calling console.time"));
-
             Assert.That(messages
-                .Skip(1)
                 .Select(msg => msg.Text)
                 .ToArray(), Is.EqualTo(new[]
             {
@@ -78,38 +92,115 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with timing functions")]
+        public async Task ShouldWorkForDifferentConsoleApiCallsWithTimingFunctions()
+        {
+            var messages = new List<ConsoleMessage>();
+
+            Page.Console += (_, e) => messages.Add(e.Message);
+
+            // All console events will be reported before `page.evaluate` is finished.
+            await Page.EvaluateFunctionAsync(@"() => {
+              // A pair of time/timeEnd generates only one Console API call.
+              console.time('calling console.time');
+              console.timeEnd('calling console.time');
+            }");
+
+            Assert.That(messages
+                .Select(_ => _.Type)
+                .ToArray(), Is.EqualTo(new[]
+            {
+                ConsoleType.TimeEnd
+            }));
+
+            Assert.That(messages[0].Text, Does.Contain("calling console.time"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with group functions")]
+        public async Task ShouldWorkForDifferentConsoleApiCallsWithGroupFunctions()
+        {
+            var messages = new List<ConsoleMessage>();
+
+            Page.Console += (_, e) => messages.Add(e.Message);
+
+            // All console events will be reported before `page.evaluate` is finished.
+            await Page.EvaluateFunctionAsync(@"() => {
+              console.group('calling console.group');
+              console.groupEnd();
+            }");
+
+            Assert.That(messages
+                .Select(_ => _.Type)
+                .ToArray(), Is.EqualTo(new[]
+            {
+                ConsoleType.StartGroup,
+                ConsoleType.EndGroup
+            }));
+
+            // We should be able to check both messages, but Chrome report text
+            Assert.That(messages[0].Text, Does.Contain("calling console.group"));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
         public async Task ShouldNotFailForWindowObject()
         {
-            var consoleTcs = new TaskCompletionSource<string>();
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
-            void EventHandler(object sender, ConsoleEventArgs e)
-            {
-                consoleTcs.TrySetResult(e.Message.Text);
-                Page.Console -= EventHandler;
-            }
-
-            Page.Console += EventHandler;
+            Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
             await Task.WhenAll(
-                consoleTcs.Task,
-                Page.EvaluateExpressionAsync("console.error(window)")
-            );
+                messageTask.Task,
+                Page.EvaluateFunctionAsync(@"() => {
+                    return console.error(window);
+                }"));
 
-            Assert.That(await consoleTcs.Task, Is.EqualTo("JSHandle@object"));
+            var message = await messageTask.Task;
+            Assert.That(
+                new[] { "JSHandle@object", "JSHandle@window" },
+                Does.Contain(message.Text));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should return remote objects")]
+        public async Task ShouldReturnRemoteObjects()
+        {
+            var logTask = new TaskCompletionSource<ConsoleMessage>();
+
+            Page.Console += (_, e) => logTask.TrySetResult(e.Message);
+
+            await Page.EvaluateFunctionAsync(@"() => {
+                globalThis.test = 1;
+                console.log(1, 2, 3, globalThis);
+            }");
+
+            var log = await logTask.Task;
+
+            Assert.That(
+                new[] { "1 2 3 JSHandle@object", "1 2 3 JSHandle@window" },
+                Does.Contain(log.Text));
+            Assert.That(log.Args.Count, Is.EqualTo(4));
+
+            var property = await log.Args[3].GetPropertyAsync("test");
+            Assert.That(await property.JsonValueAsync<int>(), Is.EqualTo(1));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
         public async Task ShouldTriggerCorrectLog()
         {
-            await Page.GoToAsync(TestConstants.AboutBlank);
+            // Navigate to localhost (one origin)
+            await Page.GoToAsync(TestConstants.EmptyPage);
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
 
             Page.Console += (_, e) => messageTask.TrySetResult(e.Message);
 
-            await Page.EvaluateFunctionAsync("async url => fetch(url).catch(e => {})", TestConstants.EmptyPage);
+            // Fetch from 127.0.0.1 (different origin) to trigger CORS error
+            await Task.WhenAll(
+                messageTask.Task,
+                Page.EvaluateFunctionAsync(
+                    "async url => await fetch(url).catch(() => {})",
+                    $"{TestConstants.CrossProcessUrl}/empty.html"));
+
             var message = await messageTask.Task;
-            Assert.That(message.Text, Does.Contain("No 'Access-Control-Allow-Origin'"));
+            Assert.That(message.Text, Does.Contain("Access-Control-Allow-Origin"));
 
             if (TestConstants.IsChrome)
             {
@@ -124,20 +215,30 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location when fetch fails")]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
+            // The point of this test is to make sure that we report console messages from
+            // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (_, e) => consoleTask.TrySetResult(e);
+            var consoleTask = new TaskCompletionSource<ConsoleMessage>();
+            Page.Console += (_, e) =>
+            {
+                // Wait for the specific network error message
+                if (e.Message.Text.Contains("ERR_NAME"))
+                {
+                    consoleTask.TrySetResult(e.Message);
+                }
+            };
 
             await Task.WhenAll(
                 consoleTask.Task,
                 Page.SetContentAsync("<script>fetch('http://wat');</script>"));
 
-            var args = await consoleTask.Task;
-            Assert.That(args.Message.Text, Does.Contain("ERR_NAME"));
-            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Error));
-            Assert.That(args.Message.Location, Is.EqualTo(new ConsoleMessageLocation
+            var message = await consoleTask.Task;
+            Assert.That(message.Text, Does.Contain("ERR_NAME"));
+            Assert.That(message.Type, Is.EqualTo(ConsoleType.Error));
+            Assert.That(message.Location, Is.EqualTo(new ConsoleMessageLocation
             {
                 URL = "http://wat/",
+                LineNumber = null,
             }));
         }
 
@@ -145,66 +246,82 @@ namespace PuppeteerSharp.Tests.PageTests
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            var consoleTask = new TaskCompletionSource<ConsoleEventArgs>();
-            Page.Console += (_, e) => consoleTask.TrySetResult(e);
+            var consoleTask = new TaskCompletionSource<ConsoleMessage>();
+
+            void ConsoleHandler(object sender, ConsoleEventArgs e)
+            {
+                // Wait for the console.trace message specifically
+                if (e.Message.Type == ConsoleType.Trace)
+                {
+                    consoleTask.TrySetResult(e.Message);
+                    Page.Console -= ConsoleHandler;
+                }
+            }
+
+            Page.Console += ConsoleHandler;
 
             await Task.WhenAll(
                 consoleTask.Task,
-                Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html"));
+                Page.GoToAsync(TestConstants.ServerUrl + "/consoletrace.html"));
 
-            var args = await consoleTask.Task;
-            Assert.That(args.Message.Text, Is.EqualTo("yellow"));
-            Assert.That(args.Message.Type, Is.EqualTo(ConsoleType.Log));
-            Assert.That(args.Message.Location, Is.EqualTo(new ConsoleMessageLocation
+            var message = await consoleTask.Task;
+            Assert.That(message.Text, Is.EqualTo("yellow"));
+            Assert.That(message.Type, Is.EqualTo(ConsoleType.Trace));
+            Assert.That(message.Location, Is.EqualTo(new ConsoleMessageLocation
             {
-                URL = TestConstants.ServerUrl + "/consolelog.html",
-                LineNumber = 7,
-                ColumnNumber = 14
+                URL = TestConstants.ServerUrl + "/consoletrace.html",
+                LineNumber = 8,
+                ColumnNumber = 16,
+            }));
+            Assert.That(message.StackTrace, Is.EqualTo(new[]
+            {
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 8,
+                    ColumnNumber = 16,
+                },
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 11,
+                    ColumnNumber = 8,
+                },
+                new ConsoleMessageLocation
+                {
+                    URL = TestConstants.ServerUrl + "/consoletrace.html",
+                    LineNumber = 13,
+                    ColumnNumber = 6,
+                },
             }));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not throw when there are console messages in detached iframes")]
+        // @see https://github.com/puppeteer/puppeteer/issues/3865
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "ex")]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await Page.EvaluateFunctionAsync(@"async () =>
             {
                 // 1. Create a popup that Puppeteer is not connected to.
-                const win = window.open(window.location.href, 'Title', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0');
-                await new Promise(x => win.onload = x);
+                const win = window.open(
+                    window.location.href,
+                    'Title',
+                    'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0'
+                );
+                await new Promise(x => { return (win.onload = x); });
                 // 2. In this popup, create an iframe that console.logs a message.
                 win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
                 const frame = win.document.querySelector('iframe');
-                await new Promise(x => frame.onload = x);
+                await new Promise(x => { return (frame.onload = x); });
                 // 3. After that, remove the iframe.
                 frame.remove();
             }");
-#pragma warning disable CS0618 // Type or member is obsolete
-            var popupTarget = Page.BrowserContext.Targets().First(target => target != Page.Target);
-#pragma warning restore CS0618 // Type or member is obsolete
-            // 4. Connect to the popup and make sure it doesn't throw.
-            await popupTarget.PageAsync();
-        }
-
-        [Test, Ignore("previously not marked as a test")]
-        public async Task ShouldNotFailForNullArgument()
-        {
-            var consoleTcs = new TaskCompletionSource<string>();
-
-            void EventHandler(object sender, ConsoleEventArgs e)
-            {
-                consoleTcs.TrySetResult(e.Message.Text);
-                Page.Console -= EventHandler;
-            }
-
-            Page.Console += EventHandler;
-
-            await Task.WhenAll(
-                consoleTcs.Task,
-                Page.EvaluateExpressionAsync("console.debug(null);")
-            );
-
-            Assert.That(await consoleTcs.Task, Is.EqualTo("JSHandle:null"));
+            // 4. Find the popup target - filter by page type first since targets can include frames/workers
+            var popupTarget = await FindPopupTargetAsync(Page);
+            // 5. Connect to the popup and make sure it doesn't throw and is not the same page.
+            Assert.That(popupTarget, Is.Not.Null, "Popup target should be found");
+            Assert.That(await popupTarget.PageAsync(), Is.Not.EqualTo(Page));
         }
     }
 }

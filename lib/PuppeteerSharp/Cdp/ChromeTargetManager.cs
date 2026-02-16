@@ -192,9 +192,14 @@ namespace PuppeteerSharp.Cdp
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(e.TargetId);
 
-                if (targetInfo?.Type == TargetType.ServiceWorker && _attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
+                if (targetInfo?.Type == TargetType.ServiceWorker)
                 {
-                    TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                    // Special case for service workers: report TargetGone event when
+                    // the worker is destroyed.
+                    if (_attachedTargetsByTargetId.TryRemove(e.TargetId, out var target))
+                    {
+                        TargetGone?.Invoke(this, new TargetChangedArgs { Target = target, TargetInfo = targetInfo });
+                    }
                 }
             }
             catch (Exception ex)
@@ -235,8 +240,32 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private bool IsPageTargetBecomingPrimary(Target target, TargetInfo newTargetInfo)
+        private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo)
             => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
+
+        private async Task SilentDetachAsync(CDPSession session, ICDPConnection parentConnection)
+        {
+            try
+            {
+                await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+
+                // We don't use session.Detach() because that dispatches all commands on
+                // the connection instead of the parent session.
+                await parentConnection.SendAsync(
+                    "Target.detachFromTarget",
+                    new TargetDetachFromTargetRequest
+                    {
+                        SessionId = session.Id,
+                    }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "silentDetach failed.");
+            }
+        }
+
+        private CdpTarget GetParentTarget(ICDPConnection parentConnection)
+            => parentConnection is CdpCDPSession parentSession ? parentSession.Target as CdpTarget : null;
 
         private async Task OnAttachedToTargetAsync(object sender, TargetAttachedToTargetResponse e)
         {
@@ -255,7 +284,7 @@ namespace PuppeteerSharp.Cdp
             {
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(targetInfo.TargetId);
-                await SilentDetach().ConfigureAwait(false);
+                await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {
                     return;
@@ -274,12 +303,18 @@ namespace PuppeteerSharp.Cdp
                 target = _targetFactoryFunc(targetInfo, session, parentSession);
             }
 
+            var parentTarget = GetParentTarget(parentConnection);
+
             if (_targetFilterFunc?.Invoke(target) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
                 await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
-                FinishInitializationIfReady(targetInfo.TargetId);
-                await SilentDetach().ConfigureAwait(false);
+                if (parentTarget?.TargetInfo.Type == TargetType.Tab)
+                {
+                    FinishInitializationIfReady(parentTarget.TargetId);
+                }
+
+                await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
                 return;
             }
 
@@ -298,7 +333,6 @@ namespace PuppeteerSharp.Cdp
                 _attachedTargetsBySessionId.TryAdd(session.Id, target);
             }
 
-            var parentTarget = parentSession?.Target;
             parentTarget?.AddChildTarget(target);
             (parentSession ?? parentConnection as CDPSession)?.OnSessionReady(session);
 
@@ -326,26 +360,6 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to call setAutoAttach and runIfWaitingForDebugger");
-            }
-
-            return;
-
-            async Task SilentDetach()
-            {
-                try
-                {
-                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
-                    await parentConnection!.SendAsync(
-                        "Target.detachFromTarget",
-                        new TargetDetachFromTargetRequest
-                        {
-                            SessionId = session.Id,
-                        }).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "silentDetach failed.");
-                }
             }
         }
 
@@ -388,7 +402,11 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            (sender as CdpCDPSession)?.Target.RemoveChildTarget(target);
+            if (sender is CdpCDPSession parentSession)
+            {
+                parentSession.Target.RemoveChildTarget(target);
+            }
+
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
         }

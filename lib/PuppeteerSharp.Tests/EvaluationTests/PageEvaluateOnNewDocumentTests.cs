@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             {
                 Content = "window.e = 10;"
             }).ContinueWith(_ => Task.CompletedTask);
-            Assert.That(await Page.EvaluateExpressionAsync("window.e"), Is.Null);
+            Assert.That(await Page.EvaluateExpressionAsync<int?>("window.e"), Is.Null);
         }
 
         [Test, Ignore("Inconsistent results on Firefox")]

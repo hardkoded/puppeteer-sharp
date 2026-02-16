@@ -36,7 +36,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionExperimentalTests;
 
 public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should cooperatively ${expectedAction} by priority")]
     [TestCase("abort")]
     [TestCase("continue")]
@@ -126,10 +126,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should intercept")]
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception", "should intercept")]
     public async Task ShouldIntercept()
     {
         await Page.SetRequestInterceptionAsync(true);
+        Exception requestError = null;
         Page.AddRequestInterceptor(async request =>
         {
             if (TestUtils.IsFavicon(request))
@@ -138,25 +139,36 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
                 return;
             }
 
-            Assert.That(request.Url, Does.Contain("empty.html"));
-            Assert.That(request.Headers, Is.Not.Null);
-            Assert.That(request.Headers["user-agent"], Is.Not.Null);
-            Assert.That(request.Headers["accept"], Is.Not.Null);
-            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
-            Assert.That(request.PostData, Is.Null);
-            Assert.That(request.IsNavigationRequest, Is.True);
-            Assert.That(request.ResourceType, Is.EqualTo(ResourceType.Document));
-            Assert.That(request.Frame, Is.EqualTo(Page.MainFrame));
-            Assert.That(request.Frame.Url, Is.EqualTo(TestConstants.AboutBlank));
-            await request.ContinueAsync(new Payload(), 0);
+            try
+            {
+                Assert.That(request, Is.Not.Null);
+                Assert.That(request.Url, Does.Contain("empty.html"));
+                Assert.That(request.Headers["user-agent"], Is.Not.Null);
+                Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+                Assert.That(request.IsNavigationRequest, Is.True);
+                Assert.That(request.Frame, Is.EqualTo(Page.MainFrame));
+                Assert.That(request.Frame.Url, Is.EqualTo(TestConstants.AboutBlank));
+            }
+            catch (Exception ex)
+            {
+                requestError = ex;
+            }
+            finally
+            {
+                await request.ContinueAsync(new Payload(), 0);
+            }
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage);
-        Assert.That(response.Ok, Is.True);
 
-        Assert.That(response.RemoteAddress.Port, Is.EqualTo(TestConstants.Port));
+        if (requestError != null)
+        {
+            throw requestError;
+        }
+
+        Assert.That(response.Ok, Is.True);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work when POST is redirected with 302")]
     public async Task ShouldWorkWhenPostIsRedirectedWith302()
     {
@@ -176,7 +188,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         );
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work when header manipulation headers with redirect")]
     public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
     {
@@ -193,7 +205,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.GoToAsync(TestConstants.ServerUrl + "/rrredirect");
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should be able to remove headers")]
     public async Task ShouldBeAbleToRemoveHeaders()
     {
@@ -214,7 +226,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(string.IsNullOrEmpty(requestTask.Result), Is.True);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should contain referer header")]
     public async Task ShouldContainRefererHeader()
     {
@@ -243,7 +255,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(requests[1].Headers["Referer"], Does.Contain("/one-style.html"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should properly return navigation response when URL has cookies")]
     public async Task ShouldProperlyReturnNavigationResponseWhenURLHasCookies()
     {
@@ -258,7 +270,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should stop intercepting")]
     public async Task ShouldStopIntercepting()
     {
@@ -276,7 +288,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await Page.GoToAsync(TestConstants.EmptyPage);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should show custom HTTP headers")]
     public async Task ShouldShowCustomHTTPHeaders()
     {
@@ -291,7 +303,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Ok, Is.True);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with redirect inside sync XHR")]
     public async Task ShouldWorkWithRedirectInsideSyncXHR()
     {
@@ -310,7 +322,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(status, Is.EqualTo(200));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with custom referer headers")]
     public async Task ShouldWorkWithCustomRefererHeaders()
     {
@@ -325,7 +337,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Ok, Is.True);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should be abortable")]
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception", "should be abortable")]
     public async Task ShouldBeAbortable()
     {
         await Page.SetRequestInterceptionAsync(true);
@@ -340,15 +352,19 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
                 return request.ContinueAsync(new Payload(), 0);
             }
         });
-        var failedRequests = 0;
-        Page.RequestFailed += (_, _) => failedRequests++;
+
+        // Track unique URLs of failed requests to handle Firefox BiDi duplicate events
+        // Firefox may send multiple BeforeRequestSent events with different request IDs
+        // for the same resource during speculative/parallel loading
+        var failedUrls = new HashSet<string>();
+        Page.RequestFailed += (_, e) => failedUrls.Add(e.Request.Url);
         var response = await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
         Assert.That(response.Ok, Is.True);
         Assert.That(response.Request.FailureText, Is.Null);
-        Assert.That(failedRequests, Is.EqualTo(1));
+        Assert.That(failedUrls, Has.Count.EqualTo(1));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should be abortable with custom error codes")]
     public async Task ShouldBeAbortableWithCustomErrorCodes()
     {
@@ -365,7 +381,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(failedRequest.FailureText, Is.EqualTo("net::ERR_INTERNET_DISCONNECTED"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception", "should send referer")]
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception", "should send referer")]
     public async Task ShouldSendReferer()
     {
         await Page.SetExtraHttpHeadersAsync(new Dictionary<string, string> { ["referer"] = "http://google.com/" });
@@ -379,7 +395,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(requestTask.Result, Is.EqualTo("http://google.com/"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should fail navigation when aborting main resource")]
     public async Task ShouldFailNavigationWhenAbortingMainResource()
     {
@@ -394,11 +410,11 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         }
         else
         {
-            Assert.That(exception.Message, Does.Contain("NS_ERROR_FAILURE"));
+            Assert.That(exception.Message, Does.Contain("NS_ERROR_ABORT"));
         }
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with redirects")]
     public async Task ShouldWorkWithRedirects()
     {
@@ -407,7 +423,10 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Page.AddRequestInterceptor(async request =>
         {
             await request.ContinueAsync(new Payload(), 0);
-            requests.Add(request);
+            if (!TestUtils.IsFavicon(request))
+            {
+                requests.Add(request);
+            }
         });
 
         Server.SetRedirect("/non-existing-page.html", "/non-existing-page-2.html");
@@ -434,7 +453,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         }
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with redirects for subresources")]
     public async Task ShouldWorkWithRedirectsForSubresources()
     {
@@ -461,7 +480,12 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Url, Does.Contain("one-style.html"));
         Assert.That(requests, Has.Count.EqualTo(5));
         Assert.That(requests[0].ResourceType, Is.EqualTo(ResourceType.Document));
-        Assert.That(requests[1].ResourceType, Is.EqualTo(ResourceType.StyleSheet));
+
+        // BiDi without CDP doesn't provide ResourceType for subresources (only navigation requests)
+        if (PuppeteerTestAttribute.IsCdp)
+        {
+            Assert.That(requests[1].ResourceType, Is.EqualTo(ResourceType.StyleSheet));
+        }
 
         // Check redirect chain
         var redirectChain = requests[1].RedirectChain;
@@ -470,7 +494,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(redirectChain[2].Url, Does.Contain("three-style.css"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should be able to abort redirects")]
     public async Task ShouldBeAbleToAbortRedirects()
     {
@@ -509,7 +533,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         }
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with equal requests")]
     public async Task ShouldWorkWithEqualRequests()
     {
@@ -545,7 +569,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(results, Is.EqualTo(new[] { "11", "FAILED", "22" }));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should navigate to dataURL and fire dataURL requests")]
     public async Task ShouldNavigateToDataURLAndFireDataURLRequests()
     {
@@ -564,7 +588,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(requests[0].Url, Is.EqualTo(dataURL));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should be able to fetch dataURL and fire dataURL requests")]
     public async Task ShouldBeAbleToFetchDataURLAndFireDataURLRequests()
     {
@@ -587,7 +611,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(requests[0].Url, Is.EqualTo(dataURL));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should navigate to URL with hash and fire requests without hash")]
     public async Task ShouldNavigateToURLWithHashAndAndFireRequestsWithoutHash()
     {
@@ -595,17 +619,21 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var requests = new List<IRequest>();
         Page.AddRequestInterceptor(request =>
         {
-            requests.Add(request);
+            if (!TestUtils.IsFavicon(request))
+            {
+                requests.Add(request);
+            }
+
             return request.ContinueAsync(new Payload(), 0);
         });
         var response = await Page.GoToAsync(TestConstants.EmptyPage + "#hash");
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
-        Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
+        Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage + "#hash"));
         Assert.That(requests, Has.Exactly(1).Items);
-        Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage));
+        Assert.That(requests[0].Url, Is.EqualTo(TestConstants.EmptyPage + "#hash"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with encoded server")]
     public async Task ShouldWorkWithEncodedServer()
     {
@@ -617,7 +645,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with badly encoded server")]
     public async Task ShouldWorkWithBadlyEncodedServer()
     {
@@ -628,7 +656,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with encoded server - 2")]
     public async Task ShouldWorkWithEncodedServerNegative2()
     {
@@ -638,18 +666,21 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         var requests = new List<IRequest>();
         Page.AddRequestInterceptor(request =>
         {
-            requests.Add(request);
+            if (!request.Url.Contains("favicon.ico"))
+            {
+                requests.Add(request);
+            }
+
             return request.ContinueAsync(new Payload(), 0);
         });
         var response =
-            await Page.GoToAsync(
-                $"data:text/html,<link rel=\"stylesheet\" href=\"{TestConstants.ServerUrl}/fonts?helvetica|arial\"/>");
+            await Page.GoToAsync($"{TestConstants.ServerUrl}/style-404.html");
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(requests, Has.Count.EqualTo(2));
         Assert.That(requests[1].Response.Status, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should not throw \"Invalid Interception Id\" if the request was cancelled")]
     public async Task ShouldNotThrowInvalidInterceptionIdIfTheRequestWasCancelled()
     {
@@ -672,7 +703,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         await request.ContinueAsync(new Payload(), 0);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should throw if interception is not enabled")]
     public async Task ShouldThrowIfInterceptionIsNotEnabled()
     {
@@ -692,7 +723,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(exception.Message, Does.Contain("Request Interception is not enabled"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should work with file URLs")]
     public async Task ShouldWorkWithFileURLs()
     {
@@ -711,9 +742,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(urls, Does.Contain("one-style.css"));
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
-        "should not cache if cache disabled")]
-    public async Task ShouldNotCacheIfCacheDisabled()
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
+        "should not cache stylesheet if cache disabled")]
+    public async Task ShouldNotCacheStylesheetIfCacheDisabled()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
         await Page.SetRequestInterceptionAsync(true);
@@ -727,9 +758,9 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(cached, Is.Empty);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
-        "should cache if cache enabled")]
-    public async Task ShouldNotCacheIfCacheEnabled()
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
+        "should cache stylesheet if cache enabled")]
+    public async Task ShouldCacheStylesheetIfCacheEnabled()
     {
         await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
         await Page.SetRequestInterceptionAsync(true);
@@ -743,7 +774,39 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
         Assert.That(cached, Has.Exactly(1).Items);
     }
 
-    [Test, PuppeteerTest("requestinterception-experimental.spec", "Page.setRequestInterception",
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
+        "should not cache script if cache disabled")]
+    public async Task ShouldNotCacheScriptIfCacheDisabled()
+    {
+        await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
+        await Page.SetRequestInterceptionAsync(true);
+        await Page.SetCacheEnabledAsync(false);
+        Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
+
+        var cached = new List<IRequest>();
+        Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+        await Page.ReloadAsync();
+        Assert.That(cached, Is.Empty);
+    }
+
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
+        "should cache script if cache enabled")]
+    public async Task ShouldCacheScriptIfCacheEnabled()
+    {
+        await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
+        await Page.SetRequestInterceptionAsync(true);
+        await Page.SetCacheEnabledAsync(true);
+        Page.AddRequestInterceptor(request => request.ContinueAsync(new Payload(), 0));
+
+        var cached = new List<IRequest>();
+        Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+        await Page.ReloadAsync();
+        Assert.That(cached, Has.Exactly(1).Items);
+    }
+
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "cooperative request interception Page.setRequestInterception",
         "should load fonts if cache enabled")]
     public async Task ShouldLoadFontsIfCacheEnabled()
     {

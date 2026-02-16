@@ -77,7 +77,9 @@ public class CdpWebWorker : WebWorker
     }
 
     /// <inheritdoc/>
-    public override CDPSession Client { get; }
+    public override ICDPSession Client { get; }
+
+    internal CDPSession CdpCDPSession => (CdpCDPSession)Client;
 
     internal override IsolatedWorld World { get; }
 
@@ -90,22 +92,35 @@ public class CdpWebWorker : WebWorker
         switch (_targetType)
         {
             case TargetType.ServiceWorker:
-            case TargetType.SharedWorker:
-                // For service and shared workers we need to close the target and detach to allow
-                // the worker to stop.
-                await Client.Connection.SendAsync(
-                    "Target.closeTarget",
-                    new TargetCloseTargetRequest()
-                    {
-                        TargetId = _id,
-                    }).ConfigureAwait(false);
+                if (CdpCDPSession.Connection != null)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
 
-                await Client.Connection.SendAsync(
-                    "Target.detachFromTarget",
-                    new TargetDetachFromTargetRequest()
-                    {
-                        SessionId = Client.Id,
-                    }).ConfigureAwait(false);
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest()
+                        {
+                            SessionId = Client.Id,
+                        }).ConfigureAwait(false);
+                }
+
+                break;
+            case TargetType.SharedWorker:
+                if (CdpCDPSession.Connection != null)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
+                }
+
                 break;
             default:
                 await EvaluateFunctionAsync(@"() => {
@@ -156,7 +171,7 @@ public class CdpWebWorker : WebWorker
     {
         if (!World.HasContext)
         {
-            World.SetNewContext(Client, e.Context, World);
+            World.SetNewContext(CdpCDPSession, e.Context, World);
         }
     }
 }

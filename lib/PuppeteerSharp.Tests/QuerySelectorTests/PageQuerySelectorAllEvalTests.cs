@@ -13,7 +13,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should work")]
         public async Task ShouldWork()
         {
-            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<div>hello</div>
+          <div>beautiful</div>
+          <div>world!</div>"));
             var divsCount = await Page.QuerySelectorAllHandleAsync("div").EvaluateFunctionAsync<int>("divs => divs.length");
             Assert.That(divsCount, Is.EqualTo(3));
         }
@@ -21,7 +23,9 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept extra arguments")]
         public async Task ShouldAcceptExtraArguments()
         {
-            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<div>hello</div>
+          <div>beautiful</div>
+          <div>world!</div>"));
             var divsCount = await Page
                 .QuerySelectorAllHandleAsync("div")
                 .EvaluateFunctionAsync<int>("(divs, two, three) => divs.length + two + three", 2, 3);
@@ -31,7 +35,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$$eval", "should accept ElementHandles as arguments")]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
-            await Page.SetContentAsync("<section>2</section><section>2</section><section>1</section><div>3</div>");
+            await Page.SetContentAsync(TestUtils.Html(@"<section>2</section>
+          <section>2</section>
+          <section>1</section>
+          <div>3</div>"));
             var divHandle = await Page.QuerySelectorAsync("div");
             var divsCount = await Page
                 .QuerySelectorAllHandleAsync("section")
@@ -64,7 +71,7 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithAwaitedElements()
         {
-            await Page.SetContentAsync("<div>hello</div><div>beautiful</div><div>world!</div>");
+            await Page.SetContentAsync(TestUtils.Html("<div>hello</div><div>beautiful</div><div>world!</div>"));
             var divs = await Page.QuerySelectorAllHandleAsync("div");
             var divsCount = await divs.EvaluateFunctionAsync<int>("divs => divs.length");
             Assert.That(divsCount, Is.EqualTo(3));

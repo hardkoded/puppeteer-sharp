@@ -7,7 +7,7 @@ namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     public abstract class Request<TResponse>
-        : IRequest
+        : IRequest, IInterceptableRequest
         where TResponse : IResponse
     {
         /// <inheritdoc/>
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         public string PostData { get; internal init; }
 
         /// <inheritdoc/>
-        public Dictionary<string, string> Headers { get; internal init; }
+        public virtual Dictionary<string, string> Headers { get; protected set; }
 
         /// <inheritdoc/>
         public string Url { get; internal init; }
@@ -88,8 +88,16 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task<string> FetchPostDataAsync();
 
+        /// <inheritdoc/>
+        void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+            => EnqueueInterceptionActionCore(pendingHandler);
+
         internal abstract Task FinalizeInterceptionsAsync();
 
-        internal abstract void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler);
+        /// <summary>
+        /// Enqueues an interception action to be executed when the request is finalized.
+        /// </summary>
+        /// <param name="pendingHandler">The handler to execute.</param>
+        internal abstract void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler);
     }
 }

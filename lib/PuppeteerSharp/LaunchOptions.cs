@@ -61,7 +61,7 @@ namespace PuppeteerSharp
         public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <summary>
-        ///  Whether to pipe browser process stdout and stderr into process.stdout and process.stderr. Defaults to false.
+        ///  Whether to pipe browser process stdout and stderr into process stdout and process stderr. Defaults to false.
         /// </summary>
         public bool DumpIO { get; set; }
 
@@ -94,6 +94,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
+        /// <remarks>
+        /// This property is obsolete and has no effect. It will be removed in a future version.
+        /// </remarks>
+        [Obsolete("This property has no effect and will be removed in a future version.")]
         public bool LogProcess { get; set; }
 
         /// <summary>
@@ -161,7 +165,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// It's set to <c>true</c> by default because it's the safest way to send commands to Chromium.
-        /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
+        /// Setting this to <c>false</c> proved to work in .NET Core, but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = true;
 
@@ -194,6 +198,14 @@ namespace PuppeteerSharp
         /// Additional preferences that can be passed when launching with Firefox. <see fref="https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js">See</see>.
         /// </summary>
         public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
+
+        /// <summary>
+        /// Wait for the initial page before initializing.
+        /// </summary>
+        public bool WaitForInitialPage { get; set; } = true;
+
+        // Internal until is usable
+        internal ProtocolType Protocol { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

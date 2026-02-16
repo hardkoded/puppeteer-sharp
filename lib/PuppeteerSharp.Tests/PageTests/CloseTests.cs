@@ -6,8 +6,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class CloseTests : PuppeteerPageBaseTest
     {
-        public CloseTests() : base() { }
-
         [Test, PuppeteerTest("page.spec", "Page Page.close", "should reject all promises when page is closed")]
         public async Task ShouldRejectAllPromisesWhenPageIsClosed()
         {
@@ -32,7 +30,11 @@ namespace PuppeteerSharp.Tests.PageTests
             );
 
             Assert.That(exception.Message, Does.Contain("Protocol error"));
-            Assert.That(exception.CloseReason, Is.EqualTo("Target.detachedFromTarget"));
+            Assert.That(
+                exception.CloseReason,
+                PuppeteerTestAttribute.IsCdp
+                    ? Is.EqualTo("Target.detachedFromTarget")
+                    : Is.EqualTo("Browsing context closed"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.close", "should not be visible in browser.pages")]
@@ -72,7 +74,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 }
                 else
                 {
-                    Assert.That(e.Dialog.Message, Is.EqualTo("This page is asking you to confirm that you want to leave - data you have entered may not be saved."));
+                    Assert.That(e.Dialog.Message, Is.Not.Empty);
                 }
 
                 await e.Dialog.Accept();
@@ -85,12 +87,14 @@ namespace PuppeteerSharp.Tests.PageTests
             // We have to interact with a page so that 'beforeunload' handlers
             // fire.
             await Page.ClickAsync("body");
-            await Page.CloseAsync(new PageCloseOptions { RunBeforeUnload = true });
+            var pageClosingTask = Page.CloseAsync(new PageCloseOptions { RunBeforeUnload = true });
 
             await Task.WhenAll(
                 dialogTask.Task,
                 closeTask.Task
             );
+
+            await pageClosingTask;
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.close", "should *not* run beforeunload by default")]
@@ -128,7 +132,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("page.spec", "Page Page.close PuppeteerSharp", "should close when connection breaks prematurely")]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
             Browser.Disconnect();

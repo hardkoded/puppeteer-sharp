@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.TestServer;
 
 namespace PuppeteerSharp.Tests
 {
@@ -11,18 +12,18 @@ namespace PuppeteerSharp.Tests
     {
         public const int DebuggerAttachedTestTimeout = 300_000;
         public const int DefaultPuppeteerTimeout = 10_000;
-        public const int Port = 8081;
-        public const int HttpsPort = Port + 1;
-        public const string ServerUrl = "http://localhost:8081";
-        public const string ServerIpUrl = "http://127.0.0.1:8081";
-        public const string HttpsPrefix = "https://localhost:8082";
         public const string AboutBlank = "about:blank";
-        public static readonly string CrossProcessHttpPrefix = "http://127.0.0.1:8081";
-        public static readonly string CrossProcessHttpsPrefix = "https://127.0.0.1:8082";
-        public static readonly string EmptyPage = $"{ServerUrl}/empty.html";
-        public static readonly string CrossProcessUrl = ServerIpUrl;
-        public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
 
+        public static int Port { get; private set; }
+        public static int HttpsPort { get; private set; }
+        public static string ServerUrl { get; private set; }
+        public static string ServerIpUrl { get; private set; }
+        public static string HttpsPrefix { get; private set; }
+        public static string CrossProcessHttpPrefix { get; private set; }
+        public static string CrossProcessHttpsPrefix { get; private set; }
+        public static string EmptyPage { get; private set; }
+        public static string CrossProcessUrl { get; private set; }
+        public static readonly bool IsChrome = PuppeteerTestAttribute.IsChrome;
         public static readonly DeviceDescriptor IPhone = Puppeteer.Devices[DeviceDescriptorName.IPhone6];
         public static readonly DeviceDescriptor IPhone6Landscape = Puppeteer.Devices[DeviceDescriptorName.IPhone6Landscape];
 
@@ -38,6 +39,19 @@ namespace PuppeteerSharp.Tests
             "    http://localhost:<PORT>/frames/frame.html (aframe)"
         };
 
+        public static void Initialize(SimpleServer server, SimpleServer httpsServer)
+        {
+            Port = server.Port;
+            HttpsPort = httpsServer.Port;
+            ServerUrl = server.Prefix;
+            ServerIpUrl = server.IpPrefix;
+            HttpsPrefix = httpsServer.Prefix;
+            CrossProcessHttpPrefix = server.IpPrefix;
+            CrossProcessHttpsPrefix = httpsServer.IpPrefix;
+            EmptyPage = $"{ServerUrl}/empty.html";
+            CrossProcessUrl = ServerIpUrl;
+        }
+
         public static LaunchOptions DefaultBrowserOptions() => new()
         {
             SlowMo = Convert.ToInt32(Environment.GetEnvironmentVariable("SLOW_MO")),
@@ -45,7 +59,7 @@ namespace PuppeteerSharp.Tests
             Browser = IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox,
             EnqueueAsyncMessages = Convert.ToBoolean(Environment.GetEnvironmentVariable("ENQUEUE_ASYNC_MESSAGES") ?? "false"),
             Timeout = 0,
-            LogProcess = true,
+            Protocol = PuppeteerTestAttribute.IsCdp ? ProtocolType.Cdp : ProtocolType.WebdriverBiDi,
 #if NETCOREAPP
             EnqueueTransportMessages = false
 #else

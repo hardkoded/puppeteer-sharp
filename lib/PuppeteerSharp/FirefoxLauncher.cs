@@ -37,9 +37,6 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public override Task<string> GetDefaultBuildIdAsync() => Firefox.GetDefaultBuildIdAsync();
-
-        /// <inheritdoc />
         public override string ToString() => $"Firefox process; EndPoint={EndPoint}; State={CurrentState}";
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
@@ -80,6 +77,8 @@ namespace PuppeteerSharp
             firefoxArguments.AddRange(options.Args);
             return firefoxArguments.ToArray();
         }
+
+        internal Task<string> GetDefaultBuildIdAsync() => Firefox.GetDefaultBuildIdAsync();
 
         internal override void OnExit()
         {
@@ -154,18 +153,27 @@ namespace PuppeteerSharp
                 firefoxArguments.Add($"{userDataDir.Quote()}");
             }
 
-            Firefox.CreateProfile(userDataDir, GetPreferences(options.ExtraPrefsFirefox));
+            Firefox.CreateProfile(userDataDir, GetPreferences(options.Protocol, options.ExtraPrefsFirefox));
 
             return (firefoxArguments, tempUserDataDirectory, userDataDir);
         }
 
-        private static Dictionary<string, object> GetPreferences(Dictionary<string, object> optionsExtraPreferencesFirefox)
+        private static Dictionary<string, object> GetPreferences(ProtocolType protocol, Dictionary<string, object> optionsExtraPreferencesFirefox)
         {
             var result = optionsExtraPreferencesFirefox ?? [];
-            result["browser.tabs.closeWindowWithLastTab"] = false;
-            result["network.cookie.cookieBehavior"] = 0;
-            result["fission.bfcacheInParent"] = false;
-            result["remote.active-protocols"] = 2;
+
+            if (protocol == ProtocolType.WebdriverBiDi)
+            {
+                result["remote.active-protocols"] = 1;
+            }
+            else
+            {
+                result["browser.tabs.closeWindowWithLastTab"] = false;
+                result["network.cookie.cookieBehavior"] = 0;
+                result["fission.bfcacheInParent"] = false;
+                result["remote.active-protocols"] = 2;
+            }
+
             result["fission.webContentIsolationStrategy"] = 0;
 
             return result;

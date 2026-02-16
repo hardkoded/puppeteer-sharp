@@ -538,7 +538,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JsonElement?> EvaluateExpressionAsync(string script);
+        Task EvaluateExpressionAsync(string script);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -591,7 +591,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args);
+        Task EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -1448,6 +1448,26 @@ namespace PuppeteerSharp
         /// <param name="options">Optional waiting parameters.</param>
         /// <returns>A task that resolves after the page gets the prompt.</returns>
         Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
+
+        /// <summary>
+        /// Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+        /// </summary>
+        /// <param name="contentWidth">The desired width of the content area in pixels.</param>
+        /// <param name="contentHeight">The desired height of the content area in pixels.</param>
+        /// <returns>A task that resolves when the resize operation is complete.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task ResizeAsync(int contentWidth, int contentHeight);
+
+        /// <summary>
+        /// Returns the page's window ID.
+        /// </summary>
+        /// <returns>A task that resolves to the window ID string.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task<string> WindowIdAsync();
 
         /// <summary>
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.

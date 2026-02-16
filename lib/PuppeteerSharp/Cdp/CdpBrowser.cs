@@ -46,14 +46,12 @@ public class CdpBrowser : Browser
         SupportedBrowser browser,
         Connection connection,
         string[] contextIds,
-        bool acceptInsecureCerts,
         ViewPortOptions defaultViewport,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetFunc = null)
     {
         BrowserType = browser;
-        AcceptInsecureCerts = acceptInsecureCerts;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
@@ -102,8 +100,10 @@ public class CdpBrowser : Browser
 
     internal ITargetManager TargetManager { get; }
 
+    internal override ProtocolType Protocol => ProtocolType.Cdp;
+
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
     public override ITarget[] Targets()
@@ -134,16 +134,57 @@ public class CdpBrowser : Browser
             "Target.createBrowserContext",
             new TargetCreateBrowserContextRequest
             {
-                ProxyServer = options?.ProxyServer ?? string.Empty,
+                ProxyServer = options?.ProxyServer,
                 ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
-        _contexts.TryAdd(response.BrowserContextId, (CdpBrowserContext)context);
+        _contexts.TryAdd(response.BrowserContextId, context);
         return context;
     }
 
     /// <inheritdoc/>
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
+
+    /// <inheritdoc/>
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
+            "Browser.getWindowBounds",
+            new BrowserGetWindowBoundsRequest { WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture) }).ConfigureAwait(false);
+        return response.Bounds;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
+    {
+        await Connection.SendAsync(
+            "Browser.setWindowBounds",
+            new BrowserSetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
+                Bounds = windowBounds,
+            }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo[]> ScreensAsync()
+    {
+        var response = await Connection.SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos").ConfigureAwait(false);
+        return response.ScreenInfos;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<ScreenInfo> AddScreenAsync(AddScreenParams @params)
+    {
+        var response = await Connection.SendAsync<EmulationAddScreenResponse>("Emulation.addScreen", @params).ConfigureAwait(false);
+        return response.ScreenInfo;
+    }
+
+    /// <inheritdoc/>
+    public override async Task RemoveScreenAsync(string screenId)
+    {
+        await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
+    }
 
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
@@ -160,7 +201,6 @@ public class CdpBrowser : Browser
             browserToCreate,
             connection,
             contextIds,
-            acceptInsecureCerts,
             defaultViewPort,
             launcher,
             targetFilter,
@@ -169,6 +209,12 @@ public class CdpBrowser : Browser
         try
         {
             initAction?.Invoke(browser);
+
+            if (acceptInsecureCerts)
+            {
+                await connection.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true })
+                    .ConfigureAwait(false);
+            }
 
             await browser.AttachAsync().ConfigureAwait(false);
             return browser;
@@ -180,11 +226,23 @@ public class CdpBrowser : Browser
         }
     }
 
-    internal async Task<IPage> CreatePageInContextAsync(string contextId)
+    internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
+        var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
+        var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
+
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
+            Left = windowBounds?.Left,
+            Top = windowBounds?.Top,
+            Width = windowBounds?.Width,
+            Height = windowBounds?.Height,
+            WindowState = windowBounds?.WindowState,
+
+            // Works around crbug.com/454825274.
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
+            Background = options?.Background,
         };
 
         if (contextId != null)
@@ -199,7 +257,7 @@ public class CdpBrowser : Browser
 
         var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
             .ConfigureAwait(false)).TargetId;
-        var target = await WaitForTargetAsync(t => t.TargetId == targetId).ConfigureAwait(false) as Target;
+        var target = await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false) as CdpTarget;
         await target!.InitializedTask.ConfigureAwait(false);
         return await target.PageAsync().ConfigureAwait(false);
     }
@@ -259,7 +317,6 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }
@@ -272,7 +329,6 @@ public class CdpBrowser : Browser
                 context,
                 TargetManager,
                 CreateSession,
-                AcceptInsecureCerts,
                 DefaultViewport,
                 ScreenshotTaskQueue);
         }
@@ -353,23 +409,24 @@ public class CdpBrowser : Browser
 
     private void OnTargetChanged(object sender, TargetChangedArgs e)
     {
-        var args = new TargetChangedArgs { Target = e.Target };
+        var args = new TargetChangedArgs(e.Target);
         OnTargetChanged(args);
-        ((CdpTarget)e.Target).BrowserContext.OnTargetChanged(this, args);
+        ((CdpTarget)e.Target).BrowserContext.OnTargetChanged(args);
     }
 
     private async void OnDetachedFromTargetAsync(object sender, TargetChangedArgs e)
     {
         try
         {
-            e.Target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
-            e.Target.CloseTaskWrapper.TrySetResult(true);
+            var target = (CdpTarget)e.Target;
+            target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
+            target.CloseTaskWrapper.TrySetResult(true);
 
-            if ((await e.Target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
+            if ((await target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
             {
-                var args = new TargetChangedArgs { Target = e.Target };
+                var args = new TargetChangedArgs(e.Target);
                 OnTargetDestroyed(args);
-                e.Target.BrowserContext.OnTargetDestroyed(this, args);
+                e.Target.BrowserContext.OnTargetDestroyed(args);
             }
         }
         catch (Exception ex)
@@ -384,11 +441,12 @@ public class CdpBrowser : Browser
     {
         try
         {
-            if (await e.Target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
+            var target = (CdpTarget)e.Target;
+            if (await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
             {
-                var args = new TargetChangedArgs { Target = e.Target };
+                var args = new TargetChangedArgs(e.Target);
                 OnTargetCreated(args);
-                ((CdpTarget)e.Target).BrowserContext.OnTargetCreated(this, args);
+                ((CdpTarget)e.Target).BrowserContext.OnTargetCreated(args);
             }
         }
         catch (Exception ex)

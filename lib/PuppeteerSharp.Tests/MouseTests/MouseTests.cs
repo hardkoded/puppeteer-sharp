@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Input;
@@ -71,22 +69,23 @@ namespace PuppeteerSharp.Tests.MouseTests
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should select the text with mouse")]
         public async Task ShouldSelectTheTextWithMouse()
         {
+            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
+
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
-            const string text = "This is the text that we are going to try to select. Let's see how it goes.";
             await Page.Keyboard.TypeAsync(text);
-
             await Page.WaitForFunctionAsync(@"(text) => document.querySelector('textarea').value === text", text);
-
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.DownAsync();
             await Page.Mouse.MoveAsync(100, 100);
             await Page.Mouse.UpAsync();
-            Assert.That(await Page.EvaluateFunctionAsync<string>(@"() => {
-                const textarea = document.querySelector('textarea');
-                return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
-            }"), Is.EqualTo(text));
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>(@"() => {
+                    const textarea = document.querySelector('textarea');
+                    return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+                }"),
+                Is.EqualTo(text));
         }
 
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should trigger hover state")]
@@ -134,7 +133,7 @@ namespace PuppeteerSharp.Tests.MouseTests
         public async Task ShouldSendMouseWheelEvents()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/wheel.html");
-            var elem = await Page.QuerySelectorAsync("div");
+            await using var elem = await Page.QuerySelectorAsync("div");
             var boundingBoxBefore = await elem.BoundingBoxAsync();
             Assert.That(boundingBoxBefore.Width, Is.EqualTo(115));
             Assert.That(boundingBoxBefore.Height, Is.EqualTo(115));
@@ -147,17 +146,31 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.Mouse.WheelAsync(0, -100);
             var boundingBoxAfter = await elem.BoundingBoxAsync();
 
-            // We don't have this OS check upstream
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            Assert.That(boundingBoxAfter.Width, Is.EqualTo(230));
+            Assert.That(boundingBoxAfter.Height, Is.EqualTo(230));
+        }
+
+        [Test, PuppeteerTest("mouse.spec", "Mouse", "should set ctrlKey on the wheel event")]
+        public async Task ShouldSetCtrlKeyOnTheWheelEvent()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var ctrlKeyTask = Page.EvaluateFunctionAsync<bool>(@"() => {
+                return new Promise(resolve => {
+                    window.addEventListener('wheel', event => {
+                        resolve(event.ctrlKey);
+                    }, { once: true });
+                });
+            }");
+            await Page.Keyboard.DownAsync("Control");
+            await Page.Mouse.WheelAsync(0, -100);
+            // Scroll back to work around
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=1901211.
+            if (!TestConstants.IsChrome)
             {
-                Assert.That(boundingBoxAfter.Width, Is.EqualTo(345));
-                Assert.That(boundingBoxAfter.Height, Is.EqualTo(345));
+                await Page.Mouse.WheelAsync(0, 100);
             }
-            else
-            {
-                Assert.That(boundingBoxAfter.Width, Is.EqualTo(230));
-                Assert.That(boundingBoxAfter.Height, Is.EqualTo(230));
-            }
+            await Page.Keyboard.UpAsync("Control");
+            Assert.That(await ctrlKeyTask, Is.True);
         }
 
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should tween mouse movement")]
@@ -208,13 +221,13 @@ namespace PuppeteerSharp.Tests.MouseTests
                 }));
         }
 
-        [Test, PuppeteerTest("mouse.spec", "Mouse", "should throw if buttons are pressed incorrectly")]
-        public async Task ShouldThrowIfButtonsArePressedIncorrectly()
+        [Test, PuppeteerTest("mouse.spec", "Mouse", "should not throw if buttons are pressed twice")]
+        public async Task ShouldNotThrowIfButtonsArePressedTwice()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
 
             await Page.Mouse.DownAsync();
-            Assert.ThrowsAsync<PuppeteerException>(async () => await Page.Mouse.DownAsync());
+            await Page.Mouse.DownAsync();
         }
 
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should not throw if clicking in parallel")]
@@ -228,84 +241,70 @@ namespace PuppeteerSharp.Tests.MouseTests
                 Page.Mouse.ClickAsync(6, 10));
 
             var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
+            var commonAttrs = new
+            {
+                IsTrusted = true,
+                Detail = 1,
+                ClientY = 5,
+                ClientX = 0,
+                Button = 0,
+            };
 
-            Assert.That(
-                data.Take(3), Is.EqualTo(new ClickData[]
-                {
-                    new()
-                    {
-                        Type = "mousedown",
-                        Buttons = 1,
-                        Detail = 1,
-                        ClientX = 0,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "mouseup",
-                        Buttons = 0,
-                        Detail = 1,
-                        ClientX = 0,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "click",
-                        Buttons = 0,
-                        Detail = 1,
-                        ClientX = 0,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                }));
+            Assert.That(data[0].Type, Is.EqualTo("mousedown"));
+            Assert.That(data[0].Buttons, Is.EqualTo(1));
+            Assert.That(data[0].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+            Assert.That(data[0].Detail, Is.EqualTo(commonAttrs.Detail));
+            Assert.That(data[0].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[0].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[0].Button, Is.EqualTo(commonAttrs.Button));
 
-            Assert.That(
-                data.Skip(3).Take(3), Is.EqualTo(new ClickData[]
-                {
-                    new()
-                    {
-                        Type = "mousedown",
-                        Buttons = 1,
-                        Detail = 1,
-                        ClientX = 6,
-                        ClientY = 10,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "mouseup",
-                        Buttons = 0,
-                        Detail = 1,
-                        ClientX = 6,
-                        ClientY = 10,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "click",
-                        Buttons = 0,
-                        Detail = 1,
-                        ClientX = 6,
-                        ClientY = 10,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                }));
+            Assert.That(data[1].Type, Is.EqualTo("mouseup"));
+            Assert.That(data[1].Buttons, Is.EqualTo(0));
+            Assert.That(data[1].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+            Assert.That(data[1].Detail, Is.EqualTo(commonAttrs.Detail));
+            Assert.That(data[1].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[1].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[1].Button, Is.EqualTo(commonAttrs.Button));
+
+            Assert.That(data[2].Type, Is.EqualTo("click"));
+            Assert.That(data[2].Buttons, Is.EqualTo(0));
+            Assert.That(data[2].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+            Assert.That(data[2].Detail, Is.EqualTo(commonAttrs.Detail));
+            Assert.That(data[2].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[2].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[2].Button, Is.EqualTo(commonAttrs.Button));
+
+            Assert.That(data[3].Type, Is.EqualTo("mousedown"));
+            Assert.That(data[3].Buttons, Is.EqualTo(1));
+            Assert.That(data[3].IsTrusted, Is.True);
+            Assert.That(data[3].Detail, Is.EqualTo(1));
+            Assert.That(data[3].ClientX, Is.EqualTo(6));
+            Assert.That(data[3].ClientY, Is.EqualTo(10));
+            Assert.That(data[3].Button, Is.EqualTo(0));
+
+            Assert.That(data[4].Type, Is.EqualTo("mouseup"));
+            Assert.That(data[4].Buttons, Is.EqualTo(0));
+            Assert.That(data[4].IsTrusted, Is.True);
+            Assert.That(data[4].Detail, Is.EqualTo(1));
+            Assert.That(data[4].ClientX, Is.EqualTo(6));
+            Assert.That(data[4].ClientY, Is.EqualTo(10));
+            Assert.That(data[4].Button, Is.EqualTo(0));
+
+            Assert.That(data[5].Type, Is.EqualTo("click"));
+            Assert.That(data[5].Buttons, Is.EqualTo(0));
+            Assert.That(data[5].IsTrusted, Is.True);
+            Assert.That(data[5].Detail, Is.EqualTo(1));
+            Assert.That(data[5].ClientX, Is.EqualTo(6));
+            Assert.That(data[5].ClientY, Is.EqualTo(10));
+            Assert.That(data[5].Button, Is.EqualTo(0));
         }
 
         [Test, PuppeteerTest("mouse.spec", "Mouse", "should reset properly")]
         public async Task ShouldResetProperly()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
-            await Page.Mouse.MoveAsync(5, 5);
 
+            await Page.Mouse.MoveAsync(5, 5);
             await Task.WhenAll(
                 Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Left }),
                 Page.Mouse.DownAsync(new ClickOptions() { Button = MouseButton.Middle }),
@@ -315,61 +314,100 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.Mouse.ResetAsync();
 
             var data = await Page.EvaluateExpressionAsync<ClickData[]>("window.clicks");
+            var commonAttrs = new
+            {
+                IsTrusted = true,
+                ClientY = 5,
+                ClientX = 5,
+            };
 
-            Assert.That(
-                data, Is.EqualTo(new ClickData[]
-                {
-                    new()
-                    {
-                        Type = "mouseup",
-                        Buttons = 6,
-                        Detail = 1,
-                        ClientX = 5,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "click",
-                        Buttons = 6,
-                        Detail = 1,
-                        ClientX = 5,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                    new()
-                    {
-                        Type = "mouseup",
-                        Buttons = 2,
-                        Detail = 0,
-                        ClientX = 5,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 1,
-                    },
-                    new()
-                    {
-                        Type = "mouseup",
-                        Buttons = 0,
-                        Detail = 0,
-                        ClientX = 5,
-                        ClientY = 5,
-                        IsTrusted = true,
-                        Button = 2,
-                    },
-                    new()
-                    {
-                        Type = "mousemove",
-                        Buttons = 0,
-                        Detail = 0,
-                        ClientX = 0,
-                        ClientY = 0,
-                        IsTrusted = true,
-                        Button = 0,
-                    },
-                }));
+            Assert.That(data[0].Type, Is.EqualTo("mouseup"));
+            Assert.That(data[0].Button, Is.EqualTo(2));
+            Assert.That(data[0].Buttons, Is.EqualTo(5));
+            Assert.That(data[0].Detail, Is.EqualTo(1));
+            Assert.That(data[0].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[0].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[0].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+            Assert.That(data[1].Type, Is.EqualTo("auxclick"));
+            Assert.That(data[1].Button, Is.EqualTo(2));
+            Assert.That(data[1].Buttons, Is.EqualTo(5));
+            Assert.That(data[1].Detail, Is.EqualTo(1));
+            Assert.That(data[1].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[1].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[1].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+            // TODO(crbug/1485040): This should align with the firefox implementation.
+            if (TestConstants.IsChrome)
+            {
+                Assert.That(data[2].Type, Is.EqualTo("mouseup"));
+                Assert.That(data[2].Button, Is.EqualTo(1));
+                Assert.That(data[2].Buttons, Is.EqualTo(1));
+                Assert.That(data[2].Detail, Is.EqualTo(0));
+                Assert.That(data[2].ClientX, Is.EqualTo(commonAttrs.ClientX));
+                Assert.That(data[2].ClientY, Is.EqualTo(commonAttrs.ClientY));
+                Assert.That(data[2].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+                Assert.That(data[3].Type, Is.EqualTo("mouseup"));
+                Assert.That(data[3].Button, Is.EqualTo(0));
+                Assert.That(data[3].Buttons, Is.EqualTo(0));
+                Assert.That(data[3].Detail, Is.EqualTo(0));
+                Assert.That(data[3].ClientX, Is.EqualTo(commonAttrs.ClientX));
+                Assert.That(data[3].ClientY, Is.EqualTo(commonAttrs.ClientY));
+                Assert.That(data[3].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+                return;
+            }
+
+            Assert.That(data[2].Type, Is.EqualTo("mouseup"));
+            Assert.That(data[2].Button, Is.EqualTo(1));
+            Assert.That(data[2].Buttons, Is.EqualTo(1));
+            Assert.That(data[2].Detail, Is.EqualTo(1));
+            Assert.That(data[2].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[2].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[2].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+            Assert.That(data[3].Type, Is.EqualTo("auxclick"));
+            Assert.That(data[3].Button, Is.EqualTo(1));
+            Assert.That(data[3].Buttons, Is.EqualTo(1));
+            Assert.That(data[3].Detail, Is.EqualTo(1));
+            Assert.That(data[3].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[3].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[3].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+            Assert.That(data[4].Type, Is.EqualTo("mouseup"));
+            Assert.That(data[4].Button, Is.EqualTo(0));
+            Assert.That(data[4].Buttons, Is.EqualTo(0));
+            Assert.That(data[4].Detail, Is.EqualTo(1));
+            Assert.That(data[4].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[4].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[4].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+
+            Assert.That(data[5].Type, Is.EqualTo("click"));
+            Assert.That(data[5].Button, Is.EqualTo(0));
+            Assert.That(data[5].Buttons, Is.EqualTo(0));
+            Assert.That(data[5].Detail, Is.EqualTo(1));
+            Assert.That(data[5].ClientX, Is.EqualTo(commonAttrs.ClientX));
+            Assert.That(data[5].ClientY, Is.EqualTo(commonAttrs.ClientY));
+            Assert.That(data[5].IsTrusted, Is.EqualTo(commonAttrs.IsTrusted));
+        }
+
+        [Test, PuppeteerTest("mouse.spec", "Mouse", "should evaluate before mouse event")]
+        public async Task ShouldEvaluateBeforeMouseEvent()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/input/button.html");
+
+            await using var button = await Page.WaitForSelectorAsync("button");
+
+            var point = await button.ClickablePointAsync();
+
+            var resultTask = Page.EvaluateFunctionAsync(@"() => {
+                return new Promise(resolve => {
+                    document.querySelector('button')?.addEventListener('click', resolve, { once: true });
+                });
+            }");
+            await Page.Mouse.ClickAsync(point.X, point.Y);
+            await resultTask;
         }
 
         private Task AddMouseDataListenersAsync(IPage page, bool includeMove = false)
@@ -393,6 +431,7 @@ namespace PuppeteerSharp.Tests.MouseTests
                 }
                 document.addEventListener('mouseup', mouseEventListener);
                 document.addEventListener('click', mouseEventListener);
+                document.addEventListener('auxclick', mouseEventListener);
                 window.clicks = clicks;
             }",
             includeMove);

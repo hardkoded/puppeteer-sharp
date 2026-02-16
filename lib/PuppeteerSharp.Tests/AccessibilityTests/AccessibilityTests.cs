@@ -113,42 +113,22 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             await Page.SetContentAsync("<textarea autofocus>hi</textarea>");
             await Page.FocusAsync("textarea");
 
-            // This object has more children than in upstream.
-            // Because upstream uses `toMatchObject` which stops going deeper if the element has not Children.
-            Assert.That(
-                FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
-                {
-                    InterestingOnly = false
-                })),
-                Is.EqualTo(new SerializedAXNode
-                {
-                    Role = "textbox",
-                    Name = "",
-                    Value = "hi",
-                    Focused = true,
-                    Multiline = true,
-                    Children = new SerializedAXNode[]
-                    {
-                        new() {
-                            Role = "generic",
-                            Name = "",
-                            Children = new SerializedAXNode[]
-                            {
-                                new() {
-                                    Role = "StaticText",
-                                    Name = "hi",
-                                    Children = new SerializedAXNode[]
-                                    {
-                                        new()
-                                        {
-                                            Role = "InlineTextBox",
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }));
+            // Upstream uses toMatchObject (partial matching), so we assert individual properties
+            var focusedNode = FindFocusedNode(await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                InterestingOnly = false
+            }));
+            Assert.That(focusedNode.Role, Is.EqualTo("textbox"));
+            Assert.That(focusedNode.Name, Is.EqualTo(""));
+            Assert.That(focusedNode.Value, Is.EqualTo("hi"));
+            Assert.That(focusedNode.Focused, Is.True);
+            Assert.That(focusedNode.Multiline, Is.True);
+            Assert.That(focusedNode.Children, Has.Length.EqualTo(1));
+            Assert.That(focusedNode.Children[0].Role, Is.EqualTo("generic"));
+            Assert.That(focusedNode.Children[0].Name, Is.EqualTo(""));
+            Assert.That(focusedNode.Children[0].Children, Has.Length.EqualTo(1));
+            Assert.That(focusedNode.Children[0].Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(focusedNode.Children[0].Children[0].Name, Is.EqualTo("hi"));
         }
 
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "get snapshots while the tree is re-calculated")]
@@ -401,6 +381,89 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                     Name = "this is the inner content yo",
                     Checked = CheckedState.True
                 }));
+        }
+
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should capture new accessibility properties and not prune them")]
+        public async Task ShouldCaptureNewAccessibilityPropertiesAndNotPruneThem()
+        {
+            await Page.SetContentAsync(@"
+                <div role=""alert"" aria-busy=""true"">This is an alert</div>
+                <div aria-live=""polite"" aria-atomic=""true"" aria-relevant=""additions text"">
+                  This is polite live region
+                </div>
+                <div aria-modal=""true"" role=""dialog"" aria-roledescription=""My Modal"">
+                  Modal content
+                </div>
+                <div id=""error"">Error message</div>
+                <input aria-invalid=""true"" aria-errormessage=""error"" value=""invalid input"">
+                <div id=""details"">Additional details</div>
+                <div aria-details=""details"">Element with details</div>
+                <div aria-description=""This is a description""></div>");
+
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+
+            Assert.That(snapshot.Role, Is.EqualTo("RootWebArea"));
+            Assert.That(snapshot.Children.Length, Is.GreaterThanOrEqualTo(8));
+
+            // alert node with busy, live, atomic
+            var alertNode = snapshot.Children[0];
+            Assert.That(alertNode.Role, Is.EqualTo("alert"));
+            Assert.That(alertNode.Name, Is.EqualTo(string.Empty));
+            Assert.That(alertNode.Busy, Is.True);
+            Assert.That(alertNode.Live, Is.EqualTo("assertive"));
+            Assert.That(alertNode.Atomic, Is.True);
+            Assert.That(alertNode.Children, Has.Length.EqualTo(1));
+            Assert.That(alertNode.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(alertNode.Children[0].Name, Is.EqualTo("This is an alert"));
+
+            // polite live region with atomic and relevant
+            var liveRegionNode = snapshot.Children[1];
+            Assert.That(liveRegionNode.Role, Is.EqualTo("generic"));
+            Assert.That(liveRegionNode.Name, Is.EqualTo(string.Empty));
+            Assert.That(liveRegionNode.Live, Is.EqualTo("polite"));
+            Assert.That(liveRegionNode.Atomic, Is.True);
+            Assert.That(liveRegionNode.Relevant, Is.EqualTo("additions text"));
+            Assert.That(liveRegionNode.Children, Has.Length.EqualTo(1));
+            Assert.That(liveRegionNode.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(liveRegionNode.Children[0].Name, Is.EqualTo("This is polite live region"));
+
+            // dialog with modal and roledescription
+            var dialogNode = snapshot.Children[2];
+            Assert.That(dialogNode.Role, Is.EqualTo("dialog"));
+            Assert.That(dialogNode.Name, Is.EqualTo(string.Empty));
+            Assert.That(dialogNode.Modal, Is.True);
+            Assert.That(dialogNode.RoleDescription, Is.EqualTo("My Modal"));
+            Assert.That(dialogNode.Children, Has.Length.EqualTo(1));
+            Assert.That(dialogNode.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(dialogNode.Children[0].Name, Is.EqualTo("Modal content"));
+
+            // Error message static text
+            Assert.That(snapshot.Children[3].Role, Is.EqualTo("StaticText"));
+            Assert.That(snapshot.Children[3].Name, Is.EqualTo("Error message"));
+
+            // input with invalid and errormessage
+            var inputNode = snapshot.Children[4];
+            Assert.That(inputNode.Role, Is.EqualTo("textbox"));
+            Assert.That(inputNode.Value, Is.EqualTo("invalid input"));
+            Assert.That(inputNode.Invalid, Is.EqualTo("true"));
+            Assert.That(inputNode.Errormessage, Is.EqualTo("error"));
+
+            // Additional details static text
+            Assert.That(snapshot.Children[5].Role, Is.EqualTo("StaticText"));
+            Assert.That(snapshot.Children[5].Name, Is.EqualTo("Additional details"));
+
+            // element with details
+            var detailsNode = snapshot.Children[6];
+            Assert.That(detailsNode.Role, Is.EqualTo("generic"));
+            Assert.That(detailsNode.Details, Is.EqualTo("details"));
+            Assert.That(detailsNode.Children, Has.Length.EqualTo(1));
+            Assert.That(detailsNode.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(detailsNode.Children[0].Name, Is.EqualTo("Element with details"));
+
+            // element with description only (no name)
+            var descriptionNode = snapshot.Children[7];
+            Assert.That(descriptionNode.Role, Is.EqualTo("generic"));
+            Assert.That(descriptionNode.Description, Is.EqualTo("This is a description"));
         }
 
         private SerializedAXNode FindFocusedNode(SerializedAXNode serializedAXNode)
