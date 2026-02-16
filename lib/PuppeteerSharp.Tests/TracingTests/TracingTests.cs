@@ -111,7 +111,7 @@ namespace PuppeteerSharp.Tests.TracingTests
             var newPage = await Browser.NewPageAsync();
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
-                await Page.Tracing.StartAsync(new TracingOptions
+                await newPage.Tracing.StartAsync(new TracingOptions
                 {
                     Path = _file
                 });
@@ -121,8 +121,8 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.Tracing.StopAsync();
         }
 
-        [Test, PuppeteerTest("tracing.spec", "Tracing", "should return a buffer")]
-        public async Task ShouldReturnABuffer()
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should return a typedArray")]
+        public async Task ShouldReturnATypedArray()
         {
             await Page.Tracing.StartAsync(new TracingOptions
             {
@@ -144,13 +144,27 @@ namespace PuppeteerSharp.Tests.TracingTests
             Assert.That(trace, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("tracing.spec", "Tracing", "should support a buffer without a path")]
-        public async Task ShouldSupportABufferWithoutAPath()
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should support a typedArray without a path")]
+        public async Task ShouldSupportATypedArrayWithoutAPath()
         {
             await Page.Tracing.StartAsync();
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
             Assert.That(trace.Length, Is.GreaterThan(10));
+        }
+
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
+        public async Task ShouldProperlyFailIfReadProtocolStreamErrorsOut()
+        {
+            await Page.Tracing.StartAsync(new TracingOptions
+            {
+                Path = Path.GetTempPath()
+            });
+
+            Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await Page.Tracing.StopAsync();
+            });
         }
     }
 }
