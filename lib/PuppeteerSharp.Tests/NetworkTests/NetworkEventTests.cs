@@ -188,7 +188,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
                 }
             };
             Server.SetRedirect("/foo.html", "/empty.html");
-            const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
+            var FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
             Assert.That(events.ToArray(), Is.EqualTo(new[] {
                 $"GET {FOO_URL}",
@@ -209,7 +209,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
         public async Task ResponseRemoteAddressShouldSupportRedirects()
         {
             Server.SetRedirect("/foo.html", "/empty.html");
-            const string FOO_URL = TestConstants.ServerUrl + "/foo.html";
+            var FOO_URL = TestConstants.ServerUrl + "/foo.html";
             var response = await Page.GoToAsync(FOO_URL);
 
             // Check redirect chain remote address
