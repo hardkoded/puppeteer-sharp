@@ -20,9 +20,13 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class RequestEventArgs(Request request)
 {
     public Request Request { get; } = request;
 }
+
+#endif

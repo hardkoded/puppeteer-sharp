@@ -28,6 +28,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
@@ -92,3 +94,5 @@ public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) :
 
     internal virtual void OnMessageReceived(MessageEventArgs e) => MessageReceived?.Invoke(this, e);
 }
+
+#endif

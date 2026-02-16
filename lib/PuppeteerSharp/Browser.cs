@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+#if !CDP_ONLY
 using PuppeteerSharp.Bidi;
+#endif
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
@@ -171,6 +173,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
             => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
+
+        /// <inheritdoc/>
+        public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
 
         /// <inheritdoc/>
         public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
