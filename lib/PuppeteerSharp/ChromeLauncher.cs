@@ -71,7 +71,6 @@ namespace PuppeteerSharp
                 "--disable-default-apps",
                 "--disable-dev-shm-usage",
                 "--disable-extensions",
-                "--disable-field-trial-config",
                 "--disable-hang-monitor",
                 "--disable-infobars",
                 "--disable-ipc-flooding-protection",
