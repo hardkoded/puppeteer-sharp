@@ -31,7 +31,7 @@ jobs:
         dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_INT_API_KEY}} --source https://apiint.nugettest.org/v3/index.json
     - name: Build (CDP only)
       run: |
-        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp --configuration Release --no-restore
+        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp /p:Description="Headless Browser .NET API with CDP support only (no WebDriverBiDi)" --configuration Release --no-restore
         ls ./lib/PuppeteerSharp/bin/Release
     - name: NugetPush to int.nuget.org (CDP only)
       env:
