@@ -62,7 +62,7 @@ static bool EvaluateRelease(DirectoryInfo dir)
     }
     Console.WriteLine();
 
-    return failed;
+    return !failed;
 }
 
 var failed = false;
