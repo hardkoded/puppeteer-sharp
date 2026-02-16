@@ -173,6 +173,9 @@ namespace PuppeteerSharp
             => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
         /// <inheritdoc/>
+        public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
+
+        /// <inheritdoc/>
         public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
 
         /// <inheritdoc/>
