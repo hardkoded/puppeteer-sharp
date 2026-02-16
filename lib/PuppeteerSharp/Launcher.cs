@@ -79,7 +79,7 @@ namespace PuppeteerSharp
 
             Process = options.Browser switch
             {
-                SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromeLauncher(executable, options),
+                SupportedBrowser.Chrome or SupportedBrowser.Chromium or SupportedBrowser.ChromeHeadlessShell => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
                 _ => throw new ArgumentException("Invalid browser"),
             };
