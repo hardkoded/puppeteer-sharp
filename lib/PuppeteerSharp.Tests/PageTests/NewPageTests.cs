@@ -4,7 +4,7 @@ using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.PageTests
 {
-    public class NewPageTests : PuppeteerBrowserContextBaseTest
+    public class NewPageTests : PuppeteerPageBaseTest
     {
         [Test, PuppeteerTest("page.spec", "Page Page.newPage", "should open pages in a new window")]
         public async Task ShouldOpenPagesInANewWindow()
@@ -85,21 +85,10 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page Page.newPage", "should create a background page")]
         public async Task ShouldCreateABackgroundPage()
         {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.DefaultViewport = null;
+            var page = await Context.NewPageAsync(new CreatePageOptions { Background = true });
 
-            await using var browser = await Puppeteer.LaunchAsync(options);
-            var context = await browser.CreateBrowserContextAsync();
-
-            var page = await context.NewPageAsync(new CreatePageOptions
-            {
-                Background = true,
-            });
-
-            var visibility = await page.EvaluateFunctionAsync<string>(
-                "() => document.visibilityState");
-
-            Assert.That(visibility, Is.EqualTo("hidden"));
+            var visibilityState = await page.EvaluateExpressionAsync<string>("document.visibilityState");
+            Assert.That(visibilityState, Is.EqualTo("hidden"));
         }
 
         private sealed class OuterSize

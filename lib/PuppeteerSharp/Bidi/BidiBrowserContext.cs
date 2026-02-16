@@ -121,16 +121,15 @@ public class BidiBrowserContext : BrowserContext
     public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />
-    public override Task<IPage> NewPageAsync() => NewPageAsync(null);
-
-    /// <inheritdoc />
-    public override async Task<IPage> NewPageAsync(CreatePageOptions options)
+    public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
-        var createType = options?.Type == CreatePageType.Window
+        var type = options?.Type == CreatePageType.Window
             ? WebDriverBiDi.BrowsingContext.CreateType.Window
             : WebDriverBiDi.BrowsingContext.CreateType.Tab;
 
-        var context = await UserContext.CreateBrowserContextAsync(createType).ConfigureAwait(false);
+        var context = await UserContext.CreateBrowserContextAsync(
+            type,
+            background: options?.Background).ConfigureAwait(false);
 
         if (!_pages.TryGetValue(context, out var page))
         {

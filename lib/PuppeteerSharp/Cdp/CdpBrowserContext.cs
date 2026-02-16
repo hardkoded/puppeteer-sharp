@@ -56,10 +56,7 @@ public class CdpBrowserContext : BrowserContext
             .Where(p => p != null).ToArray();
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => _browser.CreatePageInContextAsync(Id);
-
-    /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync(CreatePageOptions options) => _browser.CreatePageInContextAsync(Id, options);
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => _browser.CreatePageInContextAsync(Id, options);
 
     /// <inheritdoc/>
     public override Task CloseAsync()

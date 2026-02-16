@@ -103,7 +103,7 @@ public class CdpBrowser : Browser
     internal override ProtocolType Protocol => ProtocolType.Cdp;
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
     public override ITarget[] Targets()
@@ -228,7 +228,7 @@ public class CdpBrowser : Browser
 
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
-        var hasTargets = Targets().Any(t => t.BrowserContext is CdpBrowserContext ctx && ctx.Id == contextId);
+        var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
         var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
 
         var createTargetRequest = new TargetCreateTargetRequest
@@ -239,6 +239,8 @@ public class CdpBrowser : Browser
             Width = windowBounds?.Width,
             Height = windowBounds?.Height,
             WindowState = windowBounds?.WindowState,
+
+            // Works around crbug.com/454825274.
             NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
             Background = options?.Background,
         };

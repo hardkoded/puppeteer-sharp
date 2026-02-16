@@ -174,7 +174,7 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc />
-    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
     public override Task<ScreenInfo[]> ScreensAsync()
