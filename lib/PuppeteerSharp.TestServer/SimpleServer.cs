@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
@@ -18,6 +20,11 @@ namespace PuppeteerSharp.TestServer
         private readonly IDictionary<string, (string username, string password)> _auths;
         private readonly IDictionary<string, string> _csp;
         private readonly IWebHost _webHost;
+        private readonly bool _isHttps;
+
+        public int Port { get; private set; }
+        public string Prefix { get; private set; }
+        public string IpPrefix { get; private set; }
 
         internal IList<string> GzipRoutes { get; }
         public static SimpleServer Create(int port, string contentRoot) => new SimpleServer(port, contentRoot, isHttps: false);
@@ -25,6 +32,7 @@ namespace PuppeteerSharp.TestServer
 
         private SimpleServer(int port, string contentRoot, bool isHttps)
         {
+            _isHttps = isHttps;
             _requestSubscribers = new ConcurrentDictionary<string, Action<HttpRequest>>();
             _routes = new ConcurrentDictionary<string, RequestDelegate>();
             _auths = new ConcurrentDictionary<string, (string username, string password)>();
@@ -92,7 +100,19 @@ namespace PuppeteerSharp.TestServer
 
         public void SetCSP(string path, string csp) => _csp.Add(path, csp);
 
-        public Task StartAsync() => _webHost.StartAsync();
+        public async Task StartAsync()
+        {
+            await _webHost.StartAsync();
+            var address = _webHost.ServerFeatures
+                .Get<IServerAddressesFeature>()
+                .Addresses
+                .First();
+            var uri = new Uri(address);
+            Port = uri.Port;
+            var scheme = _isHttps ? "https" : "http";
+            Prefix = $"{scheme}://localhost:{Port}";
+            IpPrefix = $"{scheme}://127.0.0.1:{Port}";
+        }
 
         public async Task StopAsync()
         {

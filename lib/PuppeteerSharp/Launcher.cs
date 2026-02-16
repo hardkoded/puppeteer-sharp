@@ -7,13 +7,17 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+#if !CDP_ONLY
 using PuppeteerSharp.Bidi;
+#endif
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
+#if !CDP_ONLY
 using WebDriverBiDi;
 using BidiTransport = WebDriverBiDi.Protocol.Transport;
+#endif
 using CdpConnection = PuppeteerSharp.Cdp.Connection;
 
 namespace PuppeteerSharp
@@ -79,7 +83,7 @@ namespace PuppeteerSharp
 
             Process = options.Browser switch
             {
-                SupportedBrowser.Chrome or SupportedBrowser.Chromium => new ChromeLauncher(executable, options),
+                SupportedBrowser.Chrome or SupportedBrowser.Chromium or SupportedBrowser.ChromeHeadlessShell => new ChromeLauncher(executable, options),
                 SupportedBrowser.Firefox => new FirefoxLauncher(executable, options),
                 _ => throw new ArgumentException("Invalid browser"),
             };
@@ -100,8 +104,12 @@ namespace PuppeteerSharp
                 {
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
+#if !CDP_ONLY
                         var driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
                         browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
+#else
+                        throw new ArgumentException("Invalid browser. Only CDP is supported");
+#endif
                     }
                     else
                     {
@@ -168,12 +176,17 @@ namespace PuppeteerSharp
 
             if (options.Protocol == ProtocolType.WebdriverBiDi)
             {
+#if !CDP_ONLY
                 return await ConnectBidiAsync(browserWSEndpoint, options).ConfigureAwait(false);
+#else
+                throw new ArgumentException("Invalid browser. Only CDP is supported");
+#endif
             }
 
             return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
         }
 
+#if !CDP_ONLY
         private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
         {
             if (options.TransportFactory != null)
@@ -226,6 +239,7 @@ namespace PuppeteerSharp
                 throw new ProcessException("Failed to create connection", ex);
             }
         }
+#endif
 
         private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
         {

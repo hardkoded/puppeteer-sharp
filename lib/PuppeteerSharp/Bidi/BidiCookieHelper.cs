@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Storage;
@@ -80,10 +82,12 @@ internal static class BidiCookieHelper
         }
 
         // Add CDP-specific properties if needed
+#pragma warning disable CS0618 // SameParty is deprecated
         if (cookie.SameParty.HasValue)
         {
             bidiCookie.AdditionalData["goog:sameParty"] = cookie.SameParty.Value;
         }
+#pragma warning restore CS0618
 
         if (cookie.SourceScheme.HasValue)
         {
@@ -209,3 +213,5 @@ internal static class BidiCookieHelper
         };
     }
 }
+
+#endif

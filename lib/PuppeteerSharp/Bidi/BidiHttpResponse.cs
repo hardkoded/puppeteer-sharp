@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -144,3 +146,5 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         _request.BidiPage.OnResponse(new ResponseCreatedEventArgs(this));
     }
 }
+
+#endif
