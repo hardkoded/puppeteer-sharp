@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -133,3 +135,5 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         return (T)value;
     }
 }
+
+#endif

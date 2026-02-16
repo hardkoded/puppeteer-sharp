@@ -22,6 +22,8 @@
 
 using WebDriverBiDi.BrowsingContext;
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class SetViewportOptions
@@ -30,3 +32,5 @@ internal class SetViewportOptions
 
     public double? DevicePixelRatio { get; set; }
 }
+
+#endif

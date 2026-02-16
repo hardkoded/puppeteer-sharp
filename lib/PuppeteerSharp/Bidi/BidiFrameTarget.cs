@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Bidi;
@@ -55,3 +57,5 @@ internal class BidiFrameTarget : Target
 
     public override Task<ICDPSession> CreateCDPSessionAsync() => throw new PuppeteerException("Not supported");
 }
+
+#endif

@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using WebDriverBiDi.BrowsingContext;
 
@@ -159,3 +161,5 @@ internal class Navigation
         return Id == navigation;
     }
 }
+
+#endif

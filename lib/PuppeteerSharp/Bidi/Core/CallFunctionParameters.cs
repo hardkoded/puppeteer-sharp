@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System.Collections.Generic;
 using WebDriverBiDi.Script;
 
@@ -35,3 +37,5 @@ internal class CallFunctionParameters
 
     public SerializationOptions SerializationOptions { get; set; }
 }
+
+#endif
