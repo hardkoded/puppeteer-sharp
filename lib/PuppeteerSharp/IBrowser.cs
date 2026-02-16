@@ -171,8 +171,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page.
         /// </summary>
+        /// <param name="options">Options for creating the page.</param>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
-        Task<IPage> NewPageAsync();
+        Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
@@ -229,6 +230,21 @@ namespace PuppeteerSharp
         /// Clears all registered handlers.
         /// </summary>
         void ClearCustomQueryHandlers();
+
+        /// <summary>
+        /// Gets the specified window bounds.
+        /// </summary>
+        /// <param name="windowId">The window ID.</param>
+        /// <returns>A task that resolves to the <see cref="WindowBounds"/>.</returns>
+        Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <summary>
+        /// Sets the specified window bounds.
+        /// </summary>
+        /// <param name="windowId">The window ID.</param>
+        /// <param name="windowBounds">The bounds to set.</param>
+        /// <returns>A task that resolves when the bounds have been set.</returns>
+        Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
 
         /// <summary>
         /// Gets a list of <see cref="ScreenInfo"/> objects.

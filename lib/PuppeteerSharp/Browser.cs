@@ -73,7 +73,7 @@ namespace PuppeteerSharp
         internal abstract ProtocolType Protocol { get; }
 
         /// <inheritdoc/>
-        public abstract Task<IPage> NewPageAsync();
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
@@ -173,6 +173,12 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
             => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
+
+        /// <inheritdoc/>
+        public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <inheritdoc/>
+        public abstract Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
 
         /// <inheritdoc />
         public void Dispose()

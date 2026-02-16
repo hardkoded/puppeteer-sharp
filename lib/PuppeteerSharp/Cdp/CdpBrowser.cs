@@ -103,7 +103,7 @@ public class CdpBrowser : Browser
     internal override ProtocolType Protocol => ProtocolType.Cdp;
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => DefaultContext.NewPageAsync();
+    public override Task<IPage> NewPageAsync(CreatePageOptions options = null) => DefaultContext.NewPageAsync(options);
 
     /// <inheritdoc/>
     public override ITarget[] Targets()
@@ -144,6 +144,27 @@ public class CdpBrowser : Browser
 
     /// <inheritdoc/>
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
+
+    /// <inheritdoc/>
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
+            "Browser.getWindowBounds",
+            new BrowserGetWindowBoundsRequest { WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture) }).ConfigureAwait(false);
+        return response.Bounds;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
+    {
+        await Connection.SendAsync(
+            "Browser.setWindowBounds",
+            new BrowserSetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
+                Bounds = windowBounds,
+            }).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public override async Task<ScreenInfo[]> ScreensAsync()
@@ -205,11 +226,23 @@ public class CdpBrowser : Browser
         }
     }
 
-    internal async Task<IPage> CreatePageInContextAsync(string contextId)
+    internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
+        var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
+        var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
+
         var createTargetRequest = new TargetCreateTargetRequest
         {
             Url = "about:blank",
+            Left = windowBounds?.Left,
+            Top = windowBounds?.Top,
+            Width = windowBounds?.Width,
+            Height = windowBounds?.Height,
+            WindowState = windowBounds?.WindowState,
+
+            // Works around crbug.com/454825274.
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
+            Background = options?.Background,
         };
 
         if (contextId != null)
