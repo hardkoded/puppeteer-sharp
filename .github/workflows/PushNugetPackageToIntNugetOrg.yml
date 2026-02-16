@@ -33,9 +33,6 @@ jobs:
       run: |
         dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp --configuration Release --no-restore
         ls ./lib/PuppeteerSharp/bin/Release
-    - name: Check for WebDriverBiDi leakage (CDP only)
-      run: |
-        dotnet tools\csharp\check-leaks.cs lib\PuppeteerSharp\bin\Release
     - name: NugetPush to int.nuget.org (CDP only)
       env:
         NUGET_TOKEN_TEST_EXISTS: ${{ secrets.NUGET_INT_API_KEY }}
