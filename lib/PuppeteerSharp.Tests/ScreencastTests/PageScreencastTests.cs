@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -17,12 +19,14 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             });
 
             var screencastFramesReceived = 0;
+            var frameReceived = new TaskCompletionSource<bool>();
             page.Client.MessageReceived += async (_, e) =>
             {
                 if (e.MessageID == "Page.screencastFrame")
                 {
                     Assert.That(e.MessageData.GetProperty("data").GetString(), Is.Not.Null.Or.Empty);
-                    screencastFramesReceived++;
+                    Interlocked.Increment(ref screencastFramesReceived);
+                    frameReceived.TrySetResult(true);
 
                     // acknowledge frame
                     await page.Client.SendAsync("Page.screencastFrameAck", new
@@ -39,6 +43,9 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             });
 
             await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+
+            // Wait for at least one frame to be received before stopping
+            await frameReceived.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
             await page.Client.SendAsync("Page.stopScreencast");
 

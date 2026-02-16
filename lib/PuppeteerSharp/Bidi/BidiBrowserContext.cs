@@ -123,7 +123,7 @@ public class BidiBrowserContext : BrowserContext
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
-        var type = options?.Type == "window"
+        var type = options?.Type == CreatePageType.Window
             ? WebDriverBiDi.BrowsingContext.CreateType.Window
             : WebDriverBiDi.BrowsingContext.CreateType.Tab;
 
@@ -146,6 +146,12 @@ public class BidiBrowserContext : BrowserContext
             {
                 // No support for setViewport in Firefox.
             }
+        }
+
+        if (options?.Type == CreatePageType.Window && options?.WindowBounds != null)
+        {
+            var windowId = await page.WindowIdAsync().ConfigureAwait(false);
+            await Browser.SetWindowBoundsAsync(windowId, options.WindowBounds).ConfigureAwait(false);
         }
 
         return page;

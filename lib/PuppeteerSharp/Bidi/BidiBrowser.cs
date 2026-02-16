@@ -211,6 +211,63 @@ public class BidiBrowser : Browser
             .Cast<IBrowserContext>()
             .ToArray();
 
+    /// <inheritdoc />
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var result = await Driver.Browser.GetClientWindowsAsync().ConfigureAwait(false);
+        var window = result.ClientWindows.FirstOrDefault(w => w.ClientWindowId == windowId)
+            ?? throw new PuppeteerException("Window not found");
+
+        return new WindowBounds
+        {
+            Left = (int)window.X,
+            Top = (int)window.Y,
+            Width = (int)window.Width,
+            Height = (int)window.Height,
+            WindowState = MapFromClientWindowState(window.State),
+        };
+    }
+
+    /// <inheritdoc />
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
+    {
+        if (windowBounds == null)
+        {
+            throw new ArgumentNullException(nameof(windowBounds));
+        }
+
+        var windowState = windowBounds.WindowState ?? WindowState.Normal;
+        var parameters = new WebDriverBiDi.Browser.SetClientWindowStateCommandParameters(windowId)
+        {
+            State = MapToClientWindowState(windowState),
+        };
+
+        if (windowState == WindowState.Normal)
+        {
+            if (windowBounds.Left.HasValue)
+            {
+                parameters.X = (ulong)windowBounds.Left.Value;
+            }
+
+            if (windowBounds.Top.HasValue)
+            {
+                parameters.Y = (ulong)windowBounds.Top.Value;
+            }
+
+            if (windowBounds.Width.HasValue)
+            {
+                parameters.Width = (ulong)windowBounds.Width.Value;
+            }
+
+            if (windowBounds.Height.HasValue)
+            {
+                parameters.Height = (ulong)windowBounds.Height.Value;
+            }
+        }
+
+        await Driver.Browser.SetClientWindowStateAsync(parameters).ConfigureAwait(false);
+    }
+
     [SuppressMessage(
         "Reliability",
         "CA2000:Dispose objects before losing scope",
@@ -288,6 +345,24 @@ public class BidiBrowser : Browser
         browser.InitializeAsync();
         return browser;
     }
+
+    private static WindowState MapFromClientWindowState(WebDriverBiDi.Browser.ClientWindowState state) => state switch
+    {
+        WebDriverBiDi.Browser.ClientWindowState.Normal => WindowState.Normal,
+        WebDriverBiDi.Browser.ClientWindowState.Minimized => WindowState.Minimized,
+        WebDriverBiDi.Browser.ClientWindowState.Maximized => WindowState.Maximized,
+        WebDriverBiDi.Browser.ClientWindowState.Fullscreen => WindowState.Fullscreen,
+        _ => WindowState.Normal,
+    };
+
+    private static WebDriverBiDi.Browser.ClientWindowState MapToClientWindowState(WindowState state) => state switch
+    {
+        WindowState.Normal => WebDriverBiDi.Browser.ClientWindowState.Normal,
+        WindowState.Minimized => WebDriverBiDi.Browser.ClientWindowState.Minimized,
+        WindowState.Maximized => WebDriverBiDi.Browser.ClientWindowState.Maximized,
+        WindowState.Fullscreen => WebDriverBiDi.Browser.ClientWindowState.Fullscreen,
+        _ => WebDriverBiDi.Browser.ClientWindowState.Normal,
+    };
 
     private void InitializeAsync()
     {

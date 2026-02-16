@@ -172,6 +172,12 @@ namespace PuppeteerSharp
         public void ClearCustomQueryHandlers()
             => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
+        /// <inheritdoc/>
+        public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <inheritdoc/>
+        public abstract Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
+
         /// <inheritdoc />
         public void Dispose()
         {

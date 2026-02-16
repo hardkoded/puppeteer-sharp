@@ -146,6 +146,27 @@ public class CdpBrowser : Browser
     public override IBrowserContext[] BrowserContexts() => [DefaultContext, .. _contexts.Values];
 
     /// <inheritdoc/>
+    public override async Task<WindowBounds> GetWindowBoundsAsync(string windowId)
+    {
+        var response = await Connection.SendAsync<BrowserGetWindowBoundsResponse>(
+            "Browser.getWindowBounds",
+            new BrowserGetWindowBoundsRequest { WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture) }).ConfigureAwait(false);
+        return response.Bounds;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds)
+    {
+        await Connection.SendAsync(
+            "Browser.setWindowBounds",
+            new BrowserSetWindowBoundsRequest
+            {
+                WindowId = int.Parse(windowId, System.Globalization.CultureInfo.InvariantCulture),
+                Bounds = windowBounds,
+            }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override async Task<ScreenInfo[]> ScreensAsync()
     {
         var response = await Connection.SendAsync<EmulationGetScreenInfosResponse>("Emulation.getScreenInfos").ConfigureAwait(false);
@@ -208,7 +229,7 @@ public class CdpBrowser : Browser
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {
         var hasTargets = Array.Exists(Targets(), t => t.BrowserContext.Id == contextId);
-        var windowBounds = options?.Type == "window" ? options.WindowBounds : null;
+        var windowBounds = options?.Type == CreatePageType.Window ? options.WindowBounds : null;
 
         var createTargetRequest = new TargetCreateTargetRequest
         {
@@ -220,7 +241,7 @@ public class CdpBrowser : Browser
             WindowState = windowBounds?.WindowState,
 
             // Works around crbug.com/454825274.
-            NewWindow = hasTargets && options?.Type == "window" ? true : null,
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
             Background = options?.Background,
         };
 

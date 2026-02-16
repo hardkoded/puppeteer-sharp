@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <summary>
-        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync"/>.
+        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync(CreatePageOptions)"/>.
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetCreated;
 
