@@ -82,10 +82,12 @@ internal static class BidiCookieHelper
         }
 
         // Add CDP-specific properties if needed
+#pragma warning disable CS0618 // SameParty is deprecated
         if (cookie.SameParty.HasValue)
         {
             bidiCookie.AdditionalData["goog:sameParty"] = cookie.SameParty.Value;
         }
+#pragma warning restore CS0618
 
         if (cookie.SourceScheme.HasValue)
         {
