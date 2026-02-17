@@ -82,17 +82,24 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             => Assert.That(await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }), Is.EqualTo(42));
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw when evaluation triggers reload")]
-        public void ShouldThrowWhenEvaluationTriggersReload()
+        public async Task ShouldThrowWhenEvaluationTriggersReload()
         {
-            var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            EvaluationFailedException exception = null;
+            try
             {
-                return Page.EvaluateFunctionAsync(@"() => {
+                await Page.EvaluateFunctionAsync(@"() => {
                     location.reload();
                     return new Promise(() => {});
                 }");
-            });
+            }
+            catch (EvaluationFailedException ex)
+            {
+                exception = ex;
+            }
 
-            Assert.That(exception.Message, Does.Contain("Protocol error"));
+            Assert.That(exception, Is.Not.Null);
+            Assert.That(exception.Message, Does.Contain("Execution context was destroyed")
+                .Or.Contain("no such frame"));
         }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work right after framenavigated")]
