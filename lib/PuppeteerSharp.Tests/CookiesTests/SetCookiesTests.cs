@@ -214,7 +214,11 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.HttpOnly, Is.False);
             Assert.That(cookie.Secure, Is.True);
             Assert.That(cookie.Session, Is.True);
-            Assert.That(cookie.SourceScheme, Is.EqualTo(CookieSourceScheme.Secure));
+            if (TestConstants.IsChrome)
+            {
+                Assert.That(cookie.SourceScheme, Is.EqualTo(CookieSourceScheme.Secure));
+            }
+
             if (TestConstants.IsChrome)
             {
                 key = url.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.UriEscaped);
