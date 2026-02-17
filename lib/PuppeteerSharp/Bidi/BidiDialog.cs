@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 
@@ -61,3 +63,4 @@ public class BidiDialog : Dialog
     }
 }
 
+#endif

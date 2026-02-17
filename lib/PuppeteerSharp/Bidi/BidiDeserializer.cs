@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using WebDriverBiDi.Script;
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi;
 
 internal static class BidiDeserializer
@@ -114,3 +116,5 @@ internal static class BidiDeserializer
         }
     }
 }
+
+#endif

@@ -31,6 +31,8 @@ using WebDriverBiDi.Input;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Session;
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
@@ -176,3 +178,5 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     private void OnInputFileDialogOpened(FileDialogOpenedEventArgs obj) => InputFileDialogOpened?.Invoke(this, obj);
 }
+
+#endif
