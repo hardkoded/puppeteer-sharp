@@ -110,5 +110,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Execution context destruction doesn't reliably propagate in .NET, causing the test to hang",
+    "testIdPattern": "[evaluation.spec] *should throw when evaluation triggers reload",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"]
   }
 ]

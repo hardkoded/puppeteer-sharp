@@ -82,9 +82,9 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             => Assert.That(await Page.EvaluateFunctionAsync<int>("a => a['中文字符']", new Dictionary<string, int> { ["中文字符"] = 42 }), Is.EqualTo(42));
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should throw when evaluation triggers reload")]
-        public async Task ShouldThrowWhenEvaluationTriggersReload()
+        public void ShouldThrowWhenEvaluationTriggersReload()
         {
-            var exception = await Assert.ThrowsAsync<EvaluationFailedException>(() =>
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(() =>
             {
                 return Page.EvaluateFunctionAsync(@"() => {
                     location.reload();
