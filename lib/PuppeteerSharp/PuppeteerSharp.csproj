@@ -45,7 +45,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="WebDriverBiDi" Version="0.0.43" />
+    <PackageReference Include="WebDriverBiDi" Version="0.0.43" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0" />

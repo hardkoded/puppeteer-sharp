@@ -22,6 +22,8 @@
 
 using WebDriverBiDi.BrowsingContext;
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class ScreenshotParameters
@@ -32,3 +34,5 @@ internal class ScreenshotParameters
 
     public ScreenshotOrigin Origin { get; set; }
 }
+
+#endif

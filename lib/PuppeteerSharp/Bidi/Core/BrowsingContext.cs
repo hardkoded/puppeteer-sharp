@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -492,3 +494,5 @@ internal class BrowsingContext : IDisposable
 
     private void OnFileDialogOpened(FileDialogOpenedEventArgs args) => FileDialogOpened?.Invoke(this, args);
 }
+
+#endif

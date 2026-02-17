@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 
@@ -87,3 +89,5 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         };
     }
 }
+
+#endif

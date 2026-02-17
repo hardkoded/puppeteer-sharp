@@ -1,0 +1,35 @@
+name: WebDriverBiDi leak check
+
+on:
+  push:
+    branches:
+      - master
+      - release-*
+  pull_request:
+    paths:
+      - "**.cs"
+      - "**.csproj"
+      - "**/leak-check.yml"
+
+jobs:
+  build:
+    name: WebDriverBiDi leak check
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: "10.0.x" # The .NET SDK version to use
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Install dependencies
+        run: |
+          dotnet restore lib/PuppeteerSharp.sln
+      - name: Build (CDP only)
+        run: |
+          dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp --configuration Release --no-restore
+          ls ./lib/PuppeteerSharp/bin/Release
+      - name: Check for WebDriverBiDi leakage (CDP only)
+        run: |
+          dotnet tools/csharp/check-leaks.cs ./lib/PuppeteerSharp/bin/Release
