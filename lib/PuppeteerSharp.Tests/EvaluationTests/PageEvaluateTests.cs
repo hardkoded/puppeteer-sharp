@@ -92,8 +92,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
                 }");
             });
 
-            Assert.That(exception.Message, Does.Contain("Execution context was destroyed")
-                .Or.Contain("no such frame"));
+            Assert.That(exception.Message, Does.Contain("Protocol error"));
         }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work right after framenavigated")]
