@@ -652,6 +652,10 @@ public class CdpPage : Page
         => _emulationManager.EmulateCPUThrottlingAsync(factor);
 
     /// <inheritdoc/>
+    public override Task EmulateFocusedPageAsync(bool enabled)
+        => _emulationManager.EmulateFocusAsync(enabled);
+
+    /// <inheritdoc/>
     public override Task<IResponse> GoBackAsync(NavigationOptions options = null) => GoAsync(-1, options);
 
     /// <inheritdoc/>
