@@ -94,5 +94,11 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "local-network-access")]
         LocalNetworkAccess,
+        
+        /// <summary>
+        /// Local Fonts.
+        /// </summary>
+        [EnumMember(Value = "local-fonts")]
+        LocalFonts,
     }
 }
