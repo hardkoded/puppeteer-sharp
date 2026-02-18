@@ -362,7 +362,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public async Task<ElementHandle> FrameElementAsync()
+        public virtual async Task<ElementHandle> FrameElementAsync()
         {
             var parentFrame = ParentFrame;
             if (parentFrame == null)
