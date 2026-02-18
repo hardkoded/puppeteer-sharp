@@ -20,9 +20,13 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 namespace PuppeteerSharp.Bidi.Core;
 
 internal class ResponseEventArgs(WebDriverBiDi.Network.ResponseData response)
 {
     public WebDriverBiDi.Network.ResponseData Response { get; } = response;
 }
+
+#endif

@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Threading.Tasks;
 
@@ -47,3 +49,5 @@ internal class BidiPageTarget(BidiPage page) : Target
     public override Task<ICDPSession> CreateCDPSessionAsync()
         => page.CreateCDPSessionAsync();
 }
+
+#endif

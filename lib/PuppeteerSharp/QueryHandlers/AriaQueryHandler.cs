@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+#if !CDP_ONLY
 using PuppeteerSharp.Bidi;
+#endif
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
@@ -34,6 +36,7 @@ namespace PuppeteerSharp.QueryHandlers
         {
             var ariaSelector = ParseAriaSelector(selector);
 
+#if !CDP_ONLY
             // Handle BiDi element handles
             if (element is BidiElementHandle bidiElementHandle)
             {
@@ -44,6 +47,7 @@ namespace PuppeteerSharp.QueryHandlers
 
                 yield break;
             }
+#endif
 
             // Handle CDP element handles
             if (element is not ElementHandle elementHandle)
@@ -74,11 +78,13 @@ namespace PuppeteerSharp.QueryHandlers
             // Get frame from element if not provided
             var targetFrame = frame ?? element?.Frame;
 
+#if !CDP_ONLY
             // For BiDi frames, use native BiDi approach with polling
             if (targetFrame is BidiFrame)
             {
                 return await WaitForBidiAsync(targetFrame, element, selector, options).ConfigureAwait(false);
             }
+#endif
 
             // For CDP frames, use the base implementation
             return await base.WaitForAsync(frame, element, selector, options).ConfigureAwait(false);
@@ -91,6 +97,7 @@ namespace PuppeteerSharp.QueryHandlers
         private static Regex GetAriaSelectorAttributeRegex() => _ariaSelectorAttributeRegex;
 #endif
 
+#if !CDP_ONLY
         private static async Task<bool> IsVisibleAsync(IElementHandle element)
         {
             return await element.EvaluateFunctionAsync<bool>(@"(element) => {
@@ -98,6 +105,7 @@ namespace PuppeteerSharp.QueryHandlers
                 return style && style.visibility !== 'hidden' && style.display !== 'none';
             }").ConfigureAwait(false);
         }
+#endif
 
         private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(ICDPSession client, IElementHandle element, string accessibleName, string role)
         {
@@ -159,6 +167,7 @@ namespace PuppeteerSharp.QueryHandlers
             return queryOptions;
         }
 
+#if !CDP_ONLY
         private async Task<IElementHandle> WaitForBidiAsync(
             Frame frame,
             ElementHandle element,
@@ -246,5 +255,7 @@ namespace PuppeteerSharp.QueryHandlers
                 throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
             }
         }
+#endif
+
     }
 }

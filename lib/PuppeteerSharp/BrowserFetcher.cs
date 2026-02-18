@@ -252,11 +252,11 @@ namespace PuppeteerSharp
 
             var outputPath = cache.GetInstallationDir(browser, Platform, buildId);
 
-            if (new DirectoryInfo(outputPath).Exists)
+            var installedBrowserCandidate = new InstalledBrowser(cache, browser, buildId, Platform);
+            if (new FileInfo(installedBrowserCandidate.GetExecutablePath()).Exists)
             {
-                var existingBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
-                existingBrowser.PermissionsFixed = RunSetup(existingBrowser);
-                return existingBrowser;
+                installedBrowserCandidate.PermissionsFixed = RunSetup(installedBrowserCandidate);
+                return installedBrowserCandidate;
             }
 
             try

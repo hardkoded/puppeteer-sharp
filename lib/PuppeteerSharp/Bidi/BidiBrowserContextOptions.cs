@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using WebDriverBiDi.BrowsingContext;
 
 namespace PuppeteerSharp.Bidi;
@@ -28,3 +30,5 @@ internal class BidiBrowserContextOptions
 {
     public ViewPortOptions DefaultViewport { get; set; }
 }
+
+#endif
