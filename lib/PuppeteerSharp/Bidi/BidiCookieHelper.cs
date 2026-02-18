@@ -23,6 +23,7 @@
 #if !CDP_ONLY
 
 using System;
+using System.Text.Json;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Storage;
 using BidiCookie = WebDriverBiDi.Network.Cookie;
@@ -47,7 +48,8 @@ internal static class BidiCookieHelper
             SameSite = ConvertSameSiteBidiToPuppeteer(bidiCookie.SameSite),
             Expires = bidiCookie.EpochExpires.HasValue ? (double)bidiCookie.EpochExpires.Value / 1000 : -1,
             Session = !bidiCookie.EpochExpires.HasValue || bidiCookie.EpochExpires.Value == 0,
-            SourceScheme = CookieSourceScheme.Unset,
+            SourceScheme = GetSourceScheme(bidiCookie),
+            PartitionKey = GetPartitionKey(bidiCookie),
         };
 
     /// <summary>
@@ -210,6 +212,51 @@ internal static class BidiCookieHelper
             CookiePriority.Medium => "Medium",
             CookiePriority.High => "High",
             _ => "Medium",
+        };
+    }
+
+    private static string GetPartitionKey(BidiCookie bidiCookie)
+    {
+        if (!bidiCookie.AdditionalData.TryGetValue("goog:partitionKey", out var value))
+        {
+            return null;
+        }
+
+        if (value is string stringValue)
+        {
+            return stringValue;
+        }
+
+        if (value is JsonElement jsonElement)
+        {
+            if (jsonElement.ValueKind == JsonValueKind.String)
+            {
+                return jsonElement.GetString();
+            }
+
+            if (jsonElement.ValueKind == JsonValueKind.Object &&
+                jsonElement.TryGetProperty("topLevelSite", out var topLevelSite))
+            {
+                return topLevelSite.GetString();
+            }
+        }
+
+        return null;
+    }
+
+    private static CookieSourceScheme GetSourceScheme(BidiCookie bidiCookie)
+    {
+        if (!bidiCookie.AdditionalData.TryGetValue("goog:sourceScheme", out var value))
+        {
+            return CookieSourceScheme.Unset;
+        }
+
+        var scheme = value?.ToString();
+        return scheme switch
+        {
+            "Secure" => CookieSourceScheme.Secure,
+            "NonSecure" => CookieSourceScheme.NonSecure,
+            _ => CookieSourceScheme.Unset,
         };
     }
 }

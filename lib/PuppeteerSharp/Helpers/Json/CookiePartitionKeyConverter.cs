@@ -35,11 +35,12 @@ namespace PuppeteerSharp.Helpers.Json
             string value,
             JsonSerializerOptions options)
         {
-            // Write as a simple string for user serialization/deserialization
-            // This allows cookies to be easily saved to and loaded from files
             if (value != null)
             {
-                writer.WriteStringValue(value);
+                writer.WriteStartObject();
+                writer.WriteString("topLevelSite", value);
+                writer.WriteBoolean("hasCrossSiteAncestor", false);
+                writer.WriteEndObject();
             }
             else
             {
