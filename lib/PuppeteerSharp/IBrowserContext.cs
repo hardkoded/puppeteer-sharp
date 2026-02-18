@@ -74,7 +74,6 @@ namespace PuppeteerSharp
         /// ]]>
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
-        [System.Obsolete("Use SetPermissionAsync instead.")]
         Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
 
         /// <summary>
