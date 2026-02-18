@@ -830,6 +830,10 @@ public class BidiPage : Page
         => throw new NotSupportedException("Metrics is not supported in BiDi protocol");
 
     /// <inheritdoc />
+    public override Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options)
+        => throw new NotSupportedException("CaptureHeapSnapshot is not supported in BiDi protocol");
+
+    /// <inheritdoc />
     public override async Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
     {
         var expression = EvaluationExpression(pageFunction, args);
