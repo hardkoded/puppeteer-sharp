@@ -283,12 +283,14 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         public async Task ShouldNotThrowAnErrorWhenEvaluationDoesANavigation()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+            var onRequest = Server.WaitForRequest("/empty.html");
             var result = await Page.EvaluateFunctionAsync<int[]>(@"() =>
             {
                 window.location = '/empty.html';
                 return [42];
             }");
             Assert.That(result, Is.EqualTo(new[] { 42 }));
+            await onRequest;
         }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer 100Mb of data from page to node.js")]
