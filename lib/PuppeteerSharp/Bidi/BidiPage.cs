@@ -716,12 +716,6 @@ public class BidiPage : Page
                 throw new PuppeteerException($"Data URL page can not have cookie \"{cookie.Name}\"");
             }
 
-            // TODO: Support Chrome cookie partition keys
-            if (!string.IsNullOrEmpty(cookie.PartitionKey))
-            {
-                throw new PuppeteerException("BiDi only allows domain partition keys");
-            }
-
             Uri normalizedUrl = null;
             if (Uri.TryCreate(cookieUrl, UriKind.Absolute, out var parsedUrl))
             {
@@ -756,10 +750,25 @@ public class BidiPage : Page
 
             var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookieToUse, domain);
 
-            await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
+            if (!string.IsNullOrEmpty(cookie.PartitionKey))
             {
-                Partition = new WebDriverBiDi.Storage.BrowsingContextPartitionDescriptor(BidiMainFrame.BrowsingContext.Id),
-            }).ConfigureAwait(false);
+                var userContext = ((BidiBrowserContext)BrowserContext).UserContext;
+                await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
+                {
+                    Partition = new WebDriverBiDi.Storage.StorageKeyPartitionDescriptor
+                    {
+                        SourceOrigin = cookie.PartitionKey,
+                        UserContextId = userContext.Id,
+                    },
+                }).ConfigureAwait(false);
+            }
+            else
+            {
+                await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
+                {
+                    Partition = new WebDriverBiDi.Storage.BrowsingContextPartitionDescriptor(BidiMainFrame.BrowsingContext.Id),
+                }).ConfigureAwait(false);
+            }
         }
     }
 
