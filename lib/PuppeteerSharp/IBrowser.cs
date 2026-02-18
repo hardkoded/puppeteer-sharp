@@ -269,6 +269,14 @@ namespace PuppeteerSharp
         Task RemoveScreenAsync(string screenId);
 
         /// <summary>
+        /// Sets the permission for a specific origin on the default browser context.
+        /// </summary>
+        /// <param name="origin">The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only).</param>
+        /// <param name="permissions">The permissions to set.</param>
+        /// <returns>The task.</returns>
+        Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+
+        /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>

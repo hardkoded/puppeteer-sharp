@@ -74,7 +74,16 @@ namespace PuppeteerSharp
         /// ]]>
         /// </example>
         /// <seealso href="https://developer.mozilla.org/en-US/docs/Glossary/Origin"/>
+        [System.Obsolete("Use SetPermissionAsync instead.")]
         Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
+
+        /// <summary>
+        /// Sets the permission for a specific origin.
+        /// </summary>
+        /// <param name="origin">The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only).</param>
+        /// <param name="permissions">The permissions to set.</param>
+        /// <returns>The task.</returns>
+        Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
 
         /// <summary>
         /// An array of all pages inside the browser context.
