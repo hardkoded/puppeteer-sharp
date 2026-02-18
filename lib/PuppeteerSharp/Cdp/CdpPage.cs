@@ -214,6 +214,11 @@ public class CdpPage : Page
 
         if (cookies.Length > 0)
         {
+            foreach (var cookie in cookies)
+            {
+                cookie.SameSite = ConvertSameSiteForCdp(cookie.SameSite);
+            }
+
             await PrimaryTargetClient
                 .SendAsync("Network.setCookies", new NetworkSetCookiesRequest { Cookies = cookies, })
                 .ConfigureAwait(false);
@@ -986,6 +991,19 @@ public class CdpPage : Page
         "mm" => 3.78m,
         _ => null,
     };
+
+    /// <summary>
+    /// Converts a PuppeteerSharp SameSite value to a CDP-compatible value.
+    /// CDP does not support "Default", so we map it to null (omitted).
+    /// </summary>
+    private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)
+    {
+        return sameSite switch
+        {
+            SameSite.Strict or SameSite.Lax or SameSite.None => sameSite,
+            _ => null,
+        };
+    }
 
     private void SetupPrimaryTargetListeners()
     {

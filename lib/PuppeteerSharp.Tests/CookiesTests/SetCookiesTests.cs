@@ -227,6 +227,22 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(cookie.PartitionKey, Is.EqualTo(key));
         }
 
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should be able to delete \"Default\" sameSite cookie")]
+        public async Task ShouldBeAbleToDeleteDefaultSameSiteCookie()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Name = "a",
+                Value = "b",
+                SameSite = SameSite.Default,
+            });
+            var cookies = await Page.GetCookiesAsync();
+            Assert.That(cookies.Any(c => c.Name == "a"), Is.True);
+            await Page.DeleteCookieAsync(cookies);
+            Assert.That(await Page.GetCookiesAsync(), Is.Empty);
+        }
+
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should not set a cookie on a blank page")]
         public async Task ShouldNotSetACookieOnABlankPage()
         {
