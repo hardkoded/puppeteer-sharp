@@ -100,7 +100,7 @@ jobs:
         HEADLESS_MODE: ${{ matrix.mode }}
         PROTOCOL: ${{ matrix.protocol }}
       run: |
-          Xvfb :1 -screen 5 1024x768x8 &
+          Xvfb :1 -screen 5 1024x768x8 2>/dev/null &
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
           dotnet tool update -g dotnet-retest
