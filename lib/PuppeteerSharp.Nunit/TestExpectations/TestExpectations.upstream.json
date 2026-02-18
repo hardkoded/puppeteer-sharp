@@ -112,6 +112,13 @@
     "comment": "Spawns headful browser, needs display or `xvfb` like which is not required for other headless tests"
   },
   {
+    "testIdPattern": "[heapSnapshot.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Not supported in WebDriver BiDi"
+  },
+  {
     "testIdPattern": "[interventionHeaders.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -679,7 +686,7 @@
   {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "Not supported by WebDriver BiDi"
   },
@@ -693,7 +700,7 @@
   {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"],
     "comment": "Not supported by WebDriver BiDi"
   },
