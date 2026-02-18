@@ -243,6 +243,23 @@ public class CdpFrame : Frame
         return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
     }
 
+    /// <inheritdoc/>
+    public override async Task<ElementHandle> FrameElementAsync()
+    {
+        var parentFrame = ParentFrame;
+        if (parentFrame == null)
+        {
+            return null;
+        }
+
+        var response = await parentFrame.Client.SendAsync<DomGetFrameOwnerResponse>("DOM.getFrameOwner", new DomGetFrameOwnerRequest
+        {
+            FrameId = Id,
+        }).ConfigureAwait(false);
+
+        return (ElementHandle)await parentFrame.MainRealm.AdoptBackendNodeAsync(response.BackendNodeId).ConfigureAwait(false);
+    }
+
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
     {
         Client = client;
