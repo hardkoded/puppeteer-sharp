@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.PageAccessibility
 {
