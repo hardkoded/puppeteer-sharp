@@ -245,6 +245,10 @@ public class BidiPage : Page
         => _cdpEmulationManager.EmulateCPUThrottlingAsync(factor);
 
     /// <inheritdoc />
+    public override Task EmulateFocusedPageAsync(bool enabled)
+        => _cdpEmulationManager.EmulateFocusAsync(enabled);
+
+    /// <inheritdoc />
     public override async Task<IResponse> ReloadAsync(NavigationOptions options)
     {
         // Clear the events trackers on navigation to allow fresh events
