@@ -28,7 +28,7 @@ jobs:
           dotnet restore lib/PuppeteerSharp.sln
       - name: Build (CDP only)
         run: |
-          dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp --configuration Release --no-restore
+          dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY --configuration Release --no-restore
           ls ./lib/PuppeteerSharp/bin/Release
       - name: Check for WebDriverBiDi leakage (CDP only)
         run: |
