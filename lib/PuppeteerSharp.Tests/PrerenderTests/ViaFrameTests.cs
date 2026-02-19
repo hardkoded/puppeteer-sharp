@@ -14,6 +14,8 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
+        await Page.WaitForNetworkIdleAsync();
+
         var mainFrame = Page.MainFrame;
         var link = await mainFrame.WaitForSelectorAsync("a");
         await Task.WhenAll(
