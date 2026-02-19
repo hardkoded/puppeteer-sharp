@@ -231,6 +231,7 @@ public class BidiBrowserContext : BrowserContext
             OverridePermission.IdleDetection => "idle-detection",
             OverridePermission.PersistentStorage => "persistent-storage",
             OverridePermission.LocalNetworkAccess => "local-network-access",
+            OverridePermission.LocalFonts => "local-fonts",
             _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
         };
     }
