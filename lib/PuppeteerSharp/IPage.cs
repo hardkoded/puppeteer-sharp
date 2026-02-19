@@ -264,6 +264,11 @@ namespace PuppeteerSharp
         ITracing Tracing { get; }
 
         /// <summary>
+        /// Gets this page's bluetooth emulation.
+        /// </summary>
+        IBluetoothEmulation Bluetooth { get; }
+
+        /// <summary>
         /// Shortcut for <c>page.MainFrame.Url</c>.
         /// </summary>
         string Url { get; }

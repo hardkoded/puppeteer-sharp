@@ -24,5 +24,5 @@ namespace PuppeteerSharp.Cdp.Messaging;
 
 internal class DeviceAccessCancelPrompt
 {
-    public string RequestId { get; set; }
+    public string Id { get; set; }
 }

@@ -75,6 +75,10 @@ public class CdpPage : Page
         FrameManager = new FrameManager(client, this, TimeoutSettings);
         Accessibility = new Accessibility(client);
 
+        // Use browser context's connection, as current Bluetooth emulation in Chromium is
+        // implemented on the browser context level, and not tied to the specific tab.
+        Bluetooth = new CdpBluetoothEmulation(PrimaryTargetClient.Connection);
+
         FrameManager.FrameAttached += (_, e) => OnFrameAttached(e);
         FrameManager.FrameDetached += (_, e) => OnFrameDetached(e);
         FrameManager.FrameNavigated += (_, e) => OnFrameNavigated(e);

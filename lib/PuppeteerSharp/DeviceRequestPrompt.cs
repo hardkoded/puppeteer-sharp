@@ -74,7 +74,7 @@ public class DeviceRequestPrompt
 
         return _client.SendAsync("DeviceAccess.selectPrompt", new DeviceAccessSelectPrompt
         {
-            RequestId = _id,
+            Id = _id,
             DeviceId = device.Id,
         });
     }
@@ -129,7 +129,7 @@ public class DeviceRequestPrompt
 
         return _client.SendAsync("DeviceAccess.cancelPrompt", new DeviceAccessCancelPrompt
         {
-            RequestId = _id,
+            Id = _id,
         });
     }
 
