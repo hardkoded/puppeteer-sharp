@@ -232,6 +232,13 @@ namespace PuppeteerSharp
                     return default;
                 }
 
+                if (ex.Message.Contains("Cannot find context with specified id") ||
+                    ex.Message.Contains("Inspected target navigated or closed"))
+                {
+                    throw new EvaluationFailedException(
+                        "Execution context was destroyed, most likely because of a navigation.", ex);
+                }
+
                 throw new EvaluationFailedException(ex.Message, ex);
             }
         }
