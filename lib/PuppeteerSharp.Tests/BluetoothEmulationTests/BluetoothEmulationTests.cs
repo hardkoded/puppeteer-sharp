@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.BluetoothEmulationTests
             DefaultOptions.Args = [.. DefaultOptions.Args ?? [], "--enable-features=WebBluetoothNewPermissionsBackend,WebBluetooth"];
         }
 
-        [Test, PuppeteerTest("bluetooth-emulation.spec.ts", "request prompt for emulated bluetooth device", "can be canceled")]
+        [Test, PuppeteerTest("bluetooth-emulation.spec", "request prompt for emulated bluetooth device", "can be canceled")]
         public async Task CanBeCanceled()
         {
             await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.BluetoothEmulationTests
             Assert.ThrowsAsync<EvaluationFailedException>(async () => await navigatorRequestDeviceTask);
         }
 
-        [Test, PuppeteerTest("bluetooth-emulation.spec.ts", "request prompt for emulated bluetooth device", "can be selected")]
+        [Test, PuppeteerTest("bluetooth-emulation.spec", "request prompt for emulated bluetooth device", "can be selected")]
         public async Task CanBeSelected()
         {
             await Page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
