@@ -656,11 +656,11 @@ namespace PuppeteerSharp
         public abstract Task AuthenticateAsync(Credentials credentials);
 
         /// <inheritdoc/>
-        public abstract Task<IResponse> ReloadAsync(NavigationOptions options);
+        public abstract Task<IResponse> ReloadAsync(ReloadOptions options);
 
         /// <inheritdoc/>
         public Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null)
-            => ReloadAsync(new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
+            => ReloadAsync(new ReloadOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <inheritdoc/>
         public Task<string[]> SelectAsync(string selector, params string[] values)

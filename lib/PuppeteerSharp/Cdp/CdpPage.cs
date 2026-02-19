@@ -479,14 +479,18 @@ public class CdpPage : Page
         => FrameManager.NetworkManager.SetUserAgentAsync(userAgent, userAgentData);
 
     /// <inheritdoc/>
-    public override async Task<IResponse> ReloadAsync(NavigationOptions options)
+    public override async Task<IResponse> ReloadAsync(ReloadOptions options)
     {
         Debug.Assert(options != null, nameof(options) + " != null");
         var navigationTask = WaitForNavigationAsync(options with { IgnoreSameDocumentNavigation = true });
 
         await Task.WhenAll(
                 navigationTask,
-                PrimaryTargetClient.SendAsync("Page.reload", new PageReloadRequest { FrameId = MainFrame.Id }))
+                PrimaryTargetClient.SendAsync("Page.reload", new PageReloadRequest
+                {
+                    FrameId = MainFrame.Id,
+                    IgnoreCache = options.IgnoreCache,
+                }))
             .ConfigureAwait(false);
 
         return navigationTask.Result;

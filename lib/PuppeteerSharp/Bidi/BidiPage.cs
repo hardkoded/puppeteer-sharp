@@ -248,7 +248,7 @@ public class BidiPage : Page
         => _cdpEmulationManager.EmulateFocusAsync(enabled);
 
     /// <inheritdoc />
-    public override async Task<IResponse> ReloadAsync(NavigationOptions options)
+    public override async Task<IResponse> ReloadAsync(ReloadOptions options)
     {
         // Clear the events trackers on navigation to allow fresh events
         ClearEventTrackers();
@@ -257,7 +257,8 @@ public class BidiPage : Page
             ? new NavigationOptions { IgnoreSameDocumentNavigation = true }
             : options with { IgnoreSameDocumentNavigation = true };
         var waitForNavigationTask = WaitForNavigationAsync(navOptions);
-        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync();
+        var navigationTask = BidiMainFrame.BrowsingContext.ReloadAsync(
+            options?.IgnoreCache == true ? true : null);
 
         try
         {
