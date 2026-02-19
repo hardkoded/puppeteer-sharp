@@ -153,6 +153,11 @@ namespace PuppeteerSharp
                 },
             });
 
+        internal Task EmulateFocusAsync(bool enabled)
+            => _client.SendAsync(
+                "Emulation.setFocusEmulationEnabled",
+                new EmulationSetFocusEmulationEnabledRequest { Enabled = enabled, });
+
         internal Task SetJavaScriptEnabledAsync(bool enabled)
         {
             if (enabled == JavascriptEnabled)

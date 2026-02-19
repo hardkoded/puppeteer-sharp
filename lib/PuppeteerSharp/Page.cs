@@ -744,6 +744,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task EmulateCPUThrottlingAsync(decimal? factor = null);
 
+        /// <inheritdoc/>
+        public abstract Task EmulateFocusedPageAsync(bool enabled);
+
         /// <inheritdoc />
         public void Dispose()
         {
