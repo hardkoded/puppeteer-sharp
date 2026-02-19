@@ -51,6 +51,8 @@ namespace PuppeteerSharp.PageAccessibility
 
         public bool Focusable { get; set; }
 
+        internal SerializedAXNode IframeSnapshot { get; set; }
+
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
 
         internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
