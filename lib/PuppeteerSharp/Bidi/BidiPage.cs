@@ -118,8 +118,6 @@ public class BidiPage : Page
 
     internal ConcurrentDictionary<string, string> ExtraHttpHeaders { get; set; } = new();
 
-    internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
-
     internal bool IsNetworkInterceptionEnabled =>
         _requestInterception != null || _extraHeadersInterception != null || _authInterception != null;
 

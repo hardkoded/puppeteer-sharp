@@ -57,7 +57,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     }
 
     /// <summary>
-    /// Gets the merged headers including extra HTTP headers and user agent headers.
+    /// Gets the merged headers including extra HTTP headers.
     /// </summary>
     public override Dictionary<string, string> Headers
     {
@@ -71,11 +71,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             }
 
             foreach (var kvp in ExtraHttpHeaders)
-            {
-                headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
-            }
-
-            foreach (var kvp in UserAgentHeaders)
             {
                 headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
             }
@@ -98,9 +93,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal ConcurrentDictionary<string, string> ExtraHttpHeaders => BidiPage.ExtraHttpHeaders;
 
-    internal ConcurrentDictionary<string, string> UserAgentHeaders => BidiPage.UserAgentHeaders;
-
-    internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0 || UserAgentHeaders.Values.Count != 0;
+    internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0;
 
     /// <summary>
     /// Gets whether network interception is enabled at the page level.
