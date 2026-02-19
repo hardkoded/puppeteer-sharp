@@ -55,11 +55,11 @@ namespace PuppeteerSharp.Cdp
 
         internal int NumRequestsInProgress => _networkEventManager.NumRequestsInProgress;
 
-        internal Task AddClientAsync(ICDPSession client)
+        internal async Task AddClientAsync(ICDPSession client)
         {
             if (_clients.ContainsKey(client))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var subscriptions = new DisposableActionsStack();
@@ -67,13 +67,20 @@ namespace PuppeteerSharp.Cdp
             client.MessageReceived += Client_MessageReceived;
             subscriptions.Defer(() => client.MessageReceived -= Client_MessageReceived);
 
-            return Task.WhenAll(
-                client.SendAsync("Network.enable"),
-                ApplyExtraHTTPHeadersAsync(client),
-                ApplyNetworkConditionsAsync(client),
-                ApplyProtocolCacheDisabledAsync(client),
-                ApplyProtocolRequestInterceptionAsync(client),
-                ApplyUserAgentAsync(client));
+            try
+            {
+                await Task.WhenAll(
+                    client.SendAsync("Network.enable"),
+                    ApplyExtraHTTPHeadersAsync(client),
+                    ApplyNetworkConditionsAsync(client),
+                    ApplyProtocolCacheDisabledAsync(client),
+                    ApplyProtocolRequestInterceptionAsync(client),
+                    ApplyUserAgentAsync(client)).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+                // Ignore errors for targets that don't support network operations (e.g., workers).
+            }
         }
 
         internal void RemoveClient(CDPSession client)
@@ -154,6 +161,11 @@ namespace PuppeteerSharp.Cdp
             _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
             return ApplyToAllClientsAsync(ApplyNetworkConditionsAsync);
         }
+
+        private static bool CanIgnoreError(Exception error)
+            => error is TargetClosedException ||
+               error.Message.Contains("Not supported") ||
+               error.Message.Contains("wasn't found");
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
         {
