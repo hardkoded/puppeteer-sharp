@@ -262,6 +262,35 @@ public class CdpBrowser : Browser
         return await target.PageAsync().ConfigureAwait(false);
     }
 
+    internal async Task<IPage> CreateDevToolsPageAsync(string pageTargetId)
+    {
+        var openDevToolsResponse = await Connection.SendAsync<TargetCreateTargetResponse>(
+            "Target.openDevTools",
+            new TargetActivateTargetRequest { TargetId = pageTargetId }).ConfigureAwait(false);
+
+        var target = await WaitForTargetAsync(
+            t => ((CdpTarget)t).TargetId == openDevToolsResponse.TargetId).ConfigureAwait(false) as CdpTarget;
+
+        if (target == null)
+        {
+            throw new PuppeteerException($"Missing target for DevTools page (id = {pageTargetId})");
+        }
+
+        var initialized = await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success;
+        if (!initialized)
+        {
+            throw new PuppeteerException($"Failed to create target for DevTools page (id = {pageTargetId})");
+        }
+
+        var page = await target.PageAsync().ConfigureAwait(false);
+        if (page == null)
+        {
+            throw new PuppeteerException($"Failed to create a DevTools Page for target (id = {pageTargetId})");
+        }
+
+        return page;
+    }
+
     internal async Task DisposeContextAsync(string contextId)
     {
         await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest
