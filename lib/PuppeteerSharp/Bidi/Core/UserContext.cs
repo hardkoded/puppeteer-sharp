@@ -28,7 +28,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
-using WebDriverBiDi.Permissions;
+using BidiPermissionState = WebDriverBiDi.Permissions.PermissionState;
+using SetPermissionCommandParameters = WebDriverBiDi.Permissions.SetPermissionCommandParameters;
 
 namespace PuppeteerSharp.Bidi.Core;
 
@@ -132,7 +133,7 @@ internal class UserContext : IDisposable
     public async Task SetPermissionsAsync(
         string origin,
         string permissionName,
-        PermissionState state)
+        BidiPermissionState state)
     {
         await Session.Driver.Permissions.SetPermissionAsync(
             new SetPermissionCommandParameters(permissionName, state, origin)

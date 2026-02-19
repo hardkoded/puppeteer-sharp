@@ -79,6 +79,30 @@ public class CdpBrowserContext : BrowserContext
         });
 
     /// <inheritdoc/>
+    public override async Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+    {
+        await Task.WhenAll(permissions.Select(entry =>
+        {
+            var protocolPermission = new BrowserPermissionDescriptor
+            {
+                Name = entry.Permission.Name,
+                UserVisibleOnly = entry.Permission.UserVisibleOnly,
+                Sysex = entry.Permission.Sysex,
+                AllowWithoutSanitization = entry.Permission.AllowWithoutSanitization,
+                PanTiltZoom = entry.Permission.PanTiltZoom,
+            };
+
+            return _connection.SendAsync("Browser.setPermission", new BrowserSetPermissionRequest
+            {
+                Origin = origin == "*" ? null : origin,
+                BrowserContextId = Id,
+                Permission = protocolPermission,
+                Setting = entry.State,
+            });
+        })).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override Task ClearPermissionOverridesAsync()
         => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
         {

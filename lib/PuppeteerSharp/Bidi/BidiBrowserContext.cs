@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
-using WebDriverBiDi.Permissions;
+using BidiPermissionState = WebDriverBiDi.Permissions.PermissionState;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -66,8 +66,8 @@ public class BidiBrowserContext : BrowserContext
         foreach (OverridePermission permission in Enum.GetValues(typeof(OverridePermission)))
         {
             var state = permissionsSet.Contains(permission)
-                ? PermissionState.Granted
-                : PermissionState.Denied;
+                ? BidiPermissionState.Granted
+                : BidiPermissionState.Denied;
 
             var permissionName = GetPermissionName(permission);
 
@@ -97,13 +97,50 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
+    public override async Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+    {
+        if (origin == "*")
+        {
+            throw new PuppeteerException("Origin (*) is not supported by WebDriver BiDi");
+        }
+
+        await Task.WhenAll(permissions.Select(entry =>
+        {
+            if (entry.Permission.AllowWithoutSanitization == true)
+            {
+                throw new PuppeteerException("allowWithoutSanitization is not supported by WebDriver BiDi");
+            }
+
+            if (entry.Permission.PanTiltZoom == true)
+            {
+                throw new PuppeteerException("panTiltZoom is not supported by WebDriver BiDi");
+            }
+
+            if (entry.Permission.UserVisibleOnly == true)
+            {
+                throw new PuppeteerException("userVisibleOnly is not supported by WebDriver BiDi");
+            }
+
+            var state = entry.State switch
+            {
+                PermissionState.Granted => BidiPermissionState.Granted,
+                PermissionState.Denied => BidiPermissionState.Denied,
+                PermissionState.Prompt => BidiPermissionState.Prompt,
+                _ => throw new ArgumentOutOfRangeException(nameof(entry), entry.State, "Unknown permission state"),
+            };
+
+            return UserContext.SetPermissionsAsync(origin, entry.Permission.Name, state);
+        })).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public override async Task ClearPermissionOverridesAsync()
     {
         var tasks = new List<Task>();
         foreach (var (origin, permission) in _overrides.ToArray())
         {
             var permissionName = GetPermissionName(permission);
-            tasks.Add(UserContext.SetPermissionsAsync(origin, permissionName, PermissionState.Prompt)
+            tasks.Add(UserContext.SetPermissionsAsync(origin, permissionName, BidiPermissionState.Prompt)
                 .ContinueWith(
                     t =>
                     {
@@ -231,6 +268,7 @@ public class BidiBrowserContext : BrowserContext
             OverridePermission.IdleDetection => "idle-detection",
             OverridePermission.PersistentStorage => "persistent-storage",
             OverridePermission.LocalNetworkAccess => "local-network-access",
+            OverridePermission.LocalFonts => "local-fonts",
             _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
         };
     }

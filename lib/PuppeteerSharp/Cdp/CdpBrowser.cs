@@ -271,6 +271,11 @@ public class CdpBrowser : Browser
         _contexts.TryRemove(contextId, out var _);
     }
 
+    private static bool IsDevToolsPageTarget(string url)
+    {
+        return url?.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase) == true;
+    }
+
     private Task AttachAsync()
     {
         Connection.Disconnected += Connection_Disconnected;
@@ -309,7 +314,7 @@ public class CdpBrowser : Browser
             CreateSession,
             ScreenshotTaskQueue);
 
-        if (targetInfo.Url?.StartsWith("devtools://", StringComparison.OrdinalIgnoreCase) == true)
+        if (IsDevToolsPageTarget(targetInfo.Url))
         {
             return new CdpDevToolsTarget(
                 targetInfo,

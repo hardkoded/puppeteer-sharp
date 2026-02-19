@@ -175,6 +175,10 @@ namespace PuppeteerSharp
             => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
 
         /// <inheritdoc/>
+        public Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+            => DefaultContext.SetPermissionAsync(origin, permissions);
+
+        /// <inheritdoc/>
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
 
         /// <inheritdoc/>
