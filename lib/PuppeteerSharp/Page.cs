@@ -158,6 +158,9 @@ namespace PuppeteerSharp
         ITracing IPage.Tracing => Tracing;
 
         /// <inheritdoc/>
+        IBluetoothEmulation IPage.Bluetooth => Bluetooth;
+
+        /// <inheritdoc/>
         IMouse IPage.Mouse => Mouse;
 
         /// <inheritdoc/>
@@ -201,6 +204,8 @@ namespace PuppeteerSharp
         internal Tracing Tracing { get; init; }
 
         internal Mouse Mouse { get; init; }
+
+        internal IBluetoothEmulation Bluetooth { get; init; }
 
         internal bool IsDragging { get; set; }
 
