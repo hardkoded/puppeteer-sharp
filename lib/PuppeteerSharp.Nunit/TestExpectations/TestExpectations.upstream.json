@@ -977,6 +977,13 @@
     "comment": "We can't connect to a browser started with pipe:true"
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext BrowserContext.setPermission should support * as origin",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "Origin (*) is not supported for setPermission in BiDi"
+  },
+  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

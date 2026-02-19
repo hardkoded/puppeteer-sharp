@@ -49,6 +49,9 @@ namespace PuppeteerSharp
         public abstract Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
 
         /// <inheritdoc/>
+        public abstract Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+
+        /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
         /// <inheritdoc />
