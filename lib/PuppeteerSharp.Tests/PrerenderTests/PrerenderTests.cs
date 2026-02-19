@@ -14,6 +14,8 @@ public class PrerenderTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
+        await Page.WaitForNetworkIdleAsync();
+
         var link = await Page.WaitForSelectorAsync("a");
         await Task.WhenAll(
             Page.WaitForNavigationAsync(),

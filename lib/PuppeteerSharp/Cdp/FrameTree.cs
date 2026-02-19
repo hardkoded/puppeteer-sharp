@@ -10,13 +10,33 @@ namespace PuppeteerSharp.Cdp
     internal class FrameTree
     {
         private readonly AsyncDictionaryHelper<string, CdpFrame> _frames = new("Frame {0} not found");
+        private readonly List<string> _orderedFrameIds = new();
+        private readonly object _orderedFrameIdsLock = new();
         private readonly ConcurrentDictionary<string, string> _parentIds = new();
         private readonly ConcurrentDictionary<string, List<string>> _childIds = new();
         private readonly ConcurrentDictionary<string, List<TaskCompletionSource<CdpFrame>>> _waitRequests = new();
 
         public CdpFrame MainFrame { get; set; }
 
-        public CdpFrame[] Frames => _frames.Values.ToArray();
+        public CdpFrame[] Frames
+        {
+            get
+            {
+                lock (_orderedFrameIdsLock)
+                {
+                    var result = new List<CdpFrame>(_orderedFrameIds.Count);
+                    foreach (var id in _orderedFrameIds)
+                    {
+                        if (_frames.TryGetValue(id, out var frame))
+                        {
+                            result.Add(frame);
+                        }
+                    }
+
+                    return result.ToArray();
+                }
+            }
+        }
 
         internal Task<CdpFrame> GetFrameAsync(string frameId) => _frames.GetItemAsync(frameId);
 
@@ -46,6 +66,15 @@ namespace PuppeteerSharp.Cdp
         internal void AddFrame(CdpFrame frame)
         {
             _frames.AddItem(frame.Id, frame);
+
+            lock (_orderedFrameIdsLock)
+            {
+                if (!_orderedFrameIds.Contains(frame.Id))
+                {
+                    _orderedFrameIds.Add(frame.Id);
+                }
+            }
+
             if (frame.ParentId != null)
             {
                 _parentIds.TryAdd(frame.Id, frame.ParentId);
@@ -72,6 +101,12 @@ namespace PuppeteerSharp.Cdp
         internal void RemoveFrame(Frame frame)
         {
             _frames.TryRemove(frame.Id, out _);
+
+            lock (_orderedFrameIdsLock)
+            {
+                _orderedFrameIds.Remove(frame.Id);
+            }
+
             _parentIds.TryRemove(frame.Id, out var _);
 
             if (frame.ParentId != null)
