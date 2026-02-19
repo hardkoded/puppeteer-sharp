@@ -25,19 +25,26 @@ namespace PuppeteerSharp.Tests.FrameTests
             var childFrames = Page.Frames.Where(f => f != Page.MainFrame).ToArray();
             Assert.That(childFrames, Has.Length.EqualTo(2));
 
-            await using var frame1 = await childFrames[0].FrameElementAsync();
-            Assert.That(frame1, Is.Not.Null);
+            await using var frame1element = await childFrames[0].FrameElementAsync();
+            Assert.That(frame1element, Is.Not.Null);
 
-            await using var frame2 = await childFrames[1].FrameElementAsync();
-            Assert.That(frame2, Is.Not.Null);
+            await using var frame2element = await childFrames[1].FrameElementAsync();
+            Assert.That(frame2element, Is.Not.Null);
 
-            var name1 = await frame1.EvaluateFunctionAsync<string>("frame => frame.id");
-            var name2 = await frame2.EvaluateFunctionAsync<string>("frame => frame.name");
+            // Frame order may vary, so collect ids and names from both frames
+            var ids = new[]
+            {
+                await frame1element.EvaluateFunctionAsync<string>("frame => frame.id"),
+                await frame2element.EvaluateFunctionAsync<string>("frame => frame.id"),
+            };
+            var names = new[]
+            {
+                await frame1element.EvaluateFunctionAsync<string>("frame => frame.name"),
+                await frame2element.EvaluateFunctionAsync<string>("frame => frame.name"),
+            };
 
-            // The order of child frames may vary, so check both possibilities
-            Assert.That(
-                new[] { name1, name2 },
-                Is.EquivalentTo(new[] { "theFrameId", "theFrameName" }));
+            Assert.That(ids, Has.Member("theFrameId"));
+            Assert.That(names, Has.Member("theFrameName"));
         }
 
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame.prototype.frameElement", "should handle shadow roots")]
