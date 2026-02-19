@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -525,6 +527,27 @@ public class BidiFrame : Frame
             BrowsingContext.Closed -= OnFrameDetached;
             cleanupLoadListeners();
         }
+    }
+
+    /// <inheritdoc />
+    public override async Task<ElementHandle> FrameElementAsync()
+    {
+        var parentFrame = ParentFrame as BidiFrame;
+        if (parentFrame == null)
+        {
+            return null;
+        }
+
+        var nodes = await parentFrame.BrowsingContext.LocateNodesAsync(
+            new WebDriverBiDi.BrowsingContext.ContextLocator(Id)).ConfigureAwait(false);
+
+        var node = nodes.FirstOrDefault();
+        if (node == null)
+        {
+            return null;
+        }
+
+        return BidiElementHandle.From(node, (BidiRealm)parentFrame.MainRealm) as ElementHandle;
     }
 
     internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
@@ -1067,3 +1090,4 @@ public class BidiFrame : Frame
     }
 }
 
+#endif

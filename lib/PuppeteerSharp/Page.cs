@@ -238,6 +238,9 @@ namespace PuppeteerSharp
         public abstract Task<Dictionary<string, decimal>> MetricsAsync();
 
         /// <inheritdoc/>
+        public abstract Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options);
+
+        /// <inheritdoc/>
         public Task TapAsync(string selector)
             => MainFrame.TapAsync(selector);
 

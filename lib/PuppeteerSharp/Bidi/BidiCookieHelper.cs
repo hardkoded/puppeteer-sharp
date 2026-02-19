@@ -20,7 +20,10 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
+using System.Text.Json;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Storage;
 using BidiCookie = WebDriverBiDi.Network.Cookie;
@@ -45,7 +48,8 @@ internal static class BidiCookieHelper
             SameSite = ConvertSameSiteBidiToPuppeteer(bidiCookie.SameSite),
             Expires = bidiCookie.EpochExpires.HasValue ? (double)bidiCookie.EpochExpires.Value / 1000 : -1,
             Session = !bidiCookie.EpochExpires.HasValue || bidiCookie.EpochExpires.Value == 0,
-            SourceScheme = CookieSourceScheme.Unset,
+            SourceScheme = GetSourceScheme(bidiCookie),
+            PartitionKey = GetPartitionKey(bidiCookie),
         };
 
     /// <summary>
@@ -80,10 +84,12 @@ internal static class BidiCookieHelper
         }
 
         // Add CDP-specific properties if needed
+#pragma warning disable CS0618 // SameParty is deprecated
         if (cookie.SameParty.HasValue)
         {
             bidiCookie.AdditionalData["goog:sameParty"] = cookie.SameParty.Value;
         }
+#pragma warning restore CS0618
 
         if (cookie.SourceScheme.HasValue)
         {
@@ -172,7 +178,8 @@ internal static class BidiCookieHelper
         {
             CookieSameSiteValue.Strict => SameSite.Strict,
             CookieSameSiteValue.Lax => SameSite.Lax,
-            _ => SameSite.None,
+            CookieSameSiteValue.None => SameSite.None,
+            _ => SameSite.Default,
         };
     }
 
@@ -183,7 +190,7 @@ internal static class BidiCookieHelper
             SameSite.Strict => CookieSameSiteValue.Strict,
             SameSite.Lax => CookieSameSiteValue.Lax,
             SameSite.None => CookieSameSiteValue.None,
-            _ => null,
+            _ => CookieSameSiteValue.Default,
         };
     }
 
@@ -208,4 +215,51 @@ internal static class BidiCookieHelper
             _ => "Medium",
         };
     }
+
+    private static string GetPartitionKey(BidiCookie bidiCookie)
+    {
+        if (!bidiCookie.AdditionalData.TryGetValue("goog:partitionKey", out var value))
+        {
+            return null;
+        }
+
+        if (value is string stringValue)
+        {
+            return stringValue;
+        }
+
+        if (value is JsonElement jsonElement)
+        {
+            if (jsonElement.ValueKind == JsonValueKind.String)
+            {
+                return jsonElement.GetString();
+            }
+
+            if (jsonElement.ValueKind == JsonValueKind.Object &&
+                jsonElement.TryGetProperty("topLevelSite", out var topLevelSite))
+            {
+                return topLevelSite.GetString();
+            }
+        }
+
+        return null;
+    }
+
+    private static CookieSourceScheme GetSourceScheme(BidiCookie bidiCookie)
+    {
+        if (!bidiCookie.AdditionalData.TryGetValue("goog:sourceScheme", out var value))
+        {
+            return CookieSourceScheme.Unset;
+        }
+
+        var scheme = value?.ToString();
+        return scheme switch
+        {
+            "Secure" => CookieSourceScheme.Secure,
+            "NonSecure" => CookieSourceScheme.NonSecure,
+            _ => CookieSourceScheme.Unset,
+        };
+    }
 }
+
+#endif

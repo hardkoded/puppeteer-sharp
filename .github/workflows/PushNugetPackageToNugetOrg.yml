@@ -32,3 +32,14 @@ jobs:
       if: env.NUGET_TOKEN_EXISTS != ''
       run: |
         dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+    - name: Build (CDP only)
+      run: |
+        rm -f ./lib/PuppeteerSharp/bin/Release/*.nupkg
+        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp /p:Description="Headless Browser .NET API with CDP support only (no WebDriverBiDi)" --configuration Release --no-restore
+        ls ./lib/PuppeteerSharp/bin/Release
+    - name: NugetPush to nuget.org (CDP only)
+      env:
+        NUGET_TOKEN_EXISTS: ${{ secrets.NUGET_API_KEY  }}
+      if: env.NUGET_TOKEN_EXISTS != ''
+      run: |
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

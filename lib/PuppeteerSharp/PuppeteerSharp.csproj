@@ -12,10 +12,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>21.0.1</PackageVersion>
-    <ReleaseVersion>21.0.1</ReleaseVersion>
-    <AssemblyVersion>21.0.1</AssemblyVersion>
-    <FileVersion>21.0.1</FileVersion>
+    <PackageVersion>21.1.0</PackageVersion>
+    <ReleaseVersion>21.1.0</ReleaseVersion>
+    <AssemblyVersion>21.1.0</AssemblyVersion>
+    <FileVersion>21.1.0</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <DebugType>embedded</DebugType>
@@ -45,7 +45,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="WebDriverBiDi-Relaxed" Version="0.0.42" />
+    <PackageReference Include="WebDriverBiDi" Version="0.0.43" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0" />

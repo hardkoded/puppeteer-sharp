@@ -852,6 +852,13 @@ namespace PuppeteerSharp
         Task<Dictionary<string, decimal>> MetricsAsync();
 
         /// <summary>
+        /// Captures a snapshot of the JavaScript heap and writes it to a file.
+        /// </summary>
+        /// <param name="options">Heap snapshot options.</param>
+        /// <returns>A Task which resolves after the heap snapshot is captured and written to disk.</returns>
+        Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options);
+
+        /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>

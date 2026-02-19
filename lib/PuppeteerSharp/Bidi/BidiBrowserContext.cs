@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -38,12 +40,14 @@ public class BidiBrowserContext : BrowserContext
     private readonly ConcurrentDictionary<BrowsingContext, BidiPage> _pages = [];
     private readonly ConcurrentDictionary<BidiPage, BidiPageTargetInfo> _targets = new();
     private readonly List<(string Origin, OverridePermission Permission)> _overrides = [];
+    private readonly ILogger<BidiBrowserContext> _logger;
 
     private BidiBrowserContext(BidiBrowser browser, UserContext userContext, BidiBrowserContextOptions options)
     {
         UserContext = userContext;
         Browser = browser;
         DefaultViewport = options.DefaultViewport;
+        _logger = browser.LoggerFactory?.CreateLogger<BidiBrowserContext>();
     }
 
     internal ViewPortOptions DefaultViewport { get; set; }
@@ -142,16 +146,25 @@ public class BidiBrowserContext : BrowserContext
             {
                 await page.SetViewportAsync(DefaultViewport).ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
-                // No support for setViewport in Firefox.
+                // Tolerate not supporting browsingContext.setViewport. Only log it.
+                _logger?.LogDebug(ex, "Failed to set viewport");
             }
         }
 
         if (options?.Type == CreatePageType.Window && options?.WindowBounds != null)
         {
-            var windowId = await page.WindowIdAsync().ConfigureAwait(false);
-            await Browser.SetWindowBoundsAsync(windowId, options.WindowBounds).ConfigureAwait(false);
+            try
+            {
+                var windowId = await page.WindowIdAsync().ConfigureAwait(false);
+                await Browser.SetWindowBoundsAsync(windowId, options.WindowBounds).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Tolerate not supporting browser.setClientWindowState. Only log it.
+                _logger?.LogDebug(ex, "Failed to set window bounds");
+            }
         }
 
         return page;
@@ -330,4 +343,4 @@ public class BidiBrowserContext : BrowserContext
     }
 }
 
-
+#endif

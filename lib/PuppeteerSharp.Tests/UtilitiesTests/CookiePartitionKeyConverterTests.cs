@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
     public class CookiePartitionKeyConverterTests
     {
         [Test]
-        public void ShouldSerializeAndDeserializeAsString()
+        public void ShouldSerializeAndDeserializeAsObject()
         {
             // Arrange
             var cookie = new CookieParam
@@ -23,8 +23,8 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             // Act - Serialize to JSON
             var json = JsonSerializer.Serialize(cookie);
 
-            // Assert - Verify it's serialized as a string
-            Assert.That(json, Does.Contain("\"PartitionKey\":\"https://example.com\""));
+            // Assert - Verify it's serialized as an object with topLevelSite and hasCrossSiteAncestor
+            Assert.That(json, Does.Contain("\"PartitionKey\":{\"topLevelSite\":\"https://example.com\",\"hasCrossSiteAncestor\":false}"));
 
             // Act - Deserialize back
             var deserialized = JsonSerializer.Deserialize<CookieParam>(json);

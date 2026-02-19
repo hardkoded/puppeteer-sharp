@@ -267,5 +267,11 @@ namespace PuppeteerSharp
         /// <returns>A task that completes when the screen is removed.</returns>
         /// <remarks>Only supported in headless mode. Fails if the primary screen ID is specified.</remarks>
         Task RemoveScreenAsync(string screenId);
+
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the browser.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
+        Task<ICDPSession> CreateCDPSessionAsync();
     }
 }

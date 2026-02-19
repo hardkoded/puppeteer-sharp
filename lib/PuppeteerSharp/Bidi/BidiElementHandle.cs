@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -112,3 +114,5 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
         }
     }
 }
+
+#endif

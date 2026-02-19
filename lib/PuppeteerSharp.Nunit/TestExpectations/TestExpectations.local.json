@@ -110,5 +110,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Firefox native BiDi does not return goog:partitionKey or goog:sourceScheme extension data",
+    "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie with a partitionKey",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   }
 ]

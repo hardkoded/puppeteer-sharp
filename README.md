@@ -16,6 +16,8 @@ Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://g
 
 ## Recent news
 
+Test the latest Firefox versions using WebDriver BiDi! Check the [PuppeteerSharp 21 release notes](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v21.0.0).
+
 PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 release notes!](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v19.0.0).
 
 ## Useful links
@@ -25,6 +27,14 @@ PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 releas
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
 * [Blog](https://www.hardkoded.com/)
+
+## Published Packages
+
+| Package | Description |
+| ------- | ----------- |
+| [PuppeteerSharp](https://www.nuget.org/packages/PuppeteerSharp/) | Our full cross-browser automation tool |
+| [PuppeteerSharp.Cdp](https://www.nuget.org/packages/PuppeteerSharp.Cdp/) | Ideal for Chrome-only AOT apps where binary size matters |
+| [PuppeteerSharp.AspNetFramework](https://www.nuget.org/packages/PuppeteerSharp.AspNetFramework/) | The companion library you need to run PuppeteerSharp in ASP.NET Classic |
 
 ## Prerequisites
 
@@ -167,7 +177,8 @@ A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) 
 
 <div style="display:inline">
 <img src="https://raw.githubusercontent.com/aaubry/YamlDotNet/master/Sponsors/aws-logo-small.png" width="200" height="200"/>
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/JetBrains_beam_logo.svg/1200px-JetBrains_beam_logo.svg.png" width="200" height="200"/>
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
 </div>
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):

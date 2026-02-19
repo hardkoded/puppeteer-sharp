@@ -20,6 +20,8 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+#if !CDP_ONLY
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -104,3 +106,5 @@ internal abstract class Realm(BrowsingContext context, string id, string origin)
 
     private void OnDestroyed() => Destroyed?.Invoke(this, new ClosedEventArgs(_reason));
 }
+
+#endif
