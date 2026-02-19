@@ -77,6 +77,7 @@ public class BidiPage : Page
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
         Mouse = new BidiMouse(this);
         Keyboard = new BidiKeyboard(this);
+        Bluetooth = new BidiBluetoothEmulation(browsingContext);
     }
 
     /// <inheritdoc />
@@ -117,8 +118,6 @@ public class BidiPage : Page
     internal BidiFrame BidiMainFrame { get; set; }
 
     internal ConcurrentDictionary<string, string> ExtraHttpHeaders { get; set; } = new();
-
-    internal ConcurrentDictionary<string, string> UserAgentHeaders { get; set; } = new();
 
     internal bool IsNetworkInterceptionEnabled =>
         _requestInterception != null || _extraHeadersInterception != null || _authInterception != null;
