@@ -1,23 +1,40 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.PageAccessibility
 {
     /// <inheritdoc/>
     public class Accessibility : IAccessibility
     {
+        private readonly string _frameId;
+        private readonly Func<Realm> _realmProvider;
         private CDPSession _client;
 
         /// <inheritdoc cref="Accessibility"/>
-        public Accessibility(CDPSession client) => _client = client;
+        public Accessibility(CDPSession client)
+            : this(client, string.Empty, null)
+        {
+        }
+
+        internal Accessibility(CDPSession client, string frameId, Func<Realm> realmProvider)
+        {
+            _client = client;
+            _frameId = frameId;
+            _realmProvider = realmProvider;
+        }
 
         /// <inheritdoc/>
         public async Task<SerializedAXNode> SnapshotAsync(AccessibilitySnapshotOptions options = null)
         {
-            var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>("Accessibility.getFullAXTree").ConfigureAwait(false);
+            var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>(
+                "Accessibility.getFullAXTree",
+                new AccessibilityGetFullAXTreeRequest { FrameId = _frameId }).ConfigureAwait(false);
             var nodes = response.Nodes;
             JsonElement? backendNodeId = null;
             if (options?.Root != null)
@@ -30,6 +47,16 @@ namespace PuppeteerSharp.PageAccessibility
             }
 
             var defaultRoot = AXNode.CreateTree(nodes);
+            if (defaultRoot == null)
+            {
+                return null;
+            }
+
+            if (options?.IncludeIframes == true)
+            {
+                await PopulateIframesAsync(defaultRoot, options).ConfigureAwait(false);
+            }
+
             var needle = defaultRoot;
             if (backendNodeId != null)
             {
@@ -56,9 +83,53 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal void UpdateClient(CDPSession client) => _client = client;
 
+        private async Task PopulateIframesAsync(AXNode root, AccessibilitySnapshotOptions options)
+        {
+            var realm = _realmProvider?.Invoke();
+
+            if (root.Payload.Role?.Value.ToObject<string>() == "Iframe")
+            {
+                if (root.Payload.BackendDOMNodeId.ValueKind != JsonValueKind.Number || realm == null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    var handle = await realm.AdoptBackendNodeAsync(root.Payload.BackendDOMNodeId.GetInt32()).ConfigureAwait(false);
+
+                    if (handle is not IElementHandle elementHandle)
+                    {
+                        return;
+                    }
+
+                    var frame = await elementHandle.ContentFrameAsync().ConfigureAwait(false);
+
+                    if (frame is not CdpFrame cdpFrame)
+                    {
+                        return;
+                    }
+
+                    var iframeSnapshot = await cdpFrame.Accessibility.SnapshotAsync(options).ConfigureAwait(false);
+                    root.IframeSnapshot = iframeSnapshot;
+                }
+                catch (Exception ex)
+                {
+                    // Frames can get detached at any time resulting in errors.
+                    var logger = _client.Connection?.LoggerFactory?.CreateLogger<Accessibility>();
+                    logger?.LogError(ex, "Error getting iframe accessibility snapshot");
+                }
+            }
+
+            foreach (var child in root.Children)
+            {
+                await PopulateIframesAsync(child, options).ConfigureAwait(false);
+            }
+        }
+
         private void CollectInterestingNodes(List<AXNode> collection, AXNode node, bool insideControl)
         {
-            if (node.IsInteresting(insideControl))
+            if (node.IsInteresting(insideControl) || node.IframeSnapshot != null)
             {
                 collection.Add(node);
             }
@@ -92,6 +163,16 @@ namespace PuppeteerSharp.PageAccessibility
             if (children.Count > 0)
             {
                 serializedNode.Children = [.. children];
+            }
+
+            if (node.IframeSnapshot != null)
+            {
+                serializedNode.Children ??= [];
+                var childrenList = new List<SerializedAXNode>(serializedNode.Children)
+                {
+                    node.IframeSnapshot,
+                };
+                serializedNode.Children = [.. childrenList];
             }
 
             return [serializedNode];
