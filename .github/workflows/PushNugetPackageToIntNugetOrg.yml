@@ -38,4 +38,4 @@ jobs:
         NUGET_TOKEN_TEST_EXISTS: ${{ secrets.NUGET_INT_API_KEY }}
       if: env.NUGET_TOKEN_TEST_EXISTS != ''
       run: |
-        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/PuppeteerSharp.Cdp*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/PuppeteerSharp.Cdp*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://apiint.nugettest.org/v3/index.json
