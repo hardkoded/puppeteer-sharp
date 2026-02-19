@@ -406,6 +406,13 @@ namespace PuppeteerSharp
         Task EmulateCPUThrottlingAsync(decimal? factor = null);
 
         /// <summary>
+        /// Emulates focus state of the page.
+        /// </summary>
+        /// <param name="enabled">Whether to emulate focus.</param>
+        /// <returns>A task that resolves when the message has been sent to the browser.</returns>
+        Task EmulateFocusedPageAsync(bool enabled);
+
+        /// <summary>
         /// Emulates the idle state.
         /// If no arguments set, clears idle state emulation.
         /// </summary>
