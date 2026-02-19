@@ -614,6 +614,9 @@ namespace PuppeteerSharp
         public abstract Task CloseAsync(PageCloseOptions options = null);
 
         /// <inheritdoc/>
+        public abstract Task<IPage> OpenDevToolsAsync();
+
+        /// <inheritdoc/>
         public abstract Task SetCacheEnabledAsync(bool enabled = true);
 
         /// <inheritdoc/>

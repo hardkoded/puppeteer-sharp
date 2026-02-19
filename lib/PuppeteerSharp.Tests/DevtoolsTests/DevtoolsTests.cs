@@ -79,5 +79,17 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That((await browser.PagesAsync()), Does.Not.Contain(page));
         }
 
+        [Test, PuppeteerTest("devtools.spec", "DevTools", "should support opening DevTools on a page")]
+        public async Task ShouldSupportOpeningDevToolsOnAPage()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync("about:blank");
+            var devtoolsPage = await page.OpenDevToolsAsync();
+            await devtoolsPage.WaitForFunctionAsync("() => Boolean(window.DevToolsAPI)");
+            await browser.CloseAsync();
+        }
+
     }
 }

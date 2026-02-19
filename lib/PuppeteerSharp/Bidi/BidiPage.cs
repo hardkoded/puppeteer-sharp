@@ -881,6 +881,9 @@ public class BidiPage : Page
     public override Task<IJSHandle> QueryObjectsAsync(IJSHandle prototypeHandle) => throw new NotImplementedException();
 
     /// <inheritdoc />
+    public override Task<IPage> OpenDevToolsAsync() => throw new NotImplementedException();
+
+    /// <inheritdoc />
     public override async Task SetRequestInterceptionAsync(bool value)
     {
         _requestInterception = await ToggleInterceptionAsync(
