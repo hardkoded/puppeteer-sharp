@@ -181,6 +181,14 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
+    public override async Task<IPage> OpenDevToolsAsync()
+    {
+        var pageTargetId = PrimaryTarget.TargetId;
+        var browser = (CdpBrowser)Browser;
+        return await browser.CreateDevToolsPageAsync(pageTargetId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
     {
         if (urls == null)
