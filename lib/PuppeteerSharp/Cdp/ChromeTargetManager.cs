@@ -19,20 +19,25 @@ namespace PuppeteerSharp.Cdp
         private readonly AsyncDictionaryHelper<string, CdpTarget> _attachedTargetsByTargetId = new("Target {0} not found");
         private readonly ConcurrentDictionary<string, CdpTarget> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
-        private readonly ConcurrentSet<string> _targetsIdsForInit = [];
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
-        private readonly Browser _browser;
 
-        // Needed for .NET only to prevent race conditions between StoreExistingTargetsForInit and OnAttachedToTarget
-        private readonly int _targetDiscoveryTimeout;
-        private readonly TaskCompletionSource<bool> _targetDiscoveryCompletionSource = new();
+        // IDs of tab targets detected while running the initial Target.setAutoAttach
+        // request. These are the targets whose initialization we want to await for
+        // before resolving puppeteer.connect() or launch() to avoid flakiness.
+        // Whenever a sub-target whose parent is a tab target is attached, we remove
+        // the tab target from this list. Once the list is empty, we resolve the
+        // initializeDeferred.
+        private readonly ConcurrentSet<string> _targetsIdsForInit = [];
+
+        // This is false until the connection-level Target.setAutoAttach request is
+        // done. It indicates whether we are running the initial auto-attach step or
+        // if we are handling targets after that.
+        private bool _initialAttachDone;
 
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
-            Func<Target, bool> targetFilterFunc,
-            Browser browser,
-            int targetDiscoveryTimeout = 0)
+            Func<Target, bool> targetFilterFunc)
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
@@ -40,8 +45,6 @@ namespace PuppeteerSharp.Cdp
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
-            _targetDiscoveryTimeout = targetDiscoveryTimeout;
-            _browser = browser;
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -56,24 +59,15 @@ namespace PuppeteerSharp.Cdp
 
         public async Task InitializeAsync()
         {
-            try
+            await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
             {
-                await _connection.SendAsync("Target.setDiscoverTargets", new TargetSetDiscoverTargetsRequest
-                {
-                    Discover = true,
-                    Filter =
-                    [
-                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
-                        new TargetSetDiscoverTargetsRequest.DiscoverFilter()
-                    ],
-                }).ConfigureAwait(false);
-            }
-            finally
-            {
-                _targetDiscoveryCompletionSource.SetResult(true);
-            }
-
-            StoreExistingTargetsForInit();
+                Discover = true,
+                Filter =
+                [
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "tab", Exclude = true, },
+                    new TargetSetDiscoverTargetsRequest.DiscoverFilter()
+                ],
+            }).ConfigureAwait(false);
 
             await _connection.SendAsync(
                 "Target.setAutoAttach",
@@ -84,48 +78,13 @@ namespace PuppeteerSharp.Cdp
                     AutoAttach = true,
                 }).ConfigureAwait(false);
 
+            _initialAttachDone = true;
             FinishInitializationIfReady();
 
             await _initializeCompletionSource.Task.ConfigureAwait(false);
         }
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
-
-        private void StoreExistingTargetsForInit()
-        {
-            foreach (var kv in _discoveredTargetsByTargetId)
-            {
-                var targetForFilter = new CdpTarget(
-                    kv.Value,
-                    null,
-                    null,
-                    this,
-                    null,
-                    _browser.ScreenshotTaskQueue);
-
-                // Only wait for pages and frames (except those from extensions)
-                // to auto-attach.
-                var isPageOrFrame = kv.Value.Type is TargetType.Page or TargetType.IFrame;
-                var isExtension = kv.Value.Url.StartsWith("chrome-extension://", StringComparison.OrdinalIgnoreCase);
-
-                if (isPageOrFrame && !isExtension && (_targetFilterFunc == null || _targetFilterFunc(targetForFilter)))
-                {
-                    _targetsIdsForInit.Add(kv.Key);
-                }
-            }
-        }
-
-        private async Task EnsureTargetsIdsForInitAsync()
-        {
-            if (_targetDiscoveryTimeout > 0)
-            {
-                await _targetDiscoveryCompletionSource.Task.WithTimeout(_targetDiscoveryTimeout).ConfigureAwait(false);
-            }
-            else
-            {
-                await _targetDiscoveryCompletionSource.Task.ConfigureAwait(false);
-            }
-        }
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
@@ -189,7 +148,6 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 _discoveredTargetsByTargetId.TryRemove(e.TargetId, out var targetInfo);
-                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 FinishInitializationIfReady(e.TargetId);
 
                 if (targetInfo?.Type == TargetType.ServiceWorker)
@@ -282,8 +240,6 @@ namespace PuppeteerSharp.Cdp
 
             if (targetInfo.Type == TargetType.ServiceWorker)
             {
-                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
-                FinishInitializationIfReady(targetInfo.TargetId);
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {
@@ -308,7 +264,6 @@ namespace PuppeteerSharp.Cdp
             if (_targetFilterFunc?.Invoke(target) == false)
             {
                 _ignoredTargets.Add(targetInfo.TargetId);
-                await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
                 if (parentTarget?.TargetInfo.Type == TargetType.Tab)
                 {
                     FinishInitializationIfReady(parentTarget.TargetId);
@@ -316,6 +271,11 @@ namespace PuppeteerSharp.Cdp
 
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
                 return;
+            }
+
+            if (targetInfo.Type == TargetType.Tab && !_initialAttachDone)
+            {
+                _targetsIdsForInit.Add(targetInfo.TargetId);
             }
 
             session.MessageReceived += OnMessageReceived;
@@ -336,15 +296,15 @@ namespace PuppeteerSharp.Cdp
             parentTarget?.AddChildTarget(target);
             (parentSession ?? parentConnection as CDPSession)?.OnSessionReady(session);
 
-            await EnsureTargetsIdsForInitAsync().ConfigureAwait(false);
-            _targetsIdsForInit.Remove(target.TargetId);
-
             if (!isExistingTarget)
             {
                 TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = target });
             }
 
-            FinishInitializationIfReady();
+            if (parentTarget?.TargetInfo.Type == TargetType.Tab)
+            {
+                FinishInitializationIfReady(parentTarget.TargetId);
+            }
 
             try
             {
@@ -387,6 +347,13 @@ namespace PuppeteerSharp.Cdp
             if (targetId != null)
             {
                 _targetsIdsForInit.Remove(targetId);
+            }
+
+            // If we are still initializing it might be that we have not learned about
+            // some targets yet.
+            if (!_initialAttachDone)
+            {
+                return;
             }
 
             if (_targetsIdsForInit.Count == 0)
