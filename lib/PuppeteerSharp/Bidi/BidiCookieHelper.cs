@@ -178,7 +178,8 @@ internal static class BidiCookieHelper
         {
             CookieSameSiteValue.Strict => SameSite.Strict,
             CookieSameSiteValue.Lax => SameSite.Lax,
-            _ => SameSite.None,
+            CookieSameSiteValue.None => SameSite.None,
+            _ => SameSite.Default,
         };
     }
 
@@ -189,7 +190,7 @@ internal static class BidiCookieHelper
             SameSite.Strict => CookieSameSiteValue.Strict,
             SameSite.Lax => CookieSameSiteValue.Lax,
             SameSite.None => CookieSameSiteValue.None,
-            _ => null,
+            _ => CookieSameSiteValue.Default,
         };
     }
 

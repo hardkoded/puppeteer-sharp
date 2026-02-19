@@ -18,6 +18,16 @@ Once you have all the context, you will implement the same changes in this .NET 
 5. Push the branch: `git push -u origin implement-upstream-change-<PR_NUMBER>`
 6. Create a PR via `gh pr create` targeting `master`
 
+### PR Title Convention
+
+Choose the PR title prefix based on the nature of the upstream change:
+
+- **New feature** (adds new functionality, new API, new capability): prefix the title with `"New Feature: "` — e.g. `"New Feature: Add support for request interception (#12345)"`
+- **Bug fix** (corrects broken behavior): prefix the title with `"Fix: "` — e.g. `"Fix: Handle null pointer in frame navigation (#12345)"`
+- **Other changes** (refactoring, improvements, updates, test changes): no special prefix — e.g. `"Handle shadow DOM in Frame.frameElement (#12345)"`
+
+Always include the upstream PR number in parentheses at the end of the title.
+
 ## Implementation
 
 You will have to implement the code as close as possible to the original code, but adapted to .NET idioms and practices.

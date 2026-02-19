@@ -25,6 +25,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -214,6 +215,11 @@ public class CdpPage : Page
 
         if (cookies.Length > 0)
         {
+            foreach (var cookie in cookies)
+            {
+                cookie.SameSite = ConvertSameSiteForCdp(cookie.SameSite);
+            }
+
             await PrimaryTargetClient
                 .SendAsync("Network.setCookies", new NetworkSetCookiesRequest { Cookies = cookies, })
                 .ConfigureAwait(false);
@@ -280,6 +286,44 @@ public class CdpPage : Page
         var response = await Client.SendAsync<PerformanceGetMetricsResponse>("Performance.getMetrics")
             .ConfigureAwait(false);
         return BuildMetricsObject(response.Metrics);
+    }
+
+    /// <inheritdoc/>
+    public override async Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var client = PrimaryTargetClient;
+        await client.SendAsync("HeapProfiler.enable").ConfigureAwait(false);
+        await client.SendAsync("HeapProfiler.collectGarbage").ConfigureAwait(false);
+
+        using var fileStream = new StreamWriter(options.Path);
+
+        void Handler(object sender, MessageEventArgs e)
+        {
+            if (e.MessageID == "HeapProfiler.addHeapSnapshotChunk")
+            {
+                var chunk = e.MessageData.ToObject<HeapProfilerAddHeapSnapshotChunkResponse>();
+                fileStream.Write(chunk.Chunk);
+            }
+        }
+
+        client.MessageReceived += Handler;
+
+        try
+        {
+            await client.SendAsync(
+                "HeapProfiler.takeHeapSnapshot",
+                new HeapProfilerTakeHeapSnapshotRequest { ReportProgress = false, }).ConfigureAwait(false);
+        }
+        finally
+        {
+            client.MessageReceived -= Handler;
+            await client.SendAsync("HeapProfiler.disable").ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -986,6 +1030,19 @@ public class CdpPage : Page
         "mm" => 3.78m,
         _ => null,
     };
+
+    /// <summary>
+    /// Converts a PuppeteerSharp SameSite value to a CDP-compatible value.
+    /// CDP does not support "Default", so we map it to null (omitted).
+    /// </summary>
+    private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)
+    {
+        return sameSite switch
+        {
+            SameSite.Strict or SameSite.Lax or SameSite.None => sameSite,
+            _ => null,
+        };
+    }
 
     private void SetupPrimaryTargetListeners()
     {
