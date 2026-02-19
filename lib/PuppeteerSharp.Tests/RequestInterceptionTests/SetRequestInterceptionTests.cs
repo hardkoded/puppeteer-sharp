@@ -651,6 +651,18 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(cached, Has.Count.GreaterThanOrEqualTo(1));
         }
 
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work with worker")]
+        public async Task ShouldWorkWithWorker()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<bool>();
+            Page.WorkerCreated += (_, _) => workerCreatedTcs.TrySetResult(true);
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            await workerCreatedTcs.Task.WithTimeout();
+
+            await Page.SetRequestInterceptionAsync(true);
+        }
+
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should load fonts if cache enabled")]
         public async Task ShouldLoadFontsIfCacheEnabled()
         {
