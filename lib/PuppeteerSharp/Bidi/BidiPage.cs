@@ -894,7 +894,8 @@ public class BidiPage : Page
     {
         if (!BidiBrowser.CdpSupported)
         {
-            throw new NotSupportedException();
+            await BidiMainFrame.BrowsingContext.SetOfflineModeAsync(value).ConfigureAwait(false);
+            return;
         }
 
         _emulatedNetworkConditions ??= new InternalNetworkConditions
