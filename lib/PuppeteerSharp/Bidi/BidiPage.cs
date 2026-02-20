@@ -1342,11 +1342,6 @@ public class BidiPage : Page
         }
         catch (Exception ex)
         {
-            if (ex.Message.Contains("no such history entry"))
-            {
-                return null;
-            }
-
             throw new NavigationException(ex.Message, ex);
         }
 
