@@ -1397,7 +1397,7 @@ public class CdpPage : Page
 
         if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
         {
-            return null;
+            throw new PuppeteerException("History entry to navigate to not found.");
         }
 
         var entry = history.Entries[history.CurrentIndex + delta];
