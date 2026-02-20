@@ -82,6 +82,11 @@ namespace PuppeteerSharp
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
 
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
+
         // TODO: Restore when it's usable
         internal ProtocolType Protocol { get; set; } = ProtocolType.Cdp;
 

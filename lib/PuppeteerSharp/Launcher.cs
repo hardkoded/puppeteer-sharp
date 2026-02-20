@@ -126,7 +126,8 @@ namespace PuppeteerSharp
                                 options.DefaultViewport,
                                 Process,
                                 options.TargetFilter,
-                                options.IsPageTarget)
+                                options.IsPageTarget,
+                                handleDevToolsAsPage: options.HandleDevToolsAsPage)
                             .ConfigureAwait(false);
                     }
 
@@ -265,7 +266,8 @@ namespace PuppeteerSharp
                         null,
                         options.TargetFilter,
                         options.IsPageTarget,
-                        options.InitAction)
+                        options.InitAction,
+                        options.HandleDevToolsAsPage)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

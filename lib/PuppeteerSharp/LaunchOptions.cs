@@ -204,6 +204,11 @@ namespace PuppeteerSharp
         /// </summary>
         public bool WaitForInitialPage { get; set; } = true;
 
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
+
         // Internal until is usable
         internal ProtocolType Protocol { get; set; }
 

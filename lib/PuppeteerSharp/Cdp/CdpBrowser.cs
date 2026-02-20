@@ -40,6 +40,7 @@ public class CdpBrowser : Browser
 
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
+    private readonly bool _handleDevToolsAsPage;
     private Task _closeTask;
 
     internal CdpBrowser(
@@ -49,12 +50,14 @@ public class CdpBrowser : Browser
         ViewPortOptions defaultViewport,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
-        Func<Target, bool> isPageTargetFunc = null)
+        Func<Target, bool> isPageTargetFunc = null,
+        bool handleDevToolsAsPage = false)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
+        _handleDevToolsAsPage = handleDevToolsAsPage;
         var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         IsPageTargetFunc =
@@ -97,6 +100,8 @@ public class CdpBrowser : Browser
     }
 
     internal ITargetManager TargetManager { get; }
+
+    internal bool HandleDevToolsAsPage => _handleDevToolsAsPage;
 
     internal override ProtocolType Protocol => ProtocolType.Cdp;
 
@@ -193,7 +198,8 @@ public class CdpBrowser : Browser
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetCallback = null,
-        Action<IBrowser> initAction = null)
+        Action<IBrowser> initAction = null,
+        bool handleDevToolsAsPage = false)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -202,7 +208,8 @@ public class CdpBrowser : Browser
             defaultViewPort,
             launcher,
             targetFilter,
-            isPageTargetCallback);
+            isPageTargetCallback,
+            handleDevToolsAsPage);
 
         try
         {
