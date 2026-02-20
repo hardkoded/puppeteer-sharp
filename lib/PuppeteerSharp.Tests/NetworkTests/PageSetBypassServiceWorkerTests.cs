@@ -51,7 +51,7 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
             return await globalThis.activationPromise;
         }}");
 
-        await Page.ReloadAsync(new NavigationOptions()
+        await Page.ReloadAsync(new ReloadOptions()
         {
             WaitUntil = [WaitUntilNavigation.Networkidle2],
         });
@@ -64,7 +64,7 @@ public class PageSetBypassServiceWorkerTests : PuppeteerPageBaseTest
         Assert.That(responses["style.css"].FromServiceWorker, Is.True);
 
         await Page.SetBypassServiceWorkerAsync(true);
-        await Page.ReloadAsync(new NavigationOptions()
+        await Page.ReloadAsync(new ReloadOptions()
         {
             WaitUntil = [WaitUntilNavigation.Networkidle2],
         });

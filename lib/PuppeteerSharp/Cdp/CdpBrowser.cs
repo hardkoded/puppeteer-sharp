@@ -78,9 +78,7 @@ public class CdpBrowser : Browser
             TargetManager = new ChromeTargetManager(
                 connection,
                 CreateTarget,
-                targetFilterCallback,
-                this,
-                launcher?.Options?.Timeout ?? Puppeteer.DefaultTimeout);
+                targetFilterCallback);
         }
     }
 
