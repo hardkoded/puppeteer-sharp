@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.PageAccessibility;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -41,6 +42,8 @@ public class CdpFrame : Frame
         Id = frameId;
         Client = client;
         ParentId = parentFrameId;
+
+        Accessibility = new Accessibility(client, () => Id, () => MainRealm);
 
         UpdateClient(client);
 
@@ -64,6 +67,8 @@ public class CdpFrame : Frame
     public override IReadOnlyCollection<IFrame> ChildFrames => FrameManager.FrameTree.GetChildFrames(Id);
 
     internal FrameManager FrameManager { get; }
+
+    internal Accessibility Accessibility { get; }
 
     internal CdpPage CdpPage => Page as CdpPage;
 
