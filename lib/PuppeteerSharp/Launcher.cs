@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,12 +142,30 @@ namespace PuppeteerSharp
                 {
                     connection?.Dispose();
                     browser?.Dispose();
+
+                    var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
+                    if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                    {
+                        throw new ProcessException(
+                            $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
+                            ex);
+                    }
+
                     throw new ProcessException("Failed to create connection", ex);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 await Process.KillAsync().ConfigureAwait(false);
+
+                var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
+                if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                {
+                    throw new ProcessException(
+                        $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
+                        ex);
+                }
+
                 throw;
             }
         }
@@ -219,6 +238,26 @@ namespace PuppeteerSharp
             var defaultDriver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout));
             await defaultDriver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
             return defaultDriver;
+        }
+
+        private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir)
+        {
+            var message = ex.ToString();
+            if (message.Contains("Failed to create a ProcessSingleton for your profile directory", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            // On Windows we will not get logs due to the singleton process
+            // handover. See
+            // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/process_singleton_win.cc;l=46;drc=fc7952f0422b5073515a205a04ec9c3a1ae81658
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                File.Exists(Path.Combine(userDataDir, "lockfile")))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private async Task<IBrowser> ConnectBidiAsync(string browserWSEndpoint, ConnectOptions options)
