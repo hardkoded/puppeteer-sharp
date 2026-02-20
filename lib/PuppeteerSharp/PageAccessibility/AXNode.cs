@@ -24,7 +24,6 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly string _roledescription;
         private readonly string _live;
         private readonly bool _ignored;
-        private bool? _cachedHasFocusableChild;
 
         private AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
@@ -123,17 +122,6 @@ namespace PuppeteerSharp.PageAccessibility
                 case "separator":
                 case "progressbar":
                     return true;
-            }
-
-            // Here and below: Android heuristics
-            if (HasFocusableChild())
-            {
-                return false;
-            }
-
-            if (Focusable && !string.IsNullOrEmpty(_name))
-            {
-                return true;
             }
 
             if (_role == "heading" && !string.IsNullOrEmpty(_name))
@@ -318,11 +306,6 @@ namespace PuppeteerSharp.PageAccessibility
                 _role == "text" ||
                 _role == "InlineTextBox" ||
                 _role == "StaticText";
-
-        private bool HasFocusableChild()
-        {
-            return _cachedHasFocusableChild ??= Children.Any(c => c.Focusable || c.HasFocusableChild());
-        }
 
         private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;
 

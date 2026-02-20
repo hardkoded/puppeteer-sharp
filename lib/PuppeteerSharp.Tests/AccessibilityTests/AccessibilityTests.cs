@@ -383,6 +383,21 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should not report Document as leaf node")]
+        public async Task ShouldNotReportDocumentAsLeafNode()
+        {
+            await Page.SetContentAsync(@"
+            <main><span>Hello</span><div> </div><div>World</div></main>");
+
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.That(snapshot.Role, Is.EqualTo("RootWebArea"));
+            Assert.That(snapshot.Children.Length, Is.EqualTo(2));
+            Assert.That(snapshot.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(snapshot.Children[0].Name, Is.EqualTo("Hello"));
+            Assert.That(snapshot.Children[1].Role, Is.EqualTo("StaticText"));
+            Assert.That(snapshot.Children[1].Name, Is.EqualTo("World"));
+        }
+
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should capture new accessibility properties and not prune them")]
         public async Task ShouldCaptureNewAccessibilityPropertiesAndNotPruneThem()
         {
