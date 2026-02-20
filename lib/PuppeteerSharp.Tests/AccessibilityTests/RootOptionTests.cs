@@ -120,5 +120,21 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(fullSnapshot.Children[0].Children[0].Role, Is.EqualTo("StaticText"));
             Assert.That(fullSnapshot.Children[0].Children[0].Name, Is.EqualTo("My Button"));
         }
+
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should work with nested button inside h1 with interestingOnly:true")]
+        public async Task ShouldWorkWithNestedButtonInsideH1WithInterestingOnlyTrue()
+        {
+            await Page.SetContentAsync(@"
+            <main>
+                <h2>
+                    <button>My Button</button>
+                </h2>
+            </main>");
+
+            var button = await Page.QuerySelectorAsync("button");
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button });
+            Assert.That(snapshot.Role, Is.EqualTo("button"));
+            Assert.That(snapshot.Name, Is.EqualTo("My Button"));
+        }
     }
 }

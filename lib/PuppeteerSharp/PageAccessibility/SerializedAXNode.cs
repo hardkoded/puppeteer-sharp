@@ -169,6 +169,11 @@ namespace PuppeteerSharp.PageAccessibility
         public string Details { get; set; }
 
         /// <summary>
+        /// URL for link elements.
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
         /// Child nodes of this node, if any.
         /// </summary>
         public SerializedAXNode[] Children { get; set; }

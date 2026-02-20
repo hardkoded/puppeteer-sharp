@@ -51,7 +51,10 @@ public class CdpBrowserContext : BrowserContext
                 Targets()
                     .Where(t =>
                         t.Type == TargetType.Page ||
-                        (t.Type == TargetType.Other && Browser.IsPageTargetFunc(t as Target)))
+                        (t.Type == TargetType.Other && Browser.IsPageTargetFunc(t as Target)) ||
+                        (_browser.HandleDevToolsAsPage &&
+                            t.Type == TargetType.Other &&
+                            t.Url.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase)))
                     .Select(t => t.PageAsync())).ConfigureAwait(false))
             .Where(p => p != null).ToArray();
 

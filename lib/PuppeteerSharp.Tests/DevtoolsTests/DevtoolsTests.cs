@@ -61,6 +61,49 @@ namespace PuppeteerSharp.Tests.DevtoolsTests
             Assert.That(pages, Does.Contain(page));
         }
 
+        [Test, Retry(2),
+         PuppeteerTest("devtools.spec", "DevTools",
+             "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()")]
+        public async Task BrowserPagesShouldReturnADevToolsPageIfHandleDevToolsAsPageIsProvidedInConnect()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Devtools = true;
+
+            await using var originalBrowser = await Puppeteer.LaunchAsync(
+                headfulOptions,
+                TestConstants.LoggerFactory);
+            var browserWSEndpoint = originalBrowser.WebSocketEndpoint;
+            await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browserWSEndpoint,
+                HandleDevToolsAsPage = true,
+            }, TestConstants.LoggerFactory);
+            var devtoolsPageTarget = await browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
+            await using var page = await devtoolsPageTarget.PageAsync();
+            Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
+            var pages = await browser.PagesAsync();
+            Assert.That(pages, Does.Contain(page));
+        }
+
+        [Test, Retry(2),
+         PuppeteerTest("devtools.spec", "DevTools",
+             "browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in launch()")]
+        public async Task BrowserPagesShouldReturnADevToolsPageIfHandleDevToolsAsPageIsProvidedInLaunch()
+        {
+            var headfulOptions = TestConstants.DefaultBrowserOptions();
+            headfulOptions.Devtools = true;
+            headfulOptions.HandleDevToolsAsPage = true;
+
+            await using var browser = await Puppeteer.LaunchAsync(
+                headfulOptions,
+                TestConstants.LoggerFactory);
+            var devtoolsPageTarget = await browser.WaitForTargetAsync(t => t.Type == TargetType.Other);
+            await using var page = await devtoolsPageTarget.PageAsync();
+            Assert.That(await page.EvaluateExpressionAsync<bool>("Boolean(DevToolsAPI)"), Is.True);
+            var pages = await browser.PagesAsync();
+            Assert.That(pages, Does.Contain(page));
+        }
+
         [Test, PuppeteerTest("devtools.spec", "DevTools", "target.page() should return Page when calling asPage on DevTools target")]
         public async Task TargetPageShouldReturnADevToolsPageIfAsPageIsUsed()
         {
