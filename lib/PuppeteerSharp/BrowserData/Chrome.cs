@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,43 +36,76 @@ namespace PuppeteerSharp.BrowserData
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
-        internal static string ResolveSystemExecutablePath(Platform platform, ChromeReleaseChannel channel)
+        internal static string[] ResolveSystemExecutablePaths(Platform platform, ChromeReleaseChannel channel)
         {
             switch (platform)
             {
                 case Platform.Win64:
                 case Platform.Win32:
-                    var programFilesPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                    return channel switch
-                    {
-                        ChromeReleaseChannel.Stable => $"{programFilesPath}\\Google\\Chrome\\Application\\chrome.exe",
-                        ChromeReleaseChannel.Beta => $"{programFilesPath}\\Google\\Chrome Beta\\Application\\chrome.exe",
-                        ChromeReleaseChannel.Canary => $"{programFilesPath}\\Google\\Chrome SxS\\Application\\chrome.exe",
-                        ChromeReleaseChannel.Dev => $"{programFilesPath}\\Google\\Chrome Dev\\Application\\chrome.exe",
-                        _ => throw new PuppeteerException($"{channel} is not supported"),
-                    };
+                    return GetChromeWindowsLocations(channel);
                 case Platform.MacOS:
                 case Platform.MacOSArm64:
                     return channel switch
                     {
-                        ChromeReleaseChannel.Stable => $"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-                        ChromeReleaseChannel.Beta => $"/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta",
-                        ChromeReleaseChannel.Canary => $"/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
-                        ChromeReleaseChannel.Dev => $"/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev",
+                        ChromeReleaseChannel.Stable => ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"],
+                        ChromeReleaseChannel.Beta => ["/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"],
+                        ChromeReleaseChannel.Canary => ["/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"],
+                        ChromeReleaseChannel.Dev => ["/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev"],
                         _ => throw new PuppeteerException($"{channel} is not supported"),
                     };
                 case Platform.LinuxArm64:
                 case Platform.Linux:
                     return channel switch
                     {
-                        ChromeReleaseChannel.Stable => $"/opt/google/chrome/chrome",
-                        ChromeReleaseChannel.Beta => $"/opt/google/chrome-beta/chrome",
-                        ChromeReleaseChannel.Dev => $"/opt/google/chrome-unstable/chrome",
+                        ChromeReleaseChannel.Stable => ["/opt/google/chrome/chrome"],
+                        ChromeReleaseChannel.Beta => ["/opt/google/chrome-beta/chrome"],
+                        ChromeReleaseChannel.Canary => ["/opt/google/chrome-canary/chrome"],
+                        ChromeReleaseChannel.Dev => ["/opt/google/chrome-unstable/chrome"],
                         _ => throw new PuppeteerException($"{channel} is not supported"),
                     };
                 default:
                     throw new PuppeteerException($"{platform} is not supported");
             }
+        }
+
+        private static string[] GetChromeWindowsLocations(ChromeReleaseChannel channel)
+        {
+            var suffix = channel switch
+            {
+                ChromeReleaseChannel.Stable => "\\Google\\Chrome\\Application\\chrome.exe",
+                ChromeReleaseChannel.Beta => "\\Google\\Chrome Beta\\Application\\chrome.exe",
+                ChromeReleaseChannel.Canary => "\\Google\\Chrome SxS\\Application\\chrome.exe",
+                ChromeReleaseChannel.Dev => "\\Google\\Chrome Dev\\Application\\chrome.exe",
+                _ => throw new PuppeteerException($"{channel} is not supported"),
+            };
+
+            var prefixes = new HashSet<string>();
+            var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            if (!string.IsNullOrEmpty(programFiles))
+            {
+                prefixes.Add(programFiles);
+            }
+
+            var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            if (!string.IsNullOrEmpty(programFilesX86))
+            {
+                prefixes.Add(programFilesX86);
+            }
+
+            // Also check the ProgramW6432 environment variable for the native Program Files
+            // on 64-bit systems (useful when running as a 32-bit process on a 64-bit OS).
+            var programW6432 = Environment.GetEnvironmentVariable("ProgramW6432");
+            if (!string.IsNullOrEmpty(programW6432))
+            {
+                prefixes.Add(programW6432);
+            }
+
+            if (prefixes.Count == 0)
+            {
+                throw new PuppeteerException("None of the common Windows Program Files paths were found");
+            }
+
+            return prefixes.Select(prefix => $"{prefix}{suffix}").ToArray();
         }
 
         private static async Task<ChromeGoodVersionsResult.ChromeGoodVersionsResultVersion> GetLastKnownGoodReleaseForChannel(ChromeReleaseChannel channel)

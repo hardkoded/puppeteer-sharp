@@ -115,30 +115,24 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 Is.EqualTo(BrowserData.Chrome.RelativeExecutablePath(Platform.Win64, "12372323")));
         }
 
-        // This has a custom name
         [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
-            Assert.That(
-                BrowserData.Chrome.ResolveSystemExecutablePath(Platform.Win32, ChromeReleaseChannel.Dev),
-                Is.EqualTo("C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"));
+            var paths = BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.Win32, ChromeReleaseChannel.Dev);
+            Assert.That(paths, Has.Length.GreaterThanOrEqualTo(1));
+            Assert.That(paths, Has.All.EndsWith("\\Google\\Chrome Dev\\Application\\chrome.exe"));
         }
 
         [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.That(
-                BrowserData.Chrome.ResolveSystemExecutablePath(Platform.MacOS, ChromeReleaseChannel.Beta),
-                Is.EqualTo("/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"));
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.MacOS, ChromeReleaseChannel.Beta),
+                Is.EqualTo(new[] { "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta" }));
 
-            var ex = Assert.Throws<PuppeteerException>(() =>
-            {
-                BrowserData.Chrome.ResolveSystemExecutablePath(
-                    Platform.Linux,
-                    ChromeReleaseChannel.Canary);
-            });
-
-            Assert.That(ex.Message, Is.EqualTo("Canary is not supported"));
+            Assert.That(
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.Linux, ChromeReleaseChannel.Canary),
+                Is.EqualTo(new[] { "/opt/google/chrome-canary/chrome" }));
         }
 
         [Test]
