@@ -166,6 +166,13 @@ namespace PuppeteerSharp
                         ex);
                 }
 
+                if (IsMissingXServer(ex) && options.HeadlessMode == HeadlessMode.False)
+                {
+                    throw new ProcessException(
+                        "Missing X server to start the headful browser. Either set Headless to true or use xvfb-run to run your Puppeteer script.",
+                        ex);
+                }
+
                 throw;
             }
         }
@@ -224,6 +231,9 @@ namespace PuppeteerSharp
 
             return false;
         }
+
+        private static bool IsMissingXServer(Exception ex)
+            => ex.ToString().Contains("Missing X server", StringComparison.Ordinal);
 
 #if !CDP_ONLY
         private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
