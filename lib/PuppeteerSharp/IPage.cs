@@ -189,7 +189,7 @@ namespace PuppeteerSharp
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
         /// - <see cref="GoForwardAsync(NavigationOptions)"/>
-        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(ReloadOptions)"/>
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
         /// **NOTE** <see cref="DefaultNavigationTimeout"/> takes priority over. <seealso cref="DefaultTimeout"/>
@@ -201,7 +201,7 @@ namespace PuppeteerSharp
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
         /// - <see cref="GoForwardAsync(NavigationOptions)"/>
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
-        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(ReloadOptions)"/>
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForFunctionAsync(string, object[])"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
@@ -976,7 +976,7 @@ namespace PuppeteerSharp
         /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
-        /// <seealso cref="ReloadAsync(NavigationOptions)"/>
+        /// <seealso cref="ReloadAsync(ReloadOptions)"/>
         Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
@@ -985,7 +985,7 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation options.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
-        Task<IResponse> ReloadAsync(NavigationOptions options);
+        Task<IResponse> ReloadAsync(ReloadOptions options);
 
         /// <summary>
         /// Captures a screenshot of this <see cref="IPage"/>.
