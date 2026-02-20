@@ -72,10 +72,10 @@ namespace PuppeteerSharp.BrowserData
         {
             var suffix = channel switch
             {
-                ChromeReleaseChannel.Stable => "\\Google\\Chrome\\Application\\chrome.exe",
-                ChromeReleaseChannel.Beta => "\\Google\\Chrome Beta\\Application\\chrome.exe",
-                ChromeReleaseChannel.Canary => "\\Google\\Chrome SxS\\Application\\chrome.exe",
-                ChromeReleaseChannel.Dev => "\\Google\\Chrome Dev\\Application\\chrome.exe",
+                ChromeReleaseChannel.Stable => Path.Combine("Google", "Chrome", "Application", "chrome.exe"),
+                ChromeReleaseChannel.Beta => Path.Combine("Google", "Chrome Beta", "Application", "chrome.exe"),
+                ChromeReleaseChannel.Canary => Path.Combine("Google", "Chrome SxS", "Application", "chrome.exe"),
+                ChromeReleaseChannel.Dev => Path.Combine("Google", "Chrome Dev", "Application", "chrome.exe"),
                 _ => throw new PuppeteerException($"{channel} is not supported"),
             };
 
@@ -100,12 +100,20 @@ namespace PuppeteerSharp.BrowserData
                 prefixes.Add(programW6432);
             }
 
-            if (prefixes.Count == 0)
+            // https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/mini_installer/README.md
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (!string.IsNullOrEmpty(localAppData))
             {
-                throw new PuppeteerException("None of the common Windows Program Files paths were found");
+                prefixes.Add(localAppData);
             }
 
-            return prefixes.Select(prefix => $"{prefix}{suffix}").ToArray();
+            // Fallbacks in case env vars are misconfigured.
+            prefixes.Add(@"C:\Program Files");
+            prefixes.Add(@"C:\Program Files (x86)");
+            prefixes.Add(@"D:\Program Files");
+            prefixes.Add(@"D:\Program Files (x86)");
+
+            return prefixes.Select(prefix => Path.Combine(prefix, suffix)).ToArray();
         }
 
         private static async Task<ChromeGoodVersionsResult.ChromeGoodVersionsResultVersion> GetLastKnownGoodReleaseForChannel(ChromeReleaseChannel channel)
