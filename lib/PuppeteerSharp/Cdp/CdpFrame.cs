@@ -43,7 +43,7 @@ public class CdpFrame : Frame
         Client = client;
         ParentId = parentFrameId;
 
-        Accessibility = new Accessibility(client, frameId, () => MainRealm);
+        Accessibility = new Accessibility(client, () => Id, () => MainRealm);
 
         UpdateClient(client);
 

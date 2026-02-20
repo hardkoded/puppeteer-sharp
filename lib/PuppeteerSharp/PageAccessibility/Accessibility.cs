@@ -13,20 +13,14 @@ namespace PuppeteerSharp.PageAccessibility
     /// <inheritdoc/>
     public class Accessibility : IAccessibility
     {
-        private readonly string _frameId;
+        private readonly Func<string> _getFrameId;
         private readonly Func<Realm> _realmProvider;
         private CDPSession _client;
 
-        /// <inheritdoc cref="Accessibility"/>
-        public Accessibility(CDPSession client)
-            : this(client, string.Empty, null)
-        {
-        }
-
-        internal Accessibility(CDPSession client, string frameId, Func<Realm> realmProvider)
+        internal Accessibility(CDPSession client, Func<string> getFrameId, Func<Realm> realmProvider)
         {
             _client = client;
-            _frameId = frameId;
+            _getFrameId = getFrameId;
             _realmProvider = realmProvider;
         }
 
@@ -35,7 +29,7 @@ namespace PuppeteerSharp.PageAccessibility
         {
             var response = await _client.SendAsync<AccessibilityGetFullAXTreeResponse>(
                 "Accessibility.getFullAXTree",
-                new AccessibilityGetFullAXTreeRequest { FrameId = _frameId }).ConfigureAwait(false);
+                new AccessibilityGetFullAXTreeRequest { FrameId = _getFrameId() }).ConfigureAwait(false);
             var nodes = response.Nodes;
             JsonElement? backendNodeId = null;
             if (options?.Root != null)
