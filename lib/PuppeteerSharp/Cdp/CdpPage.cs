@@ -73,7 +73,7 @@ public class CdpPage : Page
         _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
         FrameManager = new FrameManager(client, this, TimeoutSettings);
-        Accessibility = new Accessibility(client, string.Empty, () => (FrameManager.MainFrame as Frame)?.MainRealm);
+        Accessibility = new Accessibility(client, () => MainFrame?.Id, () => (FrameManager.MainFrame as Frame)?.MainRealm);
 
         // Use browser context's connection, as current Bluetooth emulation in Chromium is
         // implemented on the browser context level, and not tied to the specific tab.
