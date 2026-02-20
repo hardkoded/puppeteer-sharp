@@ -1252,7 +1252,30 @@ public class CdpPage : Page
         => OnMetrics(new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
     private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
-        => OnPageError(new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+    {
+        var exception = exceptionDetails.Exception;
+
+        if (exception != null &&
+            (exception.Type != RemoteObjectType.Object || exception.Subtype != RemoteObjectSubtype.Error) &&
+            string.IsNullOrEmpty(exception.ObjectId))
+        {
+            var primitiveValue = GetPrimitiveValueFromException(exception);
+            OnPageError(new PageErrorEventArgs(exceptionDetails.Text, primitiveValue));
+            return;
+        }
+
+        OnPageError(new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+    }
+
+    private object GetPrimitiveValueFromException(EvaluateExceptionResponseInfo exception)
+    {
+        if (exception.Type == RemoteObjectType.Undefined)
+        {
+            return null;
+        }
+
+        return exception.Value;
+    }
 
     private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
     {

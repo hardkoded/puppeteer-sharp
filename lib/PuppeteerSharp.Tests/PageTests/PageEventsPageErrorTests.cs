@@ -29,5 +29,26 @@ namespace PuppeteerSharp.Tests.PageTests
             var error = await errorTask.Task;
             Assert.That(error, Does.Contain("Fancy"));
         }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.Events.PageError", "should fire for all value types")]
+        public async Task ShouldFireForAllValueTypes()
+        {
+            var errorTask = new TaskCompletionSource<PageErrorEventArgs>();
+            void EventHandler(object sender, PageErrorEventArgs e)
+            {
+                errorTask.TrySetResult(e);
+                Page.PageError -= EventHandler;
+            }
+
+            Page.PageError += EventHandler;
+
+            await Task.WhenAll(
+                errorTask.Task,
+                Page.GoToAsync(TestConstants.ServerUrl + "/error-primitive.html")
+            );
+
+            var error = await errorTask.Task;
+            Assert.That(error.Error, Is.Null);
+        }
     }
 }
