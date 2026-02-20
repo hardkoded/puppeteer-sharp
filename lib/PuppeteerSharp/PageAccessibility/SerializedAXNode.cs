@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PuppeteerSharp.PageAccessibility
 {
@@ -177,6 +178,16 @@ namespace PuppeteerSharp.PageAccessibility
         /// Child nodes of this node, if any.
         /// </summary>
         public SerializedAXNode[] Children { get; set; }
+
+        internal Func<Task<IElementHandle>> ElementHandleFactory { get; set; }
+
+        /// <summary>
+        /// Gets the element handle for this node.
+        /// For text nodes, returns the parent element's handle instead of the text node's.
+        /// </summary>
+        /// <returns>An <see cref="IElementHandle"/> for this node, or <c>null</c> if no handle is available.</returns>
+        public Task<IElementHandle> ElementHandleAsync()
+            => ElementHandleFactory != null ? ElementHandleFactory() : Task.FromResult<IElementHandle>(null);
 
         /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Exceptions should not be raised in this type of method.")]
