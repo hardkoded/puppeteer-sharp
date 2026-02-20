@@ -99,5 +99,17 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="pendingHandler">The handler to execute.</param>
         internal abstract void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler);
+
+        /// <summary>
+        /// Verifies that request interception is enabled and the request has not been handled yet.
+        /// </summary>
+        /// <exception cref="PuppeteerException">Thrown when interception is not enabled or request is already handled.</exception>
+        protected abstract void VerifyInterception();
+
+        /// <summary>
+        /// Determines whether this request can be intercepted.
+        /// </summary>
+        /// <returns><c>true</c> if the request can be intercepted; otherwise, <c>false</c>.</returns>
+        protected abstract bool CanBeIntercepted();
     }
 }

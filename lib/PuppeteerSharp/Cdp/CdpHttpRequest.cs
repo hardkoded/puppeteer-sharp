@@ -59,44 +59,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc cref="Response"/>
     public override CdpHttpResponse Response { get; internal set; }
 
-    internal override Payload ContinueRequestOverrides
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
+    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
 
-            return _continueRequestOverrides;
-        }
-    }
+    internal override ResponseData ResponseForRequest => _responseForRequest;
 
-    internal override ResponseData ResponseForRequest
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            return _responseForRequest;
-        }
-    }
-
-    internal override RequestAbortErrorCode AbortErrorReason
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            return _abortErrorReason;
-        }
-    }
+    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     private InterceptResolutionState InterceptResolutionState
     {
@@ -118,20 +85,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task ContinueAsync(Payload overrides = null, int? priority = null)
     {
-        // Request interception is not supported for data: urls.
-        if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -163,19 +121,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task RespondAsync(ResponseData response, int? priority = null)
     {
-        if (Url.StartsWith("data:", StringComparison.Ordinal))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -206,20 +156,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
-        // Request interception is not supported for data: urls.
-        if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -282,6 +223,24 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
     internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
+
+    /// <inheritdoc/>
+    protected override void VerifyInterception()
+    {
+        if (!_allowInterception)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (IsInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override bool CanBeIntercepted()
+        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache;
 
     private static string ReconstructPostData(Messaging.Request request)
     {
