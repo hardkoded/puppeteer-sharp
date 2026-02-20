@@ -340,10 +340,24 @@ namespace PuppeteerSharp
         }
 
         private string ComputeSystemExecutablePath(SupportedBrowser browser, ChromeReleaseChannel channel)
-            => browser switch
+        {
+            if (browser != SupportedBrowser.Chrome)
             {
-                SupportedBrowser.Chrome => Chrome.ResolveSystemExecutablePath(BrowserFetcher.GetCurrentPlatform(), channel),
-                _ => throw new PuppeteerException($"System browser detection is not supported for {browser} yet."),
-            };
+                throw new PuppeteerException($"System browser detection is not supported for {browser} yet.");
+            }
+
+            var paths = Chrome.ResolveSystemExecutablePaths(BrowserFetcher.GetCurrentPlatform(), channel);
+
+            foreach (var path in paths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            throw new PuppeteerException(
+                $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
+        }
     }
 }
