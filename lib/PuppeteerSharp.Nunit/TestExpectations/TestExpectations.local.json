@@ -112,6 +112,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "comment": "Execution context destruction doesn't reliably propagate in .NET, causing the test to hang",
+    "testIdPattern": "[evaluation.spec] *should throw when evaluation triggers reload",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "Firefox native BiDi does not return goog:partitionKey or goog:sourceScheme extension data",
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie with a partitionKey",
     "platforms": ["darwin", "linux", "win32"],
