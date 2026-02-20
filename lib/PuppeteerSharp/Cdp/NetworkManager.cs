@@ -156,6 +156,7 @@ namespace PuppeteerSharp.Cdp
         internal Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
         {
             _emulatedNetworkConditions ??= new InternalNetworkConditions();
+            _emulatedNetworkConditions.Offline = networkConditions?.Offline ?? false;
             _emulatedNetworkConditions.Upload = networkConditions?.Upload ?? -1;
             _emulatedNetworkConditions.Download = networkConditions?.Download ?? -1;
             _emulatedNetworkConditions.Latency = networkConditions?.Latency ?? 0;
