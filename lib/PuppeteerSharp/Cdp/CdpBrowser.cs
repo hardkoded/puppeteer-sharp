@@ -41,6 +41,7 @@ public class CdpBrowser : Browser
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
     private readonly bool _handleDevToolsAsPage;
+    private readonly bool _networkEnabled;
     private Task _closeTask;
 
     internal CdpBrowser(
@@ -51,13 +52,15 @@ public class CdpBrowser : Browser
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetFunc = null,
-        bool handleDevToolsAsPage = false)
+        bool handleDevToolsAsPage = false,
+        bool networkEnabled = true)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
         _handleDevToolsAsPage = handleDevToolsAsPage;
+        _networkEnabled = networkEnabled;
         var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         IsPageTargetFunc =
@@ -199,7 +202,8 @@ public class CdpBrowser : Browser
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetCallback = null,
         Action<IBrowser> initAction = null,
-        bool handleDevToolsAsPage = false)
+        bool handleDevToolsAsPage = false,
+        bool networkEnabled = true)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -209,7 +213,8 @@ public class CdpBrowser : Browser
             launcher,
             targetFilter,
             isPageTargetCallback,
-            handleDevToolsAsPage);
+            handleDevToolsAsPage,
+            networkEnabled);
 
         try
         {
@@ -230,6 +235,8 @@ public class CdpBrowser : Browser
             throw;
         }
     }
+
+    internal override bool IsNetworkEnabled() => _networkEnabled;
 
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {

@@ -24,12 +24,12 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory);
+            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;

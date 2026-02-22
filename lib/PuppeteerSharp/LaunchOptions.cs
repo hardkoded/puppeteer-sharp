@@ -155,6 +155,13 @@ namespace PuppeteerSharp
         public TransportFactory TransportFactory { get; set; }
 
         /// <summary>
+        /// Experimental setting to disable monitoring network events by default. When
+        /// set to <c>false</c>, parts of Puppeteer that depend on network events would not
+        /// work such as <see cref="IRequest"/> and <see cref="IResponse"/>.
+        /// </summary>
+        public bool NetworkEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
