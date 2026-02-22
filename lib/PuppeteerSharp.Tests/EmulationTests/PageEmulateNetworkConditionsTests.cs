@@ -10,6 +10,23 @@ namespace PuppeteerSharp.Tests.EmulationTests
         {
         }
 
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should support offline")]
+        public async Task ShouldSupportOffline()
+        {
+            await Page.EmulateNetworkConditionsAsync(new NetworkConditions
+            {
+                Offline = true,
+                Download = 0,
+                Upload = 0,
+                Latency = 0,
+            });
+
+            Assert.ThrowsAsync<NavigationException>(async () =>
+            {
+                await Page.GoToAsync(TestConstants.EmptyPage);
+            });
+        }
+
         [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
