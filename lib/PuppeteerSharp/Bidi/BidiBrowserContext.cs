@@ -159,6 +159,27 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
+    public override async Task<CookieParam[]> GetCookiesAsync()
+    {
+        var cookies = await UserContext.GetCookiesAsync().ConfigureAwait(false);
+        return cookies.Select(BidiCookieHelper.BidiToPuppeteerCookie).ToArray();
+    }
+
+    /// <inheritdoc />
+    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    {
+        await Task.WhenAll(cookies.Select(async cookie =>
+        {
+            var domain = cookie.Domain;
+            var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookie, domain);
+
+            await UserContext.SetCookieAsync(
+                bidiCookie,
+                cookie.PartitionKey).ConfigureAwait(false);
+        })).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />

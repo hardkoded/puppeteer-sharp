@@ -179,6 +179,10 @@ namespace PuppeteerSharp
             => DefaultContext.SetPermissionAsync(origin, permissions);
 
         /// <inheritdoc/>
+        public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+            => DefaultContext.DeleteMatchingCookiesAsync(filters);
+
+        /// <inheritdoc/>
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
 
         /// <inheritdoc/>
