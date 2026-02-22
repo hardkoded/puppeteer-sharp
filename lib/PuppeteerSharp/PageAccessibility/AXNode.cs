@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -24,10 +25,12 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly string _roledescription;
         private readonly string _live;
         private readonly bool _ignored;
+        private readonly Realm _realm;
         private bool? _cachedHasFocusableChild;
 
-        private AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
+        private AXNode(Realm realm, AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
+            _realm = realm;
             Payload = payload;
 
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
@@ -55,12 +58,12 @@ namespace PuppeteerSharp.PageAccessibility
 
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
 
-        internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
+        internal static AXNode CreateTree(Realm realm, IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
         {
             var nodeById = new Dictionary<string, AXNode>();
             foreach (var payload in payloads)
             {
-                nodeById[payload.NodeId] = new AXNode(payload);
+                nodeById[payload.NodeId] = new AXNode(realm, payload);
             }
 
             foreach (var node in nodeById.Values)
@@ -255,8 +258,22 @@ namespace PuppeteerSharp.PageAccessibility
                 properties["description"] = Payload.Description.Value;
             }
 
+            var realm = _realm;
+            var backendDOMNodeId = Payload.BackendDOMNodeId;
+
             var node = new SerializedAXNode
             {
+                ElementHandleFactory = backendDOMNodeId.ValueKind == JsonValueKind.Number && realm != null
+                    ? async () =>
+                    {
+                        var handle = await realm.AdoptBackendNodeAsync(backendDOMNodeId.GetInt32()).ConfigureAwait(false);
+
+                        // Since Text nodes are not elements, we want to
+                        // return a handle to the parent element for them.
+                        return await ((ElementHandle)handle).EvaluateFunctionHandleAsync(
+                            "node => node.nodeType === Node.TEXT_NODE ? node.parentElement : node").ConfigureAwait(false) as IElementHandle;
+                    }
+                : null,
                 Role = _role,
                 Name = properties.GetValue("name")?.ToObject<string>(),
                 Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
@@ -268,7 +285,7 @@ namespace PuppeteerSharp.PageAccessibility
                 Disabled = properties.GetValue("disabled")?.ToObject<bool>() ?? false,
                 Expanded = properties.GetValue("expanded")?.ToObject<bool>() ?? false,
 
-                // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
+                // RootWebArea's treat focus differently than other nodes. They report whether their frame has focus,
                 // not whether focus is specifically on the root node.
                 Focused = properties.GetValue("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
                 Modal = properties.GetValue("modal")?.ToObject<bool>() ?? false,

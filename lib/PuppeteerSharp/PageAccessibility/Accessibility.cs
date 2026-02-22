@@ -41,7 +41,8 @@ namespace PuppeteerSharp.PageAccessibility
                 backendNodeId = node.Node.BackendNodeId;
             }
 
-            var defaultRoot = AXNode.CreateTree(nodes);
+            var realm = _realmProvider?.Invoke();
+            var defaultRoot = AXNode.CreateTree(realm, nodes);
             if (defaultRoot == null)
             {
                 return null;
