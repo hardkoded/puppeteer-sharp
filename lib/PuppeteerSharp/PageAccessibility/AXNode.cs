@@ -285,7 +285,7 @@ namespace PuppeteerSharp.PageAccessibility
                 Disabled = properties.GetValue("disabled")?.ToObject<bool>() ?? false,
                 Expanded = properties.GetValue("expanded")?.ToObject<bool>() ?? false,
 
-                // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
+                // RootWebArea's treat focus differently than other nodes. They report whether their frame has focus,
                 // not whether focus is specifically on the root node.
                 Focused = properties.GetValue("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
                 Modal = properties.GetValue("modal")?.ToObject<bool>() ?? false,
