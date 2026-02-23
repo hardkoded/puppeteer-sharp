@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -107,6 +108,34 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             );
 
             Assert.That(await requestTask.Result, Is.EqualTo("doggo"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should fail if the header value is invalid")]
+        public async Task ShouldFailIfTheHeaderValueIsInvalid()
+        {
+            Exception error = null;
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                try
+                {
+                    await e.Request.ContinueAsync(new Payload
+                    {
+                        Headers = new Dictionary<string, string>
+                        {
+                            ["X-Invalid-Header"] = "a\nb",
+                        },
+                    });
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+
+                await e.Request.ContinueAsync();
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend both post data and method on navigation")]
