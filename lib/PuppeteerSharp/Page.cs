@@ -525,11 +525,6 @@ namespace PuppeteerSharp
                 var stack = new DisposableTasksStack();
                 await using (stack.ConfigureAwait(false))
                 {
-                    if (!ScreenshotBurstModeOn)
-                    {
-                        await BringToFrontAsync().ConfigureAwait(false);
-                    }
-
                     // FromSurface is not supported on Firefox.
                     // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
                     if (Browser.BrowserType == SupportedBrowser.Firefox)
