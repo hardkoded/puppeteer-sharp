@@ -50,20 +50,24 @@ public class CdpCDPSession : CDPSession
         _parentSessionId = parentSessionId;
     }
 
+    /// <inheritdoc />
+    public override bool Detached => Connection.IsClosed || IsClosed;
+
     internal override CDPSession ParentSession
         => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
 
     internal bool IsClosed { get; private set; }
 
     /// <inheritdoc />
-    public override Task DetachAsync()
+    public override async Task DetachAsync()
     {
-        if (Connection == null)
+        if (Detached)
         {
-            throw new PuppeteerException($"Session already detached.Most likely the {_targetType} has been closed.");
+            throw new PuppeteerException($"Session already detached. Most likely the {_targetType} has been closed.");
         }
 
-        return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest { SessionId = Id });
+        await Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest { SessionId = Id }).ConfigureAwait(false);
+        IsClosed = true;
     }
 
     /// <inheritdoc />
@@ -73,7 +77,7 @@ public class CdpCDPSession : CDPSession
         bool waitForCallback = true,
         CommandOptions options = null)
     {
-        if (Connection == null)
+        if (Detached)
         {
             throw new TargetClosedException(
                 $"Protocol error ({method}): Session closed. " +
@@ -136,7 +140,6 @@ public class CdpCDPSession : CDPSession
 
         _callbacks.Clear();
         OnDisconnected();
-        Connection = null;
     }
 
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;

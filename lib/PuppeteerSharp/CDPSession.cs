@@ -34,6 +34,9 @@ namespace PuppeteerSharp
         public string CloseReason { get; protected set; }
 
         /// <inheritdoc/>
+        public abstract bool Detached { get; }
+
+        /// <inheritdoc/>
         public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
         internal Connection Connection { get; set; }
