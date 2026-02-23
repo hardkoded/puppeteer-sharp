@@ -1101,9 +1101,11 @@ public class BidiPage : Page
         var marginBottom = ConvertPrintParameterToCentimeters(options.MarginOptions.Bottom);
         var marginRight = ConvertPrintParameterToCentimeters(options.MarginOptions.Right);
 
-        // Wait for fonts to be ready
-        await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
-            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        if (options.WaitForFonts)
+        {
+            await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
+                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        }
 
         var pageRanges = new List<object>();
         if (!string.IsNullOrEmpty(options.PageRanges))
