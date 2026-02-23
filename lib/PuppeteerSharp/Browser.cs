@@ -94,6 +94,12 @@ namespace PuppeteerSharp
         public abstract Task RemoveScreenAsync(string screenId);
 
         /// <inheritdoc/>
+        public abstract Task<string> InstallExtensionAsync(string path);
+
+        /// <inheritdoc/>
+        public abstract Task UninstallExtensionAsync(string id);
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync()
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))

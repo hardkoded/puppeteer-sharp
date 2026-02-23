@@ -192,6 +192,21 @@ public class CdpBrowser : Browser
         await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override async Task<string> InstallExtensionAsync(string path)
+    {
+        var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
+            "Extensions.loadUnpacked",
+            new ExtensionsLoadUnpackedRequest { Path = path }).ConfigureAwait(false);
+        return response.Id;
+    }
+
+    /// <inheritdoc/>
+    public override async Task UninstallExtensionAsync(string id)
+    {
+        await Connection.SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id }).ConfigureAwait(false);
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
