@@ -482,8 +482,10 @@ namespace PuppeteerSharp
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <inheritdoc/>
-        public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
-            => _screenshotTaskQueue.Enqueue(async () =>
+        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
+        {
+            using var guard = await ((BrowserContext)BrowserContext).StartScreenshotAsync().ConfigureAwait(false);
+            return await _screenshotTaskQueue.Enqueue(async () =>
             {
                 if (options == null)
                 {
@@ -593,7 +595,8 @@ namespace PuppeteerSharp
 
                     return result;
                 }
-            });
+            }).ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());

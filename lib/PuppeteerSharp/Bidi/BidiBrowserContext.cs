@@ -186,6 +186,9 @@ public class BidiBrowserContext : BrowserContext
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
+        var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
         var type = options?.Type == CreatePageType.Window
             ? WebDriverBiDi.BrowsingContext.CreateType.Window
             : WebDriverBiDi.BrowsingContext.CreateType.Tab;

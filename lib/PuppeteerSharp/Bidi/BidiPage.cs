@@ -780,6 +780,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
+        var guard = await ((BrowserContext)BrowserContext).WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
         try
         {
             await BidiMainFrame.BrowsingContext.CloseAsync(options?.RunBeforeUnload).ConfigureAwait(false);
