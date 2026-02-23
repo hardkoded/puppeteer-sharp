@@ -19,6 +19,7 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _clients = new();
         private readonly IFrameProvider _frameManager;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly bool _networkEnabled;
 
         private InternalNetworkConditions _emulatedNetworkConditions;
         private Dictionary<string, string> _extraHTTPHeaders;
@@ -34,11 +35,13 @@ namespace PuppeteerSharp.Cdp
         /// </summary>
         /// <param name="frameManager">Frame manager.</param>
         /// <param name="loggerFactory">Logger factory.</param>
-        internal NetworkManager(IFrameProvider frameManager, ILoggerFactory loggerFactory)
+        /// <param name="networkEnabled">Whether network events are enabled.</param>
+        internal NetworkManager(IFrameProvider frameManager, ILoggerFactory loggerFactory, bool networkEnabled = true)
         {
             _frameManager = frameManager;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<NetworkManager>();
+            _networkEnabled = networkEnabled;
         }
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
@@ -57,7 +60,7 @@ namespace PuppeteerSharp.Cdp
 
         internal async Task AddClientAsync(ICDPSession client)
         {
-            if (_clients.ContainsKey(client))
+            if (!_networkEnabled || _clients.ContainsKey(client))
             {
                 return;
             }

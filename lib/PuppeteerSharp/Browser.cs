@@ -220,6 +220,8 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
+        internal virtual bool IsNetworkEnabled() => true;
+
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 
