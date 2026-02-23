@@ -290,6 +290,8 @@ public class BidiBrowserContext : BrowserContext
             OverridePermission.PersistentStorage => "persistent-storage",
             OverridePermission.LocalNetworkAccess => "local-network-access",
             OverridePermission.LocalFonts => "local-fonts",
+            OverridePermission.KeyboardLock => "keyboard-lock",
+            OverridePermission.PointerLock => "pointer-lock",
             _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
         };
     }
