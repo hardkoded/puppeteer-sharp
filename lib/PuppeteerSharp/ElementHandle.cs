@@ -710,6 +710,9 @@ namespace PuppeteerSharp
         public abstract Task<int> BackendNodeIdAsync();
 
         /// <inheritdoc/>
+        public abstract Task AutofillAsync(AutofillData data);
+
+        /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
             => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(

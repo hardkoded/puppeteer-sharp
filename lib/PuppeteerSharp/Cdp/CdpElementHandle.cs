@@ -179,6 +179,29 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
         return _backendNodeId.Value;
     }
 
+    /// <inheritdoc/>
+    public override async Task AutofillAsync(AutofillData data)
+    {
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data));
+        }
+
+        var nodeInfo = await Client
+            .SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest { ObjectId = Id, })
+            .ConfigureAwait(false);
+        var fieldId = nodeInfo.Node.BackendNodeId.GetInt32();
+        var frameId = _cdpFrame.Id;
+        await Client.SendAsync(
+            "Autofill.trigger",
+            new AutofillTriggerRequest
+            {
+                FieldId = fieldId,
+                FrameId = frameId,
+                Card = data.CreditCard,
+            }).ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();
 
