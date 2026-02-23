@@ -769,7 +769,7 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
-        if (Client?.Connection?.IsClosed ?? true)
+        if (Client?.Detached ?? true)
         {
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
             return;

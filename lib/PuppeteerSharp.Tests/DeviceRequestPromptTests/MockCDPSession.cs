@@ -47,6 +47,7 @@ public class MockCDPSession : ICDPSession
 #pragma warning disable CS0067
 
     public string CloseReason { get; }
+    public bool Detached { get; }
     public bool IsClosed { get; }
     public ILoggerFactory LoggerFactory { get; }
     public string Id { get; } = "1";

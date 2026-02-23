@@ -59,6 +59,9 @@ public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) :
     /// <inheritdoc />
     public string CloseReason { get; private set; }
 
+    /// <inheritdoc />
+    public bool Detached { get; private set; }
+
     internal static IEnumerable<BidiCdpSession> Sessions => _sessions.Values;
 
     internal BidiFrame Frame { get; set; } = bidiFrame;
