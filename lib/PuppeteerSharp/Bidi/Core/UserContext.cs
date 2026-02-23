@@ -25,9 +25,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebDriverBiDi.Browser;
 using WebDriverBiDi.BrowsingContext;
+using WebDriverBiDi.Storage;
+using BidiCookie = WebDriverBiDi.Network.Cookie;
 using BidiPermissionState = WebDriverBiDi.Permissions.PermissionState;
 using SetPermissionCommandParameters = WebDriverBiDi.Permissions.SetPermissionCommandParameters;
 
@@ -128,6 +131,33 @@ internal class UserContext : IDisposable
         {
             Dispose("User context already closed.");
         }
+    }
+
+    public async Task<BidiCookie[]> GetCookiesAsync(string sourceOrigin = null)
+    {
+        var result = await Session.Driver.Storage.GetCookiesAsync(
+            new GetCookiesCommandParameters
+            {
+                Partition = new StorageKeyPartitionDescriptor
+                {
+                    UserContextId = Id,
+                    SourceOrigin = sourceOrigin,
+                },
+            }).ConfigureAwait(false);
+        return result.Cookies.ToArray();
+    }
+
+    public async Task SetCookieAsync(PartialCookie cookie, string sourceOrigin = null)
+    {
+        await Session.Driver.Storage.SetCookieAsync(
+            new SetCookieCommandParameters(cookie)
+            {
+                Partition = new StorageKeyPartitionDescriptor
+                {
+                    SourceOrigin = sourceOrigin,
+                    UserContextId = Id,
+                },
+            }).ConfigureAwait(false);
     }
 
     public async Task SetPermissionsAsync(

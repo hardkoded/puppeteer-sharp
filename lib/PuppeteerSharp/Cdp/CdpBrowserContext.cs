@@ -111,4 +111,44 @@ public class CdpBrowserContext : BrowserContext
         {
             BrowserContextId = Id,
         });
+
+    /// <inheritdoc/>
+    public override async Task<CookieParam[]> GetCookiesAsync()
+    {
+        var response = await _connection.SendAsync<StorageGetCookiesResponse>(
+            "Storage.getCookies",
+            new StorageGetCookiesRequest { BrowserContextId = Id }).ConfigureAwait(false);
+        return response.Cookies;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    {
+        if (cookies == null)
+        {
+            throw new ArgumentNullException(nameof(cookies));
+        }
+
+        foreach (var cookie in cookies)
+        {
+            cookie.SameSite = ConvertSameSiteForCdp(cookie.SameSite);
+        }
+
+        await _connection.SendAsync(
+            "Storage.setCookies",
+            new StorageSetCookiesRequest
+            {
+                BrowserContextId = Id,
+                Cookies = cookies,
+            }).ConfigureAwait(false);
+    }
+
+    private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)
+    {
+        return sameSite switch
+        {
+            SameSite.Strict or SameSite.Lax or SameSite.None => sameSite,
+            _ => null,
+        };
+    }
 }

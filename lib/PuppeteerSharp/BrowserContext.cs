@@ -54,6 +54,82 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
+        /// <inheritdoc/>
+        public abstract Task<CookieParam[]> GetCookiesAsync();
+
+        /// <inheritdoc/>
+        public abstract Task SetCookieAsync(params CookieParam[] cookies);
+
+        /// <inheritdoc/>
+        public async Task DeleteCookieAsync(params CookieParam[] cookies)
+        {
+            await SetCookieAsync(
+                cookies.Select(cookie => new CookieParam
+                {
+                    Name = cookie.Name,
+                    Value = cookie.Value,
+                    Url = cookie.Url,
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Secure = cookie.Secure,
+                    HttpOnly = cookie.HttpOnly,
+                    SameSite = cookie.SameSite,
+                    Expires = 1,
+                    Size = cookie.Size,
+                    Session = cookie.Session,
+                    Priority = cookie.Priority,
+                    SourceScheme = cookie.SourceScheme,
+                    PartitionKey = cookie.PartitionKey,
+                    PartitionKeyOpaque = cookie.PartitionKeyOpaque,
+                }).ToArray()).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+        {
+            var cookies = await GetCookiesAsync().ConfigureAwait(false);
+            var cookiesToDelete = cookies.Where(cookie =>
+                filters.Any(filter =>
+                {
+                    if (filter.Name != cookie.Name)
+                    {
+                        return false;
+                    }
+
+                    if (filter.Domain != null && filter.Domain == cookie.Domain)
+                    {
+                        return true;
+                    }
+
+                    if (filter.Path != null && filter.Path == cookie.Path)
+                    {
+                        return true;
+                    }
+
+                    if (filter.PartitionKey != null && cookie.PartitionKey != null)
+                    {
+                        if (filter.PartitionKey == cookie.PartitionKey)
+                        {
+                            return true;
+                        }
+                    }
+
+                    if (filter.Url != null)
+                    {
+                        if (Uri.TryCreate(filter.Url, UriKind.Absolute, out var url))
+                        {
+                            if (url.Host == cookie.Domain && url.AbsolutePath == cookie.Path)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return true;
+                })).ToArray();
+            await DeleteCookieAsync(cookiesToDelete).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {

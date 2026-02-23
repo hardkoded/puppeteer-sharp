@@ -277,6 +277,13 @@ namespace PuppeteerSharp
         Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
 
         /// <summary>
+        /// Deletes cookies matching the provided filters from the default <see cref="IBrowserContext"/>.
+        /// </summary>
+        /// <param name="filters">Filters to match cookies against.</param>
+        /// <returns>Task.</returns>
+        Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters);
+
+        /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
