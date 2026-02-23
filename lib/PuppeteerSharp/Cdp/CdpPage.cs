@@ -946,8 +946,11 @@ public class CdpPage : Page
             await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
         }
 
-        await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("() => documents.fonts.ready")
-            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        if (options.WaitForFonts)
+        {
+            await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
+                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        }
 
         var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>(
             "Page.printToPDF",
