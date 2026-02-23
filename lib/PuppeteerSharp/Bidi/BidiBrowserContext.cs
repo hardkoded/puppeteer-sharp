@@ -162,20 +162,21 @@ public class BidiBrowserContext : BrowserContext
     public override async Task<CookieParam[]> GetCookiesAsync()
     {
         var cookies = await UserContext.GetCookiesAsync().ConfigureAwait(false);
-        return cookies.Select(BidiCookieHelper.BidiToPuppeteerCookie).ToArray();
+        return cookies.Select(cookie => BidiCookieHelper.BidiToPuppeteerCookie(cookie, returnCompositePartitionKey: true)).ToArray();
     }
 
     /// <inheritdoc />
-    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    public override async Task SetCookieAsync(params CookieData[] cookies)
     {
         await Task.WhenAll(cookies.Select(async cookie =>
         {
             var domain = cookie.Domain;
-            var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookie, domain);
+            var bidiCookie = BidiCookieHelper.PuppeteerCookieDataToBidiCookie(cookie, domain);
+            var partitionKey = BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.PartitionKey);
 
             await UserContext.SetCookieAsync(
                 bidiCookie,
-                cookie.PartitionKey).ConfigureAwait(false);
+                partitionKey).ConfigureAwait(false);
         })).ConfigureAwait(false);
     }
 

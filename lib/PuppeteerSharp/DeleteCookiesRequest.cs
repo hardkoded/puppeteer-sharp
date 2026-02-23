@@ -29,7 +29,8 @@ namespace PuppeteerSharp
         /// <summary>
         /// Gets or sets the partition key. If specified, deletes cookies in the given partition key.
         /// In Chrome, partitionKey matches the top-level site the partitioned cookie is available in.
+        /// In Firefox, it matches the source origin.
         /// </summary>
-        public string PartitionKey { get; set; }
+        public CookiePartitionKey PartitionKey { get; set; }
     }
 }

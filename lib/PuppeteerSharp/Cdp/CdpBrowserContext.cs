@@ -122,24 +122,34 @@ public class CdpBrowserContext : BrowserContext
     }
 
     /// <inheritdoc/>
-    public override async Task SetCookieAsync(params CookieParam[] cookies)
+    public override async Task SetCookieAsync(params CookieData[] cookies)
     {
         if (cookies == null)
         {
             throw new ArgumentNullException(nameof(cookies));
         }
 
-        foreach (var cookie in cookies)
+        var cookiesToSet = cookies.Select(cookie => new CookieData
         {
-            cookie.SameSite = ConvertSameSiteForCdp(cookie.SameSite);
-        }
+            Name = cookie.Name,
+            Value = cookie.Value,
+            Domain = cookie.Domain,
+            Path = cookie.Path,
+            Secure = cookie.Secure,
+            HttpOnly = cookie.HttpOnly,
+            SameSite = ConvertSameSiteForCdp(cookie.SameSite),
+            Expires = cookie.Expires,
+            Priority = cookie.Priority,
+            SourceScheme = cookie.SourceScheme,
+            PartitionKey = cookie.PartitionKey,
+        }).ToArray();
 
         await _connection.SendAsync(
             "Storage.setCookies",
             new StorageSetCookiesRequest
             {
                 BrowserContextId = Id,
-                Cookies = cookies,
+                Cookies = cookiesToSet,
             }).ConfigureAwait(false);
     }
 

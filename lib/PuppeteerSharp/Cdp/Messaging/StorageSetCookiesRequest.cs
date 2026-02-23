@@ -4,6 +4,6 @@ namespace PuppeteerSharp.Cdp.Messaging
     {
         public string BrowserContextId { get; set; }
 
-        public CookieParam[] Cookies { get; set; }
+        public CookieData[] Cookies { get; set; }
     }
 }
