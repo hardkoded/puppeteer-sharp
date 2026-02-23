@@ -284,6 +284,24 @@ namespace PuppeteerSharp
         Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters);
 
         /// <summary>
+        /// Installs an unpacked extension and returns the extension ID.
+        /// In Chrome, this is only available if the browser was created using pipe mode
+        /// and the <c>--enable-unsafe-extension-debugging</c> flag is set.
+        /// </summary>
+        /// <param name="path">The path to the unpacked extension directory.</param>
+        /// <returns>A task that resolves to the extension ID.</returns>
+        Task<string> InstallExtensionAsync(string path);
+
+        /// <summary>
+        /// Uninstalls a previously installed extension by its ID.
+        /// In Chrome, this is only available if the browser was created using pipe mode
+        /// and the <c>--enable-unsafe-extension-debugging</c> flag is set.
+        /// </summary>
+        /// <param name="id">The extension ID to uninstall.</param>
+        /// <returns>A task that completes when the extension is uninstalled.</returns>
+        Task UninstallExtensionAsync(string id);
+
+        /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
