@@ -1420,6 +1420,14 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
+        /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="selector">A selector to locate an element.</param>
+        /// <returns>A locator for the provided selector.</returns>
+        Locators.Locator Locator(string selector);
+
+        /// <summary>
         /// Waits for a xpath selector to be added to the DOM.
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for.</param>

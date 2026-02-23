@@ -118,6 +118,10 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
         {
             if (string.IsNullOrEmpty(xpath))

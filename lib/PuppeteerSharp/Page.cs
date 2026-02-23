@@ -681,6 +681,10 @@ namespace PuppeteerSharp
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
