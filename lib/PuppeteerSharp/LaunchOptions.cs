@@ -212,6 +212,19 @@ namespace PuppeteerSharp
         public bool WaitForInitialPage { get; set; } = true;
 
         /// <summary>
+        /// If <c>true</c>, avoids passing default arguments to the browser that would
+        /// prevent extensions from being enabled. Passing a list of strings will
+        /// load the provided paths as unpacked extensions.
+        /// </summary>
+        /// <remarks>
+        /// <para>In Chrome, setting this to <c>true</c> or a <c>string[]</c> replaces the
+        /// <c>--disable-extensions</c> flag with <c>--enable-unsafe-extension-debugging</c>.</para>
+        /// <para>Passing a <c>string[]</c> is only supported with Firefox (BiDi) at this time.</para>
+        /// <para>In Firefox, there is no known command line flag to disable addons so they are always enabled.</para>
+        /// </remarks>
+        public EnableExtensionsOption EnableExtensions { get; set; }
+
+        /// <summary>
         /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
         /// </summary>
         public bool HandleDevToolsAsPage { get; set; }

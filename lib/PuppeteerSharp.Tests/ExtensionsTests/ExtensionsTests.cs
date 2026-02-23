@@ -14,9 +14,9 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
         private static LaunchOptions BrowserWithExtensionOptions() => new()
         {
             Headless = false,
+            EnableExtensions = true,
             Args = new[]
             {
-                $"--disable-extensions-except={_extensionPath.Quote()}",
                 $"--load-extension={_extensionPath.Quote()}"
             }
         };

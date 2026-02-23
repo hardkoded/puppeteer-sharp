@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -131,6 +132,19 @@ namespace PuppeteerSharp
                                 handleDevToolsAsPage: options.HandleDevToolsAsPage,
                                 networkEnabled: options.NetworkEnabled)
                             .ConfigureAwait(false);
+                    }
+
+                    if (options.EnableExtensions is { Paths: { } extensionPaths })
+                    {
+                        if (options.Browser != SupportedBrowser.Firefox)
+                        {
+                            throw new PuppeteerException(
+                                "Installing extensions via EnableExtensions paths is only supported with Firefox. " +
+                                "For Chrome, use EnableExtensions = true and pass --load-extension as an argument.");
+                        }
+
+                        await Task.WhenAll(
+                            extensionPaths.Select(path => browser.InstallExtensionAsync(path))).ConfigureAwait(false);
                     }
 
                     if (options.WaitForInitialPage)
