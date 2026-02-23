@@ -36,6 +36,7 @@ namespace PuppeteerSharp.Cdp;
 public class CdpElementHandle : ElementHandle, ICdpHandle
 {
     private readonly CdpFrame _cdpFrame;
+    private int? _backendNodeId;
 
     internal CdpElementHandle(
         IsolatedWorld world,
@@ -161,6 +162,22 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
 
                 return handle;
             });
+
+    /// <inheritdoc/>
+    public override async Task<int> BackendNodeIdAsync()
+    {
+        if (_backendNodeId.HasValue)
+        {
+            return _backendNodeId.Value;
+        }
+
+        var response = await Client
+            .SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest { ObjectId = Id, })
+            .ConfigureAwait(false);
+
+        _backendNodeId = response.Node.BackendNodeId.GetInt32();
+        return _backendNodeId.Value;
+    }
 
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();
