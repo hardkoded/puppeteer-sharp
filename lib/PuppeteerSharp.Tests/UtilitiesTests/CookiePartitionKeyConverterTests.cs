@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             {
                 Name = "test",
                 Value = "value",
-                PartitionKey = "https://example.com"
+                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.com" },
             };
 
             // Act - Serialize to JSON
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var deserialized = JsonSerializer.Deserialize<CookieParam>(json);
 
             // Assert - Verify round-trip works
-            Assert.That(deserialized.PartitionKey, Is.EqualTo("https://example.com"));
+            Assert.That(deserialized.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com", HasCrossSiteAncestor = false }));
         }
 
         [Test]
@@ -42,8 +42,8 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             // Act
             var cookie = JsonSerializer.Deserialize<CookieParam>(cdpJson);
 
-            // Assert - Should extract the topLevelSite value
-            Assert.That(cookie.PartitionKey, Is.EqualTo("https://example.com"));
+            // Assert - Should extract the topLevelSite value into SourceOrigin
+            Assert.That(cookie.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com", HasCrossSiteAncestor = false }));
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var cookie = JsonSerializer.Deserialize<CookieParam>(stringJson);
 
             // Assert
-            Assert.That(cookie.PartitionKey, Is.EqualTo("https://example.com"));
+            Assert.That(cookie.PartitionKey, Is.EqualTo(new CookiePartitionKey { SourceOrigin = "https://example.com" }));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             {
                 Name = "test",
                 Value = "value",
-                PartitionKey = null
+                PartitionKey = null,
             };
 
             // Act
@@ -89,15 +89,15 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
                     Name = "cookie1",
                     Value = "value1",
                     Domain = "example.com",
-                    PartitionKey = "https://example.com"
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.com" },
                 },
                 new CookieParam
                 {
                     Name = "cookie2",
                     Value = "value2",
                     Domain = "test.com",
-                    PartitionKey = "https://test.com"
-                }
+                    PartitionKey = new CookiePartitionKey { SourceOrigin = "https://test.com" },
+                },
             };
 
             // Act - Serialize to JSON (simulating saving to file)
@@ -109,9 +109,9 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             // Assert - Verify all data is preserved
             Assert.That(loadedCookies, Has.Length.EqualTo(2));
             Assert.That(loadedCookies[0].Name, Is.EqualTo("cookie1"));
-            Assert.That(loadedCookies[0].PartitionKey, Is.EqualTo("https://example.com"));
+            Assert.That(loadedCookies[0].PartitionKey.SourceOrigin, Is.EqualTo("https://example.com"));
             Assert.That(loadedCookies[1].Name, Is.EqualTo("cookie2"));
-            Assert.That(loadedCookies[1].PartitionKey, Is.EqualTo("https://test.com"));
+            Assert.That(loadedCookies[1].PartitionKey.SourceOrigin, Is.EqualTo("https://test.com"));
         }
     }
 }

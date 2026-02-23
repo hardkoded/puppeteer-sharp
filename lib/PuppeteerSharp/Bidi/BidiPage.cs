@@ -754,14 +754,15 @@ public class BidiPage : Page
 
             var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookieToUse, domain);
 
-            if (!string.IsNullOrEmpty(cookie.PartitionKey))
+            var partitionKeyString = BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.PartitionKey);
+            if (!string.IsNullOrEmpty(partitionKeyString))
             {
                 var userContext = ((BidiBrowserContext)BrowserContext).UserContext;
                 await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
                 {
                     Partition = new WebDriverBiDi.Storage.StorageKeyPartitionDescriptor
                     {
-                        SourceOrigin = cookie.PartitionKey,
+                        SourceOrigin = partitionKeyString,
                         UserContextId = userContext.Id,
                     },
                 }).ConfigureAwait(false);
@@ -964,7 +965,7 @@ public class BidiPage : Page
         }).ConfigureAwait(false);
 
         return result.Cookies
-            .Select(BidiCookieHelper.BidiToPuppeteerCookie)
+            .Select(cookie => BidiCookieHelper.BidiToPuppeteerCookie(cookie))
             .Where(cookie => normalizedUrls.Any(url => BidiCookieHelper.TestUrlMatchCookie(cookie, url)))
             .ToArray();
     }

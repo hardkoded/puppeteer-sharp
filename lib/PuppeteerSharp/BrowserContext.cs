@@ -58,29 +58,25 @@ namespace PuppeteerSharp
         public abstract Task<CookieParam[]> GetCookiesAsync();
 
         /// <inheritdoc/>
-        public abstract Task SetCookieAsync(params CookieParam[] cookies);
+        public abstract Task SetCookieAsync(params CookieData[] cookies);
 
         /// <inheritdoc/>
         public async Task DeleteCookieAsync(params CookieParam[] cookies)
         {
             await SetCookieAsync(
-                cookies.Select(cookie => new CookieParam
+                cookies.Select(cookie => new CookieData
                 {
                     Name = cookie.Name,
                     Value = cookie.Value,
-                    Url = cookie.Url,
                     Domain = cookie.Domain,
                     Path = cookie.Path,
                     Secure = cookie.Secure,
                     HttpOnly = cookie.HttpOnly,
                     SameSite = cookie.SameSite,
                     Expires = 1,
-                    Size = cookie.Size,
-                    Session = cookie.Session,
                     Priority = cookie.Priority,
                     SourceScheme = cookie.SourceScheme,
                     PartitionKey = cookie.PartitionKey,
-                    PartitionKeyOpaque = cookie.PartitionKeyOpaque,
                 }).ToArray()).ConfigureAwait(false);
         }
 
@@ -108,7 +104,7 @@ namespace PuppeteerSharp
 
                     if (filter.PartitionKey != null && cookie.PartitionKey != null)
                     {
-                        if (filter.PartitionKey == cookie.PartitionKey)
+                        if (filter.PartitionKey.SourceOrigin == cookie.PartitionKey.SourceOrigin)
                         {
                             return true;
                         }
