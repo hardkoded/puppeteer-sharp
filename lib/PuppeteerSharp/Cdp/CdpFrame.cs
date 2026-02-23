@@ -79,8 +79,6 @@ public class CdpFrame : Frame
     /// <inheritdoc/>
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
     {
-        var ensureNewDocumentNavigation = false;
-
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
@@ -106,7 +104,8 @@ public class CdpFrame : Frame
 
             task = await Task.WhenAny(
                     watcher.TerminationTask,
-                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
+                    watcher.NewDocumentNavigationTask,
+                    watcher.SameDocumentNavigationTask)
                 .ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
@@ -127,8 +126,6 @@ public class CdpFrame : Frame
                 ReferrerPolicy = ReferrerPolicyToProtocol(referrerPolicy),
                 FrameId = Id,
             }).ConfigureAwait(false);
-
-            ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
             if (!string.IsNullOrEmpty(response.ErrorText) &&
                 response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")

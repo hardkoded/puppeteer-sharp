@@ -420,8 +420,8 @@ namespace PuppeteerSharp.Cdp
 
                 var eventArgs = new FrameEventArgs(frame);
                 FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
-                frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
-                FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
+                frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
+                FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
             }
         }
 
