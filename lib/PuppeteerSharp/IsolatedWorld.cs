@@ -97,7 +97,7 @@ namespace PuppeteerSharp
                         "Runtime.addBinding",
                         new RuntimeAddBindingRequest
                         {
-                            Name = name,
+                            Name = BindingUtils.CdpBindingPrefix + name,
                             ExecutionContextName = !string.IsNullOrEmpty(context.ContextName) ? context.ContextName : null,
                             ExecutionContextId = string.IsNullOrEmpty(context.ContextName) ? context.ContextId : null,
                         }).ConfigureAwait(false);

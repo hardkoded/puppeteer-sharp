@@ -25,6 +25,39 @@ public class BFCacheTests : PuppeteerPageBaseTest
         Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("BFCachednext"));
     }
 
+    [Test, PuppeteerTest("bfcache.spec", "BFCache", "can call a function exposed on a page restored from bfcache")]
+    public async Task CanCallAFunctionExposedOnAPageRestoredFromBfcache()
+    {
+        Page.DefaultTimeout = 3_000;
+        var message = string.Empty;
+
+        await Page.ExposeFunctionAsync("ping", (string msg) =>
+        {
+            message = msg;
+            return true;
+        });
+
+        await Page.GoToAsync(TestConstants.ServerUrl + "/cached/bfcache/index.html");
+
+        await Page.EvaluateExpressionAsync("window.ping('1')");
+        Assert.That(message, Is.EqualTo("1"));
+
+        await Task.WhenAll(Page.WaitForNavigationAsync(), Page.ClickAsync("a"));
+        Assert.That(Page.Url, Does.Contain("target.html"));
+
+        await Page.EvaluateExpressionAsync("window.ping('2')");
+        Assert.That(message, Is.EqualTo("2"));
+
+        await Task.WhenAll(Page.WaitForNavigationAsync(), Page.GoBackAsync());
+
+        await Page.EvaluateExpressionAsync("window.ping('3')");
+        Assert.That(message, Is.EqualTo("3"));
+
+        Assert.That(
+            await Page.EvaluateExpressionAsync<string>("document.body.innerText"),
+            Is.EqualTo("BFCachednext"));
+    }
+
     [Test, PuppeteerTest("bfcache.spec", "BFCache", "can navigate to a BFCached page containing an OOPIF and a worker")]
     public async Task CanNavigateToABFCachedPageContainingAnOOPIFAndAWorker()
     {

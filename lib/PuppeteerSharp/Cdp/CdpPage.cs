@@ -252,7 +252,7 @@ public class CdpPage : Page
                 $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
         }
 
-        await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = name, })
+        await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = BindingUtils.CdpBindingPrefix + name, })
             .ConfigureAwait(false);
 
         await RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun).ConfigureAwait(false);
@@ -871,7 +871,7 @@ public class CdpPage : Page
         }
 
         var expression = BindingUtils.PageBindingInitString("exposedFun", name);
-        await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name })
+        await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = BindingUtils.CdpBindingPrefix + name })
             .ConfigureAwait(false);
         var functionInfo = await PrimaryTargetClient
             .SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
