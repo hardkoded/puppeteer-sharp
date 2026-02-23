@@ -304,10 +304,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         catch (PuppeteerException ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
+            HandleError(ex);
         }
     }
 
@@ -326,10 +323,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (PuppeteerException ex)
         {
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
             IsInterceptResolutionHandled = false;
+            HandleError(ex);
         }
     }
 
@@ -389,10 +384,23 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (PuppeteerException ex)
         {
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
             IsInterceptResolutionHandled = false;
+            HandleError(ex);
         }
+    }
+
+    private void HandleError(PuppeteerException ex)
+    {
+        if (ex.Message.Contains("Invalid header") ||
+            ex.Message.Contains("Unsafe header") ||
+            ex.Message.Contains("Expected \"header\"") ||
+            ex.Message.Contains("invalid argument"))
+        {
+            throw ex;
+        }
+
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        _logger.LogError(ex.ToString());
     }
 }

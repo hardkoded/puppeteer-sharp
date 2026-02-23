@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -113,6 +114,38 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             }", TestConstants.ServerUrl);
             var img = await Page.QuerySelectorAsync("img");
             Assert.That(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()), Is.True);
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should fail if the header value is invalid")]
+        public async Task ShouldFailIfTheHeaderValueIsInvalid()
+        {
+            Exception error = null;
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                try
+                {
+                    await e.Request.RespondAsync(new ResponseData
+                    {
+                        Headers = new Dictionary<string, object>
+                        {
+                            ["X-Invalid-Header"] = "a\nb",
+                        },
+                    });
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Body = "Hello World",
+                });
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
