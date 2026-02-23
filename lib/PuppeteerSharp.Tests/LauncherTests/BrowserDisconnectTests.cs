@@ -49,7 +49,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var watchdog = page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Timeout = 60000 });
             remote.Disconnect();
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => watchdog);
-            Assert.That(exception!.Message, Does.Contain("Session closed"));
+            Assert.That(
+                new[]
+                {
+                    "frame got detached",
+                    "Frame detached",
+                    "Session closed",
+                    "Session already ended",
+                }.Any(value => exception!.Message.Contains(value)), Is.True);
         }
     }
 }

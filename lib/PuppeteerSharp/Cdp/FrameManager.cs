@@ -525,6 +525,13 @@ namespace PuppeteerSharp.Cdp
                     return;
                 }
 
+                if (Client.Connection.IsClosed)
+                {
+                    // On connection disconnected remove all frames
+                    RemoveFramesRecursively(mainFrame);
+                    return;
+                }
+
                 foreach (var child in mainFrame.ChildFrames)
                 {
                     RemoveFramesRecursively(child as Frame);
