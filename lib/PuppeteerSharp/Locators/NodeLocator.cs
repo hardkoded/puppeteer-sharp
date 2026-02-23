@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Locators
             return new NodeLocator(frame, selector);
         }
 
-        internal override async Task<IJSHandle> WaitHandleAsync(LocatorActionOptions options, CancellationToken cancellationToken)
+        internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
         {
             var waitOptions = new WaitForSelectorOptions
             {
