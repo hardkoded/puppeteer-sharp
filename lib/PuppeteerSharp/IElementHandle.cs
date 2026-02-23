@@ -336,5 +336,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task ScrollIntoViewAsync();
+
+        /// <summary>
+        /// When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId for the element.
+        /// </summary>
+        /// <returns>A task that resolves to the backend node ID.</returns>
+        Task<int> BackendNodeIdAsync();
     }
 }

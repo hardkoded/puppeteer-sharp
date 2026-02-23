@@ -707,6 +707,9 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public abstract Task<int> BackendNodeIdAsync();
+
+        /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
             => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(
