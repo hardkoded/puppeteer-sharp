@@ -769,6 +769,9 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
+        var guard = await ((BrowserContext)BrowserContext).WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
         if (Client?.Detached ?? true)
         {
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");

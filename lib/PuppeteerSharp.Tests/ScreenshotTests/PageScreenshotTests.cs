@@ -265,6 +265,28 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await Task.WhenAll(closeTasks);
         }
 
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel with page.close()")]
+        public async Task ShouldRunInParallelWithPageClose()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+
+            var page1 = await context.NewPageAsync();
+            var page2 = await context.NewPageAsync();
+
+            var screen1 = page1.ScreenshotDataAsync();
+            var screen2 = page2.ScreenshotDataAsync();
+
+            var close1 = screen1.ContinueWith(_ => page1.CloseAsync()).Unwrap();
+            var close2 = screen2.ContinueWith(_ => page2.CloseAsync()).Unwrap();
+
+            await screen1;
+            var page3 = await Browser.NewPageAsync();
+            await page3.ScreenshotDataAsync();
+            var close3 = page3.CloseAsync();
+
+            await Task.WhenAll(close1, close2, close3);
+        }
+
         [Test, PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should allow transparency")]
         public async Task ShouldAllowTransparency()
         {
