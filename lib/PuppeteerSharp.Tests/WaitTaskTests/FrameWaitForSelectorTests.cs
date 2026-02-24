@@ -82,6 +82,24 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a shadow root")]
+        public async Task ShouldWorkWhenNodeIsAddedInAShadowRoot()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(AddElement, "div");
+            await Task.Delay(100);
+            await Page.EvaluateFunctionAsync(@"() => {
+                const host = document.querySelector('div');
+                const shadow = host.attachShadow({mode: 'open'});
+                const h1 = document.createElement('h1');
+                h1.textContent = 'inside';
+                shadow.appendChild(h1);
+            }");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "Page.waitForSelector is shortcut for main frame")]
         public async Task PageWaitForSelectorAsyncIsShortcutForMainFrame()
         {
@@ -147,6 +165,29 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
             Assert.That(await waitForSelector, Is.True);
+            Assert.That(divFound, Is.True);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible (without DOM mutations)")]
+        public async Task ShouldWaitForVisibleWithoutDOMMutations()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<style>div {display: none;}</style><div>text</div>");
+            var element = await Page.EvaluateFunctionHandleAsync("() => document.getElementsByTagName('div')[0]");
+            Assert.That(element, Is.Not.Null);
+            await Task.Delay(100);
+            Assert.That(divFound, Is.False);
+            await Page.EvaluateFunctionAsync(@"() => {
+                const extraSheet = new CSSStyleSheet();
+                extraSheet.replaceSync('div { display: block; }');
+                document.adoptedStyleSheets = [
+                    ...document.adoptedStyleSheets,
+                    extraSheet,
+                ];
+            }");
+            Assert.That(await waitForSelector.WithTimeout(), Is.True);
             Assert.That(divFound, Is.True);
         }
 
