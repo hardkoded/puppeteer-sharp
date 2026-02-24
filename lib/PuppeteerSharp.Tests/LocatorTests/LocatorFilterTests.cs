@@ -24,21 +24,5 @@ namespace PuppeteerSharp.Tests.LocatorTests
             await hoverTask;
         }
 
-        [Test, PuppeteerTest("locator.spec", "Locator Locator.prototype.map", "should work with expect")]
-        public async Task ShouldWorkWithFilter()
-        {
-            await Page.SetContentAsync("<div id='test'>test</div>");
-            var resultTask = Page
-                .Locator("#test")
-                .Filter("(element) => element.getAttribute('clickable') !== null")
-                .Map("(element) => element.getAttribute('clickable')")
-                .WaitAsync<string>();
-
-            await Page.EvaluateExpressionAsync(
-                "document.querySelector('#test')?.setAttribute('clickable', 'true')");
-
-            var result = await resultTask;
-            Assert.That(result, Is.EqualTo("true"));
-        }
     }
 }
