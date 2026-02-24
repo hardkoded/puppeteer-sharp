@@ -503,8 +503,11 @@ namespace PuppeteerSharp.Cdp
             var frame = GetFrame(frameId);
             if (frame != null)
             {
-                if (session != null && frame.Client != Client)
+                var parentFrame = GetFrame(parentFrameId);
+                if (session != null && parentFrame != null && frame.Client != parentFrame.Client)
                 {
+                    // If an OOP iframe becomes a normal iframe again it is first
+                    // attached to the parent frame before the target is removed.
                     frame.UpdateClient(session);
                 }
 
