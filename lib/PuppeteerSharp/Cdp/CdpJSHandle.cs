@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -68,6 +69,34 @@ public class CdpJSHandle : JSHandle, ICdpHandle
         var value = await EvaluateFunctionAsync<T>("object => object").ConfigureAwait(false);
 
         return value ?? throw new PuppeteerException("Could not serialize referenced object");
+    }
+
+    /// <inheritdoc/>
+    public override async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
+    {
+        // We use Runtime.getProperties rather than the iterative version for
+        // improved performance as it allows getting everything at once.
+        var response = await Client.SendAsync<RuntimeGetPropertiesResponse>(
+            "Runtime.getProperties",
+            new RuntimeGetPropertiesRequest
+            {
+                ObjectId = RemoteObject.ObjectId,
+                OwnProperties = true,
+            }).ConfigureAwait(false);
+
+        var result = new Dictionary<string, IJSHandle>();
+
+        foreach (var property in response.Result)
+        {
+            if (!property.Enumerable || property.Value == null)
+            {
+                continue;
+            }
+
+            result[property.Name] = new CdpJSHandle((IsolatedWorld)Realm, property.Value);
+        }
+
+        return result;
     }
 
     /// <inheritdoc/>
