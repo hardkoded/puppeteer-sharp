@@ -77,9 +77,9 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return await BindIsolatedHandleAsync<IElementHandle, ElementHandle>(handle =>
-                queryHandler.WaitForAsync(null, handle, updatedSelector, options)).ConfigureAwait(false);
+                queryHandler.WaitForAsync(null, handle, updatedSelector, options, polling)).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -223,7 +223,7 @@ namespace PuppeteerSharp
                     throw new ArgumentNullException(nameof(selector));
                 }
 
-                var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+                var (updatedSelector, queryHandler, _) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
                 return queryHandler.QueryOneAsync(handle, updatedSelector);
             });
 
@@ -842,7 +842,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler, _) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             var result = new List<IElementHandle>();
             await foreach (var item in queryHandler.QueryAllAsync(this, updatedSelector).ConfigureAwait(false))
             {

@@ -395,6 +395,24 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading), Has.Exactly(1).Items);
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support evaluateOnNewDocument")]
+        public async Task ShouldSupportEvaluateOnNewDocument()
+        {
+            await Page.EvaluateFunctionOnNewDocumentAsync(@"() => {
+                window.evaluateOnNewDocument = true;
+            }");
+            var frameTask = Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
+            await frameTask.WithTimeout();
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            foreach (var frame in Page.Frames)
+            {
+                Assert.That(
+                    await frame.EvaluateFunctionAsync<bool>("() => window.evaluateOnNewDocument"),
+                    Is.True);
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "waitForFrame", "should resolve immediately if the frame already exists")]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {

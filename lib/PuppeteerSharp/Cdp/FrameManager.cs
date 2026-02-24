@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Cdp
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
         private const int TimeForWaitingForSwap = 200;
-        private const string UtilityWorldName = "__puppeteer_utility_world__";
+        private static readonly string UtilityWorldName = "__puppeteer_utility_world__" + typeof(FrameManager).Assembly.GetName().Version.ToString();
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
         private readonly ILogger _logger;
@@ -22,6 +22,7 @@ namespace PuppeteerSharp.Cdp
         private readonly List<string> _frameNavigatedReceived = [];
         private readonly TaskQueue _eventsQueue = new();
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
+        private readonly ConcurrentDictionary<string, CdpPreloadScript> _scriptsToEvaluateOnNewDocument = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
@@ -86,6 +87,55 @@ namespace PuppeteerSharp.Cdp
             return context;
         }
 
+        internal async Task<NewDocumentScriptEvaluation> EvaluateOnNewDocumentAsync(string source)
+        {
+            var mainFrame = (CdpFrame)MainFrame;
+            var response = await mainFrame.Client.SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
+                "Page.addScriptToEvaluateOnNewDocument",
+                new PageAddScriptToEvaluateOnNewDocumentRequest { Source = source, }).ConfigureAwait(false);
+
+            var preloadScript = new CdpPreloadScript(mainFrame, response.Identifier, source);
+            _scriptsToEvaluateOnNewDocument.TryAdd(response.Identifier, preloadScript);
+
+            await Task.WhenAll(
+                GetFrames().Select(frame => ((CdpFrame)frame).AddPreloadScriptAsync(preloadScript))).ConfigureAwait(false);
+
+            return new NewDocumentScriptEvaluation(response.Identifier);
+        }
+
+        internal async Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
+        {
+            if (!_scriptsToEvaluateOnNewDocument.TryRemove(identifier, out var preloadScript))
+            {
+                throw new PuppeteerException(
+                    $"Script to evaluate on new document with id {identifier} not found");
+            }
+
+            await Task.WhenAll(
+                GetFrames().Select(frame =>
+                {
+                    var cdpFrame = (CdpFrame)frame;
+                    var frameIdentifier = preloadScript.GetIdForFrame(cdpFrame);
+                    if (frameIdentifier == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    return cdpFrame.Client.SendAsync(
+                        "Page.removeScriptToEvaluateOnNewDocument",
+                        new PageRemoveScriptToEvaluateOnNewDocumentRequest { Identifier = frameIdentifier, })
+                        .ContinueWith(
+                            task =>
+                            {
+                                if (task.IsFaulted)
+                                {
+                                    _logger.LogError(task.Exception?.ToString());
+                                }
+                            },
+                            TaskScheduler.Default);
+                })).ConfigureAwait(false);
+        }
+
         internal void OnAttachedToTarget(CdpTarget target)
         {
             if (target.TargetInfo.Type != TargetType.IFrame)
@@ -97,7 +147,7 @@ namespace PuppeteerSharp.Cdp
             frame?.UpdateClient(target.Session);
 
             target.Session.MessageReceived += Client_MessageReceived;
-            _ = InitializeAsync(target.Session);
+            _ = InitializeAsync(target.Session, frame);
         }
 
         internal ExecutionContext GetExecutionContextById(int contextId, CDPSession session)
@@ -111,7 +161,7 @@ namespace PuppeteerSharp.Cdp
 
         internal Frame[] GetFrames() => FrameTree.Frames;
 
-        internal async Task InitializeAsync(CDPSession client)
+        internal async Task InitializeAsync(CDPSession client, CdpFrame frame = null)
         {
             try
             {
@@ -128,12 +178,20 @@ namespace PuppeteerSharp.Cdp
                     : Task.CompletedTask;
 
                 // Page.enable must be sent before Page.getFrameTree to ensure frame events are received
-                await client.SendAsync("Page.enable").ConfigureAwait(false);
+                // Preload scripts must also be sent before runIfWaitingForDebugger (called by the
+                // target manager after this method returns) so the scripts are registered before the
+                // document starts loading in out-of-process frames.
+                var pageEnableTask = client.SendAsync("Page.enable");
+
+                var preloadScriptTasks = frame != null
+                    ? _scriptsToEvaluateOnNewDocument.Values.Select(script => frame.AddPreloadScriptAsync(script)).ToArray()
+                    : Array.Empty<Task>();
+
+                await pageEnableTask.ConfigureAwait(false);
 
                 var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                 await Task.WhenAll(
-                    getFrameTreeTask,
-                    autoAttachTask).ConfigureAwait(false);
+                    new Task[] { getFrameTreeTask, autoAttachTask, }.Concat(preloadScriptTasks)).ConfigureAwait(false);
 
                 _frameTreeHandled.TrySetResult(true);
                 await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);

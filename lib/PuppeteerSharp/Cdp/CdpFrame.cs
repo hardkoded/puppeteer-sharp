@@ -262,6 +262,26 @@ public class CdpFrame : Frame
         return (ElementHandle)await parentFrame.MainRealm.AdoptBackendNodeAsync(response.BackendNodeId).ConfigureAwait(false);
     }
 
+    internal bool IsOopFrame() => Client != FrameManager.Client;
+
+    internal async Task AddPreloadScriptAsync(CdpPreloadScript preloadScript)
+    {
+        if (!IsOopFrame() && this != FrameManager.MainFrame)
+        {
+            return;
+        }
+
+        if (preloadScript.GetIdForFrame(this) != null)
+        {
+            return;
+        }
+
+        var response = await Client.SendAsync<Messaging.PageAddScriptToEvaluateOnNewDocumentResponse>(
+            "Page.addScriptToEvaluateOnNewDocument",
+            new Messaging.PageAddScriptToEvaluateOnNewDocumentRequest { Source = preloadScript.Source, }).ConfigureAwait(false);
+        preloadScript.SetIdForFrame(this, response.Identifier);
+    }
+
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
     {
         Client = client;

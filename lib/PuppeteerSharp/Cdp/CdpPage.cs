@@ -344,20 +344,12 @@ public class CdpPage : Page
         params object[] args)
     {
         var source = BindingUtils.EvaluationString(pageFunction, args);
-        var documentIdentifier = await Client
-            .SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
-                "Page.addScriptToEvaluateOnNewDocument",
-                new PageAddScriptToEvaluateOnNewDocumentRequest { Source = source, }).ConfigureAwait(false);
-
-        return new NewDocumentScriptEvaluation(documentIdentifier.Identifier);
+        return await FrameManager.EvaluateOnNewDocumentAsync(source).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public override Task RemoveScriptToEvaluateOnNewDocumentAsync(string identifier)
-        => Client.SendAsync("Page.removeScriptToEvaluateOnNewDocument", new PageRemoveScriptToEvaluateOnNewDocumentRequest
-        {
-            Identifier = identifier,
-        });
+        => FrameManager.RemoveScriptToEvaluateOnNewDocumentAsync(identifier);
 
     /// <inheritdoc />
     public override Task SetBypassServiceWorkerAsync(bool bypass)
@@ -372,12 +364,7 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
-        var documentIdentifier = await
-            Client.SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
-                "Page.addScriptToEvaluateOnNewDocument",
-                new PageAddScriptToEvaluateOnNewDocumentRequest { Source = expression, }).ConfigureAwait(false);
-
-        return new NewDocumentScriptEvaluation(documentIdentifier.Identifier);
+        return await FrameManager.EvaluateOnNewDocumentAsync(expression).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -876,10 +863,7 @@ public class CdpPage : Page
         var expression = BindingUtils.PageBindingInitString("exposedFun", name);
         await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = BindingUtils.CdpBindingPrefix + name })
             .ConfigureAwait(false);
-        var functionInfo = await PrimaryTargetClient
-            .SendAsync<PageAddScriptToEvaluateOnNewDocumentResponse>(
-                "Page.addScriptToEvaluateOnNewDocument",
-                new PageAddScriptToEvaluateOnNewDocumentRequest { Source = expression, }).ConfigureAwait(false);
+        var functionInfo = await FrameManager.EvaluateOnNewDocumentAsync(expression).ConfigureAwait(false);
 
         _exposedFunctions.TryAdd(name, functionInfo.Identifier);
 
