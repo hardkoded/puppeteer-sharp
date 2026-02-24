@@ -134,5 +134,15 @@ namespace PuppeteerSharp.Tests.PageTests
             await Page.SetContentAsync("<div>\n</div>");
             Assert.That(await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"), Is.EqualTo("\n"));
         }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with comments outside HTML tag")]
+        public async Task ShouldWorkWithCommentsOutsideHtmlTag()
+        {
+            const string comment = "<!-- Comment -->";
+            await Page.SetContentAsync($"{comment}<div>hello</div>");
+            var result = await Page.GetContentAsync();
+
+            Assert.That(result, Is.EqualTo($"{comment}{ExpectedOutput}"));
+        }
     }
 }
