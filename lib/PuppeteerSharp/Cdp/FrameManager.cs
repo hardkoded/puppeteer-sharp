@@ -327,7 +327,7 @@ namespace PuppeteerSharp.Cdp
                 {
                     world = frame.MainWorld;
                 }
-                else if (contextPayload.Name == UtilityWorldName && !frame.PuppeteerWorld.HasContext)
+                else if (contextPayload.Name == UtilityWorldName)
                 {
                     // In case of multiple sessions to the same target, there's a race between
                     // connections so we might end up creating multiple isolated worlds.
