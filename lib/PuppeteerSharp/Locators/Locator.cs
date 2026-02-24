@@ -137,6 +137,18 @@ namespace PuppeteerSharp.Locators
         }
 
         /// <summary>
+        /// Waits for the locator to get a handle from the page.
+        /// </summary>
+        /// <param name="options">Optional action options.</param>
+        /// <returns>A task that resolves to a handle for the located element.</returns>
+        public async Task<IJSHandle> WaitHandleAsync(LocatorActionOptions options = null)
+        {
+            return await RunWithRetryAsync(
+                ct => WaitHandleCoreAsync(options, ct),
+                options?.CancellationToken ?? default).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Waits for the locator to get a value from the page.
         /// Note this requires the value to be JSON-serializable.
         /// </summary>
@@ -145,9 +157,7 @@ namespace PuppeteerSharp.Locators
         /// <returns>A task that resolves to the serialized value.</returns>
         public async Task<T> WaitAsync<T>(LocatorActionOptions options = null)
         {
-            var handle = await RunWithRetryAsync(
-                ct => WaitHandleAsync(options, ct),
-                options?.CancellationToken ?? default).ConfigureAwait(false);
+            var handle = await WaitHandleAsync(options).ConfigureAwait(false);
 
             try
             {
@@ -166,9 +176,7 @@ namespace PuppeteerSharp.Locators
         /// <returns>A task that completes when the element is located.</returns>
         public async Task WaitAsync(LocatorActionOptions options = null)
         {
-            var handle = await RunWithRetryAsync(
-                ct => WaitHandleAsync(options, ct),
-                options?.CancellationToken ?? default).ConfigureAwait(false);
+            var handle = await WaitHandleAsync(options).ConfigureAwait(false);
 
             await handle.DisposeAsync().ConfigureAwait(false);
         }
@@ -313,7 +321,7 @@ namespace PuppeteerSharp.Locators
         /// <param name="options">Optional action options.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that resolves to a handle for the located element.</returns>
-        internal abstract Task<IJSHandle> WaitHandleAsync(LocatorActionOptions options, CancellationToken cancellationToken);
+        internal abstract Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken);
 
         private static async Task WaitForStableBoundingBoxAsync(IElementHandle handle)
         {
@@ -347,7 +355,7 @@ namespace PuppeteerSharp.Locators
             await RunWithRetryAsync(
                 async ct =>
                 {
-                    var handle = await WaitHandleAsync(null, ct).ConfigureAwait(false);
+                    var handle = await WaitHandleCoreAsync(null, ct).ConfigureAwait(false);
                     var elementHandle = handle as IElementHandle;
 
                     if (elementHandle == null)
