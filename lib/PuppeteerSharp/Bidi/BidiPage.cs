@@ -648,15 +648,10 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetViewportAsync(ViewPortOptions viewport)
     {
-        if (viewport == null)
-        {
-            throw new ArgumentNullException(nameof(viewport));
-        }
-
         if (!BidiBrowser.CdpSupported)
         {
             // Set the screen orientation based on IsLandscape
-            var screenOrientation = viewport.IsLandscape
+            var screenOrientation = viewport?.IsLandscape == true
                 ? new WebDriverBiDi.Emulation.ScreenOrientation(
                     WebDriverBiDi.Emulation.ScreenOrientationNatural.Landscape,
                     WebDriverBiDi.Emulation.ScreenOrientationType.LandscapePrimary)
@@ -675,7 +670,7 @@ public class BidiPage : Page
                                 Height = (ulong)viewport.Height,
                             }
                             : null,
-                        DevicePixelRatio = viewport.DeviceScaleFactor,
+                        DevicePixelRatio = viewport?.DeviceScaleFactor ?? 0,
                     }),
                 BidiMainFrame.BrowsingContext.SetScreenOrientationOverrideAsync(screenOrientation)).ConfigureAwait(false);
             Viewport = viewport;

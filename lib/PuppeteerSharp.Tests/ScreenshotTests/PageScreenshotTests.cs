@@ -214,6 +214,43 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot), Is.True);
         }
 
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should take fullPage screenshots when defaultViewport is null")]
+        public async Task ShouldTakeFullPageScreenshotsWhenDefaultViewportIsNull()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            await using var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            Assert.That(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }), Is.Not.Empty);
+        }
+
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should restore to original viewport size after taking fullPage screenshots when defaultViewport is null")]
+        public async Task ShouldRestoreToOriginalViewportSizeAfterTakingFullPageScreenshotsWhenDefaultViewportIsNull()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            await using var page = await browser.NewPageAsync();
+            var originalSize = await page.EvaluateFunctionAsync<ViewPortOptions>(@"() => {
+                return {width: window.innerWidth, height: window.innerHeight};
+            }");
+            await page.GoToAsync(TestConstants.ServerUrl + "/scrollbar.html");
+            await page.ScreenshotDataAsync(new ScreenshotOptions
+            {
+                FullPage = true,
+                CaptureBeyondViewport = false,
+            });
+            var size = await page.EvaluateFunctionAsync<ViewPortOptions>(@"() => {
+                return {width: window.innerWidth, height: window.innerHeight};
+            }");
+            Assert.That(page.Viewport, Is.Null);
+            Assert.That(size.Width, Is.EqualTo(originalSize.Width));
+            Assert.That(size.Height, Is.EqualTo(originalSize.Height));
+        }
+
         [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel in multiple pages")]
         public async Task ShouldRunInParallelInMultiplePages()
         {

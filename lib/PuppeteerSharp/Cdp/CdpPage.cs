@@ -436,11 +436,6 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task SetViewportAsync(ViewPortOptions viewport)
     {
-        if (viewport == null)
-        {
-            throw new ArgumentNullException(nameof(viewport));
-        }
-
         var needsReload = await _emulationManager.EmulateViewportAsync(viewport).ConfigureAwait(false);
         Viewport = viewport;
 
