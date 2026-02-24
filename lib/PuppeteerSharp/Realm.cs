@@ -39,6 +39,7 @@ namespace PuppeteerSharp
                 options.PollingInterval,
                 options.Timeout ?? TimeoutSettings.Timeout,
                 options.Root,
+                options.CancellationToken,
                 args);
 
             return await waitTask
@@ -56,6 +57,7 @@ namespace PuppeteerSharp
                 options.PollingInterval,
                 options.Timeout ?? TimeoutSettings.Timeout,
                 null, // Root
+                options.CancellationToken,
                 null); // args
 
             return await waitTask

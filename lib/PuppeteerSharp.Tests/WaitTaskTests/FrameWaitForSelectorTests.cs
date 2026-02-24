@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -43,6 +44,20 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame.WaitForSelectorAsync("*");
             await frame.EvaluateFunctionAsync(AddElement, "div");
             await frame.WaitForSelectorAsync("div");
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForSelectorAsync("wrong", new WaitForSelectorOptions
+            {
+                CancellationToken = cts.Token,
+            });
+            cts.Cancel();
+            var exception = Assert.ThrowsAsync<OperationCanceledException>(() => task);
+            Assert.That(exception.Message, Does.Contain("cancelled"));
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work with removed MutationObserver")]
