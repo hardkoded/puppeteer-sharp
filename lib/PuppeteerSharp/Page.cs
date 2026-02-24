@@ -258,6 +258,10 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+            => MainFrame.QuerySelectorAllAsync(selector, options);
+
+        /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 

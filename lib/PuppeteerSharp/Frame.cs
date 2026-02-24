@@ -198,6 +198,13 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public async Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+        {
+            var document = await GetDocumentAsync().ConfigureAwait(false);
+            return await document.QuerySelectorAllAsync(selector, options).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
         public async Task<IElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocumentAsync().ConfigureAwait(false);

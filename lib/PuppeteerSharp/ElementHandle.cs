@@ -229,22 +229,18 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
-            => BindIsolatedHandleAsync<IElementHandle[], ElementHandle>(async handle =>
+            => QuerySelectorAllAsync(selector, null);
+
+        /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+        {
+            if (options?.Isolate == false)
             {
-                if (string.IsNullOrEmpty(selector))
-                {
-                    throw new ArgumentNullException(nameof(selector));
-                }
+                return QuerySelectorAllImplAsync(selector);
+            }
 
-                var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
-                var result = new List<IElementHandle>();
-                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector).ConfigureAwait(false))
-                {
-                    result.Add(item);
-                }
-
-                return result.ToArray();
-            });
+            return BindIsolatedHandleAsync<IElementHandle[], ElementHandle>(handle => handle.QuerySelectorAllImplAsync(selector));
+        }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
@@ -837,6 +833,23 @@ namespace PuppeteerSharp
             }
 
             return result;
+        }
+
+        private async Task<IElementHandle[]> QuerySelectorAllImplAsync(string selector)
+        {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var result = new List<IElementHandle>();
+            await foreach (var item in queryHandler.QueryAllAsync(this, updatedSelector).ConfigureAwait(false))
+            {
+                result.Add(item);
+            }
+
+            return result.ToArray();
         }
 
         private async Task<BoundingBox> NonEmptyVisibleBoundingBoxAsync()
