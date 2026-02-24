@@ -487,7 +487,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             }
 
             // Add content-length if not present and we have body data
-            if (!hasContentLength && response.BodyData != null)
+            if (!hasContentLength && response.BodyData is { Length: > 0 })
             {
                 responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
             }

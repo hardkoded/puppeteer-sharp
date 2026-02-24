@@ -148,6 +148,40 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
         }
 
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should report correct content-length header with string")]
+        public async Task ShouldReportCorrectContentLengthHeaderWithString()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Body = "Correct length \U0001F4CF?",
+                });
+            };
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var headers = response.Headers;
+            Assert.That(headers["content-length"], Is.EqualTo("20"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should report correct content-length header with binary body")]
+        public async Task ShouldReportCorrectContentLengthHeaderWithBinaryBody()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    BodyData = System.Text.Encoding.UTF8.GetBytes("Correct length \U0001F4CF?"),
+                });
+            };
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var headers = response.Headers;
+            Assert.That(headers["content-length"], Is.EqualTo("20"));
+        }
+
         [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
