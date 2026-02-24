@@ -84,12 +84,17 @@ namespace PuppeteerSharp
 
         internal async Task<bool> EmulateViewportAsync(ViewPortOptions viewport)
         {
+            if (viewport == null && _viewport == null)
+            {
+                return false;
+            }
+
             _viewport = viewport;
 
             await ApplyViewportAsync(_client).ConfigureAwait(false);
 
-            var mobile = viewport.IsMobile;
-            var hasTouch = viewport.HasTouch;
+            var mobile = viewport?.IsMobile ?? false;
+            var hasTouch = viewport?.HasTouch ?? false;
             var reloadNeeded = _emulatingMobile != mobile || _hasTouch != hasTouch;
             _emulatingMobile = mobile;
             _hasTouch = hasTouch;
@@ -177,6 +182,21 @@ namespace PuppeteerSharp
             var viewport = _viewport;
             if (viewport == null)
             {
+                try
+                {
+                    await Task.WhenAll(
+                    [
+                        client.SendAsync("Emulation.clearDeviceMetricsOverride"),
+                        client.SendAsync(
+                            "Emulation.setTouchEmulationEnabled",
+                            new EmulationSetTouchEmulationEnabledRequest { Enabled = false, }),
+                    ]).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+
                 return;
             }
 

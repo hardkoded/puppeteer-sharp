@@ -258,6 +258,10 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+            => MainFrame.QuerySelectorAllAsync(selector, options);
+
+        /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
@@ -565,9 +569,9 @@ namespace PuppeteerSharp
                                             };
                                         }").ConfigureAwait(false);
 
-                                    var viewport = Viewport with { };
+                                    var viewport = Viewport;
 
-                                    await SetViewportAsync(viewport with
+                                    await SetViewportAsync((viewport ?? new ViewPortOptions()) with
                                     {
                                         Width = Convert.ToInt32(scrollDimensions.Width),
                                         Height = Convert.ToInt32(scrollDimensions.Height),
