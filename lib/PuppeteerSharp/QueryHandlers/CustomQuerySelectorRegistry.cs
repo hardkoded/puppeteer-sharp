@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.QueryHandlers
 {
@@ -87,7 +88,7 @@ namespace PuppeteerSharp.QueryHandlers
             ScriptInjector.Default.Append(registerScript);
         }
 
-        internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        internal (string UpdatedSelector, QueryHandler QueryHandler, bool SelectorHasPseudoClasses) GetQueryHandlerAndSelector(string selector)
         {
             // Take a snapshot of custom handlers to avoid holding lock during iteration
             KeyValuePair<string, (string RegisterScript, QueryHandler Handler)>[] customHandlers;
@@ -106,7 +107,7 @@ namespace PuppeteerSharp.QueryHandlers
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         selector = selector.Substring(prefix.Length);
-                        return (selector, kv.Value.Handler);
+                        return (selector, kv.Value.Handler, false);
                     }
                 }
             }
@@ -120,12 +121,12 @@ namespace PuppeteerSharp.QueryHandlers
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         selector = selector.Substring(prefix.Length);
-                        return (selector, kv.Value);
+                        return (selector, kv.Value, false);
                     }
                 }
             }
 
-            return (selector, _defaultHandler);
+            return (selector, _defaultHandler, SelectorHelper.HasPseudoClasses(selector));
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
