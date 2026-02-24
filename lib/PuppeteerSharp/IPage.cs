@@ -1428,6 +1428,14 @@ namespace PuppeteerSharp
         Locators.Locator Locator(string selector);
 
         /// <summary>
+        /// Creates a locator for the provided function. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="func">A JavaScript function expression to evaluate.</param>
+        /// <returns>A locator for the provided function.</returns>
+        Locators.Locator LocatorFunction(string func);
+
+        /// <summary>
         /// Waits for a xpath selector to be added to the DOM.
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for.</param>
