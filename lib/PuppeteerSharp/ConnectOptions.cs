@@ -51,6 +51,11 @@ namespace PuppeteerSharp
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
         /// <summary>
+        /// Sets the download behavior for the context.
+        /// </summary>
+        public DownloadBehavior DownloadBehavior { get; set; }
+
+        /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
         /// </summary>
         public TransportFactory TransportFactory { get; set; }

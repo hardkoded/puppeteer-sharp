@@ -158,6 +158,14 @@ public class CdpBrowserContext : BrowserContext
             }).ConfigureAwait(false);
     }
 
+    internal Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior)
+        => _connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+        {
+            Behavior = downloadBehavior.Policy,
+            DownloadPath = downloadBehavior.DownloadPath,
+            BrowserContextId = Id,
+        });
+
     private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)
     {
         return sameSite switch

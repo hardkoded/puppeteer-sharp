@@ -144,6 +144,12 @@ public class CdpBrowser : Browser
                 ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
+
+        if (options?.DownloadBehavior != null)
+        {
+            await context.SetDownloadBehaviorAsync(options.DownloadBehavior).ConfigureAwait(false);
+        }
+
         _contexts.TryAdd(response.BrowserContextId, context);
         return context;
     }
@@ -218,7 +224,8 @@ public class CdpBrowser : Browser
         Func<Target, bool> isPageTargetCallback = null,
         Action<IBrowser> initAction = null,
         bool handleDevToolsAsPage = false,
-        bool networkEnabled = true)
+        bool networkEnabled = true,
+        DownloadBehavior downloadBehavior = null)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -238,6 +245,12 @@ public class CdpBrowser : Browser
             if (acceptInsecureCerts)
             {
                 await connection.SendAsync("Security.setIgnoreCertificateErrors", new SecuritySetIgnoreCertificateErrorsRequest { Ignore = true })
+                    .ConfigureAwait(false);
+            }
+
+            if (downloadBehavior != null)
+            {
+                await ((CdpBrowserContext)browser.DefaultContext).SetDownloadBehaviorAsync(downloadBehavior)
                     .ConfigureAwait(false);
             }
 
