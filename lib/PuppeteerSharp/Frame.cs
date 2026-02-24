@@ -113,8 +113,8 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
-            return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitForAsync(this, null, updatedSelector, options, polling).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
