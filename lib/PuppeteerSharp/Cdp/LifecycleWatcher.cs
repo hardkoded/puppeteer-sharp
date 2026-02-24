@@ -17,7 +17,6 @@ namespace PuppeteerSharp.Cdp
         private readonly CdpFrame _frame;
         private readonly IEnumerable<string> _expectedLifecycle;
         private readonly int _timeout;
-        private readonly string _initialLoaderId;
         private readonly TaskCompletionSource<bool> _newDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _sameDocumentNavigationTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _lifecycleTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -25,6 +24,7 @@ namespace PuppeteerSharp.Cdp
         private readonly CancellationTokenSource _terminationCancellationToken = new();
         private IRequest _navigationRequest;
         private bool _hasSameDocumentNavigation;
+        private bool _newDocumentNavigation;
         private bool _swapped;
         private TaskCompletionSource<bool> _navigationResponseReceived;
 
@@ -43,7 +43,6 @@ namespace PuppeteerSharp.Cdp
 
             _networkManager = networkManager;
             _frame = frame;
-            _initialLoaderId = frame.LoaderId;
             _timeout = timeout;
             _hasSameDocumentNavigation = false;
 
@@ -112,6 +111,11 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            if (!e.NavigatedWithinDocument)
+            {
+                _newDocumentNavigation = true;
+            }
+
             CheckLifecycleComplete();
         }
 
@@ -157,7 +161,7 @@ namespace PuppeteerSharp.Cdp
                 _sameDocumentNavigationTaskWrapper.TrySetResult(true);
             }
 
-            if (_swapped || _frame.LoaderId != _initialLoaderId)
+            if (_swapped || _newDocumentNavigation)
             {
                 _newDocumentNavigationTaskWrapper.TrySetResult(true);
             }

@@ -92,7 +92,7 @@ public class CdpWebWorker : WebWorker
         switch (_targetType)
         {
             case TargetType.ServiceWorker:
-                if (CdpCDPSession.Connection != null)
+                if (!CdpCDPSession.Detached)
                 {
                     await CdpCDPSession.Connection.SendAsync(
                         "Target.closeTarget",
@@ -111,7 +111,7 @@ public class CdpWebWorker : WebWorker
 
                 break;
             case TargetType.SharedWorker:
-                if (CdpCDPSession.Connection != null)
+                if (!CdpCDPSession.Detached)
                 {
                     await CdpCDPSession.Connection.SendAsync(
                         "Target.closeTarget",

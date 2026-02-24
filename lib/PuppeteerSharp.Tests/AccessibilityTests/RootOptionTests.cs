@@ -120,5 +120,56 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(fullSnapshot.Children[0].Children[0].Role, Is.EqualTo("StaticText"));
             Assert.That(fullSnapshot.Children[0].Children[0].Name, Is.EqualTo("My Button"));
         }
+
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should get the parent ElementHandle from a text node accessibility node")]
+        public async Task ShouldGetTheParentElementHandleFromATextNodeAccessibilityNode()
+        {
+            await Page.SetContentAsync("<div><b>Hello, </b> world!</div>");
+            var div = await Page.QuerySelectorAsync("div");
+
+            var parentSnapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                Root = div,
+                InterestingOnly = false,
+            });
+
+            Assert.That(parentSnapshot.Role, Is.EqualTo("generic"));
+            Assert.That(parentSnapshot.Name, Is.EqualTo(""));
+            Assert.That(parentSnapshot.Children, Has.Length.EqualTo(2));
+            Assert.That(parentSnapshot.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(parentSnapshot.Children[0].Name, Is.EqualTo("Hello, "));
+            Assert.That(parentSnapshot.Children[1].Role, Is.EqualTo("StaticText"));
+            Assert.That(parentSnapshot.Children[1].Name, Is.EqualTo("world!"));
+
+            var textNode = await div.EvaluateFunctionHandleAsync("el => el.lastChild");
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = textNode as IElementHandle ?? (IElementHandle)textNode });
+
+            // Get the element handle from the text node.
+            // This should be the parent's handle, not the text node's.
+            var parentNodeHandle = await parentSnapshot.ElementHandleAsync();
+            var textNodeHandle = await snapshot.ElementHandleAsync();
+
+            var parentInnerHtml = await parentNodeHandle.EvaluateFunctionAsync<string>("el => el.innerHTML");
+            var textNodeInnerHtml = await textNodeHandle.EvaluateFunctionAsync<string>("el => el.innerHTML");
+
+            Assert.That(parentInnerHtml, Is.EqualTo(textNodeInnerHtml));
+            Assert.That(textNodeInnerHtml, Is.EqualTo("<b>Hello, </b> world!"));
+        }
+
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should work with nested button inside h1 with interestingOnly:true")]
+        public async Task ShouldWorkWithNestedButtonInsideH1WithInterestingOnlyTrue()
+        {
+            await Page.SetContentAsync(@"
+            <main>
+                <h2>
+                    <button>My Button</button>
+                </h2>
+            </main>");
+
+            var button = await Page.QuerySelectorAsync("button");
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button });
+            Assert.That(snapshot.Role, Is.EqualTo("button"));
+            Assert.That(snapshot.Name, Is.EqualTo("My Button"));
+        }
     }
 }

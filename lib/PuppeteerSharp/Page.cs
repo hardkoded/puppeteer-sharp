@@ -482,8 +482,10 @@ namespace PuppeteerSharp
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <inheritdoc/>
-        public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
-            => _screenshotTaskQueue.Enqueue(async () =>
+        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
+        {
+            using var guard = await ((BrowserContext)BrowserContext).StartScreenshotAsync().ConfigureAwait(false);
+            return await _screenshotTaskQueue.Enqueue(async () =>
             {
                 if (options == null)
                 {
@@ -525,11 +527,6 @@ namespace PuppeteerSharp
                 var stack = new DisposableTasksStack();
                 await using (stack.ConfigureAwait(false))
                 {
-                    if (!ScreenshotBurstModeOn)
-                    {
-                        await BringToFrontAsync().ConfigureAwait(false);
-                    }
-
                     // FromSurface is not supported on Firefox.
                     // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
                     if (Browser.BrowserType == SupportedBrowser.Firefox)
@@ -598,7 +595,8 @@ namespace PuppeteerSharp
 
                     return result;
                 }
-            });
+            }).ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
@@ -684,6 +682,14 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
+        /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
+        public Locators.Locator LocatorFunction(string func)
+            => Locators.FunctionLocator.Create(this, func);
 
         /// <inheritdoc/>
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete

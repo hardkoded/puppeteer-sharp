@@ -155,6 +155,13 @@ namespace PuppeteerSharp
         public TransportFactory TransportFactory { get; set; }
 
         /// <summary>
+        /// Experimental setting to disable monitoring network events by default. When
+        /// set to <c>false</c>, parts of Puppeteer that depend on network events would not
+        /// work such as <see cref="IRequest"/> and <see cref="IResponse"/>.
+        /// </summary>
+        public bool NetworkEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
@@ -203,6 +210,24 @@ namespace PuppeteerSharp
         /// Wait for the initial page before initializing.
         /// </summary>
         public bool WaitForInitialPage { get; set; } = true;
+
+        /// <summary>
+        /// If <c>true</c>, avoids passing default arguments to the browser that would
+        /// prevent extensions from being enabled. Passing a list of strings will
+        /// load the provided paths as unpacked extensions.
+        /// </summary>
+        /// <remarks>
+        /// <para>In Chrome, setting this to <c>true</c> or a <c>string[]</c> replaces the
+        /// <c>--disable-extensions</c> flag with <c>--enable-unsafe-extension-debugging</c>.</para>
+        /// <para>Passing a <c>string[]</c> is only supported with Firefox (BiDi) at this time.</para>
+        /// <para>In Firefox, there is no known command line flag to disable addons so they are always enabled.</para>
+        /// </remarks>
+        public EnableExtensionsOption EnableExtensions { get; set; }
+
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
 
         // Internal until is usable
         internal ProtocolType Protocol { get; set; }

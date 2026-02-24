@@ -40,6 +40,8 @@ public class CdpBrowser : Browser
 
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
+    private readonly bool _handleDevToolsAsPage;
+    private readonly bool _networkEnabled;
     private Task _closeTask;
 
     internal CdpBrowser(
@@ -49,12 +51,16 @@ public class CdpBrowser : Browser
         ViewPortOptions defaultViewport,
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
-        Func<Target, bool> isPageTargetFunc = null)
+        Func<Target, bool> isPageTargetFunc = null,
+        bool handleDevToolsAsPage = false,
+        bool networkEnabled = true)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
         Launcher = launcher;
         Connection = connection;
+        _handleDevToolsAsPage = handleDevToolsAsPage;
+        _networkEnabled = networkEnabled;
         var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         IsPageTargetFunc =
@@ -97,6 +103,8 @@ public class CdpBrowser : Browser
     }
 
     internal ITargetManager TargetManager { get; }
+
+    internal bool HandleDevToolsAsPage => _handleDevToolsAsPage;
 
     internal override ProtocolType Protocol => ProtocolType.Cdp;
 
@@ -184,6 +192,21 @@ public class CdpBrowser : Browser
         await Connection.SendAsync("Emulation.removeScreen", new EmulationRemoveScreenRequest { ScreenId = screenId }).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override async Task<string> InstallExtensionAsync(string path)
+    {
+        var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
+            "Extensions.loadUnpacked",
+            new ExtensionsLoadUnpackedRequest { Path = path }).ConfigureAwait(false);
+        return response.Id;
+    }
+
+    /// <inheritdoc/>
+    public override async Task UninstallExtensionAsync(string id)
+    {
+        await Connection.SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id }).ConfigureAwait(false);
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
@@ -193,7 +216,9 @@ public class CdpBrowser : Browser
         LauncherBase launcher,
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetCallback = null,
-        Action<IBrowser> initAction = null)
+        Action<IBrowser> initAction = null,
+        bool handleDevToolsAsPage = false,
+        bool networkEnabled = true)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -202,7 +227,9 @@ public class CdpBrowser : Browser
             defaultViewPort,
             launcher,
             targetFilter,
-            isPageTargetCallback);
+            isPageTargetCallback,
+            handleDevToolsAsPage,
+            networkEnabled);
 
         try
         {
@@ -223,6 +250,8 @@ public class CdpBrowser : Browser
             throw;
         }
     }
+
+    internal override bool IsNetworkEnabled() => _networkEnabled;
 
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {

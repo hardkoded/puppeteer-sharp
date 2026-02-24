@@ -12,10 +12,12 @@ public record FrameNavigatedEventArgs
     /// </summary>
     /// <param name="frame">Frame.</param>
     /// <param name="type">Navigation type.</param>
-    internal FrameNavigatedEventArgs(IFrame frame, NavigationType type)
+    /// <param name="navigatedWithinDocument">Whether this is a within-document navigation.</param>
+    internal FrameNavigatedEventArgs(IFrame frame, NavigationType type, bool navigatedWithinDocument = false)
     {
         Frame = frame;
         Type = type;
+        NavigatedWithinDocument = navigatedWithinDocument;
     }
 
     /// <summary>
@@ -28,4 +30,9 @@ public record FrameNavigatedEventArgs
     /// Navigation type.
     /// </summary>
     public NavigationType Type { get; }
+
+    /// <summary>
+    /// Whether this is a within-document navigation (e.g., via History API).
+    /// </summary>
+    internal bool NavigatedWithinDocument { get; }
 }

@@ -103,6 +103,19 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
         return null;
     }
 
+    public override Task<int> BackendNodeIdAsync()
+    {
+        if (!BidiFrame.BidiPage.BidiBrowser.CdpSupported)
+        {
+            throw new PuppeteerException("BackendNodeId is not supported in the current configuration.");
+        }
+
+        throw new PuppeteerException("BackendNodeId is not supported in the current configuration.");
+    }
+
+    public override Task AutofillAsync(AutofillData data)
+        => throw new PuppeteerException("Autofill is not supported in the current configuration.");
+
     internal async IAsyncEnumerable<IElementHandle> QueryAXTreeAsync(string name, string role)
     {
         var locator = new AccessibilityLocator { Name = name, Role = role };

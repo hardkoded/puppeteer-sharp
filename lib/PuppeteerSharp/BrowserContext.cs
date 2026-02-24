@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     public abstract class BrowserContext : IBrowserContext
     {
+        private ScreenshotMutex _pageScreenshotMutex;
+        private int _screenshotOperationsCount;
+
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
@@ -54,6 +59,78 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
+        /// <inheritdoc/>
+        public abstract Task<CookieParam[]> GetCookiesAsync();
+
+        /// <inheritdoc/>
+        public abstract Task SetCookieAsync(params CookieData[] cookies);
+
+        /// <inheritdoc/>
+        public async Task DeleteCookieAsync(params CookieParam[] cookies)
+        {
+            await SetCookieAsync(
+                cookies.Select(cookie => new CookieData
+                {
+                    Name = cookie.Name,
+                    Value = cookie.Value,
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Secure = cookie.Secure,
+                    HttpOnly = cookie.HttpOnly,
+                    SameSite = cookie.SameSite,
+                    Expires = 1,
+                    Priority = cookie.Priority,
+                    SourceScheme = cookie.SourceScheme,
+                    PartitionKey = cookie.PartitionKey,
+                }).ToArray()).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+        {
+            var cookies = await GetCookiesAsync().ConfigureAwait(false);
+            var cookiesToDelete = cookies.Where(cookie =>
+                filters.Any(filter =>
+                {
+                    if (filter.Name != cookie.Name)
+                    {
+                        return false;
+                    }
+
+                    if (filter.Domain != null && filter.Domain == cookie.Domain)
+                    {
+                        return true;
+                    }
+
+                    if (filter.Path != null && filter.Path == cookie.Path)
+                    {
+                        return true;
+                    }
+
+                    if (filter.PartitionKey != null && cookie.PartitionKey != null)
+                    {
+                        if (filter.PartitionKey.SourceOrigin == cookie.PartitionKey.SourceOrigin)
+                        {
+                            return true;
+                        }
+                    }
+
+                    if (filter.Url != null)
+                    {
+                        if (Uri.TryCreate(filter.Url, UriKind.Absolute, out var url))
+                        {
+                            if (url.Host == cookie.Domain && url.AbsolutePath == cookie.Path)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return true;
+                })).ToArray();
+            await DeleteCookieAsync(cookiesToDelete).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -69,6 +146,42 @@ namespace PuppeteerSharp
         {
             await CloseAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Starts a screenshot operation and returns a guard that should be disposed when the operation completes.
+        /// While screenshot operations are in progress, certain operations like NewPage and Close will wait.
+        /// </summary>
+        /// <returns>A disposable guard for the screenshot operation.</returns>
+        internal async Task<IDisposable> StartScreenshotAsync()
+        {
+            var mutex = _pageScreenshotMutex ?? new ScreenshotMutex();
+            _pageScreenshotMutex = mutex;
+            Interlocked.Increment(ref _screenshotOperationsCount);
+            return await mutex.AcquireAsync(() =>
+            {
+                if (Interlocked.Decrement(ref _screenshotOperationsCount) == 0)
+                {
+                    // Remove the mutex to indicate no ongoing screenshot operation.
+                    _pageScreenshotMutex = null;
+                }
+            }).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Waits for any ongoing screenshot operations to complete.
+        /// Returns null if no screenshot operations are in progress.
+        /// </summary>
+        /// <returns>A disposable guard, or null if no screenshots are in progress.</returns>
+        internal async Task<IDisposable> WaitForScreenshotOperationsAsync()
+        {
+            var mutex = _pageScreenshotMutex;
+            if (mutex == null)
+            {
+                return null;
+            }
+
+            return await mutex.AcquireAsync().ConfigureAwait(false);
         }
 
         internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);

@@ -119,8 +119,10 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         public void ShouldResolveSystemExecutablePathWindows()
         {
             var paths = BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.Win32, ChromeReleaseChannel.Dev);
-            Assert.That(paths, Has.Length.GreaterThanOrEqualTo(1));
-            Assert.That(paths, Has.All.EndsWith("\\Google\\Chrome Dev\\Application\\chrome.exe"));
+            // Should include env-based paths plus fallback paths
+            Assert.That(paths, Has.Length.GreaterThanOrEqualTo(5));
+            var suffix = Path.Combine("Google", "Chrome Dev", "Application", "chrome.exe");
+            Assert.That(paths, Has.All.EndsWith(suffix));
         }
 
         [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]

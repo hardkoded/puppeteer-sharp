@@ -720,6 +720,7 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
             }
         });
         await Page.GoToAsync(TestConstants.EmptyPage);
+        Assert.That(exception, Is.Not.Null);
         Assert.That(exception.Message, Does.Contain("Request Interception is not enabled"));
     }
 

@@ -66,6 +66,11 @@ namespace PuppeteerSharp
         string CloseReason { get; }
 
         /// <summary>
+        /// True if the session has been detached, false otherwise.
+        /// </summary>
+        bool Detached { get; }
+
+        /// <summary>
         /// Detaches session from target. Once detached, session won't emit any events and can't be used to send messages.
         /// </summary>
         /// <returns>A Task that when awaited detaches from the session target.</returns>

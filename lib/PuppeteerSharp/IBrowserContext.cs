@@ -47,6 +47,33 @@ namespace PuppeteerSharp
         Task ClearPermissionOverridesAsync();
 
         /// <summary>
+        /// Gets all cookies in the browser context.
+        /// </summary>
+        /// <returns>Task which resolves to an array of <see cref="CookieParam"/>.</returns>
+        Task<CookieParam[]> GetCookiesAsync();
+
+        /// <summary>
+        /// Sets cookies in the browser context.
+        /// </summary>
+        /// <param name="cookies">Cookies to set.</param>
+        /// <returns>Task.</returns>
+        Task SetCookieAsync(params CookieData[] cookies);
+
+        /// <summary>
+        /// Removes cookies from the browser context.
+        /// </summary>
+        /// <param name="cookies">Complete <see cref="CookieParam"/> objects to be removed.</param>
+        /// <returns>Task.</returns>
+        Task DeleteCookieAsync(params CookieParam[] cookies);
+
+        /// <summary>
+        /// Deletes cookies matching the provided filters in this browser context.
+        /// </summary>
+        /// <param name="filters">Filters to match cookies against.</param>
+        /// <returns>Task.</returns>
+        Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters);
+
+        /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed.
         /// </summary>
         /// <returns>Task.</returns>

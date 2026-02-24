@@ -25,12 +25,12 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, CdpPreloadScript> _scriptsToEvaluateOnNewDocument = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory);
+            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled);
             TimeoutSettings = timeoutSettings;
 
             Client.MessageReceived += Client_MessageReceived;
@@ -385,7 +385,7 @@ namespace PuppeteerSharp.Cdp
                 {
                     world = frame.MainWorld;
                 }
-                else if (contextPayload.Name == UtilityWorldName && !frame.PuppeteerWorld.HasContext)
+                else if (contextPayload.Name == UtilityWorldName)
                 {
                     // In case of multiple sessions to the same target, there's a race between
                     // connections so we might end up creating multiple isolated worlds.
@@ -478,8 +478,8 @@ namespace PuppeteerSharp.Cdp
 
                 var eventArgs = new FrameEventArgs(frame);
                 FrameNavigatedWithinDocument?.Invoke(this, eventArgs);
-                frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
-                FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation));
+                frame.OnFrameNavigated(new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
+                FrameNavigated?.Invoke(this, new FrameNavigatedEventArgs(frame, NavigationType.Navigation, navigatedWithinDocument: true));
             }
         }
 
@@ -580,6 +580,13 @@ namespace PuppeteerSharp.Cdp
                 var mainFrame = FrameTree.MainFrame;
                 if (mainFrame == null)
                 {
+                    return;
+                }
+
+                if (Client.Connection.IsClosed)
+                {
+                    // On connection disconnected remove all frames
+                    RemoveFramesRecursively(mainFrame);
                     return;
                 }
 

@@ -383,6 +383,74 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
                 }));
         }
 
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should work for showcase")]
+        public async Task ShouldWorkForShowcase()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/a11y/landmarks.html");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+
+            Assert.That(snapshot.Role, Is.EqualTo("RootWebArea"));
+            Assert.That(snapshot.Name, Is.EqualTo("HTML Elements Showcase"));
+            Assert.That(snapshot.Children.Length, Is.GreaterThanOrEqualTo(4));
+
+            // banner
+            var banner = snapshot.Children[0];
+            Assert.That(banner.Role, Is.EqualTo("banner"));
+            Assert.That(banner.Name, Is.EqualTo(string.Empty));
+            Assert.That(banner.Children.Length, Is.GreaterThanOrEqualTo(2));
+            Assert.That(banner.Children[0].Role, Is.EqualTo("heading"));
+            Assert.That(banner.Children[0].Name, Is.EqualTo("HTML Elements Showcase"));
+            Assert.That(banner.Children[0].Level, Is.EqualTo(1));
+
+            // navigation inside banner
+            var nav = banner.Children[1];
+            Assert.That(nav.Role, Is.EqualTo("navigation"));
+            Assert.That(nav.Name, Is.EqualTo(string.Empty));
+            Assert.That(nav.Children.Length, Is.GreaterThanOrEqualTo(3));
+            Assert.That(nav.Children[0].Role, Is.EqualTo("link"));
+            Assert.That(nav.Children[0].Name, Is.EqualTo("Forms"));
+            Assert.That(nav.Children[1].Role, Is.EqualTo("link"));
+            Assert.That(nav.Children[1].Name, Is.EqualTo("Media"));
+            Assert.That(nav.Children[2].Role, Is.EqualTo("link"));
+            Assert.That(nav.Children[2].Name, Is.EqualTo("Interactive"));
+
+            // main
+            var main = snapshot.Children[1];
+            Assert.That(main.Role, Is.EqualTo("main"));
+            Assert.That(main.Name, Is.EqualTo(string.Empty));
+
+            // complementary (aside)
+            var complementary = snapshot.Children[2];
+            Assert.That(complementary.Role, Is.EqualTo("complementary"));
+            Assert.That(complementary.Name, Is.EqualTo(string.Empty));
+
+            // contentinfo (footer)
+            var contentinfo = snapshot.Children[3];
+            Assert.That(contentinfo.Role, Is.EqualTo("contentinfo"));
+            Assert.That(contentinfo.Name, Is.EqualTo(string.Empty));
+        }
+
+        [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should not report Document as leaf node")]
+        public async Task ShouldNotReportDocumentAsLeafNode()
+        {
+            await Page.SetContentAsync(@"
+            <main><span>Hello</span><div> </div><div>World</div></main>");
+
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            Assert.That(snapshot.Role, Is.EqualTo("RootWebArea"));
+            Assert.That(snapshot.Children.Length, Is.GreaterThanOrEqualTo(1));
+
+            // With landmarks, main is now interesting
+            var main = snapshot.Children[0];
+            Assert.That(main.Role, Is.EqualTo("main"));
+            Assert.That(main.Name, Is.EqualTo(string.Empty));
+            Assert.That(main.Children.Length, Is.GreaterThanOrEqualTo(2));
+            Assert.That(main.Children[0].Role, Is.EqualTo("StaticText"));
+            Assert.That(main.Children[0].Name, Is.EqualTo("Hello"));
+            Assert.That(main.Children[1].Role, Is.EqualTo("StaticText"));
+            Assert.That(main.Children[1].Name, Is.EqualTo("World"));
+        }
+
         [Test, PuppeteerTest("accessibility.spec", "Accessibility", "should capture new accessibility properties and not prune them")]
         public async Task ShouldCaptureNewAccessibilityPropertiesAndNotPruneThem()
         {

@@ -72,8 +72,8 @@ public class CdpPage : Page
 
         _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, TimeoutSettings);
-        Accessibility = new Accessibility(client);
+        FrameManager = new FrameManager(client, this, TimeoutSettings, target.Browser.IsNetworkEnabled());
+        Accessibility = new Accessibility(client, () => MainFrame?.Id, () => (FrameManager.MainFrame as Frame)?.MainRealm);
 
         // Use browser context's connection, as current Bluetooth emulation in Chromium is
         // implemented on the browser context level, and not tied to the specific tab.
@@ -252,7 +252,7 @@ public class CdpPage : Page
                 $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
         }
 
-        await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = name, })
+        await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = BindingUtils.CdpBindingPrefix + name, })
             .ConfigureAwait(false);
 
         await RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun).ConfigureAwait(false);
@@ -756,7 +756,10 @@ public class CdpPage : Page
     /// <inheritdoc/>
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
-        if (Client?.Connection?.IsClosed ?? true)
+        var guard = await ((BrowserContext)BrowserContext).WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
+        if (Client?.Detached ?? true)
         {
             _logger.LogWarning("Protocol error: Connection closed. Most likely the page has been closed.");
             return;
@@ -858,7 +861,7 @@ public class CdpPage : Page
         }
 
         var expression = BindingUtils.PageBindingInitString("exposedFun", name);
-        await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = name })
+        await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = BindingUtils.CdpBindingPrefix + name })
             .ConfigureAwait(false);
         var functionInfo = await FrameManager.EvaluateOnNewDocumentAsync(expression).ConfigureAwait(false);
 
@@ -930,8 +933,11 @@ public class CdpPage : Page
             await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
         }
 
-        await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("() => documents.fonts.ready")
-            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        if (options.WaitForFonts)
+        {
+            await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
+                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        }
 
         var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>(
             "Page.printToPDF",
@@ -1236,7 +1242,30 @@ public class CdpPage : Page
         => OnMetrics(new MetricEventArgs(metrics.Title, BuildMetricsObject(metrics.Metrics)));
 
     private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
-        => OnPageError(new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+    {
+        var exception = exceptionDetails.Exception;
+
+        if (exception != null &&
+            (exception.Type != RemoteObjectType.Object || exception.Subtype != RemoteObjectSubtype.Error) &&
+            string.IsNullOrEmpty(exception.ObjectId))
+        {
+            var primitiveValue = GetPrimitiveValueFromException(exception);
+            OnPageError(new PageErrorEventArgs(exceptionDetails.Text, primitiveValue));
+            return;
+        }
+
+        OnPageError(new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+    }
+
+    private object GetPrimitiveValueFromException(EvaluateExceptionResponseInfo exception)
+    {
+        if (exception.Type == RemoteObjectType.Undefined)
+        {
+            return null;
+        }
+
+        return exception.Value;
+    }
 
     private Dictionary<string, decimal> BuildMetricsObject(List<Metric> metrics)
     {
@@ -1381,7 +1410,7 @@ public class CdpPage : Page
 
         if (history.Entries.Count <= history.CurrentIndex + delta || history.CurrentIndex + delta < 0)
         {
-            return null;
+            throw new PuppeteerException("History entry to navigate to not found.");
         }
 
         var entry = history.Entries[history.CurrentIndex + delta];

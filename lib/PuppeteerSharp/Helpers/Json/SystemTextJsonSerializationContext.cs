@@ -34,6 +34,7 @@ namespace PuppeteerSharp.Helpers.Json;
 /// We need this class for AOT.
 /// </summary>
 [JsonSourceGenerationOptions]
+[JsonSerializable(typeof(AccessibilityGetFullAXTreeRequest))]
 [JsonSerializable(typeof(AccessibilityGetFullAXTreeResponse))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeRequest))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeResponse))]

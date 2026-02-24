@@ -336,5 +336,24 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task ScrollIntoViewAsync();
+
+        /// <summary>
+        /// When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId for the element.
+        /// </summary>
+        /// <returns>A task that resolves to the backend node ID.</returns>
+        Task<int> BackendNodeIdAsync();
+
+        /// <summary>
+        /// If the element is a form input, you can use <see cref="AutofillAsync(AutofillData)"/>
+        /// to test if the form is compatible with the browser's autofill implementation.
+        /// Throws an error if the form cannot be autofilled.
+        /// </summary>
+        /// <param name="data">The autofill data.</param>
+        /// <returns>A task that resolves when the autofill is complete.</returns>
+        /// <remarks>
+        /// Currently, Puppeteer supports auto-filling credit card information only and
+        /// in Chrome in the new headless and headful modes only.
+        /// </remarks>
+        Task AutofillAsync(AutofillData data);
     }
 }

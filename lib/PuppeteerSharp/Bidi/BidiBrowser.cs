@@ -50,12 +50,14 @@ public class BidiBrowser : Browser
     private readonly ILogger<BidiBrowser> _logger;
     private readonly BidiBrowserTarget _target;
     private readonly string _webSocketEndpoint;
+    private readonly bool _networkEnabled;
     private bool _isClosed;
 
     private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
     {
         _target = new BidiBrowserTarget(this);
         _options = options;
+        _networkEnabled = options.NetworkEnabled;
         BrowserCore = browserCore;
         _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
@@ -190,6 +192,22 @@ public class BidiBrowser : Browser
     public override Task RemoveScreenAsync(string screenId)
         => throw new NotSupportedException("RemoveScreen is not supported in WebDriver BiDi.");
 
+    /// <inheritdoc/>
+    public override async Task<string> InstallExtensionAsync(string path)
+    {
+        var result = await Driver.WebExtension.InstallAsync(
+            new WebDriverBiDi.WebExtension.InstallCommandParameters(
+                new WebDriverBiDi.WebExtension.ExtensionPath(path))).ConfigureAwait(false);
+        return result.ExtensionId;
+    }
+
+    /// <inheritdoc/>
+    public override async Task UninstallExtensionAsync(string id)
+    {
+        await Driver.WebExtension.UninstallAsync(
+            new WebDriverBiDi.WebExtension.UninstallCommandParameters(id)).ConfigureAwait(false);
+    }
+
     /// <inheritdoc />
     public override ITarget[] Targets()
         =>
@@ -320,10 +338,18 @@ public class BidiBrowser : Browser
             },
             loggerFactory).ConfigureAwait(false);
 
-        await session.SubscribeAsync(
-            session.Info.Capabilities.BrowserName.ToLowerInvariant().Contains("firefox")
-                ? SubscribeModules
-                : [.. SubscribeModules, .. SubscribeCdpEvents]).ConfigureAwait(false);
+        var modules = session.Info.Capabilities.BrowserName.ToLowerInvariant().Contains("firefox")
+            ? SubscribeModules
+            : [.. SubscribeModules, .. SubscribeCdpEvents];
+
+        if (!options.NetworkEnabled)
+        {
+            modules = modules
+                .Where(m => m != "network" && m != "cdp.Network.requestWillBeSent")
+                .ToArray();
+        }
+
+        await session.SubscribeAsync(modules).ConfigureAwait(false);
 
         // Add data collectors for request and response bodies.
         // This enables network.getData to return response/request bodies.
@@ -347,6 +373,8 @@ public class BidiBrowser : Browser
         browser.InitializeAsync();
         return browser;
     }
+
+    internal override bool IsNetworkEnabled() => _networkEnabled;
 
     private static WindowState MapFromClientWindowState(WebDriverBiDi.Browser.ClientWindowState state) => state switch
     {
