@@ -93,7 +93,9 @@ public class CdpJSHandle : JSHandle, ICdpHandle
                 continue;
             }
 
-            result[property.Name] = new CdpJSHandle((IsolatedWorld)Realm, property.Value);
+            result[property.Name] = property.Value.Subtype == RemoteObjectSubtype.Node && ((IsolatedWorld)Realm).Frame != null
+                ? new CdpElementHandle((IsolatedWorld)Realm, property.Value)
+                : new CdpJSHandle((IsolatedWorld)Realm, property.Value);
         }
 
         return result;

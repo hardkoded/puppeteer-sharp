@@ -255,6 +255,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
+            _context = context;
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
