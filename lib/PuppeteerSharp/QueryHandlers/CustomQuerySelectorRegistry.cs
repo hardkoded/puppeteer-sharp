@@ -87,7 +87,7 @@ namespace PuppeteerSharp.QueryHandlers
             ScriptInjector.Default.Append(registerScript);
         }
 
-        internal (string UpdatedSelector, QueryHandler QueryHandler) GetQueryHandlerAndSelector(string selector)
+        internal (string UpdatedSelector, QueryHandler QueryHandler, WaitForFunctionPollingOption Polling) GetQueryHandlerAndSelector(string selector)
         {
             // Take a snapshot of custom handlers to avoid holding lock during iteration
             KeyValuePair<string, (string RegisterScript, QueryHandler Handler)>[] customHandlers;
@@ -106,7 +106,7 @@ namespace PuppeteerSharp.QueryHandlers
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         selector = selector.Substring(prefix.Length);
-                        return (selector, kv.Value.Handler);
+                        return (selector, kv.Value.Handler, WaitForFunctionPollingOption.Mutation);
                     }
                 }
             }
@@ -120,12 +120,17 @@ namespace PuppeteerSharp.QueryHandlers
                     if (selector.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     {
                         selector = selector.Substring(prefix.Length);
-                        return (selector, kv.Value);
+
+                        // Use RAF-based polling for ARIA selectors
+                        var polling = kv.Key == "aria"
+                            ? WaitForFunctionPollingOption.Raf
+                            : WaitForFunctionPollingOption.Mutation;
+                        return (selector, kv.Value, polling);
                     }
                 }
             }
 
-            return (selector, _defaultHandler);
+            return (selector, _defaultHandler, WaitForFunctionPollingOption.Mutation);
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
