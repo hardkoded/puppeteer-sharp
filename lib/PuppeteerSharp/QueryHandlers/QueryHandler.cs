@@ -93,7 +93,7 @@ namespace PuppeteerSharp.QueryHandlers
             ElementHandle element,
             string selector,
             WaitForSelectorOptions options,
-            WaitForFunctionPollingOption? pollingOverride = null)
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
         {
             if (element != null)
             {
@@ -139,7 +139,7 @@ namespace PuppeteerSharp.QueryHandlers
                     predicate,
                     new()
                     {
-                        Polling = pollingOverride ?? (waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation),
+                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : polling,
                         Root = element,
                         Timeout = timeout,
                     },

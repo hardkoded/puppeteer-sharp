@@ -77,10 +77,9 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler, selectorHasPseudoClasses) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
-            var pollingOverride = selectorHasPseudoClasses ? WaitForFunctionPollingOption.Raf : (WaitForFunctionPollingOption?)null;
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return await BindIsolatedHandleAsync<IElementHandle, ElementHandle>(handle =>
-                queryHandler.WaitForAsync(null, handle, updatedSelector, options, pollingOverride)).ConfigureAwait(false);
+                queryHandler.WaitForAsync(null, handle, updatedSelector, options, polling)).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

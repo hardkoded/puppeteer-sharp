@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Cdp
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
         private const int TimeForWaitingForSwap = 200;
-        private const string UtilityWorldName = "__puppeteer_utility_world__";
+        private static readonly string UtilityWorldName = "__puppeteer_utility_world__" + typeof(FrameManager).Assembly.GetName().Version.ToString();
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
         private readonly ILogger _logger;
@@ -503,8 +503,11 @@ namespace PuppeteerSharp.Cdp
             var frame = GetFrame(frameId);
             if (frame != null)
             {
-                if (session != null && frame.Client != Client)
+                var parentFrame = GetFrame(parentFrameId);
+                if (session != null && parentFrame != null && frame.Client != parentFrame.Client)
                 {
+                    // If an OOP iframe becomes a normal iframe again it is first
+                    // attached to the parent frame before the target is removed.
                     frame.UpdateClient(session);
                 }
 

@@ -74,7 +74,7 @@ namespace PuppeteerSharp.QueryHandlers
             ElementHandle element,
             string selector,
             WaitForSelectorOptions options,
-            WaitForFunctionPollingOption? pollingOverride = null)
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
         {
             // Get frame from element if not provided
             var targetFrame = frame ?? element?.Frame;
@@ -88,7 +88,7 @@ namespace PuppeteerSharp.QueryHandlers
 #endif
 
             // For CDP frames, use the base implementation
-            return await base.WaitForAsync(frame, element, selector, options, pollingOverride).ConfigureAwait(false);
+            return await base.WaitForAsync(frame, element, selector, options, polling).ConfigureAwait(false);
         }
 
 #if NET8_0_OR_GREATER
