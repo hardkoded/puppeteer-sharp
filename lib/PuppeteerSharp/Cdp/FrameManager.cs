@@ -23,6 +23,7 @@ namespace PuppeteerSharp.Cdp
         private readonly TaskQueue _eventsQueue = new();
         private readonly ConcurrentDictionary<CDPSession, DeviceRequestPromptManager> _deviceRequestPromptManagerMap = new();
         private readonly ConcurrentDictionary<string, CdpPreloadScript> _scriptsToEvaluateOnNewDocument = new();
+        private readonly HashSet<Binding> _bindings = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
@@ -136,6 +137,20 @@ namespace PuppeteerSharp.Cdp
                 })).ConfigureAwait(false);
         }
 
+        internal async Task AddExposedFunctionBindingAsync(Binding binding)
+        {
+            _bindings.Add(binding);
+            await Task.WhenAll(
+                GetFrames().Select(frame => ((CdpFrame)frame).AddExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+        }
+
+        internal async Task RemoveExposedFunctionBindingAsync(Binding binding)
+        {
+            _bindings.Remove(binding);
+            await Task.WhenAll(
+                GetFrames().Select(frame => ((CdpFrame)frame).RemoveExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+        }
+
         internal void OnAttachedToTarget(CdpTarget target)
         {
             if (target.TargetInfo.Type != TargetType.IFrame)
@@ -178,9 +193,9 @@ namespace PuppeteerSharp.Cdp
                     : Task.CompletedTask;
 
                 // Page.enable must be sent before Page.getFrameTree to ensure frame events are received
-                // Preload scripts must also be sent before runIfWaitingForDebugger (called by the
-                // target manager after this method returns) so the scripts are registered before the
-                // document starts loading in out-of-process frames.
+                // Preload scripts and bindings must also be sent before runIfWaitingForDebugger
+                // (called by the target manager after this method returns) so the scripts
+                // are registered before the document starts loading in out-of-process frames.
                 var pageEnableTask = client.SendAsync("Page.enable");
 
                 var preloadScriptTasks = frame != null
@@ -200,6 +215,12 @@ namespace PuppeteerSharp.Cdp
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
                     networkInitTask).ConfigureAwait(false);
+
+                if (frame != null)
+                {
+                    await Task.WhenAll(
+                        _bindings.Select(binding => frame.AddExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+                }
 
                 await CreateIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
             }

@@ -246,30 +246,18 @@ public class CdpPage : Page
             throw new ArgumentNullException(nameof(name));
         }
 
-        if (!_exposedFunctions.TryRemove(name, out var exposedFun) || !_bindings.TryRemove(name, out _))
+        if (!_exposedFunctions.TryRemove(name, out var exposedFun))
         {
             throw new PuppeteerException(
-                $"Failed to remove page binding with name {name}: window['{name}'] does not exists!");
+                $"Function with name \"{name}\" does not exist");
         }
 
-        await Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest { Name = BindingUtils.CdpBindingPrefix + name, })
-            .ConfigureAwait(false);
-
-        await RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun).ConfigureAwait(false);
+        // #bindings must be updated together with #exposedFunctions.
+        _bindings.TryRemove(name, out var binding);
 
         await Task.WhenAll(
-            Frames.Select(frame =>
-                {
-                    // If a frame has not started loading, it might never start. Rely on
-                    // addScriptToEvaluateOnNewDocument in that case.
-                    if (frame != MainFrame && !((Frame)frame).HasStartedLoading)
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    return frame.EvaluateFunctionAsync("name => globalThis[name] = undefined", name);
-                })
-                .ToArray()).ConfigureAwait(false);
+            FrameManager.RemoveScriptToEvaluateOnNewDocumentAsync(exposedFun),
+            FrameManager.RemoveExposedFunctionBindingAsync(binding)).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -849,42 +837,21 @@ public class CdpPage : Page
     /// <inheritdoc />
     protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
     {
-        if (!_bindings.TryAdd(name, new Binding(name, puppeteerFunction)))
+        var source = BindingUtils.PageBindingInitString("exposedFun", name);
+        var binding = new Binding(name, puppeteerFunction, source);
+
+        if (!_bindings.TryAdd(name, binding))
         {
             throw new PuppeteerException(
                 $"Failed to add page binding with name {name}: window['{name}'] already exists!");
         }
 
-        var expression = BindingUtils.PageBindingInitString("exposedFun", name);
-        await PrimaryTargetClient.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest { Name = BindingUtils.CdpBindingPrefix + name })
-            .ConfigureAwait(false);
-        var functionInfo = await FrameManager.EvaluateOnNewDocumentAsync(expression).ConfigureAwait(false);
+        var evaluateTask = FrameManager.EvaluateOnNewDocumentAsync(source);
+        var bindingTask = FrameManager.AddExposedFunctionBindingAsync(binding);
 
-        _exposedFunctions.TryAdd(name, functionInfo.Identifier);
+        await Task.WhenAll(evaluateTask, bindingTask).ConfigureAwait(false);
 
-        await Task.WhenAll(Frames.Select(
-                frame =>
-                {
-                    // If a frame has not started loading, it might never start. Rely on
-                    // addScriptToEvaluateOnNewDocument in that case.
-                    if (frame != MainFrame && !((Frame)frame).HasStartedLoading)
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    return frame
-                        .EvaluateExpressionAsync(expression)
-                        .ContinueWith(
-                            task =>
-                            {
-                                if (task.IsFaulted && task.Exception != null)
-                                {
-                                    _logger.LogError(task.Exception.ToString());
-                                }
-                            },
-                            TaskScheduler.Default);
-                }))
-            .ConfigureAwait(false);
+        _exposedFunctions.TryAdd(name, evaluateTask.Result.Identifier);
     }
 
     /// <inheritdoc/>
@@ -1074,7 +1041,29 @@ public class CdpPage : Page
             OnWorkerCreated(worker);
         }
 
+        if (session.Target.Type == TargetType.IFrame)
+        {
+            session.MessageReceived += OopifSession_MessageReceived;
+        }
+
         session.Ready += OnAttachedToTarget;
+    }
+
+    private async void OopifSession_MessageReceived(object sender, MessageEventArgs e)
+    {
+        try
+        {
+            if (e.MessageID == "Runtime.bindingCalled")
+            {
+                await OnBindingCalledAsync(
+                    e.MessageData.ToObject<BindingCalledResponse>(),
+                    sender as CDPSession).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to process OOPIF message {MessageId}", e.MessageID);
+        }
     }
 
     private async void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -1331,14 +1320,14 @@ public class CdpPage : Page
         }
     }
 
-    private async Task OnBindingCalledAsync(BindingCalledResponse e)
+    private async Task OnBindingCalledAsync(BindingCalledResponse e, CDPSession session = null)
     {
         if (e.BindingPayload.Type != "exposedFun" || !_bindings.ContainsKey(e.BindingPayload.Name))
         {
             return;
         }
 
-        var context = FrameManager.GetExecutionContextById(e.ExecutionContextId, Client);
+        var context = FrameManager.GetExecutionContextById(e.ExecutionContextId, session ?? Client);
 
         await BindingUtils.ExecuteBindingAsync(context, e, _bindings).ConfigureAwait(false);
     }

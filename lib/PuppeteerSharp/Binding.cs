@@ -10,15 +10,18 @@ namespace PuppeteerSharp
 {
     internal class Binding
     {
-        public Binding(string name, Delegate fn)
+        public Binding(string name, Delegate fn, string initSource)
         {
             Name = name;
             Function = fn;
+            InitSource = initSource;
         }
 
         public string Name { get; }
 
         public Delegate Function { get; }
+
+        public string InitSource { get; }
 
         internal async Task RunAsync(
             ExecutionContext context,

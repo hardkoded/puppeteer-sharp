@@ -413,6 +413,63 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support removing evaluateOnNewDocument scripts")]
+        public async Task ShouldSupportRemovingEvaluateOnNewDocumentScripts()
+        {
+            var result = await Page.EvaluateFunctionOnNewDocumentAsync(@"() => {
+                window.evaluateOnNewDocument = true;
+            }");
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
+            await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            foreach (var frame in Page.Frames)
+            {
+                Assert.That(
+                    await frame.EvaluateFunctionAsync<bool>("() => window.evaluateOnNewDocument"),
+                    Is.True);
+            }
+
+            await Page.RemoveScriptToEvaluateOnNewDocumentAsync(result.Identifier);
+            await Page.ReloadAsync();
+            await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+        }
+
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support exposeFunction")]
+        public async Task ShouldSupportExposeFunction()
+        {
+            var count = 0;
+            await Page.ExposeFunctionAsync("plusOne", () =>
+            {
+                count++;
+            });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
+            await Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            foreach (var frame in Page.Frames)
+            {
+                await frame.EvaluateFunctionAsync("async () => await window.plusOne()");
+            }
+
+            Assert.That(count, Is.EqualTo(2));
+        }
+
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support removing exposed function")]
+        public async Task ShouldSupportRemovingExposedFunction()
+        {
+            await Page.ExposeFunctionAsync("plusOne", () => { });
+            var frameTask = Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
+            await frameTask.WithTimeout();
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            await Page.RemoveExposedFunctionAsync("plusOne");
+            foreach (var frame in Page.Frames)
+            {
+                Assert.That(
+                    await frame.EvaluateFunctionAsync<bool>("() => !!window['plusOne']"),
+                    Is.False);
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "waitForFrame", "should resolve immediately if the frame already exists")]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {
