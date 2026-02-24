@@ -480,6 +480,39 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(networkEvents, Does.Contain($"http://oopifdomain:{TestConstants.Port}/fetch"));
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should retrieve body for OOPIF document requests")]
+        public async Task ShouldRetrieveBodyForOopifDocumentRequests()
+        {
+            var frameUrl = TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/oopif-response.html";
+
+            IResponse testResponse = null;
+
+            Page.Response += (_, e) =>
+            {
+                if (e.Response.Request.Url == frameUrl)
+                {
+                    testResponse = e.Response;
+                }
+            };
+
+            // Navigate to the empty page and add an OOPIF iframe.
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"(frameUrl) => {
+                const frame = document.createElement('iframe');
+                frame.setAttribute('src', frameUrl);
+                document.body.appendChild(frame);
+                return new Promise((x, y) => {
+                    frame.onload = x;
+                    frame.onerror = y;
+                });
+            }", frameUrl);
+            await Page.WaitForSelectorAsync("iframe");
+
+            Assert.That(testResponse, Is.Not.Null);
+            var text = await testResponse.TextAsync();
+            Assert.That(text, Does.Contain("I'm an OOPIF"));
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF waitForFrame", "should report google.com frame")]
         public async Task OOPIFShouldReportGoogleComFrame()
         {

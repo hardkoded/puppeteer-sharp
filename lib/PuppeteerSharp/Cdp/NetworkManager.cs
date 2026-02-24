@@ -194,10 +194,10 @@ namespace PuppeteerSharp.Cdp
                         OnResponseReceived(client, e.MessageData.ToObject<ResponseReceivedResponse>());
                         break;
                     case "Network.loadingFinished":
-                        OnLoadingFinished(e.MessageData.ToObject<LoadingFinishedEventResponse>());
+                        OnLoadingFinished(client, e.MessageData.ToObject<LoadingFinishedEventResponse>());
                         break;
                     case "Network.loadingFailed":
-                        OnLoadingFailed(e.MessageData.ToObject<LoadingFailedEventResponse>());
+                        OnLoadingFailed(client, e.MessageData.ToObject<LoadingFailedEventResponse>());
                         break;
                     case "Network.responseReceivedExtraInfo":
                         await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
@@ -238,12 +238,12 @@ namespace PuppeteerSharp.Cdp
 
                 if (queuedEvents.LoadingFinishedEvent != null)
                 {
-                    EmitLoadingFinished(queuedEvents.LoadingFinishedEvent);
+                    EmitLoadingFinished(client, queuedEvents.LoadingFinishedEvent);
                 }
 
                 if (queuedEvents.LoadingFailedEvent != null)
                 {
-                    EmitLoadingFailed(queuedEvents.LoadingFailedEvent);
+                    EmitLoadingFailed(client, queuedEvents.LoadingFailedEvent);
                 }
 
                 return;
@@ -253,7 +253,7 @@ namespace PuppeteerSharp.Cdp
             _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
         }
 
-        private void OnLoadingFailed(LoadingFailedEventResponse e)
+        private void OnLoadingFailed(CDPSession client, LoadingFailedEventResponse e)
         {
             var queuedEvents = _networkEventManager.GetQueuedEventGroup(e.RequestId);
 
@@ -263,11 +263,11 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
-                EmitLoadingFailed(e);
+                EmitLoadingFailed(client, e);
             }
         }
 
-        private void EmitLoadingFailed(LoadingFailedEventResponse e)
+        private void EmitLoadingFailed(CDPSession client, LoadingFailedEventResponse e)
         {
             var request = _networkEventManager.GetRequest(e.RequestId);
             if (request == null)
@@ -275,6 +275,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            MaybeReassignOOPIFRequestClient(client, request);
             request.FailureText = e.ErrorText;
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
@@ -283,7 +284,7 @@ namespace PuppeteerSharp.Cdp
             RequestFailed?.Invoke(this, new RequestEventArgs(request));
         }
 
-        private void OnLoadingFinished(LoadingFinishedEventResponse e)
+        private void OnLoadingFinished(CDPSession client, LoadingFinishedEventResponse e)
         {
             var queuedEvents = _networkEventManager.GetQueuedEventGroup(e.RequestId);
 
@@ -293,11 +294,11 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
-                EmitLoadingFinished(e);
+                EmitLoadingFinished(client, e);
             }
         }
 
-        private void EmitLoadingFinished(LoadingFinishedEventResponse e)
+        private void EmitLoadingFinished(CDPSession client, LoadingFinishedEventResponse e)
         {
             var request = _networkEventManager.GetRequest(e.RequestId);
             if (request == null)
@@ -305,6 +306,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            MaybeReassignOOPIFRequestClient(client, request);
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
@@ -364,7 +366,6 @@ namespace PuppeteerSharp.Cdp
             }
 
             var response = new CdpHttpResponse(
-                client,
                 request,
                 e.Response,
                 extraInfo);
@@ -545,7 +546,6 @@ namespace PuppeteerSharp.Cdp
         private void HandleRequestRedirect(CDPSession client, CdpHttpRequest request, ResponsePayload responseMessage, ResponseReceivedExtraInfoResponse extraInfo)
         {
             var response = new CdpHttpResponse(
-                client,
                 request,
                 responseMessage,
                 extraInfo);
@@ -675,5 +675,18 @@ namespace PuppeteerSharp.Cdp
 
         private Task ApplyToAllClientsAsync(Func<ICDPSession, Task> func)
             => Task.WhenAll(_clients.Keys.Select(func));
+
+        private void MaybeReassignOOPIFRequestClient(CDPSession client, CdpHttpRequest request)
+        {
+            // Document requests for OOPIFs start in the parent frame but are adopted by their
+            // child frame, meaning their loadingFinished and loadingFailed events are fired on
+            // the child session. In this case we reassign the request CDPSession to ensure all
+            // subsequent actions use the correct session (e.g. retrieving response body in
+            // CdpHttpResponse).
+            if (client != request.Client && request.IsNavigationRequest)
+            {
+                request.Client = client;
+            }
+        }
     }
 }

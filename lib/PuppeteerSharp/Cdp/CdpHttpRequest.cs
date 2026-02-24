@@ -15,10 +15,10 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc/>
 public class CdpHttpRequest : Request<CdpHttpResponse>
 {
-    private readonly CDPSession _client;
     private readonly bool _allowInterception;
     private readonly ILogger _logger;
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
+    private CDPSession _client;
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
@@ -58,6 +58,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
     /// <inheritdoc cref="Response"/>
     public override CdpHttpResponse Response { get; internal set; }
+
+    internal CDPSession Client
+    {
+        get => _client;
+        set => _client = value;
+    }
 
     internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
 
