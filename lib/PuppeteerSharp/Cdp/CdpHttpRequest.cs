@@ -355,11 +355,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                     responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = keyValuePair.Value.ToString() });
                 }
             }
+        }
 
-            if (!response.Headers.ContainsKey("content-length") && response.BodyData != null)
-            {
-                responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.CurrentCulture) });
-            }
+        if (response.BodyData is { Length: > 0 } && (response.Headers == null || !response.Headers.ContainsKey("content-length")))
+        {
+            responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.InvariantCulture) });
         }
 
         if (response.ContentType != null)
