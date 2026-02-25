@@ -394,7 +394,7 @@ namespace PuppeteerSharp
                 var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
                 if (frame?.Id == Id)
                 {
-                    return iframe as ElementHandle;
+                    return await parentFrame.MainRealm.AdoptHandleAsync(iframe).ConfigureAwait(false) as ElementHandle;
                 }
 
                 try
