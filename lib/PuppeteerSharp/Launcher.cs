@@ -2,7 +2,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -126,8 +128,23 @@ namespace PuppeteerSharp
                                 options.DefaultViewport,
                                 Process,
                                 options.TargetFilter,
-                                options.IsPageTarget)
+                                options.IsPageTarget,
+                                handleDevToolsAsPage: options.HandleDevToolsAsPage,
+                                networkEnabled: options.NetworkEnabled)
                             .ConfigureAwait(false);
+                    }
+
+                    if (options.EnableExtensions is { Paths: { } extensionPaths })
+                    {
+                        if (options.Browser != SupportedBrowser.Firefox)
+                        {
+                            throw new PuppeteerException(
+                                "Installing extensions via EnableExtensions paths is only supported with Firefox. " +
+                                "For Chrome, use EnableExtensions = true and pass --load-extension as an argument.");
+                        }
+
+                        await Task.WhenAll(
+                            extensionPaths.Select(path => browser.InstallExtensionAsync(path))).ConfigureAwait(false);
                     }
 
                     if (options.WaitForInitialPage)
@@ -141,12 +158,37 @@ namespace PuppeteerSharp
                 {
                     connection?.Dispose();
                     browser?.Dispose();
+
+                    var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
+                    if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                    {
+                        throw new ProcessException(
+                            $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
+                            ex);
+                    }
+
                     throw new ProcessException("Failed to create connection", ex);
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 await Process.KillAsync().ConfigureAwait(false);
+
+                var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
+                if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                {
+                    throw new ProcessException(
+                        $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
+                        ex);
+                }
+
+                if (IsMissingXServer(ex) && options.HeadlessMode == HeadlessMode.False)
+                {
+                    throw new ProcessException(
+                        "Missing X server to start the headful browser. Either set Headless to true or use xvfb-run to run your Puppeteer script.",
+                        ex);
+                }
+
                 throw;
             }
         }
@@ -185,6 +227,29 @@ namespace PuppeteerSharp
 
             return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
         }
+
+        private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir)
+        {
+            var message = ex.ToString();
+            if (message.Contains("Failed to create a ProcessSingleton for your profile directory", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            // On Windows we will not get logs due to the singleton process
+            // handover. See
+            // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/process_singleton_win.cc;l=46;drc=fc7952f0422b5073515a205a04ec9c3a1ae81658
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                File.Exists(Path.Combine(userDataDir, "lockfile")))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsMissingXServer(Exception ex)
+            => ex.ToString().Contains("Missing X server", StringComparison.Ordinal);
 
 #if !CDP_ONLY
         private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
@@ -265,7 +330,9 @@ namespace PuppeteerSharp
                         null,
                         options.TargetFilter,
                         options.IsPageTarget,
-                        options.InitAction)
+                        options.InitAction,
+                        options.HandleDevToolsAsPage,
+                        options.NetworkEnabled)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

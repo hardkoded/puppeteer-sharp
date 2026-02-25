@@ -82,7 +82,7 @@ namespace PuppeteerSharp.Cdp
                 var childIds = _childIds.GetOrAdd(frame.ParentId, static _ => new());
                 childIds.Add(frame.Id);
             }
-            else
+            else if (MainFrame == null)
             {
                 MainFrame = frame;
             }

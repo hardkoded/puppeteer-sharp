@@ -14,6 +14,15 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// The root DOM element for the snapshot. Defaults to the whole page.
         /// </summary>
+        /// <summary>
+        /// If true, gets accessibility trees for each of the iframes in the frame subtree.
+        /// Defaults to false.
+        /// </summary>
+        public bool IncludeIframes { get; set; }
+
+        /// <summary>
+        /// The root DOM element for the snapshot. Defaults to the whole page.
+        /// </summary>
         public IElementHandle Root { get; set; }
     }
 }

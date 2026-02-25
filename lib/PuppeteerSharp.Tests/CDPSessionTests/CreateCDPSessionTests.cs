@@ -140,5 +140,24 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
             => Assert.That(await Page.CreateCDPSessionAsync(), Is.Not.Null);
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should keep the underlying connection after being detached")]
+        public async Task ShouldKeepTheUnderlyingConnectionAfterBeingDetached()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            var cdpSession = client as CDPSession;
+            var connection = cdpSession?.Connection;
+            await client.DetachAsync();
+            Assert.That(cdpSession?.Connection, Is.EqualTo(connection));
+        }
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose detached state")]
+        public async Task ShouldExposeDetachedState()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            Assert.That(client.Detached, Is.False);
+            await client.DetachAsync();
+            Assert.That(client.Detached, Is.True);
+        }
     }
 }

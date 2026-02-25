@@ -953,6 +953,15 @@ namespace PuppeteerSharp
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
+        /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for.</param>
+        /// <param name="options">Optional query options.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
+        /// <seealso cref="IFrame.QuerySelectorAllAsync(string, QueryOptions)"/>
+        Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options);
+
+        /// <summary>
         /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
         /// </summary>
         /// <param name="selector">A selector to query page for.</param>
@@ -1418,6 +1427,22 @@ namespace PuppeteerSharp
         /// Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.</returns>
         /// <seealso cref="IFrame.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+
+        /// <summary>
+        /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="selector">A selector to locate an element.</param>
+        /// <returns>A locator for the provided selector.</returns>
+        Locators.Locator Locator(string selector);
+
+        /// <summary>
+        /// Creates a locator for the provided function. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="func">A JavaScript function expression to evaluate.</param>
+        /// <returns>A locator for the provided function.</returns>
+        Locators.Locator LocatorFunction(string func);
 
         /// <summary>
         /// Waits for a xpath selector to be added to the DOM.

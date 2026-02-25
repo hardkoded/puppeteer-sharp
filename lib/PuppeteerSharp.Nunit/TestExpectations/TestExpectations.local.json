@@ -117,5 +117,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "PuppeteerSharp does not support pipe mode, which is required for Extensions.loadUnpacked CDP command",
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"]
   }
 ]

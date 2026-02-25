@@ -648,15 +648,10 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetViewportAsync(ViewPortOptions viewport)
     {
-        if (viewport == null)
-        {
-            throw new ArgumentNullException(nameof(viewport));
-        }
-
         if (!BidiBrowser.CdpSupported)
         {
             // Set the screen orientation based on IsLandscape
-            var screenOrientation = viewport.IsLandscape
+            var screenOrientation = viewport?.IsLandscape == true
                 ? new WebDriverBiDi.Emulation.ScreenOrientation(
                     WebDriverBiDi.Emulation.ScreenOrientationNatural.Landscape,
                     WebDriverBiDi.Emulation.ScreenOrientationType.LandscapePrimary)
@@ -675,7 +670,7 @@ public class BidiPage : Page
                                 Height = (ulong)viewport.Height,
                             }
                             : null,
-                        DevicePixelRatio = viewport.DeviceScaleFactor,
+                        DevicePixelRatio = viewport?.DeviceScaleFactor ?? 0,
                     }),
                 BidiMainFrame.BrowsingContext.SetScreenOrientationOverrideAsync(screenOrientation)).ConfigureAwait(false);
             Viewport = viewport;
@@ -754,14 +749,15 @@ public class BidiPage : Page
 
             var bidiCookie = BidiCookieHelper.PuppeteerToBidiCookie(cookieToUse, domain);
 
-            if (!string.IsNullOrEmpty(cookie.PartitionKey))
+            var partitionKeyString = BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.PartitionKey);
+            if (!string.IsNullOrEmpty(partitionKeyString))
             {
                 var userContext = ((BidiBrowserContext)BrowserContext).UserContext;
                 await BidiBrowser.Driver.Storage.SetCookieAsync(new WebDriverBiDi.Storage.SetCookieCommandParameters(bidiCookie)
                 {
                     Partition = new WebDriverBiDi.Storage.StorageKeyPartitionDescriptor
                     {
-                        SourceOrigin = cookie.PartitionKey,
+                        SourceOrigin = partitionKeyString,
                         UserContextId = userContext.Id,
                     },
                 }).ConfigureAwait(false);
@@ -779,6 +775,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task CloseAsync(PageCloseOptions options = null)
     {
+        var guard = await ((BrowserContext)BrowserContext).WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
         try
         {
             await BidiMainFrame.BrowsingContext.CloseAsync(options?.RunBeforeUnload).ConfigureAwait(false);
@@ -964,7 +963,7 @@ public class BidiPage : Page
         }).ConfigureAwait(false);
 
         return result.Cookies
-            .Select(BidiCookieHelper.BidiToPuppeteerCookie)
+            .Select(cookie => BidiCookieHelper.BidiToPuppeteerCookie(cookie))
             .Where(cookie => normalizedUrls.Any(url => BidiCookieHelper.TestUrlMatchCookie(cookie, url)))
             .ToArray();
     }
@@ -1100,9 +1099,11 @@ public class BidiPage : Page
         var marginBottom = ConvertPrintParameterToCentimeters(options.MarginOptions.Bottom);
         var marginRight = ConvertPrintParameterToCentimeters(options.MarginOptions.Right);
 
-        // Wait for fonts to be ready
-        await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
-            .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        if (options.WaitForFonts)
+        {
+            await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
+                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+        }
 
         var pageRanges = new List<object>();
         if (!string.IsNullOrEmpty(options.PageRanges))
@@ -1342,11 +1343,6 @@ public class BidiPage : Page
         }
         catch (Exception ex)
         {
-            if (ex.Message.Contains("no such history entry"))
-            {
-                return null;
-            }
-
             throw new NavigationException(ex.Message, ex);
         }
 

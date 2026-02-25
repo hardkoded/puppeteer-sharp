@@ -100,5 +100,17 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "local-fonts")]
         LocalFonts,
+
+        /// <summary>
+        /// Keyboard Lock.
+        /// </summary>
+        [EnumMember(Value = "keyboardLock")]
+        KeyboardLock,
+
+        /// <summary>
+        /// Pointer Lock.
+        /// </summary>
+        [EnumMember(Value = "pointerLock")]
+        PointerLock,
     }
 }

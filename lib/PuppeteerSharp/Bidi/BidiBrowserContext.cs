@@ -159,11 +159,36 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
+    public override async Task<CookieParam[]> GetCookiesAsync()
+    {
+        var cookies = await UserContext.GetCookiesAsync().ConfigureAwait(false);
+        return cookies.Select(cookie => BidiCookieHelper.BidiToPuppeteerCookie(cookie, returnCompositePartitionKey: true)).ToArray();
+    }
+
+    /// <inheritdoc />
+    public override async Task SetCookieAsync(params CookieData[] cookies)
+    {
+        await Task.WhenAll(cookies.Select(async cookie =>
+        {
+            var domain = cookie.Domain;
+            var bidiCookie = BidiCookieHelper.PuppeteerCookieDataToBidiCookie(cookie, domain);
+            var partitionKey = BidiCookieHelper.ConvertCookiesPartitionKeyFromPuppeteerToBiDi(cookie.PartitionKey);
+
+            await UserContext.SetCookieAsync(
+                bidiCookie,
+                partitionKey).ConfigureAwait(false);
+        })).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
     {
+        var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+
         var type = options?.Type == CreatePageType.Window
             ? WebDriverBiDi.BrowsingContext.CreateType.Window
             : WebDriverBiDi.BrowsingContext.CreateType.Tab;
@@ -269,6 +294,8 @@ public class BidiBrowserContext : BrowserContext
             OverridePermission.PersistentStorage => "persistent-storage",
             OverridePermission.LocalNetworkAccess => "local-network-access",
             OverridePermission.LocalFonts => "local-fonts",
+            OverridePermission.KeyboardLock => "keyboard-lock",
+            OverridePermission.PointerLock => "pointer-lock",
             _ => throw new ArgumentOutOfRangeException(nameof(permission), permission, "Unknown permission"),
         };
     }

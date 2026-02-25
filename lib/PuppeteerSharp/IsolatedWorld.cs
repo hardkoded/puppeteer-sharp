@@ -97,7 +97,7 @@ namespace PuppeteerSharp
                         "Runtime.addBinding",
                         new RuntimeAddBindingRequest
                         {
-                            Name = name,
+                            Name = BindingUtils.CdpBindingPrefix + name,
                             ExecutionContextName = !string.IsNullOrEmpty(context.ContextName) ? context.ContextName : null,
                             ExecutionContextId = string.IsNullOrEmpty(context.ContextName) ? context.ContextId : null,
                         }).ConfigureAwait(false);
@@ -178,14 +178,16 @@ namespace PuppeteerSharp
             TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
-        internal Task<ExecutionContext> GetExecutionContextAsync()
+        internal async Task<ExecutionContext> GetExecutionContextAsync()
         {
             if (_detached)
             {
                 throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
             }
 
-            return _contextResolveTaskWrapper.Task;
+            return await _contextResolveTaskWrapper.Task
+                .WithTimeout(TimeoutSettings.Timeout)
+                .ConfigureAwait(false);
         }
 
         internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)

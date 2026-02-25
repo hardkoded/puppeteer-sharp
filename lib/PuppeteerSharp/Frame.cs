@@ -113,9 +113,17 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
-            return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitForAsync(this, null, updatedSelector, options, polling).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
+        public Locators.Locator LocatorFunction(string func)
+            => Locators.FunctionLocator.Create(this, func);
 
         /// <inheritdoc/>
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
@@ -187,6 +195,13 @@ namespace PuppeteerSharp
         {
             var document = await GetDocumentAsync().ConfigureAwait(false);
             return await document.QuerySelectorAllAsync(selector).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+        {
+            var document = await GetDocumentAsync().ConfigureAwait(false);
+            return await document.QuerySelectorAllAsync(selector, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

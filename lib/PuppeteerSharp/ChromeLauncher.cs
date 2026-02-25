@@ -67,10 +67,8 @@ namespace PuppeteerSharp
                 "--disable-breakpad",
                 "--disable-client-side-phishing-detection",
                 "--disable-component-extensions-with-background-pages",
-                "--disable-component-update",
                 "--disable-default-apps",
                 "--disable-dev-shm-usage",
-                "--disable-extensions",
                 "--disable-field-trial-config",
                 "--disable-hang-monitor",
                 "--disable-infobars",
@@ -114,6 +112,11 @@ namespace PuppeteerSharp
                     "--mute-audio",
                 });
             }
+
+            chromiumArguments.Add(
+                options.EnableExtensions is { Enabled: true }
+                    ? "--enable-unsafe-extension-debugging"
+                    : "--disable-extensions");
 
             if (args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {

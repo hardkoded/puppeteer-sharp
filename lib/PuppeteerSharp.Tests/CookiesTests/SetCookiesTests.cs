@@ -200,7 +200,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 Name = "partitionCookie",
                 Value = "partition",
                 Secure = true,
-                PartitionKey = key,
+                PartitionKey = new CookiePartitionKey { SourceOrigin = key },
             });
             var cookies = await page.GetCookiesAsync();
             Assert.That(cookies, Has.Exactly(1).Items);
@@ -224,7 +224,7 @@ namespace PuppeteerSharp.Tests.CookiesTests
                 key = url.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.UriEscaped);
             }
 
-            Assert.That(cookie.PartitionKey, Is.EqualTo(key));
+            Assert.That(cookie.PartitionKey?.SourceOrigin, Is.EqualTo(key));
         }
 
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.setCookie", "should be able to delete \"Default\" sameSite cookie")]

@@ -101,16 +101,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// </summary>
     private bool PageLevelInterceptionEnabled => BidiPage.IsNetworkInterceptionEnabled;
 
-    /// <summary>
-    /// Gets whether this specific request can be intercepted (i.e., is blocked by the browser).
-    /// </summary>
-    private bool CanBeIntercepted => _request.IsBlocked;
-
     private InterceptResolutionState InterceptResolutionState
     {
         get
         {
-            if (!CanBeIntercepted)
+            if (!CanBeIntercepted())
             {
                 return new InterceptResolutionState(InterceptResolutionAction.Disabled);
             }
@@ -124,19 +119,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
     {
-        // First verify that page-level interception is enabled
-        if (!PageLevelInterceptionEnabled)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
+        VerifyInterception();
 
-        if (_isInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
-        }
-
-        // If this specific request is not blocked, return early (don't throw)
-        if (!CanBeIntercepted)
+        if (!CanBeIntercepted())
         {
             return;
         }
@@ -175,19 +160,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             throw new ArgumentNullException(nameof(response));
         }
 
-        // First verify that page-level interception is enabled
-        if (!PageLevelInterceptionEnabled)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
+        VerifyInterception();
 
-        if (_isInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
-        }
-
-        // If this specific request is not blocked, return early (don't throw)
-        if (!CanBeIntercepted)
+        if (!CanBeIntercepted())
         {
             return;
         }
@@ -220,19 +195,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
-        // First verify that page-level interception is enabled
-        if (!PageLevelInterceptionEnabled)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
+        VerifyInterception();
 
-        if (_isInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
-        }
-
-        // If this specific request is not blocked, return early (don't throw)
-        if (!CanBeIntercepted)
+        if (!CanBeIntercepted())
         {
             return;
         }
@@ -311,7 +276,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 // we need to continue it to allow the browser to proceed.
                 // This happens when interception is enabled but no handler called
                 // ContinueAsync, AbortAsync, or RespondAsync.
-                if (CanBeIntercepted)
+                if (CanBeIntercepted())
                 {
                     await ContinueInternalAsync().ConfigureAwait(false);
                 }
@@ -322,6 +287,23 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
+
+    /// <inheritdoc/>
+    protected override void VerifyInterception()
+    {
+        if (!PageLevelInterceptionEnabled)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (_isInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override bool CanBeIntercepted() => _request.IsBlocked;
 
     private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
     {
@@ -505,7 +487,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             }
 
             // Add content-length if not present and we have body data
-            if (!hasContentLength && response.BodyData != null)
+            if (!hasContentLength && response.BodyData is { Length: > 0 })
             {
                 responseHeaders.Add(new Header("content-length", response.BodyData.Length.ToString(CultureInfo.InvariantCulture)));
             }
@@ -629,7 +611,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             BidiPage.OnRequest(this);
         }
 
-        if (HasInternalHeaderOverwrite && CanBeIntercepted)
+        if (HasInternalHeaderOverwrite && CanBeIntercepted())
         {
             _interception.Handlers.Add(async () =>
             {

@@ -94,6 +94,12 @@ namespace PuppeteerSharp
         public abstract Task RemoveScreenAsync(string screenId);
 
         /// <inheritdoc/>
+        public abstract Task<string> InstallExtensionAsync(string path);
+
+        /// <inheritdoc/>
+        public abstract Task UninstallExtensionAsync(string id);
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync()
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
@@ -179,6 +185,10 @@ namespace PuppeteerSharp
             => DefaultContext.SetPermissionAsync(origin, permissions);
 
         /// <inheritdoc/>
+        public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+            => DefaultContext.DeleteMatchingCookiesAsync(filters);
+
+        /// <inheritdoc/>
         public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
 
         /// <inheritdoc/>
@@ -215,6 +225,8 @@ namespace PuppeteerSharp
             await ScreenshotTaskQueue.DisposeAsync().ConfigureAwait(false);
             GC.SuppressFinalize(this);
         }
+
+        internal virtual bool IsNetworkEnabled() => true;
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();

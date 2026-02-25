@@ -38,6 +38,13 @@ namespace PuppeteerSharp
         public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
+        /// Experimental setting to disable monitoring network events by default. When
+        /// set to <c>false</c>, parts of Puppeteer that depend on network events would not
+        /// work such as <see cref="IRequest"/> and <see cref="IResponse"/>.
+        /// </summary>
+        public bool NetworkEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
@@ -81,6 +88,11 @@ namespace PuppeteerSharp
         /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
+
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
 
         // TODO: Restore when it's usable
         internal ProtocolType Protocol { get; set; } = ProtocolType.Cdp;

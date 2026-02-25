@@ -20,9 +20,16 @@ namespace PuppeteerSharp.Tests.NavigationTests
             response = await Page.GoForwardAsync();
             Assert.That(response.Ok, Is.True);
             Assert.That(response.Url, Does.Contain("grid"));
+        }
 
-            response = await Page.GoForwardAsync();
-            Assert.That(response, Is.Null);
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should error if no history is found")]
+        public async Task ShouldErrorIfNoHistoryIsFound()
+        {
+            var exception = Assert.CatchAsync<PuppeteerException>(async () => await Page.GoBackAsync());
+            Assert.That(exception, Is.Not.Null);
+            Assert.That(
+                exception.Message,
+                Does.Contain("History entry to navigate to not found.").Or.Contain("no such history entry"));
         }
 
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goBack", "should work with HistoryAPI")]
@@ -35,11 +42,13 @@ namespace PuppeteerSharp.Tests.NavigationTests
             ");
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/second.html"));
 
-            await Page.GoBackAsync();
+            var response = await Page.GoBackAsync();
+            Assert.That(response, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
             await Page.GoBackAsync();
             Assert.That(Page.Url, Is.EqualTo(TestConstants.EmptyPage));
-            await Page.GoForwardAsync();
+            response = await Page.GoForwardAsync();
+            Assert.That(response, Is.Null);
             Assert.That(Page.Url, Is.EqualTo(TestConstants.ServerUrl + "/first.html"));
         }
     }

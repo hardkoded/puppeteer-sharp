@@ -258,6 +258,10 @@ namespace PuppeteerSharp
             => MainFrame.QuerySelectorAllAsync(selector);
 
         /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+            => MainFrame.QuerySelectorAllAsync(selector, options);
+
+        /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
             => MainFrame.QuerySelectorAllHandleAsync(selector);
 
@@ -482,8 +486,10 @@ namespace PuppeteerSharp
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <inheritdoc/>
-        public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
-            => _screenshotTaskQueue.Enqueue(async () =>
+        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
+        {
+            using var guard = await ((BrowserContext)BrowserContext).StartScreenshotAsync().ConfigureAwait(false);
+            return await _screenshotTaskQueue.Enqueue(async () =>
             {
                 if (options == null)
                 {
@@ -525,11 +531,6 @@ namespace PuppeteerSharp
                 var stack = new DisposableTasksStack();
                 await using (stack.ConfigureAwait(false))
                 {
-                    if (!ScreenshotBurstModeOn)
-                    {
-                        await BringToFrontAsync().ConfigureAwait(false);
-                    }
-
                     // FromSurface is not supported on Firefox.
                     // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
                     if (Browser.BrowserType == SupportedBrowser.Firefox)
@@ -568,9 +569,9 @@ namespace PuppeteerSharp
                                             };
                                         }").ConfigureAwait(false);
 
-                                    var viewport = Viewport with { };
+                                    var viewport = Viewport;
 
-                                    await SetViewportAsync(viewport with
+                                    await SetViewportAsync((viewport ?? new ViewPortOptions()) with
                                     {
                                         Width = Convert.ToInt32(scrollDimensions.Width),
                                         Height = Convert.ToInt32(scrollDimensions.Height),
@@ -598,7 +599,8 @@ namespace PuppeteerSharp
 
                     return result;
                 }
-            });
+            }).ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
@@ -684,6 +686,14 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null)
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
+
+        /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
+        public Locators.Locator LocatorFunction(string func)
+            => Locators.FunctionLocator.Create(this, func);
 
         /// <inheritdoc/>
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete

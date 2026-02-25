@@ -395,6 +395,24 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(Page.Frames.Where(frame => !((Frame)frame).HasStartedLoading), Has.Exactly(1).Items);
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support evaluateOnNewDocument")]
+        public async Task ShouldSupportEvaluateOnNewDocument()
+        {
+            await Page.EvaluateFunctionOnNewDocumentAsync(@"() => {
+                window.evaluateOnNewDocument = true;
+            }");
+            var frameTask = Page.WaitForFrameAsync(frame => frame.Url.EndsWith("/oopif.html"));
+            await Page.GoToAsync(TestConstants.ServerUrl + "/dynamic-oopif.html");
+            await frameTask.WithTimeout();
+            Assert.That(Page.Frames, Has.Length.EqualTo(2));
+            foreach (var frame in Page.Frames)
+            {
+                Assert.That(
+                    await frame.EvaluateFunctionAsync<bool>("() => window.evaluateOnNewDocument"),
+                    Is.True);
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "waitForFrame", "should resolve immediately if the frame already exists")]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {
@@ -460,6 +478,39 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             });
 
             Assert.That(networkEvents, Does.Contain($"http://oopifdomain:{TestConstants.Port}/fetch"));
+        }
+
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should retrieve body for OOPIF document requests")]
+        public async Task ShouldRetrieveBodyForOopifDocumentRequests()
+        {
+            var frameUrl = TestConstants.ServerUrl.Replace("localhost", "oopifdomain") + "/oopif-response.html";
+
+            IResponse testResponse = null;
+
+            Page.Response += (_, e) =>
+            {
+                if (e.Response.Request.Url == frameUrl)
+                {
+                    testResponse = e.Response;
+                }
+            };
+
+            // Navigate to the empty page and add an OOPIF iframe.
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(@"(frameUrl) => {
+                const frame = document.createElement('iframe');
+                frame.setAttribute('src', frameUrl);
+                document.body.appendChild(frame);
+                return new Promise((x, y) => {
+                    frame.onload = x;
+                    frame.onerror = y;
+                });
+            }", frameUrl);
+            await Page.WaitForSelectorAsync("iframe");
+
+            Assert.That(testResponse, Is.Not.Null);
+            var text = await testResponse.TextAsync();
+            Assert.That(text, Does.Contain("I'm an OOPIF"));
         }
 
         [Test, PuppeteerTest("oopif.spec", "OOPIF waitForFrame", "should report google.com frame")]

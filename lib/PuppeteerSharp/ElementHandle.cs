@@ -77,9 +77,9 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
             return await BindIsolatedHandleAsync<IElementHandle, ElementHandle>(handle =>
-                queryHandler.WaitForAsync(null, handle, updatedSelector, options)).ConfigureAwait(false);
+                queryHandler.WaitForAsync(null, handle, updatedSelector, options, polling)).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -223,28 +223,24 @@ namespace PuppeteerSharp
                     throw new ArgumentNullException(nameof(selector));
                 }
 
-                var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+                var (updatedSelector, queryHandler, _) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
                 return queryHandler.QueryOneAsync(handle, updatedSelector);
             });
 
         /// <inheritdoc/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
-            => BindIsolatedHandleAsync<IElementHandle[], ElementHandle>(async handle =>
+            => QuerySelectorAllAsync(selector, null);
+
+        /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+        {
+            if (options?.Isolate == false)
             {
-                if (string.IsNullOrEmpty(selector))
-                {
-                    throw new ArgumentNullException(nameof(selector));
-                }
+                return QuerySelectorAllImplAsync(selector);
+            }
 
-                var (updatedSelector, queryHandler) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
-                var result = new List<IElementHandle>();
-                await foreach (var item in queryHandler.QueryAllAsync(handle, updatedSelector).ConfigureAwait(false))
-                {
-                    result.Add(item);
-                }
-
-                return result.ToArray();
-            });
+            return BindIsolatedHandleAsync<IElementHandle[], ElementHandle>(handle => handle.QuerySelectorAllImplAsync(selector));
+        }
 
         /// <inheritdoc/>
         public async Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
@@ -707,6 +703,12 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public abstract Task<int> BackendNodeIdAsync();
+
+        /// <inheritdoc/>
+        public abstract Task AutofillAsync(AutofillData data);
+
+        /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
             => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(
@@ -831,6 +833,23 @@ namespace PuppeteerSharp
             }
 
             return result;
+        }
+
+        private async Task<IElementHandle[]> QuerySelectorAllImplAsync(string selector)
+        {
+            if (string.IsNullOrEmpty(selector))
+            {
+                throw new ArgumentNullException(nameof(selector));
+            }
+
+            var (updatedSelector, queryHandler, _) = CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
+            var result = new List<IElementHandle>();
+            await foreach (var item in queryHandler.QueryAllAsync(this, updatedSelector).ConfigureAwait(false))
+            {
+                result.Add(item);
+            }
+
+            return result.ToArray();
         }
 
         private async Task<BoundingBox> NonEmptyVisibleBoundingBoxAsync()

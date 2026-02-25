@@ -1916,6 +1916,13 @@
   {
     "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"],
+    "comment": "Firefox is currently only able to install signed extensions."
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL"],
     "comment": "Extensions are not supported in shell mode."

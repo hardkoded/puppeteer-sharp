@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.PageAccessibility;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -41,6 +42,8 @@ public class CdpFrame : Frame
         Id = frameId;
         Client = client;
         ParentId = parentFrameId;
+
+        Accessibility = new Accessibility(client, () => Id, () => MainRealm);
 
         UpdateClient(client);
 
@@ -65,6 +68,8 @@ public class CdpFrame : Frame
 
     internal FrameManager FrameManager { get; }
 
+    internal Accessibility Accessibility { get; }
+
     internal CdpPage CdpPage => Page as CdpPage;
 
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
@@ -74,8 +79,6 @@ public class CdpFrame : Frame
     /// <inheritdoc/>
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
     {
-        var ensureNewDocumentNavigation = false;
-
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
@@ -101,7 +104,8 @@ public class CdpFrame : Frame
 
             task = await Task.WhenAny(
                     watcher.TerminationTask,
-                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
+                    watcher.NewDocumentNavigationTask,
+                    watcher.SameDocumentNavigationTask)
                 .ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
@@ -122,8 +126,6 @@ public class CdpFrame : Frame
                 ReferrerPolicy = ReferrerPolicyToProtocol(referrerPolicy),
                 FrameId = Id,
             }).ConfigureAwait(false);
-
-            ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
             if (!string.IsNullOrEmpty(response.ErrorText) &&
                 response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
@@ -258,6 +260,26 @@ public class CdpFrame : Frame
         }).ConfigureAwait(false);
 
         return (ElementHandle)await parentFrame.MainRealm.AdoptBackendNodeAsync(response.BackendNodeId).ConfigureAwait(false);
+    }
+
+    internal bool IsOopFrame() => Client != FrameManager.Client;
+
+    internal async Task AddPreloadScriptAsync(CdpPreloadScript preloadScript)
+    {
+        if (!IsOopFrame() && this != FrameManager.MainFrame)
+        {
+            return;
+        }
+
+        if (preloadScript.GetIdForFrame(this) != null)
+        {
+            return;
+        }
+
+        var response = await Client.SendAsync<Messaging.PageAddScriptToEvaluateOnNewDocumentResponse>(
+            "Page.addScriptToEvaluateOnNewDocument",
+            new Messaging.PageAddScriptToEvaluateOnNewDocumentRequest { Source = preloadScript.Source, }).ConfigureAwait(false);
+        preloadScript.SetIdForFrame(this, response.Identifier);
     }
 
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
