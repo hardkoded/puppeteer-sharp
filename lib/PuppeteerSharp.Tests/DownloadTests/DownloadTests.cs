@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -48,58 +46,8 @@ namespace PuppeteerSharp.Tests.DownloadTests
                 },
             });
             var page = await context.NewPageAsync();
-
-            // Listen for download events via CDP
-            var session = await page.CreateCDPSessionAsync();
-            await session.SendAsync("Browser.setDownloadBehavior", new
-            {
-                behavior = "allow",
-                downloadPath = _tempDir,
-                eventsEnabled = true,
-            });
-
-            var downloadStarted = new TaskCompletionSource<JsonElement>();
-            session.MessageReceived += (sender, e) =>
-            {
-                TestContext.WriteLine($"CDP event: {e.MessageID}");
-                if (e.MessageID == "Browser.downloadWillBegin" || e.MessageID == "Browser.downloadProgress" ||
-                    e.MessageID == "Page.downloadWillBegin" || e.MessageID == "Page.downloadProgress")
-                {
-                    TestContext.WriteLine($"Download event: {e.MessageID} => {e.MessageData}");
-                    downloadStarted.TrySetResult(e.MessageData);
-                }
-            };
-
-            TestContext.WriteLine($"Download dir: {_tempDir}");
-            TestContext.WriteLine($"Download dir exists: {Directory.Exists(_tempDir)}");
-
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
-
-            // Wait a bit for the download
-            await Task.Delay(5_000);
-
-            // List all files in the download directory
-            var files = Directory.GetFiles(_tempDir, "*", SearchOption.AllDirectories);
-            TestContext.WriteLine($"Files in download dir ({files.Length}):");
-            foreach (var f in files)
-            {
-                TestContext.WriteLine($"  {f} ({new FileInfo(f).Length} bytes)");
-            }
-
-            // Also check the user's default download directory
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var defaultDownloads = Path.Combine(userProfile, "Downloads");
-            if (Directory.Exists(defaultDownloads))
-            {
-                var defaultFiles = Directory.GetFiles(defaultDownloads, "download*", SearchOption.TopDirectoryOnly);
-                TestContext.WriteLine($"Files matching 'download*' in {defaultDownloads} ({defaultFiles.Length}):");
-                foreach (var f in defaultFiles)
-                {
-                    TestContext.WriteLine($"  {f} ({new FileInfo(f).Length} bytes)");
-                }
-            }
-
             await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 10_000);
         }
 

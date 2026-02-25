@@ -299,7 +299,22 @@ public class CdpBrowser : Browser
             .ConfigureAwait(false)).TargetId;
         var target = await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false) as CdpTarget;
         await target!.InitializedTask.ConfigureAwait(false);
-        return await target.PageAsync().ConfigureAwait(false);
+        var page = await target.PageAsync().ConfigureAwait(false);
+
+        if (contextId != null
+            && _contexts.TryGetValue(contextId, out var context)
+            && context is CdpBrowserContext cdpContext
+            && cdpContext.DownloadBehavior != null)
+        {
+            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
+            await session.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+            {
+                Behavior = cdpContext.DownloadBehavior.Policy,
+                DownloadPath = cdpContext.DownloadBehavior.DownloadPath,
+            }).ConfigureAwait(false);
+        }
+
+        return page;
     }
 
     internal async Task<IPage> CreateDevToolsPageAsync(string pageTargetId)
