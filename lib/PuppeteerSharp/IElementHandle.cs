@@ -352,14 +352,6 @@ namespace PuppeteerSharp
         Task<int> BackendNodeIdAsync();
 
         /// <summary>
-        /// Converts the current handle to the given element type.
-        /// </summary>
-        /// <param name="tagName">The tag name of the desired element type.</param>
-        /// <exception cref="PuppeteerException">If the handle does not match the given tag name.</exception>
-        /// <returns>A task that resolves to the element handle if it matches the tag name.</returns>
-        Task<IElementHandle> ToElementAsync(string tagName);
-
-        /// <summary>
         /// If the element is a form input, you can use <see cref="AutofillAsync(AutofillData)"/>
         /// to test if the form is compatible with the browser's autofill implementation.
         /// Throws an error if the form cannot be autofilled.
