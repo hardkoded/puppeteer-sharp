@@ -69,6 +69,28 @@ namespace PuppeteerSharp.QueryHandlers
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
         }
 
+        internal async Task<IJSHandle> QueryAllAsJSArrayAsync(IElementHandle element, string selector)
+        {
+            if (element is not ElementHandle elementHandle)
+            {
+                return null;
+            }
+
+            // Create an empty JS array in the same execution context
+            var arrayHandle = await elementHandle.EvaluateFunctionHandleAsync("() => []").ConfigureAwait(false);
+
+            await foreach (var item in QueryAllAsync(element, selector).ConfigureAwait(false))
+            {
+                // Push each element into the JS array
+                await elementHandle.Realm.EvaluateFunctionAsync(
+                    "(arr, elem) => arr.push(elem)",
+                    arrayHandle,
+                    item).ConfigureAwait(false);
+            }
+
+            return arrayHandle;
+        }
+
         internal override async Task<IElementHandle> WaitForAsync(
             Frame frame,
             ElementHandle element,

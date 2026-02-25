@@ -45,16 +45,18 @@ internal class ExposableFunction : IAsyncDisposable
     private readonly BidiFrame _frame;
     private readonly string _name;
     private readonly Delegate _puppeteerFunction;
+    private readonly bool _isolate;
     private readonly string _channel;
     private readonly List<(BidiFrame Frame, string ScriptId)> _scripts = new();
     private EventObserver<ScriptMessageEventArgs> _observer;
     private int _disposed;
 
-    private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction)
+    private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
     {
         _frame = frame;
         _name = name;
         _puppeteerFunction = puppeteerFunction;
+        _isolate = isolate;
         _channel = $"__puppeteer__{frame.Id}_page_exposeFunction_{name}";
     }
 
@@ -68,9 +70,13 @@ internal class ExposableFunction : IAsyncDisposable
     /// <summary>
     /// Creates and initializes an ExposableFunction.
     /// </summary>
-    public static async Task<ExposableFunction> FromAsync(BidiFrame frame, string name, Delegate puppeteerFunction)
+    /// <param name="frame">The frame to expose the function in.</param>
+    /// <param name="name">The name of the function on globalThis.</param>
+    /// <param name="puppeteerFunction">The C# delegate to invoke.</param>
+    /// <param name="isolate">When true, install the function in the sandbox (isolated) realm instead of the default realm.</param>
+    public static async Task<ExposableFunction> FromAsync(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
     {
-        var func = new ExposableFunction(frame, name, puppeteerFunction);
+        var func = new ExposableFunction(frame, name, puppeteerFunction, isolate);
         await func.InitializeAsync().ConfigureAwait(false);
         return func;
     }
@@ -152,21 +158,32 @@ internal class ExposableFunction : IAsyncDisposable
             contexts.AddRange(contexts[i].Children);
         }
 
-        // Add preload script only to the top-level context (for future navigations)
-        var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
+        // Add preload script only to the top-level context (for future navigations).
+        // Skip for isolate mode (ARIA bindings) since they are re-installed on each
+        // realm update via GetPuppeteerUtilAsync, and child frames cannot be used as
+        // contexts for addPreloadScript (BiDi requires top-level contexts).
+        if (!_isolate)
         {
-            Arguments = [channelValue],
-            Contexts = [_frame.BrowsingContext.Id],
-        };
-        var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
-        _scripts.Add((_frame, scriptResult.PreloadScriptId));
+            var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
+            {
+                Arguments = [channelValue],
+                Contexts = [_frame.BrowsingContext.Id],
+            };
+
+            var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
+            _scripts.Add((_frame, scriptResult.PreloadScriptId));
+        }
 
         // Call the function immediately on all contexts (main + children)
         var tasks = contexts.Select(async context =>
         {
             try
             {
-                var callParams = new CallFunctionCommandParameters(functionDeclaration, context.DefaultRealm.Target, true);
+                var target = _isolate
+                    ? (_frame.IsolatedRealm as BidiFrameRealm)?.WindowRealm?.Target ?? context.DefaultRealm.Target
+                    : context.DefaultRealm.Target;
+
+                var callParams = new CallFunctionCommandParameters(functionDeclaration, target, true);
                 callParams.Arguments.Add(channelValue);
                 await Connection.Script.CallFunctionAsync(callParams).ConfigureAwait(false);
             }

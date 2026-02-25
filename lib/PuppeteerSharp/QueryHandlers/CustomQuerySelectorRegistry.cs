@@ -131,7 +131,21 @@ namespace PuppeteerSharp.QueryHandlers
                 }
             }
 
-            return (selector, _defaultHandler, SelectorHelper.HasPseudoClasses(selector) ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+            try
+            {
+                var (jsonSelector, isPureCSS, hasPseudoClasses, hasAria) = PSelectorParser.Parse(selector);
+
+                if (isPureCSS)
+                {
+                    return (selector, _defaultHandler, SelectorHelper.HasPseudoClasses(selector) ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+                }
+
+                return (jsonSelector, new PQueryHandler(), hasAria ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
+            }
+            catch
+            {
+                return (selector, _defaultHandler, WaitForFunctionPollingOption.Mutation);
+            }
         }
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
