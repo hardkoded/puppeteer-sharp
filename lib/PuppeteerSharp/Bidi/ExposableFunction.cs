@@ -151,38 +151,43 @@ internal class ExposableFunction : IAsyncDisposable
             }});
         }}";
 
-        // Collect all frames (main frame + child frames)
-        var frames = new List<BidiFrame> { _frame };
-        for (var i = 0; i < frames.Count; i++)
+        // Collect all browsing contexts (main context + child contexts)
+        var contexts = new List<BrowsingContext> { _frame.BrowsingContext };
+        for (var i = 0; i < contexts.Count; i++)
         {
-            frames.AddRange(frames[i].ChildFrames.OfType<BidiFrame>());
+            contexts.AddRange(contexts[i].Children);
         }
 
-        await Task.WhenAll(frames.Select(async targetFrame =>
+        // Add preload script only to the top-level context (for future navigations)
+        var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
+        {
+            Arguments = [channelValue],
+            Contexts = [_frame.BrowsingContext.Id],
+        };
+
+        if (_isolate)
+        {
+            var isolatedRealm = _frame.IsolatedRealm as BidiFrameRealm;
+            var sandboxName = isolatedRealm?.WindowRealm?.Target?.Sandbox;
+            if (!string.IsNullOrEmpty(sandboxName))
+            {
+                addPreloadParams.Sandbox = sandboxName;
+            }
+        }
+
+        var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
+        _scripts.Add((_frame, scriptResult.PreloadScriptId));
+
+        // Call the function immediately on all contexts (main + children)
+        var tasks = contexts.Select(async context =>
         {
             try
             {
-                var realm = _isolate
-                    ? targetFrame.IsolatedRealm as BidiFrameRealm
-                    : targetFrame.MainRealm as BidiFrameRealm;
+                var target = _isolate
+                    ? (_frame.IsolatedRealm as BidiFrameRealm)?.WindowRealm?.Target ?? context.DefaultRealm.Target
+                    : context.DefaultRealm.Target;
 
-                var sandboxName = realm?.WindowRealm?.Target?.Sandbox;
-
-                var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
-                {
-                    Arguments = [channelValue],
-                    Contexts = [targetFrame.BrowsingContext.Id],
-                };
-
-                if (!string.IsNullOrEmpty(sandboxName))
-                {
-                    addPreloadParams.Sandbox = sandboxName;
-                }
-
-                var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
-                _scripts.Add((targetFrame, scriptResult.PreloadScriptId));
-
-                var callParams = new CallFunctionCommandParameters(functionDeclaration, realm.WindowRealm.Target, true);
+                var callParams = new CallFunctionCommandParameters(functionDeclaration, target, true);
                 callParams.Arguments.Add(channelValue);
                 await Connection.Script.CallFunctionAsync(callParams).ConfigureAwait(false);
             }
@@ -191,7 +196,9 @@ internal class ExposableFunction : IAsyncDisposable
                 // If it errors, the frame probably doesn't support call function.
                 // We fail gracefully.
             }
-        })).ConfigureAwait(false);
+        });
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
     }
 
     private async void HandleMessage(ScriptMessageEventArgs message)
