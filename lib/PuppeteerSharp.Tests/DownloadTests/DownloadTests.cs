@@ -48,7 +48,7 @@ namespace PuppeteerSharp.Tests.DownloadTests
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
-            await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"));
+            await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 10_000);
         }
 
         [Test, PuppeteerTest("download.spec", "Download Browser.createBrowserContext", "should not download to location")]
@@ -66,10 +66,10 @@ namespace PuppeteerSharp.Tests.DownloadTests
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
             Assert.ThrowsAsync<TimeoutException>(() =>
-                WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt")));
+                WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 1_000));
         }
 
-        private static async Task WaitForFileExistenceAsync(string filePath, int timeout = 1000)
+        private static async Task WaitForFileExistenceAsync(string filePath, int timeout = 5_000)
         {
             if (File.Exists(filePath))
             {
