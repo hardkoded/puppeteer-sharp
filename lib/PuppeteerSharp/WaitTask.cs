@@ -16,6 +16,7 @@ namespace PuppeteerSharp
         private readonly IElementHandle _root;
         private readonly CancellationTokenSource _cts = new();
         private readonly TaskCompletionSource<IJSHandle> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly CancellationTokenRegistration _cancellationTokenRegistration;
 
         private bool _isDisposed;
         private IJSHandle _poller;
@@ -30,6 +31,7 @@ namespace PuppeteerSharp
             int? pollingInterval,
             int timeout,
             IElementHandle root,
+            CancellationToken cancellationToken = default,
             object[] args = null)
         {
             if (string.IsNullOrEmpty(fn))
@@ -50,6 +52,12 @@ namespace PuppeteerSharp
             _root = root;
 
             _realm.TaskManager.Add(this);
+
+            if (cancellationToken != default)
+            {
+                _cancellationTokenRegistration = cancellationToken.Register(
+                    () => _ = TerminateAsync(new OperationCanceledException("WaitTask has been cancelled.")));
+            }
 
             if (timeout > 0)
             {
@@ -76,6 +84,7 @@ namespace PuppeteerSharp
                 timeoutTimer.Dispose();
             }
 
+            _cancellationTokenRegistration.Dispose();
             _cts.Dispose();
             _rerunCts?.Dispose();
 
