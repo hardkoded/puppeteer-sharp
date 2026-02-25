@@ -87,11 +87,6 @@ namespace PuppeteerSharp
                 await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
             }
 
-            if (World != null)
-            {
-                await World.DisposeAsync().ConfigureAwait(false);
-            }
-
             GC.SuppressFinalize(this);
         }
 
