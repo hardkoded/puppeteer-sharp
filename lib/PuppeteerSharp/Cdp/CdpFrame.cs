@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -280,6 +281,58 @@ public class CdpFrame : Frame
             "Page.addScriptToEvaluateOnNewDocument",
             new Messaging.PageAddScriptToEvaluateOnNewDocumentRequest { Source = preloadScript.Source, }).ConfigureAwait(false);
         preloadScript.SetIdForFrame(this, response.Identifier);
+    }
+
+    internal async Task AddExposedFunctionBindingAsync(Binding binding)
+    {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (this != FrameManager.MainFrame && !HasStartedLoading)
+        {
+            return;
+        }
+
+        await Task.WhenAll(
+            Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest
+            {
+                Name = BindingUtils.CdpBindingPrefix + binding.Name,
+            }),
+            EvaluateExpressionAsync(binding.InitSource)
+                .ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            Logger.LogError(task.Exception?.ToString());
+                        }
+                    },
+                    TaskScheduler.Default)).ConfigureAwait(false);
+    }
+
+    internal async Task RemoveExposedFunctionBindingAsync(Binding binding)
+    {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (this != FrameManager.MainFrame && !HasStartedLoading)
+        {
+            return;
+        }
+
+        await Task.WhenAll(
+            Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest
+            {
+                Name = BindingUtils.CdpBindingPrefix + binding.Name,
+            }),
+            EvaluateFunctionAsync("name => globalThis[name] = undefined", binding.Name)
+                .ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            Logger.LogError(task.Exception?.ToString());
+                        }
+                    },
+                    TaskScheduler.Default)).ConfigureAwait(false);
     }
 
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
