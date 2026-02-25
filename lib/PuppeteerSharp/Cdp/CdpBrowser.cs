@@ -306,8 +306,7 @@ public class CdpBrowser : Browser
             && context is CdpBrowserContext cdpContext
             && cdpContext.DownloadBehavior != null)
         {
-            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
-            await session.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+            await Connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
             {
                 Behavior = cdpContext.DownloadBehavior.Policy,
                 DownloadPath = cdpContext.DownloadBehavior.DownloadPath,
