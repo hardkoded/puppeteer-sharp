@@ -42,6 +42,8 @@ public class CdpBrowserContext : BrowserContext
         Id = contextId;
     }
 
+    internal DownloadBehavior DownloadBehavior { get; set; }
+
     /// <inheritdoc/>
     public override ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
@@ -160,6 +162,7 @@ public class CdpBrowserContext : BrowserContext
 
     internal Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior)
     {
+        DownloadBehavior = downloadBehavior;
         return _connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
         {
             Behavior = downloadBehavior.Policy,
