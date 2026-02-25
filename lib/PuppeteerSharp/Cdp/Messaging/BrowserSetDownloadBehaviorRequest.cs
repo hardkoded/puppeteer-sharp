@@ -2,7 +2,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 {
     internal class BrowserSetDownloadBehaviorRequest
     {
-        public DownloadPolicy Behavior { get; set; }
+        public string Behavior { get; set; }
 
         public string DownloadPath { get; set; }
 

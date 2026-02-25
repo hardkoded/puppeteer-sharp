@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -308,7 +309,7 @@ public class CdpBrowser : Browser
         {
             await page.Client.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
             {
-                Behavior = cdpContext.DownloadBehavior.Policy,
+                Behavior = cdpContext.DownloadBehavior.Policy.ToValueString(),
                 DownloadPath = cdpContext.DownloadBehavior.DownloadPath,
                 EventsEnabled = true,
             }).ConfigureAwait(false);

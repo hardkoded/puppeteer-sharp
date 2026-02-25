@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -165,7 +166,7 @@ public class CdpBrowserContext : BrowserContext
         DownloadBehavior = downloadBehavior;
         return _connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
         {
-            Behavior = downloadBehavior.Policy,
+            Behavior = downloadBehavior.Policy.ToValueString(),
             DownloadPath = downloadBehavior.DownloadPath,
             BrowserContextId = Id,
             EventsEnabled = true,
