@@ -22,8 +22,11 @@
 
 #if !CDP_ONLY
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -31,7 +34,9 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
 {
     private readonly WindowRealm _realm = realm;
     private readonly TaskQueue _puppeteerUtilQueue = new();
+    private readonly List<ExposableFunction> _ariaBindings = new();
     private IJSHandle _puppeteerUtil;
+    private bool _bindingsInstalled;
 
     internal override IEnvironment Environment => frame;
 
@@ -48,6 +53,12 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
 
     public override async Task<IJSHandle> GetPuppeteerUtilAsync()
     {
+        if (!_bindingsInstalled)
+        {
+            _bindingsInstalled = true;
+            await InstallAriaBindingsAsync().ConfigureAwait(false);
+        }
+
         var scriptInjector = frame.BrowsingContext.Session.ScriptInjector;
 
         await _puppeteerUtilQueue.Enqueue(async () =>
@@ -86,7 +97,29 @@ internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(re
         {
             (Environment as Frame)?.ClearDocumentHandle();
             _puppeteerUtil = null;
+            _bindingsInstalled = false;
         };
+    }
+
+    private async Task InstallAriaBindingsAsync()
+    {
+        var ariaHandler = (AriaQueryHandler)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
+        var isolate = !string.IsNullOrEmpty(_realm.Target?.Sandbox);
+
+        var queryOneBinding = await ExposableFunction.FromAsync(
+            frame,
+            "__ariaQuerySelector",
+            (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
+            isolate).ConfigureAwait(false);
+
+        var queryAllBinding = await ExposableFunction.FromAsync(
+            frame,
+            "__ariaQuerySelectorAll",
+            (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
+            isolate).ConfigureAwait(false);
+
+        _ariaBindings.Add(queryOneBinding);
+        _ariaBindings.Add(queryAllBinding);
     }
 }
 

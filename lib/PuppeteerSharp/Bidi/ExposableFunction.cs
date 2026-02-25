@@ -45,16 +45,18 @@ internal class ExposableFunction : IAsyncDisposable
     private readonly BidiFrame _frame;
     private readonly string _name;
     private readonly Delegate _puppeteerFunction;
+    private readonly bool _isolate;
     private readonly string _channel;
     private readonly List<(BidiFrame Frame, string ScriptId)> _scripts = new();
     private EventObserver<ScriptMessageEventArgs> _observer;
     private int _disposed;
 
-    private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction)
+    private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
     {
         _frame = frame;
         _name = name;
         _puppeteerFunction = puppeteerFunction;
+        _isolate = isolate;
         _channel = $"__puppeteer__{frame.Id}_page_exposeFunction_{name}";
     }
 
@@ -68,9 +70,13 @@ internal class ExposableFunction : IAsyncDisposable
     /// <summary>
     /// Creates and initializes an ExposableFunction.
     /// </summary>
-    public static async Task<ExposableFunction> FromAsync(BidiFrame frame, string name, Delegate puppeteerFunction)
+    /// <param name="frame">The frame to expose the function in.</param>
+    /// <param name="name">The name of the function on globalThis.</param>
+    /// <param name="puppeteerFunction">The C# delegate to invoke.</param>
+    /// <param name="isolate">When true, install the function in the sandbox (isolated) realm instead of the default realm.</param>
+    public static async Task<ExposableFunction> FromAsync(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
     {
-        var func = new ExposableFunction(frame, name, puppeteerFunction);
+        var func = new ExposableFunction(frame, name, puppeteerFunction, isolate);
         await func.InitializeAsync().ConfigureAwait(false);
         return func;
     }
@@ -145,28 +151,38 @@ internal class ExposableFunction : IAsyncDisposable
             }});
         }}";
 
-        // Collect all browsing contexts (main context + child contexts)
-        var contexts = new List<BrowsingContext> { _frame.BrowsingContext };
-        for (var i = 0; i < contexts.Count; i++)
+        // Collect all frames (main frame + child frames)
+        var frames = new List<BidiFrame> { _frame };
+        for (var i = 0; i < frames.Count; i++)
         {
-            contexts.AddRange(contexts[i].Children);
+            frames.AddRange(frames[i].ChildFrames.OfType<BidiFrame>());
         }
 
-        // Add preload script only to the top-level context (for future navigations)
-        var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
-        {
-            Arguments = [channelValue],
-            Contexts = [_frame.BrowsingContext.Id],
-        };
-        var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
-        _scripts.Add((_frame, scriptResult.PreloadScriptId));
-
-        // Call the function immediately on all contexts (main + children)
-        var tasks = contexts.Select(async context =>
+        await Task.WhenAll(frames.Select(async targetFrame =>
         {
             try
             {
-                var callParams = new CallFunctionCommandParameters(functionDeclaration, context.DefaultRealm.Target, true);
+                var realm = _isolate
+                    ? targetFrame.IsolatedRealm as BidiFrameRealm
+                    : targetFrame.MainRealm as BidiFrameRealm;
+
+                var sandboxName = realm?.WindowRealm?.Target?.Sandbox;
+
+                var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
+                {
+                    Arguments = [channelValue],
+                    Contexts = [targetFrame.BrowsingContext.Id],
+                };
+
+                if (!string.IsNullOrEmpty(sandboxName))
+                {
+                    addPreloadParams.Sandbox = sandboxName;
+                }
+
+                var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
+                _scripts.Add((targetFrame, scriptResult.PreloadScriptId));
+
+                var callParams = new CallFunctionCommandParameters(functionDeclaration, realm.WindowRealm.Target, true);
                 callParams.Arguments.Add(channelValue);
                 await Connection.Script.CallFunctionAsync(callParams).ConfigureAwait(false);
             }
@@ -175,9 +191,7 @@ internal class ExposableFunction : IAsyncDisposable
                 // If it errors, the frame probably doesn't support call function.
                 // We fail gracefully.
             }
-        });
-
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+        })).ConfigureAwait(false);
     }
 
     private async void HandleMessage(ScriptMessageEventArgs message)
