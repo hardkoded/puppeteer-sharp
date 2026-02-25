@@ -158,25 +158,21 @@ internal class ExposableFunction : IAsyncDisposable
             contexts.AddRange(contexts[i].Children);
         }
 
-        // Add preload script only to the top-level context (for future navigations)
-        var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
+        // Add preload script only to the top-level context (for future navigations).
+        // Skip for isolate mode (ARIA bindings) since they are re-installed on each
+        // realm update via GetPuppeteerUtilAsync, and child frames cannot be used as
+        // contexts for addPreloadScript (BiDi requires top-level contexts).
+        if (!_isolate)
         {
-            Arguments = [channelValue],
-            Contexts = [_frame.BrowsingContext.Id],
-        };
-
-        if (_isolate)
-        {
-            var isolatedRealm = _frame.IsolatedRealm as BidiFrameRealm;
-            var sandboxName = isolatedRealm?.WindowRealm?.Target?.Sandbox;
-            if (!string.IsNullOrEmpty(sandboxName))
+            var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
             {
-                addPreloadParams.Sandbox = sandboxName;
-            }
-        }
+                Arguments = [channelValue],
+                Contexts = [_frame.BrowsingContext.Id],
+            };
 
-        var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
-        _scripts.Add((_frame, scriptResult.PreloadScriptId));
+            var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
+            _scripts.Add((_frame, scriptResult.PreloadScriptId));
+        }
 
         // Call the function immediately on all contexts (main + children)
         var tasks = contexts.Select(async context =>
