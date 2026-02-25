@@ -7,5 +7,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public string DownloadPath { get; set; }
 
         public string BrowserContextId { get; set; }
+
+        public bool? EventsEnabled { get; set; }
     }
 }

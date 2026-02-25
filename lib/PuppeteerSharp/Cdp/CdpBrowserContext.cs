@@ -165,6 +165,7 @@ public class CdpBrowserContext : BrowserContext
             Behavior = downloadBehavior.Policy,
             DownloadPath = downloadBehavior.DownloadPath,
             BrowserContextId = Id,
+            EventsEnabled = true,
         });
     }
 
