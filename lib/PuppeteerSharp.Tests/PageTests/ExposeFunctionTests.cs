@@ -116,6 +116,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result, Is.EqualTo(15));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be called once")]
+        public async Task ShouldBeCalledOnce()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/nested-frames.html");
+            var calls = 0;
+            await Page.ExposeFunctionAsync("call", () =>
+            {
+                calls++;
+            });
+
+            var frame = Page.Frames[1];
+            await frame.EvaluateFunctionAsync("async () => call()");
+            Assert.That(calls, Is.EqualTo(1));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with complex objects")]
         public async Task ShouldWorkWithComplexObjects()
         {

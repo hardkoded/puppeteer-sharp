@@ -65,15 +65,19 @@ namespace PuppeteerSharp
         public void Dispose()
         {
             _bindingQueue.Dispose();
-            _context?.Dispose();
+            var context = _context;
+            _context = null;
+            context?.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
             await _bindingQueue.DisposeAsync().ConfigureAwait(false);
-            if (_context != null)
+            var context = _context;
+            _context = null;
+            if (context != null)
             {
-                await _context.DisposeAsync().ConfigureAwait(false);
+                await context.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -282,6 +286,11 @@ namespace PuppeteerSharp
 
         private async Task OnBindingCalledAsync(BindingCalledResponse e)
         {
+            if (e.ExecutionContextId != _context?.ContextId)
+            {
+                return;
+            }
+
             var payload = e.BindingPayload;
 
             if (payload.Type != "internal")
@@ -297,11 +306,6 @@ namespace PuppeteerSharp
             try
             {
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
-
-                if (e.ExecutionContextId != context.ContextId)
-                {
-                    return;
-                }
 
                 if (Bindings.TryGetValue(payload.Name, out var binding))
                 {
