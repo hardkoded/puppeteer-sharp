@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.QueryHandlers
 {
@@ -136,10 +137,7 @@ namespace PuppeteerSharp.QueryHandlers
 
                 if (isPureCSS)
                 {
-                    var polling = hasPseudoClasses
-                        ? WaitForFunctionPollingOption.Raf
-                        : WaitForFunctionPollingOption.Mutation;
-                    return (selector, _defaultHandler, polling);
+                    return (selector, _defaultHandler, SelectorHelper.HasPseudoClasses(selector) ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);
                 }
 
                 return (jsonSelector, new PQueryHandler(), hasAria ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation);

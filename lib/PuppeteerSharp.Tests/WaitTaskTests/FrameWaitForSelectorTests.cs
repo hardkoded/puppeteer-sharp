@@ -97,6 +97,16 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work for selector with a pseudo class")]
+        public async Task ShouldWorkForSelectorWithAPseudoClass()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watchdog = Page.WaitForSelectorAsync("input:focus");
+            await Page.SetContentAsync("<input></input>");
+            await Page.ClickAsync("input");
+            await watchdog;
+        }
+
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a shadow root")]
         public async Task ShouldWorkWhenNodeIsAddedInAShadowRoot()
         {
