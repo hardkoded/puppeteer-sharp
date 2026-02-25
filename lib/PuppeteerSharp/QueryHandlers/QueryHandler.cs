@@ -106,6 +106,12 @@ namespace PuppeteerSharp.QueryHandlers
                 var waitForVisible = options?.Visible ?? false;
                 var waitForHidden = options?.Hidden ?? false;
                 var timeout = options?.Timeout;
+                var cancellationToken = options?.CancellationToken ?? default;
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                }
 
                 var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
                   if (!PuppeteerUtil) {{
@@ -142,8 +148,15 @@ namespace PuppeteerSharp.QueryHandlers
                         Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : polling,
                         Root = element,
                         Timeout = timeout,
+                        CancellationToken = cancellationToken,
                     },
                     args.ToArray()).ConfigureAwait(false);
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                }
 
                 if (jsHandle is not ElementHandle elementHandle)
                 {
@@ -152,6 +165,10 @@ namespace PuppeteerSharp.QueryHandlers
                 }
 
                 return await frame.MainRealm.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

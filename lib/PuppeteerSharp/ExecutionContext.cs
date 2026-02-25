@@ -121,12 +121,14 @@ namespace PuppeteerSharp
 
                             await InstallGlobalBindingAsync(new Binding(
                                 "__ariaQuerySelector",
-                                (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync))
+                                (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
+                                string.Empty))
                                 .ConfigureAwait(false);
 
                             await InstallGlobalBindingAsync(new Binding(
                                 "__ariaQuerySelectorAll",
-                                (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync))
+                                (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
+                                string.Empty))
                                 .ConfigureAwait(false);
 
                             _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);

@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -21,5 +23,14 @@ namespace PuppeteerSharp
         /// Root element.
         /// </summary>
         public IElementHandle Root { get; set; }
+
+        /// <summary>
+        /// A <see cref="CancellationToken"/> to cancel the waitForSelector operation.
+        /// </summary>
+        /// <remarks>
+        /// This is the .NET equivalent of the upstream AbortController/AbortSignal pattern.
+        /// When the token is cancelled, the wait operation will throw an <see cref="System.OperationCanceledException"/>.
+        /// </remarks>
+        public CancellationToken CancellationToken { get; set; }
     }
 }
