@@ -193,6 +193,21 @@ namespace PuppeteerSharp
             });
 
         /// <inheritdoc/>
+        public async Task<IElementHandle> ToElementAsync(string tagName)
+        {
+            var isMatchingTagName = await EvaluateFunctionAsync<bool>(
+                "(node, tagName) => node.nodeName === tagName.toUpperCase()",
+                tagName).ConfigureAwait(false);
+
+            if (!isMatchingTagName)
+            {
+                throw new PuppeteerException($"Element is not a(n) `{tagName}` element");
+            }
+
+            return this;
+        }
+
+        /// <inheritdoc/>
         public Task FocusAsync() =>
             BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle => handle.EvaluateFunctionAsync("element => element.focus()"));
 
