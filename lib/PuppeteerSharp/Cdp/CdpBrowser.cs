@@ -301,18 +301,6 @@ public class CdpBrowser : Browser
         await target!.InitializedTask.ConfigureAwait(false);
         var page = await target.PageAsync().ConfigureAwait(false);
 
-        if (contextId != null
-            && _contexts.TryGetValue(contextId, out var context)
-            && context is CdpBrowserContext cdpContext
-            && cdpContext.DownloadBehavior != null)
-        {
-            await Connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
-            {
-                Behavior = cdpContext.DownloadBehavior.Policy,
-                DownloadPath = cdpContext.DownloadBehavior.DownloadPath,
-            }).ConfigureAwait(false);
-        }
-
         return page;
     }
 
