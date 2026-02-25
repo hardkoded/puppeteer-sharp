@@ -87,10 +87,6 @@ namespace PuppeteerSharp
                 await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
             }
 
-            // Note: We intentionally do NOT dispose World here.
-            // The World owns the ExecutionContext (IsolatedWorld._context),
-            // so IsolatedWorld.DisposeAsync() is responsible for disposing us.
-            // Disposing World here would cause infinite mutual recursion.
             GC.SuppressFinalize(this);
         }
 
