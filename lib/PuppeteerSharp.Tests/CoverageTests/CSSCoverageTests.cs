@@ -133,6 +133,16 @@ namespace PuppeteerSharp.Tests.CoverageTests
                 Is.EqualTo(TestUtils.CompressText(involved)));
         }
 
+        [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should work with empty stylesheets")]
+        public async Task ShouldWorkWithEmptyStylesheets()
+        {
+            await Page.Coverage.StartCSSCoverageAsync();
+            await Page.GoToAsync(TestConstants.ServerUrl + "/csscoverage/empty.html");
+            var coverage = await Page.Coverage.StopCSSCoverageAsync();
+            Assert.That(coverage, Has.Exactly(1).Items);
+            Assert.That(coverage[0].Text, Is.EqualTo(string.Empty));
+        }
+
         [Test, PuppeteerTest("coverage.spec", "Coverage specs CSSCoverage", "should ignore injected stylesheets")]
         public async Task ShouldIgnoreInjectedStylesheets()
         {
