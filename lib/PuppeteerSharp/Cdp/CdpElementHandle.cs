@@ -149,7 +149,6 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
                 var backendNodeId = node.Node.BackendNodeId;
 
                 var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
-                CheckForFileAccess(files);
                 await handle.Client.SendAsync(
                     "DOM.setFileInputFiles",
                     new DomSetFileInputFilesRequest
@@ -204,19 +203,4 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
 
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();
-
-    private void CheckForFileAccess(string[] files)
-    {
-        foreach (var file in files)
-        {
-            try
-            {
-                File.Open(file, FileMode.Open).Dispose();
-            }
-            catch (Exception ex)
-            {
-                throw new PuppeteerException($"{files} does not exist or is not readable", ex);
-            }
-        }
-    }
 }

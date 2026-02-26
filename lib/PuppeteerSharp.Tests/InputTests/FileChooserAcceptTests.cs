@@ -91,8 +91,8 @@ namespace PuppeteerSharp.Tests.InputTests
                 "./assets/pptr.png"));
         }
 
-        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should fail for non-existent files")]
-        public async Task ShouldFailForNonExistentFiles()
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should succeed even for non-existent files")]
+        public async Task ShouldSucceedEvenForNonExistentFiles()
         {
             await Page.SetContentAsync("<input type=file>");
             var waitForTask = Page.WaitForFileChooserAsync();
@@ -101,7 +101,25 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
+            await waitForTask.Result.AcceptAsync("file-does-not-exist.txt");
+        }
+
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should error on read of non-existent files")]
+        public async Task ShouldErrorOnReadOfNonExistentFiles()
+        {
+            await Page.SetContentAsync("<input type=file>");
+            _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync("file-does-not-exist.txt"));
+
+            Assert.That(
+                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<bool>(@"async picker =>
+                {
+                    picker.click();
+                    await new Promise(x => picker.oninput = x);
+                    const reader = new FileReader();
+                    const promise = new Promise(fulfill => reader.onerror = fulfill);
+                    reader.readAsText(picker.files[0]);
+                    return await promise.then(() => false);
+                }"), Is.False);
         }
 
         [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should fail when accepting file chooser twice")]
