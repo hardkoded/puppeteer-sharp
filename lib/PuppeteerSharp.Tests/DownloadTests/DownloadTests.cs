@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -46,8 +48,62 @@ namespace PuppeteerSharp.Tests.DownloadTests
                 },
             });
             var page = await context.NewPageAsync();
+
+            // Diagnostic: verify CDP response to setDownloadBehavior
+            var session = await page.CreateCDPSessionAsync();
+            var response = await session.SendAsync("Browser.setDownloadBehavior", new
+            {
+                behavior = "allow",
+                downloadPath = _tempDir,
+                eventsEnabled = true,
+            });
+            TestContext.Out.WriteLine($"CDP setDownloadBehavior response: {response}");
+            TestContext.Out.WriteLine($"Download dir: {_tempDir}");
+            TestContext.Out.WriteLine($"Download dir exists: {Directory.Exists(_tempDir)}");
+            TestContext.Out.WriteLine($"Browser version: {await Browser.GetVersionAsync()}");
+
+            // Listen for download events
+            session.MessageReceived += (sender, e) =>
+            {
+                if (e.MessageID.Contains("download", StringComparison.OrdinalIgnoreCase))
+                {
+                    TestContext.Out.WriteLine($"Download event: {e.MessageID} => {e.MessageData}");
+                }
+            };
+
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
+
+            // Give extra time and check
+            await Task.Delay(3_000);
+
+            // List files in download dir
+            if (Directory.Exists(_tempDir))
+            {
+                var files = Directory.GetFiles(_tempDir, "*", SearchOption.AllDirectories);
+                TestContext.Out.WriteLine($"Files in download dir ({files.Length}):");
+                foreach (var f in files)
+                {
+                    TestContext.Out.WriteLine($"  {f} ({new FileInfo(f).Length} bytes)");
+                }
+            }
+
+            // Check default user Downloads folder
+            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var defaultDownloads = Path.Combine(userProfile, "Downloads");
+            if (Directory.Exists(defaultDownloads))
+            {
+                var defaultFiles = Directory.GetFiles(defaultDownloads, "download*", SearchOption.TopDirectoryOnly);
+                if (defaultFiles.Length > 0)
+                {
+                    TestContext.Out.WriteLine($"Files matching 'download*' in {defaultDownloads} ({defaultFiles.Length}):");
+                    foreach (var f in defaultFiles.Take(5))
+                    {
+                        TestContext.Out.WriteLine($"  {f} ({new FileInfo(f).Length} bytes)");
+                    }
+                }
+            }
+
             await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 10_000);
         }
 
