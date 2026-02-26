@@ -1,12 +1,5 @@
 [
   {
-    "comment": "ASP.NET Core Kestrel defaults empty ReasonPhrase to 'OK', so empty status text cannot be tested",
-    "testIdPattern": "[network.spec] network Response.statusText handles missing status text",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": [],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
