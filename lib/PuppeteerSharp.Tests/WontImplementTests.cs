@@ -47,6 +47,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands and nested arrow functions")]
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.toElement", "should work")]
         public void TheseTestWontBeImplemented()
         {
         }
