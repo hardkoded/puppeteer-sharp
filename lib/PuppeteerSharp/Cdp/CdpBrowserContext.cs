@@ -66,7 +66,20 @@ public class CdpBrowserContext : BrowserContext
     {
         var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
         guard?.Dispose();
-        return await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
+        var page = await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
+
+        if (DownloadBehavior != null)
+        {
+            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
+            await session.SendAsync("Browser.setDownloadBehavior", new
+            {
+                behavior = DownloadBehavior.Policy.ToValueString(),
+                downloadPath = DownloadBehavior.DownloadPath,
+                eventsEnabled = true,
+            }).ConfigureAwait(false);
+        }
+
+        return page;
     }
 
     /// <inheritdoc/>
