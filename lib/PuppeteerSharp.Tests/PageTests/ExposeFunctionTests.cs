@@ -46,11 +46,32 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(called, Is.True);
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work")]
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should survive navigation")]
         public async Task ShouldSurviveNavigation()
         {
             await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             await Page.GoToAsync(TestConstants.EmptyPage);
+            var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
+            Assert.That(result, Is.EqualTo(36));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should not throw when frames detach")]
+        public async Task ShouldNotThrowWhenFramesDetach()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
+
+            var result = await Page.EvaluateFunctionAsync<int>("async () => compute(3, 5)");
+            Assert.That(result, Is.EqualTo(15));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should fallback to default export when passed a module object")]
+        public async Task ShouldFallbackToDefaultExportWhenPassedAModuleObject()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.ExposeFunctionAsync("compute", (int a, int b) => a * b);
             var result = await Page.EvaluateFunctionAsync<int>("async () => compute(9, 4)");
             Assert.That(result, Is.EqualTo(36));
         }
