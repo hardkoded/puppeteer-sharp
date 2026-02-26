@@ -3,57 +3,35 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.DownloadTests
 {
     public class DownloadTests : PuppeteerBrowserBaseTest
     {
-        private string _tempDir;
-
-        [SetUp]
-        public void CreateTempDir()
-        {
-            _tempDir = Path.Combine(Path.GetTempPath(), "downloads-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_tempDir);
-        }
-
-        [TearDown]
-        public void DeleteTempDir()
-        {
-            try
-            {
-                if (Directory.Exists(_tempDir))
-                {
-                    Directory.Delete(_tempDir, true);
-                }
-            }
-            catch
-            {
-                // Ignore cleanup errors
-            }
-        }
-
         [Test, PuppeteerTest("download.spec", "Download Browser.createBrowserContext", "should download to configured location")]
         public async Task ShouldDownloadToConfiguredLocation()
         {
+            using var tempDir = new TempDirectory();
             await using var context = await Browser.CreateBrowserContextAsync(new BrowserContextOptions
             {
                 DownloadBehavior = new DownloadBehavior
                 {
                     Policy = DownloadPolicy.Allow,
-                    DownloadPath = _tempDir,
+                    DownloadPath = tempDir.Path,
                 },
             });
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
-            await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 10_000);
+            await WaitForFileExistenceAsync(Path.Combine(tempDir.Path, "download.txt"), 10_000);
         }
 
         [Test, PuppeteerTest("download.spec", "Download Browser.createBrowserContext", "should not download to location")]
         public async Task ShouldNotDownloadToLocation()
         {
+            using var tempDir = new TempDirectory();
             await using var context = await Browser.CreateBrowserContextAsync(new BrowserContextOptions
             {
                 DownloadBehavior = new DownloadBehavior
@@ -66,7 +44,7 @@ namespace PuppeteerSharp.Tests.DownloadTests
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
             await page.ClickAsync("#download");
             Assert.ThrowsAsync<TimeoutException>(() =>
-                WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"), 1_000));
+                WaitForFileExistenceAsync(Path.Combine(tempDir.Path, "download.txt"), 1_000));
         }
 
         private static async Task WaitForFileExistenceAsync(string filePath, int timeout = 5_000)

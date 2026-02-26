@@ -70,7 +70,12 @@ public class CdpBrowserContext : BrowserContext
 
         if (DownloadBehavior != null)
         {
-            await page.Client.SendAsync("Browser.setDownloadBehavior", new
+            // Allow pending async operations from page creation to complete
+            // before creating a new CDP session for download behavior.
+            // On Windows, the page target is not fully ready immediately.
+            await Task.Delay(100).ConfigureAwait(false);
+            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
+            await session.SendAsync("Browser.setDownloadBehavior", new
             {
                 behavior = DownloadBehavior.Policy.ToValueString(),
                 downloadPath = DownloadBehavior.DownloadPath,
