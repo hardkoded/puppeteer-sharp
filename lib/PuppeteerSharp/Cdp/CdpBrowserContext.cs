@@ -68,21 +68,6 @@ public class CdpBrowserContext : BrowserContext
         guard?.Dispose();
         var page = await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
 
-        if (DownloadBehavior != null)
-        {
-            // Allow pending async operations from page creation to complete
-            // before creating a new CDP session for download behavior.
-            // On Windows, the page target is not fully ready immediately.
-            await Task.Delay(100).ConfigureAwait(false);
-            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
-            await session.SendAsync("Browser.setDownloadBehavior", new
-            {
-                behavior = DownloadBehavior.Policy.ToValueString(),
-                downloadPath = DownloadBehavior.DownloadPath,
-                eventsEnabled = true,
-            }).ConfigureAwait(false);
-        }
-
         return page;
     }
 
@@ -181,11 +166,11 @@ public class CdpBrowserContext : BrowserContext
     internal Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior)
     {
         DownloadBehavior = downloadBehavior;
-        return _connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+        return _connection.SendAsync("Browser.setDownloadBehavior", new
         {
-            Behavior = downloadBehavior.Policy.ToValueString(),
-            DownloadPath = downloadBehavior.DownloadPath,
-            BrowserContextId = Id,
+            behavior = downloadBehavior.Policy.ToValueString(),
+            downloadPath = downloadBehavior.DownloadPath,
+            browserContextId = Id,
         });
     }
 

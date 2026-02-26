@@ -27,7 +27,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
-using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
