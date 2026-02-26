@@ -127,6 +127,26 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to a browser with no page targets")]
+        public async Task ShouldBeAbleToConnectToABrowserWithNoPageTargets()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+
+            var pages = await browser.PagesAsync();
+            await Task.WhenAll(pages.Select(page => page.CloseAsync()));
+
+            await using var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browser.WebSocketEndpoint,
+                Protocol = ((Browser)browser).Protocol,
+            });
+
+            var disconnectedTask = WaitForBrowserDisconnect(browser);
+            await Task.WhenAll(
+                disconnectedTask,
+                remoteBrowser.CloseAsync());
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {

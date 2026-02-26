@@ -111,6 +111,12 @@ namespace PuppeteerSharp.BrowserData
         internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
         {
             tempUserDataDirectory = tempUserDataDirectory.Unquote();
+
+            if (!Directory.Exists(tempUserDataDirectory))
+            {
+                Directory.CreateDirectory(tempUserDataDirectory);
+            }
+
             var defaultPreferences = GetDefaultPreferences(preferences);
 
             SyncPreferences(defaultPreferences, tempUserDataDirectory);
