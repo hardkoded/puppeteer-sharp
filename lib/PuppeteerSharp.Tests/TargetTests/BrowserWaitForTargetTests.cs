@@ -29,5 +29,21 @@ namespace PuppeteerSharp.Tests.TargetTests
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
                 new() { Timeout = 1 }));
+
+        [Test, PuppeteerTest("target.spec", "Target", "should be able to use async waitForTarget")]
+        public async Task ShouldBeAbleToUseAsyncWaitForTarget()
+        {
+            var targetTask = Context.WaitForTargetAsync(
+                target => target.Url == TestConstants.CrossProcessHttpPrefix + "/empty.html",
+                new() { Timeout = 3000 });
+            await Page.EvaluateFunctionAsync(
+                "url => window.open(url)",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            var target = await targetTask;
+            var otherPage = await target.PageAsync();
+            Assert.That(otherPage.Url, Is.EqualTo(TestConstants.CrossProcessHttpPrefix + "/empty.html"));
+            Assert.That(Page, Is.Not.SameAs(otherPage));
+            await otherPage.CloseAsync();
+        }
     }
 }
