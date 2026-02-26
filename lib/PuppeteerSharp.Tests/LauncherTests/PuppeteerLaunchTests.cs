@@ -497,7 +497,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(await page.EvaluateExpressionAsync<int>("2 + 2"), Is.EqualTo(4));
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support targetFilter option in puppeteer.launch")]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option in puppeteer.launch")]
         public async Task ShouldSupportTargetFilterOptionInPuppeteerLaunch()
         {
             var options = TestConstants.DefaultBrowserOptions();
