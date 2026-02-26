@@ -508,10 +508,14 @@ public class CdpPage : Page
 
             networkManager.Request -= RequestEventListener;
             networkManager.Response -= ResponseEventListener;
+            networkManager.RequestFinished -= RequestEventListener;
+            networkManager.RequestFailed -= RequestEventListener;
         }
 
         networkManager.Request += RequestEventListener;
         networkManager.Response += ResponseEventListener;
+        networkManager.RequestFinished += RequestEventListener;
+        networkManager.RequestFailed += RequestEventListener;
 
         Evaluate();
 
