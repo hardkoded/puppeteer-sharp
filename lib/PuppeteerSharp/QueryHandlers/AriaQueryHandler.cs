@@ -203,15 +203,15 @@ namespace PuppeteerSharp.QueryHandlers
 
             var sw = Stopwatch.StartNew();
 
-            try
+            while (true)
             {
-                while (true)
+                if (sw.ElapsedMilliseconds > timeout)
                 {
-                    if (sw.ElapsedMilliseconds > timeout)
-                    {
-                        throw new TimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
-                    }
+                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                }
 
+                try
+                {
                     IElementHandle queryElement = element;
                     if (queryElement == null)
                     {
@@ -264,18 +264,18 @@ namespace PuppeteerSharp.QueryHandlers
                             return null;
                         }
                     }
-
-                    // Small delay to avoid busy-waiting
-                    await Task.Delay(100).ConfigureAwait(false);
                 }
-            }
-            catch (TimeoutException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: {ex.Message}", ex);
+                catch (Exception) when (sw.ElapsedMilliseconds > timeout)
+                {
+                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                }
+                catch (Exception)
+                {
+                    // Navigation or context changes may cause transient errors; continue polling
+                }
+
+                // Small delay to avoid busy-waiting
+                await Task.Delay(100).ConfigureAwait(false);
             }
         }
 #endif
