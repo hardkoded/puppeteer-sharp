@@ -77,6 +77,7 @@ public class BidiPage : Page
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
         Mouse = new BidiMouse(this);
         Keyboard = new BidiKeyboard(this);
+        Touchscreen = new BidiTouchscreen(this);
         Bluetooth = new BidiBluetoothEmulation(browsingContext);
     }
 
