@@ -728,8 +728,20 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
     }
 
-    private LocalValue SerializePlainObject(object arg)
+    private LocalValue SerializePlainObject(object arg, List<object> seen = null)
     {
+        seen ??= new List<object>();
+
+        foreach (var item in seen)
+        {
+            if (ReferenceEquals(item, arg))
+            {
+                throw new PuppeteerException("Recursive objects are not allowed.");
+            }
+        }
+
+        seen.Add(arg);
+
         var dict = new Dictionary<string, LocalValue>();
         var properties = arg.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -737,7 +749,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         {
             var value = prop.GetValue(arg);
             var key = ToCamelCase(prop.Name);
-            dict[key] = SerializeValue(value);
+            dict[key] = SerializeValue(value, seen);
         }
 
         return LocalValue.Object(dict);
@@ -762,7 +774,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return LocalValue.Object(dict);
     }
 
-    private LocalValue SerializeValue(object value)
+    private LocalValue SerializeValue(object value, List<object> seen = null)
     {
         return value switch
         {
@@ -779,7 +791,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             decimal m => LocalValue.Number(m),
             BigInteger big => LocalValue.BigInt(big),
             IJSHandle => throw new PuppeteerException("Unable to make function call. Are you passing a nested JSHandle?"),
-            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value),
+            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value, seen),
             _ => LocalValue.Null,
         };
     }
