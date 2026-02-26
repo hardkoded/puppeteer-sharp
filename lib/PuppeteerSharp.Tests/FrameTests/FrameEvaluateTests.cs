@@ -16,5 +16,17 @@ namespace PuppeteerSharp.Tests.FrameTests
                 () => frame.EvaluateExpressionAsync("5 * 8"));
             Assert.That(exception.Message, Does.Contain("Execution Context is not available in detached frame"));
         }
+
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame.evaluate", "allows readonly array to be an argument")]
+        public async Task AllowsReadonlyArrayToBeAnArgument()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var mainFrame = Page.MainFrame;
+
+            // This test checks if Frame.evaluate allows an array to be an argument.
+            // See https://github.com/puppeteer/puppeteer/issues/6953.
+            var readonlyArray = new[] { "a", "b", "c" };
+            await mainFrame.EvaluateFunctionAsync("arr => arr", (object)readonlyArray);
+        }
     }
 }
