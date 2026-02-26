@@ -21,11 +21,11 @@ namespace PuppeteerSharp.Input
         /// </summary>
         /// <param name="x">The touch X location.</param>
         /// <param name="y">The touch Y location.</param>
-        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        Task TouchStartAsync(decimal x, decimal y);
+        /// <returns>A Task that resolves with a handle for the touch that was started.</returns>
+        Task<ITouchHandle> TouchStartAsync(decimal x, decimal y);
 
         /// <summary>
-        /// Dispatches a <c>touchmove</c> event.
+        /// Dispatches a <c>touchmove</c> event on the first touch that is active.
         /// </summary>
         /// <param name="x">The touch X location.</param>
         /// <param name="y">The touch Y location.</param>
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Input
         Task TouchMoveAsync(decimal x, decimal y);
 
         /// <summary>
-        /// /// Dispatches a <c>touchendt</c> event.
+        /// Dispatches a <c>touchend</c> event on the first touch that is active.
         /// </summary>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task TouchEndAsync();
