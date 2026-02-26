@@ -307,11 +307,12 @@ public class CdpBrowser : Browser
             && context is CdpBrowserContext cdpContext
             && cdpContext.DownloadBehavior != null)
         {
-            await page.Client.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
+            await session.SendAsync("Browser.setDownloadBehavior", new
             {
-                Behavior = cdpContext.DownloadBehavior.Policy.ToValueString(),
-                DownloadPath = cdpContext.DownloadBehavior.DownloadPath,
-                EventsEnabled = true,
+                behavior = cdpContext.DownloadBehavior.Policy.ToValueString(),
+                downloadPath = cdpContext.DownloadBehavior.DownloadPath,
+                eventsEnabled = true,
             }).ConfigureAwait(false);
         }
 
