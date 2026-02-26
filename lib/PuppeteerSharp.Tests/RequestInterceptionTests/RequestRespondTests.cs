@@ -205,8 +205,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
-        [Test, Ignore("previously not marked as a test")]
-        public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should allow mocking multiple headers with same key")]
+        public async Task ShouldAllowMockingMultipleHeadersWithSameKey()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
@@ -216,23 +216,35 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                     Status = HttpStatusCode.OK,
                     Headers = new Dictionary<string, object>
                     {
-                        ["foo"] = new bool[] { true, false },
-                        ["Set-Cookie"] = new string[] { "sessionId=abcdef", "specialId=123456" }
+                        ["foo"] = "bar",
+                        ["arr"] = new string[] { "1", "2" },
+                        ["set-cookie"] = new string[] { "first=1", "second=2" },
                     },
-                    Body = "Yo, page!"
+                    Body = "Hello \U0001F310",
                 });
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync();
+            var firstCookie = Array.Find(cookies, cookie => cookie.Name == "first");
+            var secondCookie = Array.Find(cookies, cookie => cookie.Name == "second");
 
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Headers["foo"], Is.EqualTo("True\nFalse"));
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
-            Assert.That(cookies[0].Name, Is.EqualTo("specialId"));
-            Assert.That(cookies[0].Value, Is.EqualTo("123456"));
-            Assert.That(cookies[1].Name, Is.EqualTo("sessionId"));
-            Assert.That(cookies[1].Value, Is.EqualTo("abcdef"));
+            Assert.That(response.Headers["foo"], Is.EqualTo("bar"));
+
+            // The separator used to handle headers with multiple values is browser
+            // specific. Chrome uses newline, Firefox uses comma-separated values.
+            if (!TestConstants.IsChrome)
+            {
+                Assert.That(response.Headers["arr"], Is.EqualTo("1, 2"));
+            }
+            else
+            {
+                Assert.That(response.Headers["arr"], Is.EqualTo("1\n2"));
+            }
+
+            Assert.That(firstCookie?.Value, Is.EqualTo("1"));
+            Assert.That(secondCookie?.Value, Is.EqualTo("2"));
         }
     }
 }
