@@ -167,6 +167,17 @@ namespace PuppeteerSharp.Tests.FrameTests
             Assert.That(frame2, Is.Not.SameAs(frame1));
         }
 
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support lazy frames")]
+        public async Task ShouldSupportLazyFrames()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 1000, Height = 1000 });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/lazy-frame.html");
+
+            Assert.That(
+                Page.Frames.Select(frame => ((Frame)frame).HasStartedLoading).ToArray(),
+                Is.EqualTo(new[] { true, true, false }));
+        }
+
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support framesets")]
         public async Task ShouldSupportFramesets()
         {
