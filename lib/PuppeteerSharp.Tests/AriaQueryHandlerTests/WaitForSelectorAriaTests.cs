@@ -129,5 +129,167 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             var elementHandle = await waitForSelectorTask;
             Assert.That(frame2, Is.SameAs(elementHandle.Frame));
         }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should throw when frame is detached")]
+        public async Task ShouldThrowWhenFrameIsDetached()
+        {
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
+            var frame = await Page.FirstChildFrameAsync();
+            var waitTask = frame.WaitForSelectorAsync("aria/does-not-exist");
+            await FrameUtils.DetachFrameAsync(Page, "frame1");
+            var waitException = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitTask);
+
+            Assert.That(waitException, Is.Not.Null);
+            Assert.That(waitException.Message, Does.Contain("Waiting for selector `does-not-exist` failed"));
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should survive cross-process navigation")]
+        public async Task ShouldSurviveCrossProcessNavigation()
+        {
+            var imgFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/[role=\"image\"]").ContinueWith(_ => imgFound = true);
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(imgFound, Is.False);
+            await Page.ReloadAsync();
+            Assert.That(imgFound, Is.False);
+            await Page.GoToAsync(TestConstants.CrossProcessHttpPrefix + "/grid.html");
+            await waitForSelector;
+            Assert.That(imgFound, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should wait for visible")]
+        public async Task ShouldWaitForVisible()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/name", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div aria-label='name' style='display: none; visibility: hidden;'>1</div>");
+            Assert.That(divFound, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.removeProperty('display')");
+            Assert.That(divFound, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.removeProperty('visibility')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divFound, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should wait for visible recursively")]
+        public async Task ShouldWaitForVisibleRecursively()
+        {
+            var divVisible = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/inner", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divVisible = true);
+            await Page.SetContentAsync("<div style='display: none; visibility: hidden;'><div aria-label='inner'>hi</div></div>");
+            Assert.That(divVisible, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.removeProperty('display')");
+            Assert.That(divVisible, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.removeProperty('visibility')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divVisible, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "hidden should wait for visibility: hidden")]
+        public async Task HiddenShouldWaitForVisibilityHidden()
+        {
+            await Page.SetContentAsync("<div role='button' style='display: block;'>text</div>");
+            var divHidden = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/[role=\"button\"]", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
+            Assert.That(divHidden, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.setProperty('visibility', 'hidden')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divHidden, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "hidden should wait for display: none")]
+        public async Task HiddenShouldWaitForDisplayNone()
+        {
+            await Page.SetContentAsync("<div role='main' style='display: block;'>text</div>");
+            var divHidden = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/[role=\"main\"]", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await Page.WaitForSelectorAsync("aria/[role=\"main\"]");
+            Assert.That(divHidden, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').style.setProperty('display', 'none')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divHidden, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "hidden should wait for removal")]
+        public async Task HiddenShouldWaitForRemoval()
+        {
+            await Page.SetContentAsync("<div role='main'>text</div>");
+            var divRemoved = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/[role=\"main\"]", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divRemoved = true);
+            await Page.WaitForSelectorAsync("aria/[role=\"main\"]");
+            Assert.That(divRemoved, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').remove()");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divRemoved, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should return null if waiting to hide non-existing element")]
+        public async Task ShouldReturnNullIfWaitingToHideNonExistingElement()
+        {
+            var handle = await Page.WaitForSelectorAsync("aria/non-existing", new WaitForSelectorOptions { Hidden = true });
+            Assert.That(handle, Is.Null);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should respect timeout")]
+        public async Task ShouldRespectTimeout()
+        {
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(
+                () => Page.WaitForSelectorAsync("aria/[role=\"button\"]", new WaitForSelectorOptions { Timeout = 10 }));
+
+            Assert.That(exception.Message, Does.Contain("Waiting for selector `[role=\"button\"]` failed"));
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should have an error message specifically for awaiting an element to be hidden")]
+        public async Task ShouldHaveAnErrorMessageSpecificallyForAwaitingAnElementToBeHidden()
+        {
+            await Page.SetContentAsync("<div role='main'>text</div>");
+            var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(
+                () => Page.WaitForSelectorAsync("aria/[role=\"main\"]", new WaitForSelectorOptions { Hidden = true, Timeout = 10 }));
+
+            Assert.That(exception.Message, Does.Contain("Waiting for selector `[role=\"main\"]` failed"));
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should respond to node attribute mutation")]
+        public async Task ShouldRespondToNodeAttributeMutation()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("aria/zombo").ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<div aria-label='notZombo'></div>");
+            Assert.That(divFound, Is.False);
+            await Page.EvaluateFunctionAsync("() => document.querySelector('div').setAttribute('aria-label', 'zombo')");
+            Assert.That(await waitForSelector, Is.True);
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should return the element handle")]
+        public async Task ShouldReturnTheElementHandle()
+        {
+            var waitForSelector = Page.WaitForSelectorAsync("aria/zombo");
+            await Page.SetContentAsync("<div aria-label='zombo'>anything</div>");
+            var handle = await waitForSelector;
+            Assert.That(await Page.EvaluateFunctionAsync<string>("x => x?.textContent", handle), Is.EqualTo("anything"));
+        }
+
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should have correct stack trace for timeout")]
+        public async Task ShouldHaveCorrectStackTraceForTimeout()
+        {
+            WaitTaskTimeoutException error = null;
+            try
+            {
+                await Page.WaitForSelectorAsync("aria/zombo", new WaitForSelectorOptions { Timeout = 10 });
+            }
+            catch (WaitTaskTimeoutException ex)
+            {
+                error = ex;
+            }
+
+            Assert.That(error, Is.Not.Null);
+            Assert.That(error.Message, Does.Contain("Waiting for selector `zombo` failed"));
+        }
     }
 }
