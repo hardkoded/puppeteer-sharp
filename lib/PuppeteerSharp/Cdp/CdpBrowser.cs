@@ -302,6 +302,20 @@ public class CdpBrowser : Browser
         await target!.InitializedTask.ConfigureAwait(false);
         var page = await target.PageAsync().ConfigureAwait(false);
 
+        if (contextId != null
+            && _contexts.TryGetValue(contextId, out var context)
+            && context is CdpBrowserContext cdpContext
+            && cdpContext.DownloadBehavior != null)
+        {
+            var session = await page.CreateCDPSessionAsync().ConfigureAwait(false);
+            await session.SendAsync("Browser.setDownloadBehavior", new
+            {
+                behavior = cdpContext.DownloadBehavior.Policy.ToValueString(),
+                downloadPath = cdpContext.DownloadBehavior.DownloadPath,
+                eventsEnabled = true,
+            }).ConfigureAwait(false);
+        }
+
         return page;
     }
 
