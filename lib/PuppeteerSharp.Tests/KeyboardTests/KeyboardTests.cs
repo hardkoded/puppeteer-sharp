@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -41,6 +42,33 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             _ = Page.Keyboard.UpAsync("Shift");
             await Page.Keyboard.PressAsync("Backspace");
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"), Is.EqualTo("Hello World!"));
+        }
+
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should trigger commands of keyboard shortcuts")]
+        public async Task ShouldTriggerCommandsOfKeyboardShortcuts()
+        {
+            var cmdKey = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Meta" : "Control";
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.TypeAsync("textarea", "hello");
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.PressAsync("a", new PressOptions { Commands = new[] { "SelectAll" } });
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.DownAsync("c", new DownOptions { Commands = new[] { "Copy" } });
+            await Page.Keyboard.UpAsync("c");
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.PressAsync("v", new PressOptions { Commands = new[] { "Paste" } });
+            await Page.Keyboard.PressAsync("v", new PressOptions { Commands = new[] { "Paste" } });
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => document.querySelector('textarea').value"),
+                Is.EqualTo("hellohello"));
         }
 
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with ElementHandle.press")]

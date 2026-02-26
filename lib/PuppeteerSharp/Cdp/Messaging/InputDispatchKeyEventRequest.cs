@@ -21,5 +21,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public int Location { get; set; }
 
         public bool IsKeypad { get; set; }
+
+        public string[] Commands { get; set; }
     }
 }
