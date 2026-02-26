@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) 2020 Darío Kondratiuk
+//  * Copyright (c) Dario Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,12 @@
 namespace PuppeteerSharp;
 
 /// <summary>
-/// Information about the request initiator.
+/// Stack trace information for the <see cref="Initiator"/>.
 /// </summary>
-public class Initiator
+public class InitiatorStackTrace
 {
     /// <summary>
-    /// Gets or sets the type of the initiator.
+    /// Gets or sets the call frames in the stack trace.
     /// </summary>
-    public InitiatorType Type { get; set; }
-
-    /// <summary>
-    /// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
-    /// </summary>
-    public string Url { get; set; }
-
-    /// <summary>
-    /// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
-    /// </summary>
-    public int? LineNumber { get; set; }
-
-    /// <summary>
-    /// Initiator column number, set for Parser type or for Script type (when script is importing module) (0-based).
-    /// </summary>
-    public int? ColumnNumber { get; set; }
-
-    /// <summary>
-    /// Set if another request triggered this request (e.g. preflight).
-    /// </summary>
-    public string RequestId { get; set; }
-
-    /// <summary>
-    /// Initiator JavaScript stack trace, set for Script type only.
-    /// </summary>
-    public InitiatorStackTrace Stack { get; set; }
+    public CallFrame[] CallFrames { get; set; }
 }

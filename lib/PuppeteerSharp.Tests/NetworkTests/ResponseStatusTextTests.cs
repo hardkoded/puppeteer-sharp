@@ -27,5 +27,18 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var response = await Page.GoToAsync(TestConstants.ServerUrl + "/cool");
             Assert.That(response.StatusText, Is.EqualTo("cool!"));
         }
+
+        [Test, PuppeteerTest("network.spec", "network Response.statusText", "handles missing status text")]
+        public async Task HandlesMissingStatusText()
+        {
+            Server.SetRoute("/nostatus", (context) =>
+            {
+                context.Response.StatusCode = 200;
+                context.Features.Get<IHttpResponseFeature>().ReasonPhrase = string.Empty;
+                return Task.CompletedTask;
+            });
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/nostatus");
+            Assert.That(response.StatusText, Is.EqualTo(string.Empty));
+        }
     }
 }

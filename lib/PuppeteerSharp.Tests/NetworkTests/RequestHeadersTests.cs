@@ -6,8 +6,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestHeadersTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("network.spec", "network Request.Headers", "should work")]
-        public async Task ShouldWork()
+        [Test, PuppeteerTest("network.spec", "network Request.headers", "should define Browser in user agent header")]
+        public async Task ShouldDefineBrowserInUserAgentHeader()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
 

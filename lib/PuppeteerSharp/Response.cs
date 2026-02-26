@@ -49,6 +49,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public IFrame Frame => Request.Frame;
 
+        /// <inheritdoc/>
+        public ResourceTiming Timing { get; protected init; }
+
         /// <inheritdoc cref="Request"/>
         protected TRequest Request { get; init; }
 
