@@ -257,7 +257,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divFound, Is.True);
         }
 
-        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for visible recursively")]
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible recursively")]
         public async Task ShouldWaitForVisibleRecursively()
         {
             var divVisible = false;
@@ -287,6 +287,20 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.WaitForSelectorAsync("div"); // do a round trip
             Assert.That(divHidden, Is.False);
             await Page.EvaluateExpressionAsync($"document.querySelector('div').style.setProperty('{propertyName}', '{propertyValue}')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divHidden, Is.True);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (bounding box)")]
+        public async Task HiddenShouldWaitForBoundingBox()
+        {
+            var divHidden = false;
+            await Page.SetContentAsync("<div>text</div>");
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await Page.WaitForSelectorAsync("div"); // do a round trip
+            Assert.That(divHidden, Is.False);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('height', '0')");
             Assert.That(await waitForSelector, Is.True);
             Assert.That(divHidden, Is.True);
         }
@@ -432,6 +446,22 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.SetContentAsync("<div>some text</div>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/html/body/div");
             Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath), Is.EqualTo("some text"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should return null if the element is not found")]
+        public async Task XpathHiddenShouldReturnNullIfTheElementIsNotFound()
+        {
+            var waitForSelector = await Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true });
+            Assert.That(waitForSelector, Is.Null);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should return an empty element handle if the element is found")]
+        public async Task XpathHiddenShouldReturnAnEmptyElementHandleIfTheElementIsFound()
+        {
+            await Page.SetContentAsync("<div style='display: none;'>text</div>");
+            var waitForSelector = await Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true });
+            Assert.That(waitForSelector, Is.Not.Null);
+            Assert.That(waitForSelector, Is.InstanceOf<IElementHandle>());
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should respect timeout")]
