@@ -88,5 +88,51 @@ namespace PuppeteerSharp.Tests.QueryHandlerTests.TextSelectorTests
             var element = await Page.QuerySelectorAsync("text/a b");
             Assert.That(await element.EvaluateFunctionAsync<string>("element => element.textContent"), Is.EqualTo("a b"));
         }
+
+        [Test, PuppeteerTest("queryhandler.spec", "Query handler tests Text selectors in Page", "should clear caches")]
+        public async Task ShouldClearCaches()
+        {
+            await Page.SetContentAsync(
+                @"<div id=""target1"">text</div>
+                <input id=""target2"" value=""text"">
+                <div id=""target3"">text</div>");
+
+            var div = await Page.QuerySelectorAsync("#target1");
+            var input = await Page.QuerySelectorAsync("#target2");
+
+            await div.EvaluateFunctionAsync("div => div.textContent = 'text'");
+            Assert.That(
+                await (await Page.QuerySelectorAsync("text/text")).EvaluateFunctionAsync<string>("e => e.id"),
+                Is.EqualTo("target1"));
+
+            await div.EvaluateFunctionAsync("div => div.textContent = 'foo'");
+            Assert.That(
+                await (await Page.QuerySelectorAsync("text/text")).EvaluateFunctionAsync<string>("e => e.id"),
+                Is.EqualTo("target2"));
+
+            await input.EvaluateFunctionAsync("input => input.value = ''");
+            await input.TypeAsync("foo");
+            Assert.That(
+                await (await Page.QuerySelectorAsync("text/text")).EvaluateFunctionAsync<string>("e => e.id"),
+                Is.EqualTo("target3"));
+
+            await div.EvaluateFunctionAsync("div => div.textContent = 'text'");
+            await input.EvaluateFunctionAsync("input => input.value = ''");
+            await input.TypeAsync("text");
+            Assert.That(
+                (await Page.QuerySelectorAllAsync("text/text")).Length,
+                Is.EqualTo(3));
+
+            await div.EvaluateFunctionAsync("div => div.textContent = 'foo'");
+            Assert.That(
+                (await Page.QuerySelectorAllAsync("text/text")).Length,
+                Is.EqualTo(2));
+
+            await input.EvaluateFunctionAsync("input => input.value = ''");
+            await input.TypeAsync("foo");
+            Assert.That(
+                (await Page.QuerySelectorAllAsync("text/text")).Length,
+                Is.EqualTo(1));
+        }
     }
 }
