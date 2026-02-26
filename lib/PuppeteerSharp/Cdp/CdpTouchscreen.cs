@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) Darío Kondratiuk
+//  * Copyright (c) Dario Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@
 
 using System;
 using System.Threading.Tasks;
-using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Input;
 
 namespace PuppeteerSharp.Cdp;
@@ -41,67 +40,34 @@ public class CdpTouchscreen : Touchscreen
     }
 
     /// <inheritdoc />
-    public override Task TouchStartAsync(decimal x, decimal y)
+    public override async Task<ITouchHandle> TouchStartAsync(decimal x, decimal y)
     {
-        var touchPoints = new[]
+        var id = GenerateId();
+        var touchPoint = new TouchPoint
         {
-                new TouchPoint
-                {
-                    X = Math.Round(x, MidpointRounding.AwayFromZero),
-                    Y = Math.Round(y, MidpointRounding.AwayFromZero),
-                    RadiusX = 0.5m,
-                    RadiusY = 0.5m,
-                    Force = 0.5m,
-                },
+            X = Math.Round(x, MidpointRounding.AwayFromZero),
+            Y = Math.Round(y, MidpointRounding.AwayFromZero),
+            RadiusX = 0.5m,
+            RadiusY = 0.5m,
+            Force = 0.5m,
+            Id = id,
         };
 
-        return _client.SendAsync(
-            "Input.dispatchTouchEvent",
-            new InputDispatchTouchEventRequest
-            {
-                Type = "touchStart",
-                TouchPoints = touchPoints,
-                Modifiers = _keyboard.Modifiers,
-            });
+        var touch = new CdpTouchHandle(_client, this, _keyboard, touchPoint);
+        await touch.StartAsync().ConfigureAwait(false);
+        Touches.Add(touch);
+        return touch;
     }
 
-    /// <inheritdoc />
-    public override Task TouchMoveAsync(decimal x, decimal y)
+    internal void UpdateClient(CDPSession newSession)
     {
-        var touchPoints = new[]
+        _client = newSession;
+        foreach (var touch in Touches)
         {
-                new TouchPoint
-                {
-                    X = Math.Round(x, MidpointRounding.AwayFromZero),
-                    Y = Math.Round(y, MidpointRounding.AwayFromZero),
-                    RadiusX = 0.5m,
-                    RadiusY = 0.5m,
-                    Force = 0.5m,
-                },
-        };
-
-        return _client.SendAsync(
-            "Input.dispatchTouchEvent",
-            new InputDispatchTouchEventRequest
+            if (touch is CdpTouchHandle cdpTouch)
             {
-                Type = "touchStart",
-                TouchPoints = touchPoints,
-                Modifiers = _keyboard.Modifiers,
-            });
+                cdpTouch.UpdateClient(newSession);
+            }
+        }
     }
-
-    /// <inheritdoc />
-    public override Task TouchEndAsync()
-    {
-        return _client.SendAsync(
-            "Input.dispatchTouchEvent",
-            new InputDispatchTouchEventRequest
-            {
-                Type = "touchEnd",
-                TouchPoints = [],
-                Modifiers = _keyboard.Modifiers,
-            });
-    }
-
-    internal void UpdateClient(CDPSession newSession) => _client = newSession;
 }

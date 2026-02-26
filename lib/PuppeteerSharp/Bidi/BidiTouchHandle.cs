@@ -30,19 +30,23 @@ using WebDriverBiDi.Input;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiTouchscreen(BidiPage page) : Touchscreen, IDisposable
+internal class BidiTouchHandle : ITouchHandle
 {
-    private readonly PointerSourceActions _touchSource = new()
+    private readonly BidiTouchscreen _touchScreen;
+    private readonly BidiPage _page;
+    private readonly PointerSourceActions _touchSource;
+    private readonly TaskQueue _actionsQueue;
+
+    internal BidiTouchHandle(BidiTouchscreen touchScreen, BidiPage page, PointerSourceActions touchSource, TaskQueue actionsQueue)
     {
-        Parameters = new PointerParameters
-        {
-            PointerType = WebDriverBiDi.Input.PointerType.Touch,
-        },
-    };
+        _touchScreen = touchScreen;
+        _page = page;
+        _touchSource = touchSource;
+        _actionsQueue = actionsQueue;
+    }
 
-    private readonly TaskQueue _actionsQueue = new();
-
-    public override Task<ITouchHandle> TouchStartAsync(decimal x, decimal y)
+    /// <inheritdoc />
+    public Task MoveAsync(decimal x, decimal y)
     {
         return _actionsQueue.Enqueue(async () =>
         {
@@ -51,21 +55,23 @@ internal class BidiTouchscreen(BidiPage page) : Touchscreen, IDisposable
                 X = (long)Math.Round(x),
                 Y = (long)Math.Round(y),
             });
-            _touchSource.Actions.Add(new PointerDownAction(0));
 
-            await page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
+            await _page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
             _touchSource.Actions.Clear();
-
-            var handle = new BidiTouchHandle(this, page, _touchSource, _actionsQueue);
-            Touches.Add(handle);
-            return (ITouchHandle)handle;
         });
     }
 
-    public void Dispose()
+    /// <inheritdoc />
+    public Task EndAsync()
     {
-        _actionsQueue.Dispose();
-        GC.SuppressFinalize(this);
+        return _actionsQueue.Enqueue(async () =>
+        {
+            _touchSource.Actions.Add(new PointerUpAction(0));
+
+            await _page.BidiMainFrame.BrowsingContext.PerformActionsAsync([_touchSource]).ConfigureAwait(false);
+            _touchSource.Actions.Clear();
+            _touchScreen.RemoveHandle(this);
+        });
     }
 }
 
