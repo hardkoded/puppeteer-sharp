@@ -103,6 +103,18 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(otherPage, "geolocation"), Is.EqualTo("granted"));
         }
 
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should grant persistent-storage")]
+        public async Task ShouldGrantPersistentStorage()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(await GetPermissionAsync(Page, "persistent-storage"), Is.Not.EqualTo("granted"));
+            await Context.OverridePermissionsAsync(TestConstants.EmptyPage, new OverridePermission[]
+            {
+                OverridePermission.PersistentStorage
+            });
+            Assert.That(await GetPermissionAsync(Page, "persistent-storage"), Is.EqualTo("granted"));
+        }
+
         [Test, Ignore("Fails on Firefox")]
         public async Task AllEnumsdAreValid()
         {
