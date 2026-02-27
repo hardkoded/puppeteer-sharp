@@ -37,7 +37,7 @@ namespace PuppeteerSharp
         public abstract bool Detached { get; }
 
         /// <inheritdoc/>
-        public ILoggerFactory LoggerFactory => Connection.LoggerFactory;
+        public virtual ILoggerFactory LoggerFactory => Connection.LoggerFactory;
 
         internal Connection Connection { get; set; }
 

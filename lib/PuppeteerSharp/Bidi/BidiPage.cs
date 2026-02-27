@@ -74,6 +74,7 @@ public class BidiPage : Page
         BrowserContext = browserContext;
         Browser = browserContext.Browser;
         BidiMainFrame = BidiFrame.From(this, null, browsingContext);
+        Client = (CDPSession)BidiMainFrame.Client;
         _cdpEmulationManager = new CdpEmulationManager(BidiMainFrame.Client);
         Mouse = new BidiMouse(this);
         Keyboard = new BidiKeyboard(this);
