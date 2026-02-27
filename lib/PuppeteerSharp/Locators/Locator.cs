@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
@@ -58,6 +59,16 @@ namespace PuppeteerSharp.Locators
         {
             get => _waitForStableBoundingBox;
             set => _waitForStableBoundingBox = value;
+        }
+
+        /// <summary>
+        /// Creates a new locator that races multiple locators, returning the first one to resolve.
+        /// </summary>
+        /// <param name="locators">The locators to race.</param>
+        /// <returns>A new locator that resolves to the first matching locator's result.</returns>
+        public static Locator Race(params Locator[] locators)
+        {
+            return new RaceLocator(locators);
         }
 
         /// <summary>
