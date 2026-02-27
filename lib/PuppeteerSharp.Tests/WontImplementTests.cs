@@ -48,6 +48,9 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands and nested arrow functions")]
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.toElement", "should work")]
+        // These test JavaScript-internal utilities (PuppeteerUtil, createFunction) injected into the isolated realm via LazyArg - no C# equivalent
+        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
+        [PuppeteerTest("injected.spec", "createFunction tests", "should work")]
         public void TheseTestWontBeImplemented()
         {
         }
