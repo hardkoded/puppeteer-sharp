@@ -124,5 +124,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "ASP.NET Core Kestrel does not support sending empty HTTP reason phrases - it defaults to 'OK' for status 200",
+    "testIdPattern": "[network.spec] network Response.statusText handles missing status text",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": [],
+    "expectations": ["FAIL"]
   }
 ]

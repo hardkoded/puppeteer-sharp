@@ -91,6 +91,8 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal BidiPage BidiPage => (BidiPage)Frame.Page;
 
+    internal WebDriverBiDi.Network.FetchTimingInfo Timings => _request.Timings;
+
     internal ConcurrentDictionary<string, string> ExtraHttpHeaders => BidiPage.ExtraHttpHeaders;
 
     internal bool HasInternalHeaderOverwrite => ExtraHttpHeaders.Values.Count != 0;

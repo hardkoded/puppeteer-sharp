@@ -48,6 +48,31 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         // BiDi doesn't provide remote address information
         RemoteAddress = new RemoteAddress { IP = string.Empty, Port = -1 };
 
+        // Map BiDi timing info to ResourceTiming
+        var bidiTiming = request.Timings;
+        Timing = new ResourceTiming
+        {
+            RequestTime = (decimal)bidiTiming.RequestTime,
+            ProxyStart = -1,
+            ProxyEnd = -1,
+            DnsStart = (decimal)bidiTiming.DnsStart,
+            DnsEnd = (decimal)bidiTiming.DnsEnd,
+            ConnectStart = (decimal)bidiTiming.ConnectStart,
+            ConnectEnd = (decimal)bidiTiming.ConnectEnd,
+            SslStart = (decimal)bidiTiming.TlsStart,
+            SslEnd = -1,
+            WorkerStart = -1,
+            WorkerReady = -1,
+            WorkerFetchStart = -1,
+            WorkerRespondWithSettled = -1,
+            SendStart = (decimal)bidiTiming.RequestStart,
+            SendEnd = -1,
+            PushStart = -1,
+            PushEnd = -1,
+            ReceiveHeadersStart = (decimal)bidiTiming.ResponseStart,
+            ReceiveHeadersEnd = (decimal)bidiTiming.ResponseEnd,
+        };
+
         // Convert headers
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)

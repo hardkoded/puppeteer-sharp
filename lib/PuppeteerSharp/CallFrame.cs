@@ -1,6 +1,6 @@
 // * MIT License
 //  *
-//  * Copyright (c) 2020 Darío Kondratiuk
+//  * Copyright (c) Dario Kondratiuk
 //  *
 //  * Permission is hereby granted, free of charge, to any person obtaining a copy
 //  * of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,32 @@
 namespace PuppeteerSharp;
 
 /// <summary>
-/// Information about the request initiator.
+/// Represents a call frame in a stack trace.
 /// </summary>
-public class Initiator
+public class CallFrame
 {
     /// <summary>
-    /// Gets or sets the type of the initiator.
+    /// Gets or sets the JavaScript function name.
     /// </summary>
-    public InitiatorType Type { get; set; }
+    public string FunctionName { get; set; }
 
     /// <summary>
-    /// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
+    /// Gets or sets the script identifier.
+    /// </summary>
+    public string ScriptId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of the script.
     /// </summary>
     public string Url { get; set; }
 
     /// <summary>
-    /// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// Gets or sets the line number in the script (0-based).
     /// </summary>
-    public int? LineNumber { get; set; }
+    public int LineNumber { get; set; }
 
     /// <summary>
-    /// Initiator column number, set for Parser type or for Script type (when script is importing module) (0-based).
+    /// Gets or sets the column number in the script (0-based).
     /// </summary>
-    public int? ColumnNumber { get; set; }
-
-    /// <summary>
-    /// Set if another request triggered this request (e.g. preflight).
-    /// </summary>
-    public string RequestId { get; set; }
-
-    /// <summary>
-    /// Initiator JavaScript stack trace, set for Script type only.
-    /// </summary>
-    public InitiatorStackTrace Stack { get; set; }
+    public int ColumnNumber { get; set; }
 }

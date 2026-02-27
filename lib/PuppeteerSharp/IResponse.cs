@@ -78,6 +78,11 @@ namespace PuppeteerSharp
         IFrame Frame { get; }
 
         /// <summary>
+        /// Resource timing information for this response.
+        /// </summary>
+        ResourceTiming Timing { get; }
+
+        /// <summary>
         /// Returns a Task which resolves to a buffer with response body.
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body.</returns>

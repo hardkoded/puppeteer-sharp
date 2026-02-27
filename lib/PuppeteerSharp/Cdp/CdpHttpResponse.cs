@@ -44,6 +44,7 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
             IP = responseMessage.RemoteIPAddress,
             Port = responseMessage.RemotePort,
         };
+        Timing = responseMessage.Timing;
     }
 
     /// <inheritdoc/>
