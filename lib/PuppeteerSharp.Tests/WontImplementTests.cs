@@ -46,6 +46,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("tracing.spec", "Tracing", "should return undefined in case of Buffer error")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
+        [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands")]
         [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands and nested arrow functions")]
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.toElement", "should work")]
         public void TheseTestWontBeImplemented()
