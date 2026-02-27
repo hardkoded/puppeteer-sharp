@@ -108,7 +108,20 @@ namespace PuppeteerSharp
                     {
 #if !CDP_ONLY
                         var driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
-                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process).ConfigureAwait(false);
+                        var bidiProcess = Process;
+                        Func<Task> bidiCloseCallback = async () =>
+                        {
+                            try
+                            {
+                                var closeTimeout = TimeSpan.FromMilliseconds(5000);
+                                await bidiProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                            }
+                            catch
+                            {
+                                await bidiProcess.KillAsync().ConfigureAwait(false);
+                            }
+                        };
+                        browser = await BidiBrowser.CreateAsync(driver, options, _loggerFactory, Process, bidiCloseCallback).ConfigureAwait(false);
 #else
                         throw new ArgumentException("Invalid browser. Only CDP is supported");
 #endif
@@ -119,6 +132,20 @@ namespace PuppeteerSharp
                             .Create(Process.EndPoint, options, _loggerFactory)
                             .ConfigureAwait(false);
 
+                        var cdpProcess = Process;
+                        Func<Task> cdpCloseCallback = async () =>
+                        {
+                            try
+                            {
+                                var closeTimeout = TimeSpan.FromMilliseconds(5000);
+                                await cdpProcess.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                            }
+                            catch
+                            {
+                                await cdpProcess.KillAsync().ConfigureAwait(false);
+                            }
+                        };
+
                         browser = await CdpBrowser
                             .CreateAsync(
                                 options.Browser,
@@ -127,6 +154,7 @@ namespace PuppeteerSharp
                                 options.AcceptInsecureCerts,
                                 options.DefaultViewport,
                                 Process,
+                                cdpCloseCallback,
                                 options.TargetFilter,
                                 options.IsPageTarget,
                                 handleDevToolsAsPage: options.HandleDevToolsAsPage,
@@ -328,6 +356,7 @@ namespace PuppeteerSharp
                         options.AcceptInsecureCerts,
                         options.DefaultViewport,
                         null,
+                        closeCallback: null,
                         options.TargetFilter,
                         options.IsPageTarget,
                         options.InitAction,
