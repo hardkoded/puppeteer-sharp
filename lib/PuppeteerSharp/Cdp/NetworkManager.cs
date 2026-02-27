@@ -598,36 +598,48 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            await client.SendAsync(
-                "Network.setUserAgentOverride",
-                new NetworkSetUserAgentOverrideRequest
-                {
-                    UserAgent = _userAgent,
-                    UserAgentMetadata = _userAgentMetadata,
-                }).ConfigureAwait(false);
+            try
+            {
+                await client.SendAsync(
+                    "Network.setUserAgentOverride",
+                    new NetworkSetUserAgentOverrideRequest
+                    {
+                        UserAgent = _userAgent,
+                        UserAgentMetadata = _userAgentMetadata,
+                    }).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+            }
         }
 
         private async Task ApplyProtocolRequestInterceptionAsync(ICDPSession client)
         {
             _userCacheDisabled ??= false;
 
-            if (_protocolRequestInterceptionEnabled)
+            try
             {
-                await Task.WhenAll(
-                    ApplyProtocolCacheDisabledAsync(client),
-                    client.SendAsync(
-                        "Fetch.enable",
-                        new FetchEnableRequest
-                        {
-                            HandleAuthRequests = true,
-                            Patterns = [new FetchEnableRequest.Pattern("*")],
-                        })).ConfigureAwait(false);
+                if (_protocolRequestInterceptionEnabled)
+                {
+                    await Task.WhenAll(
+                        ApplyProtocolCacheDisabledAsync(client),
+                        client.SendAsync(
+                            "Fetch.enable",
+                            new FetchEnableRequest
+                            {
+                                HandleAuthRequests = true,
+                                Patterns = [new FetchEnableRequest.Pattern("*")],
+                            })).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Task.WhenAll(
+                        ApplyProtocolCacheDisabledAsync(client),
+                        client.SendAsync("Fetch.disable")).ConfigureAwait(false);
+                }
             }
-            else
+            catch (Exception ex) when (CanIgnoreError(ex))
             {
-                await Task.WhenAll(
-                    ApplyProtocolCacheDisabledAsync(client),
-                    client.SendAsync("Fetch.disable")).ConfigureAwait(false);
             }
         }
 
@@ -638,9 +650,15 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            await client.SendAsync(
-                "Network.setCacheDisabled",
-                new NetworkSetCacheDisabledRequest(_userCacheDisabled.Value)).ConfigureAwait(false);
+            try
+            {
+                await client.SendAsync(
+                    "Network.setCacheDisabled",
+                    new NetworkSetCacheDisabledRequest(_userCacheDisabled.Value)).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+            }
         }
 
         private async Task ApplyNetworkConditionsAsync(ICDPSession client)
@@ -650,15 +668,21 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            await client.SendAsync(
-                "Network.emulateNetworkConditions",
-                new NetworkEmulateNetworkConditionsRequest
-                {
-                    Offline = _emulatedNetworkConditions.Offline,
-                    Latency = _emulatedNetworkConditions.Latency,
-                    UploadThroughput = _emulatedNetworkConditions.Upload,
-                    DownloadThroughput = _emulatedNetworkConditions.Download,
-                }).ConfigureAwait(false);
+            try
+            {
+                await client.SendAsync(
+                    "Network.emulateNetworkConditions",
+                    new NetworkEmulateNetworkConditionsRequest
+                    {
+                        Offline = _emulatedNetworkConditions.Offline,
+                        Latency = _emulatedNetworkConditions.Latency,
+                        UploadThroughput = _emulatedNetworkConditions.Upload,
+                        DownloadThroughput = _emulatedNetworkConditions.Download,
+                    }).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+            }
         }
 
         private async Task ApplyExtraHTTPHeadersAsync(ICDPSession client)
@@ -668,9 +692,15 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            await client.SendAsync(
-                "Network.setExtraHTTPHeaders",
-                new NetworkSetExtraHTTPHeadersRequest(_extraHTTPHeaders)).ConfigureAwait(false);
+            try
+            {
+                await client.SendAsync(
+                    "Network.setExtraHTTPHeaders",
+                    new NetworkSetExtraHTTPHeadersRequest(_extraHTTPHeaders)).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+            }
         }
 
         private Task ApplyToAllClientsAsync(Func<ICDPSession, Task> func)

@@ -816,4 +816,58 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
 
         Assert.That(responses.Select(response => response.Status), Is.EqualTo(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }));
     }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw on target close error")]
+    public async Task ShouldNotThrowOnTargetCloseError()
+    {
+        var client = Substitute.For<ICDPSession>();
+        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+            .Returns<JsonElement?>(_ => throw new TargetClosedException("error"));
+
+        var frameManagerMock = Substitute.For<IFrameProvider>();
+        using var loggerFactory = new LoggerFactory();
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+
+        await manager.AddClientAsync(client);
+        await manager.SetCacheEnabledAsync(true);
+        await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>());
+        await manager.SetOfflineModeAsync(true);
+        await manager.SetUserAgentAsync("test", null);
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw on unsupported errors")]
+    public async Task ShouldNotThrowOnUnsupportedErrors()
+    {
+        var client = Substitute.For<ICDPSession>();
+        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+            .Returns<JsonElement?>(_ => throw new PuppeteerException("Not supported"));
+
+        var frameManagerMock = Substitute.For<IFrameProvider>();
+        using var loggerFactory = new LoggerFactory();
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+
+        await manager.AddClientAsync(client);
+        await manager.SetCacheEnabledAsync(true);
+        await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>());
+        await manager.SetOfflineModeAsync(true);
+        await manager.SetUserAgentAsync("test", null);
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should throw on non-TargetClose errors")]
+    public async Task ShouldThrowOnNonTargetCloseErrors()
+    {
+        var client = Substitute.For<ICDPSession>();
+        client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+            .Returns<JsonElement?>(_ => throw new PuppeteerException("error"));
+
+        var frameManagerMock = Substitute.For<IFrameProvider>();
+        using var loggerFactory = new LoggerFactory();
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+
+        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.AddClientAsync(client));
+        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetCacheEnabledAsync(true));
+        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>()));
+        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetOfflineModeAsync(true));
+        Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetUserAgentAsync("test", null));
+    }
 }
