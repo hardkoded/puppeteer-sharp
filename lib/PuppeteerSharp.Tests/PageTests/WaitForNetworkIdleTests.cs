@@ -91,6 +91,27 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(t2, Is.GreaterThan(t1));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with aborted requests")]
+        public async Task ShouldWorkWithAbortedRequests()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/abort-request.html");
+
+            await using var element = await Page.QuerySelectorAsync("#abort");
+            await element.ClickAsync();
+
+            var error = false;
+            try
+            {
+                await Page.WaitForNetworkIdleAsync();
+            }
+            catch
+            {
+                error = true;
+            }
+
+            Assert.That(error, Is.False);
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]
         public async Task ShouldWorkWithNoTimeout()
         {
