@@ -55,6 +55,12 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public bool HasPostData { get; internal init; }
 
+        /// <inheritdoc />
+        public abstract bool IsInterceptResolutionHandled { get; protected set; }
+
+        /// <inheritdoc />
+        public abstract InterceptResolutionState InterceptResolutionState { get; }
+
         internal List<IRequest> RedirectChainList { get; init; }
 
         internal abstract Payload ContinueRequestOverrides
