@@ -1100,10 +1100,12 @@ public class BidiPage : Page
         var marginBottom = ConvertPrintParameterToCentimeters(options.MarginOptions.Bottom);
         var marginRight = ConvertPrintParameterToCentimeters(options.MarginOptions.Right);
 
+        var timeout = options.Timeout ?? TimeoutSettings.Timeout;
+
         if (options.WaitForFonts)
         {
             await BidiMainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
-                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+                .WithTimeout(timeout).ConfigureAwait(false);
         }
 
         var pageRanges = new List<object>();
@@ -1140,7 +1142,7 @@ public class BidiPage : Page
             printOptions.PageRanges.AddRange(pageRanges);
         }
 
-        var base64Data = await BidiMainFrame.BrowsingContext.PrintAsync(printOptions).ConfigureAwait(false);
+        var base64Data = await BidiMainFrame.BrowsingContext.PrintAsync(printOptions).WithTimeout(timeout).ConfigureAwait(false);
         var data = Convert.FromBase64String(base64Data);
 
         if (!string.IsNullOrEmpty(file))
