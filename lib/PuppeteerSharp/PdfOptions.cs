@@ -115,5 +115,14 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>Defaults to <c>true</c>.</remarks>
         public bool WaitForFonts { get; set; } = true;
+
+        /// <summary>
+        /// Timeout in milliseconds. Pass <c>0</c> to disable timeout.
+        /// </summary>
+        /// <remarks>
+        /// The default value can be changed by using the <see cref="IPage.DefaultTimeout"/> property.
+        /// </remarks>
+        [JsonIgnore]
+        public int? Timeout { get; set; }
     }
 }

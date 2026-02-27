@@ -147,6 +147,59 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "can print to PDF and save to file")]
+        public async Task CanPrintToPdfAndSaveToFile()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            await Page.PdfAsync(outputFile);
+            try
+            {
+                Assert.That(new FileInfo(outputFile).Length, Is.GreaterThan(0));
+            }
+            finally
+            {
+                if (File.Exists(outputFile))
+                {
+                    File.Delete(outputFile);
+                }
+            }
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "can print to PDF and stream the result")]
+        public async Task CanPrintToPdfAndStreamTheResult()
+        {
+            var stream = await Page.PdfStreamAsync();
+            var size = 0L;
+            var buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                size += bytesRead;
+            }
+
+            Assert.That(size, Is.GreaterThan(0));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "should respect timeout")]
+        public async Task ShouldRespectTimeout()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
+            {
+                await Page.PdfDataAsync(new PdfOptions { Timeout = 1 });
+            });
+
+            Assert.That(exception, Is.Not.Null);
+        }
+
         [Test]
         public void ConvertPrintParameterToInchesTests()
         {

@@ -895,10 +895,12 @@ public class CdpPage : Page
             await _emulationManager.SetTransparentBackgroundColorAsync().ConfigureAwait(false);
         }
 
+        var timeout = options.Timeout ?? TimeoutSettings.Timeout;
+
         if (options.WaitForFonts)
         {
             await FrameManager.MainFrame.IsolatedRealm.EvaluateExpressionAsync("document.fonts.ready")
-                .WithTimeout(TimeoutSettings.Timeout).ConfigureAwait(false);
+                .WithTimeout(timeout).ConfigureAwait(false);
         }
 
         var result = await PrimaryTargetClient.SendAsync<PagePrintToPDFResponse>(
@@ -922,7 +924,7 @@ public class CdpPage : Page
                 PreferCSSPageSize = options.PreferCSSPageSize,
                 GenerateTaggedPDF = options.Tagged,
                 GenerateDocumentOutline = options.Outline,
-            }).ConfigureAwait(false);
+            }).WithTimeout(timeout).ConfigureAwait(false);
 
         if (options.OmitBackground)
         {
