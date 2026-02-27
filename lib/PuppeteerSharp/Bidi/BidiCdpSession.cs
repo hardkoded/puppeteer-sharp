@@ -33,52 +33,38 @@ using Microsoft.Extensions.Logging;
 namespace PuppeteerSharp.Bidi;
 
 /// <inheritdoc />
-public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) : ICDPSession
+public class BidiCdpSession : CDPSession
 {
     // I don't like the idea of having this static field. But this is the original implementation.
     private static readonly ConcurrentDictionary<string, BidiCdpSession> _sessions = new();
 
-    /// <inheritdoc />
-    public event EventHandler<MessageEventArgs> MessageReceived;
+    internal BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory)
+    {
+        Frame = bidiFrame;
+        LoggerFactory = loggerFactory;
+    }
 
     /// <inheritdoc />
-    public event EventHandler Disconnected;
+    public override ILoggerFactory LoggerFactory { get; }
 
     /// <inheritdoc />
-    public event EventHandler<SessionEventArgs> SessionAttached;
-
-    /// <inheritdoc />
-    public event EventHandler<SessionEventArgs> SessionDetached;
-
-    /// <inheritdoc />
-    public ILoggerFactory LoggerFactory { get; } = loggerFactory;
-
-    /// <inheritdoc />
-    public string Id { get; }
-
-    /// <inheritdoc />
-    public string CloseReason { get; private set; }
-
-    /// <inheritdoc />
-    public bool Detached { get; private set; }
+    public override bool Detached { get; }
 
     internal static IEnumerable<BidiCdpSession> Sessions => _sessions.Values;
 
-    internal BidiFrame Frame { get; set; } = bidiFrame;
+    internal override CDPSession ParentSession => null;
+
+    internal BidiFrame Frame { get; set; }
 
     /// <inheritdoc />
-    public Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
+    public override Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
         => throw new PuppeteerException("CDP support is required for this feature. The current browser does not support CDP.");
 
     /// <inheritdoc />
-    public Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
-        => throw new PuppeteerException("CDP support is required for this feature. The current browser does not support CDP.");
+    public override Task DetachAsync() => throw new NotImplementedException();
 
     /// <inheritdoc />
-    public Task DetachAsync() => throw new NotImplementedException();
-
-    /// <inheritdoc />
-    public void Close(string reason = null)
+    public override void Close(string reason = null)
     {
         CloseReason = reason;
         OnClose();
@@ -88,14 +74,6 @@ public class BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory) :
     {
         throw new NotImplementedException();
     }
-
-    internal virtual void OnSessionAttached(SessionEventArgs e) => SessionAttached?.Invoke(this, e);
-
-    internal virtual void OnSessionDetached(SessionEventArgs e) => SessionDetached?.Invoke(this, e);
-
-    internal virtual void OnDisconnected() => Disconnected?.Invoke(this, EventArgs.Empty);
-
-    internal virtual void OnMessageReceived(MessageEventArgs e) => MessageReceived?.Invoke(this, e);
 }
 
 #endif
