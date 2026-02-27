@@ -120,5 +120,15 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await Page.QuerySelectorAsync("select").EvaluateFunctionAsync<string>(
                 "select => Array.from(select.options).filter(option => option.selected)[0].value"), Is.EqualTo(""));
         }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.select", "should work when re-defining top-level Event class")]
+        public async Task ShouldWorkWhenReDefiningTopLevelEventClass()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/select.html");
+            await Page.EvaluateFunctionAsync("() => window.Event = undefined");
+            await Page.SelectAsync("select", "blue");
+            Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onInput"), Is.EqualTo(new string[] { "blue" }));
+            Assert.That(await Page.EvaluateExpressionAsync<string[]>("result.onChange"), Is.EqualTo(new string[] { "blue" }));
+        }
     }
 }
