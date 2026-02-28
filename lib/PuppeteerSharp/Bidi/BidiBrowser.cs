@@ -40,11 +40,6 @@ namespace PuppeteerSharp.Bidi;
 /// </summary>
 public class BidiBrowser : Browser
 {
-    /// <summary>
-    /// Time in milliseconds for process to exit gracefully.
-    /// </summary>
-    private const int CloseTimeout = 5000;
-
     private readonly IBrowserOptions _options;
     private readonly ConcurrentDictionary<UserContext, BidiBrowserContext> _browserContexts = new();
     private readonly ILogger<BidiBrowser> _logger;
@@ -142,12 +137,9 @@ public class BidiBrowser : Browser
             {
                 await BrowserCore.CloseAsync().ConfigureAwait(false);
 
-                if (Launcher != null)
+                if (CloseCallback != null)
                 {
-                    // Notify process that exit is expected, but should be enforced if it
-                    // doesn't occur within the close timeout.
-                    var closeTimeout = TimeSpan.FromMilliseconds(CloseTimeout);
-                    await Launcher.EnsureExitAsync(closeTimeout).ConfigureAwait(false);
+                    await CloseCallback().ConfigureAwait(false);
                 }
             }
             finally
@@ -167,11 +159,6 @@ public class BidiBrowser : Browser
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to close browser");
-
-            if (Launcher != null)
-            {
-                await Launcher.KillAsync().ConfigureAwait(false);
-            }
         }
 
         OnClosed();
@@ -296,15 +283,17 @@ public class BidiBrowser : Browser
         BiDiDriver driver,
         LaunchOptions options,
         ILoggerFactory loggerFactory,
-        LauncherBase launcher)
-        => CreateAsync(driver, options, loggerFactory, launcher, null);
+        LauncherBase launcher,
+        Func<Task> closeCallback = null)
+        => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
 
     internal static Task<BidiBrowser> CreateAsync(
         BiDiDriver driver,
         ConnectOptions options,
         ILoggerFactory loggerFactory,
-        LauncherBase launcher)
-        => CreateAsync(driver, options, loggerFactory, launcher, null);
+        LauncherBase launcher,
+        Func<Task> closeCallback = null)
+        => CreateAsync(driver, options, loggerFactory, launcher, closeCallback, null);
 
     [SuppressMessage(
         "Reliability",
@@ -315,6 +304,7 @@ public class BidiBrowser : Browser
         IBrowserOptions options,
         ILoggerFactory loggerFactory,
         LauncherBase launcher,
+        Func<Task> closeCallback,
         string webSocketEndpoint)
     {
         var session = await Session.FromAsync(
@@ -369,7 +359,7 @@ public class BidiBrowser : Browser
             }
         }
 
-        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher };
+        var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
         return browser;
     }

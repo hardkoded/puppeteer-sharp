@@ -68,6 +68,8 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; init; }
 
+        internal Func<Task> CloseCallback { get; init; }
+
         internal Func<Target, bool> IsPageTargetFunc { get; init; }
 
         internal abstract ProtocolType Protocol { get; }
@@ -213,7 +215,7 @@ namespace PuppeteerSharp
         {
             // On disposal, the browser doesn't get closed. It gets disconnected.
             // TODO: See a better way to handle this instead of checking for BidiBrowser.
-            if (Launcher == null)
+            if (CloseCallback == null)
             {
                 Disconnect();
             }
