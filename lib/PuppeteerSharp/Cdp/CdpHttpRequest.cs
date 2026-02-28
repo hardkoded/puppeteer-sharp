@@ -59,19 +59,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc cref="Response"/>
     public override CdpHttpResponse Response { get; internal set; }
 
-    internal CDPSession Client
-    {
-        get => _client;
-        set => _client = value;
-    }
-
-    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
-
-    internal override ResponseData ResponseForRequest => _responseForRequest;
-
-    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
-
-    private InterceptResolutionState InterceptResolutionState
+    /// <inheritdoc/>
+    public override InterceptResolutionState InterceptResolutionState
     {
         get
         {
@@ -86,7 +75,20 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private bool IsInterceptResolutionHandled { get; set; }
+    /// <inheritdoc/>
+    public override bool IsInterceptResolutionHandled { get; protected set; }
+
+    internal CDPSession Client
+    {
+        get => _client;
+        set => _client = value;
+    }
+
+    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
+
+    internal override ResponseData ResponseForRequest => _responseForRequest;
+
+    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     /// <inheritdoc/>
     public override async Task ContinueAsync(Payload overrides = null, int? priority = null)

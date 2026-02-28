@@ -25,13 +25,39 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp;
 
+/// <summary>
+/// Represents the action taken for an intercepted request.
+/// </summary>
 [JsonConverter(typeof(JsonStringEnumMemberConverter<InterceptResolutionAction>))]
-internal enum InterceptResolutionAction
+public enum InterceptResolutionAction
 {
+    /// <summary>
+    /// The request will be aborted.
+    /// </summary>
     Abort,
+
+    /// <summary>
+    /// The request will be fulfilled with a custom response.
+    /// </summary>
     Respond,
+
+    /// <summary>
+    /// The request will continue normally.
+    /// </summary>
     Continue,
+
+    /// <summary>
+    /// Request interception is disabled.
+    /// </summary>
     Disabled,
+
+    /// <summary>
+    /// No interception action has been set yet.
+    /// </summary>
     None,
+
+    /// <summary>
+    /// The interception has already been handled.
+    /// </summary>
     AlreadyHandled,
 }

@@ -45,7 +45,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
     private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
-    private bool _isInterceptResolutionHandled;
     private bool _authenticationHandled;
 
     private BidiHttpRequest(Request request, BidiFrame frame, BidiHttpRequest redirect)
@@ -79,6 +78,25 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
     }
 
+    /// <inheritdoc/>
+    public override InterceptResolutionState InterceptResolutionState
+    {
+        get
+        {
+            if (!CanBeIntercepted())
+            {
+                return new InterceptResolutionState(InterceptResolutionAction.Disabled);
+            }
+
+            return IsInterceptResolutionHandled
+                ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
+                : _interceptResolutionState;
+        }
+    }
+
+    /// <inheritdoc/>
+    public override bool IsInterceptResolutionHandled { get; protected set; }
+
     // TODO: I don't like having this static field at all. This will cause memory leaks for sure.
     // We need to move this to a place where we can control its lifecycle.
     internal static AsyncDictionaryHelper<Request, BidiHttpRequest> Requests { get; } = new("Request {0} not found");
@@ -102,21 +120,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// This is used to verify that the user has called SetRequestInterceptionAsync(true).
     /// </summary>
     private bool PageLevelInterceptionEnabled => BidiPage.IsNetworkInterceptionEnabled;
-
-    private InterceptResolutionState InterceptResolutionState
-    {
-        get
-        {
-            if (!CanBeIntercepted())
-            {
-                return new InterceptResolutionState(InterceptResolutionAction.Disabled);
-            }
-
-            return _isInterceptResolutionHandled
-                ? new InterceptResolutionState(InterceptResolutionAction.AlreadyHandled)
-                : _interceptResolutionState;
-        }
-    }
 
     /// <inheritdoc />
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
@@ -298,7 +301,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             throw new PuppeteerException("Request Interception is not enabled!");
         }
 
-        if (_isInterceptResolutionHandled)
+        if (IsInterceptResolutionHandled)
         {
             throw new PuppeteerException("Request is already handled!");
         }
@@ -382,7 +385,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private async Task ContinueInternalAsync(Payload overrides = null)
     {
-        _isInterceptResolutionHandled = true;
+        IsInterceptResolutionHandled = true;
 
         try
         {
@@ -407,7 +410,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            _isInterceptResolutionHandled = false;
+            IsInterceptResolutionHandled = false;
 
             // Only swallow specific protocol errors that are safe to ignore.
             // Match upstream's handleError behavior.
@@ -424,7 +427,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private async Task AbortInternalAsync()
     {
-        _isInterceptResolutionHandled = true;
+        IsInterceptResolutionHandled = true;
 
         try
         {
@@ -432,7 +435,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            _isInterceptResolutionHandled = false;
+            IsInterceptResolutionHandled = false;
 
             // Only swallow specific protocol errors that are safe to ignore.
             if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
@@ -448,7 +451,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     private async Task RespondInternalAsync(ResponseData response)
     {
-        _isInterceptResolutionHandled = true;
+        IsInterceptResolutionHandled = true;
 
         try
         {
@@ -516,7 +519,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         }
         catch (Exception ex)
         {
-            _isInterceptResolutionHandled = false;
+            IsInterceptResolutionHandled = false;
 
             // Only swallow specific protocol errors that are safe to ignore.
             if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
