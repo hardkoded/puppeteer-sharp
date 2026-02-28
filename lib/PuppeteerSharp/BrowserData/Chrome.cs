@@ -68,6 +68,17 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
+        internal static string GetFolder(Platform platform)
+            => platform switch
+            {
+                Platform.Linux or Platform.LinuxArm64 => "linux64",
+                Platform.MacOSArm64 => "mac-arm64",
+                Platform.MacOS => "mac-x64",
+                Platform.Win32 => "win32",
+                Platform.Win64 => "win64",
+                _ => throw new PuppeteerException($"Unknown platform: {platform}"),
+            };
+
         private static string[] GetChromeWindowsLocations(ChromeReleaseChannel channel)
         {
             var suffix = channel switch
@@ -135,16 +146,5 @@ namespace PuppeteerSharp.BrowserData
                 GetFolder(platform),
                 $"chrome-{GetFolder(platform)}.zip"
             ];
-
-        private static string GetFolder(Platform platform)
-            => platform switch
-            {
-                Platform.Linux or Platform.LinuxArm64 => "linux64",
-                Platform.MacOSArm64 => "mac-arm64",
-                Platform.MacOS => "mac-x64",
-                Platform.Win32 => "win32",
-                Platform.Win64 => "win64",
-                _ => throw new PuppeteerException($"Unknown platform: {platform}"),
-            };
     }
 }
