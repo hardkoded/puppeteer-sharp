@@ -184,7 +184,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(result, Is.EqualTo(expected));
         }
 
-        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept \"undefined\" as one of multiple parameters")]
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should accept \"null\" as one of multiple parameters")]
         public async Task ShouldAcceptNullAsOneOfMultipleParameters()
         {
             var result = await Page.EvaluateFunctionAsync<bool>(
@@ -198,6 +198,21 @@ namespace PuppeteerSharp.Tests.EvaluationTests
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for non-serializable objects")]
         public async Task ShouldReturnNullForNonSerializableObjects()
             => Assert.That(await Page.EvaluateFunctionAsync<object>("() => window"), Is.Null);
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return promise as empty object")]
+        public async Task ShouldReturnPromiseAsEmptyObject()
+        {
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
+                return {
+                    promise: new Promise(resolve => {
+                        setTimeout(resolve, 1000);
+                    }),
+                };
+            }");
+
+            Assert.That(result.GetProperty("promise").ValueKind, Is.EqualTo(JsonValueKind.Object));
+            Assert.That(result.GetProperty("promise").EnumerateObject().Any(), Is.False);
+        }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should fail for circular object")]
         public async Task ShouldFailForCircularObject()

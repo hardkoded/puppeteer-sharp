@@ -192,6 +192,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     private static bool IsNullOrUndefinedType(RemoteValue remoteValue)
         => remoteValue.Type is "null" or "undefined";
 
+    /// <summary>
+    /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be deserialized
+    /// as an empty object rather than treated as a circular reference or null.
+    /// Matches upstream Puppeteer's Deserializer behavior where promises return {}.
+    /// </summary>
+    private static bool IsEmptyObjectType(RemoteValue remoteValue)
+        => remoteValue.Type is "promise";
+
     private static string ToCamelCase(string name)
     {
         if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
@@ -537,6 +545,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     result[key] = null;
                 }
+                else if (IsEmptyObjectType(remoteValue))
+                {
+                    result[key] = new Dictionary<string, object>();
+                }
                 else if (!remoteValue.HasValue)
                 {
                     // If RemoteValue has no value and is not null/undefined, it's a circular reference
@@ -560,6 +572,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return null;
             }
 
+            if (IsEmptyObjectType(remoteVal))
+            {
+                return new Dictionary<string, object>();
+            }
+
             // If RemoteValue has no value and is not null/undefined, it's a circular reference
             if (!remoteVal.HasValue)
             {
@@ -581,6 +598,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     if (IsNullOrUndefinedType(rv))
                     {
                         list.Add(null);
+                    }
+                    else if (IsEmptyObjectType(rv))
+                    {
+                        list.Add(new Dictionary<string, object>());
                     }
                     else if (!rv.HasValue)
                     {
