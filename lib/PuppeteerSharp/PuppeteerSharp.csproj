@@ -26,8 +26,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>14</LangVersion>
     <AnalysisLevel>10.0-Recommended</AnalysisLevel>
-    <NoWarn>$(NoWarn);NU5104</NoWarn>
+    <NoWarn>$(NoWarn);NU5104;IL2026</NoWarn>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsTrimmable Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsTrimmable>
+    <EnableTrimAnalyzer Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</EnableTrimAnalyzer>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>

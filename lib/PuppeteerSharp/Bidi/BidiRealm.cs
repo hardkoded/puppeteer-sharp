@@ -25,6 +25,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -313,6 +314,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return result as EvaluateResultSuccess;
     }
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2060", Justification = "DeserializeResult and DeserializeRemoteValueDictionary are only called with types known at compile time")]
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection on List<T>.ToArray and generic method invocation uses types preserved by the caller")]
+#endif
     private T DeserializeResult<T>(object result)
     {
         if (result is null)
@@ -409,6 +414,12 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return (T)result;
     }
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2060", Justification = "DeserializeRemoteValueDictionary is only called with types known at compile time")]
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection on generic method invocation uses types preserved by the caller")]
+    [UnconditionalSuppressMessage("Trimming", "IL2090", Justification = "Types passed to DeserializeRemoteValueDictionary have their properties preserved by the caller")]
+    [UnconditionalSuppressMessage("Trimming", "IL2091", Justification = "Types passed to DeserializeRemoteValueDictionary have public parameterless constructors")]
+#endif
     private T DeserializeRemoteValueDictionary<T>(RemoteValueDictionary remoteValueDictionary)
     {
         var type = typeof(T);
@@ -802,6 +813,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         }
     }
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "SerializePlainObject is used with types whose properties are known at compile time")]
+#endif
     private LocalValue SerializePlainObject(object arg, List<object> seen = null)
     {
         seen ??= new List<object>();
