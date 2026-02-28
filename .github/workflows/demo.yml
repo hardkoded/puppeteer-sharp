@@ -39,6 +39,11 @@ jobs:
       working-directory: ./demos/PuppeteerSharpPdfDemo
       run: |
           dotnet run --project PuppeteerSharpPdfDemo-Local.csproj auto-exit ${{ matrix.browser }} -f net10.0
+    - name: Run with Trim
+      working-directory: ./demos/PuppeteerSharpPdfDemo
+      run: |
+          dotnet publish PuppeteerSharpPdfDemo-Local.csproj -p:PublishAot=false -r ${{ matrix.os == 'windows-2022' && 'win-x64' || 'osx-arm64' }} -o build-trim -f net10.0
+          ${{ matrix.os == 'windows-2022' && 'build-trim/PuppeteerSharpPdfDemo-Local.exe' || './build-trim/PuppeteerSharpPdfDemo-Local' }} auto-exit ${{ matrix.browser }}
     - name: Run with AOT
       if: matrix.os == 'windows-2022'
       working-directory: ./demos/PuppeteerSharpPdfDemo
