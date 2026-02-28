@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -88,6 +89,9 @@ namespace PuppeteerSharp
             await binding.RunAsync(context, e.BindingPayload.Seq, args, e.BindingPayload.IsTrivial).ConfigureAwait(false);
         }
 
+#if NET5_0_OR_GREATER
+        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Task<T>.Result is a well-known BCL property that is not trimmed")]
+#endif
         internal static async Task<object> ExecuteBindingAsync(Delegate binding, object[] rawArgs)
         {
             const string taskResultPropertyName = "Result";

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,9 @@ namespace PuppeteerSharp
 
         public string InitSource { get; }
 
+#if NET5_0_OR_GREATER
+        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Task<T>.Result is a well-known BCL property that is not trimmed")]
+#endif
         internal async Task RunAsync(
             ExecutionContext context,
             int id,

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -308,6 +309,9 @@ internal class ExposableFunction : IAsyncDisposable
         }
     }
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Task<T>.Result is a well-known BCL property that is not trimmed")]
+#endif
     private async Task<object> InvokeFunctionAsync(object[] args)
     {
         // Convert args to the expected parameter types
