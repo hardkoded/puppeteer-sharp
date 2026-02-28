@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -41,6 +42,8 @@ public class CdpBrowserContext : BrowserContext
         _browser = browser;
         Id = contextId;
     }
+
+    internal DownloadBehavior DownloadBehavior { get; set; }
 
     /// <inheritdoc/>
     public override ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
@@ -63,7 +66,9 @@ public class CdpBrowserContext : BrowserContext
     {
         var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
         guard?.Dispose();
-        return await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
+        var page = await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
+
+        return page;
     }
 
     /// <inheritdoc/>
@@ -156,6 +161,17 @@ public class CdpBrowserContext : BrowserContext
                 BrowserContextId = Id,
                 Cookies = cookiesToSet,
             }).ConfigureAwait(false);
+    }
+
+    internal Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior)
+    {
+        DownloadBehavior = downloadBehavior;
+        return _connection.SendAsync("Browser.setDownloadBehavior", new
+        {
+            behavior = downloadBehavior.Policy.ToValueString(),
+            downloadPath = downloadBehavior.DownloadPath,
+            browserContextId = Id,
+        });
     }
 
     private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)

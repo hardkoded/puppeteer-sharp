@@ -168,6 +168,11 @@ namespace PuppeteerSharp
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
 
         /// <summary>
+        /// Sets the download behavior for the context.
+        /// </summary>
+        public DownloadBehavior DownloadBehavior { get; set; }
+
+        /// <summary>
         /// If not <see cref="Transport"/> is set this will be use to determine is the default <see cref="WebSocketTransport"/> will enqueue messages.
         /// </summary>
         /// <remarks>

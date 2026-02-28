@@ -49,6 +49,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(BrowserResetPermissionsRequest))]
 [JsonSerializable(typeof(BrowserSetPermissionRequest))]
 [JsonSerializable(typeof(BrowserSetContentsSizeRequest))]
+[JsonSerializable(typeof(BrowserSetDownloadBehaviorRequest))]
 [JsonSerializable(typeof(BrowserSetWindowBoundsRequest))]
 [JsonSerializable(typeof(BoundingBox[]))]
 [JsonSerializable(typeof(BoundingBox))]

@@ -158,7 +158,8 @@ namespace PuppeteerSharp
                                 options.TargetFilter,
                                 options.IsPageTarget,
                                 handleDevToolsAsPage: options.HandleDevToolsAsPage,
-                                networkEnabled: options.NetworkEnabled)
+                                networkEnabled: options.NetworkEnabled,
+                                downloadBehavior: options.DownloadBehavior)
                             .ConfigureAwait(false);
                     }
 
@@ -361,7 +362,8 @@ namespace PuppeteerSharp
                         options.IsPageTarget,
                         options.InitAction,
                         options.HandleDevToolsAsPage,
-                        options.NetworkEnabled)
+                        options.NetworkEnabled,
+                        options.DownloadBehavior)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
