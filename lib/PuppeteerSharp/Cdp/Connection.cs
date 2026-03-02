@@ -248,6 +248,15 @@ namespace PuppeteerSharp.Cdp
         {
             try
             {
+                // Apply SlowMo delay before entering the serialized queue.
+                // In upstream Puppeteer (JS), the delay runs independently per message.
+                // If we delay inside the serialized queue, delays accumulate and cause
+                // timeouts on busy pages (see #2659).
+                if (e.Message.Length > 0 && Delay > 0)
+                {
+                    await Task.Delay(Delay).ConfigureAwait(false);
+                }
+
                 await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
             }
             catch (Exception exception)
@@ -264,11 +273,6 @@ namespace PuppeteerSharp.Cdp
             {
                 var response = e.Message;
                 ConnectionResponse obj;
-
-                if (response.Length > 0 && Delay > 0)
-                {
-                    await Task.Delay(Delay).ConfigureAwait(false);
-                }
 
                 try
                 {
