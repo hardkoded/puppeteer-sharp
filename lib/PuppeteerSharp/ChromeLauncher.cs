@@ -58,6 +58,14 @@ namespace PuppeteerSharp
                 args = RemoveMatchingFlags(options.Args, "--enable-features");
             }
 
+            // Merge default enabled features with user-provided ones, if any.
+            var enabledFeatures = new List<string>
+            {
+                "PdfOopif",
+            };
+
+            enabledFeatures.AddRange(userEnabledFeatures);
+
             var chromiumArguments = new List<string>(
             [
                 "--allow-pre-commit-input",
@@ -90,7 +98,7 @@ namespace PuppeteerSharp
             ])
             {
                 $"--disable-features={string.Join(",", disabledFeatures)}",
-                $"--enable-features={string.Join(",", userEnabledFeatures)}",
+                $"--enable-features={string.Join(",", enabledFeatures)}",
             };
 
             if (!string.IsNullOrEmpty(options.UserDataDir))
