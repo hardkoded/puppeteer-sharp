@@ -265,7 +265,23 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+                var fallbackUrl = await TryResolveFallbackDownloadUrlAsync(browser, buildId).ConfigureAwait(false);
+                if (fallbackUrl != null)
+                {
+                    _logger?.LogWarning("Failed to download from {Url}, falling back to dashboard URL: {FallbackUrl}", url, fallbackUrl);
+                    try
+                    {
+                        await _customFileDownload(fallbackUrl, archivePath).ConfigureAwait(false);
+                    }
+                    catch (Exception fallbackEx)
+                    {
+                        throw new PuppeteerException($"Failed to download {browser} for {Platform} from {fallbackUrl}", fallbackEx);
+                    }
+                }
+                else
+                {
+                    throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+                }
             }
 
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
@@ -480,6 +496,47 @@ namespace PuppeteerSharp
                     }
                 }
             }
+        }
+
+        private async Task<string> TryResolveFallbackDownloadUrlAsync(SupportedBrowser browser, string buildId)
+        {
+            if (!string.IsNullOrEmpty(BaseUrl))
+            {
+                return null;
+            }
+
+            var dashboardKey = browser switch
+            {
+                SupportedBrowser.Chrome => "chrome",
+                SupportedBrowser.ChromeHeadlessShell => "chrome-headless-shell",
+                _ => null,
+            };
+
+            if (dashboardKey == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var dashboardUrl = $"https://googlechromelabs.github.io/chrome-for-testing/{buildId}.json";
+                _logger?.LogInformation("Trying to find download URL via {DashboardUrl}", dashboardUrl);
+
+                var version = await JsonUtils.GetAsync<ChromeDashboardVersionResult>(dashboardUrl).ConfigureAwait(false);
+                var platform = Chrome.GetFolder(Platform);
+
+                if (version.Downloads.TryGetValue(dashboardKey, out var entries))
+                {
+                    var entry = entries?.FirstOrDefault(e => e.Platform == platform);
+                    return entry?.Url;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to resolve fallback download URL from dashboard");
+            }
+
+            return null;
         }
 
         private async Task DownloadFileUsingHttpClientTaskAsync(string address, string filename)
