@@ -275,6 +275,10 @@ namespace PuppeteerSharp.PageAccessibility
                     }
                 : null,
                 Role = _role,
+
+                // LoaderId is an experimental mechanism to establish unique IDs across
+                // navigations.
+                LoaderId = (realm?.Environment as Frame)?.LoaderId,
                 Name = properties.GetValue("name")?.ToObject<string>(),
                 Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
                 Description = properties.GetValue("description")?.ToObject<string>(),
