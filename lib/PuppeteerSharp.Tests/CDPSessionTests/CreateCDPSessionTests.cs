@@ -41,6 +41,30 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(events, Has.Exactly(1).Items);
         }
 
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not send extra events")]
+        public async Task ShouldNotSendExtraEvents()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            await client.SendAsync("Network.enable");
+            var events = new HashSet<string>();
+
+            client.MessageReceived += (_, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.MessageID))
+                {
+                    events.Add(e.MessageID.Split('.')[0]);
+                }
+            };
+
+            await Task.WhenAll(
+                WaitEvent(client, "Network.requestWillBeSent"),
+                Page.GoToAsync(TestConstants.EmptyPage));
+
+            var sortedEvents = new List<string>(events);
+            sortedEvents.Sort();
+            Assert.That(sortedEvents, Is.EqualTo(new List<string> { "Network" }));
+        }
+
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
         public async Task ShouldEnableAndDisableDomainsIndependently()
         {
