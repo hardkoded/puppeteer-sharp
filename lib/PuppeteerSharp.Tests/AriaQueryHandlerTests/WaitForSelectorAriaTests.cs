@@ -52,7 +52,7 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             await Page.WaitForSelectorAsync("aria/[role=\"button\"]");
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should work independently of `exposeFunction")]
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler waitForSelector (aria)", "should work independently of `exposeFunction`")]
         public async Task ShouldWorkIndependentlyOfExposeFunction()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);

@@ -48,8 +48,8 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
             Assert.That(id, Is.EqualTo("mnu1"));
         }
 
-        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find by name")]
-        public async Task ShouldFindByName2()
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler queryOne", "should find 2nd element by name")]
+        public async Task ShouldFind2ndElementByName()
         {
             await Page.SetContentAsync(@"
                 <div role=""menu"" id=""mnu1"" aria-label=""menu-label1"">menu div</div>
