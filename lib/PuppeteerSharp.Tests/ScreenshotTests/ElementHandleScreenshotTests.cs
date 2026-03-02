@@ -170,6 +170,39 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-element-fractional-offset.png", screenshot), Is.True);
         }
 
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should use element clip")]
+        public async Task ShouldUseElementClip()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 500,
+                Height = 500
+            });
+            await Page.SetContentAsync(@"
+                something above
+                <style>div {
+                    border: 2px solid blue;
+                    background: green;
+                    width: 50px;
+                    height: 50px;
+                }
+                </style>
+                <div></div>
+            ");
+            var elementHandle = await Page.QuerySelectorAsync("div");
+            var screenshot = await elementHandle.ScreenshotDataAsync(new ElementScreenshotOptions
+            {
+                Clip = new Media.Clip
+                {
+                    X = 10,
+                    Y = 10,
+                    Width = 20,
+                    Height = 20,
+                },
+            });
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-element-clip.png", screenshot), Is.True);
+        }
+
         [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should work with a null viewport")]
         public async Task ShouldWorkWithANullViewport()
         {
