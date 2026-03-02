@@ -15,13 +15,12 @@ namespace PuppeteerSharp
     /// <inheritdoc cref="IExecutionContext"/>
     public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable, IPuppeteerUtilWrapper
     {
-        internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
-        private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
-
 #if NETSTANDARD2_0
         private static readonly Regex _sourceUrlRegex =
             new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
 #endif
+
+        private static string _evaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
@@ -35,6 +34,16 @@ namespace PuppeteerSharp
             ContextId = contextPayload.Id;
             ContextName = contextPayload.Name;
             World = world;
+        }
+
+        /// <summary>
+        /// Gets or sets the URL used to identify evaluation scripts.
+        /// This can be changed to avoid bot detection by services that look for known automation markers.
+        /// </summary>
+        public static string EvaluationScriptUrl
+        {
+            get => _evaluationScriptUrl;
+            set => _evaluationScriptUrl = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <inheritdoc/>
@@ -197,7 +206,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n//# sourceURL={EvaluationScriptUrl}",
                 ["contextId"] = ContextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
@@ -207,7 +216,7 @@ namespace PuppeteerSharp
         private async Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
             => await ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
-                FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
+                FunctionDeclaration = $"{script}\n//# sourceURL={EvaluationScriptUrl}\n",
                 ExecutionContextId = ContextId,
                 Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false),
                 ReturnByValue = returnByValue,
