@@ -121,6 +121,22 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(fullSnapshot.Children[0].Children[0].Name, Is.EqualTo("My Button"));
         }
 
+        [Test, PuppeteerTest("accessibility.spec", "root option", "should get an ElementHandle from a snapshot item")]
+        public async Task ShouldGetAnElementHandleFromASnapshotItem()
+        {
+            await Page.SetContentAsync("<button>My Button</button>");
+
+            var button = await Page.QuerySelectorAsync("button");
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions { Root = button });
+            Assert.That(snapshot.Role, Is.EqualTo("button"));
+            Assert.That(snapshot.Name, Is.EqualTo("My Button"));
+
+            var buttonHandle = await snapshot.ElementHandleAsync();
+            Assert.That(
+                await buttonHandle.EvaluateFunctionAsync<string>("button => button.innerHTML"),
+                Is.EqualTo("My Button"));
+        }
+
         [Test, PuppeteerTest("accessibility.spec", "root option", "should get the parent ElementHandle from a text node accessibility node")]
         public async Task ShouldGetTheParentElementHandleFromATextNodeAccessibilityNode()
         {
