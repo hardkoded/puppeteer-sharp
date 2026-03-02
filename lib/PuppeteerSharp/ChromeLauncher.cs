@@ -48,6 +48,7 @@ namespace PuppeteerSharp
                 "IPH_ReadingModePageActionLabel",
                 "ReadAnythingOmniboxChip",
                 "ProcessPerSiteUpToMainFrameThreshold",
+                "IsolateSandboxedIframes",
             };
 
             disabledFeatures.AddRange(userDisabledFeatures);
