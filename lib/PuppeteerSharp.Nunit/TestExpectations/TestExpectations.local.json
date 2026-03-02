@@ -131,5 +131,19 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "PuppeteerSharp does not yet extract Error message text from console messages - returns JSHandle@error instead",
+    "testIdPattern": "[console.spec] console should work for Error instances",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "PuppeteerSharp does not yet extract Error message text from console messages - returns JSHandle@error instead",
+    "testIdPattern": "[console.spec] console should return the first line of the error message in text()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"]
   }
 ]
