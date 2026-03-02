@@ -152,7 +152,16 @@ public class CdpFrame : Frame
 
         await raceTask.ConfigureAwait(false);
 
-        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
+        var navigationResponseTask = watcher.NavigationResponseAsync();
+        var completedTask = await Task.WhenAny(
+            watcher.TerminationTask,
+            navigationResponseTask).ConfigureAwait(false);
+
+        await completedTask.ConfigureAwait(false);
+
+        return completedTask == navigationResponseTask
+            ? navigationResponseTask.Result
+            : null;
     }
 
     /// <inheritdoc/>
