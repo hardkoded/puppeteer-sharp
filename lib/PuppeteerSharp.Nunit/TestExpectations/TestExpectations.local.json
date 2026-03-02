@@ -131,5 +131,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "CDP deleteCookie does not delete partitioned cookies when no partition key is specified",
+    "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should only delete cookie from the default partition if partitionkey is not specified",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
   }
 ]
