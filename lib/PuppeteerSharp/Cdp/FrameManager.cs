@@ -284,7 +284,7 @@ namespace PuppeteerSharp.Cdp
             {
                 try
                 {
-                    await _frameTreeHandled.Task.WithTimeout().ConfigureAwait(false);
+                    await _frameTreeHandled.Task.WithTimeout(Puppeteer.DefaultTimeout).ConfigureAwait(false);
                     switch (e.MessageID)
                     {
                         case "Page.frameAttached":
