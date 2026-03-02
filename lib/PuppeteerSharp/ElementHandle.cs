@@ -98,7 +98,8 @@ namespace PuppeteerSharp
                     throw new ArgumentNullException(nameof(options));
                 }
 
-                var clip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
+                var userClip = options.Clip;
+                var elementClip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
                 var page = handle.Page;
 
                 if (options.ScrollIntoView)
@@ -106,7 +107,7 @@ namespace PuppeteerSharp
                     await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
 
                     // We measure again just in case.
-                    clip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
+                    elementClip = await handle.NonEmptyVisibleBoundingBoxAsync().ConfigureAwait(false);
                 }
 
                 var points = await EvaluateFunctionAsync<decimal[]>(@"() => {
@@ -119,10 +120,18 @@ namespace PuppeteerSharp
                     ];
                 }").ConfigureAwait(false);
 
-                clip.X += decimal.Floor(points[0]);
-                clip.Y += decimal.Floor(points[1]);
+                elementClip.X += decimal.Floor(points[0]);
+                elementClip.Y += decimal.Floor(points[1]);
 
-                options.Clip = clip.ToClip();
+                if (userClip != null)
+                {
+                    elementClip.X += userClip.X;
+                    elementClip.Y += userClip.Y;
+                    elementClip.Height = userClip.Height;
+                    elementClip.Width = userClip.Width;
+                }
+
+                options.Clip = elementClip.ToClip();
 
                 return await page.ScreenshotBase64Async(options).ConfigureAwait(false);
             });
