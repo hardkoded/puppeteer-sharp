@@ -6,6 +6,19 @@ namespace PuppeteerSharp.Tests.AriaQueryHandlerTests
 {
     public class ParseAriaSelectorTests : PuppeteerPageBaseTest
     {
+        [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler parseAriaSelector", "should handle non-breaking spaces in span")]
+        public async Task ShouldHandleNonBreakingSpacesInSpan()
+        {
+            await Page.SetContentAsync(
+                "<button id=\"btn\" role=\"button\"><span>&nbsp;</span><span>&nbsp;</span>Submit button and some spaces</button>"
+            );
+
+            var button = await Page.QuerySelectorAsync("aria/\u00A0\u00A0Submit button and some spaces");
+            await ExpectFound(button);
+            button = await Page.QuerySelectorAsync("aria/Submit button and some spaces");
+            Assert.That(button, Is.Null);
+        }
+
         [Test, PuppeteerTest("ariaqueryhandler.spec", "AriaQueryHandler parseAriaSelector", "should handle non-breaking spaces")]
         public async Task ShouldHandleNonBreakingSpaces()
         {
