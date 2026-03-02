@@ -470,6 +470,39 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should exposeFunction on a page with a PDF viewer")]
+        public async Task ShouldExposeFunctionOnAPageWithAPdfViewer()
+        {
+            await Page.GoToAsync(
+                TestConstants.ServerUrl + "/pdf-viewer.html",
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+
+            await Page.ExposeFunctionAsync("test", () =>
+            {
+                System.Diagnostics.Debug.WriteLine("test");
+            });
+        }
+
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should evaluate on a page with a PDF viewer")]
+        public async Task ShouldEvaluateOnAPageWithAPdfViewer()
+        {
+            await Page.GoToAsync(
+                TestConstants.ServerUrl + "/pdf-viewer.html",
+                new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle2 } });
+
+            var results = await Task.WhenAll(
+                Page.Frames.Select(async frame =>
+                    await frame.EvaluateFunctionAsync<string>("() => window.location.pathname")));
+
+            Assert.That(results, Is.EqualTo(new[]
+            {
+                "/pdf-viewer.html",
+                "/sample.pdf",
+                "/index.html",
+                "/sample.pdf",
+            }));
+        }
+
         [Test, PuppeteerTest("oopif.spec", "waitForFrame", "should resolve immediately if the frame already exists")]
         public async Task ShouldResolveImmediatelyIfTheFrameAlreadyExists()
         {
