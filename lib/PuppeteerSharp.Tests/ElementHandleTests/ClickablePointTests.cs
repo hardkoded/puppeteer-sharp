@@ -78,18 +78,17 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
         }
 
         [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.clickablePoint", "should not work if the click box is not visible due to the iframe")]
-        [System.Obsolete]
         public async Task ShouldNotWorkIfTheClickBoxIsNotVisibleDueToTheIframe()
         {
             await Page.SetContentAsync(
                 "<iframe name=\"frame\" style=\"position: absolute; left: -100px\" srcdoc=\"<button style='width: 10px; height: 10px;'></button>\"></iframe>");
-            var frame = await Page.WaitForFrameAsync(f => f.Name == "frame");
+            var frame = await Page.WaitForFrameAsync(f => f != Page.MainFrame);
             var handle = await frame.WaitForSelectorAsync("button");
             Assert.ThrowsAsync<PuppeteerException>(async () => await handle.ClickablePointAsync());
 
             await Page.SetContentAsync(
                 "<iframe name=\"frame2\" style=\"position: absolute; top: -100px\" srcdoc=\"<button style='width: 10px; height: 10px;'></button>\"></iframe>");
-            var frame2 = await Page.WaitForFrameAsync(f => f.Name == "frame2");
+            var frame2 = await Page.WaitForFrameAsync(f => f != Page.MainFrame);
             var handle2 = await frame2.WaitForSelectorAsync("button");
             Assert.ThrowsAsync<PuppeteerException>(async () => await handle2.ClickablePointAsync());
         }
