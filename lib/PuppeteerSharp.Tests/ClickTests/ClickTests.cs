@@ -265,6 +265,59 @@ namespace PuppeteerSharp.Tests.ClickTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("result"), Is.EqualTo("Clicked"));
         }
 
+        [Test, PuppeteerTest("click.spec", "Page.click", "should click half-offscreen elements")]
+        public async Task ShouldClickHalfOffscreenElements()
+        {
+            await Page.SetContentAsync(@"<!DOCTYPE html>
+                <style>
+                    body {
+                        overflow: hidden;
+                    }
+                    #target {
+                        width: 200px;
+                        height: 200px;
+                        background: red;
+                        position: fixed;
+                        left: -150px;
+                        top: -150px;
+                    }
+                </style>
+                <div
+                    id=""target""
+                    onclick=""window.CLICKED=true;""
+                ></div>");
+            await Page.ClickAsync("#target");
+            Assert.That(
+                await Page.EvaluateFunctionAsync<bool>("() => globalThis.CLICKED"),
+                Is.True);
+            var element = await Page.QuerySelectorAsync("#target");
+            var boundingBox = await element.BoundingBoxAsync();
+            Assert.That(boundingBox.Height, Is.EqualTo(200));
+            Assert.That(boundingBox.Width, Is.EqualTo(200));
+            Assert.That(boundingBox.X, Is.EqualTo(-150));
+            Assert.That(boundingBox.Y, Is.EqualTo(-150));
+            var clickablePoint = await element.ClickablePointAsync();
+            Assert.That(clickablePoint.X, Is.EqualTo(25));
+            Assert.That(clickablePoint.Y, Is.EqualTo(25));
+        }
+
+        [Test, PuppeteerTest("click.spec", "Page.click", "should double multiple times")]
+        public async Task ShouldDoubleMultipleTimes()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            await Page.EvaluateExpressionAsync(@"{
+                window.count = 0;
+                const button = document.querySelector('button');
+                button.addEventListener('dblclick', () => {
+                    window.count++;
+                });
+            }");
+            var button = await Page.QuerySelectorAsync("button");
+            await button.ClickAsync(new ClickOptions { Count = 2 });
+            await button.ClickAsync(new ClickOptions { Count = 2 });
+            Assert.That(await Page.EvaluateExpressionAsync<int>("count"), Is.EqualTo(2));
+        }
+
         [Test, PuppeteerTest("click.spec", "Page.click", "should click a partially obscured button")]
         public async Task ShouldClickAPartiallyObscuredButton()
         {
