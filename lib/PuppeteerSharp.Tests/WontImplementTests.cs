@@ -51,6 +51,11 @@ namespace PuppeteerSharp.Tests
         // These test JavaScript-internal utilities (PuppeteerUtil, createFunction) injected into the isolated realm via LazyArg - no C# equivalent
         [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
         [PuppeteerTest("injected.spec", "createFunction tests", "should work")]
+        // PuppeteerSharp does not implement pipe transport, so pipe-related launcher tests are not applicable
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
+        // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
         public void TheseTestWontBeImplemented()
         {
         }
