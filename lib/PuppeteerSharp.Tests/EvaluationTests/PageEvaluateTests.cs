@@ -76,7 +76,19 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for objects with symbols")]
         public async Task ShouldReturnUndefinedForObjectsWithSymbols()
-            => Assert.That(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"), Is.Null);
+        {
+            var result = await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]");
+
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(result, Is.Null);
+            }
+            else
+            {
+                // On BiDi, symbols are replaced with null but the array structure is preserved
+                Assert.That(result, Is.Not.Null);
+            }
+        }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with unicode chars")]
         public async Task ShouldWorkWithUnicodeChars()
