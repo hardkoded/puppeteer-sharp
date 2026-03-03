@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Mobile;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.EmulationTests
@@ -14,6 +15,14 @@ namespace PuppeteerSharp.Tests.EmulationTests
 
             Assert.That(await Page.EvaluateExpressionAsync<int>("window.innerWidth"), Is.EqualTo(375));
             Assert.That(await Page.EvaluateExpressionAsync<string>("navigator.userAgent"), Does.Contain("iPhone"));
+        }
+
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should work twice on about:blank")]
+        public async Task ShouldWorkTwiceOnAboutBlank()
+        {
+            await Page.GoToAsync("about:blank");
+            await Page.EmulateAsync(Puppeteer.Devices[DeviceDescriptorName.IPhone6]);
+            await Page.EmulateAsync(Puppeteer.Devices[DeviceDescriptorName.IPadProLandscape]);
         }
 
         [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulate", "should support clicking")]
