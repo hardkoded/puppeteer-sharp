@@ -277,6 +277,27 @@ public class CdpPage : Page
             }
 
             await PrimaryTargetClient.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
+
+            if (pageURL.StartsWith("http", StringComparison.Ordinal) && cookie.PartitionKey == null)
+            {
+                var url = new Uri(pageURL);
+                var topLevelSite = $"{url.Scheme}://{url.Host}";
+
+                await PrimaryTargetClient.SendAsync(
+                    "Network.deleteCookies",
+                    new CookieParam
+                    {
+                        Name = cookie.Name,
+                        Url = cookie.Url,
+                        Domain = cookie.Domain,
+                        Path = cookie.Path,
+                        PartitionKey = new CookiePartitionKey
+                        {
+                            SourceOrigin = topLevelSite,
+                            HasCrossSiteAncestor = false,
+                        },
+                    }).ConfigureAwait(false);
+            }
         }
     }
 
