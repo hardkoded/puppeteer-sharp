@@ -199,6 +199,9 @@ namespace PuppeteerSharp.Cdp
                     case "Network.loadingFailed":
                         OnLoadingFailed(client, e.MessageData.ToObject<LoadingFailedEventResponse>());
                         break;
+                    case "Network.requestWillBeSentExtraInfo":
+                        OnRequestWillBeSentExtraInfo(e.MessageData.ToObject<RequestWillBeSentExtraInfoResponse>());
+                        break;
                     case "Network.responseReceivedExtraInfo":
                         await OnResponseReceivedExtraInfoAsync(sender as CDPSession, e.MessageData.ToObject<ResponseReceivedExtraInfoResponse>()).ConfigureAwait(false);
                         break;
@@ -213,6 +216,19 @@ namespace PuppeteerSharp.Cdp
                     (client as CDPSession)?.Close(message);
                     return Task.CompletedTask;
                 });
+            }
+        }
+
+        private void OnRequestWillBeSentExtraInfo(RequestWillBeSentExtraInfoResponse e)
+        {
+            var request = _networkEventManager.GetRequest(e.RequestId);
+            if (request != null)
+            {
+                request.UpdateHeaders(e.Headers);
+            }
+            else
+            {
+                _networkEventManager.RequestExtraInfo(e.RequestId).Add(e);
             }
         }
 
@@ -503,6 +519,14 @@ namespace PuppeteerSharp.Cdp
                 {
                     HandleRequestRedirect(client, request, e.RedirectResponse, redirectResponseExtraInfo);
                     redirectChain = request.RedirectChainList;
+
+                    var reqExtraInfoList = _networkEventManager.RequestExtraInfo(e.RequestId);
+                    if (reqExtraInfoList.Count > 0)
+                    {
+                        var reqExtraInfo = reqExtraInfoList[0];
+                        reqExtraInfoList.RemoveAt(0);
+                        request.UpdateHeaders(reqExtraInfo.Headers);
+                    }
                 }
             }
 
@@ -516,6 +540,14 @@ namespace PuppeteerSharp.Cdp
                 e,
                 redirectChain,
                 _loggerFactory);
+
+            var requestExtraInfoList = _networkEventManager.RequestExtraInfo(e.RequestId);
+            if (requestExtraInfoList.Count > 0)
+            {
+                var extraInfoForRequest = requestExtraInfoList[0];
+                requestExtraInfoList.RemoveAt(0);
+                request.UpdateHeaders(extraInfoForRequest.Headers);
+            }
 
             _networkEventManager.StoreRequest(e.RequestId, request);
 

@@ -232,6 +232,14 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
 
+    internal void UpdateHeaders(Dictionary<string, string> headers)
+    {
+        foreach (var kvp in headers)
+        {
+            Headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+        }
+    }
+
     /// <inheritdoc/>
     protected override void VerifyInterception()
     {
