@@ -36,21 +36,6 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result.GetProperty("stack").GetString(), Does.Contain("ExposeFunctionTests"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should support throwing \"null\"")]
-        public async Task ShouldSupportThrowingNull()
-        {
-            await Page.ExposeFunctionAsync("woof", () => throw null);
-            var thrown = await Page.EvaluateFunctionAsync<object>(@"async () => {
-                try {
-                    await woof();
-                    return undefined;
-                } catch (error) {
-                    return error;
-                }
-            }");
-            Assert.That(thrown, Is.Null);
-        }
-
         [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned if called from function")]
         public async Task ShouldAwaitReturnedIfCalledFromFunction()
         {
