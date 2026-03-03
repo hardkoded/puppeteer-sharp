@@ -1067,7 +1067,7 @@ public class BidiPage : Page
 
     internal async Task<BidiFrame> FocusedFrameAsync()
     {
-        var handle = (BidiJSHandle)await BidiMainFrame.IsolatedRealm.EvaluateFunctionHandleAsync(
+        var handle = await BidiMainFrame.IsolatedRealm.EvaluateFunctionHandleAsync(
             @"() => {
                 let win = window;
                 while (
@@ -1082,9 +1082,14 @@ public class BidiPage : Page
                 return win;
             }").ConfigureAwait(false);
 
-        var remoteValue = handle.RemoteValue;
+        var remoteValue = handle switch
+        {
+            BidiElementHandle bidiElement => bidiElement.BidiJSHandle.RemoteValue,
+            BidiJSHandle bidiJsHandle => bidiJsHandle.RemoteValue,
+            _ => null,
+        };
 
-        if (remoteValue.Type == "window")
+        if (remoteValue?.Type == "window")
         {
             var windowProxy = remoteValue.ValueAs<WindowProxyProperties>();
             if (windowProxy != null)
