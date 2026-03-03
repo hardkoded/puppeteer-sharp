@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class PrerenderScreencastTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("prerender.spec.ts", "Prerender", "can screencast")]
+    [Test, PuppeteerTest("prerender.spec", "Prerender", "can screencast")]
     public async Task CanScreencast()
     {
         var screencastFramesReceived = 0;

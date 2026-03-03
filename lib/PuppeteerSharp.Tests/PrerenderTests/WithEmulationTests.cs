@@ -6,7 +6,7 @@ namespace PuppeteerSharp.Tests.PrerenderTests;
 
 public class WithEmulationTests : PuppeteerPageBaseTest
 {
-    [Test, PuppeteerTest("prerender.spec.ts", "Prerender with emulation", "can configure viewport for prerendered pages")]
+    [Test, PuppeteerTest("prerender.spec", "Prerender with emulation", "can configure viewport for prerendered pages")]
     public async Task CanConfigureViewportForPrerenderedPages()
     {
         await Page.SetViewportAsync(new ViewPortOptions()
