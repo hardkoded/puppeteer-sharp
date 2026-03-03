@@ -537,5 +537,52 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 () => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
             Assert.That(exception, Is.Not.Null);
         }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "can launch multiple instances without node warnings")]
+        public async Task CanLaunchMultipleInstancesWithoutWarnings()
+        {
+            var tasks = new Task<IBrowser>[2];
+            for (var i = 0; i < 2; i++)
+            {
+                tasks[i] = Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+            }
+
+            var browsers = await Task.WhenAll(tasks);
+
+            foreach (var browser in browsers)
+            {
+                await browser.CloseAsync();
+                await browser.DisposeAsync();
+            }
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should set the debugging port")]
+        public async Task ShouldSetTheDebuggingPort()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+            options.Args = options.Args.Concat(new[] { "--remote-debugging-port=9999" }).ToArray();
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            var url = new Uri(browser.WebSocketEndpoint);
+            Assert.That(url.Port, Is.EqualTo(9999));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.executablePath", "should work")]
+        public void ExecutablePathShouldWork()
+        {
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            var options = TestConstants.DefaultBrowserOptions();
+
+            // The executable path is resolved internally, so we verify that
+            // launching a browser succeeds, which implies the executable path is valid.
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await using var browser = await launcher.LaunchAsync(options);
+                var executablePath = browser.Process.StartInfo.FileName;
+                Assert.That(File.Exists(executablePath), Is.True);
+                Assert.That(Path.GetFullPath(executablePath), Is.EqualTo(executablePath));
+            });
+        }
     }
 }
