@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -27,6 +28,23 @@ namespace PuppeteerSharp.Tests.BrowserTests
             Assert.That(remoteBrowser.Process, Is.Null);
 
             remoteBrowser.Disconnect();
+        }
+
+        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.process", "should keep connected after the last page is closed")]
+        public async Task ShouldKeepConnectedAfterTheLastPageIsClosed()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(
+                TestConstants.DefaultBrowserOptions(),
+                TestConstants.LoggerFactory);
+
+            var pages = await browser.PagesAsync();
+            await Task.WhenAll(pages.Select(page => page.CloseAsync()));
+
+            // Verify the browser is still connected.
+            Assert.That(browser.IsConnected, Is.True);
+
+            // Verify the browser can open a new page.
+            await browser.NewPageAsync();
         }
     }
 }
