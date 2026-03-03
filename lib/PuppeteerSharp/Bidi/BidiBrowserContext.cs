@@ -61,6 +61,14 @@ public class BidiBrowserContext : BrowserContext
     {
         var permissionsSet = new HashSet<OverridePermission>(permissions);
 
+        foreach (var permission in permissionsSet)
+        {
+            if (!Enum.IsDefined(typeof(OverridePermission), permission))
+            {
+                throw new ArgumentException($"Unknown permission: {permission}");
+            }
+        }
+
         // We need to set all permissions - grant the ones in the list, deny the rest
         var tasks = new List<Task>();
         foreach (OverridePermission permission in Enum.GetValues(typeof(OverridePermission)))

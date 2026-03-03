@@ -38,7 +38,6 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should throw for non-string header values")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly added and removed request events")]
-        [PuppeteerTest("page.spec", "Page BrowserContext.overridePermissions", "should fail when bad permission is given")]
         [PuppeteerTest("page.spec", "Page Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with function shorthands")]

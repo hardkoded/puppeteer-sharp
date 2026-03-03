@@ -32,6 +32,17 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(await GetPermissionAsync(Page, "geolocation"), Is.EqualTo("denied"));
         }
 
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should fail when bad permission is given")]
+        public async Task ShouldFailWhenBadPermissionIsGiven()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var exception = Assert.CatchAsync(
+                () => Context.OverridePermissionsAsync(
+                    TestConstants.EmptyPage,
+                    new[] { (OverridePermission)999 }));
+            Assert.That(exception, Is.Not.Null);
+        }
+
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext BrowserContext.overridePermissions", "should grant permission when listed")]
         public async Task ShouldGrantPermissionWhenListed()
         {
