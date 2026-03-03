@@ -297,7 +297,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             await Page.SetContentAsync(
                 "<iframe srcdoc=\"<iframe name='test' srcdoc='<textarea></textarea>'></iframe>\"></iframe>");
-            var frame = await Page.WaitForFrameAsync(f => f.Name == "test");
+            var frame = await Page.WaitForFrameAsync(f => f.ParentFrame != null && f.ParentFrame != Page.MainFrame);
             await frame.FocusAsync("textarea");
 
             await frame.EvaluateFunctionAsync(@"() => {
