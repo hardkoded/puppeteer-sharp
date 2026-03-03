@@ -20,6 +20,8 @@ namespace PuppeteerSharp.Locators
         /// </summary>
         internal const int RetryDelay = 100;
 
+        private const int TypingThreshold = 100;
+
         private bool _ensureElementIsInTheViewport = true;
         private bool _waitForEnabled = true;
         private bool _waitForStableBoundingBox = true;
@@ -264,6 +266,7 @@ namespace PuppeteerSharp.Locators
                     var inputType = await handle.EvaluateFunctionAsync<string>(
                         @"(el) => {
                             if (el instanceof HTMLSelectElement) return 'select';
+                            if (el instanceof HTMLTextAreaElement) return 'typeable-input';
                             if (el instanceof HTMLInputElement) {
                                 if (new Set(['textarea','text','url','tel','search','password','number','email']).has(el.type))
                                     return 'typeable-input';
@@ -280,30 +283,34 @@ namespace PuppeteerSharp.Locators
                             break;
                         case "contenteditable":
                         case "typeable-input":
-                            var textToType = await handle.EvaluateFunctionAsync<string>(
-                                @"(input, newValue) => {
-                                    const currentValue = input.isContentEditable ? input.innerText : input.value;
-                                    if (newValue.length <= currentValue.length || !newValue.startsWith(input.value)) {
-                                        if (input.isContentEditable) { input.innerText = ''; } else { input.value = ''; }
-                                        return newValue;
-                                    }
-                                    const originalValue = input.isContentEditable ? input.innerText : input.value;
-                                    if (input.isContentEditable) { input.innerText = ''; input.innerText = originalValue; }
-                                    else { input.value = ''; input.value = originalValue; }
-                                    return newValue.substring(originalValue.length);
-                                }",
-                                value).ConfigureAwait(false);
-                            await handle.TypeAsync(textToType).ConfigureAwait(false);
+                            if (value.Length < TypingThreshold)
+                            {
+                                var textToType = await handle.EvaluateFunctionAsync<string>(
+                                    @"(input, newValue) => {
+                                        const currentValue = input.isContentEditable ? input.innerText : input.value;
+                                        if (newValue.length <= currentValue.length || !newValue.startsWith(currentValue)) {
+                                            if (input.isContentEditable) { input.innerText = ''; } else { input.value = ''; }
+                                            return newValue;
+                                        }
+                                        const originalValue = input.isContentEditable ? input.innerText : input.value;
+                                        if (input.isContentEditable) { input.innerText = ''; input.innerText = originalValue; }
+                                        else { input.value = ''; input.value = originalValue; }
+                                        return newValue.substring(originalValue.length);
+                                    }",
+                                    value).ConfigureAwait(false);
+                                if (!string.IsNullOrEmpty(textToType))
+                                {
+                                    await handle.TypeAsync(textToType).ConfigureAwait(false);
+                                }
+                            }
+                            else
+                            {
+                                await FillDirectlyAsync(handle, value).ConfigureAwait(false);
+                            }
+
                             break;
                         case "other-input":
-                            await handle.FocusAsync().ConfigureAwait(false);
-                            await handle.EvaluateFunctionAsync(
-                                @"(input, value) => {
-                                    input.value = value;
-                                    input.dispatchEvent(new Event('input', {bubbles: true}));
-                                    input.dispatchEvent(new Event('change', {bubbles: true}));
-                                }",
-                                value).ConfigureAwait(false);
+                            await FillDirectlyAsync(handle, value).ConfigureAwait(false);
                             break;
                         default:
                             throw new PuppeteerException("Element cannot be filled out.");
@@ -356,6 +363,29 @@ namespace PuppeteerSharp.Locators
             {
                 throw new PuppeteerException("Bounding box is not stable.");
             }
+        }
+
+        private static async Task FillDirectlyAsync(IElementHandle handle, string value)
+        {
+            await handle.FocusAsync().ConfigureAwait(false);
+            await handle.EvaluateFunctionAsync(
+                @"(input, value) => {
+                    const element = input;
+                    const currentValue = element.isContentEditable
+                        ? element.innerText
+                        : element.value;
+                    if (currentValue === value) {
+                        return;
+                    }
+                    if (element.isContentEditable) {
+                        element.innerText = value;
+                    } else {
+                        element.value = value;
+                    }
+                    element.dispatchEvent(new Event('input', {bubbles: true}));
+                    element.dispatchEvent(new Event('change', {bubbles: true}));
+                }",
+                value).ConfigureAwait(false);
         }
 
         private async Task PerformActionAsync(
@@ -435,9 +465,24 @@ namespace PuppeteerSharp.Locators
                 {
                     throw;
                 }
+                catch (Exception) when (linkedToken.IsCancellationRequested && timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+                {
+                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
+                }
+                catch (Exception) when (linkedToken.IsCancellationRequested)
+                {
+                    throw;
+                }
                 catch (Exception) when (!linkedToken.IsCancellationRequested)
                 {
-                    await Task.Delay(RetryDelay, linkedToken).ConfigureAwait(false);
+                    try
+                    {
+                        await Task.Delay(RetryDelay, linkedToken).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+                    {
+                        throw new TimeoutException($"Timed out after waiting {Timeout}ms");
+                    }
                 }
             }
         }
