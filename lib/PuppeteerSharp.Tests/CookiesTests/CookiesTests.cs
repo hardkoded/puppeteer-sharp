@@ -212,6 +212,34 @@ namespace PuppeteerSharp.Tests.CookiesTests
             Assert.That(await Page.GetCookiesAsync("https://sub_domain.base_domain.com"), Is.Empty);
         }
 
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from subdomain if the domain field allows it")]
+        public async Task ShouldGetCookiesFromSubdomainIfTheDomainFieldAllowsIt()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://base_domain.com",
+                Domain = ".base_domain.com",
+                Name = "doggo",
+                Value = "woofs",
+            });
+            var cookies = await Page.GetCookiesAsync("https://sub_domain.base_domain.com");
+            Assert.That(cookies, Has.Exactly(1).Items);
+        }
+
+        [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should not get cookies from subdomain if the cookie is for top-level domain")]
+        public async Task ShouldNotGetCookiesFromSubdomainIfTheCookieIsForTopLevelDomain()
+        {
+            await Page.SetCookieAsync(new CookieParam
+            {
+                Url = "https://base_domain.com",
+                Domain = "base_domain.com",
+                Name = "doggo",
+                Value = "woofs",
+            });
+            var cookies = await Page.GetCookiesAsync("https://sub_domain.base_domain.com");
+            Assert.That(cookies, Is.Empty);
+        }
+
         [Test, PuppeteerTest("cookies.spec", "Cookie specs Page.cookies", "should get cookies from nested path")]
         public async Task ShouldGetCookiesFromNestedPath()
         {
