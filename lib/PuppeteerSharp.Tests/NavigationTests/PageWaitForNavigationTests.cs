@@ -1,4 +1,6 @@
+using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -155,6 +157,31 @@ namespace PuppeteerSharp.Tests.NavigationTests
                 frame.EvaluateFunctionAsync("() => window.stop()"),
                 navigationTask
             );
+        }
+
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.waitForNavigation", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForNavigationAsync(new NavigationOptions
+            {
+                CancellationToken = cts.Token,
+                Timeout = 5_000,
+            });
+
+            cts.Cancel();
+
+            Exception caughtException = null;
+            try
+            {
+                await task;
+            }
+            catch (Exception ex)
+            {
+                caughtException = ex;
+            }
+
+            Assert.That(caughtException, Is.Not.Null);
         }
     }
 }

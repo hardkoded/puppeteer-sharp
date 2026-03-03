@@ -52,5 +52,12 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That((await Page.EvaluateExpressionHandleAsync("new Int32Array()")).ToString(), Is.EqualTo("JSHandle@typedarray"));
             Assert.That((await Page.EvaluateExpressionHandleAsync("new Proxy({}, {})")).ToString(), Is.EqualTo("JSHandle@proxy"));
         }
+
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with window subtypes")]
+        public async Task ShouldWorkWithWindowSubtypes()
+        {
+            Assert.That((await Page.EvaluateExpressionHandleAsync("window")).ToString(), Is.EqualTo("JSHandle@window"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("globalThis")).ToString(), Is.EqualTo("JSHandle@window"));
+        }
     }
 }

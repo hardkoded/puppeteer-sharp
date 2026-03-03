@@ -141,6 +141,12 @@ public class CdpBrowser : Browser
                 ProxyBypassList = string.Join(",", options?.ProxyBypassList ?? Array.Empty<string>()),
             }).ConfigureAwait(false);
         var context = new CdpBrowserContext(Connection, this, response.BrowserContextId);
+
+        if (options?.DownloadBehavior != null)
+        {
+            await context.SetDownloadBehaviorAsync(options.DownloadBehavior).ConfigureAwait(false);
+        }
+
         _contexts.TryAdd(response.BrowserContextId, context);
         return context;
     }

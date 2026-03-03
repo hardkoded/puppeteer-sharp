@@ -200,6 +200,15 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     private static bool IsEmptyObjectType(RemoteValue remoteValue)
         => remoteValue.Type is "promise";
 
+    /// <summary>
+    /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be treated as null/undefined.
+    /// Symbols, functions, weakmaps, weaksets, errors, proxies, and other non-serializable types
+    /// should return null rather than being treated as circular references.
+    /// </summary>
+    private static bool IsNonSerializableType(RemoteValue remoteValue)
+        => remoteValue.Type is "symbol" or "function" or "weakmap" or "weakset" or "error" or "proxy"
+            or "typedarray" or "arraybuffer" or "generator" or "window";
+
     private static string ToCamelCase(string name)
     {
         if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
@@ -503,21 +512,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     /// <summary>
     /// Deserializes a BiDi result value to a plain .NET object.
     /// Handles RemoteValueDictionary, RemoteValue, and primitive types.
-    /// Returns null for the entire result if circular references are detected.
+    /// Circular references within the object are set to null for the specific property,
+    /// matching upstream BiDi behavior where the rest of the object is still accessible.
     /// </summary>
     private object DeserializeToObject(object value)
     {
         var hasCircularRef = false;
-        var result = DeserializeToObjectInternal(value, ref hasCircularRef);
-
-        // If circular references were detected, return null for the entire result
-        // This matches CDP behavior where circular objects cannot be serialized
-        if (hasCircularRef)
-        {
-            return null;
-        }
-
-        return result;
+        return DeserializeToObjectInternal(value, ref hasCircularRef);
     }
 
     private object DeserializeToObjectInternal(object value, ref bool hasCircularRef)
@@ -549,9 +550,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     result[key] = new Dictionary<string, object>();
                 }
+                else if (IsNonSerializableType(remoteValue))
+                {
+                    // Non-serializable types (symbol, function, etc.) are treated as null
+                    result[key] = null;
+                }
                 else if (!remoteValue.HasValue)
                 {
-                    // If RemoteValue has no value and is not null/undefined, it's a circular reference
+                    // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
                     hasCircularRef = true;
                     result[key] = null;
                 }
@@ -577,7 +583,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return new Dictionary<string, object>();
             }
 
-            // If RemoteValue has no value and is not null/undefined, it's a circular reference
+            if (IsNonSerializableType(remoteVal))
+            {
+                // Non-serializable types (symbol, function, etc.) are treated as null
+                return null;
+            }
+
+            // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
             if (!remoteVal.HasValue)
             {
                 hasCircularRef = true;
@@ -603,9 +615,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     {
                         list.Add(new Dictionary<string, object>());
                     }
+                    else if (IsNonSerializableType(rv))
+                    {
+                        // Non-serializable types (symbol, function, etc.) are treated as null
+                        list.Add(null);
+                    }
                     else if (!rv.HasValue)
                     {
-                        // If RemoteValue has no value and is not null/undefined, it's a circular reference
+                        // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
                         hasCircularRef = true;
                         list.Add(null);
                     }
@@ -621,6 +638,20 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             }
 
             return list.ToArray();
+        }
+
+        // Handle RegularExpressionValue - deserialize to a dictionary representation
+        // that can be serialized to JSON as an object, matching upstream behavior
+        if (value is RegularExpressionValue regExpValue)
+        {
+            var regExpDict = new Dictionary<string, object>();
+            regExpDict["pattern"] = regExpValue.Pattern;
+            if (regExpValue.Flags != null)
+            {
+                regExpDict["flags"] = regExpValue.Flags;
+            }
+
+            return regExpDict;
         }
 
         // Check for non-serializable BiDi types like WindowProxyProperties
@@ -715,6 +746,28 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
                 return elementHandle.Value.ToRemoteReference();
+        }
+
+        // Handle Regex as BiDi RegExp
+        if (arg is Regex regex)
+        {
+            var flags = string.Empty;
+            if (regex.Options.HasFlag(RegexOptions.IgnoreCase))
+            {
+                flags += "i";
+            }
+
+            if (regex.Options.HasFlag(RegexOptions.Multiline))
+            {
+                flags += "m";
+            }
+
+            if (regex.Options.HasFlag(RegexOptions.Singleline))
+            {
+                flags += "s";
+            }
+
+            return LocalValue.RegExp(regex.ToString(), flags.Length > 0 ? flags : null);
         }
 
         // Handle plain objects (anonymous types, POCOs, etc.) by serializing them as BiDi objects

@@ -356,6 +356,41 @@
     "comment": "Not testable in headful"
   },
   {
+    "testIdPattern": "[console.spec] console should have location when fetch fails",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "BiDi does not support getting a Handle for log args"
+  },
+  {
+    "testIdPattern": "[console.spec] console should return remote objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should trigger correct Log",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[console.spec] console should work for different console API calls with timing functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"],
+    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

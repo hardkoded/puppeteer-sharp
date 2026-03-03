@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -75,7 +76,19 @@ namespace PuppeteerSharp.Tests.EvaluationTests
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return undefined for objects with symbols")]
         public async Task ShouldReturnUndefinedForObjectsWithSymbols()
-            => Assert.That(await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]"), Is.Null);
+        {
+            var result = await Page.EvaluateFunctionAsync<object>("() => [Symbol('foo4')]");
+
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(result, Is.Null);
+            }
+            else
+            {
+                // On BiDi, symbols are replaced with null but the array structure is preserved
+                Assert.That(result, Is.Not.Null);
+            }
+        }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with unicode chars")]
         public async Task ShouldWorkWithUnicodeChars()
@@ -214,17 +227,18 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             Assert.That(result.GetProperty("promise").EnumerateObject().Any(), Is.False);
         }
 
-        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should fail for circular object")]
-        public async Task ShouldFailForCircularObject()
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work for circular object")]
+        public async Task ShouldWorkForCircularObject()
         {
-            var result = await Page.EvaluateFunctionAsync<object>(@"() => {
-                const a = {};
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
+                const a = { c: 5, d: { foo: 'bar' } };
                 const b = {a};
-                a.b = b;
+                a['b'] = b;
                 return a;
             }");
 
-            Assert.That(result, Is.Null);
+            Assert.That(result.GetProperty("c").GetInt32(), Is.EqualTo(5));
+            Assert.That(result.GetProperty("d").GetProperty("foo").GetString(), Is.EqualTo("bar"));
         }
 
         [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should be able to throw a tricky error")]
@@ -342,6 +356,59 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             var element = await Page.QuerySelectorAsync("section");
             var text = await Page.EvaluateFunctionAsync<string>("(e) => e.textContent", element);
             Assert.That(text, Is.EqualTo("42"));
+        }
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should transfer RegEx")]
+        public async Task ShouldTransferRegEx()
+        {
+            var result = await Page.EvaluateFunctionAsync<string>(
+                "a => 'Hello World!'.match(a)[1]",
+                new Regex("Hello (.*)"));
+            Assert.That(result, Is.EqualTo("World!"));
+        }
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should replace symbols with undefined")]
+        public async Task ShouldReplaceSymbolsWithUndefined()
+        {
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
+                return [Symbol('foo4'), 'foo'];
+            }");
+            Assert.That(result.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(result[0].ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(result[1].GetString(), Is.EqualTo("foo"));
+        }
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should support thrown platform objects as error messages")]
+        public void ShouldSupportThrownPlatformObjectsAsErrorMessages()
+        {
+            var exception = Assert.ThrowsAsync<EvaluationFailedException>(
+                () => Page.EvaluateExpressionAsync("throw new DOMException('some DOMException message')"));
+            Assert.That(exception.Message, Does.Contain("some DOMException message"));
+        }
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return RegEx")]
+        public async Task ShouldReturnRegEx()
+        {
+            var result = await Page.EvaluateFunctionAsync<JsonElement>("() => /(.*)/");
+            Assert.That(result.ValueKind, Is.EqualTo(JsonValueKind.Object));
+        }
+
+        [Test, PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should return properly serialize objects with unknown type fields")]
+        public async Task ShouldReturnProperlySerializeObjectsWithUnknownTypeFields()
+        {
+            await Page.SetContentAsync(
+                "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==\" />");
+
+            var result = await Page.EvaluateFunctionAsync<JsonElement>(@"async () => {
+                const image = document.querySelector('img');
+                const imageBitmap = await createImageBitmap(image);
+                return {
+                    a: 'foo',
+                    b: imageBitmap,
+                };
+            }");
+
+            Assert.That(result.GetProperty("a").GetString(), Is.EqualTo("foo"));
         }
 
         public class ComplexObjectTestClass

@@ -5,9 +5,9 @@ namespace PuppeteerSharp.Tests
     public class WontImplementTests : PuppeteerPageBaseTest
     {
         // We don't implement pipes
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe option")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe argument")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should fire \"disconnected\" when closing with pipe")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe option")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe argument")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should fire \"disconnected\" when closing with pipe")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
@@ -38,7 +38,6 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should throw for non-string header values")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly added and removed request events")]
-        [PuppeteerTest("page.spec", "Page BrowserContext.overridePermissions", "should fail when bad permission is given")]
         [PuppeteerTest("page.spec", "Page Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with function shorthands")]
@@ -61,6 +60,11 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
         // ElementHandle.touchMove with a pre-existing Touch parameter: C# ElementHandle.TouchMoveAsync takes no parameters
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
+        // PuppeteerSharp does not implement pipe transport, so pipe-related launcher tests are not applicable
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
+        // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
         public void TheseTestWontBeImplemented()
         {
         }

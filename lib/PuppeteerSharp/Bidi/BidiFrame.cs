@@ -977,6 +977,8 @@ public class BidiFrame : Frame
                 var consoleArgs = args.Arguments;
                 var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
 
+                var logEntryText = args.Text;
+
                 var text = string.Join(
                     " ",
                     handleArgs.Select(arg =>
@@ -984,6 +986,11 @@ public class BidiFrame : Frame
                         if (arg is BidiJSHandle { IsPrimitiveValue: true } jsHandle)
                         {
                             return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
+                        }
+
+                        if (arg is BidiJSHandle { RemoteValue.Type: "error" } && !string.IsNullOrEmpty(logEntryText))
+                        {
+                            return (object)logEntryText.Split('\n')[0];
                         }
 
                         return arg.ToString();

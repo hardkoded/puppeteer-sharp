@@ -277,6 +277,27 @@ public class CdpPage : Page
             }
 
             await PrimaryTargetClient.SendAsync("Network.deleteCookies", cookie).ConfigureAwait(false);
+
+            if (pageURL.StartsWith("http", StringComparison.Ordinal) && cookie.PartitionKey == null)
+            {
+                var url = new Uri(pageURL);
+                var topLevelSite = $"{url.Scheme}://{url.Host}";
+
+                await PrimaryTargetClient.SendAsync(
+                    "Network.deleteCookies",
+                    new CookieParam
+                    {
+                        Name = cookie.Name,
+                        Url = cookie.Url,
+                        Domain = cookie.Domain,
+                        Path = cookie.Path,
+                        PartitionKey = new CookiePartitionKey
+                        {
+                            SourceOrigin = topLevelSite,
+                            HasCrossSiteAncestor = false,
+                        },
+                    }).ConfigureAwait(false);
+            }
         }
     }
 
@@ -1203,6 +1224,11 @@ public class CdpPage : Page
         var tokens = values.Select(i =>
         {
             var handle = (CdpJSHandle)i;
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
+            {
+                return handle.RemoteObject.Description.Split('\n')[0];
+            }
+
             return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
