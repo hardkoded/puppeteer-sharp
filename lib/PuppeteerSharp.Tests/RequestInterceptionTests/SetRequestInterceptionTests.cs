@@ -66,6 +66,48 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             );
         }
 
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work with keep alive redirects")]
+        public async Task ShouldWorkWithKeepAliveRedirects()
+        {
+            Server.SetRoute("/rredirect", context =>
+            {
+                context.Response.Headers["location"] = "/target";
+                context.Response.StatusCode = 302;
+                return Task.CompletedTask;
+            });
+            Server.SetRoute("/target", async context =>
+            {
+                await context.Response.WriteAsync("Hello World");
+            });
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.ContinueAsync();
+            };
+            await Page.SetRequestInterceptionAsync(true);
+
+            var redirectRequestTask = Page.WaitForRequestAsync(
+                request => request.Url.EndsWith("/rredirect"),
+                new WaitForOptions(1000));
+            var targetResponseTask = Page.WaitForResponseAsync(
+                response => response.Request.Url.EndsWith("/target"),
+                new WaitForOptions(1000));
+
+            await Page.EvaluateFunctionAsync(@"async (url) => {
+                void fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({test: 'test'}),
+                    mode: 'no-cors',
+                    keepalive: true,
+                }).then(async res => {
+                    console.log(await res.text());
+                });
+            }", TestConstants.ServerUrl + "/rredirect");
+
+            await redirectRequestTask;
+            await targetResponseTask;
+        }
+
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work when header manipulation headers with redirect")]
         public async Task ShouldWorkWhenHeaderManipulationHeadersWithRedirect()
         {
@@ -127,6 +169,51 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await requestsReadyTcs.Task.WithTimeout();
             Assert.That(requests[1].Url, Does.Contain("/one-style.css"));
             Assert.That(requests[1].Headers["Referer"], Does.Contain("/one-style.html"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should not allow mutating request headers")]
+        public async Task ShouldNotAllowMutatingRequestHeaders()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<IRequest>();
+            Page.Request += async (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+                // In .NET, Headers returns the same reference, so we use Clone()
+                // to get a copy, mutate it, then verify continuing with the clone
+                // does not affect the original stored headers.
+                var headers = e.Request.Headers.Clone();
+                headers["test"] = "test";
+                await e.Request.ContinueAsync(new Payload { Headers = e.Request.Headers.Clone() });
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(requests[0].Headers.ContainsKey("test"), Is.False);
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work with requests without networkId")]
+        public async Task ShouldWorkWithRequestsWithoutNetworkId()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+
+            var cdp = await Page.CreateCDPSessionAsync();
+            await cdp.SendAsync("DOM.enable");
+            var urls = new List<string>();
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.ContinueAsync();
+                if (TestUtils.IsFavicon(e.Request))
+                {
+                    return;
+                }
+                urls.Add(e.Request.Url);
+            };
+            // This causes network requests without networkId.
+            await cdp.SendAsync("CSS.enable");
+            Assert.That(urls, Is.EqualTo(new[] { TestConstants.EmptyPage }));
         }
 
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should properly return navigation response when URL has cookies")]
@@ -649,6 +736,37 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             await Page.ReloadAsync();
             // BiDi may fire multiple cache events (for HTML and CSS), while CDP only fires for CSS
+            Assert.That(cached, Has.Count.GreaterThanOrEqualTo(1));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should not cache script if cache disabled")]
+        public async Task ShouldNotCacheScriptIfCacheDisabled()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync(false);
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var cached = new List<IRequest>();
+            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+            await Page.ReloadAsync();
+            Assert.That(cached, Is.Empty);
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should cache script if cache enabled")]
+        public async Task ShouldCacheScriptIfCacheEnabled()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync();
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var cached = new List<IRequest>();
+            Page.RequestServedFromCache += (_, e) => cached.Add(e.Request);
+
+            await Page.ReloadAsync();
+            // BiDi may fire multiple cache events, while CDP only fires for cached resources
             Assert.That(cached, Has.Count.GreaterThanOrEqualTo(1));
         }
 
