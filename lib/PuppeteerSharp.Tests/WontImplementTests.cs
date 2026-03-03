@@ -5,9 +5,9 @@ namespace PuppeteerSharp.Tests
     public class WontImplementTests : PuppeteerPageBaseTest
     {
         // We don't implement pipes
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe option")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe argument")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should fire \"disconnected\" when closing with pipe")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe option")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe argument")]
+        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should fire \"disconnected\" when closing with pipe")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
