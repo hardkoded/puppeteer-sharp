@@ -94,5 +94,12 @@ namespace PuppeteerSharp
         /// The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
         /// </remarks>
         Task<T> JsonValueAsync<T>();
+
+        /// <summary>
+        /// Prevents the handle from being disposed on the next <see cref="IAsyncDisposable.DisposeAsync"/> call.
+        /// This is useful when you want to keep the handle alive past an <c>await using</c> scope.
+        /// </summary>
+        /// <returns>The handle itself.</returns>
+        IJSHandle Move();
     }
 }

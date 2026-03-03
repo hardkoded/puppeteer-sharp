@@ -173,22 +173,29 @@ namespace PuppeteerSharp
             });
 
         /// <inheritdoc/>
-        public Task TouchStartAsync()
-            => BindIsolatedHandleAsync<IElementHandle, ElementHandle>(async handle =>
+        public Task<ITouchHandle> TouchStartAsync()
+            => BindIsolatedHandleAsync<ITouchHandle, ElementHandle>(async handle =>
             {
                 await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                 var clickablePoint = await handle.ClickablePointAsync().ConfigureAwait(false);
-                await Page.Touchscreen.TouchStartAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
-                return handle;
+                return await Page.Touchscreen.TouchStartAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
             });
 
         /// <inheritdoc/>
-        public Task TouchMoveAsync()
+        public Task TouchMoveAsync(ITouchHandle touch = null)
             => BindIsolatedHandleAsync<IElementHandle, ElementHandle>(async handle =>
             {
                 await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                 var clickablePoint = await handle.ClickablePointAsync().ConfigureAwait(false);
-                await Page.Touchscreen.TouchMoveAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
+                if (touch != null)
+                {
+                    await touch.MoveAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Page.Touchscreen.TouchMoveAsync(clickablePoint.X, clickablePoint.Y).ConfigureAwait(false);
+                }
+
                 return handle;
             });
 
@@ -700,7 +707,7 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public override async ValueTask DisposeAsync()
         {
-            if (Disposed)
+            if (Disposed || CheckAndResetMoved())
             {
                 return;
             }

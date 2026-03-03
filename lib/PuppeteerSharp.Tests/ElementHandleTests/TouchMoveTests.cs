@@ -42,6 +42,55 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(events[1].Touches[0][1], Is.EqualTo(expectedDivY));
         }
 
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
+        public async Task ShouldWorkWithAPreExistingTouch()
+        {
+            await SetupTouchEventReporting();
+
+            await Page.EvaluateExpressionAsync(@"
+                document.body.style.padding = '0';
+                document.body.style.margin = '0';
+                document.body.innerHTML = '<div style=""cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;""></div>';
+            ");
+
+            var divHandle = await Page.QuerySelectorAsync("div");
+            await Page.Touchscreen.TouchStartAsync(200, 200);
+            var secondTouch = await Page.Touchscreen.TouchStartAsync(200, 100);
+            await divHandle.TouchMoveAsync(secondTouch);
+
+            var events = await Page.EvaluateExpressionAsync<TouchEventReport[]>("window.__touchEvents");
+
+            // margin + middle point offset
+            var expectedDivX = 45 + 60;
+            var expectedDivY = 45 + 30;
+
+            Assert.That(events, Has.Length.EqualTo(3));
+
+            // First event: touchstart at (200, 200)
+            Assert.That(events[0].Changed[0][0], Is.EqualTo(200));
+            Assert.That(events[0].Changed[0][1], Is.EqualTo(200));
+            Assert.That(events[0].Touches[0][0], Is.EqualTo(200));
+            Assert.That(events[0].Touches[0][1], Is.EqualTo(200));
+
+            // Second event: touchstart at (200, 100)
+            Assert.That(events[1].Changed[0][0], Is.EqualTo(200));
+            Assert.That(events[1].Changed[0][1], Is.EqualTo(100));
+            Assert.That(events[1].Touches, Has.Length.EqualTo(2));
+            Assert.That(events[1].Touches[0][0], Is.EqualTo(200));
+            Assert.That(events[1].Touches[0][1], Is.EqualTo(200));
+            Assert.That(events[1].Touches[1][0], Is.EqualTo(200));
+            Assert.That(events[1].Touches[1][1], Is.EqualTo(100));
+
+            // Third event: touchmove of second touch to div center
+            Assert.That(events[2].Changed[0][0], Is.EqualTo(expectedDivX));
+            Assert.That(events[2].Changed[0][1], Is.EqualTo(expectedDivY));
+            Assert.That(events[2].Touches, Has.Length.EqualTo(2));
+            Assert.That(events[2].Touches[0][0], Is.EqualTo(200));
+            Assert.That(events[2].Touches[0][1], Is.EqualTo(200));
+            Assert.That(events[2].Touches[1][0], Is.EqualTo(expectedDivX));
+            Assert.That(events[2].Touches[1][1], Is.EqualTo(expectedDivY));
+        }
+
         private async Task SetupTouchEventReporting()
         {
             await Page.EvaluateExpressionAsync(@"

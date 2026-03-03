@@ -104,7 +104,7 @@ public class CdpJSHandle : JSHandle, ICdpHandle
     /// <inheritdoc/>
     public override async ValueTask DisposeAsync()
     {
-        if (Disposed)
+        if (Disposed || CheckAndResetMoved())
         {
             return;
         }
