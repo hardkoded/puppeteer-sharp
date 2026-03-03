@@ -1,5 +1,12 @@
 [
   {
+    "testIdPattern": "[a11yLoaderId.spec] Accessibility loaderId should match loaderId for iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"],
+    "comment": "not supported, CDP-specific test"
+  },
+  {
     "testIdPattern": "[autofill.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

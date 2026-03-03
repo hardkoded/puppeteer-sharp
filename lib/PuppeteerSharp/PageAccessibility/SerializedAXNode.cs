@@ -175,6 +175,11 @@ namespace PuppeteerSharp.PageAccessibility
         public string Url { get; set; }
 
         /// <summary>
+        /// CDP-specific documentId. LoaderId is an experimental mechanism to establish unique IDs across navigations.
+        /// </summary>
+        public string LoaderId { get; set; }
+
+        /// <summary>
         /// Child nodes of this node, if any.
         /// </summary>
         public SerializedAXNode[] Children { get; set; }
