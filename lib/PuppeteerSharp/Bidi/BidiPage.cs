@@ -1065,6 +1065,41 @@ public class BidiPage : Page
         _requestEventsFired.Clear();
     }
 
+    internal async Task<BidiFrame> FocusedFrameAsync()
+    {
+        var handle = (BidiJSHandle)await BidiMainFrame.IsolatedRealm.EvaluateFunctionHandleAsync(
+            @"() => {
+                let win = window;
+                while (
+                    win.document.activeElement instanceof win.HTMLIFrameElement ||
+                    win.document.activeElement instanceof win.HTMLFrameElement
+                ) {
+                    if (win.document.activeElement.contentWindow === null) {
+                        break;
+                    }
+                    win = win.document.activeElement.contentWindow;
+                }
+                return win;
+            }").ConfigureAwait(false);
+
+        var remoteValue = handle.RemoteValue;
+
+        if (remoteValue.Type == "window")
+        {
+            var windowProxy = remoteValue.ValueAs<WindowProxyProperties>();
+            if (windowProxy != null)
+            {
+                var frame = Frames.OfType<BidiFrame>().FirstOrDefault(f => f.Id == windowProxy.Context);
+                if (frame != null)
+                {
+                    return frame;
+                }
+            }
+        }
+
+        return BidiMainFrame;
+    }
+
     /// <inheritdoc />
     protected override async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
     {
