@@ -1203,6 +1203,11 @@ public class CdpPage : Page
         var tokens = values.Select(i =>
         {
             var handle = (CdpJSHandle)i;
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
+            {
+                return handle.RemoteObject.Description.Split('\n')[0];
+            }
+
             return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
                 ? i.ToString()
                 : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
