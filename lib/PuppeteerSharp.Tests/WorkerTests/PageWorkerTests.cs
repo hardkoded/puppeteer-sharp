@@ -104,7 +104,20 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(errorLog, Does.Contain("this is my error"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers", "scan be closed")]
+        [Test, PuppeteerTest("worker.spec", "Workers", "should work with console logs")]
+        public async Task ShouldWorkWithConsoleLogs()
+        {
+            var consoleTcs = new TaskCompletionSource<ConsoleMessage>();
+            Page.Console += (_, e) => consoleTcs.TrySetResult(e.Message);
+
+            await Page.EvaluateFunctionAsync("() => new Worker(`data:text/javascript,console.log(1,2,3,this)`)");
+            var log = await consoleTcs.Task;
+
+            Assert.That(log.Text, Does.Contain("1 2 3").Or.Contain("1 2 3"));
+            Assert.That(log.Args, Has.Count.EqualTo(4));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "can be closed")]
         public async Task CanBeClosed()
         {
             var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
@@ -119,6 +132,49 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(worker.Url, Does.Contain("worker.js"));
             await worker.CloseAsync();
             Assert.That(await workerClosedTcs.Task, Is.SameAs(worker));
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should work with waitForNetworkIdle")]
+        public async Task ShouldWorkWithWaitForNetworkIdle()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<bool>();
+            Page.WorkerCreated += (_, _) => workerCreatedTcs.TrySetResult(true);
+
+            await Task.WhenAll(
+                workerCreatedTcs.Task,
+                Page.GoToAsync(
+                    TestConstants.ServerUrl + "/worker/worker.html",
+                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }));
+
+            await Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { Timeout = 3000 });
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should retrieve body for main worker requests")]
+        public async Task ShouldRetrieveBodyForMainWorkerRequests()
+        {
+            IResponse testResponse = null;
+            var workerUrl = TestConstants.ServerUrl + "/worker/worker.js";
+
+            Page.Response += (_, e) =>
+            {
+                if (e.Response.Request.Url == workerUrl)
+                {
+                    testResponse = e.Response;
+                }
+            };
+
+            var workerCreatedTcs = new TaskCompletionSource<bool>();
+            Page.WorkerCreated += (_, _) => workerCreatedTcs.TrySetResult(true);
+
+            await Task.WhenAll(
+                workerCreatedTcs.Task,
+                Page.GoToAsync(
+                    TestConstants.ServerUrl + "/worker/worker.html",
+                    new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } }));
+
+            Assert.That(testResponse, Is.Not.Null);
+            var text = await testResponse.TextAsync();
+            Assert.That(text, Does.Contain("hello from the worker"));
         }
     }
 }
