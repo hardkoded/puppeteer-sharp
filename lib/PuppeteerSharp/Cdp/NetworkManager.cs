@@ -291,7 +291,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            MaybeReassignOOPIFRequestClient(client, request);
+            MaybeReassignRequestClient(client, request);
             request.FailureText = e.ErrorText;
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
@@ -322,7 +322,7 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
-            MaybeReassignOOPIFRequestClient(client, request);
+            MaybeReassignRequestClient(client, request);
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);
@@ -738,14 +738,14 @@ namespace PuppeteerSharp.Cdp
         private Task ApplyToAllClientsAsync(Func<ICDPSession, Task> func)
             => Task.WhenAll(_clients.Keys.Select(func));
 
-        private void MaybeReassignOOPIFRequestClient(CDPSession client, CdpHttpRequest request)
+        private void MaybeReassignRequestClient(CDPSession client, CdpHttpRequest request)
         {
-            // Document requests for OOPIFs start in the parent frame but are adopted by their
-            // child frame, meaning their loadingFinished and loadingFailed events are fired on
-            // the child session. In this case we reassign the request CDPSession to ensure all
-            // subsequent actions use the correct session (e.g. retrieving response body in
-            // CdpHttpResponse).
-            if (client != request.Client && request.IsNavigationRequest)
+            // Requests may start in one session but have their completion events (loadingFinished,
+            // loadingFailed) fire on a different session. This happens for OOPIF document requests
+            // (adopted by child frame) and worker script requests (adopted by worker session).
+            // Reassign the request CDPSession to ensure subsequent actions (e.g. retrieving response
+            // body in CdpHttpResponse) use the correct session.
+            if (client != request.Client)
             {
                 request.Client = client;
             }

@@ -131,19 +131,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "WaitForNetworkIdleAsync times out with workers - likely NumRequestsInProgress is not reaching 0",
-    "testIdPattern": "[worker.spec] Workers should work with waitForNetworkIdle",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "CDP does not surface worker script response events to Page.Response",
-    "testIdPattern": "[worker.spec] Workers should retrieve body for main worker requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"]
   }
 ]
