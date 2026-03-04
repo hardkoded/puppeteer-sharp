@@ -246,5 +246,27 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(firstCookie?.Value, Is.EqualTo("1"));
             Assert.That(secondCookie?.Value, Is.EqualTo("2"));
         }
+
+        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should report correct encoding from page when content-type is set")]
+        public async Task ShouldReportCorrectEncodingFromPageWhenContentTypeIsSet()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    BodyData = System.Text.Encoding.UTF8.GetBytes("Correct length \U0001F4CF?"),
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["Content-Type"] = "text/plain; charset=utf-8"
+                    },
+                });
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var content = await Page.EvaluateExpressionAsync<string>("document.documentElement.innerText");
+            Assert.That(content, Is.EqualTo("Correct length \U0001F4CF?"));
+        }
     }
 }
