@@ -23,6 +23,7 @@
 #if !CDP_ONLY
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Transport;
 using WebDriverBiDi.Protocol;
@@ -37,7 +38,7 @@ namespace PuppeteerSharp.Bidi;
 internal class PuppeteerConnection : BidiConnection
 {
     private readonly IConnectionTransport _transport;
-    private TaskCompletionSource<bool> _startCompletionSource;
+    private bool _isActive;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PuppeteerConnection"/> class.
@@ -51,30 +52,56 @@ internal class PuppeteerConnection : BidiConnection
     }
 
     /// <inheritdoc/>
-    public override async Task StartAsync(string url)
+    public override bool IsActive => _isActive;
+
+    /// <inheritdoc/>
+    public override ConnectionType ConnectionType => ConnectionType.WebSocket;
+
+    /// <inheritdoc/>
+    public override Task StartAsync(string connectionString, CancellationToken cancellationToken = default)
     {
         // The transport is already connected (it was created by the TransportFactory)
-        // We just need to mark ourselves as active and set the connected URL
-        ConnectedUrl = url;
-        _startCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        await Task.CompletedTask.ConfigureAwait(false);
+        // We just need to mark ourselves as active and set the connection string
+        ConnectionString = connectionString;
+        _isActive = true;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override async Task StopAsync()
+    public override Task StopAsync(CancellationToken cancellationToken = default)
     {
         _transport.MessageReceived -= OnTransportMessageReceived;
         _transport.Closed -= OnTransportClosed;
         _transport.StopReading();
         _transport.Dispose();
-        ConnectedUrl = string.Empty;
-        await Task.CompletedTask.ConfigureAwait(false);
+        ConnectionString = string.Empty;
+        _isActive = false;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override async Task SendDataAsync(byte[] data)
+    public override Task SendDataAsync(byte[] data, CancellationToken cancellationToken = default)
     {
-        await _transport.SendAsync(data).ConfigureAwait(false);
+        return _transport.SendAsync(data);
+    }
+
+    /// <inheritdoc/>
+    protected override Task ReceiveDataAsync()
+    {
+        // Data reception is handled by the transport's MessageReceived event
+        // rather than a polling loop, so this is a no-op.
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    protected override ValueTask DisposeAsyncCore()
+    {
+        _transport.MessageReceived -= OnTransportMessageReceived;
+        _transport.Closed -= OnTransportClosed;
+        _transport.StopReading();
+        _transport.Dispose();
+        _isActive = false;
+        return default;
     }
 
     private async void OnTransportMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -92,7 +119,7 @@ internal class PuppeteerConnection : BidiConnection
 
     private void OnTransportClosed(object sender, TransportClosedEventArgs e)
     {
-        _startCompletionSource?.TrySetResult(false);
+        _isActive = false;
     }
 }
 

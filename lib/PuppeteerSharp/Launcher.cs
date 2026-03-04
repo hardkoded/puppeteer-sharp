@@ -285,11 +285,15 @@ namespace PuppeteerSharp
             if (options.TransportFactory != null)
             {
                 var transport = await options.TransportFactory(new Uri(browserWSEndpoint), options, CancellationToken.None).ConfigureAwait(false);
+                PuppeteerConnection puppeteerConnection = null;
+                BidiTransport bidiTransport = null;
                 BiDiDriver driver = null;
                 try
                 {
-                    var puppeteerConnection = new PuppeteerConnection(transport);
-                    var bidiTransport = new BidiTransport(puppeteerConnection);
+#pragma warning disable CA2000 // Ownership is transferred to the driver
+                    puppeteerConnection = new PuppeteerConnection(transport);
+                    bidiTransport = new BidiTransport(puppeteerConnection);
+#pragma warning restore CA2000
                     driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
                     await driver.StartAsync(browserWSEndpoint).ConfigureAwait(false);
                     return driver;
@@ -299,6 +303,14 @@ namespace PuppeteerSharp
                     if (driver != null)
                     {
                         await driver.StopAsync().ConfigureAwait(false);
+                    }
+                    else if (bidiTransport != null)
+                    {
+                        await bidiTransport.DisposeAsync().ConfigureAwait(false);
+                    }
+                    else if (puppeteerConnection != null)
+                    {
+                        await puppeteerConnection.DisposeAsync().ConfigureAwait(false);
                     }
                     else
                     {

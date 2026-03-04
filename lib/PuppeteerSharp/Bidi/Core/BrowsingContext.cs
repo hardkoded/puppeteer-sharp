@@ -271,7 +271,7 @@ internal class BrowsingContext : IDisposable
             NetworkConditions = enabled ? new NetworkConditionsOffline() : null,
             Contexts = [Id],
         };
-        await Session.Driver.Emulation.SetNetworkConditions(parameters).ConfigureAwait(false);
+        await Session.Driver.Emulation.SetNetworkConditionsAsync(parameters).ConfigureAwait(false);
     }
 
     internal async Task SetScreenOrientationOverrideAsync(ScreenOrientation screenOrientation)
