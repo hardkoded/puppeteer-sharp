@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -236,6 +237,42 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/consolelog.html");
             await Page.EvaluateFunctionAsync("() => window.__done = true");
             await watchdog;
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForFunctionAsync(
+                "() => window.__done",
+                new WaitForFunctionOptions
+                {
+                    CancellationToken = cts.Token,
+                });
+            cts.Cancel();
+            var exception = Assert.ThrowsAsync<OperationCanceledException>(() => task);
+            Assert.That(exception.Message, Does.Contain("cancelled"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "can start multiple tasks without node warnings")]
+        public async Task CanStartMultipleTasksWithoutIssues()
+        {
+            using var cts = new CancellationTokenSource();
+            for (var i = 0; i < 2; i++)
+            {
+                await Page.WaitForFunctionAsync(
+                    "() => true",
+                    new WaitForFunctionOptions
+                    {
+                        CancellationToken = cts.Token,
+                    });
+            }
+
+            // If we got here without exceptions, the test passed.
+            // This is the .NET equivalent of the upstream test that verifies
+            // no Node.js MaxListeners warnings are emitted when starting
+            // multiple wait tasks with an AbortSignal.
         }
     }
 }

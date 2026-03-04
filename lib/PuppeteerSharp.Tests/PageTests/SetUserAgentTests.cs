@@ -83,6 +83,29 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should restore original")]
+        public async Task ShouldRestoreOriginal()
+        {
+            var userAgent = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+
+            await Page.SetUserAgentAsync("foobar");
+            var requestWithOverrideTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                requestWithOverrideTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(requestWithOverrideTask.Result, Is.EqualTo("foobar"));
+
+            await Page.SetUserAgentAsync(string.Empty);
+            var requestTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(requestTask.Result, Is.EqualTo(userAgent));
+
+            var userAgentRestored = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+            Assert.That(userAgentRestored, Is.EqualTo(userAgent));
+        }
+
         [Test, PuppeteerTest("puppeteer-sharp", "Page Page.setUserAgent", "should work with bitness and wow64")]
         public async Task ShouldWorkWithBitnessAndWow64()
         {
