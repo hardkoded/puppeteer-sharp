@@ -36,6 +36,17 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(result.GetProperty("stack").GetString(), Does.Contain("ExposeFunctionTests"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should await returned if called from function")]
+        public async Task ShouldAwaitReturnedIfCalledFromFunction()
+        {
+            await Page.ExposeFunctionAsync("compute", (int a, int b) => Task.FromResult(a * b));
+            var result = await Page.EvaluateFunctionAsync<int>(@"async () => {
+                const result = await compute(3, 5);
+                return result;
+            }");
+            Assert.That(result, Is.EqualTo(15));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.exposeFunction", "should be callable from-inside evaluateOnNewDocument")]
         public async Task ShouldBeCallableFromInsideEvaluateOnNewDocument()
         {

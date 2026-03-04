@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
 
@@ -110,6 +112,43 @@ namespace PuppeteerSharp.Tests.PageTests
             }
 
             Assert.That(error, Is.False);
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with delayed response")]
+        public async Task ShouldWorkWithDelayedResponse()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var responseTcs = new TaskCompletionSource<HttpResponse>();
+            Server.SetRoute("/fetch-request-b.js", context =>
+            {
+                responseTcs.SetResult(context.Response);
+                // Don't complete the response yet - wait for external signal
+                return Task.Delay(10000);
+            });
+
+            var stopwatch = Stopwatch.StartNew();
+            var idleTask = Page.WaitForNetworkIdleAsync(new WaitForNetworkIdleOptions { IdleTime = 100 });
+
+            // Start the fetch which will be delayed
+            var fetchTask = Page.EvaluateFunctionAsync("async () => { await fetch('/fetch-request-b.js'); }");
+
+            // Wait for the server to receive the request
+            var response = await responseTcs.Task;
+
+            // Wait 300ms then complete the response
+            await Task.Delay(300);
+            var t2 = stopwatch.ElapsedMilliseconds;
+            response.StatusCode = 200;
+            await response.CompleteAsync();
+
+            await idleTask;
+            var t1 = stopwatch.ElapsedMilliseconds;
+
+            Assert.That(t1, Is.GreaterThan(t2));
+            // request finished + idle time.
+            Assert.That(t1, Is.GreaterThanOrEqualTo(400));
+            // request finished + idle time - request finished.
+            Assert.That(t1 - t2, Is.GreaterThanOrEqualTo(100));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.waitForNetworkIdle", "should work with no timeout")]
