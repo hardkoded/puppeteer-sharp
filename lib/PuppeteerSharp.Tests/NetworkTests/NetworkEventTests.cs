@@ -35,8 +35,8 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(requests[0].Frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache")]
-        public async Task PageEventsRequestServedFromCache()
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache for stylesheet")]
+        public async Task PageEventsRequestServedFromCacheForStylesheet()
         {
             // Use a fresh browser context to avoid shared HTTP cache from prior tests.
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -55,6 +55,28 @@ namespace PuppeteerSharp.Tests.NetworkTests
             await Task.Delay(1000);
             await page.ReloadAsync();
             Assert.That(cached, Is.EqualTo(new[] { "one-style.css" }));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestServedFromCache for script")]
+        public async Task PageEventsRequestServedFromCacheForScript()
+        {
+            // Use a fresh browser context to avoid shared HTTP cache from prior tests.
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+
+            var cached = new List<string>();
+            page.RequestServedFromCache += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    cached.Add(e.Request.Url.Split('/').Last());
+                }
+            };
+            await page.GoToAsync(TestConstants.ServerUrl + "/cached/one-script.html");
+            Assert.That(cached, Is.Empty);
+            await Task.Delay(1000);
+            await page.ReloadAsync();
+            Assert.That(cached, Is.EqualTo(new[] { "one-script.js" }));
         }
 
         [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.Response")]

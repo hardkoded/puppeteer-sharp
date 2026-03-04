@@ -12,6 +12,7 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
         private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
         private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap = new();
+        private readonly ConcurrentDictionary<string, List<RequestWillBeSentExtraInfoResponse>> _requestWillBeSentExtraInfoMap = new();
         private readonly ConcurrentDictionary<string, List<ResponseReceivedExtraInfoResponse>> _responseReceivedExtraInfoMap = new();
 
         public int NumRequestsInProgress
@@ -21,11 +22,15 @@ namespace PuppeteerSharp.Cdp
         {
             _requestWillBeSentMap.TryRemove(requestId, out _);
             _requestPausedMap.TryRemove(requestId, out _);
+            _requestWillBeSentExtraInfoMap.TryRemove(requestId, out _);
             _queuedEventGroupMap.TryRemove(requestId, out _);
             _queuedRedirectInfoMap.TryRemove(requestId, out _);
             _responseReceivedExtraInfoMap.TryRemove(requestId, out _);
             _httpRequestsMap.TryRemove(requestId, out _);
         }
+
+        internal List<RequestWillBeSentExtraInfoResponse> RequestExtraInfo(string networkRequestId)
+            => _requestWillBeSentExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());
 
         internal List<ResponseReceivedExtraInfoResponse> ResponseExtraInfo(string networkRequestId)
             => _responseReceivedExtraInfoMap.GetOrAdd(networkRequestId, static _ => new());

@@ -43,7 +43,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("Hello, world!\uFFFD"));
         }
 
-        [Test, PuppeteerTest("Puppeteer-Sharp", "network Request.postData", "should be |undefined| when there is no post data")]
+        [Test, PuppeteerTest("network.spec", "network Request.postData", "should be |undefined| when there is no post data")]
         public async Task ShouldBeUndefinedWhenThereIsNoPostData()
         {
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
