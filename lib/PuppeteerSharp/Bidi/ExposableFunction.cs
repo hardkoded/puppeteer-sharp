@@ -48,7 +48,9 @@ internal class ExposableFunction : IAsyncDisposable
     private readonly bool _isolate;
     private readonly string _channel;
     private readonly List<(BidiFrame Frame, string ScriptId)> _scripts = new();
+#pragma warning disable CA2213 // Disposed in DisposeAsync via Interlocked.Exchange
     private EventObserver<ScriptMessageEventArgs> _observer;
+#pragma warning restore CA2213
     private int _disposed;
 
     private ExposableFunction(BidiFrame frame, string name, Delegate puppeteerFunction, bool isolate = false)
@@ -92,7 +94,7 @@ internal class ExposableFunction : IAsyncDisposable
 
         // Unsubscribe from messages using atomic exchange
         var observer = Interlocked.Exchange(ref _observer, null);
-        observer?.Unobserve();
+        observer?.Dispose();
 
         // Remove preload scripts and delete the function from globalThis
         foreach (var (frame, scriptId) in _scripts)
