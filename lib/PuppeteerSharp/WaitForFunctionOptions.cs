@@ -19,6 +19,15 @@ namespace PuppeteerSharp
         public int? PollingInterval { get; set; }
 
         /// <summary>
+        /// A <see cref="CancellationToken"/> to cancel the wait operation.
+        /// </summary>
+        /// <remarks>
+        /// This is the .NET equivalent of the upstream AbortController/AbortSignal pattern.
+        /// When the token is cancelled, the wait operation will throw an <see cref="System.OperationCanceledException"/>.
+        /// </remarks>
+        public CancellationToken CancellationToken { get; set; }
+
+        /// <summary>
         /// Root element.
         /// </summary>
         internal IElementHandle Root { get; set; }

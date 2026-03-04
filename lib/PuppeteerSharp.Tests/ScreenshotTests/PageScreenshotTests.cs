@@ -234,6 +234,7 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
 
             await using var browser = await Puppeteer.LaunchAsync(options);
             await using var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var originalSize = await page.EvaluateFunctionAsync<ViewPortOptions>(@"() => {
                 return {width: window.innerWidth, height: window.innerHeight};
             }");
