@@ -1418,11 +1418,7 @@ public class BidiPage : Page
     {
         if (expected && interception == null)
         {
-            var options = new AddInterceptCommandParameters();
-            foreach (var phase in phases)
-            {
-                options.Phases.Add(phase);
-            }
+            var options = new AddInterceptCommandParameters(phases);
 
             return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
         }
