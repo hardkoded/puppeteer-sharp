@@ -131,5 +131,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Chrome 145 does not generate pointer events for multi-touch CDP Input.dispatchTouchEvent after the first touch. Upstream passes with Chrome 146.",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["FAIL"]
   }
 ]
