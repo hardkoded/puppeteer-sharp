@@ -129,8 +129,8 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
             throw new PuppeteerException("Cannot send more than 1 character.");
         }
 
-        // Use the main frame for now; in future we may need to find the focused frame
-        await page.BidiMainFrame.EvaluateFunctionAsync(
+        var frame = await page.FocusedFrameAsync().ConfigureAwait(false);
+        await frame.IsolatedRealm.EvaluateFunctionAsync(
             "async (char) => { document.execCommand('insertText', false, char); }",
             charText).ConfigureAwait(false);
     }
