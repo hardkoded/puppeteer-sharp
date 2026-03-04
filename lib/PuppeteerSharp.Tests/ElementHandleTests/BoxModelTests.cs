@@ -73,5 +73,53 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             var elementHandle = await Page.QuerySelectorAsync("div");
             Assert.That(await elementHandle.BoxModelAsync(), Is.Null);
         }
+
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.boxModel", "should correctly compute box model with offsets")]
+        public async Task ShouldCorrectlyComputeBoxModelWithOffsets()
+        {
+            var border = 10;
+            var padding = 11;
+            var margin = 12;
+            var width = 200;
+            var height = 100;
+            var verticalOffset = 100;
+            var horizontalOffset = 100;
+
+            await Page.SetContentAsync(
+                $"<div style=\"position:absolute; left: {horizontalOffset}px; top: {verticalOffset}px; width: {width}px; height: {height}px; border: {border}px solid green; padding: {padding}px; margin: {margin}px;\" id=\"box\"></div>");
+
+            var element = await Page.QuerySelectorAsync("#box");
+            var boxModel = await element.BoxModelAsync();
+
+            BoxModelPoint[] MakeQuad(BoxModelPoint topLeft, BoxModelPoint bottomRight)
+            {
+                return new[]
+                {
+                    new BoxModelPoint { X = topLeft.X, Y = topLeft.Y },
+                    new BoxModelPoint { X = bottomRight.X, Y = topLeft.Y },
+                    new BoxModelPoint { X = bottomRight.X, Y = bottomRight.Y },
+                    new BoxModelPoint { X = topLeft.X, Y = bottomRight.Y },
+                };
+            }
+
+            Assert.That(boxModel.Width, Is.EqualTo(width + (padding * 2) + (border * 2)));
+            Assert.That(boxModel.Height, Is.EqualTo(height + (padding * 2) + (border * 2)));
+
+            Assert.That(boxModel.Content, Is.EqualTo(MakeQuad(
+                new BoxModelPoint { X = horizontalOffset + padding + margin + border, Y = verticalOffset + padding + margin + border },
+                new BoxModelPoint { X = horizontalOffset + width + padding + margin + border, Y = verticalOffset + height + padding + margin + border })));
+
+            Assert.That(boxModel.Padding, Is.EqualTo(MakeQuad(
+                new BoxModelPoint { X = horizontalOffset + margin + border, Y = verticalOffset + margin + border },
+                new BoxModelPoint { X = horizontalOffset + width + (padding * 2) + margin + border, Y = verticalOffset + (padding * 2) + height + margin + border })));
+
+            Assert.That(boxModel.Border, Is.EqualTo(MakeQuad(
+                new BoxModelPoint { X = horizontalOffset + margin, Y = verticalOffset + margin },
+                new BoxModelPoint { X = horizontalOffset + width + (padding * 2) + margin + (border * 2), Y = verticalOffset + (padding * 2) + height + margin + (border * 2) })));
+
+            Assert.That(boxModel.Margin, Is.EqualTo(MakeQuad(
+                new BoxModelPoint { X = horizontalOffset, Y = verticalOffset },
+                new BoxModelPoint { X = horizontalOffset + width + (padding * 2) + (margin * 2) + (border * 2), Y = verticalOffset + (padding * 2) + height + (margin * 2) + (border * 2) })));
+        }
     }
 }

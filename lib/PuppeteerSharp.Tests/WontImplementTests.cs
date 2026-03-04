@@ -51,6 +51,15 @@ namespace PuppeteerSharp.Tests
         // These test JavaScript-internal utilities (PuppeteerUtil, createFunction) injected into the isolated realm via LazyArg - no C# equivalent
         [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
         [PuppeteerTest("injected.spec", "createFunction tests", "should work")]
+        // Symbol.dispose / Symbol.asyncDispose are JavaScript-specific disposal patterns (using/await using). C# has IDisposable/IAsyncDisposable which are already tested via DisposeAsync.
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.dispose]", "should work")]
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.asyncDispose]", "should work")]
+        // ElementHandle.move() is a JS-specific internal method for moving handles between realms - no C# equivalent
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.move", "should work")]
+        // ElementHandle.touchStart returning a Touch handle for chaining: C# ElementHandle.TouchStartAsync returns Task, not Task<ITouchHandle>
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
+        // ElementHandle.touchMove with a pre-existing Touch parameter: C# ElementHandle.TouchMoveAsync takes no parameters
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
         // PuppeteerSharp does not implement pipe transport, so pipe-related launcher tests are not applicable
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]

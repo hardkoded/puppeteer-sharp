@@ -81,7 +81,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
     /// <inheritdoc/>
     public override async ValueTask DisposeAsync()
     {
-        if (Disposed)
+        if (Disposed || CheckAndResetMoved())
         {
             return;
         }

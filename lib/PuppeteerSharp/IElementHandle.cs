@@ -324,14 +324,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dispatches a <c>touchstart</c> event.
         /// </summary>
-        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        Task TouchStartAsync();
+        /// <returns>A Task that resolves to the <see cref="ITouchHandle"/> for the started touch.</returns>
+        Task<ITouchHandle> TouchStartAsync();
 
         /// <summary>
         /// Dispatches a <c>touchmove</c> event.
         /// </summary>
+        /// <param name="touch">Optional touch handle to move. If not provided, the first active touch is moved.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        Task TouchMoveAsync();
+        Task TouchMoveAsync(ITouchHandle touch = null);
 
         /// <summary>
         /// /// Dispatches a <c>touchendt</c> event.

@@ -9,6 +9,8 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public abstract class JSHandle : IJSHandle
     {
+        private bool _moved;
+
         internal JSHandle()
         {
         }
@@ -66,6 +68,13 @@ namespace PuppeteerSharp
         public abstract Task<T> JsonValueAsync<T>();
 
         /// <inheritdoc/>
+        public IJSHandle Move()
+        {
+            _moved = true;
+            return this;
+        }
+
+        /// <inheritdoc/>
         public abstract ValueTask DisposeAsync();
 
         /// <inheritdoc/>
@@ -86,6 +95,22 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             return Realm.EvaluateFunctionAsync<T>(script, [this, .. args]);
+        }
+
+        /// <summary>
+        /// Checks if the handle has been moved and should skip disposal.
+        /// If moved, resets the flag and returns <c>true</c>.
+        /// </summary>
+        /// <returns><c>true</c> if disposal should be skipped.</returns>
+        protected bool CheckAndResetMoved()
+        {
+            if (_moved)
+            {
+                _moved = false;
+                return true;
+            }
+
+            return false;
         }
     }
 }

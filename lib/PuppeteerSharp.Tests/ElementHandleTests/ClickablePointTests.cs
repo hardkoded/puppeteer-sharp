@@ -52,5 +52,45 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(pointWithOffset.X, Is.EqualTo(20 + 30 + 10)); // iframe pos + margin + offset
             Assert.That(pointWithOffset.Y, Is.EqualTo(20 + 30 + 15)); // iframe pos + margin + offset
         }
+
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.clickablePoint", "should not work if the click box is not visible")]
+        public async Task ShouldNotWorkIfTheClickBoxIsNotVisible()
+        {
+            await Page.SetContentAsync(
+                "<button style=\"width: 10px; height: 10px; position: absolute; left: -20px\"></button>");
+            var handle = await Page.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle.ClickablePointAsync());
+
+            await Page.SetContentAsync(
+                "<button style=\"width: 10px; height: 10px; position: absolute; right: -20px\"></button>");
+            var handle2 = await Page.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle2.ClickablePointAsync());
+
+            await Page.SetContentAsync(
+                "<button style=\"width: 10px; height: 10px; position: absolute; top: -20px\"></button>");
+            var handle3 = await Page.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle3.ClickablePointAsync());
+
+            await Page.SetContentAsync(
+                "<button style=\"width: 10px; height: 10px; position: absolute; bottom: -20px\"></button>");
+            var handle4 = await Page.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle4.ClickablePointAsync());
+        }
+
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.clickablePoint", "should not work if the click box is not visible due to the iframe")]
+        public async Task ShouldNotWorkIfTheClickBoxIsNotVisibleDueToTheIframe()
+        {
+            await Page.SetContentAsync(
+                "<iframe name=\"frame\" style=\"position: absolute; left: -100px\" srcdoc=\"<button style='width: 10px; height: 10px;'></button>\"></iframe>");
+            var frame = await Page.WaitForFrameAsync(f => f != Page.MainFrame);
+            var handle = await frame.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle.ClickablePointAsync());
+
+            await Page.SetContentAsync(
+                "<iframe name=\"frame2\" style=\"position: absolute; top: -100px\" srcdoc=\"<button style='width: 10px; height: 10px;'></button>\"></iframe>");
+            var frame2 = await Page.WaitForFrameAsync(f => f != Page.MainFrame);
+            var handle2 = await frame2.WaitForSelectorAsync("button");
+            Assert.ThrowsAsync<PuppeteerException>(async () => await handle2.ClickablePointAsync());
+        }
     }
 }
