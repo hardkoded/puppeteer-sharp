@@ -1065,6 +1065,7 @@ public class CdpPage : Page
                 AddConsoleMessageAsync,
                 HandleException);
             _workers[session.Id] = worker;
+            _ = FrameManager.NetworkManager.AddClientAsync(session);
             OnWorkerCreated(worker);
         }
 
