@@ -36,20 +36,23 @@ public class RequestRespondTests : PuppeteerPageBaseTest
     public async Task ShouldBeAbleToAccessTheResponse()
     {
         await Page.SetRequestInterceptionAsync(true);
-        Page.AddRequestInterceptor(request => request.RespondAsync(new ResponseData
-        {
-            Status = HttpStatusCode.OK,
-            Body = "Yo, page!"
-        }, 0));
         ResponseData response = null;
-        Page.AddRequestInterceptor(request =>
+        Page.AddRequestInterceptor(async request =>
         {
+            await request.RespondAsync(new ResponseData
+            {
+                Status = HttpStatusCode.OK,
+                Body = "Yo, page!"
+            }, 0);
+
             if (request is Cdp.CdpHttpRequest cdpRequest)
             {
                 response = cdpRequest.ResponseForRequest;
             }
-
-            return request.ContinueAsync(new Payload(), 0);
+            else if (request is Bidi.BidiHttpRequest bidiRequest)
+            {
+                response = bidiRequest.ResponseForRequest;
+            }
         });
         await Page.GoToAsync(TestConstants.EmptyPage);
         Assert.That(response, Is.Not.Null);

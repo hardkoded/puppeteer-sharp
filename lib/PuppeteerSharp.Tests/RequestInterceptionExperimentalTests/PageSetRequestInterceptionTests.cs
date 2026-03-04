@@ -369,19 +369,19 @@ public class PageSetRequestInterceptionTests : PuppeteerPageBaseTest
     public async Task ShouldBeAbleToAccessTheErrorReason()
     {
         await Page.SetRequestInterceptionAsync(true);
+        RequestAbortErrorCode? abortReason = null;
         Page.AddRequestInterceptor(async request =>
         {
             await request.AbortAsync(RequestAbortErrorCode.Failed, 0);
-        });
-        RequestAbortErrorCode? abortReason = null;
-        Page.AddRequestInterceptor(request =>
-        {
+
             if (request is Cdp.CdpHttpRequest cdpRequest)
             {
                 abortReason = cdpRequest.AbortErrorReason;
             }
-
-            return request.ContinueAsync(new Payload(), 0);
+            else if (request is Bidi.BidiHttpRequest bidiRequest)
+            {
+                abortReason = bidiRequest.AbortErrorReason;
+            }
         });
         try
         {
