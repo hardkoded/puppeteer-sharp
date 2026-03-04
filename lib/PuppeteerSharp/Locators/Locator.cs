@@ -439,6 +439,14 @@ namespace PuppeteerSharp.Locators
                 {
                     await Task.Delay(RetryDelay, linkedToken).ConfigureAwait(false);
                 }
+                catch (Exception) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+                catch (Exception) when (timeoutCts.IsCancellationRequested)
+                {
+                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
+                }
             }
         }
 
