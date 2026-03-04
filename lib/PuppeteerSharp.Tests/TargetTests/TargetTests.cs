@@ -31,6 +31,12 @@ namespace PuppeteerSharp.Tests.TargetTests
             Assert.That(allPages, Does.Contain(Page));
         }
 
+        [Test, PuppeteerTest("target.spec", "Target", "page should return tab target id")]
+        public void PageShouldReturnTabTargetId()
+        {
+            Assert.That(((Page)Page).TabId.Length, Is.GreaterThan(0));
+        }
+
         [Test, PuppeteerTest("target.spec", "Target", "should contain browser target")]
         public void ShouldContainBrowserTarget()
         {

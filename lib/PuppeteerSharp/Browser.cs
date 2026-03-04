@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 #if !CDP_ONLY
 using PuppeteerSharp.Bidi;
@@ -128,6 +129,7 @@ namespace PuppeteerSharp
             }
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
             var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void TargetHandler(object sender, TargetChangedArgs e)
@@ -138,10 +140,18 @@ namespace PuppeteerSharp
                 }
             }
 
+            CancellationTokenRegistration? cancellationRegistration = null;
+
             try
             {
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
+
+                if (cancellationToken != default)
+                {
+                    cancellationRegistration = cancellationToken.Register(
+                        () => targetCompletionSource.TrySetCanceled(cancellationToken));
+                }
 
                 var existingTarget = Targets().FirstOrDefault(predicate);
                 if (existingTarget != null)
@@ -153,6 +163,7 @@ namespace PuppeteerSharp
             }
             finally
             {
+                cancellationRegistration?.Dispose();
                 TargetCreated -= TargetHandler;
                 TargetChanged -= TargetHandler;
             }

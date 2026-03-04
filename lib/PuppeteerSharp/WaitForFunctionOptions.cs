@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -24,10 +22,5 @@ namespace PuppeteerSharp
         /// Root element.
         /// </summary>
         internal IElementHandle Root { get; set; }
-
-        /// <summary>
-        /// A <see cref="CancellationToken"/> to cancel the wait operation.
-        /// </summary>
-        internal CancellationToken CancellationToken { get; set; }
     }
 }
