@@ -207,6 +207,8 @@ namespace PuppeteerSharp
 
         internal IBluetoothEmulation Bluetooth { get; init; }
 
+        internal string TabId { get; set; } = string.Empty;
+
         internal bool IsDragging { get; set; }
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
