@@ -132,6 +132,16 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(exception.Message, Does.Not.Contain("Timeout"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.close", "should close child iframes")]
+        public async Task ShouldCloseChildIframes()
+        {
+            var newPage = await Context.NewPageAsync();
+            await newPage.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+            Assert.That(newPage.Frames, Has.Length.EqualTo(2));
+            await newPage.CloseAsync();
+            Assert.That(await Context.PagesAsync(), Does.Not.Contain(newPage));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.close PuppeteerSharp", "should close when connection breaks prematurely")]
         public async Task ShouldCloseWhenConnectionBreaksPrematurely()
         {
