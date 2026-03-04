@@ -83,6 +83,7 @@ The library uses a base class pattern with protocol-specific implementations:
 
 **IMPORTANT: Test Expectations Files Rules:**
 - `TestExpectations.upstream.json`: This file should NEVER be edited unless syncing with the upstream Puppeteer project. It contains expectations that match the upstream Puppeteer test expectations.
+- `TestExpectations.canary.json`: Mirrors upstream's `CanaryTestExpectations.json`. Contains expectations for known browser bugs in newer/canary versions that also affect our current browser versions. Sync this file with upstream's canary expectations when tests fail due to browser-level bugs (not PuppeteerSharp code issues).
 - `TestExpectations.local.json`: Use this file for local overrides and PuppeteerSharp-specific test expectations. Add entries here to skip or mark tests that fail due to .NET-specific issues or features not yet implemented. Never add entries to this file that are meant to match upstream expectations and never add entries without explicit confirmation.
 
 ### Building and Running Tests
