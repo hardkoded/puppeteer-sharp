@@ -63,6 +63,8 @@ namespace PuppeteerSharp.Tests
         // PuppeteerSharp does not implement pipe transport, so pipe-related launcher tests are not applicable
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
+        // The pipe=true variant of this userDataDir test requires pipe transport which PuppeteerSharp does not implement
+        [PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=true")]
         // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
         public void TheseTestWontBeImplemented()
