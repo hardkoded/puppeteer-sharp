@@ -465,16 +465,19 @@ namespace PuppeteerSharp.Locators
                 {
                     throw;
                 }
-                catch (Exception) when (linkedToken.IsCancellationRequested && timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+                catch (Exception) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+                catch (Exception) when (timeoutCts.IsCancellationRequested)
                 {
                     throw new TimeoutException($"Timed out after waiting {Timeout}ms");
                 }
-                catch (Exception) when (linkedToken.IsCancellationRequested)
+                catch
                 {
-                    throw;
-                }
-                catch (Exception) when (!linkedToken.IsCancellationRequested)
-                {
+                    // Non-cancellation error: wait before retrying.
+                    // Task.Delay is wrapped in try-catch because exceptions thrown
+                    // inside a catch block bypass sibling catch clauses.
                     try
                     {
                         await Task.Delay(RetryDelay, linkedToken).ConfigureAwait(false);
@@ -483,14 +486,6 @@ namespace PuppeteerSharp.Locators
                     {
                         throw new TimeoutException($"Timed out after waiting {Timeout}ms");
                     }
-                }
-                catch (Exception) when (cancellationToken.IsCancellationRequested)
-                {
-                    throw new OperationCanceledException(cancellationToken);
-                }
-                catch (Exception) when (timeoutCts.IsCancellationRequested)
-                {
-                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
                 }
             }
         }
