@@ -9,6 +9,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="TestExpectations\TestExpectations.local.json" />
+	  <EmbeddedResource Include="TestExpectations\TestExpectations.canary.json" />
 	  <EmbeddedResource Include="TestExpectations\TestExpectations.upstream.json" />
 	</ItemGroup>
 	<ItemGroup>

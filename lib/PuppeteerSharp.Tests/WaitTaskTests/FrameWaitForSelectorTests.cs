@@ -305,18 +305,22 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divHidden, Is.True);
         }
 
-        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (removal)")]
         public async Task HiddenShouldWaitForRemoval()
         {
+            var promise = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true });
             await Page.SetContentAsync("<div>text</div>");
-            var divRemoved = false;
-            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
-                .ContinueWith(_ => divRemoved = true);
-            await Page.WaitForSelectorAsync("div"); // do a round trip
-            Assert.That(divRemoved, Is.False);
-            await Page.EvaluateExpressionAsync("document.querySelector('div').remove()");
-            Assert.That(await waitForSelector, Is.True);
-            Assert.That(divRemoved, Is.True);
+            await Page.EvaluateFunctionHandleAsync("() => document.getElementsByTagName('div')[0]");
+
+            // The promise should not have resolved yet because the div is still in the DOM
+            var completed = await Task.WhenAny(promise, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(promise));
+
+            await Page.EvaluateFunctionAsync("e => e.remove()", await Page.QuerySelectorAsync("div"));
+
+            // After removal, waitForSelector should resolve to null
+            var result = await promise;
+            Assert.That(result, Is.Null);
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should return null if waiting to hide non-existing element")]

@@ -170,7 +170,7 @@ namespace PuppeteerSharp
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
-                    await TerminateAsync(exception).ConfigureAwait(false);
+                    await TerminateAsync(new PuppeteerException("Waiting failed", exception)).ConfigureAwait(false);
                 }
             }
         }

@@ -20,6 +20,7 @@ namespace PuppeteerSharp.Nunit
     public class PuppeteerTestAttribute : NUnitAttribute, IApplyToTest
     {
         private static TestExpectation[] _localExpectations;
+        private static TestExpectation[] _canaryExpectations;
         private static TestExpectation[] _upstreamExpectations;
 
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
@@ -120,9 +121,10 @@ namespace PuppeteerSharp.Nunit
             ];
 
             var localExpectations = GetLocalExpectations();
+            var canaryExpectations = GetCanaryExpectations();
             var upstreamExpectations = GetUpstreamExpectations();
-            // Join local and upstream in one variable
-            var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
+            // Join local, canary, and upstream in one variable
+            var allExpectations = localExpectations.Concat(canaryExpectations).Concat(upstreamExpectations).ToArray();
 
             var testIdStr = ToString();
 
@@ -185,6 +187,9 @@ namespace PuppeteerSharp.Nunit
 
         private static TestExpectation[] GetLocalExpectations() =>
             _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.local.json");
+
+        private static TestExpectation[] GetCanaryExpectations() =>
+            _canaryExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.canary.json");
 
         private static TestExpectation[] GetUpstreamExpectations() =>
             _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");
