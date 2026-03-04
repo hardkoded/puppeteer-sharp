@@ -484,6 +484,14 @@ namespace PuppeteerSharp.Locators
                         throw new TimeoutException($"Timed out after waiting {Timeout}ms");
                     }
                 }
+                catch (Exception) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+                catch (Exception) when (timeoutCts.IsCancellationRequested)
+                {
+                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
+                }
             }
         }
 
