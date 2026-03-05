@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -61,11 +62,27 @@ public class DeviceRequestPromptManager
         }
 
         var timeout = options?.Timeout ?? _timeoutSettings.Timeout;
-        var task = _deviceRequestPromptTcs.Task.WithTimeout(timeout);
+        var cancellationToken = options?.CancellationToken ?? default;
+        CancellationTokenRegistration? registration = null;
 
-        await Task.WhenAll(enableTask, task).ConfigureAwait(false);
+        if (cancellationToken != default)
+        {
+            registration = cancellationToken.Register(
+                () => _deviceRequestPromptTcs.TrySetCanceled(cancellationToken));
+        }
 
-        return await _deviceRequestPromptTcs.Task.ConfigureAwait(false);
+        try
+        {
+            var task = _deviceRequestPromptTcs.Task.WithTimeout(timeout, cancellationToken: cancellationToken);
+
+            await Task.WhenAll(enableTask, task).ConfigureAwait(false);
+
+            return await _deviceRequestPromptTcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            registration?.Dispose();
+        }
     }
 
     private void OnMessageReceived(object sender, MessageEventArgs e)
