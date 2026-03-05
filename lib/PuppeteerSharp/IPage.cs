@@ -997,6 +997,17 @@ namespace PuppeteerSharp
         Task<IResponse> ReloadAsync(ReloadOptions options);
 
         /// <summary>
+        /// Captures a screencast of this <see cref="IPage"/>.
+        /// </summary>
+        /// <param name="options">Screencast options.</param>
+        /// <returns>A Task which resolves to a <see cref="ScreenRecorder"/> that can be used to stop the recording.</returns>
+        /// <remarks>
+        /// By default, all recordings will be WebM format using the VP9 video codec, with a frame rate of 30 FPS.
+        /// You must have ffmpeg installed on your system.
+        /// </remarks>
+        Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null);
+
+        /// <summary>
         /// Captures a screenshot of this <see cref="IPage"/>.
         /// </summary>
         /// <returns>The screenshot task.</returns>
