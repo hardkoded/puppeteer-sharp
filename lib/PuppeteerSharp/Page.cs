@@ -41,6 +41,8 @@ namespace PuppeteerSharp
 
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
+        private int _screencastSessionCount;
+        private Task _startScreencastTask;
 
         internal Page(TaskQueue screenshotTaskQueue)
         {
@@ -448,6 +450,69 @@ namespace PuppeteerSharp
             return Task.WhenAll(
                 SetViewportAsync(options.ViewPort),
                 SetUserAgentAsync(options.UserAgent));
+        }
+
+        /// <inheritdoc/>
+        public async Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null)
+        {
+            options ??= new ScreencastOptions();
+
+            var dimensions = await GetNativePixelDimensionsAsync().ConfigureAwait(false);
+            var viewportWidth = dimensions.Width / dimensions.DevicePixelRatio;
+            var viewportHeight = dimensions.Height / dimensions.DevicePixelRatio;
+
+            if (options.Crop != null)
+            {
+                var crop = options.Crop;
+                var cropX = crop.X;
+                var cropY = crop.Y;
+                var cropWidth = crop.Width;
+                var cropHeight = crop.Height;
+
+                if (cropX < 0 || cropY < 0)
+                {
+                    throw new PuppeteerException("`crop.x` and `crop.y` must be greater than or equal to 0.");
+                }
+
+                if (cropWidth <= 0 || cropHeight <= 0)
+                {
+                    throw new PuppeteerException("`crop.height` and `crop.width` must be greater than or equal to 0.");
+                }
+
+                if (cropX + cropWidth > (decimal)viewportWidth)
+                {
+                    throw new PuppeteerException($"`crop.width` cannot be larger than the viewport width ({viewportWidth}).");
+                }
+
+                if (cropY + cropHeight > (decimal)viewportHeight)
+                {
+                    throw new PuppeteerException($"`crop.height` cannot be larger than the viewport height ({viewportHeight}).");
+                }
+            }
+
+            if (options.Speed is not null && options.Speed <= 0)
+            {
+                throw new PuppeteerException("`speed` must be greater than 0.");
+            }
+
+            if (options.Scale is not null && options.Scale <= 0)
+            {
+                throw new PuppeteerException("`scale` must be greater than 0.");
+            }
+
+            var recorder = new ScreenRecorder(this, options);
+
+            try
+            {
+                await StartScreencastAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+                await recorder.StopAsync().ConfigureAwait(false);
+                throw;
+            }
+
+            return recorder;
         }
 
         /// <inheritdoc/>
@@ -899,6 +964,53 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Starts a CDP screencast session.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the screencast has started.</returns>
+        internal async Task StartScreencastAsync()
+        {
+            _screencastSessionCount++;
+            if (_startScreencastTask == null)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+                void OnScreencastFrame(object sender, MessageEventArgs e)
+                {
+                    if (e.MessageID == "Page.screencastFrame")
+                    {
+                        Client.MessageReceived -= OnScreencastFrame;
+                        tcs.TrySetResult(true);
+                    }
+                }
+
+                Client.MessageReceived += OnScreencastFrame;
+                _startScreencastTask = Client.SendAsync("Page.startScreencast", new { format = "png" })
+                    .ContinueWith(_ => tcs.Task, TaskScheduler.Default)
+                    .Unwrap();
+            }
+
+            await _startScreencastTask.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Stops a CDP screencast session.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the screencast has stopped.</returns>
+        internal async Task StopScreencastAsync()
+        {
+            _screencastSessionCount--;
+            if (_startScreencastTask == null)
+            {
+                return;
+            }
+
+            _startScreencastTask = null;
+            if (_screencastSessionCount == 0)
+            {
+                await Client.SendAsync("Page.stopScreencast").ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Raises the <see cref="Request"/> event without enqueueing handlers.
         /// Used when handlers have already been enqueued separately.
         /// </summary>
@@ -1021,6 +1133,34 @@ namespace PuppeteerSharp
                 Width = Math.Abs(clip.Width),
                 Height = Math.Abs(clip.Height),
             };
+        }
+
+        private async Task<NativePixelDimensions> GetNativePixelDimensionsAsync()
+        {
+            var result = await MainFrame.EvaluateFunctionAsync<decimal[]>(
+                @"() => {
+                    return [
+                        window.visualViewport.width * window.devicePixelRatio,
+                        window.visualViewport.height * window.devicePixelRatio,
+                        window.devicePixelRatio,
+                    ];
+                }").ConfigureAwait(false);
+
+            return new NativePixelDimensions
+            {
+                Width = (double)result[0],
+                Height = (double)result[1],
+                DevicePixelRatio = (double)result[2],
+            };
+        }
+
+        private struct NativePixelDimensions
+        {
+            public double Width { get; set; }
+
+            public double Height { get; set; }
+
+            public double DevicePixelRatio { get; set; }
         }
     }
 }
