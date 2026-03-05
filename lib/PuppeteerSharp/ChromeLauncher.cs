@@ -49,6 +49,7 @@ namespace PuppeteerSharp
                 "ReadAnythingOmniboxChip",
                 "ProcessPerSiteUpToMainFrameThreshold",
                 "IsolateSandboxedIframes",
+                "PartitionAllocSchedulerLoopQuarantineTaskControlledPurge",
             };
 
             disabledFeatures.AddRange(userDisabledFeatures);
