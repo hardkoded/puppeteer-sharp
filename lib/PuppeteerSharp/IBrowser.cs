@@ -112,6 +112,14 @@ namespace PuppeteerSharp
         string WebSocketEndpoint { get; }
 
         /// <summary>
+        /// Get debug information from Puppeteer.
+        /// </summary>
+        /// <remarks>
+        /// Currently, includes pending protocol calls. In the future, more info might be added.
+        /// </remarks>
+        DebugInfo DebugInfo { get; }
+
+        /// <summary>
         /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>.
         /// </summary>
         /// <returns>An array of <see cref="IBrowserContext"/> objects.</returns>

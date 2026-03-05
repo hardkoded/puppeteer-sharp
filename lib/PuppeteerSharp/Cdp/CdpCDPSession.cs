@@ -144,6 +144,18 @@ public class CdpCDPSession : CDPSession
 
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+    internal List<string> GetPendingProtocolErrors()
+    {
+        var result = new List<string>();
+
+        foreach (var callback in _callbacks.Values)
+        {
+            result.Add($"{callback.Method} timed out.");
+        }
+
+        return result;
+    }
+
     internal int GetMessageId() => Interlocked.Increment(ref _lastId);
 
     internal IEnumerable<MessageTask> GetPendingMessages() => _callbacks.Values;
