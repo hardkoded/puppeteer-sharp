@@ -102,6 +102,7 @@ internal class Navigation
 
         Session.BrowsingContextDomContentLoaded += OnSessionPageLoaded;
         Session.BrowsingContextLoad += OnSessionPageLoaded;
+        Session.BrowsingContextNavigationCommitted += OnSessionPageLoaded;
 
         Session.BrowsingContextFragmentNavigated += (sender, args) => HandleNavigation(args, () => OnFragment(new NavigationEventArgs(args.Url)));
         Session.BrowsingContextNavigationFailed += (sender, args) => HandleNavigation(args, () => OnFailed(new NavigationEventArgs(args.Url)));
