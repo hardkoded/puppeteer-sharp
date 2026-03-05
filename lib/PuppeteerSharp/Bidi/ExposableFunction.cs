@@ -90,9 +90,9 @@ internal class ExposableFunction : IAsyncDisposable
             return;
         }
 
-        // Unsubscribe from messages using atomic exchange
-        var observer = Interlocked.Exchange(ref _observer, null);
-        observer?.Unobserve();
+        // Unsubscribe from messages
+        _observer?.Dispose();
+        _observer = null;
 
         // Remove preload scripts and delete the function from globalThis
         foreach (var (frame, scriptId) in _scripts)
