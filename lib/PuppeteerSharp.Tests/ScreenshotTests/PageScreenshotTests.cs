@@ -167,6 +167,26 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip.png", screenshot), Is.True);
         }
 
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should clip clip bigger than the viewport without \"captureBeyondViewport\"")]
+        public async Task ShouldClipClipBiggerThanTheViewportWithoutCaptureBeyondViewport()
+        {
+            await using var page = await Context.NewPageAsync();
+            await page.SetViewportAsync(new ViewPortOptions { Width = 50, Height = 50 });
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+            {
+                CaptureBeyondViewport = false,
+                Clip = new Clip
+                {
+                    X = 25,
+                    Y = 25,
+                    Width = 100,
+                    Height = 100
+                }
+            });
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-offscreen-clip-2.png", screenshot), Is.True);
+        }
+
         [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel")]
         public async Task ShouldRunInParallel()
         {
@@ -212,6 +232,26 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
                 FullPage = true
             });
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage.png", screenshot), Is.True);
+        }
+
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should take fullPage screenshots without captureBeyondViewport")]
+        public async Task ShouldTakeFullPageScreenshotsWithoutCaptureBeyondViewport()
+        {
+            await using var page = await Context.NewPageAsync();
+            await page.SetViewportAsync(new ViewPortOptions
+            {
+                Width = 500,
+                Height = 500
+            });
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
+            {
+                FullPage = true,
+                CaptureBeyondViewport = false,
+            });
+            Assert.That(ScreenshotHelper.PixelMatch("screenshot-grid-fullpage-2.png", screenshot), Is.True);
+            Assert.That(page.Viewport.Width, Is.EqualTo(500));
+            Assert.That(page.Viewport.Height, Is.EqualTo(500));
         }
 
         [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should take fullPage screenshots when defaultViewport is null")]
@@ -303,7 +343,60 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             await Task.WhenAll(closeTasks);
         }
 
-        [Test, PuppeteerTest("screenshot.spec", "Screenshots Page.screenshot", "should run in parallel with page.close()")]
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should run in parallel in multiple pages")]
+        public async Task ShouldRunInParallelInMultiplePagesElementHandle()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+
+            const int n = 2;
+            var pageTasks = new List<Task<IPage>>();
+            for (var i = 0; i < n; i++)
+            {
+                pageTasks.Add(Func());
+                continue;
+
+                async Task<IPage> Func()
+                {
+                    var page = await context.NewPageAsync();
+                    await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+                    return page;
+                }
+            }
+
+            await Task.WhenAll(pageTasks);
+
+            var screenshotTasks = new List<Task<byte[]>>();
+            for (var i = 0; i < n; i++)
+            {
+                screenshotTasks.Add(pageTasks[i].Result.ScreenshotDataAsync(new ScreenshotOptions
+                {
+                    Clip = new Clip
+                    {
+                        X = 50 * i,
+                        Y = 0,
+                        Width = 50,
+                        Height = 50
+                    }
+                }));
+            }
+
+            await Task.WhenAll(screenshotTasks);
+
+            for (var i = 0; i < n; i++)
+            {
+                Assert.That(ScreenshotHelper.PixelMatch($"grid-cell-{i}.png", screenshotTasks[i].Result), Is.True);
+            }
+
+            var closeTasks = new List<Task>();
+            for (var i = 0; i < n; i++)
+            {
+                closeTasks.Add(pageTasks[i].Result.CloseAsync());
+            }
+
+            await Task.WhenAll(closeTasks);
+        }
+
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should run in parallel with page.close()")]
         public async Task ShouldRunInParallelWithPageClose()
         {
             await using var context = await Browser.CreateBrowserContextAsync();
@@ -357,12 +450,12 @@ namespace PuppeteerSharp.Tests.ScreenshotTests
             Assert.That(ScreenshotHelper.PixelMatch("white.jpg", screenshot), Is.True);
         }
 
-        [Test, PuppeteerTest("screenshot.spec", "Screenshots Cdp", "should work with webp")]
+        [Test, PuppeteerTest("screenshot.spec", "Screenshots ElementHandle.screenshot", "should work with webp")]
         public async Task ShouldWorkWithWebp()
         {
             await using var page = await Context.NewPageAsync();
             await page.SetViewportAsync(new ViewPortOptions { Width = 100, Height = 100 });
-            await page.GoToAsync(TestConstants.EmptyPage);
+            await page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var screenshot = await page.ScreenshotDataAsync(new ScreenshotOptions
             {
                 Type = ScreenshotType.Webp
