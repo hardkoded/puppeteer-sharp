@@ -619,8 +619,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work with encoded server - 2")]
-        public async Task ShouldWorkWithEncodedServerNegative2()
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should work with missing stylesheets")]
+        public async Task ShouldWorkWithMissingStylesheets()
         {
             // The requestWillBeSent will report URL as-is, whereas interception will
             // report encoded URL for stylesheet. @see crbug.com/759388
