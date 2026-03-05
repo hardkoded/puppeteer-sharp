@@ -62,6 +62,7 @@ public class CdpPage : Page
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
         TabTarget = (CdpTarget)TabTargetClient.Target;
+        TabId = TabTarget.TargetId;
         PrimaryTarget = target;
         _targetManager = target.TargetManager;
         Keyboard = new CdpKeyboard(client);

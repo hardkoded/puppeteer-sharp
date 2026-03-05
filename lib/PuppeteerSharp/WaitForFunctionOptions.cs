@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -19,15 +17,6 @@ namespace PuppeteerSharp
         /// An interval at which the <c>pageFunction</c> is executed. If no value is specified will use <see cref="Polling"/>.
         /// </summary>
         public int? PollingInterval { get; set; }
-
-        /// <summary>
-        /// A <see cref="CancellationToken"/> to cancel the wait operation.
-        /// </summary>
-        /// <remarks>
-        /// This is the .NET equivalent of the upstream AbortController/AbortSignal pattern.
-        /// When the token is cancelled, the wait operation will throw an <see cref="System.OperationCanceledException"/>.
-        /// </remarks>
-        public CancellationToken CancellationToken { get; set; }
 
         /// <summary>
         /// Root element.

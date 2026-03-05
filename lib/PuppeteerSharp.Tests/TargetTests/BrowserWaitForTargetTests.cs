@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -29,6 +30,18 @@ namespace PuppeteerSharp.Tests.TargetTests
             => Assert.ThrowsAsync<TimeoutException>(async () => await Browser.WaitForTargetAsync(
                 (target) => target.Url == TestConstants.EmptyPage,
                 new() { Timeout = 1 }));
+
+        [Test, PuppeteerTest("target.spec", "Target Browser.waitForTarget", "should be able to abort")]
+        public void ShouldBeAbleToAbort()
+        {
+            using var cts = new CancellationTokenSource();
+            var task = Browser.WaitForTargetAsync(
+                _ => false,
+                new WaitForOptions { CancellationToken = cts.Token });
+
+            cts.Cancel();
+            Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
+        }
 
         [Test, PuppeteerTest("target.spec", "Target", "should be able to use async waitForTarget")]
         public async Task ShouldBeAbleToUseAsyncWaitForTarget()
