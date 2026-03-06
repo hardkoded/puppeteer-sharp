@@ -11,11 +11,11 @@ Process the GitHub release at `$ARGUMENTS` and implement each non-documentation 
 
 ### Step 1: Parse the Release
 
-Extract the tag from the `$ARGUMENTS` URL (e.g. `https://github.com/nicknisi/puppeteer/releases/tag/puppeteer-v24.7.2` → `puppeteer-v24.7.2`).
+Extract the tag from the `$ARGUMENTS` URL (e.g. `https://github.com/puppeteer/puppeteer/releases/tag/puppeteer-v24.7.2` → `puppeteer-v24.7.2`).
 
 Fetch the release body:
 ```bash
-gh release view <tag> --repo nicknisi/puppeteer --json body -q .body
+gh release view <tag> --repo puppeteer/puppeteer --json body -q .body
 ```
 
 ### Step 2: Extract and Filter PRs
@@ -49,8 +49,8 @@ You are implementing upstream Puppeteer PR #<PR_NUMBER> (<PR_URL>) into the Pupp
 
 3. Read the upstream PR to understand the changes:
    ```bash
-   gh pr view <PR_NUMBER> --repo nicknisi/puppeteer --json title,body,files
-   gh pr diff <PR_NUMBER> --repo nicknisi/puppeteer
+   gh pr view <PR_NUMBER> --repo puppeteer/puppeteer --json title,body,files
+   gh pr diff <PR_NUMBER> --repo puppeteer/puppeteer
    ```
 4. Read the relevant upstream source files in `../../puppeteer/puppeteer` to understand context.
 5. Read the corresponding PuppeteerSharp files to understand the current .NET implementation.
