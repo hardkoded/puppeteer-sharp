@@ -322,13 +322,6 @@
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["headless"],
-    "expectations": ["FAIL"],
-    "comment": "Exact window bounds are different on Windows and Mac."
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should set and get browser window maximized state",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"],
@@ -1600,13 +1593,6 @@
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"],
     "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=1866749"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window in maximized state",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["FAIL"],
-    "comment": "Returns a different window size in Chrome Headless on Mac"
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
