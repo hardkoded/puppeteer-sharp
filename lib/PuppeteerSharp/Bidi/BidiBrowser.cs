@@ -74,6 +74,12 @@ public class BidiBrowser : Browser
     /// <inheritdoc/>
     public override IBrowserContext DefaultContext => _browserContexts.TryGetValue(BrowserCore.DefaultUserContext, out var context) ? context : null;
 
+    /// <inheritdoc />
+    public override DebugInfo DebugInfo => new()
+    {
+        PendingProtocolErrors = [],
+    };
+
     internal static string[] SubscribeModules { get; } =
     [
         "browsingContext",

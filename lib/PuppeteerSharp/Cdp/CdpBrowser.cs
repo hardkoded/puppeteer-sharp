@@ -99,6 +99,12 @@ public class CdpBrowser : Browser
         }
     }
 
+    /// <inheritdoc />
+    public override DebugInfo DebugInfo => new()
+    {
+        PendingProtocolErrors = Connection.GetPendingProtocolErrors(),
+    };
+
     internal ITargetManager TargetManager { get; }
 
     internal bool HandleDevToolsAsPage => _handleDevToolsAsPage;

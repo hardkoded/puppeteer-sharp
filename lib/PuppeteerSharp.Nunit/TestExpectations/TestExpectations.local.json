@@ -131,5 +131,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "BiDi driver does not expose pending protocol callbacks for DebugInfo tracking",
+    "testIdPattern": "[debugInfo.spec] DebugInfo Browser.debugInfo should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]

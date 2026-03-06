@@ -59,6 +59,9 @@ namespace PuppeteerSharp
         public virtual bool IsConnected => !Connection.IsClosed;
 
         /// <inheritdoc/>
+        public abstract DebugInfo DebugInfo { get; }
+
+        /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();

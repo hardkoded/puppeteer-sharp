@@ -190,6 +190,23 @@ namespace PuppeteerSharp.Cdp
 
         internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+        internal List<string> GetPendingProtocolErrors()
+        {
+            var result = new List<string>();
+
+            foreach (var callback in _callbacks.Values)
+            {
+                result.Add($"{callback.Method} timed out.");
+            }
+
+            foreach (var session in _sessions.Values)
+            {
+                result.AddRange(session.GetPendingProtocolErrors());
+            }
+
+            return result;
+        }
+
         internal void Close(string closeReason)
         {
             if (IsClosed)
