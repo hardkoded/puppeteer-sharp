@@ -108,6 +108,32 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(response.SecurityDetails, Is.Null);
         }
 
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should navigate successfully after encountering network error")]
+        public async Task ShouldNavigateSuccessfullyAfterEncounteringNetworkError()
+        {
+            // Destroy the connection to simulate a network error. This will open
+            // about:neterror on Firefox.
+            Server.SetRoute("/network-error", context =>
+            {
+                context.Abort();
+                return Task.CompletedTask;
+            });
+
+            Exception error = null;
+            try
+            {
+                await Page.GoToAsync(TestConstants.ServerUrl + "/network-error");
+            }
+            catch (Exception ex)
+            {
+                error = ex;
+            }
+
+            Assert.That(error, Is.Not.Null);
+            var response = await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
+            Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        }
+
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should work when page calls history API in beforeunload")]
         public async Task ShouldWorkWhenPageCallsHistoryAPIInBeforeunload()
         {
