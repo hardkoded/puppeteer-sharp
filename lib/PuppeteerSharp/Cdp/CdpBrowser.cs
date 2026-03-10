@@ -329,6 +329,14 @@ public class CdpBrowser : Browser
         return page;
     }
 
+    internal async Task<string> HasDevToolsTargetAsync(string pageTargetId)
+    {
+        var response = await Connection.SendAsync<TargetCreateTargetResponse>(
+            "Target.getDevToolsTarget",
+            new TargetActivateTargetRequest { TargetId = pageTargetId }).ConfigureAwait(false);
+        return response.TargetId;
+    }
+
     internal async Task DisposeContextAsync(string contextId)
     {
         await Connection.SendAsync("Target.disposeBrowserContext", new TargetDisposeBrowserContextRequest

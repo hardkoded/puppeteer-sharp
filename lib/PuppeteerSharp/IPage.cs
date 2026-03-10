@@ -375,6 +375,13 @@ namespace PuppeteerSharp
         Task<IPage> OpenDevToolsAsync();
 
         /// <summary>
+        /// Returns true if DevTools is attached to the current page.
+        /// Use <see cref="OpenDevToolsAsync"/> to get the DevTools page.
+        /// </summary>
+        /// <returns>A <see cref="Task{Boolean}"/> that completes with true if DevTools is attached.</returns>
+        Task<bool> HasDevToolsAsync();
+
+        /// <summary>
         /// Deletes cookies from the page.
         /// </summary>
         /// <param name="cookies">Cookies to delete.</param>

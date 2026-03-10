@@ -686,6 +686,9 @@ namespace PuppeteerSharp
         public abstract Task<IPage> OpenDevToolsAsync();
 
         /// <inheritdoc/>
+        public abstract Task<bool> HasDevToolsAsync();
+
+        /// <inheritdoc/>
         public abstract Task SetCacheEnabledAsync(bool enabled = true);
 
         /// <inheritdoc/>

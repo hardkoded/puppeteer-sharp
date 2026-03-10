@@ -190,6 +190,14 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
+    public override async Task<bool> HasDevToolsAsync()
+    {
+        var browser = (CdpBrowser)Browser;
+        var targetId = await browser.HasDevToolsTargetAsync(PrimaryTarget.TargetId).ConfigureAwait(false);
+        return !string.IsNullOrEmpty(targetId);
+    }
+
+    /// <inheritdoc/>
     public override async Task<CookieParam[]> GetCookiesAsync(params string[] urls)
     {
         if (urls == null)
