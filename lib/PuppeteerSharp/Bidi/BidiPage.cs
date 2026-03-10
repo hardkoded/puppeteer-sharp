@@ -886,6 +886,9 @@ public class BidiPage : Page
     public override Task<IPage> OpenDevToolsAsync() => throw new NotImplementedException();
 
     /// <inheritdoc />
+    public override Task<bool> HasDevToolsAsync() => throw new NotSupportedException("HasDevToolsAsync is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override async Task SetRequestInterceptionAsync(bool value)
     {
         _requestInterception = await ToggleInterceptionAsync(
