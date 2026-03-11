@@ -74,16 +74,21 @@ namespace PuppeteerSharp.Tests.MouseTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
             await Page.FocusAsync("textarea");
             await Page.Keyboard.TypeAsync(text);
-            await Page.WaitForFunctionAsync(@"(text) => document.querySelector('textarea').value === text", text);
+            await using var handle = await Page.Locator("textarea")
+                .FilterHandle(async element =>
+                {
+                    return await element.EvaluateFunctionAsync<bool>(
+                        @"(element, text) => element.value === text", text);
+                })
+                .WaitHandleAsync();
             var dimensions = await Page.EvaluateFunctionAsync<Dimensions>(Dimensions);
             await Page.Mouse.MoveAsync(dimensions.X + 2, dimensions.Y + 2);
             await Page.Mouse.DownAsync();
             await Page.Mouse.MoveAsync(100, 100);
             await Page.Mouse.UpAsync();
             Assert.That(
-                await Page.EvaluateFunctionAsync<string>(@"() => {
-                    const textarea = document.querySelector('textarea');
-                    return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+                await handle.EvaluateFunctionAsync<string>(@"(element) => {
+                    return element.value.substring(element.selectionStart, element.selectionEnd);
                 }"),
                 Is.EqualTo(text));
         }
