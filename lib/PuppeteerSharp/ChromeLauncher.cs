@@ -23,7 +23,7 @@ namespace PuppeteerSharp
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Chromium.</param>
         public ChromeLauncher(string executable, LaunchOptions options)
-            : base(executable, options)
+            : base(executable ?? throw new ArgumentNullException(nameof(executable)), options)
         {
             (var chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
 
@@ -262,12 +262,17 @@ namespace PuppeteerSharp
                 // 0</dev/null → redirect stdin from /dev/null
                 // 1>&2 → redirect stdout to stderr (for DumpIO)
                 var shell = FindShell();
-                var script = $"exec 3<&0 4>&1 0</dev/null 1>&2; exec \"{executable}\" {arguments}";
+
+                // Escape double quotes in the executable path and arguments so they
+                // can be safely embedded inside the double-quoted -c "..." argument.
+                // .NET's Process on Unix understands double-quote delimited arguments
+                // but does NOT handle single quotes.
+                var escapedExecutable = executable.Replace("\"", "\\\"");
+                var escapedArguments = arguments.Replace("\"", "\\\"");
+                var script = $"exec 3<&0 4>&1 0</dev/null 1>&2; exec \\\"{escapedExecutable}\\\" {escapedArguments}";
 
                 Process.StartInfo.FileName = shell;
-                Process.StartInfo.Arguments = string.Empty;
-                Process.StartInfo.ArgumentList.Add("-c");
-                Process.StartInfo.ArgumentList.Add(script);
+                Process.StartInfo.Arguments = $"-c \"{script}\"";
             }
         }
     }
