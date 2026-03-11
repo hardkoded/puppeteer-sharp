@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -35,6 +36,11 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
         [Test, PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=true")]
         public async Task ShouldNotLaunchBrowserTwiceWithSameUserDataDirWithPipe()
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Ignore("Pipe transport is not implemented on Windows yet");
+            }
+
             using var userDataDir = new TempDirectory();
             var options = TestConstants.DefaultBrowserOptions();
             options.UserDataDir = userDataDir.Path;

@@ -119,48 +119,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "Pipe transport is not implemented on Windows yet",
-    "testIdPattern": "[pipe.spec] *",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Pipe transport is not supported for Firefox",
-    "testIdPattern": "[pipe.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Pipe transport is not supported for Firefox",
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Pipe transport is not implemented on Windows yet",
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Pipe transport is not implemented on Windows yet",
-    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "comment": "Pipe transport is not supported for Firefox",
-    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "ASP.NET Core Kestrel does not support sending empty HTTP reason phrases - it defaults to 'OK' for status 200",
     "testIdPattern": "[network.spec] network Response.statusText handles missing status text",
     "platforms": ["darwin", "linux", "win32"],

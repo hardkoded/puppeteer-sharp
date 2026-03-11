@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -16,14 +17,17 @@ namespace PuppeteerSharp.Tests.WebExtensionTests
         [Test, PuppeteerTest("webExtension.spec", "webExtension", "can install and uninstall an extension")]
         public async Task CanInstallAndUninstallAnExtension()
         {
+            if (TestConstants.IsChrome && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Ignore("Pipe transport is not implemented on Windows yet");
+            }
+
             var options = TestConstants.DefaultBrowserOptions();
 
             if (TestConstants.IsChrome)
             {
-                options.IgnoredDefaultArgs = new[] { "--disable-extensions" };
-                options.Args = new[] { "--enable-unsafe-extension-debugging" }
-                    .Concat(options.Args ?? Array.Empty<string>())
-                    .ToArray();
+                options.EnableExtensions = true;
+                options.Pipe = true;
             }
 
             await using var browser = await Puppeteer.LaunchAsync(
