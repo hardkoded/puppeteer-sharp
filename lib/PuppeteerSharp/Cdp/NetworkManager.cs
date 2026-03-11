@@ -29,6 +29,7 @@ namespace PuppeteerSharp.Cdp
         private bool? _userCacheDisabled;
         private string _userAgent;
         private UserAgentMetadata _userAgentMetadata;
+        private string _platform;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkManager"/> class.
@@ -122,10 +123,11 @@ namespace PuppeteerSharp.Cdp
             return ApplyToAllClientsAsync(ApplyExtraHTTPHeadersAsync);
         }
 
-        internal Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata)
+        internal Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentMetadata, string platform = null)
         {
             _userAgent = userAgent;
             _userAgentMetadata = userAgentMetadata;
+            _platform = platform;
             return ApplyToAllClientsAsync(ApplyUserAgentAsync);
         }
 
@@ -638,6 +640,7 @@ namespace PuppeteerSharp.Cdp
                     {
                         UserAgent = _userAgent,
                         UserAgentMetadata = _userAgentMetadata,
+                        Platform = _platform,
                     }).ConfigureAwait(false);
             }
             catch (Exception ex) when (CanIgnoreError(ex))

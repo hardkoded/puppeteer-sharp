@@ -487,6 +487,13 @@ public class CdpPage : Page
         => FrameManager.NetworkManager.SetUserAgentAsync(userAgent, userAgentData);
 
     /// <inheritdoc/>
+    public override async Task SetUserAgentAsync(SetUserAgentOptions options)
+    {
+        var userAgent = options?.UserAgent ?? await Browser.GetUserAgentAsync().ConfigureAwait(false);
+        await FrameManager.NetworkManager.SetUserAgentAsync(userAgent, options?.UserAgentMetadata, options?.Platform).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override async Task<IResponse> ReloadAsync(ReloadOptions options)
     {
         Debug.Assert(options != null, nameof(options) + " != null");
