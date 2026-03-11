@@ -54,6 +54,20 @@
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+  <PropertyGroup Condition=" '$(DefineConstants)' != 'CDP_ONLY' ">
+    <ChromiumBidiVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)Bidi/chromium-bidi.version').Trim())</ChromiumBidiVersion>
+    <MapperTabPath>$(MSBuildThisFileDirectory)Bidi/mapperTab.js</MapperTabPath>
+  </PropertyGroup>
+  <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" '$(DefineConstants)' != 'CDP_ONLY' AND !Exists('$(MapperTabPath)') ">
+    <PropertyGroup>
+      <_TarballUrl>https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballUrl>
+      <_TarballPath>$(IntermediateOutputPath)chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
+    </PropertyGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <DownloadFile SourceUrl="$(_TarballUrl)" DestinationFolder="$(IntermediateOutputPath)" DestinationFileName="chromium-bidi-$(ChromiumBidiVersion).tgz" SkipUnchangedFiles="true" />
+    <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(MSBuildThisFileDirectory)Bidi&quot; package/lib/iife/mapperTab.js" />
+    <Message Importance="high" Text="Downloaded chromium-bidi v$(ChromiumBidiVersion) mapperTab.js" />
+  </Target>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
     <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />

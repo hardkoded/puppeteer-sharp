@@ -26,6 +26,10 @@ You are allowed to run git commands to update these repositories locally.
 - Original Puppeteer repository: ../../puppeteer/puppeteer. Every time "upstream" is mentioned we are referring to this code.
 - Bidi Driver: ../../webdriverbidi-net/webdriverbidi-net
 
+## chromium-bidi Mapper Version
+
+Chrome BiDi support uses the chromium-bidi mapper (downloaded at build time from npm). The version is tracked in `lib/PuppeteerSharp/Bidi/chromium-bidi.version`. When syncing with upstream Puppeteer, check if the chromium-bidi version has changed in `packages/puppeteer-core/package.json` (`"chromium-bidi": "X.Y.Z"`) and update our version file accordingly.
+
 ## Upstream code structure
 
 - Code in upstream puppeteer-core/src/api/* are our abstract class. For instance our public abstract class Frame.
