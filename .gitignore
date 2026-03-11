@@ -306,3 +306,6 @@ lib/.claude/settings.local.json
 lib/.claude/settings.local.json
 .nuget/
 .claude/*local*.*
+
+# Downloaded at build time from npm (see chromium-bidi.version)
+lib/PuppeteerSharp/Bidi/mapperTab.js
