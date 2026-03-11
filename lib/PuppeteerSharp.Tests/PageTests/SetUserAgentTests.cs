@@ -21,6 +21,73 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with options parameter")]
+        public async Task ShouldWorkWithOptionsParameter()
+        {
+            Assert.That(await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"), Does.Contain("Mozilla"));
+            await Page.SetUserAgentAsync(new SetUserAgentOptions { UserAgent = "foobar" });
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with platform option")]
+        public async Task ShouldWorkWithPlatformOption()
+        {
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.Not.EqualTo("MockPlatform"));
+
+            await Page.SetUserAgentAsync(new SetUserAgentOptions
+            {
+                UserAgent = "foobar",
+                Platform = "MockPlatform",
+            });
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.EqualTo("MockPlatform"));
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with platform option without userAgent")]
+        public async Task ShouldWorkWithPlatformOptionWithoutUserAgent()
+        {
+            var originalUserAgent = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.Not.EqualTo("MockPlatform"));
+
+            await Page.SetUserAgentAsync(new SetUserAgentOptions
+            {
+                Platform = "MockPlatform",
+            });
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.EqualTo("MockPlatform"));
+
+            // User agent should remain the same
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"),
+                Is.EqualTo(originalUserAgent));
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo(originalUserAgent));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
