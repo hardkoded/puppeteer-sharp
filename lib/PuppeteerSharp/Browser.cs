@@ -201,6 +201,18 @@ namespace PuppeteerSharp
             => DefaultContext.SetPermissionAsync(origin, permissions);
 
         /// <inheritdoc/>
+        public Task<CookieParam[]> GetCookiesAsync()
+            => DefaultContext.GetCookiesAsync();
+
+        /// <inheritdoc/>
+        public Task SetCookieAsync(params CookieData[] cookies)
+            => DefaultContext.SetCookieAsync(cookies);
+
+        /// <inheritdoc/>
+        public Task DeleteCookieAsync(params CookieParam[] cookies)
+            => DefaultContext.DeleteCookieAsync(cookies);
+
+        /// <inheritdoc/>
         public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
             => DefaultContext.DeleteMatchingCookiesAsync(filters);
 
