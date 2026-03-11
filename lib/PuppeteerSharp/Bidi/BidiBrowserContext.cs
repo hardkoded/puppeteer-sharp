@@ -189,7 +189,7 @@ public class BidiBrowserContext : BrowserContext
     }
 
     /// <inheritdoc />
-    public override Task<IPage[]> PagesAsync() => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
+    public override Task<IPage[]> PagesAsync(bool includeAll = false) => Task.FromResult(_pages.Values.Cast<IPage>().ToArray());
 
     /// <inheritdoc />
     public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
