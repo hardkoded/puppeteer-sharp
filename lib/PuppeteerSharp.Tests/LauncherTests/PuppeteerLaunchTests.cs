@@ -52,16 +52,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
         public void ThrowsAnErrorIfExecutablePathIsNotValidWithPipeTrue()
         {
-            if (!TestConstants.IsChrome)
-            {
-                Assert.Ignore("Pipe transport is only supported for Chrome");
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Ignore("Pipe transport is not implemented on Windows yet");
-            }
-
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "/tmp/does-not-exist";
             options.Pipe = true;

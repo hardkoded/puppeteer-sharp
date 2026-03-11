@@ -25,6 +25,7 @@ namespace PuppeteerSharp.Nunit
 
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
         public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
+        public static readonly bool IsPipe = Environment.GetEnvironmentVariable("PIPE") == "true";
 
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
@@ -119,6 +120,11 @@ namespace PuppeteerSharp.Nunit
                         ? TestExpectation.TestExpectationsParameter.Headful
                         : TestExpectation.TestExpectationsParameter.ChromeHeadlessShell
             ];
+
+            if (IsPipe)
+            {
+                parameters.Add(TestExpectation.TestExpectationsParameter.Pipe);
+            }
 
             var localExpectations = GetLocalExpectations();
             var canaryExpectations = GetCanaryExpectations();

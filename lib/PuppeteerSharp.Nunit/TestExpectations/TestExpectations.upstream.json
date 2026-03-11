@@ -1968,5 +1968,19 @@
     "parameters": ["cdp", "chrome", "chrome-headless-shell"],
     "expectations": ["FAIL", "PASS"],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox does not support --remote-debugging-pipe argument"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox does not support --remote-debugging-pipe argument"
   }
 ]

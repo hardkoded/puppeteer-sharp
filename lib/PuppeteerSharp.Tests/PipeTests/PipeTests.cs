@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -11,11 +10,6 @@ namespace PuppeteerSharp.Tests.PipeTests
         [Test, PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe option")]
         public async Task ShouldSupportThePipeOption()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Ignore("Pipe transport is not implemented on Windows yet");
-            }
-
             var options = TestConstants.DefaultBrowserOptions();
             options.Pipe = true;
 
@@ -30,11 +24,6 @@ namespace PuppeteerSharp.Tests.PipeTests
         [Test, PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe argument")]
         public async Task ShouldSupportThePipeArgument()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Ignore("Pipe transport is not implemented on Windows yet");
-            }
-
             var options = TestConstants.DefaultBrowserOptions();
             options.Args = ["--remote-debugging-pipe", .. options.Args];
             options.Pipe = true;
@@ -49,11 +38,6 @@ namespace PuppeteerSharp.Tests.PipeTests
         [Test, PuppeteerTest("pipe.spec", "Puppeteer.launch", "should fire \"disconnected\" when closing with pipe")]
         public async Task ShouldFireDisconnectedWhenClosingWithPipe()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Assert.Ignore("Pipe transport is not implemented on Windows yet");
-            }
-
             var options = TestConstants.DefaultBrowserOptions();
             options.Pipe = true;
 
