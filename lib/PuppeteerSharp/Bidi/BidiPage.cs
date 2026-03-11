@@ -648,6 +648,20 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
+    public override async Task SetUserAgentAsync(SetUserAgentOptions options)
+    {
+        if (!BidiBrowser.CdpSupported && options?.UserAgentMetadata != null)
+        {
+            throw new PuppeteerException("Current Browser does not support `userAgentMetadata`");
+        }
+
+        var userAgent = options?.UserAgent;
+        var enable = !string.IsNullOrEmpty(userAgent);
+
+        await BidiMainFrame.BrowsingContext.SetUserAgentAsync(enable ? userAgent : null).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public override async Task SetViewportAsync(ViewPortOptions viewport)
     {
         if (!BidiBrowser.CdpSupported)

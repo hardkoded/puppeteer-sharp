@@ -1185,6 +1185,13 @@ namespace PuppeteerSharp
         Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
 
         /// <summary>
+        /// Sets the user agent, user agent metadata, and platform.
+        /// </summary>
+        /// <param name="options">User agent options.</param>
+        /// <returns>Task.</returns>
+        Task SetUserAgentAsync(SetUserAgentOptions options);
+
+        /// <summary>
         /// Sets the viewport.
         /// In the case of multiple pages in a single browser, each page can have its own viewport size.
         /// <see cref="SetViewportAsync(ViewPortOptions)"/> will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
