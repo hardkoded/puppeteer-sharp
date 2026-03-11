@@ -133,10 +133,10 @@ namespace PuppeteerSharp
                     }
                     else
                     {
-                        if (options.Pipe && Process.PipeTransport != null)
+                        if (options.Pipe && Process is ChromeLauncher chromeLauncher)
                         {
-                            Process.PipeTransport.Start();
-                            connection = CdpConnection.CreateFromTransport(Process.PipeTransport, options, _loggerFactory);
+                            chromeLauncher.InitializePipeTransport();
+                            connection = CdpConnection.CreateFromTransport(chromeLauncher.PipeTransport, options, _loggerFactory);
                         }
                         else
                         {

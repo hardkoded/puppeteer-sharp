@@ -15,7 +15,7 @@ namespace PuppeteerSharp
     {
         private const string UserDataDirArgument = "--user-data-dir";
 
-        private readonly PipeTransport _pipeTransport;
+        private PipeTransport _pipeTransport;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromeLauncher"/> class.
@@ -29,7 +29,6 @@ namespace PuppeteerSharp
 
             if (options.Pipe)
             {
-                _pipeTransport = new PipeTransport();
                 ConfigurePipeProcess(executable, chromiumArgs);
             }
             else
@@ -162,6 +161,18 @@ namespace PuppeteerSharp
         internal static string[] RemoveMatchingFlags(string[] array, string flag)
             => array.Where(arg => !arg.StartsWith(flag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
+        /// <summary>
+        /// Creates the pipe transport after the process has started.
+        /// Must be called after <see cref="LauncherBase.StartAsync"/>.
+        /// </summary>
+        internal void InitializePipeTransport()
+        {
+            _pipeTransport = new PipeTransport(
+                Process.StandardInput.BaseStream,
+                Process.StandardOutput.BaseStream);
+            _pipeTransport.Start();
+        }
+
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
@@ -216,7 +227,6 @@ namespace PuppeteerSharp
 
         private static string FindShell()
         {
-            // Prefer bash, fall back to sh
             if (System.IO.File.Exists("/bin/bash"))
             {
                 return "/bin/bash";
@@ -232,34 +242,32 @@ namespace PuppeteerSharp
 
         private void ConfigurePipeProcess(string executable, List<string> chromiumArgs)
         {
-            var readHandle = _pipeTransport.ReadPipeHandle;
-            var writeHandle = _pipeTransport.WritePipeHandle;
             var arguments = string.Join(" ", chromiumArgs);
+
+            // Redirect stdin/stdout so we can use them as the pipe transport.
+            // The shell script remaps stdin→FD3 (browser reads) and stdout→FD4 (browser writes),
+            // then redirects the real stdin from /dev/null and stdout to stderr.
+            Process.StartInfo.RedirectStandardInput = true;
+            Process.StartInfo.RedirectStandardOutput = true;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // On Windows, Chrome supports --remote-debugging-io-pipes to pass pipe handles directly
-                Process.StartInfo.Arguments = $"{arguments} --remote-debugging-io-pipes={readHandle},{writeHandle}";
+                Process.StartInfo.Arguments = arguments;
             }
             else
             {
-                // On Unix, remap inherited pipe handles to FD 3 (browser reads) and FD 4 (browser writes)
-                var closePart = string.Empty;
-                if (readHandle != "3" && readHandle != "4")
-                {
-                    closePart += $" {readHandle}<&-";
-                }
-
-                if (writeHandle != "3" && writeHandle != "4" && writeHandle != readHandle)
-                {
-                    closePart += $" {writeHandle}>&-";
-                }
-
+                // On Unix, use a shell wrapper to remap stdin/stdout to FDs 3/4.
+                // exec 3<&0 → FD 3 reads from what was stdin (our write pipe)
+                // exec 4>&1 → FD 4 writes to what was stdout (our read pipe)
+                // 0</dev/null → redirect stdin from /dev/null
+                // 1>&2 → redirect stdout to stderr (for DumpIO)
                 var shell = FindShell();
-                var script = $"exec 3<&{readHandle} 4>&{writeHandle}{closePart}; exec \"{executable}\" {arguments}";
+                var script = $"exec 3<&0 4>&1 0</dev/null 1>&2; exec \"{executable}\" {arguments}";
 
                 Process.StartInfo.FileName = shell;
-                Process.StartInfo.Arguments = $"-c '{script}'";
+                Process.StartInfo.Arguments = string.Empty;
+                Process.StartInfo.ArgumentList.Add("-c");
+                Process.StartInfo.ArgumentList.Add(script);
             }
         }
     }

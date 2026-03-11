@@ -1,40 +1,35 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Transport
 {
     /// <summary>
-    /// Transport implementation using anonymous pipes for browser communication.
+    /// Transport implementation using pipes for browser communication.
     /// Used with Chrome's <c>--remote-debugging-pipe</c> flag, which communicates
-    /// via file descriptors 3 (browser reads) and 4 (browser writes) on Unix,
-    /// or via <c>--remote-debugging-io-pipes</c> on Windows.
+    /// via file descriptors 3 (browser reads) and 4 (browser writes).
+    /// Messages are null-terminated (<c>\0</c>) JSON strings.
     /// </summary>
     public class PipeTransport : IConnectionTransport
     {
-        private readonly AnonymousPipeServerStream _pipeWrite;
-        private readonly AnonymousPipeServerStream _pipeRead;
+        private readonly Stream _pipeWrite;
+        private readonly Stream _pipeRead;
         private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
 
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Disposed in StopReading/Dispose.")]
         private CancellationTokenSource _readCts = new();
 
-        private bool _clientHandlesDisposed;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PipeTransport"/> class.
-        /// Creates two anonymous pipe server streams for bidirectional communication.
         /// </summary>
-        public PipeTransport()
+        /// <param name="pipeWrite">The stream to write messages to (browser reads from this).</param>
+        /// <param name="pipeRead">The stream to read messages from (browser writes to this).</param>
+        public PipeTransport(Stream pipeWrite, Stream pipeRead)
         {
-            // PipeDirection.Out: we write to this pipe, browser reads from FD 3
-            _pipeWrite = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
-
-            // PipeDirection.In: we read from this pipe, browser writes to FD 4
-            _pipeRead = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
+            _pipeWrite = pipeWrite ?? throw new ArgumentNullException(nameof(pipeWrite));
+            _pipeRead = pipeRead ?? throw new ArgumentNullException(nameof(pipeRead));
         }
 
         /// <inheritdoc/>
@@ -47,30 +42,10 @@ namespace PuppeteerSharp.Transport
         public bool IsClosed { get; private set; }
 
         /// <summary>
-        /// Gets the client handle string for the pipe the browser reads from (FD 3).
-        /// Must be called before <see cref="Start"/>.
-        /// </summary>
-        public string ReadPipeHandle => _clientHandlesDisposed ? string.Empty : _pipeWrite.GetClientHandleAsString();
-
-        /// <summary>
-        /// Gets the client handle string for the pipe the browser writes to (FD 4).
-        /// Must be called before <see cref="Start"/>.
-        /// </summary>
-        public string WritePipeHandle => _clientHandlesDisposed ? string.Empty : _pipeRead.GetClientHandleAsString();
-
-        /// <summary>
-        /// Starts the pipe transport after the browser process has been launched.
-        /// Disposes local copies of client handles and begins the receive loop.
+        /// Starts the background receive loop.
         /// </summary>
         public void Start()
         {
-            if (!_clientHandlesDisposed)
-            {
-                _pipeWrite.DisposeLocalCopyOfClientHandle();
-                _pipeRead.DisposeLocalCopyOfClientHandle();
-                _clientHandlesDisposed = true;
-            }
-
             Task.Factory.StartNew(
                 () => ReceiveLoopAsync(_readCts.Token),
                 _readCts.Token,
@@ -144,8 +119,6 @@ namespace PuppeteerSharp.Transport
             if (disposing)
             {
                 StopReading();
-                _pipeWrite?.Dispose();
-                _pipeRead?.Dispose();
                 _sendSemaphore?.Dispose();
             }
         }
