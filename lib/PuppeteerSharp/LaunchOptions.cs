@@ -229,8 +229,12 @@ namespace PuppeteerSharp
         /// </summary>
         public bool HandleDevToolsAsPage { get; set; }
 
-        // Internal until is usable
-        internal ProtocolType Protocol { get; set; }
+        /// <summary>
+        /// The protocol to use for browser communication.
+        /// Defaults to <see cref="ProtocolType.Cdp"/>. Set to <see cref="ProtocolType.WebdriverBiDi"/> to use WebDriver BiDi.
+        /// Firefox always uses WebDriver BiDi regardless of this setting.
+        /// </summary>
+        public ProtocolType Protocol { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
+    <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />

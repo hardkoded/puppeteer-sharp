@@ -313,30 +313,39 @@ public class BidiBrowser : Browser
         Func<Task> closeCallback,
         string webSocketEndpoint)
     {
+        var capabilityRequest = new CapabilityRequest()
+        {
+            AcceptInsecureCertificates = options.AcceptInsecureCerts,
+            AdditionalCapabilities = { ["webSocketUrl"] = true, },
+
+            // Tell the browser not to auto-handle prompts so we can handle them via the Dialog API.
+            UnhandledPromptBehavior = new UserPromptHandler
+            {
+                Default = UserPromptHandlerType.Ignore,
+            },
+        };
+
+        // Chrome-specific BiDi capabilities
+        if (launcher is not FirefoxLauncher)
+        {
+            capabilityRequest.AdditionalCapabilities["goog:prerenderingDisabled"] = true;
+        }
+
         var session = await Session.FromAsync(
             driver,
             new NewCommandParameters
             {
                 Capabilities = new CapabilitiesRequest()
                 {
-                    AlwaysMatch = new CapabilityRequest()
-                    {
-                        AcceptInsecureCertificates = options.AcceptInsecureCerts,
-                        AdditionalCapabilities = { ["webSocketUrl"] = true, },
-
-                        // Tell the browser not to auto-handle prompts so we can handle them via the Dialog API.
-                        UnhandledPromptBehavior = new UserPromptHandler
-                        {
-                            Default = UserPromptHandlerType.Ignore,
-                        },
-                    },
+                    AlwaysMatch = capabilityRequest,
                 },
             },
             loggerFactory).ConfigureAwait(false);
 
-        var modules = session.Info.Capabilities.BrowserName.ToLowerInvariant().Contains("firefox")
-            ? SubscribeModules
-            : [.. SubscribeModules, .. SubscribeCdpEvents];
+        // CDP events (cdp.*) are only available with Chrome's native BiDi support.
+        // The chromium-bidi mapper (used for Chrome BiDi-over-CDP) doesn't support them,
+        // so we only subscribe to standard BiDi modules for now.
+        var modules = SubscribeModules;
 
         if (!options.NetworkEnabled)
         {

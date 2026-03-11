@@ -92,7 +92,9 @@ namespace PuppeteerSharp
 
             try
             {
-                if (options.Protocol == ProtocolType.WebdriverBiDi)
+                // Chrome doesn't have native BiDi; it only outputs a CDP endpoint.
+                // Firefox outputs a native BiDi endpoint.
+                if (options.Protocol == ProtocolType.WebdriverBiDi && Process is FirefoxLauncher)
                 {
                     Process.StateManager.LineOutputExpression = "^WebDriver BiDi listening on (ws:\\/\\/.*)$";
                 }
@@ -107,7 +109,21 @@ namespace PuppeteerSharp
                     if (options.Protocol == ProtocolType.WebdriverBiDi)
                     {
 #if !CDP_ONLY
-                        var driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
+                        BiDiDriver driver;
+
+                        if (Process is FirefoxLauncher)
+                        {
+                            // Firefox has native BiDi support
+                            driver = await CreateBidiDriverAsync(Process.EndPoint + "/session", options).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // Chrome: bridge BiDi over CDP using the chromium-bidi mapper
+                            var bidiOverCdpTransport = await BidiOverCdpTransport.CreateAsync(
+                                Process.EndPoint, options, _loggerFactory).ConfigureAwait(false);
+                            driver = await CreateBidiDriverAsync(bidiOverCdpTransport, options).ConfigureAwait(false);
+                        }
+
                         var bidiProcess = Process;
                         Func<Task> bidiCloseCallback = async () =>
                         {
@@ -280,6 +296,44 @@ namespace PuppeteerSharp
             => ex.ToString().Contains("Missing X server", StringComparison.Ordinal);
 
 #if !CDP_ONLY
+        private static async Task<BiDiDriver> CreateBidiDriverAsync(BidiOverCdpTransport transport, IConnectionOptions options)
+        {
+            PuppeteerConnection puppeteerConnection = null;
+            BidiTransport bidiTransport = null;
+            BiDiDriver driver = null;
+            try
+            {
+#pragma warning disable CA2000 // Ownership is transferred to the driver
+                puppeteerConnection = new PuppeteerConnection(transport);
+                bidiTransport = new BidiTransport(puppeteerConnection);
+#pragma warning restore CA2000
+                driver = new BiDiDriver(TimeSpan.FromMilliseconds(options.ProtocolTimeout), bidiTransport);
+                await driver.StartAsync("bidi-over-cdp://local").ConfigureAwait(false);
+                return driver;
+            }
+            catch
+            {
+                if (driver != null)
+                {
+                    await driver.StopAsync().ConfigureAwait(false);
+                }
+                else if (bidiTransport != null)
+                {
+                    await bidiTransport.DisposeAsync().ConfigureAwait(false);
+                }
+                else if (puppeteerConnection != null)
+                {
+                    await puppeteerConnection.DisposeAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    transport.Dispose();
+                }
+
+                throw;
+            }
+        }
+
         private static async Task<BiDiDriver> CreateBidiDriverAsync(string browserWSEndpoint, IConnectionOptions options)
         {
             if (options.TransportFactory != null)
