@@ -46,12 +46,12 @@ public class CdpBrowserContext : BrowserContext
     public override ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
     /// <inheritdoc/>
-    public override async Task<IPage[]> PagesAsync()
+    public override async Task<IPage[]> PagesAsync(bool includeAll = false)
         => (await Task.WhenAll(
                 Targets()
                     .Where(t =>
                         t.Type == TargetType.Page ||
-                        (t.Type == TargetType.Other && Browser.IsPageTargetFunc(t as Target)) ||
+                        ((t.Type == TargetType.Other || includeAll) && Browser.IsPageTargetFunc(t as Target)) ||
                         (_browser.HandleDevToolsAsPage &&
                             t.Type == TargetType.Other &&
                             t.Url.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase)))

@@ -42,7 +42,7 @@ namespace PuppeteerSharp
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <inheritdoc />
-        public abstract Task<IPage[]> PagesAsync();
+        public abstract Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <inheritdoc/>
         public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);

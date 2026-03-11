@@ -187,10 +187,11 @@ namespace PuppeteerSharp
         /// Returns a Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="PuppeteerSharp.Target.PageAsync"/>.
         /// </summary>
+        /// <param name="includeAll">Experimental. When true, includes all kinds of pages.</param>
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
         /// </returns>
-        Task<IPage[]> PagesAsync();
+        Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <summary>
         /// Returns An Array of all active targets.
