@@ -51,6 +51,22 @@ namespace PuppeteerSharp.Tests.LocatorTests
             Assert.That(text, Is.EqualTo("clicked"));
         }
 
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work with element handles")]
+        public async Task ShouldWorkWithElementHandles()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 500, Height = 500 });
+            await Page.SetContentAsync(
+                "<button style=\"margin-top: 600px;\" onclick=\"this.innerText = 'clicked';\">test</button>");
+
+            var button = await Page.QuerySelectorAsync("button");
+            Assert.That(button, Is.Not.Null);
+
+            await button.AsLocator().ClickAsync();
+
+            var text = await button.EvaluateFunctionAsync<string>("el => el.innerText");
+            Assert.That(text, Is.EqualTo("clicked"));
+        }
+
         [Test, PuppeteerTest("locator.spec", "Locator Locator.click", "should work if the element becomes visible later")]
         public async Task ShouldWorkIfTheElementBecomesVisibleLater()
         {

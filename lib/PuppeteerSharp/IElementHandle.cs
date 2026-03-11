@@ -364,5 +364,11 @@ namespace PuppeteerSharp
         /// in Chrome in the new headless and headful modes only.
         /// </remarks>
         Task AutofillAsync(AutofillData data);
+
+        /// <summary>
+        /// Converts this <see cref="IElementHandle"/> into a <see cref="Locators.Locator"/>.
+        /// </summary>
+        /// <returns>A <see cref="Locators.Locator"/> backed by this element handle.</returns>
+        Locators.Locator AsLocator();
     }
 }
