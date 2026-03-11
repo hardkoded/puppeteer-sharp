@@ -11,8 +11,8 @@ namespace PuppeteerSharp.Locators
     {
         private readonly Func<IJSHandle, Task<IJSHandle>> _mapper;
 
-        internal HandleMappedLocator(Locator @base, Func<IJSHandle, Task<IJSHandle>> mapper)
-            : base(@base)
+        internal HandleMappedLocator(Locator source, Func<IJSHandle, Task<IJSHandle>> mapper)
+            : base(source)
         {
             _mapper = mapper;
         }

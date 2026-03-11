@@ -11,8 +11,8 @@ namespace PuppeteerSharp.Locators
     {
         private readonly Func<IJSHandle, Task<bool>> _predicate;
 
-        internal HandleFilteredLocator(Locator @base, Func<IJSHandle, Task<bool>> predicate)
-            : base(@base)
+        internal HandleFilteredLocator(Locator source, Func<IJSHandle, Task<bool>> predicate)
+            : base(source)
         {
             _predicate = predicate;
         }
