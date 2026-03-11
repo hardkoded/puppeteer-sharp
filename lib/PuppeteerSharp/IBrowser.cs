@@ -285,6 +285,26 @@ namespace PuppeteerSharp
         Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
 
         /// <summary>
+        /// Gets all cookies in the default browser context.
+        /// </summary>
+        /// <returns>Task which resolves to an array of <see cref="CookieParam"/>.</returns>
+        Task<CookieParam[]> GetCookiesAsync();
+
+        /// <summary>
+        /// Sets cookies in the default browser context.
+        /// </summary>
+        /// <param name="cookies">Cookies to set.</param>
+        /// <returns>Task.</returns>
+        Task SetCookieAsync(params CookieData[] cookies);
+
+        /// <summary>
+        /// Removes cookies from the default browser context.
+        /// </summary>
+        /// <param name="cookies">Complete <see cref="CookieParam"/> objects to be removed.</param>
+        /// <returns>Task.</returns>
+        Task DeleteCookieAsync(params CookieParam[] cookies);
+
+        /// <summary>
         /// Deletes cookies matching the provided filters from the default <see cref="IBrowserContext"/>.
         /// </summary>
         /// <param name="filters">Filters to match cookies against.</param>
