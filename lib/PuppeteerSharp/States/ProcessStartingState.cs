@@ -38,6 +38,7 @@ namespace PuppeteerSharp.States
         protected virtual async Task StartCoreAsync(LauncherBase p)
         {
             var output = new StringBuilder();
+            var usePipe = p.Options.Pipe;
 
             void OnProcessDataReceivedWhileStarting(object sender, DataReceivedEventArgs e)
             {
@@ -57,7 +58,11 @@ namespace PuppeteerSharp.States
 
             void OnProcessExited(object sender, EventArgs e) => StateManager.Exited.EnterFrom(p, StateManager.CurrentState);
 
-            p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;
+            if (!usePipe)
+            {
+                p.Process.ErrorDataReceived += OnProcessDataReceivedWhileStarting;
+            }
+
             p.Process.Exited += OnProcessExitedWhileStarting;
             p.Process.Exited += OnProcessExited;
             CancellationTokenSource cts = null;
@@ -66,7 +71,16 @@ namespace PuppeteerSharp.States
                 p.Process.Start();
                 await StateManager.Started.EnterFromAsync(p, this).ConfigureAwait(false);
 
-                p.Process.BeginErrorReadLine();
+                if (usePipe)
+                {
+                    // In pipe mode, there's no ws:// URL to wait for.
+                    // The pipe transport is the connection mechanism.
+                    p.StartCompletionSource.TrySetResult(string.Empty);
+                }
+                else
+                {
+                    p.Process.BeginErrorReadLine();
+                }
 
                 var timeout = p.Options.Timeout;
                 if (timeout > 0)
@@ -91,7 +105,10 @@ namespace PuppeteerSharp.States
             {
                 cts?.Dispose();
                 p.Process.Exited -= OnProcessExitedWhileStarting;
-                p.Process.ErrorDataReceived -= OnProcessDataReceivedWhileStarting;
+                if (!usePipe)
+                {
+                    p.Process.ErrorDataReceived -= OnProcessDataReceivedWhileStarting;
+                }
             }
         }
     }

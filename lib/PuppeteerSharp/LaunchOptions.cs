@@ -229,6 +229,12 @@ namespace PuppeteerSharp
         /// </summary>
         public bool HandleDevToolsAsPage { get; set; }
 
+        /// <summary>
+        /// Connects to the browser over a pipe instead of a WebSocket.
+        /// Only supported for Chrome/Chromium with CDP protocol.
+        /// </summary>
+        public bool Pipe { get; set; }
+
         // Internal until is usable
         internal ProtocolType Protocol { get; set; }
 

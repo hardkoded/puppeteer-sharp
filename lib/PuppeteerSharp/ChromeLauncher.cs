@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -13,6 +15,8 @@ namespace PuppeteerSharp
     {
         private const string UserDataDirArgument = "--user-data-dir";
 
+        private readonly PipeTransport _pipeTransport;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromeLauncher"/> class.
         /// </summary>
@@ -23,8 +27,19 @@ namespace PuppeteerSharp
         {
             (var chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
 
-            Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+            if (options.Pipe)
+            {
+                _pipeTransport = new PipeTransport();
+                ConfigurePipeProcess(executable, chromiumArgs);
+            }
+            else
+            {
+                Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+            }
         }
+
+        /// <inheritdoc />
+        internal override PipeTransport PipeTransport => _pipeTransport;
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
@@ -147,6 +162,17 @@ namespace PuppeteerSharp
         internal static string[] RemoveMatchingFlags(string[] array, string flag)
             => array.Where(arg => !arg.StartsWith(flag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _pipeTransport?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
             var chromiumArgs = new List<string>();
@@ -168,7 +194,14 @@ namespace PuppeteerSharp
 
             if (!chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
             {
-                chromiumArgs.Add("--remote-debugging-port=0");
+                if (options.Pipe)
+                {
+                    chromiumArgs.Add("--remote-debugging-pipe");
+                }
+                else
+                {
+                    chromiumArgs.Add("--remote-debugging-port=0");
+                }
             }
 
             var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
@@ -179,6 +212,55 @@ namespace PuppeteerSharp
             }
 
             return (chromiumArgs, tempUserDataDirectory);
+        }
+
+        private static string FindShell()
+        {
+            // Prefer bash, fall back to sh
+            if (System.IO.File.Exists("/bin/bash"))
+            {
+                return "/bin/bash";
+            }
+
+            if (System.IO.File.Exists("/usr/bin/bash"))
+            {
+                return "/usr/bin/bash";
+            }
+
+            return "/bin/sh";
+        }
+
+        private void ConfigurePipeProcess(string executable, List<string> chromiumArgs)
+        {
+            var readHandle = _pipeTransport.ReadPipeHandle;
+            var writeHandle = _pipeTransport.WritePipeHandle;
+            var arguments = string.Join(" ", chromiumArgs);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // On Windows, Chrome supports --remote-debugging-io-pipes to pass pipe handles directly
+                Process.StartInfo.Arguments = $"{arguments} --remote-debugging-io-pipes={readHandle},{writeHandle}";
+            }
+            else
+            {
+                // On Unix, remap inherited pipe handles to FD 3 (browser reads) and FD 4 (browser writes)
+                var closePart = string.Empty;
+                if (readHandle != "3" && readHandle != "4")
+                {
+                    closePart += $" {readHandle}<&-";
+                }
+
+                if (writeHandle != "3" && writeHandle != "4" && writeHandle != readHandle)
+                {
+                    closePart += $" {writeHandle}>&-";
+                }
+
+                var shell = FindShell();
+                var script = $"exec 3<&{readHandle} 4>&{writeHandle}{closePart}; exec \"{executable}\" {arguments}";
+
+                Process.StartInfo.FileName = shell;
+                Process.StartInfo.Arguments = $"-c '{script}'";
+            }
         }
     }
 }

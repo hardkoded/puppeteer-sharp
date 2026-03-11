@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.States;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -81,6 +82,11 @@ namespace PuppeteerSharp
         internal LaunchOptions Options { get; }
 
         internal TempDirectory TempUserDataDir { get; init; }
+
+        /// <summary>
+        /// Gets the pipe transport when pipe mode is enabled.
+        /// </summary>
+        internal virtual PipeTransport PipeTransport => null;
 
         /// <summary>
         /// Gets Base process current state.

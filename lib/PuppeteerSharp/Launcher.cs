@@ -67,6 +67,11 @@ namespace PuppeteerSharp
 
             if (options.Browser == SupportedBrowser.Firefox)
             {
+                if (options.Pipe)
+                {
+                    throw new ArgumentException("Pipe transport is not supported for Firefox.");
+                }
+
                 options.Protocol = ProtocolType.WebdriverBiDi;
             }
 
@@ -128,9 +133,17 @@ namespace PuppeteerSharp
                     }
                     else
                     {
-                        connection = await CdpConnection
-                            .Create(Process.EndPoint, options, _loggerFactory)
-                            .ConfigureAwait(false);
+                        if (options.Pipe && Process.PipeTransport != null)
+                        {
+                            Process.PipeTransport.Start();
+                            connection = CdpConnection.CreateFromTransport(Process.PipeTransport, options, _loggerFactory);
+                        }
+                        else
+                        {
+                            connection = await CdpConnection
+                                .Create(Process.EndPoint, options, _loggerFactory)
+                                .ConfigureAwait(false);
+                        }
 
                         var cdpProcess = Process;
                         Func<Task> cdpCloseCallback = async () =>
