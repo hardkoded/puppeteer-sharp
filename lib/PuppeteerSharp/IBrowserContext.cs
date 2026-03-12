@@ -114,10 +114,11 @@ namespace PuppeteerSharp
         /// <summary>
         /// An array of all pages inside the browser context.
         /// </summary>
+        /// <param name="includeAll">Experimental. When true, includes all kinds of pages.</param>
         /// <returns>Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
         /// You can find them using <see cref="ITarget.PageAsync"/>.</returns>
-        Task<IPage[]> PagesAsync();
+        Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <summary>
         /// Gets an array of all active targets inside the browser context.

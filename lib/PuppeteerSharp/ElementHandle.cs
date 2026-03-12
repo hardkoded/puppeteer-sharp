@@ -725,6 +725,12 @@ namespace PuppeteerSharp
         public abstract Task AutofillAsync(AutofillData data);
 
         /// <inheritdoc/>
+        public Locators.Locator AsLocator()
+        {
+            return new Locators.HandleLocator(this);
+        }
+
+        /// <inheritdoc/>
         public virtual Task ScrollIntoViewAsync()
             => BindIsolatedHandleAsync<JsonElement?, ElementHandle>(handle
                 => handle.EvaluateFunctionAsync(

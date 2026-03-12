@@ -106,9 +106,9 @@ namespace PuppeteerSharp
         public abstract Task UninstallExtensionAsync(string id);
 
         /// <inheritdoc/>
-        public async Task<IPage[]> PagesAsync()
+        public async Task<IPage[]> PagesAsync(bool includeAll = false)
             => (await Task.WhenAll(
-                BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
+                BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))
                 .SelectMany(p => p).ToArray();
 
         /// <inheritdoc/>
@@ -199,6 +199,18 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
             => DefaultContext.SetPermissionAsync(origin, permissions);
+
+        /// <inheritdoc/>
+        public Task<CookieParam[]> GetCookiesAsync()
+            => DefaultContext.GetCookiesAsync();
+
+        /// <inheritdoc/>
+        public Task SetCookieAsync(params CookieData[] cookies)
+            => DefaultContext.SetCookieAsync(cookies);
+
+        /// <inheritdoc/>
+        public Task DeleteCookieAsync(params CookieParam[] cookies)
+            => DefaultContext.DeleteCookieAsync(cookies);
 
         /// <inheritdoc/>
         public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)

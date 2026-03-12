@@ -245,6 +245,8 @@ namespace PuppeteerSharp.Cdp
 
         internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
+        internal Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
+
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
         /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
@@ -263,8 +265,6 @@ namespace PuppeteerSharp.Cdp
             Transport.Dispose();
             _callbackQueue.Dispose();
         }
-
-        private Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
 
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {

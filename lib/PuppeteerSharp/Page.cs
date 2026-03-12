@@ -725,6 +725,9 @@ namespace PuppeteerSharp
         public abstract Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
 
         /// <inheritdoc/>
+        public abstract Task SetUserAgentAsync(SetUserAgentOptions options);
+
+        /// <inheritdoc/>
         public abstract Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers);
 
         /// <inheritdoc/>

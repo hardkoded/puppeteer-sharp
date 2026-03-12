@@ -1982,5 +1982,33 @@
     "parameters": ["firefox"],
     "expectations": ["SKIP"],
     "comment": "Firefox does not support --remote-debugging-pipe argument"
+  },
+  {
+    "testIdPattern": "[pipe.spec] *",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "webExtension test requires pipe; pipe transport is not implemented on Windows yet"
   }
 ]

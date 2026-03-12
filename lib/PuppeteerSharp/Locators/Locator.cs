@@ -150,6 +150,27 @@ namespace PuppeteerSharp.Locators
         }
 
         /// <summary>
+        /// Creates a new locator that filters elements using a handle-based predicate.
+        /// If the predicate does not match, the locator will retry.
+        /// </summary>
+        /// <param name="predicate">A function that takes a handle and returns whether it matches.</param>
+        /// <returns>A new locator that filters based on the predicate.</returns>
+        public Locator FilterHandle(Func<IJSHandle, Task<bool>> predicate)
+        {
+            return new HandleFilteredLocator(this, predicate);
+        }
+
+        /// <summary>
+        /// Maps the locator using a handle-based mapper.
+        /// </summary>
+        /// <param name="mapper">A function that takes a handle and returns a new handle.</param>
+        /// <returns>A new locator that maps the element.</returns>
+        public Locator MapHandle(Func<IJSHandle, Task<IJSHandle>> mapper)
+        {
+            return new HandleMappedLocator(this, mapper);
+        }
+
+        /// <summary>
         /// Waits for the locator to get a handle from the page.
         /// </summary>
         /// <param name="options">Optional action options.</param>
