@@ -62,10 +62,14 @@
     <PropertyGroup>
       <_TarballUrl>https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballUrl>
       <_TarballPath>$(IntermediateOutputPath)chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
+      <_ExtractDir>$(IntermediateOutputPath)chromium-bidi-extract</_ExtractDir>
     </PropertyGroup>
     <MakeDir Directories="$(IntermediateOutputPath)" />
     <DownloadFile SourceUrl="$(_TarballUrl)" DestinationFolder="$(IntermediateOutputPath)" DestinationFileName="chromium-bidi-$(ChromiumBidiVersion).tgz" SkipUnchangedFiles="true" />
-    <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(MSBuildThisFileDirectory)Bidi&quot; package/lib/iife/mapperTab.js" />
+    <!-- Extract to a TFM-specific temp dir to avoid parallel build races on Windows -->
+    <MakeDir Directories="$(_ExtractDir)" />
+    <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(_ExtractDir)&quot; package/lib/iife/mapperTab.js" />
+    <Copy SourceFiles="$(_ExtractDir)/mapperTab.js" DestinationFiles="$(MapperTabPath)" SkipUnchangedFiles="true" />
     <Message Importance="high" Text="Downloaded chromium-bidi v$(ChromiumBidiVersion) mapperTab.js" />
   </Target>
   <ItemGroup>
