@@ -5,5 +5,19 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097",
+    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with group functions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]
