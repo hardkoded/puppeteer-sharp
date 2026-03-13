@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
@@ -11,12 +12,18 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
         public TargetManagerTests() : base()
         {
             DefaultOptions = TestConstants.DefaultBrowserOptions();
-            DefaultOptions.Args = new[]
+            var args = new List<string>
             {
                 "--site-per-process",
-                "--remote-debugging-port=21222",
                 "--host-rules=\"MAP * 127.0.0.1\"",
             };
+
+            if (!DefaultOptions.Pipe)
+            {
+                args.Add("--remote-debugging-port=21222");
+            }
+
+            DefaultOptions.Args = args.ToArray();
         }
 
         [Test, PuppeteerTest("TargetManager.spec", "TargetManager", "should handle targets")]
