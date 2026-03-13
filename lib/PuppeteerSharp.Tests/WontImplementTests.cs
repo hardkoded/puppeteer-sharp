@@ -4,10 +4,6 @@ namespace PuppeteerSharp.Tests
 {
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        // We don't implement pipes
-        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe option")]
-        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should support the pipe argument")]
-        [PuppeteerTest("pipe.spec", "Puppeteer.launch", "should fire \"disconnected\" when closing with pipe")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
@@ -16,6 +12,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
         [PuppeteerTest("tracing.spec", "Tracing", "should return null in case of Buffer error")]
         [PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
+        // The dumpio+pipe fixture test requires spawning a separate Node.js process with a fixture script
         [PuppeteerTest("fixtures.spec", "Fixtures", "dumpio option should work with pipe option")]
         [PuppeteerTest("EventEmitter.spec", "once", "only calls the listener once and then removes it")]
         [PuppeteerTest("EventEmitter.spec", "once", "supports chaining")]
@@ -60,11 +57,8 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
         // ElementHandle.touchMove with a pre-existing Touch parameter: C# ElementHandle.TouchMoveAsync takes no parameters
         [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
-        // PuppeteerSharp does not implement pipe transport, so pipe-related launcher tests are not applicable
+        // PuppeteerSharp does not have a DebuggingPort property; users pass --remote-debugging-port as an arg
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
-        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
-        // The pipe=true variant of this userDataDir test requires pipe transport which PuppeteerSharp does not implement
-        [PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=true")]
         // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
         public void TheseTestWontBeImplemented()

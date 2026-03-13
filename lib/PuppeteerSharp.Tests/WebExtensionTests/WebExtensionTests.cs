@@ -20,10 +20,8 @@ namespace PuppeteerSharp.Tests.WebExtensionTests
 
             if (TestConstants.IsChrome)
             {
-                options.IgnoredDefaultArgs = new[] { "--disable-extensions" };
-                options.Args = new[] { "--enable-unsafe-extension-debugging" }
-                    .Concat(options.Args ?? Array.Empty<string>())
-                    .ToArray();
+                options.EnableExtensions = true;
+                options.Pipe = true;
             }
 
             await using var browser = await Puppeteer.LaunchAsync(

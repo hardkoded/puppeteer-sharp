@@ -148,6 +148,11 @@ namespace PuppeteerSharp.Cdp
             return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
         }
 
+        internal static Connection CreateFromTransport(IConnectionTransport transport, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
+        {
+            return new Connection(string.Empty, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
+        }
+
         internal static Connection FromSession(CdpCDPSession session) => session.Connection;
 
         internal int GetMessageId() => Interlocked.Increment(ref _lastId);
