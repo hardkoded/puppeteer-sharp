@@ -5,19 +5,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi does not fire console.groupEnd event",
-    "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "comment": "Firefox BiDi does not fire console.groupEnd event",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with group functions",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   }
 ]
