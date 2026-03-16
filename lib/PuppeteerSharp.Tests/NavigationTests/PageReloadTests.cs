@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(await Page.EvaluateFunctionAsync<int?>("() => globalThis._foo"), Is.Null);
         }
 
-        [Test, PuppeteerTest("navigation.spec", "navigation Page.reload", "should enable or disable the cache based on reload params")]
+        [Test, PuppeteerTest("page.spec", "Page Page.reload", "should enable or disable the cache based on reload params")]
         public async Task ShouldEnableOrDisableTheCacheBasedOnReloadParams()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style.html");
