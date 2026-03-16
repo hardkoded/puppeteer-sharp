@@ -31,5 +31,29 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
 
             await browser.CloseAsync();
         }
+
+        [Test, PuppeteerTest("userDataDir.spec", "userDataDir", "should not launch the browser twice with the same userDataDir with pipe=true")]
+        public async Task ShouldNotLaunchBrowserTwiceWithSameUserDataDirWithPipe()
+        {
+            using var userDataDir = new TempDirectory();
+            var options = TestConstants.DefaultBrowserOptions();
+            options.UserDataDir = userDataDir.Path;
+            options.Pipe = true;
+
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            await using var browser = await launcher.LaunchAsync(options);
+
+            // Open a page to make sure its functional.
+            await browser.NewPageAsync();
+            Assert.That(Directory.GetFiles(userDataDir.Path).Length, Is.GreaterThan(0));
+
+            var secondLauncher = new Launcher(TestConstants.LoggerFactory);
+            Assert.ThrowsAsync<ProcessException>(async () =>
+            {
+                await using var secondBrowser = await secondLauncher.LaunchAsync(options);
+            });
+
+            await browser.CloseAsync();
+        }
     }
 }

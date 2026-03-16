@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -13,18 +15,30 @@ namespace PuppeteerSharp
     {
         private const string UserDataDirArgument = "--user-data-dir";
 
+        private PipeTransport _pipeTransport;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChromeLauncher"/> class.
         /// </summary>
         /// <param name="executable">Full path of executable.</param>
         /// <param name="options">Options for launching Chromium.</param>
         public ChromeLauncher(string executable, LaunchOptions options)
-            : base(executable, options)
+            : base(executable ?? throw new ArgumentNullException(nameof(executable)), options)
         {
             (var chromiumArgs, TempUserDataDir) = PrepareChromiumArgs(options);
 
-            Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+            if (options.Pipe)
+            {
+                ConfigurePipeProcess(executable, chromiumArgs);
+            }
+            else
+            {
+                Process.StartInfo.Arguments = string.Join(" ", chromiumArgs);
+            }
         }
+
+        /// <inheritdoc />
+        internal override PipeTransport PipeTransport => _pipeTransport;
 
         /// <inheritdoc />
         public override string ToString() => $"Chromium process; EndPoint={EndPoint}; State={CurrentState}";
@@ -147,6 +161,29 @@ namespace PuppeteerSharp
         internal static string[] RemoveMatchingFlags(string[] array, string flag)
             => array.Where(arg => !arg.StartsWith(flag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
+        /// <summary>
+        /// Creates the pipe transport after the process has started.
+        /// Must be called after <see cref="LauncherBase.StartAsync"/>.
+        /// </summary>
+        internal void InitializePipeTransport()
+        {
+            _pipeTransport = new PipeTransport(
+                Process.StandardInput.BaseStream,
+                Process.StandardOutput.BaseStream);
+            _pipeTransport.Start();
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _pipeTransport?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         private static (List<string> ChromiumArgs, TempDirectory TempUserDataDirectory) PrepareChromiumArgs(LaunchOptions options)
         {
             var chromiumArgs = new List<string>();
@@ -168,7 +205,14 @@ namespace PuppeteerSharp
 
             if (!chromiumArgs.Any(argument => argument.StartsWith("--remote-debugging-", StringComparison.Ordinal)))
             {
-                chromiumArgs.Add("--remote-debugging-port=0");
+                if (options.Pipe)
+                {
+                    chromiumArgs.Add("--remote-debugging-pipe");
+                }
+                else
+                {
+                    chromiumArgs.Add("--remote-debugging-port=0");
+                }
             }
 
             var userDataDirOption = chromiumArgs.FirstOrDefault(i => i.StartsWith(UserDataDirArgument, StringComparison.Ordinal));
@@ -179,6 +223,57 @@ namespace PuppeteerSharp
             }
 
             return (chromiumArgs, tempUserDataDirectory);
+        }
+
+        private static string FindShell()
+        {
+            if (System.IO.File.Exists("/bin/bash"))
+            {
+                return "/bin/bash";
+            }
+
+            if (System.IO.File.Exists("/usr/bin/bash"))
+            {
+                return "/usr/bin/bash";
+            }
+
+            return "/bin/sh";
+        }
+
+        private void ConfigurePipeProcess(string executable, List<string> chromiumArgs)
+        {
+            var arguments = string.Join(" ", chromiumArgs);
+
+            // Redirect stdin/stdout so we can use them as the pipe transport.
+            // The shell script remaps stdin→FD3 (browser reads) and stdout→FD4 (browser writes),
+            // then redirects the real stdin from /dev/null and stdout to stderr.
+            Process.StartInfo.RedirectStandardInput = true;
+            Process.StartInfo.RedirectStandardOutput = true;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.StartInfo.Arguments = arguments;
+            }
+            else
+            {
+                // On Unix, use a shell wrapper to remap stdin/stdout to FDs 3/4.
+                // exec 3<&0 → FD 3 reads from what was stdin (our write pipe)
+                // exec 4>&1 → FD 4 writes to what was stdout (our read pipe)
+                // 0</dev/null → redirect stdin from /dev/null
+                // 1>&2 → redirect stdout to stderr (for DumpIO)
+                var shell = FindShell();
+
+                // Escape double quotes in the executable path and arguments so they
+                // can be safely embedded inside the double-quoted -c "..." argument.
+                // .NET's Process on Unix understands double-quote delimited arguments
+                // but does NOT handle single quotes.
+                var escapedExecutable = executable.Replace("\"", "\\\"");
+                var escapedArguments = arguments.Replace("\"", "\\\"");
+                var script = $"exec 3<&0 4>&1 0</dev/null 1>&2; exec \\\"{escapedExecutable}\\\" {escapedArguments}";
+
+                Process.StartInfo.FileName = shell;
+                Process.StartInfo.Arguments = $"-c \"{script}\"";
+            }
         }
     }
 }

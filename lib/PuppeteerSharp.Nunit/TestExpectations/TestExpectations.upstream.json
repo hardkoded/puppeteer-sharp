@@ -4163,5 +4163,201 @@
       "PASS"
     ],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox does not support --remote-debugging-pipe argument"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"],
+    "comment": "Firefox does not support --remote-debugging-pipe argument"
+  },
+  {
+    "testIdPattern": "[pipe.spec] *",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=true",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "Pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "webExtension test requires pipe; pipe transport is not implemented on Windows yet"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools browser.pages() should return a DevTools page if handleDevToolsAsPage is provided in connect()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["FAIL"],
+    "comment": "no connect with pipes"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.close should terminate network waiters",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject waitForSelector when browser closes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should pass the timeout parameter to browser.waitForTarget",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should set the debugging port",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should detect existing OOPIFs when Puppeteer connects to an existing page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should recover cross-origin frames on reconnect",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should reject if executable path is invalid",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "With pipe, shell wrapper changes error type. Use ThrowsAnErrorIfExecutablePathIsNotValidWithPipeTrue instead."
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Browser.close should support custom transport",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "Custom transport is bypassed in pipe mode"
+  },
+  {
+    "testIdPattern": "[launcher.spec] PuppeteerSharp should support custom websocket",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "Custom WebSocket is bypassed in pipe mode"
+  },
+  {
+    "testIdPattern": "[devtools.spec] DevTools target.page() should return Page when calling asPage on DevTools target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[connect.spec] Puppeteer.connect *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["pipe"],
+    "expectations": ["SKIP"],
+    "comment": "We can't connect to a browser started with pipe:true"
+  },
+  {
+    "testIdPattern": "[userDataDir.spec] userDataDir should not launch the browser twice with the same userDataDir with pipe=false",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"],
+    "comment": "This test is specifically for pipe=false behavior"
   }
 ]
