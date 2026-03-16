@@ -1234,13 +1234,13 @@ public class CdpPage : Page
         if (HasConsoleEventListeners)
         {
             await Task.WhenAll(values.Select(v =>
-                RemoteObjectHelper.ReleaseObjectAsync(Client, ((CdpJSHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
+                RemoteObjectHelper.ReleaseObjectAsync(Client, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
             return;
         }
 
         var tokens = values.Select(i =>
         {
-            var handle = (CdpJSHandle)i;
+            var handle = (ICdpHandle)i;
             if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
             {
                 return handle.RemoteObject.Description.Split('\n')[0];
