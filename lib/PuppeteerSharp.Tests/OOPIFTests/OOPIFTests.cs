@@ -20,12 +20,20 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             if (TestConstants.IsChrome)
             {
                 // Chrome-specific args for OOPIF testing
-                DefaultOptions.Args =
-                [
+                var args = new List<string>
+                {
                     "--site-per-process",
-                    $"--remote-debugging-port={++_port}",
-                    "--host-rules=\"MAP * 127.0.0.1\""
-                ];
+                    "--host-rules=\"MAP * 127.0.0.1\"",
+                };
+
+                // Only add an explicit debugging port when not using pipe transport,
+                // since pipe mode uses --remote-debugging-pipe instead.
+                if (!DefaultOptions.Pipe)
+                {
+                    args.Add($"--remote-debugging-port={++_port}");
+                }
+
+                DefaultOptions.Args = args.ToArray();
             }
             else
             {

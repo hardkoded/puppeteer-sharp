@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    name: ${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}
+    name: ${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}${{ matrix.pipe && '-pipe' || '' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -50,6 +50,11 @@ jobs:
             browser: CHROME
             mode: headless-shell
             protocol: cdp
+          - os: ubuntu-latest
+            browser: CHROME
+            mode: headless
+            protocol: cdp
+            pipe: true
           - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
@@ -99,6 +104,7 @@ jobs:
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
         PROTOCOL: ${{ matrix.protocol }}
+        PIPE: ${{ matrix.pipe && 'true' || '' }}
       run: |
           Xvfb :1 -screen 5 1024x768x8 2>/dev/null &
           export DISPLAY=:1.5
@@ -111,6 +117,7 @@ jobs:
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
         PROTOCOL: ${{ matrix.protocol }}
+        PIPE: ${{ matrix.pipe && 'true' || '' }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet tool update -g dotnet-retest
