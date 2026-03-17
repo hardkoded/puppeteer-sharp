@@ -126,13 +126,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "On Windows, Process.Start throws Win32Exception instead of ProcessException for invalid executable paths",
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
     "comment": "BiDi driver does not expose pending protocol callbacks for DebugInfo tracking",
     "testIdPattern": "[debugInfo.spec] DebugInfo Browser.debugInfo should work",
     "platforms": ["darwin", "linux", "win32"],

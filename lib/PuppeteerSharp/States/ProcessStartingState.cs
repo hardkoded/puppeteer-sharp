@@ -68,7 +68,15 @@ namespace PuppeteerSharp.States
             CancellationTokenSource cts = null;
             try
             {
-                p.Process.Start();
+                try
+                {
+                    p.Process.Start();
+                }
+                catch (Exception ex)
+                {
+                    throw new ProcessException($"Failed to launch browser! {ex.Message}", ex);
+                }
+
                 await StateManager.Started.EnterFromAsync(p, this).ConfigureAwait(false);
 
                 if (usePipe)
