@@ -2,471 +2,134 @@
   {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
-    "platforms": [
-      "darwin",
-      "linux"
-    ],
+    "platforms": ["darwin", "linux"],
     "parameters": [],
-    "expectations": [
-      "SKIP"
-    ]
+    "expectations": ["SKIP"]
   },
   {
     "comment": "Remove when https://github.com/hardkoded/puppeteer-sharp/issues/2450 is implemented",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "Remove when https://github.com/hardkoded/puppeteer-sharp/issues/2450 is implemented",
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO It's failing on CI/CD",
     "testIdPattern": "[fixtures.spec] Fixtures should dump browser process stderr",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "chrome"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review why is failing on Ci/CD",
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore state",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review screencasts in firefox",
     "testIdPattern": "[puppeteer-sharp] Screencast*",
-    "platforms": [
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "TODO Review screenshots in firefox",
     "testIdPattern": "[screenshot.spec] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "[click.spec] Page.click should fire aux event on middle click",
-    "platforms": [
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "headful"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["win32"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "This is flaky on CI/CD",
     "testIdPattern": "[worker.spec] Workers Page.workers",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "chrome"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "*should take fullPage screenshots*",
-    "platforms": [
-      "linux"
-    ],
-    "parameters": [
-      "firefox",
-      "headless"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "*should work when reload causes history API in beforeunload*",
-    "platforms": [
-      "linux"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "",
     "testIdPattern": "[puppeteer-sharp] *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "BiDi driver doesn't support custom WebSocket factories",
     "testIdPattern": "[launcher.spec] PuppeteerSharp should support custom websocket",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   },
   {
     "comment": "Firefox native BiDi does not return goog:partitionKey or goog:sourceScheme extension data",
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie with a partitionKey",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "comment": "ASP.NET Core Kestrel does not support sending empty HTTP reason phrases - it defaults to 'OK' for status 200",
     "testIdPattern": "[network.spec] network Response.statusText handles missing status text",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": [],
-    "expectations": [
-      "FAIL"
-    ]
+    "expectations": ["FAIL"]
   },
   {
     "comment": "BiDi driver does not expose pending protocol callbacks for DebugInfo tracking",
     "testIdPattern": "[debugInfo.spec] DebugInfo Browser.debugInfo should work",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "WebDriver BiDi does not support console location info on fetch failures",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "WebDriver BiDi does not support getting a Handle for log args",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox does not support getting console remote objects",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "WebDriver BiDi does not support console log type differentiation",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi does not support console timing functions - https://bugzilla.mozilla.org/show_bug.cgi?id=1866749",
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with timing functions",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox does not support service_worker extensions via BiDi",
-    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi does not support targetFilter option in puppeteer.launch",
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi returns extra input events for shifted keys on macOS",
-    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
-    "platforms": [
-      "darwin"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "WebDriver BiDi does not support window bounds API",
-    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Browser.add|removeScreen not available in headless Chrome on Windows",
-    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
-    "platforms": [
-      "win32"
-    ],
-    "parameters": [
-      "chrome",
-      "headless"
-    ],
-    "expectations": [
-      "FAIL"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
-    "testIdPattern": "[network.spec] network Response.buffer *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
-    "testIdPattern": "[network.spec] network Response.json *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
-  },
-  {
-    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
-    "testIdPattern": "[network.spec] network Response.text *",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "SKIP"
-    ]
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]
