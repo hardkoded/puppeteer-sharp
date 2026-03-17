@@ -1984,6 +1984,13 @@
     "comment": "Firefox does not support --remote-debugging-pipe argument"
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"],
+    "comment": "On Windows, Process.Start throws Win32Exception instead of ProcessException for invalid paths"
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["pipe"],
