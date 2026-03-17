@@ -275,8 +275,188 @@
     ]
   },
   {
-    "comment": "Hangs on Firefox BiDi - response body not available via BiDi protocol",
-    "testIdPattern": "[network.spec] network Response.text should wait until response completes",
+    "comment": "WebDriver BiDi does not support console location info on fetch failures",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "WebDriver BiDi does not support getting a Handle for log args",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Firefox does not support getting console remote objects",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should return remote objects",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "WebDriver BiDi does not support console log type differentiation",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi does not support console timing functions - https://bugzilla.mozilla.org/show_bug.cgi?id=1866749",
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls with timing functions",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Firefox does not support service_worker extensions via BiDi",
+    "testIdPattern": "[webExtension.spec] webExtension can install and uninstall an extension",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi does not support targetFilter option in puppeteer.launch",
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option in puppeteer.launch",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi returns extra input events for shifted keys on macOS",
+    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
+    "platforms": [
+      "darwin"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "WebDriver BiDi does not support window bounds API",
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Browser.add|removeScreen not available in headless Chrome on Windows",
+    "testIdPattern": "[browser.spec] Browser specs Browser.add|removeScreen should add and remove a screen",
+    "platforms": [
+      "win32"
+    ],
+    "parameters": [
+      "chrome",
+      "headless"
+    ],
+    "expectations": [
+      "FAIL"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
+    "testIdPattern": "[network.spec] network Response.buffer *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
+    "testIdPattern": "[network.spec] network Response.json *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "SKIP"
+    ]
+  },
+  {
+    "comment": "Firefox BiDi does not support response body interception - https://github.com/w3c/webdriver-bidi/issues/747",
+    "testIdPattern": "[network.spec] network Response.text *",
     "platforms": [
       "darwin",
       "linux",
