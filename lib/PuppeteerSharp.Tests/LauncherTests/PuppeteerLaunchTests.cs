@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -46,7 +45,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            Assert.ThrowsAsync<Win32Exception>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
@@ -56,8 +55,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
             options.ExecutablePath = "/tmp/does-not-exist";
             options.Pipe = true;
 
-            // On Unix with pipe mode, bash itself starts fine but exec fails,
-            // so we get ProcessException instead of Win32Exception.
             Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
         }
 
