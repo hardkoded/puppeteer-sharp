@@ -55,6 +55,11 @@ jobs:
             mode: headless
             protocol: cdp
             pipe: true
+          - os: windows-latest
+            browser: CHROME
+            mode: headless
+            protocol: cdp
+            pipe: true
           - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
