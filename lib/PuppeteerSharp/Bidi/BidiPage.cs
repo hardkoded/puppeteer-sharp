@@ -26,6 +26,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -1123,8 +1124,13 @@ public class BidiPage : Page
     }
 
     /// <inheritdoc />
-    protected override async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
+    protected override async Task PdfInternalAsync(Stream outputStream, PdfOptions options)
     {
+        if (outputStream is null)
+        {
+            throw new ArgumentNullException(nameof(outputStream));
+        }
+
         Debug.Assert(options != null, nameof(options) + " != null");
 
         // BiDi uses centimeters, PaperFormat is in inches
@@ -1201,15 +1207,7 @@ public class BidiPage : Page
         }
 
         var base64Data = await BidiMainFrame.BrowsingContext.PrintAsync(printOptions).WithTimeout(timeout).ConfigureAwait(false);
-        var data = Convert.FromBase64String(base64Data);
-
-        if (!string.IsNullOrEmpty(file))
-        {
-            using var fs = AsyncFileHelper.CreateStream(file, System.IO.FileMode.Create);
-            await fs.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-        }
-
-        return data;
+        await ProtocolStreamReader.DecodeStringInChunksAsync(base64Data, outputStream).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

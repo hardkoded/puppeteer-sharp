@@ -896,7 +896,7 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
-    protected override async Task<byte[]> PdfInternalAsync(string file, PdfOptions options)
+    protected override async Task PdfInternalAsync(Stream outputStream, PdfOptions options)
     {
         var paperWidth = PaperFormat.Letter.Width;
         var paperHeight = PaperFormat.Letter.Height;
@@ -972,7 +972,7 @@ public class CdpPage : Page
             await _emulationManager.ResetDefaultBackgroundColorAsync().ConfigureAwait(false);
         }
 
-        return await ProtocolStreamReader.ReadProtocolStreamByteAsync(Client, result.Stream, file)
+        await ProtocolStreamReader.ReadProtocolBase64StreamByteAsync(Client, result.Stream, outputStream)
             .ConfigureAwait(false);
     }
 
