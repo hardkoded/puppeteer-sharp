@@ -257,14 +257,7 @@ namespace PuppeteerSharp.Tests.ConsoleTests
             // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
             await Page.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleMessage>();
-            Page.Console += (_, e) =>
-            {
-                // Wait for the specific network error message
-                if (e.Message.Text.Contains("ERR_NAME"))
-                {
-                    consoleTask.TrySetResult(e.Message);
-                }
-            };
+            Page.Console += (_, e) => consoleTask.TrySetResult(e.Message);
 
             await Task.WhenAll(
                 consoleTask.Task,
