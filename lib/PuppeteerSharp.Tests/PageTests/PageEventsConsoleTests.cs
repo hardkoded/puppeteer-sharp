@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class PageEventsConsoleTests : PuppeteerPageBaseTest
     {
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work")]
+        [Test, PuppeteerTest("console.spec", "console", "should work")]
         public async Task ShouldWork()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -37,7 +37,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await fooProperty.JsonValueAsync<string>(), Is.EqualTo("bar"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work on script call right after navigation")]
+        [Test, PuppeteerTest("console.spec", "console", "should work on script call right after navigation")]
         public async Task ShouldWorkOnScriptCallRightAfterNavigation()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -53,7 +53,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(message.Text, Is.EqualTo("SOME_LOG_MESSAGE"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with logging functions")]
+        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with logging functions")]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithLoggingFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -92,7 +92,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with timing functions")]
+        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with timing functions")]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithTimingFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -116,7 +116,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(messages[0].Text, Does.Contain("calling console.time"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should work for different console API calls with group functions")]
+        [Test, PuppeteerTest("console.spec", "console", "should work for different console API calls with group functions")]
         public async Task ShouldWorkForDifferentConsoleApiCallsWithGroupFunctions()
         {
             var messages = new List<ConsoleMessage>();
@@ -141,7 +141,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(messages[0].Text, Does.Contain("calling console.group"));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should not fail for window object")]
+        [Test, PuppeteerTest("console.spec", "console", "should not fail for window object")]
         public async Task ShouldNotFailForWindowObject()
         {
             var messageTask = new TaskCompletionSource<ConsoleMessage>();
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.PageTests
                 Does.Contain(message.Text));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should return remote objects")]
+        [Test, PuppeteerTest("console.spec", "console", "should return remote objects")]
         public async Task ShouldReturnRemoteObjects()
         {
             var logTask = new TaskCompletionSource<ConsoleMessage>();
@@ -183,7 +183,7 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(await property.JsonValueAsync<int>(), Is.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should trigger correct Log")]
+        [Test, PuppeteerTest("console.spec", "console", "should trigger correct Log")]
         public async Task ShouldTriggerCorrectLog()
         {
             // Navigate to localhost (one origin)
@@ -212,25 +212,23 @@ namespace PuppeteerSharp.Tests.PageTests
             }
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location when fetch fails")]
+        [Test, PuppeteerTest("console.spec", "console", "should have location when fetch fails")]
+        [CancelAfter(30_000)]
         public async Task ShouldHaveLocationWhenFetchFails()
         {
             // The point of this test is to make sure that we report console messages from
             // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
             await Page.GoToAsync(TestConstants.EmptyPage);
             var consoleTask = new TaskCompletionSource<ConsoleMessage>();
-            Page.Console += (_, e) =>
-            {
-                // Wait for the specific network error message
-                if (e.Message.Text.Contains("ERR_NAME"))
-                {
-                    consoleTask.TrySetResult(e.Message);
-                }
-            };
+            Page.Console += (_, e) => consoleTask.TrySetResult(e.Message);
 
-            await Task.WhenAll(
-                consoleTask.Task,
-                Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+            var ct = TestContext.CurrentContext.CancellationToken;
+            await using (ct.Register(() => consoleTask.TrySetCanceled(ct)))
+            {
+                await Task.WhenAll(
+                    consoleTask.Task,
+                    Page.SetContentAsync("<script>fetch('http://wat');</script>"));
+            }
 
             var message = await consoleTask.Task;
             Assert.That(message.Text, Does.Contain("ERR_NAME"));
@@ -242,7 +240,7 @@ namespace PuppeteerSharp.Tests.PageTests
             }));
         }
 
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "should have location and stack trace for console API calls")]
+        [Test, PuppeteerTest("console.spec", "console", "should have location and stack trace for console API calls")]
         public async Task ShouldHaveLocationForConsoleAPICalls()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -297,7 +295,7 @@ namespace PuppeteerSharp.Tests.PageTests
         }
 
         // @see https://github.com/puppeteer/puppeteer/issues/3865
-        [Test, PuppeteerTest("page.spec", "Page Page.Events.Console", "ex")]
+        [Test, PuppeteerTest("console.spec", "console", "ex")]
         public async Task ShouldNotThrowWhenThereAreConsoleMessagesInDetachedIframes()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
