@@ -122,6 +122,15 @@ namespace PuppeteerSharp
                 $"--enable-features={string.Join(",", enabledFeatures)}",
             };
 
+            if (string.Equals(
+                    Environment.GetEnvironmentVariable("PUPPETEER_DANGEROUS_NO_SANDBOX"),
+                    "true",
+                    StringComparison.Ordinal) &&
+                !args.Contains("--no-sandbox"))
+            {
+                chromiumArguments.Add("--no-sandbox");
+            }
+
             if (!string.IsNullOrEmpty(options.UserDataDir))
             {
                 chromiumArguments.Add($"{UserDataDirArgument}={options.UserDataDir.Quote()}");
