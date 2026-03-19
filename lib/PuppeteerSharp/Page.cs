@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.IO;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -39,6 +39,7 @@ namespace PuppeteerSharp
             "JSHeapTotalSize",
         };
 
+        private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
         private int _screencastSessionCount;
@@ -395,12 +396,18 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task PdfAsync(string file, PdfOptions options)
         {
-            if (options == null)
+            if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            await PdfInternalAsync(file, options).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            using var outputStream = AsyncFileHelper.CreateStream(file, FileMode.Create);
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -408,20 +415,36 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public async Task<Stream> PdfStreamAsync(PdfOptions options)
-            => new MemoryStream(await PdfDataAsync(options).ConfigureAwait(false));
+        {
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            // The consumer will dispose the stream
+            var outputStream = _memoryStreamManager.GetStream();
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
+            outputStream.Position = 0;
+            return outputStream;
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> PdfDataAsync() => PdfDataAsync(new PdfOptions());
 
         /// <inheritdoc/>
-        public Task<byte[]> PdfDataAsync(PdfOptions options)
+        public async Task<byte[]> PdfDataAsync(PdfOptions options)
         {
-            if (options == null)
+            if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return PdfInternalAsync(null, options);
+            using var outputStream = _memoryStreamManager.GetStream();
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
+            outputStream.Position = 0;
+
+            // We have to return a copy here because the underlying stream will be returned to the pool and cleared after this method returns.
+            return outputStream.ToArray();
         }
 
         /// <inheritdoc/>
@@ -1093,10 +1116,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// PDF implementation.
         /// </summary>
-        /// <param name="file">File path.</param>
+        /// <param name="outputStream">Where to write the PDF bytes.</param>
         /// <param name="options">PDF options.</param>
         /// <returns>PDF data.</returns>
-        protected abstract Task<byte[]> PdfInternalAsync(string file, PdfOptions options);
+        protected abstract Task PdfInternalAsync(Stream outputStream, PdfOptions options);
 
         /// <summary>
         /// Screenshot implementation.

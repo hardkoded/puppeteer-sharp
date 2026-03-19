@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IO;
 
 namespace PuppeteerSharp.Transport
 {
@@ -14,6 +15,7 @@ namespace PuppeteerSharp.Transport
     /// </summary>
     public class PipeTransport : IConnectionTransport
     {
+        private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
         private readonly Stream _pipeWrite;
         private readonly Stream _pipeRead;
         private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
@@ -125,7 +127,7 @@ namespace PuppeteerSharp.Transport
 
         private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
         {
-            var messageBuffer = new MemoryStream();
+            var messageBuffer = _memoryStreamManager.GetStream();
             try
             {
                 var readBuffer = new byte[32 * 1024];
