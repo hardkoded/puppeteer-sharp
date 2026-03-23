@@ -468,7 +468,7 @@ namespace PuppeteerSharp.Cdp
             }
             else
             {
-                _networkEventManager.StoreRequestPaused(e.NetworkId, e);
+                _networkEventManager.StoreRequestPaused(e.NetworkId, e, client);
             }
         }
 
@@ -607,7 +607,12 @@ namespace PuppeteerSharp.Cdp
                 {
                     var fetchRequestId = requestPausedEvent.RequestId;
                     PatchRequestEventHeaders(e, requestPausedEvent);
-                    await OnRequestAsync(client, e, fetchRequestId).ConfigureAwait(false);
+
+                    // Use the client that received Fetch.requestPaused (where Fetch is enabled),
+                    // not the client that received Network.requestWillBeSent (which may be a
+                    // worker session without Fetch support).
+                    var fetchClient = _networkEventManager.GetRequestPausedClient(e.RequestId) ?? client;
+                    await OnRequestAsync(fetchClient, e, fetchRequestId).ConfigureAwait(false);
                     _networkEventManager.ForgetRequestPaused(e.RequestId);
                 }
 

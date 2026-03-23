@@ -9,6 +9,7 @@ namespace PuppeteerSharp.Cdp
     {
         private readonly ConcurrentDictionary<string, RequestWillBeSentResponse> _requestWillBeSentMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
+        private readonly ConcurrentDictionary<string, CDPSession> _requestPausedClientMap = new();
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
         private readonly ConcurrentDictionary<string, QueuedEventGroup> _queuedEventGroupMap = new();
         private readonly ConcurrentDictionary<string, List<RedirectInfo>> _queuedRedirectInfoMap = new();
@@ -22,6 +23,7 @@ namespace PuppeteerSharp.Cdp
         {
             _requestWillBeSentMap.TryRemove(requestId, out _);
             _requestPausedMap.TryRemove(requestId, out _);
+            _requestPausedClientMap.TryRemove(requestId, out _);
             _requestWillBeSentExtraInfoMap.TryRemove(requestId, out _);
             _queuedEventGroupMap.TryRemove(requestId, out _);
             _queuedRedirectInfoMap.TryRemove(requestId, out _);
@@ -83,10 +85,22 @@ namespace PuppeteerSharp.Cdp
         }
 
         internal void ForgetRequestPaused(string networkRequestId)
-            => _requestPausedMap.TryRemove(networkRequestId, out _);
+        {
+            _requestPausedMap.TryRemove(networkRequestId, out _);
+            _requestPausedClientMap.TryRemove(networkRequestId, out _);
+        }
 
-        internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e)
-            => _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
+        internal void StoreRequestPaused(string networkRequestId, FetchRequestPausedResponse e, CDPSession client)
+        {
+            _requestPausedMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
+            _requestPausedClientMap.AddOrUpdate(networkRequestId, client, (_, _) => client);
+        }
+
+        internal CDPSession GetRequestPausedClient(string networkRequestId)
+        {
+            _requestPausedClientMap.TryGetValue(networkRequestId, out var result);
+            return result;
+        }
 
         internal CdpHttpRequest GetRequest(string networkRequestId)
         {
