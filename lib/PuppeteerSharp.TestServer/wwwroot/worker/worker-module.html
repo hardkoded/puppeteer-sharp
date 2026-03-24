@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Module Worker test</title>
+  </head>
+  <body>
+    <script>
+      const workerCode = `await import('${location.origin}/worker/worker-module.mjs')`;
+      const blob = new Blob([workerCode], { type: 'text/javascript' });
+      const blobUrl = URL.createObjectURL(blob);
+      const worker = new Worker(blobUrl, { type: 'module' });
+      worker.addEventListener('message', (event) => {
+        console.log(event.data);
+      });
+    </script>
+  </body>
+</html>

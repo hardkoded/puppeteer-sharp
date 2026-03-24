@@ -782,6 +782,31 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
         }
 
+        [Test, PuppeteerTest("PuppeteerSharp", "request interception Page.setRequestInterception", "should continue intercepted worker module import")]
+        public async Task ShouldContinueInterceptedWorkerModuleImport()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.ContinueAsync();
+            };
+
+            var consoleTcs = new TaskCompletionSource<string>();
+            Page.Console += (_, e) =>
+            {
+                if (e.Message.Text == "worker-module-loaded")
+                {
+                    consoleTcs.TrySetResult(e.Message.Text);
+                }
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker-module.html");
+
+            var result = await consoleTcs.Task.WithTimeout();
+            Assert.That(result, Is.EqualTo("worker-module-loaded"));
+        }
+
         [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should load fonts if cache enabled")]
         public async Task ShouldLoadFontsIfCacheEnabled()
         {
