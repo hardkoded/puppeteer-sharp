@@ -101,9 +101,7 @@ internal class Session(BiDiDriver driver, NewCommandResult info) : IDisposable
 
     public async Task SubscribeAsync(string[] events, string[] contexts = null)
     {
-        var args = new SubscribeCommandParameters();
-        args.Events.AddRange(events);
-        args.Contexts.AddRange(contexts ?? []);
+        var args = new SubscribeCommandParameters(events, contexts);
         await Driver.Session.SubscribeAsync(args).ConfigureAwait(false);
     }
 

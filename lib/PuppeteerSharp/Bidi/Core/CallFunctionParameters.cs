@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Bidi.Core;
 
 internal class CallFunctionParameters
 {
-    public List<ArgumentValue> Arguments { get; set; } = new();
+    public List<LocalValue> Arguments { get; set; } = new();
 
     public ResultOwnership? ResultOwnership { get; set; }
 

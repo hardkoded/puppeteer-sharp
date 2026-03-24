@@ -40,13 +40,13 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         {
             return RemoteValue.Type switch
             {
-                "string" or "number" or "bigint" or "boolean" or "undefined" or "null" => true,
+                RemoteValueType.String or RemoteValueType.Number or RemoteValueType.BigInt or RemoteValueType.Boolean or RemoteValueType.Undefined or RemoteValueType.Null => true,
                 _ => false,
             };
         }
     }
 
-    internal string Id => RemoteValue.Handle;
+    internal string Id => (RemoteValue as IObjectReferenceRemoteValue)?.Handle;
 
     internal override Realm Realm { get; } = realm;
 
@@ -60,7 +60,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         // If it's a primitive value or doesn't have a handle, deserialize directly
         if (IsPrimitiveValue || string.IsNullOrEmpty(Id))
         {
-            return DeserializeValue<T>(RemoteValue.Value);
+            return DeserializeValue<T>(RemoteValue is ValueHoldingRemoteValue vh ? vh.ValueObject : null);
         }
 
         // Otherwise, use evaluation for objects with handles
@@ -127,7 +127,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
             return (T)(object)Convert.ToDecimal(value, CultureInfo.InvariantCulture);
         }
 
-        if (typeof(T) == typeof(DateTime) && RemoteValue.Type == "date")
+        if (typeof(T) == typeof(DateTime) && RemoteValue.Type == RemoteValueType.Date)
         {
             return (T)(object)DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
         }
