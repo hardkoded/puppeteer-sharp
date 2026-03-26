@@ -745,10 +745,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     return objectHandle.RemoteValue.ToLocalValue();
                 }
 
-                return objectHandle.RemoteValue.ToLocalValue();
+                return new RemoteObjectReference(objectHandle.Id);
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
-                return elementHandle.Value.ToLocalValue();
+                return new RemoteObjectReference(elementHandle.BidiJSHandle.Id);
         }
 
         // Handle Regex as BiDi RegExp
