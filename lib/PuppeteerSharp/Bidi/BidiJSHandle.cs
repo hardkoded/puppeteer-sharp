@@ -75,7 +75,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
             return "JSHandle:" + RemoteValue.ToPrettyPrint();
         }
 
-        return "JSHandle@" + RemoteValue.Type;
+        return "JSHandle@" + RemoteValue.Type.ToString().ToLowerInvariant();
     }
 
     /// <inheritdoc/>
