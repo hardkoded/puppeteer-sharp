@@ -295,7 +295,7 @@ internal class BrowsingContext : IDisposable
         await Session.Driver.Input.SetFilesAsync(parameters).ConfigureAwait(false);
     }
 
-    internal async Task<IList<RemoteValue>> LocateNodesAsync(Locator locator, SharedReference[] startNodes = null)
+    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(Locator locator, SharedReference[] startNodes = null)
     {
         var parameters = new LocateNodesCommandParameters(Id, locator);
         if (startNodes?.Length > 0)

@@ -94,9 +94,9 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
         await handle.DisposeAsync().ConfigureAwait(false);
 
-        if (value?.Type == "window" && value.Value is WindowProxyProperties windowProxy)
+        if (value?.Type == RemoteValueType.Window && value is WindowProxyRemoteValue windowProxyValue)
         {
-            var contextId = windowProxy.Context;
+            var contextId = windowProxyValue.Value.Context;
             return BidiFrame.BidiPage.Frames.FirstOrDefault(frame => frame.Id == contextId);
         }
 

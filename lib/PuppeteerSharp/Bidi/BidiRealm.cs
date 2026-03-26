@@ -119,13 +119,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
 
     internal override async Task<T> EvaluateExpressionAsync<T>(string script)
-        => DeserializeResult<T>((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result.Value);
+        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result));
 
     internal override async Task EvaluateExpressionAsync(string script)
         => await EvaluateAsync(true, true, script).ConfigureAwait(false);
 
     internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
-        => DeserializeResult<T>((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result.Value);
+        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result));
 
     internal override async Task EvaluateFunctionAsync(string script, params object[] args)
     {
@@ -135,7 +135,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     internal IJSHandle CreateHandle(RemoteValue remoteValue)
     {
         if (
-            remoteValue.Type is "node" or "window" &&
+            remoteValue.Type is RemoteValueType.Node or RemoteValueType.Window &&
             this is BidiFrameRealm)
         {
             return BidiElementHandle.From(remoteValue, this);
@@ -190,7 +190,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     /// These types have HasValue=false but are valid values, not circular references.
     /// </summary>
     private static bool IsNullOrUndefinedType(RemoteValue remoteValue)
-        => remoteValue.Type is "null" or "undefined";
+        => remoteValue.Type is RemoteValueType.Null or RemoteValueType.Undefined;
 
     /// <summary>
     /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be deserialized
@@ -198,7 +198,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     /// Matches upstream Puppeteer's Deserializer behavior where promises return {}.
     /// </summary>
     private static bool IsEmptyObjectType(RemoteValue remoteValue)
-        => remoteValue.Type is "promise";
+        => remoteValue.Type is RemoteValueType.Promise;
 
     /// <summary>
     /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be treated as null/undefined.
@@ -206,8 +206,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
     /// should return null rather than being treated as circular references.
     /// </summary>
     private static bool IsNonSerializableType(RemoteValue remoteValue)
-        => remoteValue.Type is "symbol" or "function" or "weakmap" or "weakset" or "error" or "proxy"
-            or "typedarray" or "arraybuffer" or "generator" or "window";
+        => remoteValue.Type is RemoteValueType.Symbol or RemoteValueType.Function or RemoteValueType.WeakMap or RemoteValueType.WeakSet or RemoteValueType.Error or RemoteValueType.Proxy
+            or RemoteValueType.TypedArray or RemoteValueType.ArrayBuffer or RemoteValueType.Generator or RemoteValueType.Window;
+
+    private static object GetValueObject(RemoteValue remoteValue)
+        => remoteValue is ValueHoldingRemoteValue vh ? vh.ValueObject : null;
 
     private static string ToCamelCase(string name)
     {
@@ -224,7 +227,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         var result = evaluateResult.Result;
 
         if (
-            result.Type is "node" or "window" &&
+            result.Type is RemoteValueType.Node or RemoteValueType.Window &&
             this is BidiFrameRealm)
         {
             return BidiElementHandle.From(result, this);
@@ -387,9 +390,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     var itemToSerialize = item;
 
-                    if (item is RemoteValue remoteValue)
+                    if (item is ValueHoldingRemoteValue remoteValue)
                     {
-                        itemToSerialize = remoteValue.Value;
+                        itemToSerialize = remoteValue.ValueObject;
                     }
 
                     // Maybe there is a better way to do this.
@@ -443,9 +446,9 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     dict[key] = null;
                 }
-                else if (remoteValue.HasValue)
+                else if (remoteValue is ValueHoldingRemoteValue vhDict)
                 {
-                    dict[key] = DeserializeResult<object>(remoteValue.Value);
+                    dict[key] = DeserializeResult<object>(vhDict.ValueObject);
                 }
                 else
                 {
@@ -483,7 +486,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     property.SetValue(boxedInstance, null);
                 }
-                else if (!remoteValue.HasValue)
+                else if (remoteValue is not ValueHoldingRemoteValue vhProp)
                 {
                     // Circular reference - set to null
                     property.SetValue(boxedInstance, null);
@@ -491,7 +494,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 else
                 {
                     // Get the value from RemoteValue
-                    var value = remoteValue.Value;
+                    var value = vhProp.ValueObject;
 
                     // Recursively deserialize the value to the property type
                     var deserializedValue = typeof(BidiRealm)
@@ -555,7 +558,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     // Non-serializable types (symbol, function, etc.) are treated as null
                     result[key] = null;
                 }
-                else if (!remoteValue.HasValue)
+                else if (remoteValue is not ValueHoldingRemoteValue vhObj)
                 {
                     // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
                     hasCircularRef = true;
@@ -563,7 +566,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 }
                 else
                 {
-                    result[key] = DeserializeToObjectInternal(remoteValue.Value, ref hasCircularRef);
+                    result[key] = DeserializeToObjectInternal(vhObj.ValueObject, ref hasCircularRef);
                 }
             }
 
@@ -590,13 +593,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             }
 
             // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
-            if (!remoteVal.HasValue)
+            if (remoteVal is not ValueHoldingRemoteValue vhNested)
             {
                 hasCircularRef = true;
                 return null;
             }
 
-            return DeserializeToObjectInternal(remoteVal.Value, ref hasCircularRef);
+            return DeserializeToObjectInternal(vhNested.ValueObject, ref hasCircularRef);
         }
 
         // Handle IEnumerable for arrays (but not strings)
@@ -620,7 +623,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                         // Non-serializable types (symbol, function, etc.) are treated as null
                         list.Add(null);
                     }
-                    else if (!rv.HasValue)
+                    else if (rv is not ValueHoldingRemoteValue vhItem)
                     {
                         // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
                         hasCircularRef = true;
@@ -628,7 +631,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     }
                     else
                     {
-                        list.Add(DeserializeToObjectInternal(rv.Value, ref hasCircularRef));
+                        list.Add(DeserializeToObjectInternal(vhItem.ValueObject, ref hasCircularRef));
                     }
                 }
                 else
@@ -667,7 +670,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         return value;
     }
 
-    private async Task<ArgumentValue> FormatArgumentAsync(object arg)
+    private async Task<LocalValue> FormatArgumentAsync(object arg)
     {
         if (arg is TaskCompletionSource<object> tcs)
         {
@@ -725,13 +728,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             case IDictionary dictionary:
                 return await SerializeDictionaryAsync(dictionary).ConfigureAwait(false);
             case IEnumerable enumerable:
-                var list = new List<ArgumentValue>();
+                var list = new List<LocalValue>();
                 foreach (var item in enumerable)
                 {
                     list.Add(await FormatArgumentAsync(item).ConfigureAwait(false));
                 }
 
-                return LocalValue.Array(list.Select(el => el as LocalValue).ToList());
+                return LocalValue.Array(list);
             case BidiJSHandle objectHandle:
                 ValidateHandle(objectHandle);
 
@@ -739,13 +742,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 // serialize its value directly instead of using it as a remote reference
                 if (string.IsNullOrEmpty(objectHandle.Id))
                 {
-                    return SerializeRemoteValue(objectHandle.RemoteValue);
+                    return objectHandle.RemoteValue.ToLocalValue();
                 }
 
-                return objectHandle.RemoteValue.ToRemoteReference();
+                return new RemoteObjectReference(objectHandle.Id);
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
-                return elementHandle.Value.ToRemoteReference();
+                return new RemoteObjectReference(elementHandle.BidiJSHandle.Id);
         }
 
         // Handle Regex as BiDi RegExp
@@ -868,64 +871,6 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value, seen),
             _ => LocalValue.Null,
         };
-    }
-
-    private LocalValue SerializeRemoteValue(RemoteValue remoteValue)
-    {
-        return remoteValue.Type switch
-        {
-            "undefined" => LocalValue.Undefined,
-            "null" => LocalValue.Null,
-            "string" => LocalValue.String((string)remoteValue.Value),
-            "number" => remoteValue.Value switch
-            {
-                long l => LocalValue.Number(l),
-                double d when double.IsPositiveInfinity(d) => LocalValue.Infinity,
-                double d when double.IsNegativeInfinity(d) => LocalValue.NegativeInfinity,
-                double d when double.IsNaN(d) => LocalValue.NaN,
-                double d => LocalValue.Number(d),
-                _ => LocalValue.Number(Convert.ToDouble(remoteValue.Value, CultureInfo.InvariantCulture)),
-            },
-            "boolean" => LocalValue.Boolean((bool)remoteValue.Value),
-            "bigint" => LocalValue.BigInt(BigInteger.Parse((string)remoteValue.Value, CultureInfo.InvariantCulture)),
-            "array" => SerializeRemoteValueArray(remoteValue.Value),
-            "object" => SerializeRemoteValueObject(remoteValue.Value),
-            _ => throw new PuppeteerException($"Cannot serialize RemoteValue of type '{remoteValue.Type}' without a handle"),
-        };
-    }
-
-    private LocalValue SerializeRemoteValueArray(object value)
-    {
-        var items = new List<LocalValue>();
-        if (value is IEnumerable<RemoteValue> remoteValues)
-        {
-            foreach (var item in remoteValues)
-            {
-                items.Add(SerializeRemoteValue(item));
-            }
-        }
-
-        return LocalValue.Array(items);
-    }
-
-    private LocalValue SerializeRemoteValueObject(object value)
-    {
-        var dict = new Dictionary<string, LocalValue>();
-        if (value is RemoteValueDictionary remoteDict)
-        {
-            foreach (var kvp in remoteDict)
-            {
-                var key = kvp.Key switch
-                {
-                    string s => s,
-                    _ => kvp.Key.ToString(),
-                };
-                var val = SerializeRemoteValue(kvp.Value);
-                dict[key] = val;
-            }
-        }
-
-        return LocalValue.Object(dict);
     }
 }
 

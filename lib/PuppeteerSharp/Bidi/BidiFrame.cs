@@ -599,15 +599,15 @@ public class BidiFrame : Frame
     internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
     {
         await BrowsingContext.SetFilesAsync(
-            element.Value.ToSharedReference(),
+            element.Value.ConvertTo<NodeRemoteValue>().ToSharedReference(),
             files).ConfigureAwait(false);
     }
 
-    internal async Task<IList<RemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
+    internal async Task<IList<NodeRemoteValue>> LocateNodesAsync(BidiElementHandle element, BidiLocator locator)
     {
         return await BrowsingContext.LocateNodesAsync(
             locator,
-            [element.Value.ToSharedReference()]).ConfigureAwait(false);
+            [element.Value.ConvertTo<NodeRemoteValue>().ToSharedReference()]).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -995,7 +995,7 @@ public class BidiFrame : Frame
                             return BidiDeserializer.Deserialize(jsHandle.RemoteValue);
                         }
 
-                        if (arg is BidiJSHandle { RemoteValue.Type: "error" } && !string.IsNullOrEmpty(logEntryText))
+                        if (arg is BidiJSHandle { RemoteValue.Type: RemoteValueType.Error } && !string.IsNullOrEmpty(logEntryText))
                         {
                             return (object)logEntryText.Split('\n')[0];
                         }
