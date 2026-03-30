@@ -209,8 +209,13 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
         => remoteValue.Type is RemoteValueType.Symbol or RemoteValueType.Function or RemoteValueType.WeakMap or RemoteValueType.WeakSet or RemoteValueType.Error or RemoteValueType.Proxy
             or RemoteValueType.TypedArray or RemoteValueType.ArrayBuffer or RemoteValueType.Generator or RemoteValueType.Window;
 
-    private static object GetValueObject(RemoteValue remoteValue)
-        => remoteValue is ValueHoldingRemoteValue vh ? vh.ValueObject : null;
+    private static object GetValueObject(RemoteValue remoteValue) => remoteValue switch
+    {
+        ValueHoldingRemoteValue vh => vh.ValueObject,
+        CollectionRemoteValue crv => crv.Value,
+        KeyValuePairCollectionRemoteValue kvp => kvp.Value,
+        _ => null,
+    };
 
     private static string ToCamelCase(string name)
     {
@@ -745,10 +750,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     return objectHandle.RemoteValue.ToLocalValue();
                 }
 
-                return new RemoteObjectReference(objectHandle.Id);
+                return ((IObjectReferenceRemoteValue)objectHandle.RemoteValue).ToRemoteObjectReference();
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
-                return new RemoteObjectReference(elementHandle.BidiJSHandle.Id);
+                return ((IObjectReferenceRemoteValue)elementHandle.Value).ToRemoteObjectReference();
         }
 
         // Handle Regex as BiDi RegExp

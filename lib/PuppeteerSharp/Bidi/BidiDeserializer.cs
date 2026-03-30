@@ -43,8 +43,7 @@ internal static class BidiDeserializer
             UndefinedRemoteValue or NullRemoteValue => null,
             StringRemoteValue s => s.Value,
             BooleanRemoteValue b => (object)b.Value,
-            LongRemoteValue l => (object)l.Value,
-            DoubleRemoteValue d => (object)d.Value,
+            NumberRemoteValue n => (object)n.Value,
             ValueHoldingRemoteValue v when value.Type == RemoteValueType.BigInt =>
                 v.ValueObject != null ? Convert.ToInt64(v.ValueObject, CultureInfo.InvariantCulture) : null,
             _ => null,
