@@ -393,12 +393,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 // Iterate over the input and add converted items to the list
                 foreach (var item in enumerable)
                 {
-                    var itemToSerialize = item;
-
-                    if (item is ValueHoldingRemoteValue remoteValue)
-                    {
-                        itemToSerialize = remoteValue.ValueObject;
-                    }
+                    var itemToSerialize = item is RemoteValue rv ? GetValueObject(rv) ?? item : item;
 
                     // Maybe there is a better way to do this.
                     var deserializedItem = typeof(BidiRealm)
@@ -753,6 +748,11 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return ((IObjectReferenceRemoteValue)objectHandle.RemoteValue).ToRemoteObjectReference();
             case BidiElementHandle elementHandle:
                 ValidateHandle(elementHandle.BidiJSHandle);
+                if (string.IsNullOrEmpty(elementHandle.BidiJSHandle.Id))
+                {
+                    return elementHandle.Value.ToLocalValue();
+                }
+
                 return ((IObjectReferenceRemoteValue)elementHandle.Value).ToRemoteObjectReference();
         }
 
