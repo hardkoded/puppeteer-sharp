@@ -446,14 +446,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     dict[key] = null;
                 }
-                else if (remoteValue is ValueHoldingRemoteValue vhDict)
-                {
-                    dict[key] = DeserializeResult<object>(vhDict.ValueObject);
-                }
                 else
                 {
-                    // Circular reference - set to null
-                    dict[key] = null;
+                    var value = GetValueObject(remoteValue);
+                    dict[key] = value != null ? DeserializeResult<object>(value) : null;
                 }
             }
 
@@ -486,24 +482,23 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 {
                     property.SetValue(boxedInstance, null);
                 }
-                else if (remoteValue is not ValueHoldingRemoteValue vhProp)
-                {
-                    // Circular reference - set to null
-                    property.SetValue(boxedInstance, null);
-                }
                 else
                 {
-                    // Get the value from RemoteValue
-                    var value = vhProp.ValueObject;
+                    var value = GetValueObject(remoteValue);
+                    if (value == null)
+                    {
+                        property.SetValue(boxedInstance, null);
+                    }
+                    else
+                    {
+                        // Recursively deserialize the value to the property type
+                        var deserializedValue = typeof(BidiRealm)
+                            .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                            ?.MakeGenericMethod(property.PropertyType)
+                            .Invoke(this, [value]);
 
-                    // Recursively deserialize the value to the property type
-                    var deserializedValue = typeof(BidiRealm)
-                        .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
-                        ?.MakeGenericMethod(property.PropertyType)
-                        .Invoke(this, [value]);
-
-                    // Set the property value on the boxed instance
-                    property.SetValue(boxedInstance, deserializedValue);
+                        property.SetValue(boxedInstance, deserializedValue);
+                    }
                 }
             }
         }
