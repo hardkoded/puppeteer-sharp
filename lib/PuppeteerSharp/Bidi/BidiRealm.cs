@@ -553,15 +553,18 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                     // Non-serializable types (symbol, function, etc.) are treated as null
                     result[key] = null;
                 }
-                else if (remoteValue is not ValueHoldingRemoteValue vhObj)
-                {
-                    // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
-                    hasCircularRef = true;
-                    result[key] = null;
-                }
                 else
                 {
-                    result[key] = DeserializeToObjectInternal(vhObj.ValueObject, ref hasCircularRef);
+                    var val = GetValueObject(remoteValue);
+                    if (val == null)
+                    {
+                        hasCircularRef = true;
+                        result[key] = null;
+                    }
+                    else
+                    {
+                        result[key] = DeserializeToObjectInternal(val, ref hasCircularRef);
+                    }
                 }
             }
 
@@ -587,14 +590,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                 return null;
             }
 
-            // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
-            if (remoteVal is not ValueHoldingRemoteValue vhNested)
+            var nestedVal = GetValueObject(remoteVal);
+            if (nestedVal == null)
             {
                 hasCircularRef = true;
                 return null;
             }
 
-            return DeserializeToObjectInternal(vhNested.ValueObject, ref hasCircularRef);
+            return DeserializeToObjectInternal(nestedVal, ref hasCircularRef);
         }
 
         // Handle IEnumerable for arrays (but not strings)
@@ -618,15 +621,18 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
                         // Non-serializable types (symbol, function, etc.) are treated as null
                         list.Add(null);
                     }
-                    else if (rv is not ValueHoldingRemoteValue vhItem)
-                    {
-                        // If RemoteValue has no value and is not null/undefined or non-serializable, it's a circular reference
-                        hasCircularRef = true;
-                        list.Add(null);
-                    }
                     else
                     {
-                        list.Add(DeserializeToObjectInternal(vhItem.ValueObject, ref hasCircularRef));
+                        var rvVal = GetValueObject(rv);
+                        if (rvVal == null)
+                        {
+                            hasCircularRef = true;
+                            list.Add(null);
+                        }
+                        else
+                        {
+                            list.Add(DeserializeToObjectInternal(rvVal, ref hasCircularRef));
+                        }
                     }
                 }
                 else
