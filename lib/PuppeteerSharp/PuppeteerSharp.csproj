@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
