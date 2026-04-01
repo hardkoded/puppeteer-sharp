@@ -311,6 +311,10 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
             // The command result is null because the connection closed
             throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
         }
+        catch (WebDriverBiDi.WebDriverBiDiConnectionException ex)
+        {
+            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
+        }
 
         if (result.ResultType == EvaluateResultType.Exception)
         {
