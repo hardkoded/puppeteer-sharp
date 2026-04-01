@@ -55,12 +55,40 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         return new BidiJSHandle(value, realm);
     }
 
+    public override Task<IJSHandle> GetPropertyAsync(string propertyName)
+    {
+        // For handleless objects (e.g. from log events), look up the property
+        // directly from the RemoteValue dictionary to avoid a browser round-trip
+        // that would fail due to serialization issues
+        if (string.IsNullOrEmpty(Id) && RemoteValue is KeyValuePairCollectionRemoteValue kvp && kvp.Value != null)
+        {
+            foreach (var entry in kvp.Value)
+            {
+                if (entry.Key?.ToString() == propertyName)
+                {
+                    return Task.FromResult<IJSHandle>(BidiJSHandle.From(entry.Value, realm));
+                }
+            }
+
+            return base.GetPropertyAsync(propertyName);
+        }
+
+        return base.GetPropertyAsync(propertyName);
+    }
+
     public override async Task<T> JsonValueAsync<T>()
     {
         // If it's a primitive value or doesn't have a handle, deserialize directly
         if (IsPrimitiveValue || string.IsNullOrEmpty(Id))
         {
-            return DeserializeValue<T>(RemoteValue is ValueHoldingRemoteValue vh ? vh.ValueObject : null);
+            var valueObject = RemoteValue switch
+            {
+                ValueHoldingRemoteValue vh => vh.ValueObject,
+                CollectionRemoteValue crv => crv.Value,
+                KeyValuePairCollectionRemoteValue kvp => (object)kvp.Value,
+                _ => null,
+            };
+            return DeserializeValue<T>(valueObject);
         }
 
         // Otherwise, use evaluation for objects with handles
