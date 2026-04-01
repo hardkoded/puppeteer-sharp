@@ -40,13 +40,13 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         {
             return RemoteValue.Type switch
             {
-                "string" or "number" or "bigint" or "boolean" or "undefined" or "null" => true,
+                RemoteValueType.String or RemoteValueType.Number or RemoteValueType.BigInt or RemoteValueType.Boolean or RemoteValueType.Undefined or RemoteValueType.Null => true,
                 _ => false,
             };
         }
     }
 
-    internal string Id => RemoteValue.Handle;
+    internal string Id => (RemoteValue as IObjectReferenceRemoteValue)?.Handle;
 
     internal override Realm Realm { get; } = realm;
 
@@ -55,12 +55,40 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
         return new BidiJSHandle(value, realm);
     }
 
+    public override Task<IJSHandle> GetPropertyAsync(string propertyName)
+    {
+        // For handleless objects (e.g. from log events), look up the property
+        // directly from the RemoteValue dictionary to avoid a browser round-trip
+        // that would fail due to serialization issues
+        if (string.IsNullOrEmpty(Id) && RemoteValue is KeyValuePairCollectionRemoteValue kvp && kvp.Value != null)
+        {
+            foreach (var entry in kvp.Value)
+            {
+                if (entry.Key?.ToString() == propertyName)
+                {
+                    return Task.FromResult<IJSHandle>(BidiJSHandle.From(entry.Value, realm));
+                }
+            }
+
+            return base.GetPropertyAsync(propertyName);
+        }
+
+        return base.GetPropertyAsync(propertyName);
+    }
+
     public override async Task<T> JsonValueAsync<T>()
     {
         // If it's a primitive value or doesn't have a handle, deserialize directly
         if (IsPrimitiveValue || string.IsNullOrEmpty(Id))
         {
-            return DeserializeValue<T>(RemoteValue.Value);
+            var valueObject = RemoteValue switch
+            {
+                ValueHoldingRemoteValue vh => vh.ValueObject,
+                CollectionRemoteValue crv => crv.Value,
+                KeyValuePairCollectionRemoteValue kvp => (object)kvp.Value,
+                _ => null,
+            };
+            return DeserializeValue<T>(valueObject);
         }
 
         // Otherwise, use evaluation for objects with handles
@@ -75,7 +103,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
             return "JSHandle:" + RemoteValue.ToPrettyPrint();
         }
 
-        return "JSHandle@" + RemoteValue.Type;
+        return "JSHandle@" + RemoteValue.Type.ToString().ToLowerInvariant();
     }
 
     /// <inheritdoc/>
@@ -127,7 +155,7 @@ internal class BidiJSHandle(RemoteValue value, BidiRealm realm) : JSHandle
             return (T)(object)Convert.ToDecimal(value, CultureInfo.InvariantCulture);
         }
 
-        if (typeof(T) == typeof(DateTime) && RemoteValue.Type == "date")
+        if (typeof(T) == typeof(DateTime) && RemoteValue.Type == RemoteValueType.Date)
         {
             return (T)(object)DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
         }

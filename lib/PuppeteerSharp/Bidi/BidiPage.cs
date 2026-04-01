@@ -598,8 +598,9 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetJavaScriptEnabledAsync(bool enabled)
     {
-        var commandParameters = new WebDriverBiDi.Emulation.SetScriptingEnabledCommandParameters(enabled)
+        var commandParameters = new WebDriverBiDi.Emulation.SetScriptingEnabledCommandParameters
         {
+            IsScriptingEnabled = enabled,
             Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
 
@@ -619,9 +620,8 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetCacheEnabledAsync(bool enabled = true)
     {
-        var commandParameters = new SetCacheBehaviorCommandParameters
+        var commandParameters = new SetCacheBehaviorCommandParameters(enabled ? CacheBehavior.Default : CacheBehavior.Bypass)
         {
-            CacheBehavior = enabled ? CacheBehavior.Default : CacheBehavior.Bypass,
             Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
 
@@ -1107,16 +1107,12 @@ public class BidiPage : Page
             _ => null,
         };
 
-        if (remoteValue?.Type == "window")
+        if (remoteValue is WindowProxyRemoteValue windowProxyRemoteValue)
         {
-            var windowProxy = remoteValue.ValueAs<WindowProxyProperties>();
-            if (windowProxy != null)
+            var frame = Frames.OfType<BidiFrame>().FirstOrDefault(f => f.Id == windowProxyRemoteValue.Value.Context);
+            if (frame != null)
             {
-                var frame = Frames.OfType<BidiFrame>().FirstOrDefault(f => f.Id == windowProxy.Context);
-                if (frame != null)
-                {
-                    return frame;
-                }
+                return frame;
             }
         }
 

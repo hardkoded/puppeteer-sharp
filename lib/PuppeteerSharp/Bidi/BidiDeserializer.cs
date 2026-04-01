@@ -38,14 +38,14 @@ internal static class BidiDeserializer
             return null;
         }
 
-        return value.Type switch
+        return value switch
         {
-            "undefined" => null,
-            "null" => null,
-            "string" => value.Value,
-            "number" => DeserializeNumber(value.Value),
-            "boolean" => value.Value,
-            "bigint" => value.Value != null ? Convert.ToInt64(value.Value, CultureInfo.InvariantCulture) : null,
+            UndefinedRemoteValue or NullRemoteValue => null,
+            StringRemoteValue s => s.Value,
+            BooleanRemoteValue b => (object)b.Value,
+            NumberRemoteValue n => (object)n.Value,
+            ValueHoldingRemoteValue v when value.Type == RemoteValueType.BigInt =>
+                v.ValueObject != null ? Convert.ToInt64(v.ValueObject, CultureInfo.InvariantCulture) : null,
             _ => null,
         };
     }
@@ -59,13 +59,13 @@ internal static class BidiDeserializer
 
         switch (value.Type)
         {
-            case "array":
-            case "set":
-                if (value.Value is IEnumerable<RemoteValue> enumerable)
+            case RemoteValueType.Array:
+            case RemoteValueType.Set:
+                if (value is CollectionRemoteValue collection)
                 {
                     var list = new List<object>();
 
-                    foreach (var item in enumerable)
+                    foreach (var item in collection.Value)
                     {
                         list.Add(item.ToPrettyPrint());
                     }
@@ -74,45 +74,32 @@ internal static class BidiDeserializer
                 }
 
                 return Array.Empty<object>();
-            case "object":
-            case "map":
+            case RemoteValueType.Object:
+            case RemoteValueType.Map:
                 // TODO
-                return value.Value;
-            case "regexp":
-            case "date":
+                return value is ValueHoldingRemoteValue vhMap ? vhMap.ValueObject : null;
+            case RemoteValueType.RegExp:
+            case RemoteValueType.Date:
                 // TODO
-                return value.Value;
-            case "promise":
+                return value is ValueHoldingRemoteValue vhDate ? vhDate.ValueObject : null;
+            case RemoteValueType.Promise:
                 return "{}";
-            case "undefined":
+            case RemoteValueType.Undefined:
                 return "undefined";
-            case "null":
+            case RemoteValueType.Null:
                 return "null";
-            case "number":
-                return DeserializeNumber(value.Value);
-            case "bigint":
-                return Convert.ToInt64(value.Value, CultureInfo.InvariantCulture);
-            case "boolean":
-                return Convert.ToBoolean(value.Value, CultureInfo.InvariantCulture);
+            case RemoteValueType.Number:
+                return value is ValueHoldingRemoteValue vhNum ? vhNum.ValueObject : null;
+            case RemoteValueType.BigInt:
+                return value is ValueHoldingRemoteValue vhBigInt
+                    ? Convert.ToInt64(vhBigInt.ValueObject, CultureInfo.InvariantCulture)
+                    : null;
+            case RemoteValueType.Boolean:
+                return value is BooleanRemoteValue b
+                    ? (object)b.Value
+                    : null;
             default:
-                return value.Value;
-        }
-    }
-
-    private static object DeserializeNumber(object value)
-    {
-        switch (value)
-        {
-            case "-0":
-                return -0;
-            case "NaN":
-                return double.NaN;
-            case "Infinity":
-                return double.PositiveInfinity;
-            case "-Infinity":
-                return double.NegativeInfinity;
-            default:
-                return value;
+                return value is ValueHoldingRemoteValue vh ? vh.ValueObject : null;
         }
     }
 }
