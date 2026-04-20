@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.RealmsTests
             Pipe = true,
         };
 
-        [Test, PuppeteerTest("cdp/realms.spec", "extension realms", "should include content script realms")]
+        [Test, PuppeteerTest("realms.spec", "extension realms", "should include content script realms")]
         public async Task ShouldIncludeContentScriptRealms()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Tests.RealmsTests
             Assert.That(realms.Count, Is.GreaterThanOrEqualTo(1));
         }
 
-        [Test, PuppeteerTest("cdp/realms.spec", "extension realms", "realm should return extension that created it")]
+        [Test, PuppeteerTest("realms.spec", "extension realms", "realm should return extension that created it")]
         public async Task RealmShouldReturnExtensionThatCreatedIt()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
@@ -65,7 +65,7 @@ namespace PuppeteerSharp.Tests.RealmsTests
             Assert.That(extension.Id, Is.EqualTo(extId));
         }
 
-        [Test, PuppeteerTest("cdp/realms.spec", "extension realms", "should evaluate in content script realms")]
+        [Test, PuppeteerTest("realms.spec", "extension realms", "should evaluate in content script realms")]
         public async Task ShouldEvaluateInContentScriptRealms()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
