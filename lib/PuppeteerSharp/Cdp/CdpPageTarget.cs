@@ -30,6 +30,21 @@ namespace PuppeteerSharp.Cdp
         internal Task<Page> PageTask { get; set; }
 
         /// <inheritdoc/>
+        public override async Task<IPage> AsPageAsync()
+        {
+            if (PageTask != null)
+            {
+                var page = await PageTask.ConfigureAwait(false);
+                if (page != null)
+                {
+                    return page;
+                }
+            }
+
+            return await base.AsPageAsync().ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
         public override async Task<IPage> PageAsync()
         {
             if (PageTask == null)
