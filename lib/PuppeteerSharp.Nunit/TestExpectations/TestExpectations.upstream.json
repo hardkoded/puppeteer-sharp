@@ -4573,5 +4573,67 @@
       "FAIL"
     ],
     "comment": "TODO: investigate why we get the response for the last redirect"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Experimental support for WebMCP is not supported in Firefox"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
+    "testIdPattern": "[webmcp.spec] *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL",
+      "TIMEOUT"
+    ],
+    "comment": "Experimental support for WebMCP requires Chrome 149+."
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should remove tools on frame navigation",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "PASS"
+    ]
   }
 ]
