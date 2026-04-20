@@ -557,6 +557,10 @@ public class BidiFrame : Frame
         return BidiElementHandle.From(node, (BidiRealm)parentFrame.MainRealm) as ElementHandle;
     }
 
+    /// <inheritdoc />
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
+
     internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext);
@@ -609,10 +613,6 @@ public class BidiFrame : Frame
             locator,
             [element.Value.ConvertTo<NodeRemoteValue>().ToSharedReference()]).ConfigureAwait(false);
     }
-
-    /// <inheritdoc />
-    public override IReadOnlyList<Realm> ExtensionRealms()
-        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();

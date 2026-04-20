@@ -410,6 +410,12 @@ namespace PuppeteerSharp
             return null;
         }
 
+        /// <summary>
+        /// Retrieves the list of extension realms within this frame.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
+
         internal void ClearDocumentHandle() => _documentTask = null;
 
         internal void OnLoadingStarted() => HasStartedLoading = true;
@@ -467,12 +473,6 @@ namespace PuppeteerSharp
         protected internal virtual void OnDetach()
         {
         }
-
-        /// <summary>
-        /// Retrieves the list of extension realms within this frame.
-        /// </summary>
-        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
-        public abstract IReadOnlyList<Realm> ExtensionRealms();
 
         /// <summary>
         /// Gets the prompts manager for the current client.

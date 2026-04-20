@@ -52,6 +52,25 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public override string Origin => _origin;
 
+        /// <summary>
+        /// This property is not upstream. It's helpful for debugging.
+        /// </summary>
+        internal bool IsMainWorld { get; }
+
+        internal Frame Frame { get; }
+
+        internal ICDPSession Client => Frame?.Client ?? Worker?.Client;
+
+        internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
+
+        internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
+
+        internal ConcurrentDictionary<string, Binding> Bindings { get; } = new();
+
+        internal override IEnvironment Environment => (IEnvironment)Frame ?? Worker;
+
+        private WebWorker Worker { get; }
+
         public void Dispose()
         {
             _bindingQueue.Dispose();
@@ -89,25 +108,6 @@ namespace PuppeteerSharp
             extensions.TryGetValue(_worldId, out var extension);
             return extension;
         }
-
-        /// <summary>
-        /// This property is not upstream. It's helpful for debugging.
-        /// </summary>
-        internal bool IsMainWorld { get; }
-
-        internal Frame Frame { get; }
-
-        internal ICDPSession Client => Frame?.Client ?? Worker?.Client;
-
-        internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
-
-        internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
-
-        internal ConcurrentDictionary<string, Binding> Bindings { get; } = new();
-
-        internal override IEnvironment Environment => (IEnvironment)Frame ?? Worker;
-
-        private WebWorker Worker { get; }
 
         internal void FrameUpdated() => Client.MessageReceived += Client_MessageReceived;
 
