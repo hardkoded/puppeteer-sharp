@@ -106,6 +106,9 @@ namespace PuppeteerSharp
         public abstract Task UninstallExtensionAsync(string id);
 
         /// <inheritdoc/>
+        public abstract Task<Dictionary<string, Extension>> ExtensionsAsync();
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync(bool includeAll = false)
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))

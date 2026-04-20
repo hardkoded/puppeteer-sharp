@@ -898,6 +898,9 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
+        /// <inheritdoc />
+        public abstract Task TriggerExtensionActionAsync(Extension extension);
+
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         /// <summary>

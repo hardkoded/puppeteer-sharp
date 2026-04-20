@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -335,5 +336,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
         Task<ICDPSession> CreateCDPSessionAsync();
+
+        /// <summary>
+        /// Gets a dictionary of installed extensions, keyed by extension ID.
+        /// </summary>
+        /// <returns>A task that resolves to a dictionary mapping extension IDs to <see cref="Extension"/> instances.</returns>
+        Task<Dictionary<string, Extension>> ExtensionsAsync();
     }
 }

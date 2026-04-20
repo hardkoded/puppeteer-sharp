@@ -201,6 +201,10 @@ public class BidiBrowser : Browser
             new WebDriverBiDi.WebExtension.UninstallCommandParameters(id)).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override Task<System.Collections.Generic.Dictionary<string, Extension>> ExtensionsAsync()
+        => throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
+
     /// <inheritdoc />
     public override ITarget[] Targets()
         =>

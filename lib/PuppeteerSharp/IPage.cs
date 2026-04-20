@@ -1578,5 +1578,12 @@ namespace PuppeteerSharp
         /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
         /// <returns>A task that resolves when the message is sent to the browser.</returns>
         Task SetBypassServiceWorkerAsync(bool bypass);
+
+        /// <summary>
+        /// Triggers an extension action for the given extension.
+        /// </summary>
+        /// <param name="extension">The extension to trigger the action for.</param>
+        /// <returns>A task that completes when the extension action has been triggered.</returns>
+        Task TriggerExtensionActionAsync(Extension extension);
     }
 }

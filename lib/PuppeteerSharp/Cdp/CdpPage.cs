@@ -379,6 +379,17 @@ public class CdpPage : Page
         });
     }
 
+    /// <inheritdoc />
+    public override Task TriggerExtensionActionAsync(Extension extension)
+    {
+        if (extension == null)
+        {
+            throw new ArgumentNullException(nameof(extension));
+        }
+
+        return extension.TriggerActionAsync(this);
+    }
+
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
