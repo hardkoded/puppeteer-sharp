@@ -143,7 +143,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(await workerClosedTcs.Task, Is.SameAs(worker));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work")]
         public async Task ConsoleShouldWork()
         {
             var worker = await CreateWorkerAsync();
@@ -160,7 +160,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(await message.Args[1].JsonValueAsync<int>(), Is.EqualTo(5));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for Error instances")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for Error instances")]
         public async Task ConsoleShouldWorkForErrorInstances()
         {
             var worker = await CreateWorkerAsync();
@@ -175,7 +175,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Args, Has.Count.EqualTo(1));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should return the first line of the error message in text()")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should return the first line of the error message in text()")]
         public async Task ConsoleShouldReturnFirstLineOfErrorMessageInText()
         {
             var worker = await CreateWorkerAsync();
@@ -189,7 +189,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Type, Is.EqualTo(ConsoleType.Log));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for console.trace")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.trace")]
         public async Task ConsoleShouldWorkForConsoleTrace()
         {
             var worker = await CreateWorkerAsync();
@@ -203,7 +203,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Is.EqualTo("calling console.trace"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for console.dir")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.dir")]
         public async Task ConsoleShouldWorkForConsoleDir()
         {
             var worker = await CreateWorkerAsync();
@@ -217,7 +217,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Is.EqualTo("calling console.dir"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for console.warn")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.warn")]
         public async Task ConsoleShouldWorkForConsoleWarn()
         {
             var worker = await CreateWorkerAsync();
@@ -231,7 +231,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Is.EqualTo("calling console.warn"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for console.error")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.error")]
         public async Task ConsoleShouldWorkForConsoleError()
         {
             var worker = await CreateWorkerAsync();
@@ -245,7 +245,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Is.EqualTo("calling console.error"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for console.log with promise")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for console.log with promise")]
         public async Task ConsoleShouldWorkForConsoleLogWithPromise()
         {
             var worker = await CreateWorkerAsync();
@@ -259,7 +259,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(message.Text, Does.Contain("promise").Or.Contain("Promise"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for different console API calls with timing functions")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for different console API calls with timing functions")]
         public async Task ConsoleShouldWorkForTimingFunctions()
         {
             var worker = await CreateWorkerAsync();
@@ -276,7 +276,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(messages[0].Text, Does.Contain("calling console.time"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should work for different console API calls with group functions")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should work for different console API calls with group functions")]
         public async Task ConsoleShouldWorkForGroupFunctions()
         {
             var worker = await CreateWorkerAsync();
@@ -294,7 +294,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(messages[0].Text, Does.Contain("calling console.group"));
         }
 
-        [Test, PuppeteerTest("worker.spec", "Workers > console", "should return remote objects")]
+        [Test, PuppeteerTest("worker.spec", "Workers console", "should return remote objects")]
         public async Task ConsoleShouldReturnRemoteObjects()
         {
             var worker = await CreateWorkerAsync();

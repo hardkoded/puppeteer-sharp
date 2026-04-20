@@ -164,41 +164,38 @@ public class CdpWebWorker : WebWorker
         var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
         var handles = consoleData.Args.Select(i => new CdpJSHandle(World, i)).ToArray<IJSHandle>();
 
-        if (Console != null)
+        var tokens = handles.Select(i =>
         {
-            var tokens = handles.Select(i =>
+            var handle = (ICdpHandle)i;
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
             {
-                var handle = (ICdpHandle)i;
-                if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
-                {
-                    return handle.RemoteObject.Description.Split('\n')[0];
-                }
-
-                return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
-                    ? i.ToString()
-                    : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
-            });
-
-            var location = new ConsoleMessageLocation();
-            var stackTraceLocations = new List<ConsoleMessageLocation>();
-            if (consoleData.StackTrace?.CallFrames?.Length > 0)
-            {
-                foreach (var callFrame in consoleData.StackTrace.CallFrames)
-                {
-                    stackTraceLocations.Add(new ConsoleMessageLocation
-                    {
-                        URL = callFrame.URL,
-                        LineNumber = callFrame.LineNumber,
-                        ColumnNumber = callFrame.ColumnNumber,
-                    });
-                }
-
-                location = stackTraceLocations[0];
+                return handle.RemoteObject.Description.Split('\n')[0];
             }
 
-            var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations);
-            OnConsole(new ConsoleEventArgs(consoleMessage));
+            return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
+                ? i.ToString()
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+        });
+
+        var location = new ConsoleMessageLocation();
+        var stackTraceLocations = new List<ConsoleMessageLocation>();
+        if (consoleData.StackTrace?.CallFrames?.Length > 0)
+        {
+            foreach (var callFrame in consoleData.StackTrace.CallFrames)
+            {
+                stackTraceLocations.Add(new ConsoleMessageLocation
+                {
+                    URL = callFrame.URL,
+                    LineNumber = callFrame.LineNumber,
+                    ColumnNumber = callFrame.ColumnNumber,
+                });
+            }
+
+            location = stackTraceLocations[0];
         }
+
+        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations);
+        OnConsole(new ConsoleEventArgs(consoleMessage));
 
         await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace).ConfigureAwait(false);
     }
