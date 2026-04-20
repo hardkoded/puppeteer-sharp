@@ -131,5 +131,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Removed from upstream; enabling RenderDocument changes script count during navigation",
+    "testIdPattern": "[coverage.spec] Coverage specs resetOnNavigation should report scripts across navigations when disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"]
   }
 ]
