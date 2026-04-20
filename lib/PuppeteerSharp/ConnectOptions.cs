@@ -45,6 +45,11 @@ namespace PuppeteerSharp
         public bool NetworkEnabled { get; set; } = true;
 
         /// <summary>
+        /// Experimental setting to disable monitoring issue events by default.
+        /// </summary>
+        public bool IssuesEnabled { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
