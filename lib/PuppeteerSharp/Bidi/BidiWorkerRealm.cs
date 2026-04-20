@@ -27,6 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -93,9 +94,65 @@ internal class BidiWorkerRealm : BidiRealm
         _realm.Log += OnLog;
     }
 
+    private static ConsoleType ConvertConsoleMessageLevel(string method) => method switch
+    {
+        "group" => ConsoleType.StartGroup,
+        "groupCollapsed" => ConsoleType.StartGroupCollapsed,
+        "groupEnd" => ConsoleType.EndGroup,
+        "log" => ConsoleType.Log,
+        "debug" => ConsoleType.Debug,
+        "info" => ConsoleType.Info,
+        "error" => ConsoleType.Error,
+        "warn" => ConsoleType.Warning,
+        "dir" => ConsoleType.Dir,
+        "dirxml" => ConsoleType.Dirxml,
+        "table" => ConsoleType.Table,
+        "trace" => ConsoleType.Trace,
+        "clear" => ConsoleType.Clear,
+        "assert" => ConsoleType.Assert,
+        "profile" => ConsoleType.Profile,
+        "profileEnd" => ConsoleType.ProfileEnd,
+        "count" => ConsoleType.Count,
+        "timeEnd" => ConsoleType.TimeEnd,
+        "verbose" => ConsoleType.Verbose,
+        "timeStamp" => ConsoleType.Timestamp,
+        _ => ConsoleType.Log,
+    };
+
+    private static ConsoleMessageLocation GetStackTraceLocation(StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            var callFrame = stackTrace.CallFrames[0];
+            return new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            };
+        }
+
+        return null;
+    }
+
+    private static IList<ConsoleMessageLocation> GetStackTrace(StackTrace stackTrace)
+    {
+        if (stackTrace?.CallFrames?.Count > 0)
+        {
+            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
+            {
+                URL = callFrame.Url,
+                LineNumber = (int)callFrame.LineNumber,
+                ColumnNumber = (int)callFrame.ColumnNumber,
+            }).ToList();
+        }
+
+        return [];
+    }
+
     private void OnLog(object sender, WebDriverBiDi.Log.EntryAddedEventArgs args)
     {
-        if (_worker.Console == null || args.Type != "console")
+        if (args.Type != "console")
         {
             return;
         }
@@ -124,62 +181,6 @@ internal class BidiWorkerRealm : BidiRealm
         var stackTrace = GetStackTrace(args.StackTrace);
         var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace);
         _worker.OnConsole(new ConsoleEventArgs(consoleMessage));
-    }
-
-    private static ConsoleType ConvertConsoleMessageLevel(string method) => method switch
-    {
-        "group" => ConsoleType.StartGroup,
-        "groupCollapsed" => ConsoleType.StartGroupCollapsed,
-        "groupEnd" => ConsoleType.EndGroup,
-        "log" => ConsoleType.Log,
-        "debug" => ConsoleType.Debug,
-        "info" => ConsoleType.Info,
-        "error" => ConsoleType.Error,
-        "warn" => ConsoleType.Warning,
-        "dir" => ConsoleType.Dir,
-        "dirxml" => ConsoleType.Dirxml,
-        "table" => ConsoleType.Table,
-        "trace" => ConsoleType.Trace,
-        "clear" => ConsoleType.Clear,
-        "assert" => ConsoleType.Assert,
-        "profile" => ConsoleType.Profile,
-        "profileEnd" => ConsoleType.ProfileEnd,
-        "count" => ConsoleType.Count,
-        "timeEnd" => ConsoleType.TimeEnd,
-        "verbose" => ConsoleType.Verbose,
-        "timeStamp" => ConsoleType.Timestamp,
-        _ => ConsoleType.Log,
-    };
-
-    private static ConsoleMessageLocation GetStackTraceLocation(WebDriverBiDi.Script.StackTrace stackTrace)
-    {
-        if (stackTrace?.CallFrames?.Count > 0)
-        {
-            var callFrame = stackTrace.CallFrames[0];
-            return new ConsoleMessageLocation
-            {
-                URL = callFrame.Url,
-                LineNumber = (int)callFrame.LineNumber,
-                ColumnNumber = (int)callFrame.ColumnNumber,
-            };
-        }
-
-        return null;
-    }
-
-    private static IList<ConsoleMessageLocation> GetStackTrace(WebDriverBiDi.Script.StackTrace stackTrace)
-    {
-        if (stackTrace?.CallFrames?.Count > 0)
-        {
-            return stackTrace.CallFrames.Select(callFrame => new ConsoleMessageLocation
-            {
-                URL = callFrame.Url,
-                LineNumber = (int)callFrame.LineNumber,
-                ColumnNumber = (int)callFrame.ColumnNumber,
-            }).ToList();
-        }
-
-        return [];
     }
 }
 
