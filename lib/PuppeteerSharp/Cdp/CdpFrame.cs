@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -72,6 +73,8 @@ public class CdpFrame : Frame
     internal Accessibility Accessibility { get; }
 
     internal CdpPage CdpPage => Page as CdpPage;
+
+    internal ConcurrentDictionary<string, IsolatedWorld> ExtensionWorlds { get; } = new();
 
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
 
@@ -272,6 +275,10 @@ public class CdpFrame : Frame
         return (ElementHandle)await parentFrame.MainRealm.AdoptBackendNodeAsync(response.BackendNodeId).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => ExtensionWorlds.Values.Cast<Realm>().ToList();
+
     internal bool IsOopFrame() => Client != FrameManager.Client;
 
     internal async Task AddPreloadScriptAsync(CdpPreloadScript preloadScript)
@@ -370,6 +377,17 @@ public class CdpFrame : Frame
             MainWorld.FrameUpdated();
             PuppeteerWorld.FrameUpdated();
         }
+    }
+
+    /// <inheritdoc/>
+    protected internal override void OnDetach()
+    {
+        foreach (var world in ExtensionWorlds.Values)
+        {
+            world.Detach();
+        }
+
+        ExtensionWorlds.Clear();
     }
 
     /// <inheritdoc />

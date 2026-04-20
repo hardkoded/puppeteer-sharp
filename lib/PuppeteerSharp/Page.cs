@@ -898,6 +898,13 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
+        /// <summary>
+        /// Retrieves the list of extension realms inside the main frame of this page.
+        /// Shortcut for <c>MainFrame.ExtensionRealms()</c>.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
+
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         /// <summary>

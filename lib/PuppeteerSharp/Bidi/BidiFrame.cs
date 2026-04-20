@@ -611,6 +611,10 @@ public class BidiFrame : Frame
     }
 
     /// <inheritdoc />
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager() => throw new System.NotImplementedException();
 
     private static ConsoleType ConvertConsoleMessageLevel(string method)
