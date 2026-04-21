@@ -14,6 +14,7 @@ namespace PuppeteerSharp.Cdp
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
         private const int TimeForWaitingForSwap = 200;
+        private const string ChromeExtensionPrefix = "chrome-extension://";
         private static readonly string UtilityWorldName = "__puppeteer_utility_world__" + typeof(FrameManager).Assembly.GetName().Version.ToString();
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
@@ -26,13 +27,14 @@ namespace PuppeteerSharp.Cdp
         private readonly HashSet<Binding> _bindings = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true, bool issuesEnabled = true)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled);
             TimeoutSettings = timeoutSettings;
+            IssuesEnabled = issuesEnabled;
 
             Client.MessageReceived += Client_MessageReceived;
             Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
@@ -57,6 +59,8 @@ namespace PuppeteerSharp.Cdp
         internal Page Page { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
+
+        internal bool IssuesEnabled { get; }
 
         internal FrameTree FrameTree { get; } = new();
 
@@ -211,10 +215,19 @@ namespace PuppeteerSharp.Cdp
                 _frameTreeHandled.TrySetResult(true);
                 await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
 
-                await Task.WhenAll(
+                var tasks = new List<Task>
+                {
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
-                    networkInitTask).ConfigureAwait(false);
+                    networkInitTask,
+                };
+
+                if (IssuesEnabled)
+                {
+                    tasks.Add(client.SendAsync("Audits.enable"));
+                }
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
 
                 if (frame != null)
                 {
@@ -276,6 +289,21 @@ namespace PuppeteerSharp.Cdp
         internal Task RegisterSpeculativeSessionAsync(CDPSession client)
             => NetworkManager.AddClientAsync(client);
 
+        private static bool IsExtensionOrigin(string origin)
+            => !string.IsNullOrEmpty(origin) && origin.StartsWith(ChromeExtensionPrefix, StringComparison.Ordinal);
+
+        private static string ExtractExtensionId(string origin)
+        {
+            if (!IsExtensionOrigin(origin))
+            {
+                return null;
+            }
+
+            var pathPart = origin.Substring(ChromeExtensionPrefix.Length);
+            var slashIndex = pathPart.IndexOf('/');
+            return slashIndex == -1 ? pathPart : pathPart.Substring(0, slashIndex);
+        }
+
         private CdpFrame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -325,6 +353,9 @@ namespace PuppeteerSharp.Cdp
                         case "Page.lifecycleEvent":
                             OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
                             break;
+                        case "Audits.issueAdded":
+                            OnIssueAdded(e.MessageData.ToObject<AuditsIssueAddedResponse>());
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -360,6 +391,22 @@ namespace PuppeteerSharp.Cdp
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
+        }
+
+        private void OnIssueAdded(AuditsIssueAddedResponse e)
+        {
+            if (e?.Issue == null)
+            {
+                return;
+            }
+
+            var issue = new Issue
+            {
+                Code = e.Issue.Code,
+                Details = e.Issue.Details,
+            };
+
+            Page.OnIssue(new IssueEventArgs(issue));
         }
 
         private void OnExecutionContextsCleared(CDPSession session)
@@ -412,6 +459,24 @@ namespace PuppeteerSharp.Cdp
                     // connections so we might end up creating multiple isolated worlds.
                     // We can use either.
                     world = frame.PuppeteerWorld;
+                }
+                else if (IsExtensionOrigin(contextPayload.Origin))
+                {
+                    var extId = ExtractExtensionId(contextPayload.Origin);
+
+                    if (extId == null)
+                    {
+                        _logger.LogError("Error while parsing extension id from origin: {Origin}", contextPayload.Origin);
+                        return;
+                    }
+
+                    if (!frame.ExtensionWorlds.TryGetValue(extId, out world))
+                    {
+                        world = new IsolatedWorld(frame, null, TimeoutSettings, false);
+                        world.SetWorldId(extId);
+                        world.SetOrigin(contextPayload.Origin);
+                        frame.ExtensionWorlds[extId] = world;
+                    }
                 }
             }
 

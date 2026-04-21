@@ -410,6 +410,12 @@ namespace PuppeteerSharp
             return null;
         }
 
+        /// <summary>
+        /// Retrieves the list of extension realms within this frame.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
+
         internal void ClearDocumentHandle() => _documentTask = null;
 
         internal void OnLoadingStarted() => HasStartedLoading = true;
@@ -454,11 +460,19 @@ namespace PuppeteerSharp
             Detached = true;
             MainWorld.Detach();
             PuppeteerWorld.Detach();
+            OnDetach();
             FrameDetached?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Called when this frame is being detached. Subclasses can override to perform additional cleanup.
+        /// </summary>
+        protected internal virtual void OnDetach()
+        {
+        }
 
         /// <summary>
         /// Gets the prompts manager for the current client.

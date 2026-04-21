@@ -106,7 +106,7 @@ namespace PuppeteerSharp
         public abstract Task UninstallExtensionAsync(string id);
 
         /// <inheritdoc/>
-        public abstract Task<Dictionary<string, Extension>> ExtensionsAsync();
+        public abstract Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync();
 
         /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync(bool includeAll = false)
@@ -258,6 +258,8 @@ namespace PuppeteerSharp
         }
 
         internal virtual bool IsNetworkEnabled() => true;
+
+        internal virtual bool IsIssuesEnabled() => true;
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();

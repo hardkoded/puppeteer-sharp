@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -28,7 +27,7 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Raised when the worker emits a console message.
+        /// Fired when the worker calls a console API method.
         /// </summary>
         public event EventHandler<ConsoleEventArgs> Console;
 

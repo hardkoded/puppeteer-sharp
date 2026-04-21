@@ -26,6 +26,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using PuppeteerSharp.Helpers;
+using WebDriverBiDi.Log;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi.Core;
@@ -42,6 +43,8 @@ internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
     }
 
     public event EventHandler<WorkerRealmEventArgs> Worker;
+
+    public event EventHandler<EntryAddedEventArgs> Log;
 
     public override Session Session => _owners.FirstOrDefault()?.Session;
 
@@ -64,11 +67,17 @@ internal class DedicatedWorkerRealm : Realm, IDedicatedWorkerOwnerRealm
 
     private void Initialize()
     {
-        // Listen to realm destruction
         Session.Driver.Script.OnRealmDestroyed.AddObserver(OnRealmDestroyed);
-
-        // Listen to nested worker creation
         Session.Driver.Script.OnRealmCreated.AddObserver(OnDedicatedRealmCreated);
+        Session.LogEntryAdded += OnLogEntryAdded;
+    }
+
+    private void OnLogEntryAdded(object sender, EntryAddedEventArgs args)
+    {
+        if (args.Source.RealmId == Id)
+        {
+            Log?.Invoke(this, args);
+        }
     }
 
     private void OnRealmDestroyed(RealmDestroyedEventArgs args)

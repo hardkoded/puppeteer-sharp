@@ -557,6 +557,10 @@ public class BidiFrame : Frame
         return BidiElementHandle.From(node, (BidiRealm)parentFrame.MainRealm) as ElementHandle;
     }
 
+    /// <inheritdoc />
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
+
     internal static BidiFrame From(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         parentFrame = new BidiFrame(parentPage, parentFrame, browsingContext);

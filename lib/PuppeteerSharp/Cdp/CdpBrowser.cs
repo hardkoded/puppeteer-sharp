@@ -37,7 +37,8 @@ public class CdpBrowser : Browser
     private readonly ILogger<Browser> _logger;
     private readonly bool _handleDevToolsAsPage;
     private readonly bool _networkEnabled;
-    private Dictionary<string, Extension> _extensions = new();
+    private readonly Dictionary<string, Extension> _extensions = new();
+    private readonly bool _issuesEnabled;
     private Task _closeTask;
 
     internal CdpBrowser(
@@ -50,7 +51,8 @@ public class CdpBrowser : Browser
         Func<Target, bool> targetFilter = null,
         Func<Target, bool> isPageTargetFunc = null,
         bool handleDevToolsAsPage = false,
-        bool networkEnabled = true)
+        bool networkEnabled = true,
+        bool issuesEnabled = true)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
@@ -59,6 +61,7 @@ public class CdpBrowser : Browser
         Connection = connection;
         _handleDevToolsAsPage = handleDevToolsAsPage;
         _networkEnabled = networkEnabled;
+        _issuesEnabled = issuesEnabled;
         var targetFilterCallback = targetFilter ?? (_ => true);
         _logger = Connection.LoggerFactory.CreateLogger<Browser>();
         IsPageTargetFunc =
@@ -220,30 +223,32 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override async Task<Dictionary<string, Extension>> ExtensionsAsync()
+    public override async Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
     {
-        var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions").ConfigureAwait(false);
+        var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
+            .ConfigureAwait(false);
 
         var extensionsMap = new Dictionary<string, Extension>();
 
-        foreach (var extensionInfo in response.Extensions)
+        foreach (var info in response.Extensions)
         {
-            if (_extensions.TryGetValue(extensionInfo.Id, out var existing))
+            if (_extensions.TryGetValue(info.Id, out var existing))
             {
-                extensionsMap[extensionInfo.Id] = existing;
+                extensionsMap[info.Id] = existing;
             }
             else
             {
-                extensionsMap[extensionInfo.Id] = new CdpExtension(
-                    extensionInfo.Id,
-                    extensionInfo.Version,
-                    extensionInfo.Name,
-                    this);
+                extensionsMap[info.Id] = new CdpExtension(info.Id, info.Version, info.Name, this);
             }
         }
 
-        _extensions = extensionsMap;
-        return _extensions;
+        _extensions.Clear();
+        foreach (var kvp in extensionsMap)
+        {
+            _extensions[kvp.Key] = kvp.Value;
+        }
+
+        return extensionsMap;
     }
 
     internal static async Task<CdpBrowser> CreateAsync(
@@ -258,7 +263,8 @@ public class CdpBrowser : Browser
         Func<Target, bool> isPageTargetCallback = null,
         Action<IBrowser> initAction = null,
         bool handleDevToolsAsPage = false,
-        bool networkEnabled = true)
+        bool networkEnabled = true,
+        bool issuesEnabled = true)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -270,7 +276,8 @@ public class CdpBrowser : Browser
             targetFilter,
             isPageTargetCallback,
             handleDevToolsAsPage,
-            networkEnabled);
+            networkEnabled,
+            issuesEnabled);
 
         try
         {
@@ -293,6 +300,8 @@ public class CdpBrowser : Browser
     }
 
     internal override bool IsNetworkEnabled() => _networkEnabled;
+
+    internal override bool IsIssuesEnabled() => _issuesEnabled;
 
     internal async Task<IPage> CreatePageInContextAsync(string contextId, CreatePageOptions options = null)
     {

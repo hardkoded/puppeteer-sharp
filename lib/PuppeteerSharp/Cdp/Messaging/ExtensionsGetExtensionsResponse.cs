@@ -4,6 +4,6 @@ namespace PuppeteerSharp.Cdp.Messaging
 {
     internal class ExtensionsGetExtensionsResponse
     {
-        public List<ExtensionInfo> Extensions { get; set; } = new();
+        public List<ExtensionInfo> Extensions { get; set; }
     }
 }

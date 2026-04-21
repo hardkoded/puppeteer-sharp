@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,6 +47,7 @@ public class BidiBrowser : Browser
     private readonly BidiBrowserTarget _target;
     private readonly string _webSocketEndpoint;
     private readonly bool _networkEnabled;
+    private readonly bool _issuesEnabled;
     private bool _isClosed;
 
     private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
@@ -53,6 +55,7 @@ public class BidiBrowser : Browser
         _target = new BidiBrowserTarget(this);
         _options = options;
         _networkEnabled = options.NetworkEnabled;
+        _issuesEnabled = options.IssuesEnabled;
         BrowserCore = browserCore;
         _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
@@ -202,8 +205,8 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override Task<System.Collections.Generic.Dictionary<string, Extension>> ExtensionsAsync()
-        => throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
+    public override Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
+        => throw new NotSupportedException("GetExtensions is not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
     public override ITarget[] Targets()
@@ -384,6 +387,8 @@ public class BidiBrowser : Browser
     }
 
     internal override bool IsNetworkEnabled() => _networkEnabled;
+
+    internal override bool IsIssuesEnabled() => _issuesEnabled;
 
     private static WindowState MapFromClientWindowState(WebDriverBiDi.Browser.ClientWindowState state) => state switch
     {

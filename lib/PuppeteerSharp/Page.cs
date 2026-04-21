@@ -93,6 +93,9 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestServedFromCache;
 
         /// <inheritdoc/>
+        public event EventHandler<IssueEventArgs> Issue;
+
+        /// <inheritdoc/>
         public event EventHandler<PageErrorEventArgs> PageError;
 
         /// <inheritdoc/>
@@ -900,6 +903,15 @@ namespace PuppeteerSharp
 
         /// <inheritdoc />
         public abstract Task TriggerExtensionActionAsync(Extension extension);
+
+        /// <summary>
+        /// Retrieves the list of extension realms inside the main frame of this page.
+        /// Shortcut for <c>MainFrame.ExtensionRealms()</c>.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
+
+        internal void OnIssue(IssueEventArgs e) => Issue?.Invoke(this, e);
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 

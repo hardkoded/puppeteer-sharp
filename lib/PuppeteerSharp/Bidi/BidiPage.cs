@@ -885,6 +885,10 @@ public class BidiPage : Page
         => throw new NotSupportedException("TriggerExtensionAction is not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
         // Wrap the expression in a function so it can be used as a preload script

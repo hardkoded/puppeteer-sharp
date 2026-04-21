@@ -18,60 +18,60 @@ internal class CdpExtension : Extension
         _browser = browser;
     }
 
-    /// <inheritdoc />
-    public override async Task<WebWorker[]> WorkersAsync()
+    /// <inheritdoc/>
+    public override async Task<IReadOnlyList<WebWorker>> WorkersAsync()
     {
         var targets = _browser.Targets();
-
-        var extensionWorkers = targets.Where(target =>
-            target.Type == TargetType.ServiceWorker &&
-            target.Url.StartsWith("chrome-extension://" + Id, System.StringComparison.OrdinalIgnoreCase));
 
         var workers = new List<WebWorker>();
-        foreach (var target in extensionWorkers)
+        foreach (var target in targets)
         {
-            var worker = await target.WorkerAsync().ConfigureAwait(false);
-            if (worker != null)
+            var targetUrl = target.Url;
+            if (target.Type == TargetType.ServiceWorker &&
+                targetUrl.StartsWith("chrome-extension://" + Id, System.StringComparison.Ordinal))
             {
-                workers.Add(worker);
+                var worker = await target.WorkerAsync().ConfigureAwait(false);
+                if (worker != null)
+                {
+                    workers.Add(worker);
+                }
             }
         }
 
-        return workers.ToArray();
+        return workers;
     }
 
-    /// <inheritdoc />
-    public override async Task<IPage[]> PagesAsync()
+    /// <inheritdoc/>
+    public override async Task<IReadOnlyList<IPage>> PagesAsync()
     {
         var targets = _browser.Targets();
 
-        var extensionPages = targets.Where(target =>
-            (target.Type == TargetType.Page || target.Type == TargetType.BackgroundPage) &&
-            target.Url.StartsWith("chrome-extension://" + Id, System.StringComparison.OrdinalIgnoreCase));
-
         var pages = new List<IPage>();
-        foreach (var target in extensionPages)
+        foreach (var target in targets)
         {
-            var page = await target.PageAsync().ConfigureAwait(false);
-            if (page != null)
+            var targetUrl = target.Url;
+            if ((target.Type == TargetType.Page || target.Type == TargetType.BackgroundPage) &&
+                targetUrl.StartsWith("chrome-extension://" + Id, System.StringComparison.Ordinal))
             {
-                pages.Add(page);
+                var page = await target.PageAsync().ConfigureAwait(false);
+                if (page != null)
+                {
+                    pages.Add(page);
+                }
             }
         }
 
-        return pages.ToArray();
+        return pages;
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public override async Task TriggerActionAsync(IPage page)
     {
         var cdpPage = (CdpPage)page;
-        await _browser.Connection.SendAsync(
-            "Extensions.triggerAction",
-            new ExtensionsTriggerActionRequest
-            {
-                Id = Id,
-                TargetId = cdpPage.TabId,
-            }).ConfigureAwait(false);
+        await _browser.Connection.SendAsync("Extensions.triggerAction", new ExtensionsTriggerActionRequest
+        {
+            Id = Id,
+            TargetId = cdpPage.TabId,
+        }).ConfigureAwait(false);
     }
 }

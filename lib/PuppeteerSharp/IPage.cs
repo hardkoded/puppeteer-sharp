@@ -94,6 +94,11 @@ namespace PuppeteerSharp
         event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
+        /// Raised when a DevTools issue is reported.
+        /// </summary>
+        event EventHandler<IssueEventArgs> Issue;
+
+        /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         event EventHandler<PageErrorEventArgs> PageError;
@@ -1585,5 +1590,11 @@ namespace PuppeteerSharp
         /// <param name="extension">The extension to trigger the action for.</param>
         /// <returns>A task that completes when the extension action has been triggered.</returns>
         Task TriggerExtensionActionAsync(Extension extension);
+
+        /// <summary>
+        /// Returns the extension content-script realms associated with the page's main frame.
+        /// </summary>
+        /// <returns>A read-only list of extension <see cref="Realm"/> instances.</returns>
+        IReadOnlyList<Realm> ExtensionRealms();
     }
 }
