@@ -259,6 +259,8 @@ namespace PuppeteerSharp
 
         internal virtual bool IsNetworkEnabled() => true;
 
+        internal virtual bool IsIssuesEnabled() => true;
+
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 

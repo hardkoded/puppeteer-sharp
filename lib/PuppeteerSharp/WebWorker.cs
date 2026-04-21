@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp
@@ -25,6 +25,11 @@ namespace PuppeteerSharp
         {
             Url = url;
         }
+
+        /// <summary>
+        /// Fired when the worker calls a console API method.
+        /// </summary>
+        public event EventHandler<ConsoleEventArgs> Console;
 
         /// <summary>
         /// Gets the Worker URL.
@@ -101,5 +106,7 @@ namespace PuppeteerSharp
         public abstract Task CloseAsync();
 
         internal virtual Realm GetMainRealm() => World;
+
+        internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
     }
 }

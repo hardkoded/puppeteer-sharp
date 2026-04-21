@@ -94,6 +94,11 @@ namespace PuppeteerSharp
         event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
+        /// Raised when a DevTools issue is reported.
+        /// </summary>
+        event EventHandler<IssueEventArgs> Issue;
+
+        /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         event EventHandler<PageErrorEventArgs> PageError;
