@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -329,6 +330,14 @@ namespace PuppeteerSharp
         /// <param name="id">The extension ID to uninstall.</param>
         /// <returns>A task that completes when the extension is uninstalled.</returns>
         Task UninstallExtensionAsync(string id);
+
+        /// <summary>
+        /// Returns a map of installed extensions, keyed by extension ID.
+        /// In Chrome, this is only available if the browser was created using pipe mode
+        /// and the <c>--enable-unsafe-extension-debugging</c> flag is set.
+        /// </summary>
+        /// <returns>A task that resolves to a dictionary of extension ID to <see cref="Extension"/>.</returns>
+        Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync();
 
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.

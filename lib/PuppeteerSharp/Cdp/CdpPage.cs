@@ -807,6 +807,10 @@ public class CdpPage : Page
         }
     }
 
+    /// <inheritdoc/>
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => ((Frame)MainFrame).ExtensionRealms();
+
     internal static async Task<Page> CreateAsync(
         CdpCDPSession client,
         CdpTarget target,

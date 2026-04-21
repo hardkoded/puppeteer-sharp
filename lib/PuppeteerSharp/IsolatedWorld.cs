@@ -21,12 +21,17 @@ namespace PuppeteerSharp
 
     internal class IsolatedWorld : Realm, IDisposable, IAsyncDisposable
     {
+        internal const string MainWorldId = "__main_world__";
+        internal const string PuppeteerWorldId = "__puppeteer_utility_world__";
+
         private readonly ILogger _logger;
         private readonly List<string> _contextBindings = new();
         private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private ExecutionContext _context;
+        private string _worldId;
+        private string _origin;
 
         public IsolatedWorld(
             Frame frame,
@@ -37,11 +42,15 @@ namespace PuppeteerSharp
             Frame = frame;
             Worker = worker;
             IsMainWorld = isMainWorld;
+            _worldId = isMainWorld ? MainWorldId : PuppeteerWorldId;
             _logger = Client.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
             FrameUpdated();
         }
+
+        /// <inheritdoc/>
+        public override string Origin => _origin;
 
         /// <summary>
         /// This property is not upstream. It's helpful for debugging.
@@ -81,7 +90,30 @@ namespace PuppeteerSharp
             }
         }
 
+        /// <inheritdoc/>
+        public override async Task<Extension> ExtensionAsync()
+        {
+            if (Worker != null)
+            {
+                throw new PuppeteerException("Unable to get extension from a worker Realm.");
+            }
+
+            if (_worldId == MainWorldId || _worldId == PuppeteerWorldId)
+            {
+                return null;
+            }
+
+            // _worldId is the extension ID for extension worlds
+            var extensions = await ((IPage)((CdpFrame)Frame).FrameManager.Page).Browser.GetExtensionsAsync().ConfigureAwait(false);
+            extensions.TryGetValue(_worldId, out var extension);
+            return extension;
+        }
+
         internal void FrameUpdated() => Client.MessageReceived += Client_MessageReceived;
+
+        internal void SetOrigin(string origin) => _origin = origin;
+
+        internal void SetWorldId(string worldId) => _worldId = worldId;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -202,6 +203,10 @@ public class BidiBrowser : Browser
         await Driver.WebExtension.UninstallAsync(
             new WebDriverBiDi.WebExtension.UninstallCommandParameters(id)).ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public override Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
+        => throw new NotSupportedException("GetExtensions is not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
     public override ITarget[] Targets()
