@@ -40,21 +40,24 @@ public class CdpCDPSession : CDPSession
     private readonly ConcurrentDictionary<int, MessageTask> _callbacks = new();
     private readonly string _parentSessionId;
     private readonly TargetType _targetType;
+    private readonly CdpCDPSession _parentSessionRef;
     private int _lastId;
 
-    internal CdpCDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId)
+    internal CdpCDPSession(Connection connection, TargetType targetType, string sessionId, string parentSessionId, CdpCDPSession parentSessionRef = null)
     {
         Connection = connection;
         _targetType = targetType;
         Id = sessionId;
         _parentSessionId = parentSessionId;
+        _parentSessionRef = parentSessionRef;
     }
 
     /// <inheritdoc />
     public override bool Detached => Connection.IsClosed || IsClosed;
 
     internal override CDPSession ParentSession
-        => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
+        => _parentSessionRef
+            ?? (string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this);
 
     internal bool IsClosed { get; private set; }
 
