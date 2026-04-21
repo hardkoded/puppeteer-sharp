@@ -26,13 +26,14 @@ namespace PuppeteerSharp.Cdp
         private readonly HashSet<Binding> _bindings = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true, bool issuesEnabled = true)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
             NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled);
             TimeoutSettings = timeoutSettings;
+            IssuesEnabled = issuesEnabled;
 
             Client.MessageReceived += Client_MessageReceived;
             Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
@@ -57,6 +58,8 @@ namespace PuppeteerSharp.Cdp
         internal Page Page { get; }
 
         internal TimeoutSettings TimeoutSettings { get; }
+
+        internal bool IssuesEnabled { get; }
 
         internal FrameTree FrameTree { get; } = new();
 
@@ -211,10 +214,19 @@ namespace PuppeteerSharp.Cdp
                 _frameTreeHandled.TrySetResult(true);
                 await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
 
-                await Task.WhenAll(
+                var tasks = new List<Task>
+                {
                     client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
                     client.SendAsync("Runtime.enable"),
-                    networkInitTask).ConfigureAwait(false);
+                    networkInitTask,
+                };
+
+                if (IssuesEnabled)
+                {
+                    tasks.Add(client.SendAsync("Audits.enable"));
+                }
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
 
                 if (frame != null)
                 {
@@ -325,6 +337,9 @@ namespace PuppeteerSharp.Cdp
                         case "Page.lifecycleEvent":
                             OnLifeCycleEvent(e.MessageData.ToObject<LifecycleEventResponse>());
                             break;
+                        case "Audits.issueAdded":
+                            OnIssueAdded(e.MessageData.ToObject<AuditsIssueAddedResponse>());
+                            break;
                     }
                 }
                 catch (Exception ex)
@@ -360,6 +375,22 @@ namespace PuppeteerSharp.Cdp
                 frame.OnLifecycleEvent(e.LoaderId, e.Name);
                 LifecycleEvent?.Invoke(this, new FrameEventArgs(frame));
             }
+        }
+
+        private void OnIssueAdded(AuditsIssueAddedResponse e)
+        {
+            if (e?.Issue == null)
+            {
+                return;
+            }
+
+            var issue = new Issue
+            {
+                Code = e.Issue.Code,
+                Details = e.Issue.Details,
+            };
+
+            Page.OnIssue(new IssueEventArgs(issue));
         }
 
         private void OnExecutionContextsCleared(CDPSession session)
