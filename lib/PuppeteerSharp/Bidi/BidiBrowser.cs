@@ -46,6 +46,7 @@ public class BidiBrowser : Browser
     private readonly BidiBrowserTarget _target;
     private readonly string _webSocketEndpoint;
     private readonly bool _networkEnabled;
+    private readonly bool _issuesEnabled;
     private bool _isClosed;
 
     private BidiBrowser(Core.Browser browserCore, IBrowserOptions options, ILoggerFactory loggerFactory, string webSocketEndpoint)
@@ -53,6 +54,7 @@ public class BidiBrowser : Browser
         _target = new BidiBrowserTarget(this);
         _options = options;
         _networkEnabled = options.NetworkEnabled;
+        _issuesEnabled = options.IssuesEnabled;
         BrowserCore = browserCore;
         _webSocketEndpoint = webSocketEndpoint;
         _logger = loggerFactory.CreateLogger<BidiBrowser>();
@@ -380,6 +382,8 @@ public class BidiBrowser : Browser
     }
 
     internal override bool IsNetworkEnabled() => _networkEnabled;
+
+    internal override bool IsIssuesEnabled() => _issuesEnabled;
 
     private static WindowState MapFromClientWindowState(WebDriverBiDi.Browser.ClientWindowState state) => state switch
     {

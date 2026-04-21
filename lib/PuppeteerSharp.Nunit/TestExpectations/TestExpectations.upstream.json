@@ -1368,6 +1368,21 @@
     "comment": "Flaky on Mac"
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Issue *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support issue events"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
     "platforms": [
       "darwin",

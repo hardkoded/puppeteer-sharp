@@ -93,6 +93,9 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestServedFromCache;
 
         /// <inheritdoc/>
+        public event EventHandler<IssueEventArgs> Issue;
+
+        /// <inheritdoc/>
         public event EventHandler<PageErrorEventArgs> PageError;
 
         /// <inheritdoc/>
@@ -897,6 +900,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc />
         public abstract Task SetBypassServiceWorkerAsync(bool bypass);
+
+        internal void OnIssue(IssueEventArgs e) => Issue?.Invoke(this, e);
 
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
