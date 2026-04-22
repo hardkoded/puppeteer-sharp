@@ -168,6 +168,7 @@ public class CdpWebMcp
                 },
                 Frame = frame,
                 Location = location,
+                WebMcp = this,
             };
 
             frameTools[tool.Name] = webMcpTool;

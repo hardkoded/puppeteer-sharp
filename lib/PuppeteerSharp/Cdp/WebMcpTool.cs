@@ -20,6 +20,9 @@
 //  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  * SOFTWARE.
 
+using System;
+using System.Threading.Tasks;
+
 namespace PuppeteerSharp.Cdp;
 
 /// <summary>
@@ -44,4 +47,32 @@ public class WebMcpTool
 
     /// <summary>Source location that defined the tool (if available).</summary>
     public ConsoleMessageLocation Location { get; init; }
+
+    internal CdpWebMcp WebMcp { get; init; }
+
+    /// <summary>
+    /// Executes the tool with the given input parameters.
+    /// </summary>
+    /// <param name="input">Input object matching the tool's <c>inputSchema</c>. Defaults to empty object.</param>
+    /// <returns>A task resolving to the tool call result.</returns>
+    public async Task<WebMcpToolCallResult> ExecuteAsync(object input = null)
+    {
+        var invocationId = await WebMcp.InvokeToolAsync(this, input ?? new { }).ConfigureAwait(false);
+
+        var tcs = new TaskCompletionSource<WebMcpToolCallResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        EventHandler<WebMcpToolCallResult> handler = null;
+        handler = (_, result) =>
+        {
+            if (result.Id == invocationId)
+            {
+                WebMcp.ToolResponded -= handler;
+                tcs.TrySetResult(result);
+            }
+        };
+
+        WebMcp.ToolResponded += handler;
+
+        return await tcs.Task.ConfigureAwait(false);
+    }
 }
