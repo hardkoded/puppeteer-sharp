@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
@@ -108,6 +109,52 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             var removed = await removedTcs.Task.WaitAsync(System.TimeSpan.FromSeconds(5));
             Assert.That(removed, Has.Length.GreaterThanOrEqualTo(1));
+        }
+
+        [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should invoke tool")]
+        public async Task ShouldInvokeTool()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(WebMcpOptions(), TestConstants.LoggerFactory);
+            var page = (CdpPage)await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+            Assert.That(page.WebMcp, Is.Not.Null);
+
+            var toolAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
+
+            await page.EvaluateFunctionAsync(@"() => {
+                window.navigator.modelContext.registerTool({
+                    name: 'test-tool-1',
+                    description: 'A test tool 1',
+                    inputSchema: {
+                        type: 'object',
+                        properties: { text: { type: 'string', description: 'Some text' } },
+                        required: ['text'],
+                    },
+                    execute: (params) => {
+                        return `hello ${params.text}`;
+                    },
+                });
+            }");
+
+            await toolAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            var tools = page.WebMcp.Tools();
+            var tool = tools[0];
+
+            var toolCalledTcs = new TaskCompletionSource<WebMcpToolCall>();
+            page.WebMcp.ToolInvoked += (_, call) => toolCalledTcs.TrySetResult(call);
+
+            var response = await tool.ExecuteAsync(new { text = "world" });
+            var call = await toolCalledTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(response.Id, Is.EqualTo(call.Id));
+            Assert.That(response.Call, Is.SameAs(call));
+            Assert.That(response.Status, Is.EqualTo(WebMcpInvocationStatus.Completed));
+            Assert.That(response.Output?.ToString(), Contains.Substring("hello world"));
+            Assert.That(response.ErrorText, Is.Null);
+            Assert.That(response.Exception, Is.Null);
         }
 
         [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should remove tools on frame navigation")]
