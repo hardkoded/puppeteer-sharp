@@ -46,6 +46,7 @@ public class CdpPage : Page
 {
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
+    private readonly CdpWebMcp _webMcp;
     private readonly CdpEmulationManager _emulationManager;
     private readonly ILogger _logger;
     private readonly Task _closedFinishedTask;
@@ -74,6 +75,7 @@ public class CdpPage : Page
         _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
         FrameManager = new FrameManager(client, this, TimeoutSettings, target.Browser.IsNetworkEnabled(), target.Browser.IsIssuesEnabled());
+        _webMcp = new CdpWebMcp(client, FrameManager);
         Accessibility = new Accessibility(client, () => MainFrame?.Id, () => (FrameManager.MainFrame as Frame)?.MainRealm);
 
         // Use browser context's connection, as current Bluetooth emulation in Chromium is
@@ -133,6 +135,9 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override bool IsJavaScriptEnabled => _emulationManager.JavascriptEnabled;
+
+    /// <inheritdoc/>
+    public override CdpWebMcp WebMcp => _webMcp;
 
     /// <inheritdoc />
     protected override Browser Browser => PrimaryTarget.Browser;
@@ -1177,6 +1182,7 @@ public class CdpPage : Page
             _emulationManager.UpdateClient(Client);
             Tracing.UpdateClient(Client);
             Coverage.UpdateClient(Client);
+            _webMcp.UpdateClient(Client);
             await FrameManager.SwapFrameTreeAsync(Client).ConfigureAwait(false);
             SetupPrimaryTargetListeners();
         }
@@ -1437,7 +1443,8 @@ public class CdpPage : Page
 
         await Task.WhenAll(
             PrimaryTargetClient.SendAsync("Performance.enable"),
-            PrimaryTargetClient.SendAsync("Log.enable")).ConfigureAwait(false);
+            PrimaryTargetClient.SendAsync("Log.enable"),
+            _webMcp.InitializeAsync()).ConfigureAwait(false);
     }
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)

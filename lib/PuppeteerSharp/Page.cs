@@ -139,6 +139,14 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract WebWorker[] Workers { get; }
 
+        /// <summary>
+        /// Experimental API for WebMCP. Requires Chrome 149+ with
+        /// --enable-features=WebMCPTesting,DevToolsWebMCPSupport flags enabled.
+        /// Only supported with CDP protocol.
+        /// </summary>
+        /// <exception cref="PuppeteerException">Thrown when not supported by the current browser/protocol.</exception>
+        public virtual Cdp.CdpWebMcp WebMcp => throw new PuppeteerException("WebMCP is only supported with Chrome DevTools Protocol.");
+
         /// <inheritdoc/>
         public bool IsServiceWorkerBypassed { get; protected set; }
 
