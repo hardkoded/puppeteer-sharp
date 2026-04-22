@@ -37,6 +37,7 @@ public class CdpBrowser : Browser
     private readonly ILogger<Browser> _logger;
     private readonly bool _handleDevToolsAsPage;
     private readonly bool _networkEnabled;
+    private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
     private Task _closeTask;
 
@@ -210,6 +211,7 @@ public class CdpBrowser : Browser
         var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
             "Extensions.loadUnpacked",
             new ExtensionsLoadUnpackedRequest { Path = path }).ConfigureAwait(false);
+        _extensions.Remove(response.Id);
         return response.Id;
     }
 
@@ -217,6 +219,36 @@ public class CdpBrowser : Browser
     public override async Task UninstallExtensionAsync(string id)
     {
         await Connection.SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id }).ConfigureAwait(false);
+        _extensions.Remove(id);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
+    {
+        var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
+            .ConfigureAwait(false);
+
+        var extensionsMap = new Dictionary<string, Extension>();
+
+        foreach (var info in response.Extensions)
+        {
+            if (_extensions.TryGetValue(info.Id, out var existing))
+            {
+                extensionsMap[info.Id] = existing;
+            }
+            else
+            {
+                extensionsMap[info.Id] = new CdpExtension(info.Id, info.Version, info.Name, this);
+            }
+        }
+
+        _extensions.Clear();
+        foreach (var kvp in extensionsMap)
+        {
+            _extensions[kvp.Key] = kvp.Value;
+        }
+
+        return extensionsMap;
     }
 
     internal static async Task<CdpBrowser> CreateAsync(

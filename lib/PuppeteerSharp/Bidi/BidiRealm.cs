@@ -45,7 +45,14 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings) : Re
 
     public JSHandle InternalPuppeteerUtilHandle { get; set; }
 
+    /// <inheritdoc/>
+    public override string Origin => throw new NotSupportedException("Origin is not supported in WebDriver BiDi.");
+
     internal override IEnvironment Environment { get; }
+
+    /// <inheritdoc/>
+    public override Task<Extension> ExtensionAsync()
+        => throw new NotSupportedException("Extension is not supported in WebDriver BiDi.");
 
     public void Dispose()
     {

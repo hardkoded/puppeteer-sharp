@@ -1583,5 +1583,11 @@ namespace PuppeteerSharp
         /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
         /// <returns>A task that resolves when the message is sent to the browser.</returns>
         Task SetBypassServiceWorkerAsync(bool bypass);
+
+        /// <summary>
+        /// Returns the extension content-script realms associated with the page's main frame.
+        /// </summary>
+        /// <returns>A read-only list of extension <see cref="Realm"/> instances.</returns>
+        IReadOnlyList<Realm> ExtensionRealms();
     }
 }

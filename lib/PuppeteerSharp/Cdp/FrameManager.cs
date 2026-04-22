@@ -14,6 +14,7 @@ namespace PuppeteerSharp.Cdp
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
         private const int TimeForWaitingForSwap = 200;
+        private const string ChromeExtensionPrefix = "chrome-extension://";
         private static readonly string UtilityWorldName = "__puppeteer_utility_world__" + typeof(FrameManager).Assembly.GetName().Version.ToString();
 
         private readonly ConcurrentDictionary<string, ExecutionContext> _contextIdToContext = new();
@@ -288,6 +289,21 @@ namespace PuppeteerSharp.Cdp
         internal Task RegisterSpeculativeSessionAsync(CDPSession client)
             => NetworkManager.AddClientAsync(client);
 
+        private static bool IsExtensionOrigin(string origin)
+            => !string.IsNullOrEmpty(origin) && origin.StartsWith(ChromeExtensionPrefix, StringComparison.Ordinal);
+
+        private static string ExtractExtensionId(string origin)
+        {
+            if (!IsExtensionOrigin(origin))
+            {
+                return null;
+            }
+
+            var pathPart = origin.Substring(ChromeExtensionPrefix.Length);
+            var slashIndex = pathPart.IndexOf('/');
+            return slashIndex == -1 ? pathPart : pathPart.Substring(0, slashIndex);
+        }
+
         private CdpFrame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
         private void Client_MessageReceived(object sender, MessageEventArgs e)
@@ -443,6 +459,24 @@ namespace PuppeteerSharp.Cdp
                     // connections so we might end up creating multiple isolated worlds.
                     // We can use either.
                     world = frame.PuppeteerWorld;
+                }
+                else if (IsExtensionOrigin(contextPayload.Origin))
+                {
+                    var extId = ExtractExtensionId(contextPayload.Origin);
+
+                    if (extId == null)
+                    {
+                        _logger.LogError("Error while parsing extension id from origin: {Origin}", contextPayload.Origin);
+                        return;
+                    }
+
+                    if (!frame.ExtensionWorlds.TryGetValue(extId, out world))
+                    {
+                        world = new IsolatedWorld(frame, null, TimeoutSettings, false);
+                        world.SetWorldId(extId);
+                        world.SetOrigin(contextPayload.Origin);
+                        frame.ExtensionWorlds[extId] = world;
+                    }
                 }
             }
 
