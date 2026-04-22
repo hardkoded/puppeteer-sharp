@@ -80,7 +80,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
                 target.Url.Contains(extensionId) && target.Type == TargetType.ServiceWorker);
 
             var workers = await extension.WorkersAsync();
-            Assert.That(workers.Length, Is.GreaterThan(0));
+            Assert.That(workers.Count, Is.GreaterThan(0));
         }
 
         [Test, PuppeteerTest("extensions.spec", "extensions", "should trigger extension action")]
@@ -124,7 +124,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
                 target.Url.Contains("popup.html") && target.Url.Contains(extensionId));
 
             var pages = await extension.PagesAsync();
-            Assert.That(pages.Length, Is.GreaterThanOrEqualTo(1));
+            Assert.That(pages.Count, Is.GreaterThanOrEqualTo(1));
             Assert.That(pages.Any(p => p.Url.Contains("popup.html")), Is.True);
         }
 

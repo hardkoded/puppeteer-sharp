@@ -337,7 +337,7 @@ namespace PuppeteerSharp
         /// and the <c>--enable-unsafe-extension-debugging</c> flag is set.
         /// </summary>
         /// <returns>A task that resolves to a dictionary of extension ID to <see cref="Extension"/>.</returns>
-        Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync();
+        Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
 
         /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.

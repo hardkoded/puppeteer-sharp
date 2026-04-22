@@ -223,7 +223,7 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override async Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
+    public override async Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
     {
         var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
             .ConfigureAwait(false);
