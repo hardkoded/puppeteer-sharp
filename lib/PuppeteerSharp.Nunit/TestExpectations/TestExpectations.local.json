@@ -138,5 +138,26 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process after this test completes on Linux; navigation inside evaluation triggers a crash in the renderer",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process during this test on Windows headful; beforeunload+history.replaceState triggers a renderer crash",
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "cdp", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on CI in headful mode; Chrome WebSocket connection enters invalid state after all pages are closed",
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp", "headful"],
+    "expectations": ["FAIL"]
   }
 ]
