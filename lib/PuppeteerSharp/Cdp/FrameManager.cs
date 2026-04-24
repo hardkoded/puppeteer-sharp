@@ -283,7 +283,10 @@ namespace PuppeteerSharp.Cdp
             await InitializeAsync(client).ConfigureAwait(false);
             await NetworkManager.AddClientAsync(client).ConfigureAwait(false);
 
-            frame?.OnFrameSwappedByActivation();
+            if (frame != null)
+            {
+                frame.OnFrameSwappedByActivation();
+            }
         }
 
         internal Task RegisterSpeculativeSessionAsync(CDPSession client)

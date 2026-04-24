@@ -1585,6 +1585,13 @@ namespace PuppeteerSharp
         Task SetBypassServiceWorkerAsync(bool bypass);
 
         /// <summary>
+        /// Triggers an extension action for the given extension.
+        /// </summary>
+        /// <param name="extension">The extension to trigger the action for.</param>
+        /// <returns>A task that completes when the extension action has been triggered.</returns>
+        Task TriggerExtensionActionAsync(Extension extension);
+
+        /// <summary>
         /// Returns the extension content-script realms associated with the page's main frame.
         /// </summary>
         /// <returns>A read-only list of extension <see cref="Realm"/> instances.</returns>

@@ -76,6 +76,11 @@ namespace PuppeteerSharp.Cdp
                     WaitForDebuggerOnStart = true,
                     Flatten = true,
                     AutoAttach = true,
+                    Filter =
+                    [
+                        new TargetSetAutoAttachRequest.AutoAttachFilter { Type = "page", Exclude = true },
+                        new TargetSetAutoAttachRequest.AutoAttachFilter(),
+                    ],
                 }).ConfigureAwait(false);
 
             _initialAttachDone = true;
@@ -182,8 +187,7 @@ namespace PuppeteerSharp.Cdp
 
             if (IsPageTargetBecomingPrimary(target, e.TargetInfo))
             {
-                var session = target.Session;
-                session.ParentSession?.OnSwapped(session);
+                target.Session?.ParentSession?.OnSwapped(target.Session);
             }
 
             target.TargetInfoChanged(e.TargetInfo);

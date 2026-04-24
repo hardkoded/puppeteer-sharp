@@ -55,6 +55,7 @@ namespace PuppeteerSharp.Cdp
             _networkManager.Request += OnRequest;
             _networkManager.Response += OnResponse;
             _networkManager.RequestFailed += OnRequestFailed;
+            _networkManager.RequestServedFromCache += OnRequestServedFromCache;
             CheckLifecycleComplete();
         }
 
@@ -87,9 +88,11 @@ namespace PuppeteerSharp.Cdp
             _frame.FrameNavigated -= Navigated;
             _frame.FrameDetached -= OnFrameDetached;
             _frame.FrameSwapped -= FrameSwapped;
+            _frame.FrameSwappedByActivation -= FrameSwapped;
             _networkManager.Request -= OnRequest;
             _networkManager.Response -= OnResponse;
             _networkManager.RequestFailed -= OnRequestFailed;
+            _networkManager.RequestServedFromCache -= OnRequestServedFromCache;
             _terminationCancellationToken.Cancel();
             _terminationCancellationToken.Dispose();
         }
@@ -203,6 +206,16 @@ namespace PuppeteerSharp.Cdp
         private void OnRequestFailed(object sender, RequestEventArgs e)
         {
             if (_navigationRequest?.Id != e.Request.Id)
+            {
+                return;
+            }
+
+            _navigationResponseReceived?.TrySetResult(true);
+        }
+
+        private void OnRequestServedFromCache(object sender, RequestEventArgs e)
+        {
+            if (e.Request == null || _navigationRequest?.Id != e.Request.Id)
             {
                 return;
             }

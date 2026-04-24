@@ -94,6 +94,8 @@ public class CdpTarget : Target
 
     internal TaskQueue ScreenshotTaskQueue { get; }
 
+    internal bool IsTargetExposed => Type != TargetType.Tab && string.IsNullOrEmpty(TargetInfo.Subtype);
+
     /// <inheritdoc/>
     public override async Task<IPage> AsPageAsync()
     {

@@ -329,7 +329,11 @@ namespace PuppeteerSharp.Cdp
             {
                 var param = obj.Params?.ToObject<ConnectionResponseParams>();
                 var sessionId = param.SessionId;
-                var session = new CdpCDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId);
+
+                // Capture the parent session reference now, before it may be removed from _sessions
+                // by SilentDetachAsync (tab targets are filtered and detached quickly).
+                var attachingParentSession = string.IsNullOrEmpty(obj.SessionId) ? null : GetSession(obj.SessionId);
+                var session = new CdpCDPSession(this, param.TargetInfo.Type, sessionId, obj.SessionId, attachingParentSession);
                 _sessions.AddItem(sessionId, session);
 
                 SessionAttached?.Invoke(this, new SessionEventArgs(session));

@@ -881,6 +881,10 @@ public class BidiPage : Page
     public override Task SetBypassServiceWorkerAsync(bool bypass) => throw new NotImplementedException();
 
     /// <inheritdoc />
+    public override Task TriggerExtensionActionAsync(Extension extension)
+        => throw new NotSupportedException("TriggerExtensionAction is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override IReadOnlyList<Realm> ExtensionRealms()
         => throw new NotSupportedException("ExtensionRealms is not supported in WebDriver BiDi.");
 
