@@ -15,13 +15,8 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
 
         private static LaunchOptions BrowserWithExtensionOptions() => new()
         {
-            Headless = false,
             EnableExtensions = true,
             Pipe = true,
-            Args = new[]
-            {
-                $"--load-extension={_extensionPath.Quote()}"
-            }
         };
 
         [Test, PuppeteerTest("extensions.spec", "extensions", "service_worker target type should be available")]
@@ -30,6 +25,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory);
+            await browserWithExtension.InstallExtensionAsync(_extensionPath);
             var serviceWorkTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             Assert.That(serviceWorkTarget, Is.Not.Null);
         }
@@ -40,6 +36,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
                 BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory);
+            await browserWithExtension.InstallExtensionAsync(_extensionPath);
             var serviceWorkerTarget = await browserWithExtension.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker);
             var worker = await serviceWorkerTarget.WorkerAsync();
             Assert.That(await worker.EvaluateFunctionAsync<int>("() => globalThis.MAGIC"), Is.EqualTo(42));
@@ -103,12 +100,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
         public async Task ShouldListExtensionPages()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
-                new LaunchOptions
-                {
-                    Headless = false,
-                    EnableExtensions = true,
-                    Pipe = true,
-                },
+                BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory);
 
             var extensionId = await browserWithExtension.InstallExtensionAsync(_extensionWithPagePath);
@@ -132,12 +124,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
         public async Task ShouldCaptureConsoleLogsFromExtensionPages()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
-                new LaunchOptions
-                {
-                    Headless = false,
-                    EnableExtensions = true,
-                    Pipe = true,
-                },
+                BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory);
 
             var extensionId = await browserWithExtension.InstallExtensionAsync(_extensionWithPagePath);
@@ -152,7 +139,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             var popupTarget = await browserWithExtension.WaitForTargetAsync(target =>
                 target.Url.Contains("popup.html") && target.Url.Contains(extensionId));
 
-            var extPage = await popupTarget.PageAsync();
+            var extPage = await popupTarget.AsPageAsync();
 
             var messageTask = new TaskCompletionSource<string>();
             extPage.Console += (sender, e) => messageTask.TrySetResult(e.Message.Text);
@@ -167,12 +154,7 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
         public async Task ShouldCaptureConsoleLogsFromExtensionWorkers()
         {
             await using var browserWithExtension = await Puppeteer.LaunchAsync(
-                new LaunchOptions
-                {
-                    Headless = false,
-                    EnableExtensions = true,
-                    Pipe = true,
-                },
+                BrowserWithExtensionOptions(),
                 TestConstants.LoggerFactory);
 
             var extensionId = await browserWithExtension.InstallExtensionAsync(_extensionWithPagePath);
