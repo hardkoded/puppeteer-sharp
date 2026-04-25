@@ -140,17 +140,17 @@
     "expectations": ["SKIP"]
   },
   {
-    "comment": "Enabling RenderDocument causes Chrome to hang the test host process after this test completes on Linux; navigation inside evaluation triggers a crash in the renderer",
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process after this test completes; navigation inside evaluation triggers a renderer crash on Linux and Windows",
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
-    "platforms": ["linux"],
+    "platforms": ["linux", "win32"],
     "parameters": ["chrome", "cdp"],
     "expectations": ["SKIP"]
   },
   {
-    "comment": "Enabling RenderDocument causes Chrome to hang the test host process during this test on Windows headful; beforeunload+history.replaceState triggers a renderer crash",
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process during this test; beforeunload+history.replaceState triggers a renderer crash on all platforms",
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
-    "platforms": ["win32"],
-    "parameters": ["chrome", "cdp", "headful"],
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "cdp"],
     "expectations": ["SKIP"]
   },
   {
