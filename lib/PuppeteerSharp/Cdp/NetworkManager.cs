@@ -251,6 +251,14 @@ namespace PuppeteerSharp.Cdp
 
             if (queuedEvents != null)
             {
+                // If the request doesn't exist yet (still being processed by requestWillBeSent),
+                // store the extra info and leave the queued group intact for OnRequestAsync to handle.
+                if (_networkEventManager.GetRequest(e.RequestId) == null)
+                {
+                    _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
+                    return;
+                }
+
                 _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
                 EmitResponseEvent(client, queuedEvents.ResponseReceivedEvent, e);
 
@@ -350,6 +358,18 @@ namespace PuppeteerSharp.Cdp
         {
             var request = _networkEventManager.GetRequest(e.RequestId);
             ResponseReceivedExtraInfoResponse extraInfo = null;
+
+            if (request == null)
+            {
+                // The request has not been created yet (race between requestWillBeSent and
+                // responseReceived due to async processing). Queue the event to be emitted
+                // once the request is stored.
+                _networkEventManager.QueuedEventGroup(e.RequestId, new()
+                {
+                    ResponseReceivedEvent = e,
+                });
+                return;
+            }
 
             if (request is { FromMemoryCache: false } && e.HasExtraInfo)
             {
@@ -552,6 +572,31 @@ namespace PuppeteerSharp.Cdp
             }
 
             _networkEventManager.StoreRequest(e.RequestId, request);
+
+            // If a responseReceived event arrived before the request was created (due to
+            // async processing of requestWillBeSent), process it now.
+            var queuedResponse = _networkEventManager.GetQueuedEventGroup(e.RequestId);
+            if (queuedResponse?.ResponseReceivedEvent != null)
+            {
+                _networkEventManager.ForgetQueuedEventGroup(e.RequestId);
+                ResponseReceivedExtraInfoResponse queuedExtraInfo = null;
+                if (!request.FromMemoryCache && queuedResponse.ResponseReceivedEvent.HasExtraInfo)
+                {
+                    queuedExtraInfo = _networkEventManager.ShiftResponseExtraInfo(e.RequestId);
+                    if (queuedExtraInfo == null)
+                    {
+                        _networkEventManager.QueuedEventGroup(e.RequestId, queuedResponse);
+                    }
+                    else
+                    {
+                        EmitResponseEvent(client, queuedResponse.ResponseReceivedEvent, queuedExtraInfo);
+                    }
+                }
+                else
+                {
+                    EmitResponseEvent(client, queuedResponse.ResponseReceivedEvent, null);
+                }
+            }
 
             Request?.Invoke(this, new RequestEventArgs(request));
 
