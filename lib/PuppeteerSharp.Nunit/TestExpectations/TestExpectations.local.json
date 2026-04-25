@@ -131,5 +131,33 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Removed from upstream; enabling RenderDocument changes script count during navigation",
+    "testIdPattern": "[coverage.spec] Coverage specs resetOnNavigation should report scripts across navigations when disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process after this test completes; navigation inside evaluation triggers a renderer crash on Linux and Windows",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Enabling RenderDocument causes Chrome to hang the test host process during this test; beforeunload+history.replaceState triggers a renderer crash on all platforms",
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on CI in headful mode; Chrome WebSocket connection enters invalid state after all pages are closed",
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp", "headful"],
+    "expectations": ["FAIL"]
   }
 ]
