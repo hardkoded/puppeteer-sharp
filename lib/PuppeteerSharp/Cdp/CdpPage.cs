@@ -384,6 +384,17 @@ public class CdpPage : Page
         });
     }
 
+    /// <inheritdoc />
+    public override Task TriggerExtensionActionAsync(Extension extension)
+    {
+        if (extension == null)
+        {
+            throw new ArgumentNullException(nameof(extension));
+        }
+
+        return extension.TriggerActionAsync(this);
+    }
+
     /// <inheritdoc/>
     public override async Task<NewDocumentScriptEvaluation> EvaluateExpressionOnNewDocumentAsync(string expression)
     {
@@ -1072,6 +1083,12 @@ public class CdpPage : Page
     {
         PrimaryTargetClient.Ready += OnAttachedToTarget;
         PrimaryTargetClient.MessageReceived += Client_MessageReceived;
+
+        if (TabTargetClient != PrimaryTargetClient)
+        {
+            PrimaryTargetClient.Swapped += (sender, args) => _ = OnActivationAsync(args.Session as CdpCDPSession);
+            PrimaryTargetClient.Ready += (sender, args) => _ = OnSecondaryTargetAsync(args.Session as CdpCDPSession);
+        }
     }
 
     private void OnAttachedToTarget(object sender, SessionEventArgs e)

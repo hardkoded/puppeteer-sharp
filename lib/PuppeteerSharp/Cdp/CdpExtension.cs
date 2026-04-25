@@ -53,10 +53,17 @@ internal class CdpExtension : Extension
             if ((target.Type == TargetType.Page || target.Type == TargetType.BackgroundPage) &&
                 targetUrl.StartsWith("chrome-extension://" + Id, System.StringComparison.Ordinal))
             {
-                var page = await target.PageAsync().ConfigureAwait(false);
-                if (page != null)
+                try
                 {
-                    pages.Add(page);
+                    var page = await target.AsPageAsync().ConfigureAwait(false);
+                    if (page != null)
+                    {
+                        pages.Add(page);
+                    }
+                }
+                catch
+                {
+                    // Target may have closed between enumeration and page creation.
                 }
             }
         }

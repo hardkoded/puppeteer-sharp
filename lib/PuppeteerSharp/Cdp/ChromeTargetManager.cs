@@ -76,6 +76,11 @@ namespace PuppeteerSharp.Cdp
                     WaitForDebuggerOnStart = true,
                     Flatten = true,
                     AutoAttach = true,
+                    Filter =
+                    [
+                        new TargetSetAutoAttachRequest.FilterEntry { Type = "page", Exclude = true },
+                        new TargetSetAutoAttachRequest.FilterEntry(),
+                    ],
                 }).ConfigureAwait(false);
 
             _initialAttachDone = true;

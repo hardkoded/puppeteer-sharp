@@ -30,38 +30,41 @@ namespace PuppeteerSharp.Tests.TargetManagerTests
         public async Task ShouldHandleTargets()
         {
             var targetManager = (Browser as CdpBrowser)!.TargetManager;
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(2));
+
+            var initialTargetCount = targetManager.GetAvailableTargets().Values.Count;
+            // There could be an optional extra prerender target.
+            Assert.That(initialTargetCount == 3 || initialTargetCount == 4, Is.True);
 
             Assert.That(await Context.PagesAsync(), Is.Empty);
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(2));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount));
 
             var page = await Context.NewPageAsync();
             Assert.That((await Context.PagesAsync()), Has.Length.EqualTo(1));
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(3));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount + 2));
 
             await page.GoToAsync(TestConstants.EmptyPage);
             Assert.That((await Context.PagesAsync()), Has.Length.EqualTo(1));
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(3));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount + 2));
 
             var frameTask = page.WaitForFrameAsync(target => target.Url == TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(page, "frame1", TestConstants.EmptyPage);
             await frameTask.WithTimeout();
             Assert.That((await Context.PagesAsync()), Has.Length.EqualTo(1));
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(3));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount + 2));
             Assert.That(page.Frames, Has.Length.EqualTo(2));
 
             frameTask = page.WaitForFrameAsync(target => target.Url == TestConstants.CrossProcessUrl + "/empty.html");
             await FrameUtils.AttachFrameAsync(page, "frame2", TestConstants.CrossProcessUrl + "/empty.html");
             await frameTask.WithTimeout();
             Assert.That((await Context.PagesAsync()), Has.Length.EqualTo(1));
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(4));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount + 3));
             Assert.That(page.Frames, Has.Length.EqualTo(3));
 
             frameTask = page.WaitForFrameAsync(target => target.Url == TestConstants.CrossProcessUrl + "/empty.html");
             await FrameUtils.AttachFrameAsync(page, "frame3", TestConstants.CrossProcessUrl + "/empty.html");
             await frameTask.WithTimeout();
             Assert.That((await Context.PagesAsync()), Has.Length.EqualTo(1));
-            Assert.That(targetManager.GetAvailableTargets().Values, Has.Count.EqualTo(5));
+            Assert.That(targetManager.GetAvailableTargets().Values.Count, Is.EqualTo(initialTargetCount + 4));
             Assert.That(page.Frames, Has.Length.EqualTo(4));
         }
     }
