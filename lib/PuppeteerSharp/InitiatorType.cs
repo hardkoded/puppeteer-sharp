@@ -40,4 +40,10 @@ public enum InitiatorType
     /// Other.
     /// </summary>
     Other,
+
+    /// <summary>
+    /// FedCM.
+    /// </summary>
+    [EnumMember(Value = "FedCM")]
+    FedCm,
 }
