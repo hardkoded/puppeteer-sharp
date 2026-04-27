@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -29,6 +30,8 @@ namespace PuppeteerSharp.Cdp
         // initializeDeferred.
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
 
+        private readonly string[] _blockList;
+
         // This is false until the connection-level Target.setAutoAttach request is
         // done. It indicates whether we are running the initial auto-attach step or
         // if we are handling targets after that.
@@ -37,11 +40,13 @@ namespace PuppeteerSharp.Cdp
         public ChromeTargetManager(
             Connection connection,
             Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
-            Func<Target, bool> targetFilterFunc)
+            Func<Target, bool> targetFilterFunc,
+            string[] blockList = null)
         {
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
+            _blockList = blockList;
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
@@ -85,6 +90,16 @@ namespace PuppeteerSharp.Cdp
         }
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
+
+        private static bool MatchesUrlPattern(string url, string pattern)
+        {
+            // Convert URLPattern glob syntax to a regex pattern.
+            // Supported wildcards: * matches any sequence of characters (within segment),
+            // and the leading *:// matches any scheme.
+            // This is a simplified implementation covering the common cases used in tests.
+            var regexPattern = "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$";
+            return Regex.IsMatch(url, regexPattern, RegexOptions.IgnoreCase);
+        }
 
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
@@ -238,6 +253,14 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            // If we connect to a browser that is already open,
+            // immediately detach from any tab that is on the blocklist.
+            if (!_initialAttachDone && !IsUrlAllowed(targetInfo.Url))
+            {
+                await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
+                return;
+            }
+
             if (targetInfo.Type == TargetType.ServiceWorker)
             {
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
@@ -315,6 +338,7 @@ namespace PuppeteerSharp.Cdp
                         Flatten = true,
                         AutoAttach = true,
                     }),
+                    MaybeSetupNetworkBlockListAsync(session),
                     session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -376,6 +400,61 @@ namespace PuppeteerSharp.Cdp
 
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+        }
+
+        private bool IsUrlAllowed(string url)
+        {
+            if (_blockList == null || _blockList.Length == 0)
+            {
+                return true;
+            }
+
+            // Always allow internal or setup pages
+            if (string.IsNullOrEmpty(url) || url == "about:blank")
+            {
+                return true;
+            }
+
+            foreach (var pattern in _blockList)
+            {
+                try
+                {
+                    if (MatchesUrlPattern(url, pattern))
+                    {
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Invalid URL pattern: {Pattern}", pattern);
+                }
+            }
+
+            return true;
+        }
+
+        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session)
+        {
+            if (_blockList == null || _blockList.Length == 0)
+            {
+                return;
+            }
+
+            var matchedNetworkConditions = Array.ConvertAll(_blockList, pattern => new MatchedNetworkCondition
+            {
+                UrlPattern = pattern,
+                Latency = 0,
+                DownloadThroughput = -1,
+                UploadThroughput = -1,
+            });
+
+            await session.SendAsync(
+                "Network.emulateNetworkConditionsByRule",
+                new NetworkEmulateNetworkConditionsByRuleRequest
+                {
+                    MatchedNetworkConditions = matchedNetworkConditions,
+                    Offline = true,
+                }).ConfigureAwait(false);
         }
     }
 }

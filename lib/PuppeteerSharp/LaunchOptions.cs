@@ -248,6 +248,29 @@ namespace PuppeteerSharp
         public ProtocolType Protocol { get; set; }
 
         /// <summary>
+        /// A list of URL patterns to block.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing specific
+        /// URLs or origins. It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL matches a blocked pattern.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to block a specific domain: <c>*://example.com/*</c>
+        /// Pattern to block all subdomains: <c>*://*.evil.com/*</c>.
+        /// </example>
+        public string[] BlockList { get; set; }
+
+        /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
         /// </summary>
         internal Func<Target, bool> IsPageTarget { get; set; }

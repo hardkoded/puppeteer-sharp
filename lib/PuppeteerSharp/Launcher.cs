@@ -188,7 +188,8 @@ namespace PuppeteerSharp
                                 options.IsPageTarget,
                                 handleDevToolsAsPage: options.HandleDevToolsAsPage,
                                 networkEnabled: options.NetworkEnabled,
-                                issuesEnabled: options.IssuesEnabled)
+                                issuesEnabled: options.IssuesEnabled,
+                                blockList: options.BlockList)
                             .ConfigureAwait(false);
                     }
 
@@ -442,7 +443,8 @@ namespace PuppeteerSharp
                         options.InitAction,
                         options.HandleDevToolsAsPage,
                         options.NetworkEnabled,
-                        options.IssuesEnabled)
+                        options.IssuesEnabled,
+                        options.BlockList)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

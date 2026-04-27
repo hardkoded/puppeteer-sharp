@@ -52,7 +52,8 @@ public class CdpBrowser : Browser
         Func<Target, bool> isPageTargetFunc = null,
         bool handleDevToolsAsPage = false,
         bool networkEnabled = true,
-        bool issuesEnabled = true)
+        bool issuesEnabled = true,
+        string[] blockList = null)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
@@ -85,7 +86,8 @@ public class CdpBrowser : Browser
             TargetManager = new ChromeTargetManager(
                 connection,
                 CreateTarget,
-                targetFilterCallback);
+                targetFilterCallback,
+                blockList);
         }
     }
 
@@ -264,7 +266,8 @@ public class CdpBrowser : Browser
         Action<IBrowser> initAction = null,
         bool handleDevToolsAsPage = false,
         bool networkEnabled = true,
-        bool issuesEnabled = true)
+        bool issuesEnabled = true,
+        string[] blockList = null)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -277,7 +280,8 @@ public class CdpBrowser : Browser
             isPageTargetCallback,
             handleDevToolsAsPage,
             networkEnabled,
-            issuesEnabled);
+            issuesEnabled,
+            blockList);
 
         try
         {

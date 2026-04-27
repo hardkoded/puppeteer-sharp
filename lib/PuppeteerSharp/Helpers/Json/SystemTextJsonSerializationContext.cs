@@ -142,6 +142,8 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(MouseEventType))]
 [JsonSerializable(typeof(NavigatedWithinDocumentResponse))]
 [JsonSerializable(typeof(NavigationType))]
+[JsonSerializable(typeof(MatchedNetworkCondition))]
+[JsonSerializable(typeof(NetworkEmulateNetworkConditionsByRuleRequest))]
 [JsonSerializable(typeof(NetworkEmulateNetworkConditionsRequest))]
 [JsonSerializable(typeof(NetworkGetCookiesRequest))]
 [JsonSerializable(typeof(NetworkGetCookiesResponse))]
