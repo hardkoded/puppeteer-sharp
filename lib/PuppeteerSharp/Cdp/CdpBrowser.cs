@@ -238,7 +238,7 @@ public class CdpBrowser : Browser
             }
             else
             {
-                extensionsMap[info.Id] = new CdpExtension(info.Id, info.Version, info.Name, this);
+                extensionsMap[info.Id] = new CdpExtension(info.Id, info.Version, info.Name, info.Path, info.Enabled, this);
             }
         }
 

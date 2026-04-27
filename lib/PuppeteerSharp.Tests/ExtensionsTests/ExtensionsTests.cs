@@ -41,5 +41,35 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             var worker = await serviceWorkerTarget.WorkerAsync();
             Assert.That(await worker.EvaluateFunctionAsync<int>("() => globalThis.MAGIC"), Is.EqualTo(42));
         }
+
+        [Test, PuppeteerTest("extensions.spec", "extensions", "should list extensions and their properties")]
+        public async Task ShouldListExtensionsAndTheirProperties()
+        {
+            var options = new LaunchOptions
+            {
+                Headless = false,
+                EnableExtensions = true,
+                Pipe = true,
+            };
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+
+            var extensionId = await browser.InstallExtensionAsync(_extensionPath);
+
+            await browser.WaitForTargetAsync(t =>
+                t.Url.Contains(extensionId) && t.Type == TargetType.ServiceWorker);
+
+            var extensions = await browser.GetExtensionsAsync();
+            var extension = extensions[extensionId];
+
+            Assert.That(extension, Is.Not.Null);
+            Assert.That(extension.Name, Is.EqualTo("Simple extension"));
+            Assert.That(extension.Version, Is.EqualTo("0.1"));
+            Assert.That(extension.Path, Is.EqualTo(_extensionPath));
+            Assert.That(extension.Enabled, Is.True);
+            Assert.That(extension.Id, Is.EqualTo(extensionId));
+
+            await browser.UninstallExtensionAsync(extensionId);
+        }
     }
 }

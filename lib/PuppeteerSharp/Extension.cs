@@ -17,11 +17,15 @@ namespace PuppeteerSharp
         /// <param name="id">The extension ID.</param>
         /// <param name="version">The extension version.</param>
         /// <param name="name">The extension name.</param>
-        protected Extension(string id, string version, string name)
+        /// <param name="path">The file system path of the extension.</param>
+        /// <param name="enabled">Whether the extension is enabled.</param>
+        protected Extension(string id, string version, string name, string path, bool enabled)
         {
             Id = id;
             Version = version;
             Name = name;
+            Path = path;
+            Enabled = enabled;
         }
 
         /// <summary>
@@ -38,6 +42,16 @@ namespace PuppeteerSharp
         /// Gets the name of the extension.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets the path in the file system where the extension is located.
+        /// </summary>
+        public string Path { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the extension is enabled.
+        /// </summary>
+        public bool Enabled { get; }
 
         /// <summary>
         /// Returns the list of the currently active service workers of the extension.

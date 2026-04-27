@@ -12,8 +12,8 @@ internal class CdpExtension : Extension
 {
     private readonly CdpBrowser _browser;
 
-    internal CdpExtension(string id, string version, string name, CdpBrowser browser)
-        : base(id, version, name)
+    internal CdpExtension(string id, string version, string name, string path, bool enabled, CdpBrowser browser)
+        : base(id, version, name, path, enabled)
     {
         _browser = browser;
     }
