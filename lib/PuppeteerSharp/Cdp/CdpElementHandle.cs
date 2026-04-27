@@ -198,6 +198,7 @@ public class CdpElementHandle : ElementHandle, ICdpHandle
                 FieldId = fieldId,
                 FrameId = frameId,
                 Card = data.CreditCard,
+                Address = data.Address,
             }).ConfigureAwait(false);
     }
 

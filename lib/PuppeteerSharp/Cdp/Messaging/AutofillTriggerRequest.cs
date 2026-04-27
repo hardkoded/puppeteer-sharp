@@ -7,5 +7,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public string FrameId { get; set; }
 
         public CreditCardData Card { get; set; }
+
+        public AutofillAddressData Address { get; set; }
     }
 }
