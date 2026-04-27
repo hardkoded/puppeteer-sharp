@@ -7,6 +7,34 @@
     "expectations": ["FAIL"]
   },
   {
+    "comment": "crbug.com/433304196 - RenderDocument enabled causes extra pointer events in headless-shell on Linux",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work",
+    "platforms": ["linux"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "crbug.com/433304196 - RenderDocument enabled causes extra pointer events in headless-shell on Linux",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with two touches",
+    "platforms": ["linux"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "crbug.com/433304196 - RenderDocument enabled causes extra pointer events in headless-shell on Linux",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work when moving touches separately",
+    "platforms": ["linux"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "crbug.com/433304196 - RenderDocument enabled causes extra pointer events in headless-shell on Linux",
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.tap should work if another touch is already active",
+    "platforms": ["linux"],
+    "parameters": ["chrome-headless-shell"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097",
     "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
     "platforms": ["darwin", "linux", "win32"],
