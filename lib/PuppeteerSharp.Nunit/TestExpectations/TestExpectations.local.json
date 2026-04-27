@@ -131,5 +131,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "With RenderDocument enabled Chrome reuses the execution context across navigation on Linux/Windows, so the pending Runtime.callFunctionOn CDP call is never rejected and the test hangs. Requires CancellationToken support in ExecutionContext.ExecuteEvaluationAsync to fix properly.",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
   }
 ]
