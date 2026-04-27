@@ -103,6 +103,19 @@ public class CdpCDPSession : CDPSession
                 Message = message,
             };
             _callbacks[id] = callback;
+
+            // Re-check Detached after adding to _callbacks. This closes the race where
+            // Close() runs between our initial Detached check and the dictionary insertion,
+            // leaving our callback uncancelled so the response wait never resolves.
+            if (Detached)
+            {
+                _callbacks.TryRemove(id, out _);
+                throw new TargetClosedException(
+                    $"Protocol error ({method}): Session closed. " +
+                    $"Most likely the {_targetType} has been closed." +
+                    $"Close reason: {CloseReason ?? Connection.CloseReason}",
+                    CloseReason ?? Connection.CloseReason);
+            }
         }
 
         try

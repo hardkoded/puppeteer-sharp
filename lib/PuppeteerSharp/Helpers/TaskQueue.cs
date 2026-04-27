@@ -8,6 +8,7 @@ namespace PuppeteerSharp.Helpers
     {
         private readonly SemaphoreSlim _semaphore;
         private readonly AsyncLocal<bool> _held = new();
+        private readonly CancellationTokenSource _disposeCts = new();
         private int _disposed;
 
         internal TaskQueue() => _semaphore = new SemaphoreSlim(1);
@@ -19,11 +20,8 @@ namespace PuppeteerSharp.Helpers
                 return;
             }
 
-            if (!_held.Value)
-            {
-                _semaphore.Wait();
-            }
-
+            _disposeCts.Cancel();
+            _disposeCts.Dispose();
             _semaphore.Dispose();
         }
 
@@ -44,7 +42,15 @@ namespace PuppeteerSharp.Helpers
 
         internal async Task<T> Enqueue<T>(Func<Task<T>> taskGenerator)
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await _semaphore.WaitAsync(_disposeCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return default;
+            }
+
             try
             {
                 _held.Value = true;
@@ -59,7 +65,15 @@ namespace PuppeteerSharp.Helpers
 
         internal async Task Enqueue(Func<Task> taskGenerator)
         {
-            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await _semaphore.WaitAsync(_disposeCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
+
             try
             {
                 _held.Value = true;
@@ -72,7 +86,7 @@ namespace PuppeteerSharp.Helpers
             }
         }
 
-        private void TryRelease(SemaphoreSlim semaphore)
+        private static void TryRelease(SemaphoreSlim semaphore)
         {
             try
             {

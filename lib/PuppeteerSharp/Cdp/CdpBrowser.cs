@@ -475,8 +475,6 @@ public class CdpBrowser : Browser
         {
             try
             {
-                // Initiate graceful browser close operation but don't await it just yet,
-                // because we want to ensure process shutdown first.
                 var browserCloseTask = Connection.IsClosed
                     ? Task.CompletedTask
                     : Connection.SendAsync("Browser.close");
@@ -486,8 +484,6 @@ public class CdpBrowser : Browser
                     await CloseCallback().ConfigureAwait(false);
                 }
 
-                // Now we can safely await the browser close operation without risking keeping chromium
-                // process running for indeterminate period.
                 await browserCloseTask.ConfigureAwait(false);
             }
             finally

@@ -28,6 +28,7 @@ namespace PuppeteerSharp.Cdp
         private readonly AsyncDictionaryHelper<string, CdpCDPSession> _sessions = new("Session {0} not found");
         private readonly List<string> _manuallyAttached = [];
         private int _lastId;
+        private int _disposed;
 
         private Connection(string url, int delay, bool enqueueAsyncMessages, IConnectionTransport transport, ILoggerFactory loggerFactory = null, int protocolTimeout = DefaultCommandTimeout)
         {
@@ -102,6 +103,11 @@ namespace PuppeteerSharp.Cdp
         /// <inheritdoc />
         public void Dispose()
         {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            {
+                return;
+            }
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -223,8 +229,11 @@ namespace PuppeteerSharp.Cdp
             CloseReason = closeReason;
 
             Transport.StopReading();
-            Disconnected?.Invoke(this, EventArgs.Empty);
 
+            // Cancel all pending session commands and callbacks before firing Disconnected.
+            // This prevents a deadlock where the Disconnected handler (via CloseCoreAsync)
+            // tries to dispose the callback queue while a queued message is awaiting a
+            // session response that will never arrive (because session cleanup hasn't run yet).
             foreach (var session in _sessions.Values)
             {
                 session.Close(closeReason);
@@ -241,6 +250,8 @@ namespace PuppeteerSharp.Cdp
 
             _callbacks.Clear();
             MessageQueue.Dispose();
+
+            Disconnected?.Invoke(this, EventArgs.Empty);
         }
 
         internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
