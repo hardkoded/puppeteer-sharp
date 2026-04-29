@@ -97,6 +97,7 @@ public class CdpFrame : Frame
         var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
 
         using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout);
+        var ensureNewDocumentNavigation = false;
         try
         {
             var navigateTask = NavigateAsync();
@@ -106,11 +107,10 @@ public class CdpFrame : Frame
 
             await task.ConfigureAwait(false);
 
-            task = await Task.WhenAny(
-                    watcher.TerminationTask,
-                    watcher.NewDocumentNavigationTask,
-                    watcher.SameDocumentNavigationTask)
-                .ConfigureAwait(false);
+            var navigationTask = ensureNewDocumentNavigation
+                ? watcher.NewDocumentNavigationTask
+                : watcher.SameDocumentNavigationTask;
+            task = await Task.WhenAny(watcher.TerminationTask, navigationTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
         }
@@ -130,6 +130,8 @@ public class CdpFrame : Frame
                 ReferrerPolicy = ReferrerPolicyToProtocol(referrerPolicy),
                 FrameId = Id,
             }).ConfigureAwait(false);
+
+            ensureNewDocumentNavigation = !string.IsNullOrEmpty(response.LoaderId);
 
             if (!string.IsNullOrEmpty(response.ErrorText) &&
                 response.ErrorText != "net::ERR_HTTP_RESPONSE_CODE_FAILURE")
