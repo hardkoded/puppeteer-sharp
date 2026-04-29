@@ -266,7 +266,16 @@ namespace PuppeteerSharp.Cdp
                         await OnFrameNavigatedAsync(syntheticPayload, NavigationType.Navigation).ConfigureAwait(false);
                     }
 
-                    await Task.WhenAll(autoAttachTask, networkInitTask, client.SendAsync("Runtime.enable")).ConfigureAwait(false);
+                    await Task.WhenAll(autoAttachTask, networkInitTask).ConfigureAwait(false);
+                    try
+                    {
+                        await client.SendAsync("Runtime.enable").ConfigureAwait(false);
+                    }
+                    catch (MessageException runtimeEx) when (
+                        runtimeEx.Message.Contains("wasn't found") ||
+                        runtimeEx.Message.Contains("Not supported"))
+                    {
+                    }
                 }
             }
             catch (Exception ex)
@@ -474,7 +483,16 @@ namespace PuppeteerSharp.Cdp
         private async Task OnExecutionContextCreatedAsync(ContextPayload contextPayload, ICDPSession session)
         {
             var frameId = contextPayload.AuxData?.FrameId;
-            var frame = !string.IsNullOrEmpty(frameId) ? await FrameTree.GetFrameAsync(frameId).ConfigureAwait(false) : null;
+            CdpFrame frame = null;
+            if (!string.IsNullOrEmpty(frameId))
+            {
+                frame = await FrameTree.TryGetFrameAsync(frameId).ConfigureAwait(false);
+                if (frame == null && contextPayload.AuxData?.IsDefault == true)
+                {
+                    frame = FrameTree.MainFrame;
+                }
+            }
+
             IsolatedWorld world = null;
 
             if (frame != null)
