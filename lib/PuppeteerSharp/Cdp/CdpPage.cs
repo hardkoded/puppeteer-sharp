@@ -841,7 +841,15 @@ public class CdpPage : Page
 
             if (defaultViewPort != null)
             {
-                await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+                try
+                {
+                    await page.SetViewportAsync(defaultViewPort).ConfigureAwait(false);
+                }
+                catch (MessageException ex) when (
+                    ex.Message.Contains("wasn't found") ||
+                    ex.Message.Contains("Not supported"))
+                {
+                }
             }
 
             return page;
@@ -1452,10 +1460,18 @@ public class CdpPage : Page
     {
         await FrameManager.InitializeAsync(PrimaryTargetClient).ConfigureAwait(false);
 
-        await Task.WhenAll(
-            PrimaryTargetClient.SendAsync("Performance.enable"),
-            PrimaryTargetClient.SendAsync("Log.enable"),
-            _webMcp.InitializeAsync()).ConfigureAwait(false);
+        try
+        {
+            await Task.WhenAll(
+                PrimaryTargetClient.SendAsync("Performance.enable"),
+                PrimaryTargetClient.SendAsync("Log.enable"),
+                _webMcp.InitializeAsync()).ConfigureAwait(false);
+        }
+        catch (MessageException ex) when (
+            ex.Message.Contains("wasn't found") ||
+            ex.Message.Contains("Not supported"))
+        {
+        }
     }
 
     private async Task<IResponse> GoAsync(int delta, NavigationOptions options)

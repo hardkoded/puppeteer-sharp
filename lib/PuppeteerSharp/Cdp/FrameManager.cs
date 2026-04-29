@@ -206,36 +206,68 @@ namespace PuppeteerSharp.Cdp
                     ? _scriptsToEvaluateOnNewDocument.Values.Select(script => frame.AddPreloadScriptAsync(script)).ToArray()
                     : Array.Empty<Task>();
 
-                await pageEnableTask.ConfigureAwait(false);
-
-                var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
-                await Task.WhenAll(
-                    new Task[] { getFrameTreeTask, autoAttachTask, }.Concat(preloadScriptTasks)).ConfigureAwait(false);
-
-                _frameTreeHandled.TrySetResult(true);
-                await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
-
-                var tasks = new List<Task>
+                bool pageEnabled;
+                try
                 {
-                    client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
-                    client.SendAsync("Runtime.enable"),
-                    networkInitTask,
-                };
-
-                if (IssuesEnabled)
+                    await pageEnableTask.ConfigureAwait(false);
+                    pageEnabled = true;
+                }
+                catch (MessageException ex) when (ex.Message.Contains("wasn't found") || ex.Message.Contains("Not supported"))
                 {
-                    tasks.Add(client.SendAsync("Audits.enable"));
+                    // Some targets (e.g. DevTools inspector pages on Chrome 147+) don't support
+                    // the Page domain. Fall back to Runtime-only initialization with a synthetic frame.
+                    pageEnabled = false;
+                    _frameTreeHandled.TrySetResult(true);
                 }
 
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-
-                if (frame != null)
+                if (pageEnabled)
                 {
+                    var getFrameTreeTask = client.SendAsync<PageGetFrameTreeResponse>("Page.getFrameTree");
                     await Task.WhenAll(
-                        _bindings.Select(binding => frame.AddExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
-                }
+                        new Task[] { getFrameTreeTask, autoAttachTask, }.Concat(preloadScriptTasks)).ConfigureAwait(false);
 
-                await CreateIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
+                    _frameTreeHandled.TrySetResult(true);
+                    await HandleFrameTreeAsync(client, getFrameTreeTask.Result.FrameTree).ConfigureAwait(false);
+
+                    var tasks = new List<Task>
+                    {
+                        client.SendAsync("Page.setLifecycleEventsEnabled", new PageSetLifecycleEventsEnabledRequest { Enabled = true }),
+                        client.SendAsync("Runtime.enable"),
+                        networkInitTask,
+                    };
+
+                    if (IssuesEnabled)
+                    {
+                        tasks.Add(client.SendAsync("Audits.enable"));
+                    }
+
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                    if (frame != null)
+                    {
+                        await Task.WhenAll(
+                            _bindings.Select(binding => frame.AddExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+                    }
+
+                    await CreateIsolatedWorldAsync(client, UtilityWorldName).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Page domain unavailable: create a synthetic main frame so evaluation works,
+                    // then enable Runtime. Skip Page-domain commands and isolated world setup.
+                    if (FrameTree.MainFrame == null)
+                    {
+                        var target = (client as CdpCDPSession)?.Target ?? (Client as CdpCDPSession)?.Target;
+                        var syntheticPayload = new FramePayload
+                        {
+                            Id = target?.TargetId ?? string.Empty,
+                            Url = target?.TargetInfo?.Url ?? string.Empty,
+                        };
+                        await OnFrameNavigatedAsync(syntheticPayload, NavigationType.Navigation).ConfigureAwait(false);
+                    }
+
+                    await Task.WhenAll(autoAttachTask, networkInitTask, client.SendAsync("Runtime.enable")).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
