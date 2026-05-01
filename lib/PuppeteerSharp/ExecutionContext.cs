@@ -22,6 +22,9 @@ namespace PuppeteerSharp
 
         private static string _evaluationScriptUrl = "__puppeteer_evaluation_script__";
 
+        private readonly TaskCompletionSource<bool> _contextDestroyedTcs =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
         private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
 
@@ -86,6 +89,8 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
+            _contextDestroyedTcs.TrySetResult(true);
+
             if (_puppeteerUtilQueue != null)
             {
                 await _puppeteerUtilQueue.DisposeAsync().ConfigureAwait(false);
@@ -148,6 +153,8 @@ namespace PuppeteerSharp
                 ? new CdpElementHandle(World, remoteObject)
                 : new CdpJSHandle(World, remoteObject);
 
+        internal void NotifyDestroyed() => _contextDestroyedTcs.TrySetResult(true);
+
 #if NET8_0_OR_GREATER
         [GeneratedRegex(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline)]
         private static partial Regex GetSourceUrlRegex();
@@ -195,7 +202,11 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc cref="IDisposable.Dispose" />
-        private void Dispose(bool disposing) => _ = DisposeAsync();
+        private void Dispose(bool disposing)
+        {
+            _contextDestroyedTcs.TrySetResult(true);
+            _ = DisposeAsync();
+        }
 
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
         {
@@ -228,7 +239,19 @@ namespace PuppeteerSharp
         {
             try
             {
-                var response = await Client.SendAsync<EvaluateHandleResponse>(method, args).ConfigureAwait(false);
+                var sendTask = Client.SendAsync<EvaluateHandleResponse>(method, args);
+
+                // Race the CDP call against context destruction. Chrome with RenderDocument may
+                // reuse the execution context across navigation without rejecting pending CDP calls,
+                // so we need to cancel explicitly when the context is cleared.
+                var winner = await Task.WhenAny(sendTask, _contextDestroyedTcs.Task).ConfigureAwait(false);
+                if (winner != sendTask)
+                {
+                    throw new EvaluationFailedException(
+                        "Execution context was destroyed, most likely because of a navigation.");
+                }
+
+                var response = await sendTask.ConfigureAwait(false);
 
                 if (response.ExceptionDetails != null)
                 {

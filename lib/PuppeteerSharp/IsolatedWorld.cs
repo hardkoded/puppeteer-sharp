@@ -276,12 +276,7 @@ namespace PuppeteerSharp
             ContextPayload contextPayload,
             IsolatedWorld world)
         {
-            _context = new ExecutionContext(
-                client,
-                contextPayload,
-                world);
-
-            SetContext(_context);
+            SetContext(new ExecutionContext(client, contextPayload, world));
         }
 
         internal void SetContext(ExecutionContext context)
@@ -291,7 +286,13 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
+            // Cancel any pending evaluations on the old context before replacing it.
+            // This handles the edge case where a new context arrives without an explicit
+            // executionContextsCleared/Destroyed event (e.g., Chrome reusing a context ID).
+            var oldContext = _context;
             _context = context;
+            oldContext?.NotifyDestroyed();
+
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
