@@ -47,6 +47,11 @@ namespace PuppeteerSharp
 
             _detached = false;
             FrameUpdated();
+
+            if (Frame != null)
+            {
+                Frame.FrameNavigated += Frame_FrameNavigated;
+            }
         }
 
         /// <inheritdoc/>
@@ -211,6 +216,12 @@ namespace PuppeteerSharp
         {
             _detached = true;
             Client.MessageReceived -= Client_MessageReceived;
+
+            if (Frame != null)
+            {
+                Frame.FrameNavigated -= Frame_FrameNavigated;
+            }
+
             TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
@@ -286,16 +297,18 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            // Cancel any pending evaluations on the old context before replacing it.
-            // This handles the edge case where a new context arrives without an explicit
-            // executionContextsCleared/Destroyed event (e.g., Chrome reusing a context ID).
-            var oldContext = _context;
             _context = context;
-            oldContext?.NotifyDestroyed();
-
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
+        }
+
+        private void Frame_FrameNavigated(object sender, FrameNavigatedEventArgs e)
+        {
+            if (!e.NavigatedWithinDocument)
+            {
+                _context?.NotifyDestroyed();
+            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
