@@ -305,7 +305,10 @@ namespace PuppeteerSharp
 
         private void Frame_FrameNavigated(object sender, FrameNavigatedEventArgs e)
         {
-            if (!e.NavigatedWithinDocument)
+            // For BFCache restores, Chrome sends executionContextCreated (with the cached
+            // context) BEFORE Page.frameNavigated. By the time this event fires, _context
+            // is already the restored context, so we must not destroy it.
+            if (!e.NavigatedWithinDocument && e.Type != NavigationType.BackForwardCacheRestore)
             {
                 _context?.NotifyDestroyed();
             }
