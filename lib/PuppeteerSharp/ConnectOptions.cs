@@ -126,12 +126,49 @@ namespace PuppeteerSharp
         /// <para>
         /// Currently only supported for CDP connections.
         /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="Allowlist"/>.
+        /// </para>
         /// </remarks>
         /// <example>
         /// Pattern to block a specific domain: <c>*://example.com/*</c>
         /// Pattern to block all subdomains: <c>*://*.evil.com/*</c>.
         /// </example>
         public string[] BlockList { get; set; }
+
+        /// <summary>
+        /// A list of URL patterns to allow. When set, the browser can only access URLs matching these patterns.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <strong>Requires Chrome 149+.</strong>
+        /// </para>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing any URLs
+        /// except for those that match the patterns in the allowlist.
+        /// It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// When connecting to an existing browser, Puppeteer will silently detach from any
+        /// already open targets that violate the patterns.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL does not match any pattern in the allowlist.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="BlockList"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to allow a specific domain: <c>*://example.com/*</c>
+        /// Pattern to allow all subdomains: <c>*://*.example.com/*</c>.
+        /// </example>
+        public string[] Allowlist { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.
