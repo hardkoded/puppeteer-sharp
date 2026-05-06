@@ -4,6 +4,6 @@ namespace PuppeteerSharp.Cdp.Messaging
     {
         public MatchedNetworkCondition[] MatchedNetworkConditions { get; set; }
 
-        public bool Offline { get; set; }
+        public bool? Offline { get; set; }
     }
 }

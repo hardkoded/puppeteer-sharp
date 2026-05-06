@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -53,7 +54,8 @@ public class CdpBrowser : Browser
         bool handleDevToolsAsPage = false,
         bool networkEnabled = true,
         bool issuesEnabled = true,
-        string[] blockList = null)
+        string[] blockList = null,
+        string[] allowList = null)
     {
         BrowserType = browser;
         DefaultViewport = defaultViewport;
@@ -87,7 +89,8 @@ public class CdpBrowser : Browser
                 connection,
                 CreateTarget,
                 targetFilterCallback,
-                blockList);
+                blockList,
+                allowList);
         }
     }
 
@@ -267,8 +270,19 @@ public class CdpBrowser : Browser
         bool handleDevToolsAsPage = false,
         bool networkEnabled = true,
         bool issuesEnabled = true,
-        string[] blockList = null)
+        string[] blockList = null,
+        string[] allowList = null)
     {
+        if (allowList != null)
+        {
+            var versionResponse = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
+            var match = Regex.Match(versionResponse.Product, @"\d+");
+            if (match.Success && int.TryParse(match.Value, out var majorVersion) && majorVersion < 149)
+            {
+                throw new PuppeteerException("The Allowlist option requires Chrome 149 or greater.");
+            }
+        }
+
         var browser = new CdpBrowser(
             browserToCreate,
             connection,
@@ -281,7 +295,8 @@ public class CdpBrowser : Browser
             handleDevToolsAsPage,
             networkEnabled,
             issuesEnabled,
-            blockList);
+            blockList,
+            allowList);
 
         try
         {
