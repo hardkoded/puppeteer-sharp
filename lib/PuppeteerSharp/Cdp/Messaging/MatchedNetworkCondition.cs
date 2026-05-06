@@ -4,6 +4,8 @@ namespace PuppeteerSharp.Cdp.Messaging
     {
         public string UrlPattern { get; set; }
 
+        public bool Offline { get; set; }
+
         public double Latency { get; set; }
 
         public double DownloadThroughput { get; set; }

@@ -31,6 +31,7 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
 
         private readonly string[] _blockList;
+        private readonly string[] _allowList;
 
         // This is false until the connection-level Target.setAutoAttach request is
         // done. It indicates whether we are running the initial auto-attach step or
@@ -41,12 +42,22 @@ namespace PuppeteerSharp.Cdp
             Connection connection,
             Func<TargetInfo, CDPSession, CDPSession, CdpTarget> targetFactoryFunc,
             Func<Target, bool> targetFilterFunc,
-            string[] blockList = null)
+            string[] blockList = null,
+            string[] allowList = null)
         {
+            if (blockList != null && allowList != null)
+            {
+                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
+            }
+
+            ValidateUrlPatterns(blockList);
+            ValidateUrlPatterns(allowList);
+
             _connection = connection;
             _targetFilterFunc = targetFilterFunc;
             _targetFactoryFunc = targetFactoryFunc;
             _blockList = blockList;
+            _allowList = allowList;
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
             _connection.SessionDetached += Connection_SessionDetached;
@@ -90,6 +101,42 @@ namespace PuppeteerSharp.Cdp
         }
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
+
+        private static void ValidateUrlPatterns(string[] patterns)
+        {
+            if (patterns == null)
+            {
+                return;
+            }
+
+            foreach (var pattern in patterns)
+            {
+                // Basic validation to catch common URLPattern syntax errors (e.g., unbalanced parentheses).
+                // .NET has no native URLPattern API, so this only checks a subset of URLPattern invariants.
+                // The URLPattern spec rejects patterns with unbalanced parentheses.
+                var depth = 0;
+                foreach (var c in pattern)
+                {
+                    if (c == '(')
+                    {
+                        depth++;
+                    }
+                    else if (c == ')')
+                    {
+                        depth--;
+                        if (depth < 0)
+                        {
+                            throw new PuppeteerException($"Invalid URLPattern: '{pattern}'. Unbalanced parentheses.");
+                        }
+                    }
+                }
+
+                if (depth != 0)
+                {
+                    throw new PuppeteerException($"Invalid URLPattern: '{pattern}'. Unbalanced parentheses.");
+                }
+            }
+        }
 
         private static bool MatchesUrlPattern(string url, string pattern)
         {
@@ -404,7 +451,10 @@ namespace PuppeteerSharp.Cdp
 
         private bool IsUrlAllowed(string url)
         {
-            if (_blockList == null || _blockList.Length == 0)
+            var hasBlockList = _blockList != null && _blockList.Length > 0;
+            var hasAllowList = _allowList != null && _allowList.Length > 0;
+
+            if (!hasBlockList && !hasAllowList)
             {
                 return true;
             }
@@ -415,19 +465,28 @@ namespace PuppeteerSharp.Cdp
                 return true;
             }
 
-            foreach (var pattern in _blockList)
+            if (hasBlockList)
             {
-                try
+                foreach (var pattern in _blockList)
                 {
                     if (MatchesUrlPattern(url, pattern))
                     {
                         return false;
                     }
                 }
-                catch (Exception ex)
+            }
+
+            if (hasAllowList)
+            {
+                foreach (var pattern in _allowList)
                 {
-                    _logger.LogError(ex, "Invalid URL pattern: {Pattern}", pattern);
+                    if (MatchesUrlPattern(url, pattern))
+                    {
+                        return true;
+                    }
                 }
+
+                return false;
             }
 
             return true;
@@ -435,25 +494,63 @@ namespace PuppeteerSharp.Cdp
 
         private async Task MaybeSetupNetworkBlockListAsync(CDPSession session)
         {
-            if (_blockList == null || _blockList.Length == 0)
+            var hasBlockList = _blockList != null && _blockList.Length > 0;
+            var hasAllowList = _allowList != null && _allowList.Length > 0;
+
+            if (!hasBlockList && !hasAllowList)
             {
                 return;
             }
 
-            var matchedNetworkConditions = Array.ConvertAll(_blockList, pattern => new MatchedNetworkCondition
+            var matchedNetworkConditions = new List<MatchedNetworkCondition>();
+
+            if (hasBlockList)
             {
-                UrlPattern = pattern,
-                Latency = 0,
-                DownloadThroughput = -1,
-                UploadThroughput = -1,
-            });
+                foreach (var pattern in _blockList)
+                {
+                    matchedNetworkConditions.Add(new MatchedNetworkCondition
+                    {
+                        UrlPattern = pattern,
+                        Offline = true,
+                        Latency = 0,
+                        DownloadThroughput = -1,
+                        UploadThroughput = -1,
+                    });
+                }
+            }
+
+            if (hasAllowList)
+            {
+                foreach (var pattern in _allowList)
+                {
+                    matchedNetworkConditions.Add(new MatchedNetworkCondition
+                    {
+                        UrlPattern = pattern,
+                        Offline = false,
+                        Latency = 0,
+                        DownloadThroughput = -1,
+                        UploadThroughput = -1,
+                    });
+                }
+
+                // Block everything else
+                matchedNetworkConditions.Add(new MatchedNetworkCondition
+                {
+                    UrlPattern = string.Empty,
+                    Offline = true,
+                    Latency = 0,
+                    DownloadThroughput = -1,
+                    UploadThroughput = -1,
+                });
+            }
 
             await session.SendAsync(
                 "Network.emulateNetworkConditionsByRule",
                 new NetworkEmulateNetworkConditionsByRuleRequest
                 {
-                    MatchedNetworkConditions = matchedNetworkConditions,
+                    // 'Offline' here is for legacy blocklist compatibility (deprecated in Chrome 149).
                     Offline = true,
+                    MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
                 }).ConfigureAwait(false);
         }
     }

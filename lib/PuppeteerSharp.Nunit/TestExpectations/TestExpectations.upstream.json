@@ -371,6 +371,22 @@
     "comment": "Verifies URL blocklist enforcement when connecting to a browser via WebSocket, which is not applicable for pipe mode"
   },
   {
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should only allow navigation to URLs in the allowlist",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "allowlist option requires at least chrome 149 version"
+  },
+  {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
     "platforms": [
       "darwin",

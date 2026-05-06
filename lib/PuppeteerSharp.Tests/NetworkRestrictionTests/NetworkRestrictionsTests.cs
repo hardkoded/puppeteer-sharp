@@ -171,4 +171,95 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         // Navigation should succeed as chrome:// URLs usually bypass the network
         Assert.That(page.Url, Is.EqualTo(chromeUrl));
     }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should only allow navigation to URLs in the allowlist")]
+    public async Task ShouldOnlyAllowNavigationToUrlsInAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var allowedUrl = TestConstants.ServerUrl + "/empty.html";
+        var blockedUrl = TestConstants.ServerUrl + "/title.html";
+
+        await page.GoToAsync(allowedUrl);
+
+        Exception error = null;
+        await page.GoToAsync(blockedUrl).ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                error = t.Exception?.InnerException ?? t.Exception;
+            }
+
+            return t;
+        });
+
+        Assert.That(page.Url, Is.Not.EqualTo(blockedUrl));
+        Assert.That(error, Is.Not.Null);
+        Assert.That(error.Message, Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should throw an error when both blocklist and allowlist are specified")]
+    public async Task ShouldThrowAnErrorWhenBothBlocklistAndAllowlistAreSpecified()
+    {
+        var launchOptions = TestConstants.DefaultBrowserOptions();
+        launchOptions.BlockList = ["*://*:*/empty.html"];
+        launchOptions.Allowlist = ["*://*:*/empty.html"];
+
+        Exception launchError = null;
+        try
+        {
+            await using var browser = await Puppeteer.LaunchAsync(launchOptions, TestConstants.LoggerFactory);
+        }
+        catch (Exception ex)
+        {
+            launchError = ex;
+        }
+
+        Assert.That(launchError, Is.Not.Null);
+        Assert.That(launchError.Message, Does.Contain("Cannot specify both blocklist and allowlist"));
+
+        await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+        var wsEndpoint = originalBrowser.WebSocketEndpoint;
+
+        Exception connectError = null;
+        try
+        {
+            await using var connectedBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = wsEndpoint,
+                BlockList = ["*://*:*/empty.html"],
+                Allowlist = ["*://*:*/empty.html"],
+            });
+        }
+        catch (Exception ex)
+        {
+            connectError = ex;
+        }
+
+        Assert.That(connectError, Is.Not.Null);
+        Assert.That(connectError.Message, Does.Contain("Cannot specify both blocklist and allowlist"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should throw an error for an invalid pattern")]
+    public async Task ShouldThrowAnErrorForAnInvalidPattern()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["(invalid pattern"];
+
+        Exception error = null;
+        try
+        {
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+        }
+
+        Assert.That(error, Is.Not.Null);
+    }
 }

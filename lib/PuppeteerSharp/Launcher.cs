@@ -62,6 +62,11 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (options.BlockList != null && options.Allowlist != null)
+            {
+                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
+            }
+
             EnsureSingleLaunchOrConnect();
             _browser = options.Browser;
 
@@ -189,7 +194,8 @@ namespace PuppeteerSharp
                                 handleDevToolsAsPage: options.HandleDevToolsAsPage,
                                 networkEnabled: options.NetworkEnabled,
                                 issuesEnabled: options.IssuesEnabled,
-                                blockList: options.BlockList)
+                                blockList: options.BlockList,
+                                allowList: options.Allowlist)
                             .ConfigureAwait(false);
                     }
 
@@ -417,6 +423,11 @@ namespace PuppeteerSharp
 
         private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
         {
+            if (options.BlockList != null && options.Allowlist != null)
+            {
+                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
+            }
+
             CdpConnection connection = null;
             try
             {
@@ -444,7 +455,8 @@ namespace PuppeteerSharp
                         options.HandleDevToolsAsPage,
                         options.NetworkEnabled,
                         options.IssuesEnabled,
-                        options.BlockList)
+                        options.BlockList,
+                        options.Allowlist)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
