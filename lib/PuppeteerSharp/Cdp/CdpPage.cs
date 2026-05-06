@@ -191,6 +191,12 @@ public class CdpPage : Page
     {
         var pageTargetId = PrimaryTarget.TargetId;
         var browser = (CdpBrowser)Browser;
+        var devtoolsTargetId = await browser.HasDevToolsTargetAsync(pageTargetId).ConfigureAwait(false);
+        if (!string.IsNullOrEmpty(devtoolsTargetId))
+        {
+            return await browser.GetDevToolsTargetPageAsync(devtoolsTargetId).ConfigureAwait(false);
+        }
+
         return await browser.CreateDevToolsPageAsync(pageTargetId).ConfigureAwait(false);
     }
 
