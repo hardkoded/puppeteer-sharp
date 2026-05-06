@@ -349,24 +349,29 @@ public class CdpBrowser : Browser
             "Target.openDevTools",
             new TargetActivateTargetRequest { TargetId = pageTargetId }).ConfigureAwait(false);
 
+        return await GetDevToolsTargetPageAsync(openDevToolsResponse.TargetId).ConfigureAwait(false);
+    }
+
+    internal async Task<IPage> GetDevToolsTargetPageAsync(string devtoolsTargetId)
+    {
         var target = await WaitForTargetAsync(
-            t => ((CdpTarget)t).TargetId == openDevToolsResponse.TargetId).ConfigureAwait(false) as CdpTarget;
+            t => ((CdpTarget)t).TargetId == devtoolsTargetId).ConfigureAwait(false) as CdpTarget;
 
         if (target == null)
         {
-            throw new PuppeteerException($"Missing target for DevTools page (id = {pageTargetId})");
+            throw new PuppeteerException($"Missing target for DevTools page (id = {devtoolsTargetId})");
         }
 
         var initialized = await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success;
         if (!initialized)
         {
-            throw new PuppeteerException($"Failed to create target for DevTools page (id = {pageTargetId})");
+            throw new PuppeteerException($"Failed to create target for DevTools page (id = {devtoolsTargetId})");
         }
 
         var page = await target.PageAsync().ConfigureAwait(false);
         if (page == null)
         {
-            throw new PuppeteerException($"Failed to create a DevTools Page for target (id = {pageTargetId})");
+            throw new PuppeteerException($"Failed to create a DevTools Page for target (id = {devtoolsTargetId})");
         }
 
         return page;
