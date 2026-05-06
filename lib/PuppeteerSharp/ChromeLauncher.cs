@@ -63,6 +63,7 @@ namespace PuppeteerSharp
                 "AcceptCHFrame",
                 "MediaRouter",
                 "OptimizationHints",
+                "WebUIReloadButton",
                 "IPH_ReadingModePageActionLabel",
                 "ReadAnythingOmniboxChip",
                 "ProcessPerSiteUpToMainFrameThreshold",
