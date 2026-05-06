@@ -373,7 +373,7 @@ namespace PuppeteerSharp
         Task CloseAsync(PageCloseOptions options = null);
 
         /// <summary>
-        /// Opens DevTools for the current Page and returns the DevTools Page.
+        /// Opens DevTools for this page if not already open and returns the DevTools page.
         /// This method is only available in Chrome.
         /// </summary>
         /// <returns>A <see cref="Task{IPage}"/> that completes with the DevTools page.</returns>
