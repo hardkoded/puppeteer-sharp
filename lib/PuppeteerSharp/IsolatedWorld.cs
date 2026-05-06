@@ -47,11 +47,6 @@ namespace PuppeteerSharp
 
             _detached = false;
             FrameUpdated();
-
-            if (Frame != null)
-            {
-                Frame.FrameNavigated += Frame_FrameNavigated;
-            }
         }
 
         /// <inheritdoc/>
@@ -216,12 +211,6 @@ namespace PuppeteerSharp
         {
             _detached = true;
             Client.MessageReceived -= Client_MessageReceived;
-
-            if (Frame != null)
-            {
-                Frame.FrameNavigated -= Frame_FrameNavigated;
-            }
-
             TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
@@ -297,21 +286,18 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
+            // Cancel any pending evaluations on the old context before replacing it.
+            // With Chrome's RenderDocument feature, the new context may arrive without a
+            // preceding executionContextDestroyed event, so we cannot rely on ClearContext
+            // to signal cancellation. NotifyDestroyed is idempotent, so it's safe to call
+            // even when ClearContext already disposed the old context.
+            var oldContext = _context;
             _context = context;
+            oldContext?.NotifyDestroyed();
+
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
-        }
-
-        private void Frame_FrameNavigated(object sender, FrameNavigatedEventArgs e)
-        {
-            // For BFCache restores, Chrome sends executionContextCreated (with the cached
-            // context) BEFORE Page.frameNavigated. By the time this event fires, _context
-            // is already the restored context, so we must not destroy it.
-            if (!e.NavigatedWithinDocument && e.Type != NavigationType.BackForwardCacheRestore)
-            {
-                _context?.NotifyDestroyed();
-            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
