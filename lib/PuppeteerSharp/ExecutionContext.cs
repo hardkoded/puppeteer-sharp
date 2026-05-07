@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
@@ -37,6 +38,11 @@ namespace PuppeteerSharp
             ContextId = contextPayload.Id;
             ContextName = contextPayload.Name;
             World = world;
+
+            // Match upstream: each context subscribes to its own destruction events so that
+            // pending evaluations are cancelled even when IsolatedWorld state is out of sync
+            // (e.g. headless-shell sends executionContextsCleared after executionContextCreated).
+            Client.MessageReceived += OnCdpMessageReceived;
         }
 
         /// <summary>
@@ -89,6 +95,7 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
+            Client.MessageReceived -= OnCdpMessageReceived;
             _contextDestroyedTcs.TrySetResult(true);
 
             if (_puppeteerUtilQueue != null)
@@ -107,6 +114,7 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public void Dispose()
         {
+            Client.MessageReceived -= OnCdpMessageReceived;
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -153,7 +161,11 @@ namespace PuppeteerSharp
                 ? new CdpElementHandle(World, remoteObject)
                 : new CdpJSHandle(World, remoteObject);
 
-        internal void NotifyDestroyed() => _contextDestroyedTcs.TrySetResult(true);
+        internal void NotifyDestroyed()
+        {
+            Client.MessageReceived -= OnCdpMessageReceived;
+            _contextDestroyedTcs.TrySetResult(true);
+        }
 
 #if NET8_0_OR_GREATER
         [GeneratedRegex(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline)]
@@ -206,6 +218,24 @@ namespace PuppeteerSharp
         {
             _contextDestroyedTcs.TrySetResult(true);
             _ = DisposeAsync();
+        }
+
+        private void OnCdpMessageReceived(object sender, MessageEventArgs e)
+        {
+            switch (e.MessageID)
+            {
+                case "Runtime.executionContextDestroyed":
+                    var destroyed = e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>();
+                    if (destroyed.ExecutionContextId == ContextId)
+                    {
+                        NotifyDestroyed();
+                    }
+
+                    break;
+                case "Runtime.executionContextsCleared":
+                    NotifyDestroyed();
+                    break;
+            }
         }
 
         private async Task<T> RemoteObjectTaskToObject<T>(Task<RemoteObject> remote)
