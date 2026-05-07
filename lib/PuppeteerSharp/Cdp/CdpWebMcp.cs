@@ -164,6 +164,7 @@ public class CdpWebMcp
                 Annotations = tool.Annotations == null ? null : new WebMcpAnnotation
                 {
                     ReadOnly = tool.Annotations.ReadOnly,
+                    UntrustedContent = tool.Annotations.UntrustedContent,
                     Autosubmit = tool.Annotations.Autosubmit,
                 },
                 Frame = frame,
@@ -306,6 +307,9 @@ public class CdpWebMcp
 
         [JsonPropertyName("readOnly")]
         public bool? ReadOnly { get; set; }
+
+        [JsonPropertyName("untrustedContent")]
+        public bool? UntrustedContent { get; set; }
     }
 
     private class WebMcpProtocolRemovedTool

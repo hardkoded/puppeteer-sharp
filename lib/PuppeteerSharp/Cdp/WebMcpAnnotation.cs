@@ -33,6 +33,11 @@ public class WebMcpAnnotation
     public bool? ReadOnly { get; set; }
 
     /// <summary>
+    /// A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
+    /// </summary>
+    public bool? UntrustedContent { get; set; }
+
+    /// <summary>
     /// If the declarative tool was declared with the autosubmit attribute.
     /// </summary>
     public bool? Autosubmit { get; set; }

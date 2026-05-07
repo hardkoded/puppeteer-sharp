@@ -39,8 +39,10 @@ namespace PuppeteerSharp.Tests.WebMcpTests
                     name: 'test-tool-1',
                     description: 'A test tool 1',
                     inputSchema: { type: 'object', properties: { text: { type: 'string' } }, required: ['text'] },
-                    execute: () => {},
-                    annotations: { readOnlyHint: true },
+                    execute: (params) => {
+                        return params.text;
+                    },
+                    annotations: { readOnlyHint: true, untrustedContentHint: true },
                 });
             }");
 
@@ -55,6 +57,9 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             var tools = page.WebMcp.Tools();
             Assert.That(tools.Length, Is.GreaterThanOrEqualTo(2));
+            Assert.That(tools[0].Annotations, Is.Not.Null);
+            Assert.That(tools[0].Annotations!.ReadOnly, Is.True);
+            Assert.That(tools[0].Annotations!.UntrustedContent, Is.True);
         }
 
         [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should fire toolsadded events")]
