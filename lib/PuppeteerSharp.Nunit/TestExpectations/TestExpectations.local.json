@@ -189,6 +189,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "comment": "Flaky on headless Linux CI: coverage data differs intermittently in headless mode",
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should report right ranges for \"per function\" scope",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "Flaky on headful Linux CI: BFCache restore causes GoBack to return null response",
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work",
     "platforms": ["linux"],
