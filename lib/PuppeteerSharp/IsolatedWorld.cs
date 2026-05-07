@@ -33,6 +33,12 @@ namespace PuppeteerSharp
         private string _worldId;
         private string _origin;
 
+        // Tracks the old context to destroy when Page.frameNavigated fires.
+        // Chrome sends callFunctionOn responses before frameNavigated, so deferring
+        // NotifyDestroyed to frameNavigated ensures valid return values are captured first.
+        private ExecutionContext _contextToDestroyOnNavigation;
+        private bool _hasPendingContextDestruction;
+
         public IsolatedWorld(
             Frame frame,
             WebWorker worker,
@@ -47,6 +53,11 @@ namespace PuppeteerSharp
 
             _detached = false;
             FrameUpdated();
+
+            if (Frame != null)
+            {
+                Frame.FrameNavigated += Frame_FrameNavigated;
+            }
         }
 
         /// <inheritdoc/>
@@ -211,6 +222,12 @@ namespace PuppeteerSharp
         {
             _detached = true;
             Client.MessageReceived -= Client_MessageReceived;
+
+            if (Frame != null)
+            {
+                Frame.FrameNavigated -= Frame_FrameNavigated;
+            }
+
             TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
@@ -268,6 +285,8 @@ namespace PuppeteerSharp
             _contextResolveTaskWrapper = new TaskCompletionSource<ExecutionContext>(TaskCreationOptions.RunContinuationsAsynchronously);
             _context?.Dispose();
             _context = null;
+            _hasPendingContextDestruction = false;
+            _contextToDestroyOnNavigation = null;
             Frame?.ClearDocumentHandle();
         }
 
@@ -286,18 +305,45 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
-            // Cancel any pending evaluations on the old context before replacing it.
-            // With Chrome's RenderDocument feature, the new context may arrive without a
-            // preceding executionContextDestroyed event, so we cannot rely on ClearContext
-            // to signal cancellation. NotifyDestroyed is idempotent, so it's safe to call
-            // even when ClearContext already disposed the old context.
-            var oldContext = _context;
+            // Save the old context so Frame_FrameNavigated can signal its destruction.
+            // We defer NotifyDestroyed to frameNavigated rather than calling it here because
+            // Chrome sends callFunctionOn responses before frameNavigated — deferring ensures
+            // valid return values are captured before we signal cancellation.
+            _contextToDestroyOnNavigation = _context;
+            _hasPendingContextDestruction = true;
             _context = context;
-            oldContext?.NotifyDestroyed();
 
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
+        }
+
+        private void Frame_FrameNavigated(object sender, FrameNavigatedEventArgs e)
+        {
+            var hasPending = _hasPendingContextDestruction;
+            var ctxToDestroy = _contextToDestroyOnNavigation;
+            _hasPendingContextDestruction = false;
+            _contextToDestroyOnNavigation = null;
+
+            // Don't cancel for within-document navigations or BFCache restores.
+            // For BFCache, Chrome sends executionContextCreated with the cached context BEFORE
+            // frameNavigated, so _context is already the restored context — we must not destroy it.
+            if (e.NavigatedWithinDocument || e.Type == NavigationType.BackForwardCacheRestore)
+            {
+                return;
+            }
+
+            if (hasPending)
+            {
+                // executionContextCreated fired before frameNavigated (normal or RenderDocument with new ctx):
+                // ctxToDestroy is the old context that had the pending evaluation.
+                ctxToDestroy?.NotifyDestroyed();
+            }
+            else
+            {
+                // RenderDocument with no context events: _context is still the old context.
+                _context?.NotifyDestroyed();
+            }
         }
 
         private async void Client_MessageReceived(object sender, MessageEventArgs e)
