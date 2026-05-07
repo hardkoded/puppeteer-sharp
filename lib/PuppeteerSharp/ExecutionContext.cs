@@ -222,19 +222,27 @@ namespace PuppeteerSharp
 
         private void OnCdpMessageReceived(object sender, MessageEventArgs e)
         {
-            switch (e.MessageID)
+            try
             {
-                case "Runtime.executionContextDestroyed":
-                    var destroyed = e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>();
-                    if (destroyed.ExecutionContextId == ContextId)
-                    {
-                        NotifyDestroyed();
-                    }
+                switch (e.MessageID)
+                {
+                    case "Runtime.executionContextDestroyed":
+                        var destroyed = e.MessageData.ToObject<RuntimeExecutionContextDestroyedResponse>();
+                        if (destroyed.ExecutionContextId == ContextId)
+                        {
+                            NotifyDestroyed();
+                        }
 
-                    break;
-                case "Runtime.executionContextsCleared":
-                    NotifyDestroyed();
-                    break;
+                        break;
+                    case "Runtime.executionContextsCleared":
+                        NotifyDestroyed();
+                        break;
+                }
+            }
+            catch
+            {
+                // Swallow exceptions — this handler must never propagate into the CDPSession
+                // event dispatcher, which would crash the test host.
             }
         }
 

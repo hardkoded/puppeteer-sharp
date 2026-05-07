@@ -131,5 +131,82 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "comment": "With RenderDocument enabled Chrome reuses the execution context in headful/pipe/headless-shell modes without sending destruction events, so the pending callFunctionOn is never rejected and the test hangs",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "With RenderDocument enabled Chrome reuses the execution context in pipe mode without sending destruction events, so the pending callFunctionOn is never rejected and the test hangs",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux", "win32"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "With RenderDocument enabled Chrome reuses the execution context in headless-shell on Linux without sending destruction events, so the pending callFunctionOn is never rejected and the test hangs",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Intermittently hangs in headful/pipe/headless-shell on Linux: Chrome with RenderDocument may not send a callFunctionOn response when navigation interrupts evaluation",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Intermittently hangs in pipe mode on Linux: Chrome with RenderDocument may not send a callFunctionOn response when navigation interrupts evaluation",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Intermittently hangs in headless-shell on Linux: Chrome with RenderDocument may not send a callFunctionOn response when navigation interrupts evaluation",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "chrome-headless-shell"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on headful Linux CI: Chrome fails to open a new tab after last page closes due to process state races",
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on headful Linux CI: coverage data differs in headful mode",
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should report right ranges for \"per function\" scope",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on headful Linux CI: BFCache restore causes GoBack to return null response",
+    "testIdPattern": "[navigation.spec] navigation Page.goBack should work",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on headful Linux CI: clearDeviceMetricsOverride does not reset window.innerWidth to 0 in Xvfb",
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should restore to original viewport size after taking fullPage screenshots when defaultViewport is null",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Flaky on Firefox headless BiDi Linux CI: waitForSelector bounding box assertion fails intermittently",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should wait for element to be visible (bounding box)",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
