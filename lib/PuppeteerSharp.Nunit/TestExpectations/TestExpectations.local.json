@@ -161,6 +161,13 @@
     "expectations": ["SKIP"]
   },
   {
+    "comment": "Flaky on pipe Linux CI: BFCache restore causes GoBack to return null response",
+    "testIdPattern": "[navigation.spec] navigation Page.goBack should work",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "pipe"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "Flaky on headful Linux CI: clearDeviceMetricsOverride does not reset window.innerWidth to 0 in Xvfb",
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should restore to original viewport size after taking fullPage screenshots when defaultViewport is null",
     "platforms": ["linux"],
