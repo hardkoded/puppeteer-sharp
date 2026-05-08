@@ -124,11 +124,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
     {
-        if (!PageLevelInterceptionEnabled)
-        {
-            return;
-        }
-
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -172,11 +167,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             throw new ArgumentNullException(nameof(response));
         }
 
-        if (!PageLevelInterceptionEnabled)
-        {
-            return;
-        }
-
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -214,11 +204,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
-        if (!PageLevelInterceptionEnabled)
-        {
-            return;
-        }
-
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -480,10 +465,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
             // Only swallow specific protocol errors that are safe to ignore.
             // Match upstream's handleError behavior.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx)
             {
+                // Re-throw header validation errors — the user should see those.
+                // Swallow all other protocol errors (request already cancelled, etc.).
+                if (bidiEx.Message.Contains("Invalid header") ||
+                    bidiEx.Message.Contains("Unsafe header") ||
+                    bidiEx.Message.Contains("Expected \"header\"") ||
+                    bidiEx.Message.Contains("invalid argument"))
+                {
+                    throw;
+                }
+
                 return;
             }
 
@@ -503,7 +496,6 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             IsInterceptResolutionHandled = false;
 
-            // Only swallow specific protocol errors that are safe to ignore.
             if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
                 (bidiEx.Message.Contains("Invalid request id") ||
                  bidiEx.Message.Contains("no such request")))
@@ -587,11 +579,18 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             IsInterceptResolutionHandled = false;
 
-            // Only swallow specific protocol errors that are safe to ignore.
-            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx &&
-                (bidiEx.Message.Contains("Invalid request id") ||
-                 bidiEx.Message.Contains("no such request")))
+            if (ex is WebDriverBiDi.WebDriverBiDiException bidiEx)
             {
+                // Re-throw header validation errors — the user should see those.
+                // Swallow all other protocol errors (request already cancelled, etc.).
+                if (bidiEx.Message.Contains("Invalid header") ||
+                    bidiEx.Message.Contains("Unsafe header") ||
+                    bidiEx.Message.Contains("Expected \"header\"") ||
+                    bidiEx.Message.Contains("invalid argument"))
+                {
+                    throw;
+                }
+
                 return;
             }
 
