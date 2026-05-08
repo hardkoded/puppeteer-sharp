@@ -215,5 +215,5 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
-  }
+  },
 ]
