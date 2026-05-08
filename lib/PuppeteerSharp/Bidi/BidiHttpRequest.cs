@@ -124,12 +124,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task ContinueAsync(Payload payloadOverrides = null, int? priority = null)
     {
+        if (!PageLevelInterceptionEnabled)
+        {
+            return;
+        }
+
         VerifyInterception();
 
         if (!CanBeIntercepted())
         {
             return;
         }
+
+        ValidateHeaderValues(payloadOverrides?.Headers);
 
         if (priority is null)
         {
@@ -165,12 +172,19 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
             throw new ArgumentNullException(nameof(response));
         }
 
+        if (!PageLevelInterceptionEnabled)
+        {
+            return;
+        }
+
         VerifyInterception();
 
         if (!CanBeIntercepted())
         {
             return;
         }
+
+        ValidateResponseHeaderValues(response.Headers);
 
         if (priority is null)
         {
@@ -200,6 +214,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
+        if (!PageLevelInterceptionEnabled)
+        {
+            return;
+        }
+
         VerifyInterception();
 
         if (!CanBeIntercepted())
@@ -309,6 +328,53 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     /// <inheritdoc/>
     protected override bool CanBeIntercepted() => _request.IsBlocked;
+
+    private static void ValidateHeaderValues(Dictionary<string, string> headers)
+    {
+        if (headers == null)
+        {
+            return;
+        }
+
+        foreach (var kvp in headers)
+        {
+            if (kvp.Value != null && kvp.Value.IndexOfAny(new[] { '\n', '\r', '\0' }) >= 0)
+            {
+                throw new PuppeteerException($"Invalid header value for '{kvp.Key}'");
+            }
+        }
+    }
+
+    private static void ValidateResponseHeaderValues(Dictionary<string, object> headers)
+    {
+        if (headers == null)
+        {
+            return;
+        }
+
+        foreach (var kvp in headers)
+        {
+            if (kvp.Value is ICollection collection)
+            {
+                foreach (var item in collection)
+                {
+                    var strValue = item?.ToString();
+                    if (strValue != null && strValue.IndexOfAny(new[] { '\n', '\r', '\0' }) >= 0)
+                    {
+                        throw new PuppeteerException($"Invalid header value for '{kvp.Key}'");
+                    }
+                }
+            }
+            else
+            {
+                var strValue = kvp.Value?.ToString();
+                if (strValue != null && strValue.IndexOfAny(new[] { '\n', '\r', '\0' }) >= 0)
+                {
+                    throw new PuppeteerException($"Invalid header value for '{kvp.Key}'");
+                }
+            }
+        }
+    }
 
     private static List<Header> ConvertToBidiHeaders(Dictionary<string, string> headers)
     {
