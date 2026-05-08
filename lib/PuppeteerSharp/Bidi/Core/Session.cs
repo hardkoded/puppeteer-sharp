@@ -25,13 +25,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
+
+#if !CDP_ONLY
+
 using WebDriverBiDi;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Input;
 using WebDriverBiDi.Network;
 using WebDriverBiDi.Session;
-
-#if !CDP_ONLY
 
 namespace PuppeteerSharp.Bidi.Core;
 

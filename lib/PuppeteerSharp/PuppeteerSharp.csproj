@@ -46,7 +46,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="WebDriverBiDi" Version="0.0.49" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />
+    <PackageReference Include="WebDriverBiDi" Version="0.0.49" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.3" />
@@ -55,11 +55,11 @@
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(DefineConstants)' != 'CDP_ONLY' ">
+  <PropertyGroup Condition=" !$(DefineConstants.Contains('CDP_ONLY')) ">
     <ChromiumBidiVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)Bidi/chromium-bidi.version').Trim())</ChromiumBidiVersion>
     <MapperTabPath>$(MSBuildThisFileDirectory)Bidi/mapperTab.js</MapperTabPath>
   </PropertyGroup>
-  <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" '$(DefineConstants)' != 'CDP_ONLY' AND !Exists('$(MapperTabPath)') ">
+  <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) AND !Exists('$(MapperTabPath)') ">
     <PropertyGroup>
       <_TarballUrl>https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballUrl>
       <_TarballPath>$(IntermediateOutputPath)chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
@@ -75,7 +75,7 @@
   </Target>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
-    <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" '$(DefineConstants)' != 'CDP_ONLY' " />
+    <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />

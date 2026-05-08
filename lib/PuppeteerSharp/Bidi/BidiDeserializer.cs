@@ -23,9 +23,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using WebDriverBiDi.Script;
 
 #if !CDP_ONLY
+
+using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
 
