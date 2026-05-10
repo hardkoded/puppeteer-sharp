@@ -106,7 +106,7 @@ namespace PuppeteerSharp
         public abstract Task UninstallExtensionAsync(string id);
 
         /// <inheritdoc/>
-        public abstract Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync();
+        public abstract Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
 
         /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync(bool includeAll = false)
