@@ -4766,6 +4766,51 @@
     "comment": "Experimental support for WebMCP requires Chrome 149+."
   },
   {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolinvoked events",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "PASS"
+    ]
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event with errorText",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "PASS"
+    ]
+  },
+  {
+    "testIdPattern": "[webmcp.spec] Page.webmcp should fire toolresponded event with exception",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "cdp",
+      "chrome"
+    ],
+    "expectations": [
+      "PASS"
+    ]
+  },
+  {
     "testIdPattern": "[webmcp.spec] Page.webmcp should remove tools on frame navigation",
     "platforms": [
       "darwin",
