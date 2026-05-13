@@ -60,7 +60,7 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>", new NavigationOptions
+                await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>", new SetContentOptions
                 {
                     Timeout = 1
                 }));
