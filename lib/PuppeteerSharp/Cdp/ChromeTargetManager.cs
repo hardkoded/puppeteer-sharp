@@ -112,6 +112,49 @@ namespace PuppeteerSharp.Cdp
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
 
+        public bool IsUrlAllowed(string url)
+        {
+            var hasBlockList = _blockList != null && _blockList.Length > 0;
+            var hasAllowList = _allowList != null && _allowList.Length > 0;
+
+            if (!hasBlockList && !hasAllowList)
+            {
+                return true;
+            }
+
+            // Always allow internal or setup pages
+            if (string.IsNullOrEmpty(url) || url == "about:blank")
+            {
+                return true;
+            }
+
+            if (hasBlockList)
+            {
+                foreach (var pattern in _blockList)
+                {
+                    if (MatchesUrlPattern(url, pattern))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            if (hasAllowList)
+            {
+                foreach (var pattern in _allowList)
+                {
+                    if (MatchesUrlPattern(url, pattern))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
         private static void ValidateUrlPatterns(string[] patterns)
         {
             if (patterns == null)
@@ -457,49 +500,6 @@ namespace PuppeteerSharp.Cdp
 
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
-        }
-
-        private bool IsUrlAllowed(string url)
-        {
-            var hasBlockList = _blockList != null && _blockList.Length > 0;
-            var hasAllowList = _allowList != null && _allowList.Length > 0;
-
-            if (!hasBlockList && !hasAllowList)
-            {
-                return true;
-            }
-
-            // Always allow internal or setup pages
-            if (string.IsNullOrEmpty(url) || url == "about:blank")
-            {
-                return true;
-            }
-
-            if (hasBlockList)
-            {
-                foreach (var pattern in _blockList)
-                {
-                    if (MatchesUrlPattern(url, pattern))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (hasAllowList)
-            {
-                foreach (var pattern in _allowList)
-                {
-                    if (MatchesUrlPattern(url, pattern))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return true;
         }
 
         private async Task MaybeSetupNetworkBlockListAsync(CDPSession session)

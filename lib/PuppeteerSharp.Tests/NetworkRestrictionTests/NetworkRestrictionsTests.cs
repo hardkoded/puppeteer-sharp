@@ -34,7 +34,7 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         });
 
         Assert.That(error, Is.Not.Null);
-        Assert.That(error.Message, Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
+        Assert.That(error.Message, Does.Contain("is blocked by blocklist/allowlist rules"));
     }
 
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block window.location.href navigation to URLs in the blocklist")]
@@ -156,20 +156,29 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         }
     }
 
-    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should not block chrome://version/ even if it matches blocklist")]
-    public async Task ShouldNotBlockChromeVersionEvenIfItMatchesBlocklist()
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block chrome://version/ when it matches blocklist")]
+    public async Task ShouldBlockChromeVersionWhenItMatchesBlocklist()
     {
-        const string chromeUrl = "chrome://version/";
+        const string blockedUrl = "chrome://version/";
         var options = TestConstants.DefaultBrowserOptions();
-        options.BlockList = [chromeUrl];
+        options.BlockList = [blockedUrl];
 
         await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
         await using var page = await browser.NewPageAsync();
 
-        await page.GoToAsync(chromeUrl);
+        Exception error = null;
+        await page.GoToAsync(blockedUrl).ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                error = t.Exception?.InnerException ?? t.Exception;
+            }
 
-        // Navigation should succeed as chrome:// URLs usually bypass the network
-        Assert.That(page.Url, Is.EqualTo(chromeUrl));
+            return t;
+        });
+
+        Assert.That(error, Is.Not.Null);
+        Assert.That(error.Message, Does.Contain("is blocked by blocklist/allowlist rules"));
     }
 
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should only allow navigation to URLs in the allowlist")]
@@ -199,7 +208,7 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         Assert.That(page.Url, Is.Not.EqualTo(blockedUrl));
         Assert.That(error, Is.Not.Null);
-        Assert.That(error.Message, Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
+        Assert.That(error.Message, Does.Contain("is blocked by blocklist/allowlist rules"));
     }
 
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block window.location.href navigation to URLs not in the allowlist")]
@@ -381,5 +390,34 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         }
 
         Assert.That(error, Is.Not.Null);
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block frame.goto when the destination is in the blocklist")]
+    public async Task ShouldBlockFrameGotoWhenDestinationIsInBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        var frame = Array.Find(page.Frames, f => f != page.MainFrame);
+        Assert.That(frame, Is.Not.Null);
+
+        var blockedUrl = TestConstants.ServerUrl + "/empty.html";
+        Exception error = null;
+        await frame.GoToAsync(blockedUrl).ContinueWith(t =>
+        {
+            if (t.IsFaulted)
+            {
+                error = t.Exception?.InnerException ?? t.Exception;
+            }
+
+            return t;
+        });
+
+        Assert.That(error, Is.Not.Null);
+        Assert.That(error.Message, Does.Contain("is blocked by blocklist/allowlist rules"));
     }
 }

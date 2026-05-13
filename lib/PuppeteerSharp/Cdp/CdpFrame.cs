@@ -88,6 +88,13 @@ public class CdpFrame : Frame
             throw new ArgumentNullException(nameof(options));
         }
 
+        if (CdpPage != null && !CdpPage.IsUrlAllowed(url))
+        {
+            throw new NavigationException(
+                $"Navigation to {url} is blocked by blocklist/allowlist rules",
+                url);
+        }
+
         var referrer = string.IsNullOrEmpty(options.Referer)
             ? FrameManager.NetworkManager.ExtraHTTPHeaders?.GetValue(RefererHeaderName)
             : options.Referer;

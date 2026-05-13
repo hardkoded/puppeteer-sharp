@@ -62,6 +62,8 @@ namespace PuppeteerSharp.Cdp
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => [];
 
+        public bool IsUrlAllowed(string url) => true;
+
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
