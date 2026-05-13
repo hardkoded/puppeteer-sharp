@@ -15,6 +15,7 @@ using PuppeteerSharp.Bidi;
 using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 #if !CDP_ONLY
 using WebDriverBiDi;
@@ -62,11 +63,6 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.BlockList != null && options.Allowlist != null)
-            {
-                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
-            }
-
             EnsureSingleLaunchOrConnect();
             _browser = options.Browser;
 
@@ -79,6 +75,8 @@ namespace PuppeteerSharp
 
                 options.Protocol = ProtocolType.WebdriverBiDi;
             }
+
+            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(options.Protocol, options.BlockList, options.Allowlist);
 
             var executable = options.ExecutablePath;
             if (executable == null)
@@ -277,6 +275,8 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("Exactly one of browserWSEndpoint or browserURL must be passed to puppeteer.connect");
             }
 
+            UrlRestrictionsValidator.AssertSupportedUrlRestrictions(options.Protocol, options.BlockList, options.Allowlist);
+
             var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                 ? options.BrowserWSEndpoint
                 : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
@@ -423,11 +423,6 @@ namespace PuppeteerSharp
 
         private async Task<IBrowser> ConnectCdpAsync(string browserWSEndpoint, ConnectOptions options)
         {
-            if (options.BlockList != null && options.Allowlist != null)
-            {
-                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
-            }
-
             CdpConnection connection = null;
             try
             {
