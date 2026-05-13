@@ -909,6 +909,9 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
+        /// <inheritdoc />
+        public abstract Task TriggerExtensionActionAsync(Extension extension);
+
         /// <summary>
         /// Retrieves the list of extension realms inside the main frame of this page.
         /// Shortcut for <c>MainFrame.ExtensionRealms()</c>.

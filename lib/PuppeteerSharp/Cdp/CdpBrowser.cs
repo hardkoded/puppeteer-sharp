@@ -125,7 +125,9 @@ public class CdpBrowser : Browser
 
     /// <inheritdoc/>
     public override ITarget[] Targets()
-        => TargetManager.GetAvailableTargets().Values.ToArray();
+        => TargetManager.GetAvailableTargets().Values
+            .Where(IsTargetExposed)
+            .ToArray();
 
     /// <inheritdoc/>
     public override async Task<string> GetVersionAsync()
@@ -228,7 +230,7 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override async Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
+    public override async Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
     {
         var response = await Connection.SendAsync<ExtensionsGetExtensionsResponse>("Extensions.getExtensions")
             .ConfigureAwait(false);
@@ -409,6 +411,9 @@ public class CdpBrowser : Browser
         _contexts.TryRemove(contextId, out var _);
     }
 
+    private static bool IsTargetExposed(CdpTarget target)
+        => target.Type != TargetType.Tab && string.IsNullOrEmpty(target.TargetInfo.Subtype);
+
     private static bool IsDevToolsPageTarget(string url)
     {
         return url?.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase) == true;
@@ -544,9 +549,15 @@ public class CdpBrowser : Browser
 
     private void OnTargetChanged(object sender, TargetChangedArgs e)
     {
+        var target = (CdpTarget)e.Target;
+        if (!IsTargetExposed(target))
+        {
+            return;
+        }
+
         var args = new TargetChangedArgs(e.Target);
         OnTargetChanged(args);
-        ((CdpTarget)e.Target).BrowserContext.OnTargetChanged(args);
+        target.BrowserContext.OnTargetChanged(args);
     }
 
     private async void OnDetachedFromTargetAsync(object sender, TargetChangedArgs e)
@@ -556,6 +567,11 @@ public class CdpBrowser : Browser
             var target = (CdpTarget)e.Target;
             target.InitializedTaskWrapper.TrySetResult(InitializationStatus.Aborted);
             target.CloseTaskWrapper.TrySetResult(true);
+
+            if (!IsTargetExposed(target))
+            {
+                return;
+            }
 
             if ((await target.InitializedTask.ConfigureAwait(false)) == InitializationStatus.Success)
             {
@@ -577,6 +593,11 @@ public class CdpBrowser : Browser
         try
         {
             var target = (CdpTarget)e.Target;
+            if (!IsTargetExposed(target))
+            {
+                return;
+            }
+
             if (await target.InitializedTask.ConfigureAwait(false) == InitializationStatus.Success)
             {
                 var args = new TargetChangedArgs(e.Target);

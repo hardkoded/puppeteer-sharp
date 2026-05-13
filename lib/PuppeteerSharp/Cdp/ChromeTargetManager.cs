@@ -85,6 +85,11 @@ namespace PuppeteerSharp.Cdp
                 ],
             }).ConfigureAwait(false);
 
+            // Exclude page targets from connection-level auto-attach so we attach to the
+            // owning tab first. The tab session then auto-attaches to its page child via
+            // the session-level setAutoAttach below, establishing the browser -> tab ->
+            // page session hierarchy. Page._tabId depends on this hierarchy (and Chrome's
+            // Extensions.triggerAction rejects targetIds that are not tab targets).
             await _connection.SendAsync(
                 "Target.setAutoAttach",
                 new TargetSetAutoAttachRequest()
@@ -92,6 +97,11 @@ namespace PuppeteerSharp.Cdp
                     WaitForDebuggerOnStart = true,
                     Flatten = true,
                     AutoAttach = true,
+                    Filter = new[]
+                    {
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter() { Type = "page", Exclude = true, },
+                        new TargetSetDiscoverTargetsRequest.DiscoverFilter(),
+                    },
                 }).ConfigureAwait(false);
 
             _initialAttachDone = true;

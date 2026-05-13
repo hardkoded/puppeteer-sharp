@@ -20,8 +20,5 @@ namespace PuppeteerSharp.Cdp
             : base(targetInfo, session, context, targetManager, sessionFactory, defaultViewport, screenshotTaskQueue)
         {
         }
-
-        /// <inheritdoc/>
-        public override TargetType Type => TargetType.Other;
     }
 }

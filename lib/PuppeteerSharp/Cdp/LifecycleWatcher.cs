@@ -120,6 +120,12 @@ namespace PuppeteerSharp.Cdp
         private void FrameSwapped(object sender, EventArgs e)
         {
             _swapped = true;
+
+            // A swap (e.g. prerender activation) replays a navigation request on the
+            // new session but no real HTTP transaction takes place, so the response
+            // deferred would never resolve. Treat the swap as the navigation completing.
+            _navigationResponseReceived?.TrySetResult(true);
+
             CheckLifecycleComplete();
         }
 

@@ -205,8 +205,8 @@ public class BidiBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override Task<IReadOnlyDictionary<string, Extension>> GetExtensionsAsync()
-        => throw new NotSupportedException("GetExtensions is not supported in WebDriver BiDi.");
+    public override Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
+        => throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
 
     /// <inheritdoc />
     public override ITarget[] Targets()
