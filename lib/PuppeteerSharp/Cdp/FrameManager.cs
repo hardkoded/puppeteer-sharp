@@ -576,9 +576,12 @@ namespace PuppeteerSharp.Cdp
                 RemoveFramesRecursively(frame.ChildFrames.First() as Frame);
             }
 
-            frame.Detach();
             FrameTree.RemoveFrame(frame);
             FrameDetached?.Invoke(this, new FrameEventArgs(frame));
+
+            // Needs to be last to ensure events are dispatched before
+            // any per-frame cleanup runs. Mirrors upstream PR #14430.
+            frame.Detach();
         }
 
         private void OnFrameAttached(CDPSession session, PageFrameAttachedResponse frameAttached)
