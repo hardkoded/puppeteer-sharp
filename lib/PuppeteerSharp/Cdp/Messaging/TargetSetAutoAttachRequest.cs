@@ -7,5 +7,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public bool WaitForDebuggerOnStart { get; set; }
 
         public bool Flatten { get; set; }
+
+        public TargetSetDiscoverTargetsRequest.DiscoverFilter[] Filter { get; set; }
     }
 }
