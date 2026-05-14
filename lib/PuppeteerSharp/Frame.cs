@@ -305,7 +305,14 @@ namespace PuppeteerSharp
                 options?.ReplaceLoneSurrogates ?? false);
 
         /// <inheritdoc/>
-        public abstract Task SetContentAsync(string html, NavigationOptions options = null);
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        public abstract Task SetContentAsync(string html, NavigationOptions options);
+
+        /// <inheritdoc/>
+        public Task SetContentAsync(string html, SetContentOptions options = null)
+#pragma warning disable CS0618 // Type or member is obsolete
+            => SetContentAsync(html, options?.ToNavigationOptions());
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public Task<string> GetTitleAsync() => IsolatedRealm.EvaluateExpressionAsync<string>("document.title");

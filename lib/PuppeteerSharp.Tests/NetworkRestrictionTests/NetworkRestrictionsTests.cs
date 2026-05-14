@@ -114,10 +114,11 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         await page.GoToAsync(TestConstants.EmptyPage);
 
+        var idleTask = page.WaitForNetworkIdleAsync();
         await page.SetContentAsync(
             $@"<img src=""{blockedUrl}"" />
-               <link rel=""stylesheet"" href=""{allowedUrl}"" />",
-            new NavigationOptions { WaitUntil = [WaitUntilNavigation.Networkidle0] });
+               <link rel=""stylesheet"" href=""{allowedUrl}"" />");
+        await idleTask;
 
         Assert.That(failedRequests.ContainsKey(blockedUrl), Is.True);
         Assert.That(failedRequests[blockedUrl], Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
@@ -289,10 +290,11 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         await page.GoToAsync(TestConstants.EmptyPage);
 
+        var idleTask = page.WaitForNetworkIdleAsync();
         await page.SetContentAsync(
             $@"<img src=""{blockedUrl}"" />
-               <link rel=""stylesheet"" href=""{allowedUrl}"" />",
-            new NavigationOptions { WaitUntil = [WaitUntilNavigation.Networkidle0] });
+               <link rel=""stylesheet"" href=""{allowedUrl}"" />");
+        await idleTask;
 
         Assert.That(failedRequests.ContainsKey(blockedUrl), Is.True);
         Assert.That(failedRequests[blockedUrl], Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
@@ -419,5 +421,52 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         Assert.That(error, Is.Not.Null);
         Assert.That(error.Message, Does.Contain("is blocked by blocklist/allowlist rules"));
+    }
+
+    [Test, PuppeteerTest("BrowserConnector.test", "BrowserConnector _connectToBrowser", "should reject blocklist for WebDriver BiDi connections")]
+    public void ShouldRejectBlocklistForWebDriverBiDiConnections()
+    {
+        var connectOptions = new ConnectOptions
+        {
+            BrowserWSEndpoint = "ws://localhost:1234",
+            Protocol = ProtocolType.WebdriverBiDi,
+            BlockList = ["https://example.com/*"],
+        };
+
+        var error = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await Puppeteer.ConnectAsync(connectOptions));
+
+        Assert.That(error.Message, Does.Contain("blocklist and allowlist are only supported with the CDP protocol"));
+    }
+
+    [Test, PuppeteerTest("BrowserConnector.test", "BrowserConnector _connectToBrowser", "should reject allowlist for WebDriver BiDi connections")]
+    public void ShouldRejectAllowlistForWebDriverBiDiConnections()
+    {
+        var connectOptions = new ConnectOptions
+        {
+            BrowserWSEndpoint = "ws://localhost:1234",
+            Protocol = ProtocolType.WebdriverBiDi,
+            Allowlist = ["https://example.com/*"],
+        };
+
+        var error = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await Puppeteer.ConnectAsync(connectOptions));
+
+        Assert.That(error.Message, Does.Contain("blocklist and allowlist are only supported with the CDP protocol"));
+    }
+
+    [Test, PuppeteerTest("FirefoxLauncher.test", "FirefoxLauncher launch", "should reject blocklist for the default Firefox WebDriver BiDi protocol")]
+    public void ShouldRejectBlocklistForDefaultFirefoxWebDriverBiDiProtocol()
+    {
+        var options = new LaunchOptions
+        {
+            Browser = SupportedBrowser.Firefox,
+            BlockList = ["https://example.com/*"],
+        };
+
+        var error = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await Puppeteer.LaunchAsync(options));
+
+        Assert.That(error.Message, Does.Contain("blocklist and allowlist are only supported with the CDP protocol"));
     }
 }

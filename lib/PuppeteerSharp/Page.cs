@@ -386,7 +386,14 @@ namespace PuppeteerSharp
         public Task<string> GetContentAsync(GetContentOptions options = null) => MainFrame.GetContentAsync(options);
 
         /// <inheritdoc/>
-        public Task SetContentAsync(string html, NavigationOptions options = null)
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        public Task SetContentAsync(string html, NavigationOptions options)
+#pragma warning disable CS0618 // Type or member is obsolete
+            => MainFrame.SetContentAsync(html, options);
+#pragma warning restore CS0618
+
+        /// <inheritdoc/>
+        public Task SetContentAsync(string html, SetContentOptions options = null)
             => MainFrame.SetContentAsync(html, options);
 
         /// <inheritdoc/>
