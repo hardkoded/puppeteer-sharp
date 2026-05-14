@@ -114,10 +114,11 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         await page.GoToAsync(TestConstants.EmptyPage);
 
+        var idleTask = page.WaitForNetworkIdleAsync();
         await page.SetContentAsync(
             $@"<img src=""{blockedUrl}"" />
-               <link rel=""stylesheet"" href=""{allowedUrl}"" />",
-            new NavigationOptions { WaitUntil = [WaitUntilNavigation.Networkidle0] });
+               <link rel=""stylesheet"" href=""{allowedUrl}"" />");
+        await idleTask;
 
         Assert.That(failedRequests.ContainsKey(blockedUrl), Is.True);
         Assert.That(failedRequests[blockedUrl], Does.Contain("net::ERR_INTERNET_DISCONNECTED"));
@@ -280,10 +281,11 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         await page.GoToAsync(TestConstants.EmptyPage);
 
+        var idleTask = page.WaitForNetworkIdleAsync();
         await page.SetContentAsync(
             $@"<img src=""{blockedUrl}"" />
-               <link rel=""stylesheet"" href=""{allowedUrl}"" />",
-            new NavigationOptions { WaitUntil = [WaitUntilNavigation.Networkidle0] });
+               <link rel=""stylesheet"" href=""{allowedUrl}"" />");
+        await idleTask;
 
         Assert.That(failedRequests.ContainsKey(blockedUrl), Is.True);
         Assert.That(failedRequests[blockedUrl], Does.Contain("net::ERR_INTERNET_DISCONNECTED"));

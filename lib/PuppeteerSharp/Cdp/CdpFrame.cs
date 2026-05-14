@@ -170,7 +170,8 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc/>
-    public override async Task SetContentAsync(string html, NavigationOptions options = null)
+    [Obsolete]
+    public override async Task SetContentAsync(string html, NavigationOptions options)
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
