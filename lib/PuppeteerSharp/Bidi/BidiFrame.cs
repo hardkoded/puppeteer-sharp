@@ -173,7 +173,8 @@ public class BidiFrame : Frame
     }
 
     /// <inheritdoc />
-    public override async Task SetContentAsync(string html, NavigationOptions options = null)
+    [Obsolete]
+    public override async Task SetContentAsync(string html, NavigationOptions options)
     {
         var timeout = options?.Timeout ?? TimeoutSettings.NavigationTimeout;
 

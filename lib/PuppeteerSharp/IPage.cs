@@ -1120,7 +1120,18 @@ namespace PuppeteerSharp
         /// <param name="options">The navigations options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IFrame.SetContentAsync(string, NavigationOptions)"/>
-        Task SetContentAsync(string html, NavigationOptions options = null);
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        Task SetContentAsync(string html, NavigationOptions options);
+
+        /// <summary>
+        /// Sets the HTML markup to the page.
+        /// </summary>
+        /// <param name="html">HTML markup to assign to the page.</param>
+        /// <param name="options">The options. The <see cref="WaitUntilNavigation.Networkidle0"/> and
+        /// <see cref="WaitUntilNavigation.Networkidle2"/> wait conditions are not supported for SetContent.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="IFrame.SetContentAsync(string, SetContentOptions)"/>
+        Task SetContentAsync(string html, SetContentOptions options = null);
 
         /// <summary>
         /// Clears all of the current cookies and then sets the cookies for the page.
