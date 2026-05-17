@@ -901,6 +901,8 @@ public class CdpPage : Page
         return pixels / 96;
     }
 
+    internal bool IsUrlAllowed(string url) => _targetManager.IsUrlAllowed(url);
+
     /// <inheritdoc />
     protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
     {

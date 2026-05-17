@@ -49,5 +49,12 @@ namespace PuppeteerSharp
         /// <param name="target">Target to evaluate.</param>
         /// <returns>A list of targets.</returns>
         IEnumerable<ITarget> GetChildTargets(ITarget target);
+
+        /// <summary>
+        /// Validates a URL against the configured blocklist/allowlist patterns.
+        /// </summary>
+        /// <param name="url">URL to validate.</param>
+        /// <returns><c>true</c> if the URL is allowed, otherwise <c>false</c>.</returns>
+        bool IsUrlAllowed(string url);
     }
 }
