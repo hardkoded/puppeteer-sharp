@@ -231,17 +231,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
 
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Headers["foo"], Is.EqualTo("bar"));
-
-            // The separator used to handle headers with multiple values is browser
-            // specific. Chrome uses newline, Firefox uses comma-separated values.
-            if (!TestConstants.IsChrome)
-            {
-                Assert.That(response.Headers["arr"], Is.EqualTo("1, 2"));
-            }
-            else
-            {
-                Assert.That(response.Headers["arr"], Is.EqualTo("1\n2"));
-            }
+            Assert.That(response.Headers["arr"], Is.EqualTo("1, 2"));
 
             Assert.That(firstCookie?.Value, Is.EqualTo("1"));
             Assert.That(secondCookie?.Value, Is.EqualTo("2"));
