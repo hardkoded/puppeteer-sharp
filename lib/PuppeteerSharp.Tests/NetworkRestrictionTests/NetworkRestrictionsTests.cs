@@ -469,4 +469,39 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         Assert.That(error.Message, Does.Contain("blocklist and allowlist are only supported with the CDP protocol"));
     }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block standard emulation reset when blocklist/allowlist is active")]
+    public async Task ShouldBlockStandardEmulationResetWhenBlocklistAllowlistIsActive()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var session = await page.CreateCDPSessionAsync();
+
+        var sessionError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await session.SendAsync(
+                "Network.emulateNetworkConditions",
+                new
+                {
+                    offline = false,
+                    latency = 0,
+                    downloadThroughput = 0,
+                    uploadThroughput = 0,
+                }));
+
+        Assert.That(sessionError.Message, Does.Contain("Cannot reset network conditions: rule-based emulation is enabled."));
+
+        var pageError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await page.EmulateNetworkConditionsAsync(new NetworkConditions
+            {
+                Latency = 0,
+                Download = 0,
+                Upload = 0,
+            }));
+
+        Assert.That(pageError.Message, Does.Contain("Cannot reset network conditions: rule-based emulation is enabled."));
+    }
 }

@@ -86,6 +86,11 @@ public class CdpCDPSession : CDPSession
                 CloseReason);
         }
 
+        if (method == "Network.emulateNetworkConditions" && Connection.RejectEmulateNetworkConditionsCalls)
+        {
+            throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
+        }
+
         var id = GetMessageId();
         var message = Connection.GetMessage(id, method, args, Id);
 

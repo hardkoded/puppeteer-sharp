@@ -99,6 +99,8 @@ namespace PuppeteerSharp.Cdp
 
         internal int ProtocolTimeout { get; }
 
+        internal bool RejectEmulateNetworkConditionsCalls { get; set; }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -112,6 +114,11 @@ namespace PuppeteerSharp.Cdp
             if (IsClosed)
             {
                 throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+            }
+
+            if (method == "Network.emulateNetworkConditions" && RejectEmulateNetworkConditionsCalls)
+            {
+                throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
             }
 
             var id = GetMessageId();
