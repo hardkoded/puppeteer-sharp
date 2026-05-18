@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -34,7 +35,7 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
         {
             foreach (var keyValue in headers)
             {
-                Headers[keyValue.Key] = keyValue.Value;
+                Headers[keyValue.Key] = HttpUtils.NormalizeHeaderValue(keyValue.Value);
             }
         }
 

@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Bidi;
 
@@ -77,7 +78,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)
         {
-            Headers[header.Name] = header.Value.Value;
+            Headers[header.Name] = HttpUtils.NormalizeHeaderValue(header.Value.Value);
         }
     }
 
@@ -106,7 +107,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)
         {
-            Headers[header.Name] = header.Value.Value;
+            Headers[header.Name] = HttpUtils.NormalizeHeaderValue(header.Value.Value);
         }
     }
 
