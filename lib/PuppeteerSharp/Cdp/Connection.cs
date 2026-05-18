@@ -368,6 +368,20 @@ namespace PuppeteerSharp.Cdp
                 {
                     MessageQueue.Enqueue(callback, obj);
                 }
+                else
+                {
+                    // Chrome can occasionally omit the sessionId on responses. Fall back
+                    // to a per-session callback lookup so the response is routed to the
+                    // session that originally issued the command (upstream #14975).
+                    foreach (var session in _sessions.Values)
+                    {
+                        if (session.HasCallback(obj.Id.Value))
+                        {
+                            session.OnMessage(obj);
+                            break;
+                        }
+                    }
+                }
             }
             else
             {
