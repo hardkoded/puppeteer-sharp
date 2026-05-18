@@ -76,6 +76,8 @@ public class CdpBrowser : Browser
             contextIds.Select(contextId =>
                 new KeyValuePair<string, CdpBrowserContext>(contextId, new(Connection, this, contextId))));
 
+        Connection.RejectEmulateNetworkConditionsCalls = (blockList != null && blockList.Length > 0) || (allowList != null && allowList.Length > 0);
+
         if (browser == SupportedBrowser.Firefox)
         {
             TargetManager = new FirefoxTargetManager(
