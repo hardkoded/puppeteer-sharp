@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Serialization;
 using PuppeteerSharp.Helpers.Json;
 
@@ -81,12 +80,6 @@ namespace PuppeteerSharp
         /// Cookie Priority. Supported only in Chrome.
         /// </summary>
         public CookiePriority? Priority { get; set; }
-
-        /// <summary>
-        /// Always set to false. Supported only in Chrome.
-        /// </summary>
-        [Obsolete("SameParty is deprecated and always ignored.")]
-        public bool? SameParty { get; set; }
 
         /// <summary>
         /// Cookie source scheme type. Supported only in Chrome.
