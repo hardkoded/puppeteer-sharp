@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.CDPSessionTests
@@ -182,6 +185,24 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(client.Detached, Is.False);
             await client.DetachAsync();
             Assert.That(client.Detached, Is.True);
+        }
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should handle session callbacks when Chrome sends error without sessionId")]
+        public async Task ShouldHandleSessionCallbacksWhenChromeSendsErrorWithoutSessionId()
+        {
+            var client = (CDPSession)await Page.CreateCDPSessionAsync();
+            var connection = client.Connection;
+
+            var fakeSession = new CdpCDPSession(connection, TargetType.Other, "fake-session-id", null);
+
+            var sessionsField = typeof(Connection).GetField("_sessions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var sessions = (AsyncDictionaryHelper<string, CdpCDPSession>)sessionsField!.GetValue(connection);
+            sessions!.AddItem("fake-session-id", fakeSession);
+
+            var exception = Assert.ThrowsAsync<MessageException>(() => fakeSession.SendAsync(
+                "Runtime.evaluate",
+                new RuntimeEvaluateRequest { Expression = "1 + 1" }));
+            Assert.That(exception!.Message, Does.Contain("Session with given id not found"));
         }
     }
 }
