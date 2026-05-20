@@ -49,8 +49,24 @@ namespace PuppeteerSharp
 
         internal static string[] GetDefaultArgs(LaunchOptions options)
         {
-            var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
             var args = options.Args ?? [];
+
+            var userEnabledFeatures = GetFeatures("--enable-features", options.Args);
+            if (args != null && userEnabledFeatures.Length > 0)
+            {
+                args = RemoveMatchingFlags(options.Args, "--enable-features");
+            }
+
+            // Merge default enabled features with user-provided ones, if any.
+            var enabledFeatures = new List<string>
+            {
+                "PdfOopif",
+            };
+
+            enabledFeatures.AddRange(userEnabledFeatures);
+            enabledFeatures = enabledFeatures.Where(feature => !string.IsNullOrEmpty(feature)).ToList();
+
+            var userDisabledFeatures = GetFeatures("--disable-features", options.Args);
             if (args is not null && userDisabledFeatures.Length > 0)
             {
                 args = RemoveMatchingFlags(options.Args, "--disable-features");
@@ -71,20 +87,10 @@ namespace PuppeteerSharp
             };
 
             disabledFeatures.AddRange(userDisabledFeatures);
-
-            var userEnabledFeatures = GetFeatures("--enable-features", options.Args);
-            if (args != null && userEnabledFeatures.Length > 0)
-            {
-                args = RemoveMatchingFlags(options.Args, "--enable-features");
-            }
-
-            // Merge default enabled features with user-provided ones, if any.
-            var enabledFeatures = new List<string>
-            {
-                "PdfOopif",
-            };
-
-            enabledFeatures.AddRange(userEnabledFeatures);
+            disabledFeatures = disabledFeatures
+                .Where(feature => !string.IsNullOrEmpty(feature))
+                .Where(disabledFeature => !enabledFeatures.Contains(disabledFeature))
+                .ToList();
 
             var chromiumArguments = new List<string>(
             [
@@ -165,13 +171,24 @@ namespace PuppeteerSharp
         }
 
         internal static string[] GetFeatures(string flag, string[] options)
-            => options
-                .Where(s => s.StartsWith($"{flag}=", StringComparison.InvariantCultureIgnoreCase))
-                .Select(s => s.Substring(flag.Length + 1))
-                .Where(s => !string.IsNullOrEmpty(s)).ToArray();
+        {
+            var prefix = flag.EndsWith("=", StringComparison.Ordinal) ? flag : $"{flag}=";
+            return (options ?? [])
+                .Where(s => s.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+                .SelectMany(s => s
+                    .Substring(s.IndexOf('=') + 1)
+                    .Trim()
+                    .Split(',')
+                    .Select(feature => feature.Trim()))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+        }
 
         internal static string[] RemoveMatchingFlags(string[] array, string flag)
-            => array.Where(arg => !arg.StartsWith(flag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        {
+            var prefix = flag.EndsWith("=", StringComparison.Ordinal) ? flag : $"{flag}=";
+            return array.Where(arg => !arg.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+        }
 
         /// <summary>
         /// Creates the pipe transport after the process has started.
