@@ -149,6 +149,8 @@ public class CdpCDPSession : CDPSession
 
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+    internal bool HasCallback(int id) => _callbacks.ContainsKey(id);
+
     internal List<string> GetPendingProtocolErrors()
     {
         var result = new List<string>();
