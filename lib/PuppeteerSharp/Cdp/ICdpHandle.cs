@@ -27,7 +27,7 @@ namespace PuppeteerSharp.Cdp;
 /// <summary>
 /// CDP Specific handle info.
 /// </summary>
-internal interface ICdpHandle : IJSHandle
+public interface ICdpHandle : IJSHandle
 {
     /// <summary>
     /// CDP remote object.
