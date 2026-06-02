@@ -32,21 +32,6 @@
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
     "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "Not supported by Firefox"
-  },
-  {
-    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
-    "platforms": [
       "win32"
     ],
     "parameters": [
@@ -1566,21 +1551,6 @@
       "FAIL"
     ],
     "comment": "In headless shell all pages are in foreground"
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "Not supported by WebDriver BiDi"
   },
   {
     "testIdPattern": "[page.spec] Page Page.newPage should open pages in a new window at the specified position",
@@ -4058,6 +4028,21 @@
     "expectations": [
       "PASS"
     ]
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
+    "platforms": [
+      "darwin"
+    ],
+    "parameters": [
+      "firefox",
+      "headful",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Different dimensions on Mac for headful"
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",

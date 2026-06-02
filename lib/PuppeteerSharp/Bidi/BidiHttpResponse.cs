@@ -160,10 +160,12 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         {
             _request.FromMemoryCache = true;
 
-            // Only fire RequestServedFromCache if this URL hasn't already been reported.
-            // Firefox BiDi can send duplicate BeforeRequestSent events with different request IDs,
-            // each getting its own BidiHttpRequest, but we should only report the cache event once per URL.
-            if (_request.BidiPage.TryMarkCacheEventFired(_request.Url))
+            // Only fire RequestServedFromCache for the canonical request that actually emitted the
+            // Request event. Firefox BiDi sends duplicate BeforeRequestSent events with different
+            // request IDs for the same URL during navigation; on a cold load the phantom duplicate
+            // can report fromCache=true even though the real request was served from the network.
+            // Reporting that phantom would wrongly mark the resource as served from cache.
+            if (_request.RequestEventEmitted && _request.BidiPage.TryMarkCacheEventFired(_request.Url))
             {
                 ((Page)_request.Frame.Page).OnRequestServedFromCache(new RequestEventArgs(_request));
             }

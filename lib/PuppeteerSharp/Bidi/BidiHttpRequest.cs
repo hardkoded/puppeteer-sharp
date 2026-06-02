@@ -109,6 +109,11 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
 
     internal BidiPage BidiPage => (BidiPage)Frame.Page;
 
+    // True only for the canonical request that actually emitted the Request event.
+    // Firefox sends duplicate (phantom) BeforeRequestSent events for the same URL during navigation;
+    // those phantoms are deduplicated and must not drive page-level events like RequestServedFromCache.
+    internal bool RequestEventEmitted { get; private set; }
+
     internal WebDriverBiDi.Network.FetchTimingInfo Timings => _request.Timings;
 
     internal ConcurrentDictionary<string, string> ExtraHttpHeaders => BidiPage.ExtraHttpHeaders;
@@ -613,6 +618,7 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         // (in GoToAsync) so that subsequent fetch/XHR calls to the same URLs work correctly.
         if (BidiPage.TryMarkRequestEventFired(Url))
         {
+            RequestEventEmitted = true;
             BidiPage.OnRequest(this);
         }
 
