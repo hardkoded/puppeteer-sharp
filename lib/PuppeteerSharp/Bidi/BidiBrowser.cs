@@ -450,9 +450,9 @@ public class BidiBrowser : Browser
 
         foreach (var context in _browserContexts.Values)
         {
-            context.TargetCreated -= (sender, args) => OnTargetCreated(args);
-            context.TargetChanged -= (sender, args) => OnTargetChanged(args);
-            context.TargetDestroyed -= (sender, args) => OnTargetDestroyed(args);
+            context.TargetCreated -= OnTargetCreated;
+            context.TargetChanged -= OnTargetChanged;
+            context.TargetDestroyed -= OnTargetDestroyed;
         }
     }
 
@@ -465,12 +465,18 @@ public class BidiBrowser : Browser
 
         _browserContexts.TryAdd(userContext, browserContext);
 
-        browserContext.TargetCreated += (sender, args) => OnTargetCreated(args);
-        browserContext.TargetChanged += (sender, args) => OnTargetChanged(args);
-        browserContext.TargetDestroyed += (sender, args) => OnTargetDestroyed(args);
+        browserContext.TargetCreated += OnTargetCreated;
+        browserContext.TargetChanged += OnTargetChanged;
+        browserContext.TargetDestroyed += OnTargetDestroyed;
 
         return browserContext;
     }
+
+    private void OnTargetCreated(object sender, TargetChangedArgs args) => OnTargetCreated(args);
+
+    private void OnTargetChanged(object sender, TargetChangedArgs args) => OnTargetChanged(args);
+
+    private void OnTargetDestroyed(object sender, TargetChangedArgs args) => OnTargetDestroyed(args);
 }
 
 #endif
