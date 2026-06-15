@@ -46,11 +46,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
-    <PackageReference Include="WebDriverBiDi" Version="0.0.49" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
+    <PackageReference Include="WebDriverBiDi" Version="0.0.54" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.3" />
-    <PackageReference Include="System.Text.Json" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.7" />
+    <PackageReference Include="System.Text.Json" Version="10.0.7" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
