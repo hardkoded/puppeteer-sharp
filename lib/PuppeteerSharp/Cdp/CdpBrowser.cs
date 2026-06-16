@@ -341,7 +341,9 @@ public class CdpBrowser : Browser
             WindowState = windowBounds?.WindowState,
 
             // Works around crbug.com/454825274.
-            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
+            // When no targets exist (e.g. all pages were closed in headful mode), Chrome has no
+            // browser window. We must request a new window so Chrome can create the page.
+            NewWindow = (!hasTargets || options?.Type == CreatePageType.Window) ? true : null,
             Background = options?.Background,
         };
 
