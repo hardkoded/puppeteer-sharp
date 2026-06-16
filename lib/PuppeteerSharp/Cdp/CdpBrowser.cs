@@ -341,9 +341,7 @@ public class CdpBrowser : Browser
             WindowState = windowBounds?.WindowState,
 
             // Works around crbug.com/454825274.
-            // When no targets exist (e.g. all pages were closed in headful mode), Chrome has no
-            // browser window. We must request a new window so Chrome can create the page.
-            NewWindow = (!hasTargets || options?.Type == CreatePageType.Window) ? true : null,
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
             Background = options?.Background,
         };
 
@@ -357,8 +355,21 @@ public class CdpBrowser : Browser
                 : contextId;
         }
 
-        var targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
-            .ConfigureAwait(false)).TargetId;
+        string targetId;
+        try
+        {
+            targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)).TargetId;
+        }
+        catch (MessageException ex) when (ex.Message.Contains("Failed to open a new tab"))
+        {
+            // Chrome in headful mode has no browser window (all pages were closed).
+            // Retry with newWindow=true to create a new browser window.
+            createTargetRequest.NewWindow = true;
+            targetId = (await Connection.SendAsync<TargetCreateTargetResponse>("Target.createTarget", createTargetRequest)
+                .ConfigureAwait(false)).TargetId;
+        }
+
         var target = await WaitForTargetAsync(t => ((CdpTarget)t).TargetId == targetId).ConfigureAwait(false) as CdpTarget;
         await target!.InitializedTask.ConfigureAwait(false);
         return await target.PageAsync().ConfigureAwait(false);
