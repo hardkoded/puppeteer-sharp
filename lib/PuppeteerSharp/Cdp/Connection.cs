@@ -136,7 +136,18 @@ namespace PuppeteerSharp.Cdp
                 _callbacks[id] = callback;
             }
 
-            await RawSendAsync(message, options).ConfigureAwait(false);
+            try
+            {
+                await RawSendAsync(message, options).ConfigureAwait(false);
+            }
+            catch (System.Net.WebSockets.WebSocketException)
+            {
+                // The WebSocket was aborted (e.g. Chrome exited) between the IsClosed check and the send.
+                // Treat this as a closed connection so callers get TargetClosedException instead.
+                Close("WebSocket error");
+                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+            }
+
             return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(ProtocolTimeout).ConfigureAwait(false) : null;
         }
 
