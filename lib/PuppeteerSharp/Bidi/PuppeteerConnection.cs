@@ -108,7 +108,7 @@ internal class PuppeteerConnection : BidiConnection
     {
         try
         {
-            await OnDataReceived.NotifyObserversAsync(new ConnectionDataReceivedEventArgs(e.Message)).ConfigureAwait(false);
+            await InvocableConnectionDataReceivedObservableEvent.InvokeNotifyObserversAsync(new ConnectionDataReceivedEventArgs(e.Message)).ConfigureAwait(false);
         }
         catch
         {
