@@ -156,10 +156,10 @@ namespace PuppeteerSharp
                 });
             }
 
-            chromiumArguments.Add(
-                options.EnableExtensions is { Enabled: true }
-                    ? "--enable-unsafe-extension-debugging"
-                    : "--disable-extensions");
+            if (options.EnableExtensions is not { Enabled: true })
+            {
+                chromiumArguments.Add("--disable-extensions");
+            }
 
             if (args.All(arg => arg.StartsWith("-", StringComparison.Ordinal)))
             {

@@ -15,7 +15,6 @@ namespace PuppeteerSharp.Tests.RealmsTests
         {
             Headless = false,
             EnableExtensions = true,
-            Pipe = true,
         };
 
         [Test, PuppeteerTest("realms.spec", "extension realms", "should include content script realms")]

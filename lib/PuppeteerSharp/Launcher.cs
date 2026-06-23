@@ -199,13 +199,6 @@ namespace PuppeteerSharp
 
                     if (options.EnableExtensions is { Paths: { } extensionPaths })
                     {
-                        if (options.Browser != SupportedBrowser.Firefox)
-                        {
-                            throw new PuppeteerException(
-                                "Installing extensions via EnableExtensions paths is only supported with Firefox. " +
-                                "For Chrome, use EnableExtensions = true and pass --load-extension as an argument.");
-                        }
-
                         await Task.WhenAll(
                             extensionPaths.Select(path => browser.InstallExtensionAsync(path))).ConfigureAwait(false);
                     }
