@@ -100,6 +100,33 @@ namespace PuppeteerSharp
             => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
         /// <summary>
+        /// Waits for the provided function, <paramref name="script"/>, to return a truthy value when
+        /// evaluated in the worker's context.
+        /// </summary>
+        /// <param name="script">Function to be evaluated in the worker context until it returns a truthy value.</param>
+        /// <param name="options">Options for configuring waiting behavior.</param>
+        /// <param name="args">Arguments to pass to <paramref name="script"/>.</param>
+        /// <returns>A <see cref="Task"/> that resolves to a <see cref="IJSHandle"/> of the truthy value returned by the function.</returns>
+        public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        {
+            var opts = options ?? new WaitForFunctionOptions();
+
+            // Default to interval polling (100ms) for workers, matching upstream behavior.
+            if (!opts.PollingInterval.HasValue && opts.Polling == WaitForFunctionPollingOption.Raf)
+            {
+                opts = new WaitForFunctionOptions
+                {
+                    PollingInterval = 100,
+                    Timeout = opts.Timeout,
+                    Root = opts.Root,
+                    CancellationToken = opts.CancellationToken,
+                };
+            }
+
+            return World.WaitForFunctionAsync(script, opts, args);
+        }
+
+        /// <summary>
         /// Closes the worker.
         /// </summary>
         /// <returns>A <see cref="Task"/> that completes when the worker is closed.</returns>
