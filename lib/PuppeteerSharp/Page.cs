@@ -871,6 +871,9 @@ namespace PuppeteerSharp
         public abstract Task EmulateTimezoneAsync(string timezoneId);
 
         /// <inheritdoc/>
+        public abstract Task EmulateLocaleAsync(string locale = null);
+
+        /// <inheritdoc/>
         public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <inheritdoc/>

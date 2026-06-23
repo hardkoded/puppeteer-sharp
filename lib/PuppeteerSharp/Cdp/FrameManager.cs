@@ -27,12 +27,12 @@ namespace PuppeteerSharp.Cdp
         private readonly HashSet<Binding> _bindings = new();
         private TaskCompletionSource<bool> _frameTreeHandled = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true, bool issuesEnabled = true)
+        internal FrameManager(CDPSession client, Page page, TimeoutSettings timeoutSettings, bool networkEnabled = true, bool issuesEnabled = true, string defaultUserAgent = null)
         {
             Client = client;
             Page = page;
             _logger = Client.Connection.LoggerFactory.CreateLogger<FrameManager>();
-            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled);
+            NetworkManager = new NetworkManager(this, client.Connection.LoggerFactory, networkEnabled, defaultUserAgent);
             TimeoutSettings = timeoutSettings;
             IssuesEnabled = issuesEnabled;
 
