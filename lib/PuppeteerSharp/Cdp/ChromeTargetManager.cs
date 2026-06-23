@@ -363,6 +363,22 @@ namespace PuppeteerSharp.Cdp
 
             if (targetInfo.Type == TargetType.ServiceWorker)
             {
+                if (!IsUrlAllowed(targetInfo.Url))
+                {
+                    try
+                    {
+                        await Task.WhenAll(
+                            MaybeSetupNetworkBlockListAsync(session),
+                            session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to configure network conditions for blocked service worker");
+                    }
+
+                    return;
+                }
+
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
                 if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {

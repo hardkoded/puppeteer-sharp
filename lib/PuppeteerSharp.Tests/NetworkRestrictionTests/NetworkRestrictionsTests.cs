@@ -88,6 +88,35 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         Assert.That(fetchError, Does.Contain("Failed to fetch"));
     }
 
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should fail service worker registration for blocklisted script URLs")]
+    public async Task ShouldFailServiceWorkerRegistrationForBlocklistedScriptUrls()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/empty.html", "*://*:*/pptr.png", "*://*:*/serviceworkers/empty/sw.js"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var allowedUrl = TestConstants.ServerUrl + "/title.html";
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/empty/sw.js";
+
+        await page.GoToAsync(allowedUrl);
+
+        var swError = await page.EvaluateFunctionAsync<string>(
+            @"async (url) => {
+                try {
+                    await navigator.serviceWorker.register(url);
+                    return null;
+                } catch (e) {
+                    return e.message;
+                }
+            }",
+            blockedUrl);
+
+        Assert.That(swError, Is.Not.Null.And.Not.Empty);
+        Assert.That(swError, Does.Contain("Failed to register a ServiceWorker"));
+    }
+
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should prevent loading of blocklisted subresources (e.g., images)")]
     public async Task ShouldPreventLoadingOfBlocklistedSubresources()
     {
@@ -262,6 +291,35 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
             blockedUrl);
 
         Assert.That(fetchError, Does.Contain("Failed to fetch"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should fail service worker registration for script URLs not in the allowlist")]
+    public async Task ShouldFailServiceWorkerRegistrationForScriptUrlsNotInAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist = ["*://*:*/empty.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var allowedUrl = TestConstants.ServerUrl + "/empty.html";
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/empty/sw.js";
+
+        await page.GoToAsync(allowedUrl);
+
+        var swError = await page.EvaluateFunctionAsync<string>(
+            @"async (url) => {
+                try {
+                    await navigator.serviceWorker.register(url);
+                    return null;
+                } catch (e) {
+                    return e.message;
+                }
+            }",
+            blockedUrl);
+
+        Assert.That(swError, Is.Not.Null.And.Not.Empty);
+        Assert.That(swError, Does.Contain("Failed to register a ServiceWorker"));
     }
 
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should prevent loading of subresources not in the allowlist (e.g., images)")]
