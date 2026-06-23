@@ -39,6 +39,7 @@ public class CdpWebWorker : WebWorker
     private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
     private readonly string _id;
     private readonly TargetType _targetType;
+    private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     internal CdpWebWorker(
         CDPSession client,
@@ -132,6 +133,34 @@ public class CdpWebWorker : WebWorker
         }
     }
 
+    /// <inheritdoc/>
+    public override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task EvaluateFunctionAsync(string script, params object[] args)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        await base.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<T> EvaluateExpressionAsync<T>(string script)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+    }
+
     private async void OnMessageReceived(object sender, MessageEventArgs e)
     {
         try
@@ -146,6 +175,9 @@ public class CdpWebWorker : WebWorker
                     break;
                 case "Runtime.exceptionThrown":
                     OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>());
+                    break;
+                case "Inspector.workerScriptLoaded":
+                    _workerScriptLoaded.TrySetResult(true);
                     break;
             }
         }
