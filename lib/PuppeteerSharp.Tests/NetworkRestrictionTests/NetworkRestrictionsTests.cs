@@ -509,6 +509,40 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         Assert.That(error.Message, Does.Contain("blocklist and allowlist are only supported with the CDP protocol"));
     }
 
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block iframe content from loading if the iframe URL is in the blocklist")]
+    public async Task ShouldBlockIframeContentFromLoadingIfTheIframeUrlIsInTheBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/frames/frame.html"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
+        var frame = Array.Find(page.Frames, f => f != page.MainFrame);
+        Assert.That(frame, Is.Not.Null);
+
+        var content = await frame.GetContentAsync();
+        Assert.That(content, Does.Not.Contain("Hi, I'm frame"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block out-of-process iframe (OOPIF) content from loading if the iframe URL is in the blocklist")]
+    public async Task ShouldBlockOopifContentFromLoadingIfTheIframeUrlIsInTheBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/frames/frame.html"];
+        options.Args = ["--site-per-process"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.EmptyPage);
+        var frame = await FrameUtils.AttachFrameAsync(page, "frame1", TestConstants.CrossProcessHttpPrefix + "/frames/frame.html");
+        var content = await frame.GetContentAsync();
+        Assert.That(content, Does.Not.Contain("Hi, I'm frame"));
+        Assert.That(content, Does.Contain("ERR_INTERNET_DISCONNECTED"));
+    }
+
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should block standard emulation reset when blocklist/allowlist is active")]
     public async Task ShouldBlockStandardEmulationResetWhenBlocklistAllowlistIsActive()
     {
