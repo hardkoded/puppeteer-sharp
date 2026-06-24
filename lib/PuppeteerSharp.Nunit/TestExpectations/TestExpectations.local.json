@@ -1,5 +1,19 @@
 [
   {
+    "comment": "Service worker network restriction is a Chrome >= 149 feature; older revisions used in CI do not enforce it yet",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail service worker registration for blocklisted script URLs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Service worker network restriction is a Chrome >= 149 feature; older revisions used in CI do not enforce it yet",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail service worker registration for script URLs not in the allowlist",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "chrome"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
