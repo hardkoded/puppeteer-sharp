@@ -1,5 +1,12 @@
 [
   {
+    "comment": "Consistently crashes the test host on headful Chrome on Linux due to CDP disconnect during window.location navigation race. Not an upstream expectation — local infra issue.",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["linux"],
+    "parameters": ["headful"],
+    "expectations": ["SKIP"]
+  },
+  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
