@@ -4255,10 +4255,8 @@
       "chrome-headless-shell"
     ],
     "expectations": [
-      "FAIL",
       "PASS"
-    ],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+    ]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch throws an error if executable path is not valid with pipe=true",
