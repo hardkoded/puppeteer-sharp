@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,22 +24,23 @@ internal class CdpExtension : Extension
     {
         var targets = _browser.Targets();
 
-        var workers = new List<WebWorker>();
-        foreach (var target in targets)
-        {
-            var targetUrl = target.Url;
-            if (target.Type == TargetType.ServiceWorker &&
-                targetUrl.StartsWith("chrome-extension://" + Id, System.StringComparison.Ordinal))
-            {
-                var worker = await target.WorkerAsync().ConfigureAwait(false);
-                if (worker != null)
-                {
-                    workers.Add(worker);
-                }
-            }
-        }
+        var extensionWorkers = targets.Where(target =>
+            target.Type == TargetType.ServiceWorker &&
+            target.Url.StartsWith("chrome-extension://" + Id, StringComparison.Ordinal));
 
-        return workers;
+        var workerResults = await Task.WhenAll(extensionWorkers.Select(async target =>
+        {
+            try
+            {
+                return await target.WorkerAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex) when (CanIgnoreError(ex))
+            {
+                return null;
+            }
+        })).ConfigureAwait(false);
+
+        return workerResults.Where(worker => worker != null).ToList();
     }
 
     /// <inheritdoc/>
@@ -51,7 +53,7 @@ internal class CdpExtension : Extension
         {
             var targetUrl = target.Url;
             if ((target.Type == TargetType.Page || target.Type == TargetType.BackgroundPage) &&
-                targetUrl.StartsWith("chrome-extension://" + Id, System.StringComparison.Ordinal))
+                targetUrl.StartsWith("chrome-extension://" + Id, StringComparison.Ordinal))
             {
                 try
                 {
@@ -81,4 +83,8 @@ internal class CdpExtension : Extension
             TargetId = cdpPage.TabId,
         }).ConfigureAwait(false);
     }
+
+    private static bool CanIgnoreError(Exception error)
+        => error is TargetClosedException ||
+           error.Message.Contains("No target with given id found", StringComparison.Ordinal);
 }
