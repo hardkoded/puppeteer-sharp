@@ -239,6 +239,18 @@ public class BidiPage : Page
         => Task.FromResult(BidiMainFrame.BrowsingContext.WindowId);
 
     /// <inheritdoc />
+    public override async Task EmulateLocaleAsync(string locale = null)
+    {
+        var commandParameters = new WebDriverBiDi.Emulation.SetLocaleOverrideCommandParameters()
+        {
+            Locale = locale,
+            Contexts = [BidiMainFrame.BrowsingContext.Id],
+        };
+
+        await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetLocaleOverrideAsync(commandParameters).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public override Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null)
         => _cdpEmulationManager.EmulateIdleStateAsync(idleOverrides);
 

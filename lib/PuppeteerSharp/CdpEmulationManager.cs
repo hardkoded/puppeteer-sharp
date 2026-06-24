@@ -108,6 +108,11 @@ namespace PuppeteerSharp
             return reloadNeeded;
         }
 
+        internal Task EmulateLocaleAsync(string locale)
+            => _client.SendAsync(
+                "Emulation.setLocaleOverride",
+                new EmulationSetLocaleOverrideRequest { Locale = locale });
+
         internal Task EmulateMediaTypeAsync(MediaType type)
             => _client.SendAsync(
                 "Emulation.setEmulatedMedia",

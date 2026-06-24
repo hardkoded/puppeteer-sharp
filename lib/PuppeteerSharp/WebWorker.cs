@@ -57,7 +57,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="ExecutionContext.EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<T> EvaluateExpressionAsync<T>(string script)
+        public virtual async Task<T> EvaluateExpressionAsync<T>(string script)
             => await World.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task EvaluateFunctionAsync(string script, params object[] args)
+        public virtual async Task EvaluateFunctionAsync(string script, params object[] args)
             => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        public virtual async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => await World.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -96,8 +96,35 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
-        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        public virtual async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+
+        /// <summary>
+        /// Waits for the provided function, <paramref name="script"/>, to return a truthy value when
+        /// evaluated in the worker's context.
+        /// </summary>
+        /// <param name="script">Function to be evaluated in the worker context until it returns a truthy value.</param>
+        /// <param name="options">Options for configuring waiting behavior.</param>
+        /// <param name="args">Arguments to pass to <paramref name="script"/>.</param>
+        /// <returns>A <see cref="Task"/> that resolves to a <see cref="IJSHandle"/> of the truthy value returned by the function.</returns>
+        public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        {
+            var opts = options ?? new WaitForFunctionOptions();
+
+            // Default to interval polling (100ms) for workers, matching upstream behavior.
+            if (!opts.PollingInterval.HasValue && opts.Polling == WaitForFunctionPollingOption.Raf)
+            {
+                opts = new WaitForFunctionOptions
+                {
+                    PollingInterval = 100,
+                    Timeout = opts.Timeout,
+                    Root = opts.Root,
+                    CancellationToken = opts.CancellationToken,
+                };
+            }
+
+            return World.WaitForFunctionAsync(script, opts, args);
+        }
 
         /// <summary>
         /// Closes the worker.
