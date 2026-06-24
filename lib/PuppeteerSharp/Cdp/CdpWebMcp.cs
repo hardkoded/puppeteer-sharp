@@ -47,7 +47,6 @@ public class CdpWebMcp
     {
         _client = client;
         _frameManager = frameManager;
-        _frameManager.FrameNavigated += OnFrameNavigated;
         BindListeners();
     }
 
@@ -142,7 +141,12 @@ public class CdpWebMcp
                 continue;
             }
 
+            var isNewFrame = !_tools.ContainsKey(tool.FrameId);
             var frameTools = _tools.GetOrAdd(tool.FrameId, _ => new ConcurrentDictionary<string, WebMcpTool>());
+            if (isNewFrame)
+            {
+                ListenToContextCleared(frame as CdpFrame);
+            }
 
             ConsoleMessageLocation location = null;
             if (tool.StackTrace?.CallFrames?.Length > 0)
@@ -238,9 +242,25 @@ public class CdpWebMcp
         ToolResponded?.Invoke(this, result);
     }
 
-    private void OnFrameNavigated(object sender, FrameNavigatedEventArgs e)
+    private void ListenToContextCleared(CdpFrame frame)
     {
-        var frameId = e.Frame?.Id;
+        var mainWorld = frame?.MainWorld;
+        if (mainWorld == null)
+        {
+            return;
+        }
+
+        EventHandler handler = null;
+        handler = (_, _) =>
+        {
+            mainWorld.ContextCleared -= handler;
+            OnContextCleared(frame.Id);
+        };
+        mainWorld.ContextCleared += handler;
+    }
+
+    private void OnContextCleared(string frameId)
+    {
         if (string.IsNullOrEmpty(frameId) || !_tools.TryGetValue(frameId, out var frameTools))
         {
             return;
