@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -117,10 +118,7 @@ namespace PuppeteerSharp.PageAccessibility
                 }
             }
 
-            foreach (var child in root.Children)
-            {
-                await PopulateIframesAsync(child, options).ConfigureAwait(false);
-            }
+            await Task.WhenAll(root.Children.Select(child => PopulateIframesAsync(child, options))).ConfigureAwait(false);
         }
 
         private void CollectInterestingNodes(List<AXNode> collection, AXNode node, bool insideControl)
