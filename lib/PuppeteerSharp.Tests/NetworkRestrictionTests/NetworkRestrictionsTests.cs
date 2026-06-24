@@ -88,6 +88,45 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
         Assert.That(fetchError, Does.Contain("Failed to fetch"));
     }
 
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions blocklist validation", "should fail fetch requests from within a service worker to URLs in the blocklist")]
+    public async Task ShouldFailFetchRequestsFromWithinServiceWorkerToUrlsInBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList =
+        [
+            "*://*:*/serviceworkers/fetch/style.css",
+        ];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var context = await browser.CreateBrowserContextAsync();
+        var page = await context.NewPageAsync();
+
+        var allowedUrl = TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html";
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/fetch/style.css";
+
+        await page.GoToAsync(allowedUrl);
+
+        var target = await context.WaitForTargetAsync(
+            t => t.Type == TargetType.ServiceWorker,
+            new WaitForOptions { Timeout = 3000 });
+
+        var worker = await target.WorkerAsync();
+
+        var fetchError = await worker.EvaluateFunctionAsync<string>(
+            @"async (url) => {
+                try {
+                    await fetch(url);
+                    return null;
+                } catch (e) {
+                    return e.message;
+                }
+            }",
+            blockedUrl);
+
+        Assert.That(fetchError, Is.Not.Null.And.Not.Empty);
+        Assert.That(fetchError, Does.Contain("Failed to fetch"));
+    }
+
     [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions", "should prevent loading of blocklisted subresources (e.g., images)")]
     public async Task ShouldPreventLoadingOfBlocklistedSubresources()
     {
