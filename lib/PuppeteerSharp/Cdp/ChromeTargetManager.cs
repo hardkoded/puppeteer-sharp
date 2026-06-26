@@ -366,12 +366,9 @@ namespace PuppeteerSharp.Cdp
             {
                 if (!IsUrlAllowed(targetInfo.Url))
                 {
-                    // The block must be fully in place before the worker is resumed, otherwise the
-                    // worker fetches its own (blocked) script before the rules apply and the
-                    // registration succeeds. Sequencing the two guarantees this across transports
-                    // (the parallel form let the resume win over pipe).
-                    await MaybeSetupNetworkBlockListAsync(session, targetInfo).ConfigureAwait(false);
-                    await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                    await Task.WhenAll(
+                        MaybeSetupNetworkBlockListAsync(session, targetInfo),
+                        session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
                     return;
                 }
 
@@ -572,26 +569,25 @@ namespace PuppeteerSharp.Cdp
                 || targetInfo.Type == TargetType.ServiceWorker
                 || targetInfo.Type == TargetType.SharedWorker;
 
+            var tasks = new List<Task>();
+            if (needsNetwork)
+            {
+                tasks.Add(session.SendAsync("Network.enable"));
+            }
+
+            tasks.Add(session.SendAsync(
+                "Network.emulateNetworkConditionsByRule",
+                new NetworkEmulateNetworkConditionsByRuleRequest
+                {
+                    // 'Offline' at the request level is for legacy blocklist compatibility (deprecated in Chrome 149).
+                    // Only set it when using a blocklist; allowlist mode uses per-rule offline flags instead.
+                    Offline = hasBlockList ? true : null,
+                    MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
+                }));
+
             try
             {
-                // Network.enable must complete before emulateNetworkConditionsByRule: if the rules
-                // are sent while the Network domain is not yet active they can be dropped and the
-                // block never applies. Awaiting in order (rather than Task.WhenAll) guarantees the
-                // block is in place regardless of transport timing.
-                if (needsNetwork)
-                {
-                    await session.SendAsync("Network.enable").ConfigureAwait(false);
-                }
-
-                await session.SendAsync(
-                    "Network.emulateNetworkConditionsByRule",
-                    new NetworkEmulateNetworkConditionsByRuleRequest
-                    {
-                        // 'Offline' at the request level is for legacy blocklist compatibility (deprecated in Chrome 149).
-                        // Only set it when using a blocklist; allowlist mode uses per-rule offline flags instead.
-                        Offline = hasBlockList ? true : null,
-                        MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
-                    }).ConfigureAwait(false);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

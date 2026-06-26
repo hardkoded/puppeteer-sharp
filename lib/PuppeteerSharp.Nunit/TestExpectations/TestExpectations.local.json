@@ -1,5 +1,19 @@
 [
   {
+    "comment": "Chrome does not reliably block the service worker's own script fetch over the --remote-debugging-pipe transport on Linux (the block lands too late or the offline fetch stalls); it works over websocket on all platforms and over pipe on Windows. Scoped to linux+cdp+pipe only. See PR #3490.",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail service worker registration for blocklisted script URLs",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome", "pipe"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "comment": "Chrome does not reliably block the service worker's own script fetch over the --remote-debugging-pipe transport on Linux (the block lands too late or the offline fetch stalls); it works over websocket on all platforms and over pipe on Windows. Scoped to linux+cdp+pipe only. See PR #3490.",
+    "testIdPattern": "[network_restrictions.spec] Network Restrictions should fail service worker registration for script URLs not in the allowlist",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "chrome", "pipe"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
