@@ -58,6 +58,9 @@ public class CdpCDPSession : CDPSession
 
     internal bool IsClosed { get; private set; }
 
+    private protected override bool BufferEarlyMessages
+        => _targetType is TargetType.ServiceWorker or TargetType.SharedWorker or TargetType.Worker;
+
     /// <inheritdoc />
     public override async Task DetachAsync()
     {
@@ -144,6 +147,7 @@ public class CdpCDPSession : CDPSession
         }
 
         _callbacks.Clear();
+        ClearBufferedMessages();
         OnDisconnected();
     }
 
