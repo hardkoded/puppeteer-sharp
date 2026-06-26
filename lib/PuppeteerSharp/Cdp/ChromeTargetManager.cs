@@ -366,9 +366,7 @@ namespace PuppeteerSharp.Cdp
             {
                 if (!IsUrlAllowed(targetInfo.Url))
                 {
-                    await Task.WhenAll(
-                        MaybeSetupNetworkBlockListAsync(session, targetInfo),
-                        session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
+                    await BlockServiceWorkerRegistrationAsync(session).ConfigureAwait(false);
                     return;
                 }
 
@@ -510,6 +508,58 @@ namespace PuppeteerSharp.Cdp
 
             _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+        }
+
+        // Blocks the registration of a disallowed service worker by failing every request it makes
+        // (including its own main script fetch) at the Fetch layer. Using Fetch interception rather
+        // than Network.emulateNetworkConditions is deliberate: a paused worker (waitForDebuggerOnStart)
+        // answers no CDP command until it is resumed, so we cannot await any setup before resuming;
+        // and offline emulation only sets a connectivity state that races the script fetch (and on some
+        // transports stalls it instead of failing it). Fetch.enable is queued ahead of
+        // runIfWaitingForDebugger on the same session (FIFO), so interception is active before the
+        // worker can fetch anything, and Fetch holds each request until we fail it — no race, no stall,
+        // deterministic across transports. This diverges from upstream (which uses offline emulation and
+        // only exercises headless+websocket in CI, so it never hits the race/stall).
+        private async Task BlockServiceWorkerRegistrationAsync(CDPSession session)
+        {
+            async void OnRequestPaused(object sender, MessageEventArgs e)
+            {
+                if (e.MessageID != "Fetch.requestPaused")
+                {
+                    return;
+                }
+
+                var paused = e.MessageData.ToObject<FetchRequestPausedResponse>();
+                try
+                {
+                    await session.SendAsync(
+                        "Fetch.failRequest",
+                        new FetchFailRequest
+                        {
+                            RequestId = paused.RequestId,
+                            ErrorReason = "BlockedByClient",
+                        }).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to fail blocked service worker request");
+                }
+            }
+
+            session.MessageReceived += OnRequestPaused;
+
+            try
+            {
+                await Task.WhenAll(
+                    session.SendAsync(
+                        "Fetch.enable",
+                        new FetchEnableRequest { Patterns = [new FetchEnableRequest.Pattern("*")] }),
+                    session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to block service worker registration");
+            }
         }
 
         private async Task MaybeSetupNetworkBlockListAsync(CDPSession session, TargetInfo targetInfo)
