@@ -77,13 +77,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "This is flaky on CI/CD",
-    "testIdPattern": "[worker.spec] Workers Page.workers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome"],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "This is passing on my machine but failing on CI/CD",
     "testIdPattern": "*should take fullPage screenshots*",
     "platforms": ["linux"],
