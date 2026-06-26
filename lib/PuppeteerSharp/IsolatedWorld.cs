@@ -49,6 +49,8 @@ namespace PuppeteerSharp
             FrameUpdated();
         }
 
+        internal event EventHandler ContextCleared;
+
         /// <inheritdoc/>
         public override string Origin => _origin;
 
@@ -269,6 +271,7 @@ namespace PuppeteerSharp
             _context?.Dispose();
             _context = null;
             Frame?.ClearDocumentHandle();
+            ContextCleared?.Invoke(this, EventArgs.Empty);
         }
 
         internal void SetNewContext(

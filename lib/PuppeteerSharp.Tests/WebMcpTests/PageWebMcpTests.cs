@@ -162,6 +162,90 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             Assert.That(response.Exception, Is.Null);
         }
 
+        [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should handle multiple navigations and report tools correctly")]
+        public async Task ShouldHandleMultipleNavigationsAndReportToolsCorrectly()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(WebMcpOptions(), TestConstants.LoggerFactory);
+            var page = (CdpPage)await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+            // 1. Register tool on first context
+            var toolsAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolsAddedTcs.TrySetResult(true);
+
+            await page.EvaluateFunctionAsync(@"() => {
+                const form = document.createElement('form');
+                form.setAttribute('toolname', 'tool-1');
+                form.setAttribute('tooldescription', 'desc-1');
+                document.body.appendChild(form);
+            }");
+            await toolsAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(page.WebMcp.Tools().Length, Is.EqualTo(1));
+            Assert.That(page.WebMcp.Tools()[0].Name, Is.EqualTo("tool-1"));
+
+            // 2. Navigate to new page - tools should be removed
+            var toolsRemovedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsRemoved += (_, _) => toolsRemovedTcs.TrySetResult(true);
+
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+            await toolsRemovedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(page.WebMcp.Tools(), Is.Empty);
+
+            // 3. Register tool on second context
+            toolsAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolsAddedTcs.TrySetResult(true);
+
+            await page.EvaluateFunctionAsync(@"() => {
+                const form = document.createElement('form');
+                form.setAttribute('toolname', 'tool-2');
+                form.setAttribute('tooldescription', 'desc-2');
+                document.body.appendChild(form);
+            }");
+            await toolsAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(page.WebMcp.Tools().Length, Is.EqualTo(1));
+            Assert.That(page.WebMcp.Tools()[0].Name, Is.EqualTo("tool-2"));
+
+            // 4. Navigate again - tools should be removed again
+            toolsRemovedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsRemoved += (_, _) => toolsRemovedTcs.TrySetResult(true);
+
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+            await toolsRemovedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(page.WebMcp.Tools(), Is.Empty);
+        }
+
+        [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should not reset tools on same-document navigation")]
+        public async Task ShouldNotResetToolsOnSameDocumentNavigation()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(WebMcpOptions(), TestConstants.LoggerFactory);
+            var page = (CdpPage)await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+            var toolsAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolsAddedTcs.TrySetResult(true);
+
+            await page.EvaluateFunctionAsync(@"() => {
+                const form = document.createElement('form');
+                form.setAttribute('toolname', 'declarative tool name');
+                form.setAttribute('tooldescription', 'tool description');
+                document.body.appendChild(form);
+            }");
+            await toolsAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(page.WebMcp.Tools().Length, Is.EqualTo(1));
+
+            // Same-document (hash) navigation should not reset tools.
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html#hash");
+
+            // Tools should still be present because context was not destroyed.
+            Assert.That(page.WebMcp.Tools().Length, Is.EqualTo(1));
+            Assert.That(page.WebMcp.Tools()[0].Name, Is.EqualTo("declarative tool name"));
+        }
+
         [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should remove tools on frame navigation")]
         public async Task ShouldRemoveToolsOnFrameNavigation()
         {

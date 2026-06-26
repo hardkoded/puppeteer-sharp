@@ -535,6 +535,13 @@ namespace PuppeteerSharp
         Task EmulateTimezoneAsync(string timezoneId);
 
         /// <summary>
+        /// Emulates the locale of the page.
+        /// </summary>
+        /// <param name="locale">Locale to emulate on the page (e.g., "en-US", "de-DE"). Passing <c>null</c> disables locale emulation.</param>
+        /// <returns>A task that resolves when the locale has been set.</returns>
+        Task EmulateLocaleAsync(string locale = null);
+
+        /// <summary>
         /// Simulates the given vision deficiency on the page.
         /// </summary>
         /// <example>

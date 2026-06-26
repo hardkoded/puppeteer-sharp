@@ -350,6 +350,7 @@ namespace PuppeteerSharp.Cdp
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
+                await MaybeSetupNetworkBlockListAsync(session, targetInfo).ConfigureAwait(false);
                 return;
             }
 
@@ -365,17 +366,9 @@ namespace PuppeteerSharp.Cdp
             {
                 if (!IsUrlAllowed(targetInfo.Url))
                 {
-                    try
-                    {
-                        await Task.WhenAll(
-                            MaybeSetupNetworkBlockListAsync(session),
-                            session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to configure network conditions for blocked service worker");
-                    }
-
+                    await Task.WhenAll(
+                        MaybeSetupNetworkBlockListAsync(session, targetInfo),
+                        session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
                     return;
                 }
 
@@ -445,6 +438,7 @@ namespace PuppeteerSharp.Cdp
                 FinishInitializationIfReady(parentTarget.TargetId);
             }
 
+            // The browser might be shutting down here, so we ignore potential errors.
             try
             {
                 await Task.WhenAll(
@@ -454,7 +448,7 @@ namespace PuppeteerSharp.Cdp
                         Flatten = true,
                         AutoAttach = true,
                     }),
-                    MaybeSetupNetworkBlockListAsync(session),
+                    MaybeSetupNetworkBlockListAsync(session, targetInfo),
                     session.SendAsync("Runtime.runIfWaitingForDebugger")).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -518,7 +512,7 @@ namespace PuppeteerSharp.Cdp
             TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
         }
 
-        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session)
+        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session, TargetInfo targetInfo)
         {
             var hasBlockList = _blockList != null && _blockList.Length > 0;
             var hasAllowList = _allowList != null && _allowList.Length > 0;
@@ -570,7 +564,18 @@ namespace PuppeteerSharp.Cdp
                 });
             }
 
-            await session.SendAsync(
+            // Workers do not have Network enabled by default; enable it before applying rules.
+            var needsNetwork = targetInfo.Type == TargetType.Worker
+                || targetInfo.Type == TargetType.ServiceWorker
+                || targetInfo.Type == TargetType.SharedWorker;
+
+            var tasks = new List<Task>();
+            if (needsNetwork)
+            {
+                tasks.Add(session.SendAsync("Network.enable"));
+            }
+
+            tasks.Add(session.SendAsync(
                 "Network.emulateNetworkConditionsByRule",
                 new NetworkEmulateNetworkConditionsByRuleRequest
                 {
@@ -578,7 +583,16 @@ namespace PuppeteerSharp.Cdp
                     // Only set it when using a blocklist; allowlist mode uses per-rule offline flags instead.
                     Offline = hasBlockList ? true : null,
                     MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
-                }).ConfigureAwait(false);
+                }));
+
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to setup network block list");
+            }
         }
     }
 }

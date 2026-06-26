@@ -36,15 +36,7 @@ namespace PuppeteerSharp
         public virtual async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
         {
             var propertyNames = await EvaluateFunctionAsync<string[]>(@"object => {
-                    const enumerableProperties = [];
-                    const descriptors = Object.getOwnPropertyDescriptors(object);
-                    for (const propertyName in descriptors) {
-                        if (descriptors[propertyName]?.enumerable)
-                        {
-                            enumerableProperties.push(propertyName);
-                        }
-                    }
-                    return enumerableProperties;
+                    return Object.keys(object ?? {});
                 }").ConfigureAwait(false);
 
             var dic = new Dictionary<string, IJSHandle>();

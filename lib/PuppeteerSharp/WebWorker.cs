@@ -57,7 +57,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="ExecutionContext.EvaluateExpressionAsync(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<T> EvaluateExpressionAsync<T>(string script)
+        public virtual async Task<T> EvaluateExpressionAsync<T>(string script)
             => await World.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task EvaluateFunctionAsync(string script, params object[] args)
+        public virtual async Task EvaluateFunctionAsync(string script, params object[] args)
             => await World.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace PuppeteerSharp
         /// <see cref="IJSHandle"/> instances can be passed as arguments.
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
-        public async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        public virtual async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
             => await World.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="ExecutionContext.EvaluateExpressionHandleAsync(string)"/>
-        public async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        public virtual async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => await World.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
 
         /// <summary>

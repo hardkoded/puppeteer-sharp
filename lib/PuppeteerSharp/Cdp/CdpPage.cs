@@ -58,7 +58,8 @@ public class CdpPage : Page
     private CdpPage(
         CdpCDPSession client,
         CdpTarget target,
-        TaskQueue screenshotTaskQueue) : base(screenshotTaskQueue)
+        TaskQueue screenshotTaskQueue,
+        string defaultUserAgent = null) : base(screenshotTaskQueue)
     {
         PrimaryTargetClient = client;
         TabTargetClient = (CdpCDPSession)client.ParentSession;
@@ -74,7 +75,7 @@ public class CdpPage : Page
 
         _emulationManager = new CdpEmulationManager(client);
         _logger = Client.Connection.LoggerFactory.CreateLogger<Page>();
-        FrameManager = new FrameManager(client, this, TimeoutSettings, target.Browser.IsNetworkEnabled(), target.Browser.IsIssuesEnabled());
+        FrameManager = new FrameManager(client, this, TimeoutSettings, target.Browser.IsNetworkEnabled(), target.Browser.IsIssuesEnabled(), defaultUserAgent);
         _webMcp = new CdpWebMcp(client, FrameManager);
         Accessibility = new Accessibility(client, () => MainFrame?.Id, () => (FrameManager.MainFrame as Frame)?.MainRealm);
 
@@ -693,6 +694,13 @@ public class CdpPage : Page
         => _emulationManager.EmulateTimezoneAsync(timezoneId);
 
     /// <inheritdoc/>
+    public override async Task EmulateLocaleAsync(string locale = null)
+    {
+        await _emulationManager.EmulateLocaleAsync(locale).ConfigureAwait(false);
+        await FrameManager.NetworkManager.SetAcceptLanguageAsync(locale).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override Task EmulateIdleStateAsync(EmulateIdleOverrides overrides = null)
         => _emulationManager.EmulateIdleStateAsync(overrides);
 
@@ -839,7 +847,8 @@ public class CdpPage : Page
         ViewPortOptions defaultViewPort,
         TaskQueue screenshotTaskQueue)
     {
-        var page = new CdpPage(client, target, screenshotTaskQueue);
+        var defaultUserAgent = await target.Browser.GetUserAgentAsync().ConfigureAwait(false);
+        var page = new CdpPage(client, target, screenshotTaskQueue, defaultUserAgent);
 
         try
         {
