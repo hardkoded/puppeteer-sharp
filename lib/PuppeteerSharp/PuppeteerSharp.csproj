@@ -12,10 +12,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>25.1.2</PackageVersion>
-    <ReleaseVersion>25.1.2</ReleaseVersion>
-    <AssemblyVersion>25.1.2</AssemblyVersion>
-    <FileVersion>25.1.2</FileVersion>
+    <PackageVersion>25.2.1</PackageVersion>
+    <ReleaseVersion>25.2.1</ReleaseVersion>
+    <AssemblyVersion>25.2.1</AssemblyVersion>
+    <FileVersion>25.2.1</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <DebugType>embedded</DebugType>
