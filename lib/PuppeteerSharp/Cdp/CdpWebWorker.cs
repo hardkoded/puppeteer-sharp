@@ -58,6 +58,13 @@ public class CdpWebWorker : WebWorker
         _exceptionThrown = exceptionThrown;
         client.MessageReceived += OnMessageReceived;
 
+        // Both listeners (the isolated world above and this worker) are now attached, so replay any
+        // init events Chrome already delivered on this freshly-attached worker session
+        // (Inspector.workerScriptLoaded, Runtime.executionContextCreated) to both of them. Without
+        // this, those one-shot events race the subscriptions and can be dropped, leaving
+        // EvaluateFunctionAsync awaiting _workerScriptLoaded forever.
+        client.FlushEarlyMessages();
+
         _ = client.SendAsync("Runtime.enable").ContinueWith(
             task =>
             {

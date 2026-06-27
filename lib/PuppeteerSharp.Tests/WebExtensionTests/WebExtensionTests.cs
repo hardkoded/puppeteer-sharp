@@ -24,7 +24,6 @@ namespace PuppeteerSharp.Tests.WebExtensionTests
             if (TestConstants.IsChrome)
             {
                 options.EnableExtensions = true;
-                options.Pipe = true;
             }
 
             await using var browser = await Puppeteer.LaunchAsync(

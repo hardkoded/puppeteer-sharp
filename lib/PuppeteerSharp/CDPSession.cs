@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -11,8 +12,35 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public abstract class CDPSession : ICDPSession
     {
+        private readonly object _messageReceivedLock = new();
+        private readonly Queue<MessageEventArgs> _bufferedMessages = new();
+        private EventHandler<MessageEventArgs> _messageReceived;
+        private bool _earlyMessagesFlushed;
+
         /// <inheritdoc/>
-        public event EventHandler<MessageEventArgs> MessageReceived;
+        public event EventHandler<MessageEventArgs> MessageReceived
+        {
+            add
+            {
+                if (value is null)
+                {
+                    return;
+                }
+
+                lock (_messageReceivedLock)
+                {
+                    _messageReceived += value;
+                }
+            }
+
+            remove
+            {
+                lock (_messageReceivedLock)
+                {
+                    _messageReceived -= value;
+                }
+            }
+        }
 
         /// <inheritdoc/>
         public event EventHandler Disconnected;
@@ -45,6 +73,17 @@ namespace PuppeteerSharp
 
         internal abstract CDPSession ParentSession { get; }
 
+        /// <summary>
+        /// When <c>true</c>, method-events are buffered (instead of dispatched live) until
+        /// <see cref="FlushEarlyMessages"/> is called, then replayed to every subscriber.
+        /// Enabled for worker sessions: their consumers (the worker and its isolated world)
+        /// subscribe only after the session has attached, so without buffering the init events
+        /// Chrome replays on attach (Inspector.workerScriptLoaded, Runtime.executionContextCreated)
+        /// race the subscriptions and can be dropped. This gives .NET the run-to-completion
+        /// ordering that single-threaded environments get for free.
+        /// </summary>
+        private protected virtual bool BufferEarlyMessages => false;
+
         /// <inheritdoc/>
         public async Task<T> SendAsync<T>(string method, object args = null, CommandOptions options = null)
         {
@@ -73,10 +112,60 @@ namespace PuppeteerSharp
         internal void OnSwapped(CDPSession session) => Swapped?.Invoke(this, new SessionEventArgs(session));
 
         /// <summary>
+        /// Replays any buffered method-events to all current subscribers and switches the session to
+        /// live dispatch. Called once the consumer has finished wiring up its listeners (so every
+        /// listener receives the early events exactly once, in order).
+        /// </summary>
+        internal void FlushEarlyMessages()
+        {
+            lock (_messageReceivedLock)
+            {
+                if (_earlyMessagesFlushed)
+                {
+                    return;
+                }
+
+                _earlyMessagesFlushed = true;
+
+                while (_bufferedMessages.Count > 0)
+                {
+                    _messageReceived?.Invoke(this, _bufferedMessages.Dequeue());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Discards any buffered method-events that were never replayed (e.g. a worker session that
+        /// closed before its consumer flushed).
+        /// </summary>
+        internal void ClearBufferedMessages()
+        {
+            lock (_messageReceivedLock)
+            {
+                _bufferedMessages.Clear();
+            }
+        }
+
+        /// <summary>
         /// Emits <see cref="MessageReceived"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnMessageReceived(MessageEventArgs e) => MessageReceived?.Invoke(this, e);
+        protected void OnMessageReceived(MessageEventArgs e)
+        {
+            if (BufferEarlyMessages)
+            {
+                lock (_messageReceivedLock)
+                {
+                    if (!_earlyMessagesFlushed)
+                    {
+                        _bufferedMessages.Enqueue(e);
+                        return;
+                    }
+                }
+            }
+
+            _messageReceived?.Invoke(this, e);
+        }
 
         /// <summary>
         /// Emits <see cref="Disconnected"/> event.

@@ -16,7 +16,6 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
         private static LaunchOptions BrowserWithExtensionOptions() => new()
         {
             EnableExtensions = true,
-            Pipe = true,
         };
 
         [Test, PuppeteerTest("extensions.spec", "extensions", "service_worker target type should be available")]
