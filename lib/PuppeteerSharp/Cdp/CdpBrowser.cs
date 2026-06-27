@@ -41,6 +41,7 @@ public class CdpBrowser : Browser
     private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
     private Task _closeTask;
+    private Task<BrowserGetVersionResponse> _versionTask;
 
     internal CdpBrowser(
         SupportedBrowser browser,
@@ -133,11 +134,11 @@ public class CdpBrowser : Browser
 
     /// <inheritdoc/>
     public override async Task<string> GetVersionAsync()
-        => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).Product;
+        => (await GetVersionResponseAsync().ConfigureAwait(false)).Product;
 
     /// <inheritdoc/>
     public override async Task<string> GetUserAgentAsync()
-        => (await Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false)).UserAgent;
+        => (await GetVersionResponseAsync().ConfigureAwait(false)).UserAgent;
 
     /// <inheritdoc/>
     public override void Disconnect()
@@ -423,6 +424,11 @@ public class CdpBrowser : Browser
     {
         return url?.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase) == true;
     }
+
+    // The version is not expected to change, so cache it and only call Browser.getVersion once.
+    // This also avoids repeated calls when using Puppeteer with untrusted sessions.
+    private Task<BrowserGetVersionResponse> GetVersionResponseAsync()
+        => _versionTask ??= Connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion");
 
     private Task AttachAsync()
     {
