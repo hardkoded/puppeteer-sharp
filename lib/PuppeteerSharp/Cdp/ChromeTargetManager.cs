@@ -548,6 +548,14 @@ namespace PuppeteerSharp.Cdp
 
             session.MessageReceived += OnRequestPaused;
 
+            // Worker sessions buffer their method-events until a consumer flushes them (so a
+            // CdpWebWorker doesn't miss its init events). A blocked worker never becomes a
+            // CdpWebWorker, so nothing would ever flush — and the Fetch.requestPaused event we
+            // rely on here would stay buffered, leaving the worker's script fetch paused forever
+            // (registration hangs). Flush now that our listener is attached so requestPaused is
+            // delivered live.
+            session.FlushEarlyMessages();
+
             try
             {
                 await Task.WhenAll(
