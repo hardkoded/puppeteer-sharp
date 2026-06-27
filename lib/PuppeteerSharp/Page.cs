@@ -541,7 +541,10 @@ namespace PuppeteerSharp
                 throw new PuppeteerException("`scale` must be greater than 0.");
             }
 
-            var recorder = new ScreenRecorder(this, options);
+            var width = (int)Math.Round(dimensions.Width);
+            var height = (int)Math.Round(dimensions.Height);
+
+            var recorder = new ScreenRecorder(this, width, height, options);
 
             try
             {
