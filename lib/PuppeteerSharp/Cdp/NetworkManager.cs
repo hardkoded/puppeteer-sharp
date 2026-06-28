@@ -20,7 +20,6 @@ namespace PuppeteerSharp.Cdp
         private readonly IFrameProvider _frameManager;
         private readonly ILoggerFactory _loggerFactory;
         private readonly bool _networkEnabled;
-        private readonly string _defaultUserAgent;
 
         private InternalNetworkConditions _emulatedNetworkConditions;
         private Dictionary<string, string> _extraHTTPHeaders;
@@ -39,14 +38,12 @@ namespace PuppeteerSharp.Cdp
         /// <param name="frameManager">Frame manager.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         /// <param name="networkEnabled">Whether network events are enabled.</param>
-        /// <param name="defaultUserAgent">Default user agent to use when no explicit user agent has been set.</param>
-        internal NetworkManager(IFrameProvider frameManager, ILoggerFactory loggerFactory, bool networkEnabled = true, string defaultUserAgent = null)
+        internal NetworkManager(IFrameProvider frameManager, ILoggerFactory loggerFactory, bool networkEnabled = true)
         {
             _frameManager = frameManager;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<NetworkManager>();
             _networkEnabled = networkEnabled;
-            _defaultUserAgent = defaultUserAgent;
         }
 
         internal event EventHandler<ResponseCreatedEventArgs> Response;
@@ -642,7 +639,7 @@ namespace PuppeteerSharp.Cdp
 
         private async Task ApplyUserAgentAsync(ICDPSession client)
         {
-            var userAgent = _userAgent ?? _defaultUserAgent;
+            var userAgent = _userAgent ?? await _frameManager.Page.Browser.GetUserAgentAsync().ConfigureAwait(false);
             if (userAgent == null)
             {
                 return;

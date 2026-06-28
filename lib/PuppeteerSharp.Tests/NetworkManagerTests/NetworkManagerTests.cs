@@ -22,9 +22,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         client.MessageReceived += Raise.EventWith(
@@ -105,9 +104,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         await manager.SetRequestInterceptionAsync(true);
@@ -189,9 +187,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         var requests = new List<IRequest>();
@@ -284,9 +281,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         var finishedRequests = new List<IRequest>();
@@ -394,9 +390,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();
@@ -481,9 +476,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();
@@ -579,9 +573,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     {
         var client = Substitute.For<ICDPSession>();
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         var responses = new List<IResponse>();
@@ -824,9 +817,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
             .Returns<JsonElement?>(_ => throw new TargetClosedException("error"));
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         await manager.SetCacheEnabledAsync(true);
@@ -842,9 +834,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
             .Returns<JsonElement?>(_ => throw new PuppeteerException("Not supported"));
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         await manager.AddClientAsync(client);
         await manager.SetCacheEnabledAsync(true);
@@ -860,14 +851,43 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
             .Returns<JsonElement?>(_ => throw new PuppeteerException("error"));
 
-        var frameManagerMock = Substitute.For<IFrameProvider>();
         using var loggerFactory = new LoggerFactory();
-        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+        var manager = CreateNetworkManager(loggerFactory);
 
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.AddClientAsync(client));
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetCacheEnabledAsync(true));
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetExtraHTTPHeadersAsync(new Dictionary<string, string>()));
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetOfflineModeAsync(true));
         Assert.ThrowsAsync<PuppeteerException>(async () => await manager.SetUserAgentAsync("test", null));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw if page().browser().userAgent() throws")]
+    public async Task ShouldNotThrowIfUserAgentThrows()
+    {
+        var client = Substitute.For<ICDPSession>();
+
+        var frameManagerMock = Substitute.For<IFrameProvider>();
+        var pageMock = Substitute.For<IPage>();
+        var browserMock = Substitute.For<IBrowser>();
+        browserMock.GetUserAgentAsync().Returns<string>(_ => throw new TargetClosedException("Target closed"));
+        pageMock.Browser.Returns(browserMock);
+        frameManagerMock.Page.Returns(pageMock);
+
+        using var loggerFactory = new LoggerFactory();
+        var manager = new NetworkManager(frameManagerMock, loggerFactory);
+
+        await manager.AddClientAsync(client);
+    }
+
+    private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory)
+    {
+        var frameManagerMock = Substitute.For<IFrameProvider>();
+        var pageMock = Substitute.For<IPage>();
+        var browserMock = Substitute.For<IBrowser>();
+        browserMock.GetUserAgentAsync().Returns("user-agent");
+        pageMock.Browser.Returns(browserMock);
+        frameManagerMock.Page.Returns(pageMock);
+
+        return new NetworkManager(frameManagerMock, loggerFactory);
     }
 }
