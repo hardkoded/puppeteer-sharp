@@ -237,6 +237,30 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
+        // On Windows, an installer .exe can stay briefly locked (e.g. by antivirus scanning)
+        // right after WaitForExit() returns, so deleting it immediately can fail transiently.
+        private static async Task DeleteFileWithRetryAsync(string path)
+        {
+            const int maxAttempts = 5;
+            const int minDelayInMillis = 200;
+            const int maxDelayInMillis = 2000;
+
+            var retryDelay = minDelayInMillis;
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    new FileInfo(path).Delete();
+                    return;
+                }
+                catch (IOException) when (attempt < maxAttempts)
+                {
+                    await Task.Delay(retryDelay).ConfigureAwait(false);
+                    retryDelay = Math.Min(retryDelay * 2, maxDelayInMillis);
+                }
+            }
+        }
+
         private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
         {
             var url = GetDownloadURL(browser, Platform, BaseUrl, buildId);
@@ -285,7 +309,7 @@ namespace PuppeteerSharp
             }
 
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
-            new FileInfo(archivePath).Delete();
+            await DeleteFileWithRetryAsync(archivePath).ConfigureAwait(false);
 
             var installedBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
             installedBrowser.PermissionsFixed = RunSetup(installedBrowser);
