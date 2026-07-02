@@ -10,19 +10,24 @@ internal static class HttpUtils
     /// <summary>
     /// Normalizes HTTP header values by handling multiline values.
     /// Multiline header values are joined with commas according to
-    /// <see href="https://www.rfc-editor.org/rfc/rfc9110.html#section-5.2">RFC 9110 Section 5.2</see>.
+    /// <see href="https://www.rfc-editor.org/rfc/rfc9110.html#section-5.2">RFC 9110 Section 5.2</see>,
+    /// except for <c>Set-Cookie</c>, which is joined with newlines. See
+    /// <see href="https://www.rfc-editor.org/rfc/rfc9110.html#name-field-order">RFC 9110 Section 5.3</see>
+    /// for the <c>Set-Cookie</c> exception.
     /// </summary>
-    /// <param name="header">The header value to normalize.</param>
+    /// <param name="name">The lower-cased header name.</param>
+    /// <param name="value">The header value to normalize.</param>
     /// <returns>The normalized header value.</returns>
-    public static string NormalizeHeaderValue(string header)
+    public static string NormalizeHeaderValue(string name, string value)
     {
-        if (header == null || header.IndexOf('\n') == -1)
+        if (value == null || value.IndexOf('\n') == -1)
         {
-            return header;
+            return value;
         }
 
-        var parts = header.Split('\n');
-        var builder = new StringBuilder(header.Length);
+        var separator = name == "set-cookie" ? "\n " : ", ";
+        var parts = value.Split('\n');
+        var builder = new StringBuilder(value.Length);
         var first = true;
         foreach (var part in parts)
         {
@@ -34,7 +39,7 @@ internal static class HttpUtils
 
             if (!first)
             {
-                builder.Append(", ");
+                builder.Append(separator);
             }
 
             builder.Append(trimmed);

@@ -78,7 +78,8 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)
         {
-            Headers[header.Name] = HttpUtils.NormalizeHeaderValue(header.Value.Value);
+            var headerName = header.Name.ToLowerInvariant();
+            Headers[headerName] = HttpUtils.NormalizeHeaderValue(headerName, header.Value.Value);
         }
     }
 
@@ -107,7 +108,8 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var header in data.Headers)
         {
-            Headers[header.Name] = HttpUtils.NormalizeHeaderValue(header.Value.Value);
+            var headerName = header.Name.ToLowerInvariant();
+            Headers[headerName] = HttpUtils.NormalizeHeaderValue(headerName, header.Value.Value);
         }
     }
 

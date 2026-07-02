@@ -22,6 +22,8 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// An object with HTTP headers associated with the response. All header names are lower-case.
+        /// Duplicate header values are combined into a single comma-separated list except for
+        /// <c>Set-Cookie</c> that is separated by <c>\n</c>.
         /// </summary>
         /// <value>The headers.</value>
         Dictionary<string, string> Headers { get; }
