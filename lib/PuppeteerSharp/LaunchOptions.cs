@@ -230,6 +230,11 @@ namespace PuppeteerSharp
         public EnableExtensionsOption EnableExtensions { get; set; }
 
         /// <summary>
+        /// Gets or sets the list of extension paths that will be enabled in Incognito and off-the-record profiles.
+        /// </summary>
+        public string[] ExtensionsEnabledInIncognito { get; set; }
+
+        /// <summary>
         /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
         /// </summary>
         public bool HandleDevToolsAsPage { get; set; }

@@ -18,6 +18,12 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             EnableExtensions = true,
         };
 
+        private static void AssertNoServiceWorkerReported(ITarget[] targets, string id)
+        {
+            var target = targets.FirstOrDefault(t => t.Url.Contains(id) && t.Type == TargetType.ServiceWorker);
+            Assert.That(target, Is.Null);
+        }
+
         [Test, PuppeteerTest("extensions.spec", "extensions", "service_worker target type should be available")]
         public async Task ServiceWorkerTargetTypeShouldBeAvailable()
         {
@@ -202,6 +208,49 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
 
             extensions = await browserWithExtension.ExtensionsAsync();
             Assert.That(extensions.ContainsKey(id), Is.False);
+        }
+
+        [Test, PuppeteerTest("extensions.spec", "extensions", "should be available in Incognito profiles if enabledInIncognito is true")]
+        public async Task ShouldBeAvailableInIncognitoProfilesIfEnabledInIncognitoIsTrue()
+        {
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
+                BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory);
+
+            var extensionId = await browserWithExtension.InstallExtensionAsync(
+                _extensionPath,
+                new ExtensionInstallOptions { EnabledInIncognito = true });
+
+            var context = await browserWithExtension.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await page.GoToAsync(TestConstants.EmptyPage);
+
+            var target = await browserWithExtension.WaitForTargetAsync(t =>
+                t.Url.Contains(extensionId) && t.Type == TargetType.ServiceWorker);
+            Assert.That(target, Is.Not.Null);
+
+            var realms = page.ExtensionRealms();
+
+            Realm contentScriptRealm = null;
+            foreach (var realm in realms)
+            {
+                var extension = await realm.ExtensionAsync();
+                if (extension != null && extension.Id == extensionId)
+                {
+                    contentScriptRealm = realm;
+                    break;
+                }
+            }
+
+            Assert.That(contentScriptRealm, Is.Not.Null, "realm should be defined");
+
+            var isContentScript = await contentScriptRealm.EvaluateFunctionAsync<bool>("() => globalThis.thisIsTheContentScript");
+            Assert.That(isContentScript, Is.True);
+
+            await browserWithExtension.UninstallExtensionAsync(extensionId);
+            await context.CloseAsync();
+            var targets = browserWithExtension.Targets();
+            AssertNoServiceWorkerReported(targets, extensionId);
         }
     }
 }

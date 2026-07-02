@@ -199,8 +199,11 @@ namespace PuppeteerSharp
 
                     if (options.EnableExtensions is { Paths: { } extensionPaths })
                     {
+                        var extensionsEnabledInIncognito = options.ExtensionsEnabledInIncognito ?? [];
                         await Task.WhenAll(
-                            extensionPaths.Select(path => browser.InstallExtensionAsync(path))).ConfigureAwait(false);
+                            extensionPaths.Select(path => browser.InstallExtensionAsync(
+                                path,
+                                new ExtensionInstallOptions { EnabledInIncognito = extensionsEnabledInIncognito.Contains(path) }))).ConfigureAwait(false);
                     }
 
                     if (options.WaitForInitialPage)
