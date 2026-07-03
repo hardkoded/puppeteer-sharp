@@ -557,6 +557,21 @@
     "comment": "Firefox does not support --remote-debugging-pipe argument"
   },
   {
+    "testIdPattern": "[prerender.spec] *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Prerendering is not supported by WebDriver BiDi implementation"
+  },
+  {
     "testIdPattern": "[proxy.spec] *",
     "platforms": [
       "darwin",
