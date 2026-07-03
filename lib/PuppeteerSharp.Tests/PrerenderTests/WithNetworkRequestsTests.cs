@@ -27,7 +27,7 @@ public class WithNetworkRequestsTests : PuppeteerPageBaseTest
         );
 
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
-        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("true"));
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
 
         Assert.That(urls.Exists(url => url.Contains("prerender/target.html")), Is.True);

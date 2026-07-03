@@ -216,11 +216,11 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override async Task<string> InstallExtensionAsync(string path)
+    public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
     {
         var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
             "Extensions.loadUnpacked",
-            new ExtensionsLoadUnpackedRequest { Path = path }).ConfigureAwait(false);
+            new ExtensionsLoadUnpackedRequest { Path = path, EnableInIncognito = options?.EnabledInIncognito ?? false }).ConfigureAwait(false);
         _extensions.Remove(response.Id);
         return response.Id;
     }
@@ -342,9 +342,7 @@ public class CdpBrowser : Browser
             WindowState = windowBounds?.WindowState,
 
             // Works around crbug.com/454825274.
-            // When no targets exist (e.g. all pages were closed in headful mode), Chrome has no
-            // browser window. We must request a new window so Chrome can create the page.
-            NewWindow = (!hasTargets || options?.Type == CreatePageType.Window) ? true : null,
+            NewWindow = hasTargets && options?.Type == CreatePageType.Window ? true : null,
             Background = options?.Background,
         };
 

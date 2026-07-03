@@ -13,7 +13,6 @@ namespace PuppeteerSharp.Cdp
 {
     internal class FrameManager : IDisposable, IAsyncDisposable, IFrameProvider
     {
-        private const int TimeForWaitingForSwap = 200;
         private const string ChromeExtensionPrefix = "chrome-extension://";
         private static readonly string UtilityWorldName = "__puppeteer_utility_world__" + typeof(FrameManager).Assembly.GetName().Version.ToString();
 
@@ -37,7 +36,7 @@ namespace PuppeteerSharp.Cdp
             IssuesEnabled = issuesEnabled;
 
             Client.MessageReceived += Client_MessageReceived;
-            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
+            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync(client);
         }
 
         internal event EventHandler<FrameEventArgs> FrameAttached;
@@ -280,7 +279,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             Client.MessageReceived += Client_MessageReceived;
-            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync();
+            Client.Disconnected += (sender, e) => _ = OnClientDisconnectAsync(client);
 
             await InitializeAsync(client).ConfigureAwait(false);
             await NetworkManager.AddClientAsync(client).ConfigureAwait(false);
@@ -667,7 +666,7 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private async Task OnClientDisconnectAsync()
+        private async Task OnClientDisconnectAsync(CDPSession client)
         {
             try
             {
@@ -677,9 +676,17 @@ namespace PuppeteerSharp.Cdp
                     return;
                 }
 
-                if (Client.Connection.IsClosed)
+                // If the disconnected client is not the current one, it means a swap
+                // has already happened.
+                if (Client != client)
                 {
-                    // On connection disconnected remove all frames
+                    return;
+                }
+
+                if (Client.Connection.IsClosed || Page.IsClosed)
+                {
+                    // On connection disconnected or the page closed, we know
+                    // that activation will not happen.
                     RemoveFramesRecursively(mainFrame);
                     return;
                 }
@@ -689,17 +696,26 @@ namespace PuppeteerSharp.Cdp
                     RemoveFramesRecursively(child as Frame);
                 }
 
-                var swappedTcs = new TaskCompletionSource<bool>();
+                var swappedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-                mainFrame.FrameSwappedByActivation += (_, _) => swappedTcs.TrySetResult(true);
+                void OnFrameSwapped(object sender, EventArgs e) => swappedTcs.TrySetResult(true);
+                void OnPageClosed(object sender, EventArgs e) => swappedTcs.TrySetException(new PuppeteerException("Page closed"));
+
+                mainFrame.FrameSwappedByActivation += OnFrameSwapped;
+                Page.Close += OnPageClosed;
 
                 try
                 {
-                    await swappedTcs.Task.WithTimeout(TimeForWaitingForSwap).ConfigureAwait(false);
+                    await swappedTcs.Task.ConfigureAwait(false);
                 }
                 catch
                 {
                     RemoveFramesRecursively(mainFrame);
+                }
+                finally
+                {
+                    mainFrame.FrameSwappedByActivation -= OnFrameSwapped;
+                    Page.Close -= OnPageClosed;
                 }
             }
             catch (Exception e)

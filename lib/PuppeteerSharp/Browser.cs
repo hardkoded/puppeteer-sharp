@@ -100,7 +100,7 @@ namespace PuppeteerSharp
         public abstract Task RemoveScreenAsync(string screenId);
 
         /// <inheritdoc/>
-        public abstract Task<string> InstallExtensionAsync(string path);
+        public abstract Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null);
 
         /// <inheritdoc/>
         public abstract Task UninstallExtensionAsync(string id);

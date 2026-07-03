@@ -189,7 +189,7 @@ public class BidiBrowser : Browser
         => throw new NotSupportedException("RemoveScreen is not supported in WebDriver BiDi.");
 
     /// <inheritdoc/>
-    public override async Task<string> InstallExtensionAsync(string path)
+    public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
     {
         var result = await Driver.WebExtension.InstallAsync(
             new WebDriverBiDi.WebExtension.InstallCommandParameters(
