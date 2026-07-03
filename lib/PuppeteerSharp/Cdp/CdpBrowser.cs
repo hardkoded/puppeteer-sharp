@@ -216,11 +216,11 @@ public class CdpBrowser : Browser
     }
 
     /// <inheritdoc/>
-    public override async Task<string> InstallExtensionAsync(string path)
+    public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
     {
         var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
             "Extensions.loadUnpacked",
-            new ExtensionsLoadUnpackedRequest { Path = path }).ConfigureAwait(false);
+            new ExtensionsLoadUnpackedRequest { Path = path, EnableInIncognito = options?.EnabledInIncognito ?? false }).ConfigureAwait(false);
         _extensions.Remove(response.Id);
         return response.Id;
     }

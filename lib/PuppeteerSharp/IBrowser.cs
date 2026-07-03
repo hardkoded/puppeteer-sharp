@@ -317,8 +317,9 @@ namespace PuppeteerSharp
         /// Installs an unpacked extension and returns the extension ID.
         /// </summary>
         /// <param name="path">The path to the unpacked extension directory.</param>
+        /// <param name="options">Options for installing the extension.</param>
         /// <returns>A task that resolves to the extension ID.</returns>
-        Task<string> InstallExtensionAsync(string path);
+        Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null);
 
         /// <summary>
         /// Uninstalls a previously installed extension by its ID.
