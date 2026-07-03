@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
         {
             var header = "application/json; charset=utf-8";
 
-            Assert.That(HttpUtils.NormalizeHeaderValue(header), Is.EqualTo(header));
+            Assert.That(HttpUtils.NormalizeHeaderValue("content-type", header), Is.EqualTo(header));
         }
 
         [Test]
@@ -19,7 +19,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var header = "text/html;\n charset=utf-8;\n boundary=something";
 
             Assert.That(
-                HttpUtils.NormalizeHeaderValue(header),
+                HttpUtils.NormalizeHeaderValue("content-type", header),
                 Is.EqualTo("text/html;, charset=utf-8;, boundary=something"));
         }
 
@@ -29,7 +29,7 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var header = "text/html; \n  charset=utf-8  \n   boundary=something   ";
 
             Assert.That(
-                HttpUtils.NormalizeHeaderValue(header),
+                HttpUtils.NormalizeHeaderValue("content-type", header),
                 Is.EqualTo("text/html;, charset=utf-8, boundary=something"));
         }
 
@@ -39,8 +39,18 @@ namespace PuppeteerSharp.Tests.UtilitiesTests
             var header = "text/html;\n\n charset=utf-8;\n\n\n boundary=something";
 
             Assert.That(
-                HttpUtils.NormalizeHeaderValue(header),
+                HttpUtils.NormalizeHeaderValue("content-type", header),
                 Is.EqualTo("text/html;, charset=utf-8;, boundary=something"));
+        }
+
+        [Test]
+        public void ShouldNormalizeSetCookieWithNewlines()
+        {
+            var header = "a=b\n c=d";
+
+            Assert.That(
+                HttpUtils.NormalizeHeaderValue("set-cookie", header),
+                Is.EqualTo("a=b\n c=d"));
         }
     }
 }
