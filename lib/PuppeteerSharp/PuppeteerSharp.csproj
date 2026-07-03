@@ -12,10 +12,10 @@
     <Description>Headless Browser .NET API</Description>
     <PackageId>PuppeteerSharp</PackageId>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageVersion>25.3.0</PackageVersion>
-    <ReleaseVersion>25.3.0</ReleaseVersion>
-    <AssemblyVersion>25.3.0</AssemblyVersion>
-    <FileVersion>25.3.0</FileVersion>
+    <PackageVersion>25.3.1</PackageVersion>
+    <ReleaseVersion>25.3.1</ReleaseVersion>
+    <AssemblyVersion>25.3.1</AssemblyVersion>
+    <FileVersion>25.3.1</FileVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
     <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <DebugType>embedded</DebugType>
@@ -51,6 +51,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.7" />
     <PackageReference Include="System.Text.Json" Version="10.0.7" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.7" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
