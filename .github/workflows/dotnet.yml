@@ -19,6 +19,21 @@ env:
   DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
+  build-cdp-only:
+    name: build (CDP only)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Restore (CDP only)
+      run: |
+        dotnet restore lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY
+    - name: Build (CDP only)
+      run: |
+        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY --configuration Release --no-restore --no-incremental
   build:
     name: ${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}${{ matrix.pipe && '-pipe' || '' }}
     runs-on: ${{ matrix.os }}
