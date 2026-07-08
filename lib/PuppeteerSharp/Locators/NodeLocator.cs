@@ -40,7 +40,8 @@ namespace PuppeteerSharp.Locators
             var waitOptions = new WaitForSelectorOptions
             {
                 Timeout = Timeout,
-                Visible = Visibility == VisibilityOption.Visible ? true : Visibility == VisibilityOption.Hidden ? false : null,
+                Visible = Visibility == VisibilityOption.Visible ? true : (bool?)null,
+                Hidden = Visibility == VisibilityOption.Hidden ? true : (bool?)null,
             };
 
             IElementHandle handle;
@@ -54,7 +55,9 @@ namespace PuppeteerSharp.Locators
                 handle = await _frame.WaitForSelectorAsync(_selector, waitOptions).ConfigureAwait(false);
             }
 
-            if (handle == null)
+            // When waiting for Hidden, a null handle means the element is no longer in the DOM,
+            // which is a valid resolution (see WaitForSelectorOptions.Hidden docs), not a failure.
+            if (handle == null && Visibility != VisibilityOption.Hidden)
             {
                 throw new PuppeteerException($"Could not find element matching selector: {_selector}");
             }

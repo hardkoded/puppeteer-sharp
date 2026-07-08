@@ -193,6 +193,11 @@ namespace PuppeteerSharp.Locators
         {
             var handle = await WaitHandleAsync(options).ConfigureAwait(false);
 
+            if (handle == null)
+            {
+                return default;
+            }
+
             try
             {
                 return await handle.JsonValueAsync<T>().ConfigureAwait(false);
@@ -212,7 +217,10 @@ namespace PuppeteerSharp.Locators
         {
             var handle = await WaitHandleAsync(options).ConfigureAwait(false);
 
-            await handle.DisposeAsync().ConfigureAwait(false);
+            if (handle != null)
+            {
+                await handle.DisposeAsync().ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -422,7 +430,11 @@ namespace PuppeteerSharp.Locators
 
                     if (elementHandle == null)
                     {
-                        await handle.DisposeAsync().ConfigureAwait(false);
+                        if (handle != null)
+                        {
+                            await handle.DisposeAsync().ConfigureAwait(false);
+                        }
+
                         throw new PuppeteerException("Locator did not resolve to an element.");
                     }
 
