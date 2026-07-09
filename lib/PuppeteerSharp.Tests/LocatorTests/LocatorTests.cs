@@ -44,5 +44,26 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var text = await button.EvaluateFunctionAsync<string>("el => el.innerText");
             Assert.That(text, Is.EqualTo("clicked"));
         }
+
+        [TestCase("() => { document.querySelector('#target').style.display = 'none'; }")]
+        [TestCase("() => { document.querySelector('#target').remove(); }")]
+        public async Task SetVisibilityHiddenShouldWaitForElementToBecomeHidden(string hideElement)
+        {
+            await Page.SetContentAsync("<div id=\"target\">Visible element</div>");
+
+            var waitTask = Page
+                .Locator("#target")
+                .SetVisibility(VisibilityOption.Hidden)
+                .SetTimeout(5000)
+                .WaitAsync();
+
+            await Task.Delay(500);
+            Assert.That(waitTask.IsCompleted, Is.False, "Locator should not resolve while the element is still visible.");
+
+            await Page.EvaluateFunctionAsync(hideElement);
+
+            await waitTask;
+            Assert.That(waitTask.IsCompletedSuccessfully, Is.True);
+        }
     }
 }
