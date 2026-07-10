@@ -26,6 +26,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using PuppeteerSharp.BrowserData;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp.Helpers.Json;
@@ -39,6 +40,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(AccessibilityGetFullAXTreeResponse))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeRequest))]
 [JsonSerializable(typeof(AccessibilityQueryAXTreeResponse))]
+[JsonSerializable(typeof(AuditsIssueAddedResponse))]
 [JsonSerializable(typeof(BasicFrameResponse))]
 [JsonSerializable(typeof(BindingCalledResponse))]
 [JsonSerializable(typeof(BrowserGetVersionResponse))]
@@ -245,6 +247,10 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetInfo))]
 [JsonSerializable(typeof(WaitForFunctionPollingOption))]
 [JsonSerializable(typeof(WaitForOptions))]
+[JsonSerializable(typeof(CdpWebMcp.WebMcpToolsAddedProtocolEvent))]
+[JsonSerializable(typeof(CdpWebMcp.WebMcpToolsRemovedProtocolEvent))]
+[JsonSerializable(typeof(CdpWebMcp.WebMcpToolInvokedProtocolEvent))]
+[JsonSerializable(typeof(CdpWebMcp.WebMcpToolRespondedProtocolEvent))]
 [JsonSerializable(typeof(GeolocationOption))]
 [JsonSerializable(typeof(JsonElement))]
 [JsonSerializable(typeof(string))]
