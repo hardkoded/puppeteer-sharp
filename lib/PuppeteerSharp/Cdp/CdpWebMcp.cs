@@ -275,19 +275,19 @@ public class CdpWebMcp
         }
     }
 
-    private class WebMcpToolsAddedProtocolEvent
+    internal class WebMcpToolsAddedProtocolEvent
     {
         [JsonPropertyName("tools")]
         public WebMcpProtocolTool[] Tools { get; set; }
     }
 
-    private class WebMcpToolsRemovedProtocolEvent
+    internal class WebMcpToolsRemovedProtocolEvent
     {
         [JsonPropertyName("tools")]
         public WebMcpProtocolRemovedTool[] Tools { get; set; }
     }
 
-    private class WebMcpToolInvokedProtocolEvent
+    internal class WebMcpToolInvokedProtocolEvent
     {
         [JsonPropertyName("frameId")]
         public string FrameId { get; set; }
@@ -302,7 +302,7 @@ public class CdpWebMcp
         public string ToolName { get; set; }
     }
 
-    private class WebMcpToolRespondedProtocolEvent
+    internal class WebMcpToolRespondedProtocolEvent
     {
         [JsonPropertyName("errorText")]
         public string ErrorText { get; set; }
@@ -320,7 +320,7 @@ public class CdpWebMcp
         public string Status { get; set; }
     }
 
-    private class WebMcpProtocolAnnotation
+    internal class WebMcpProtocolAnnotation
     {
         [JsonPropertyName("autosubmit")]
         public bool? Autosubmit { get; set; }
@@ -332,7 +332,7 @@ public class CdpWebMcp
         public bool? UntrustedContent { get; set; }
     }
 
-    private class WebMcpProtocolRemovedTool
+    internal class WebMcpProtocolRemovedTool
     {
         [JsonPropertyName("frameId")]
         public string FrameId { get; set; }
@@ -341,7 +341,7 @@ public class CdpWebMcp
         public string Name { get; set; }
     }
 
-    private class WebMcpProtocolTool
+    internal class WebMcpProtocolTool
     {
         [JsonPropertyName("annotations")]
         public WebMcpProtocolAnnotation Annotations { get; set; }
