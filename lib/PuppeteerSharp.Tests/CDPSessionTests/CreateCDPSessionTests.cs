@@ -187,7 +187,7 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(client.Detached, Is.True);
         }
 
-        [Test]
+        [Test, PuppeteerTest("puppeteer-sharp", "CDPSession", "should receive events on a service worker session created via CreateCDPSessionAsync")]
         public async Task ShouldReceiveEventsOnAServiceWorkerSessionCreatedViaCreateCDPSessionAsync()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
