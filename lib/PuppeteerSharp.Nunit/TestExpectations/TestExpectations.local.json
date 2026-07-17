@@ -131,5 +131,12 @@
     "platforms": ["linux", "win32"],
     "parameters": ["chrome", "cdp"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "BidiWorkerTarget.CreateCDPSessionAsync always throws PuppeteerException(\"Not supported\") on Firefox, so this CDP-only regression test for #3517 does not apply there",
+    "testIdPattern": "[puppeteer-sharp] CDPSession should receive events on a service worker session created via CreateCDPSessionAsync",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   }
 ]

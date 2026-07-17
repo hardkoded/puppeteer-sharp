@@ -111,6 +111,15 @@ public class CdpTarget : Target
     {
         var session = await SessionFactory(false).ConfigureAwait(false);
         session.Target = this;
+
+        // Worker-type sessions buffer their early method-events until flushed (see
+        // CDPSession.BufferEarlyMessages), so an internal consumer that subscribes right after
+        // attaching (e.g. CdpWebWorker) doesn't lose Chrome's replayed init events. This public
+        // API returns the session before the caller has a chance to subscribe, so there is no
+        // "internal listener" to protect here; flush immediately so future events (e.g.
+        // Debugger.scriptParsed) reach the caller's MessageReceived handler instead of sitting in
+        // the buffer forever.
+        session.FlushEarlyMessages();
         return session;
     }
 

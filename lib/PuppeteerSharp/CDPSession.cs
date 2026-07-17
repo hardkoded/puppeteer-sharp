@@ -129,7 +129,11 @@ namespace PuppeteerSharp
 
                 while (_bufferedMessages.Count > 0)
                 {
-                    _messageReceived?.Invoke(this, _bufferedMessages.Dequeue());
+                    // Dequeue unconditionally before the null-conditional invoke: `a?.M(Dequeue())` would
+                    // short-circuit the argument evaluation (and never dequeue) when nobody has subscribed
+                    // yet, spinning this loop forever.
+                    var message = _bufferedMessages.Dequeue();
+                    _messageReceived?.Invoke(this, message);
                 }
             }
         }

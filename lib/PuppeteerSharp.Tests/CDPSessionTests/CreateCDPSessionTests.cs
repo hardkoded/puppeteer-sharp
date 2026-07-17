@@ -187,6 +187,28 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
             Assert.That(client.Detached, Is.True);
         }
 
+        [Test, PuppeteerTest("puppeteer-sharp", "CDPSession", "should receive events on a service worker session created via CreateCDPSessionAsync")]
+        public async Task ShouldReceiveEventsOnAServiceWorkerSessionCreatedViaCreateCDPSessionAsync()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker, new WaitForOptions(3_000));
+
+            var client = await target.CreateCDPSessionAsync();
+            var scriptParsedTaskCompletion = new TaskCompletionSource<bool>();
+            client.MessageReceived += (_, e) =>
+            {
+                if (e.MessageID == "Debugger.scriptParsed")
+                {
+                    scriptParsedTaskCompletion.TrySetResult(true);
+                }
+            };
+
+            await client.SendAsync("Debugger.enable");
+
+            var completed = await Task.WhenAny(scriptParsedTaskCompletion.Task, Task.Delay(5_000));
+            Assert.That(completed, Is.EqualTo(scriptParsedTaskCompletion.Task), "Debugger.scriptParsed was not received for the service worker session.");
+        }
+
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should handle session callbacks when Chrome sends error without sessionId")]
         public async Task ShouldHandleSessionCallbacksWhenChromeSendsErrorWithoutSessionId()
         {
