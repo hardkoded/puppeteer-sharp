@@ -147,8 +147,8 @@ namespace PuppeteerSharp
             // target created in that gap is never observed - TargetCreated/TargetChanged are driven by the CDP
             // message pump on its own thread, so that gap is real on .NET even though it can't happen in
             // upstream's single-threaded JS.
-            using var created = FromEventBufferedExtras.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
-            using var changed = FromEventBufferedExtras.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
+            using var created = PuppeteerExtras.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
+            using var changed = PuppeteerExtras.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
 
             try
             {
