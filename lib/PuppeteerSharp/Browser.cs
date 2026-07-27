@@ -109,6 +109,18 @@ namespace PuppeteerSharp
         public abstract Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
 
         /// <inheritdoc/>
+        public abstract Task<string> InstallPWAAsync(InstallPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task UninstallPWAAsync(UninstallPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task<IPage> LaunchPWAAsync(LaunchPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync(bool includeAll = false)
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))

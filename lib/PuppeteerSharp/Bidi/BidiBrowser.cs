@@ -208,6 +208,22 @@ public class BidiBrowser : Browser
     public override Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync()
         => throw new NotSupportedException("Extensions is not supported in WebDriver BiDi.");
 
+    /// <inheritdoc/>
+    public override Task<string> InstallPWAAsync(InstallPWAOptions options)
+        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+
+    /// <inheritdoc/>
+    public override Task UninstallPWAAsync(UninstallPWAOptions options)
+        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+
+    /// <inheritdoc/>
+    public override Task<IPage> LaunchPWAAsync(LaunchPWAOptions options)
+        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+
+    /// <inheritdoc/>
+    public override Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options)
+        => throw new NotSupportedException("PWAs are not supported in WebDriver BiDi.");
+
     /// <inheritdoc />
     public override ITarget[] Targets()
         =>
