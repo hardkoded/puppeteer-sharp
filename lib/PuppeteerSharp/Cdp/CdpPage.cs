@@ -621,59 +621,33 @@ public class CdpPage : Page
 
         var timeout = options?.Timeout ?? DefaultTimeout;
 
-        // A ReplaySubject(1), not Observable.FromEvent: listeners must be attached before checking Frames
-        // below for an already-matching frame, exactly like the pre-RxSharp implementation, and a plain
-        // Subject would silently drop a matching frame event that fires between attaching the handlers and
-        // this method actually subscribing via FirstValueFrom() further down - see the identical note on
+        // FromEventBuffered, not Observable.FromEvent: it attaches the handlers immediately (right here),
+        // before checking Frames below for an already-matching frame - see the identical note on
         // Browser.WaitForTargetAsync.
-        using var frameSubject = new ReplaySubject<IFrame>(1);
+        using var attached = FromEventBufferedExtras.FromEventBuffered<FrameEventArgs>(h => FrameManager.FrameAttached += h, h => FrameManager.FrameAttached -= h);
+        using var navigated = FromEventBufferedExtras.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameManager.FrameNavigated += h, h => FrameManager.FrameNavigated -= h);
 
-        void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
+        foreach (var frame in Frames)
         {
-            if (predicate(e.Frame))
+            if (predicate(frame))
             {
-                frameSubject.OnNext(e.Frame);
+                return frame;
             }
         }
 
-        void FrameAttachedEventListener(object sender, FrameEventArgs e)
+        var result = await attached.AsObservable().Map(e => e.Frame)
+            .MergeWith(navigated.AsObservable().Map(e => e.Frame))
+            .Filter(predicate)
+            .RaceWith(SessionClosedSignal<IFrame>(), TimeoutSignal<IFrame>(timeout))
+            .FirstValueFrom()
+            .ConfigureAwait(false);
+
+        if (SessionClosedTask.IsFaulted)
         {
-            if (predicate(e.Frame))
-            {
-                frameSubject.OnNext(e.Frame);
-            }
+            await SessionClosedTask.ConfigureAwait(false);
         }
 
-        try
-        {
-            FrameManager.FrameAttached += FrameAttachedEventListener;
-            FrameManager.FrameNavigated += FrameNavigatedEventListener;
-
-            foreach (var frame in Frames)
-            {
-                if (predicate(frame))
-                {
-                    return frame;
-                }
-            }
-
-            var result = await frameSubject.AsObservable()
-                .RaceWith(SessionClosedSignal<IFrame>(), TimeoutSignal<IFrame>(timeout))
-                .FirstValueFrom()
-                .ConfigureAwait(false);
-
-            if (SessionClosedTask.IsFaulted)
-            {
-                await SessionClosedTask.ConfigureAwait(false);
-            }
-
-            return result;
-        }
-        finally
-        {
-            FrameManager.FrameAttached -= FrameAttachedEventListener;
-            FrameManager.FrameNavigated -= FrameNavigatedEventListener;
-        }
+        return result;
     }
 
     /// <inheritdoc/>
@@ -1088,17 +1062,11 @@ public class CdpPage : Page
         };
     }
 
-    // FromCancellationToken/Timeout only ever call OnError, never OnNext - this projection exists purely
-    // so those Observable<Unit> notifiers type-check inside RaceWith(Observable<T>), matching how rxjs
-    // relies on TypeScript accepting Observable<never> anywhere an Observable<T> is expected. C# has no
-    // bottom type.
-    private static TResult NeverReached<TResult>(Unit value) => throw new InvalidOperationException("unreachable: this observable only ever errors");
-
     private static Observable<T> TimeoutSignal<T>(int timeout) =>
         TimeoutExtras.Timeout(
                 TimeSpan.FromMilliseconds(timeout),
                 () => new TimeoutException($"Timeout of {timeout} ms exceeded"))
-            .Map<Unit, T>(NeverReached<T>);
+            .AssumeNeverEmits<T>();
 
     private void SetupPrimaryTargetListeners()
     {
@@ -1114,7 +1082,7 @@ public class CdpPage : Page
         var sessionClosed = SessionClosedTask.ContinueWith(
             t => t.IsFaulted ? throw t.Exception.GetBaseException() : Unit.Default,
             TaskScheduler.Default);
-        return Observable.From(sessionClosed).Map<Unit, T>(NeverReached<T>);
+        return Observable.From(sessionClosed).AssumeNeverEmits<T>();
     }
 
     private void OnAttachedToTarget(object sender, SessionEventArgs e)
