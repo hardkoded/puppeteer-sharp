@@ -624,8 +624,8 @@ public class CdpPage : Page
         // FromEventBuffered, not Observable.FromEvent: it attaches the handlers immediately (right here),
         // before checking Frames below for an already-matching frame - see the identical note on
         // Browser.WaitForTargetAsync.
-        using var attached = PuppeteerExtras.FromEventBuffered<FrameEventArgs>(h => FrameManager.FrameAttached += h, h => FrameManager.FrameAttached -= h);
-        using var navigated = PuppeteerExtras.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameManager.FrameNavigated += h, h => FrameManager.FrameNavigated -= h);
+        using var attached = Extensions.FromEventBuffered<FrameEventArgs>(h => FrameManager.FrameAttached += h, h => FrameManager.FrameAttached -= h);
+        using var navigated = Extensions.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameManager.FrameNavigated += h, h => FrameManager.FrameNavigated -= h);
 
         foreach (var frame in Frames)
         {
@@ -1063,7 +1063,7 @@ public class CdpPage : Page
     }
 
     private static Observable<T> TimeoutSignal<T>(int timeout) =>
-        PuppeteerExtras.Timeout(
+        Extensions.Timeout(
                 TimeSpan.FromMilliseconds(timeout),
                 () => new TimeoutException($"Timeout of {timeout} ms exceeded"))
             .AssumeNeverEmits<T>();
