@@ -70,6 +70,13 @@ namespace PuppeteerSharp
         public abstract ValueTask DisposeAsync();
 
         /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc/>
         public Task<IJSHandle> EvaluateFunctionHandleAsync(string pageFunction, params object[] args)
         {
             return Realm.EvaluateFunctionHandleAsync(pageFunction, [this, .. args]);
@@ -87,6 +94,20 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             return Realm.EvaluateFunctionAsync<T>(script, [this, .. args]);
+        }
+
+        /// <summary>
+        /// Disposes the handle. By default, disposal is delegated to <see cref="DisposeAsync"/> without
+        /// waiting for it to complete; any exception raised is swallowed, mirroring the fire-and-forget
+        /// nature of a synchronous <c>Dispose</c> call over an asynchronous resource.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _ = DisposeAsync().AsTask();
+            }
         }
 
         /// <summary>

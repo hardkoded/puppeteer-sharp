@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// IJSHandle represents an in-page JavaScript object. JSHandles can be created with the <see cref="IPage.EvaluateExpressionHandleAsync(string)"/> and <see cref="IPage.EvaluateFunctionHandleAsync(string, object[])"/> methods.
     /// </summary>
-    public interface IJSHandle : IAsyncDisposable
+    public interface IJSHandle : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Gets a value indicating whether this <see cref="IJSHandle"/> is disposed.
