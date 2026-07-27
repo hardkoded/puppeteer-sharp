@@ -47,6 +47,9 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc />
 public class CdpPage : Page
 {
+    // See the comment at its use sites (WaitForFrameAsync) for why this isn't the FromEventBuffered default of 1.
+    private const int EventBufferSize = 16;
+
     private readonly ConcurrentDictionary<string, CdpWebWorker> _workers = new();
     private readonly ITargetManager _targetManager;
     private readonly CdpWebMcp _webMcp;
@@ -623,9 +626,9 @@ public class CdpPage : Page
 
         // FromEventBuffered, not Observable.FromEvent: it attaches the handlers immediately (right here),
         // before checking Frames below for an already-matching frame - see the identical note on
-        // Browser.WaitForTargetAsync.
-        using var attached = Extensions.FromEventBuffered<FrameEventArgs>(h => FrameManager.FrameAttached += h, h => FrameManager.FrameAttached -= h);
-        using var navigated = Extensions.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameManager.FrameNavigated += h, h => FrameManager.FrameNavigated -= h);
+        // Browser.WaitForTargetAsync, including why EventBufferSize isn't the FromEventBuffered default of 1.
+        using var attached = RxExtensions.FromEventBuffered<FrameEventArgs>(h => FrameManager.FrameAttached += h, h => FrameManager.FrameAttached -= h, EventBufferSize);
+        using var navigated = RxExtensions.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameManager.FrameNavigated += h, h => FrameManager.FrameNavigated -= h, EventBufferSize);
 
         foreach (var frame in Frames)
         {
@@ -1063,7 +1066,7 @@ public class CdpPage : Page
     }
 
     private static Observable<T> TimeoutSignal<T>(int timeout) =>
-        Extensions.Timeout(
+        RxExtensions.Timeout(
                 TimeSpan.FromMilliseconds(timeout),
                 () => new TimeoutException($"Timeout of {timeout} ms exceeded"))
             .AssumeNeverEmits<T>();

@@ -22,6 +22,9 @@ namespace PuppeteerSharp
     public abstract class Browser : IBrowser
 #pragma warning disable CA1724
     {
+        // See the comment at its only use site (WaitForTargetAsync) for why this isn't the FromEventBuffered default of 1.
+        private const int EventBufferSize = 16;
+
         /// <inheritdoc/>
         public event EventHandler Closed;
 
@@ -147,8 +150,15 @@ namespace PuppeteerSharp
             // target created in that gap is never observed - TargetCreated/TargetChanged are driven by the CDP
             // message pump on its own thread, so that gap is real on .NET even though it can't happen in
             // upstream's single-threaded JS.
-            using var created = Extensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
-            using var changed = Extensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
+            //
+            // bufferSize is deliberately more than the default of 1: with just 1, if a matching target's event
+            // and a later non-matching target's event both land in that same narrow pre-subscribe gap, the
+            // size-1 buffer keeps only the most recent (non-matching) one, silently losing the match - unlike
+            // the old TrySetResult-based implementation, which processes every firing and lets the first match
+            // win regardless of how many events arrive before anyone awaits it. EventBufferSize gives enough
+            // headroom to absorb a realistic burst in that gap without buffering unboundedly for the whole wait.
+            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h, EventBufferSize);
+            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h, EventBufferSize);
 
             try
             {
