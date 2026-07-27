@@ -10,6 +10,10 @@ using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
+using RxSharp;
+using RxSharp.Extras;
+using RxSharp.Operators;
+using RxSharp.Subjects;
 
 namespace PuppeteerSharp
 {
@@ -136,28 +140,32 @@ namespace PuppeteerSharp
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var cancellationToken = options?.CancellationToken ?? default;
-            var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            // A ReplaySubject(1), not Observable.FromEvent: listeners must be attached before checking
+            // Targets() below for an already-matching target, exactly like the pre-RxSharp implementation -
+            // using FromEvent + StartWith here would evaluate the existing-target check before subscribing
+            // (and therefore before attaching) the event handlers, leaking a race where a target created in
+            // that gap is never observed. A plain Subject isn't enough either: TargetCreated/TargetChanged
+            // are driven by the CDP message pump on its own thread, so a matching target can fire and call
+            // OnNext between attaching the handlers below and this method actually subscribing via
+            // FirstValueFrom() further down - a plain Subject has no buffer and silently drops any OnNext
+            // that arrives before a subscriber exists, which would hang this call until the timeout since
+            // targets are only ever created once. ReplaySubject(1) replays that value to the late subscriber
+            // instead of losing it.
+            using var targetSubject = new ReplaySubject<ITarget>(1);
 
             void TargetHandler(object sender, TargetChangedArgs e)
             {
                 if (predicate(e.Target))
                 {
-                    targetCompletionSource.TrySetResult(e.Target);
+                    targetSubject.OnNext(e.Target);
                 }
             }
-
-            CancellationTokenRegistration? cancellationRegistration = null;
 
             try
             {
                 TargetCreated += TargetHandler;
                 TargetChanged += TargetHandler;
-
-                if (cancellationToken != default)
-                {
-                    cancellationRegistration = cancellationToken.Register(
-                        () => targetCompletionSource.TrySetCanceled(cancellationToken));
-                }
 
                 var existingTarget = Targets().FirstOrDefault(predicate);
                 if (existingTarget != null)
@@ -165,11 +173,23 @@ namespace PuppeteerSharp
                     return existingTarget;
                 }
 
-                return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
+                // TaskCanceledException, not the plain OperationCanceledException CancellationExtras.FromCancellationToken
+                // defaults to: existing callers (and tests) rely on the exact pre-RxSharp cancellation type.
+                var cancellationSignal = CancellationExtras.FromCancellationToken(cancellationToken, () => new TaskCanceledException())
+                    .Map<Unit, ITarget>(NeverReached<ITarget>);
+
+                var timeoutSignal = TimeoutExtras.Timeout(
+                        TimeSpan.FromMilliseconds(timeout),
+                        () => new TimeoutException($"Timeout of {timeout} ms exceeded"))
+                    .Map<Unit, ITarget>(NeverReached<ITarget>);
+
+                return await targetSubject.AsObservable()
+                    .RaceWith(cancellationSignal, timeoutSignal)
+                    .FirstValueFrom()
+                    .ConfigureAwait(false);
             }
             finally
             {
-                cancellationRegistration?.Dispose();
                 TargetCreated -= TargetHandler;
                 TargetChanged -= TargetHandler;
             }
@@ -307,5 +327,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="e">The event arguments.</param>
         protected void OnTargetDiscovered(TargetChangedArgs e) => TargetDiscovered?.Invoke(this, e);
+
+        // FromCancellationToken/Timeout only ever call OnError, never OnNext - this projection exists purely
+        // so those Observable<Unit> notifiers type-check inside RaceWith(Observable<T>), matching how rxjs
+        // relies on TypeScript accepting Observable<never> anywhere an Observable<T> is expected. C# has no
+        // bottom type.
+        private static TResult NeverReached<TResult>(Unit value) => throw new InvalidOperationException("unreachable: this observable only ever errors");
     }
 }

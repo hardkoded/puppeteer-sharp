@@ -569,16 +569,8 @@ public class CdpPage : Page
                 .SwitchMap(idle => idle ? Observable.Timer(TimeSpan.FromMilliseconds(idleTime)) : Observable.Never<long>())
                 .Map(_ => Unit.Default);
 
-            var sessionClosed = SessionClosedTask.ContinueWith(
-                t => t.IsFaulted ? throw t.Exception.GetBaseException() : Unit.Default,
-                TaskScheduler.Default);
-
-            var timeoutSignal = TimeoutExtras.Timeout(
-                TimeSpan.FromMilliseconds(timeout),
-                () => new TimeoutException($"Timeout of {timeout} ms exceeded"));
-
             await idleReached
-                .RaceWith(Observable.From(sessionClosed), timeoutSignal)
+                .RaceWith(SessionClosedSignal<Unit>(), TimeoutSignal<Unit>(timeout))
                 .FirstValueFrom()
                 .ConfigureAwait(false);
         }
@@ -600,31 +592,23 @@ public class CdpPage : Page
     public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
     {
         var timeout = options?.Timeout ?? DefaultTimeout;
-        var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var networkManager = FrameManager.NetworkManager;
 
-        void RequestEventListener(object sender, RequestEventArgs e)
-        {
-            if (predicate(e.Request))
-            {
-                requestTcs.TrySetResult(e.Request);
-                FrameManager.NetworkManager.Request -= RequestEventListener;
-            }
-        }
+        var requestReceived = Observable.FromEvent<RequestEventArgs>(h => networkManager.Request += h, h => networkManager.Request -= h)
+            .Map(e => e.Request)
+            .Filter(predicate);
 
-        FrameManager.NetworkManager.Request += RequestEventListener;
-
-        await Task.WhenAny(requestTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
-        {
-            FrameManager.NetworkManager.Request -= RequestEventListener;
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        }).ConfigureAwait(false);
+        var result = await requestReceived
+            .RaceWith(SessionClosedSignal<IRequest>(), TimeoutSignal<IRequest>(timeout))
+            .FirstValueFrom()
+            .ConfigureAwait(false);
 
         if (SessionClosedTask.IsFaulted)
         {
             await SessionClosedTask.ConfigureAwait(false);
         }
 
-        return await requestTcs.Task.ConfigureAwait(false);
+        return result;
     }
 
     /// <inheritdoc/>
@@ -636,14 +620,19 @@ public class CdpPage : Page
         }
 
         var timeout = options?.Timeout ?? DefaultTimeout;
-        var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        // A ReplaySubject(1), not Observable.FromEvent: listeners must be attached before checking Frames
+        // below for an already-matching frame, exactly like the pre-RxSharp implementation, and a plain
+        // Subject would silently drop a matching frame event that fires between attaching the handlers and
+        // this method actually subscribing via FirstValueFrom() further down - see the identical note on
+        // Browser.WaitForTargetAsync.
+        using var frameSubject = new ReplaySubject<IFrame>(1);
 
         void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
         {
             if (predicate(e.Frame))
             {
-                frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameNavigated -= FrameNavigatedEventListener;
+                frameSubject.OnNext(e.Frame);
             }
         }
 
@@ -651,37 +640,40 @@ public class CdpPage : Page
         {
             if (predicate(e.Frame))
             {
-                frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameAttached -= FrameAttachedEventListener;
+                frameSubject.OnNext(e.Frame);
             }
         }
 
-        FrameManager.FrameAttached += FrameAttachedEventListener;
-        FrameManager.FrameNavigated += FrameNavigatedEventListener;
+        try
+        {
+            FrameManager.FrameAttached += FrameAttachedEventListener;
+            FrameManager.FrameNavigated += FrameNavigatedEventListener;
 
-        var eventRace = Task.WhenAny(frameTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
+            foreach (var frame in Frames)
+            {
+                if (predicate(frame))
+                {
+                    return frame;
+                }
+            }
+
+            var result = await frameSubject.AsObservable()
+                .RaceWith(SessionClosedSignal<IFrame>(), TimeoutSignal<IFrame>(timeout))
+                .FirstValueFrom()
+                .ConfigureAwait(false);
+
+            if (SessionClosedTask.IsFaulted)
+            {
+                await SessionClosedTask.ConfigureAwait(false);
+            }
+
+            return result;
+        }
+        finally
         {
             FrameManager.FrameAttached -= FrameAttachedEventListener;
             FrameManager.FrameNavigated -= FrameNavigatedEventListener;
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        });
-
-        foreach (var frame in Frames)
-        {
-            if (predicate(frame))
-            {
-                return frame;
-            }
         }
-
-        await eventRace.ConfigureAwait(false);
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-
-        return await frameTcs.Task.ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -726,34 +718,33 @@ public class CdpPage : Page
         WaitForOptions options = null)
     {
         var timeout = options?.Timeout ?? DefaultTimeout;
-        var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var networkManager = FrameManager.NetworkManager;
 
-        async void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
-        {
-            try
+        var responseReceived = Observable.FromEvent<ResponseCreatedEventArgs>(h => networkManager.Response += h, h => networkManager.Response -= h)
+            .Map(e => e.Response)
+            .FilterAsync(async response =>
             {
-                if (await predicate(e.Response).ConfigureAwait(false))
+                try
                 {
-                    responseTcs.TrySetResult(e.Response);
-                    FrameManager.NetworkManager.Response -= ResponseEventListener;
+                    return await predicate(response).ConfigureAwait(false);
                 }
-            }
-            catch (Exception ex)
-            {
-                responseTcs.TrySetException(new PuppeteerException("Predicated failed", ex));
-            }
-        }
+                catch (Exception ex)
+                {
+                    throw new PuppeteerException("Predicated failed", ex);
+                }
+            });
 
-        FrameManager.NetworkManager.Response += ResponseEventListener;
-
-        await Task.WhenAny(responseTcs.Task, SessionClosedTask).WithTimeout(timeout).ConfigureAwait(false);
+        var result = await responseReceived
+            .RaceWith(SessionClosedSignal<IResponse>(), TimeoutSignal<IResponse>(timeout))
+            .FirstValueFrom()
+            .ConfigureAwait(false);
 
         if (SessionClosedTask.IsFaulted)
         {
             await SessionClosedTask.ConfigureAwait(false);
         }
 
-        return await responseTcs.Task.ConfigureAwait(false);
+        return result;
     }
 
     /// <inheritdoc/>
@@ -1097,10 +1088,33 @@ public class CdpPage : Page
         };
     }
 
+    // FromCancellationToken/Timeout only ever call OnError, never OnNext - this projection exists purely
+    // so those Observable<Unit> notifiers type-check inside RaceWith(Observable<T>), matching how rxjs
+    // relies on TypeScript accepting Observable<never> anywhere an Observable<T> is expected. C# has no
+    // bottom type.
+    private static TResult NeverReached<TResult>(Unit value) => throw new InvalidOperationException("unreachable: this observable only ever errors");
+
+    private static Observable<T> TimeoutSignal<T>(int timeout) =>
+        TimeoutExtras.Timeout(
+                TimeSpan.FromMilliseconds(timeout),
+                () => new TimeoutException($"Timeout of {timeout} ms exceeded"))
+            .Map<Unit, T>(NeverReached<T>);
+
     private void SetupPrimaryTargetListeners()
     {
         PrimaryTargetClient.Ready += OnAttachedToTarget;
         PrimaryTargetClient.MessageReceived += Client_MessageReceived;
+    }
+
+    // SessionClosedTask only ever completes via TrySetException (see its getter above) - the
+    // ": Unit.Default" branch is unreachable in practice, kept only so the continuation type-checks as
+    // Task<Unit>.
+    private Observable<T> SessionClosedSignal<T>()
+    {
+        var sessionClosed = SessionClosedTask.ContinueWith(
+            t => t.IsFaulted ? throw t.Exception.GetBaseException() : Unit.Default,
+            TaskScheduler.Default);
+        return Observable.From(sessionClosed).Map<Unit, T>(NeverReached<T>);
     }
 
     private void OnAttachedToTarget(object sender, SessionEventArgs e)
