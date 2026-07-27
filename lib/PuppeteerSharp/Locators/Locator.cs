@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
+using RxSharp;
+using RxSharp.Extras;
 
 namespace PuppeteerSharp.Locators
 {
@@ -475,6 +477,15 @@ namespace PuppeteerSharp.Locators
             Func<CancellationToken, Task<IJSHandle>> operation,
             CancellationToken cancellationToken)
         {
+            // timeoutCts/linkedCts still give each attempt a token that aborts in-flight CDP calls
+            // promptly on timeout, which RetryAndRaceWithSignalAndTimer's own timeout branch (below)
+            // cannot do by itself - it only stops listening to the losing attempt, it doesn't cancel it.
+            // The two timers race independently: if linkedCts's timeoutCts fires a moment before the
+            // combinator's own timer, the in-flight operation throws OperationCanceledException, which
+            // Retry() treats as just another retryable error and immediately attempts again - wasting at
+            // most one RetryDelay before the combinator's own timer wins the race and produces the real
+            // TimeoutException. Acceptable: it only affects Timeout()-vs-Timeout() jitter, never allows
+            // retries to continue indefinitely past the deadline.
             using var timeoutCts = Timeout > 0
                 ? new CancellationTokenSource(Timeout)
                 : new CancellationTokenSource();
@@ -484,42 +495,30 @@ namespace PuppeteerSharp.Locators
 
             var linkedToken = linkedCts.Token;
 
-            while (true)
+            try
             {
-                try
-                {
-                    return await operation(linkedToken).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
-                {
-                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception) when (cancellationToken.IsCancellationRequested)
-                {
-                    throw new OperationCanceledException(cancellationToken);
-                }
-                catch (Exception) when (timeoutCts.IsCancellationRequested)
-                {
-                    throw new TimeoutException($"Timed out after waiting {Timeout}ms");
-                }
-                catch
-                {
-                    // Non-cancellation error: wait before retrying.
-                    // Task.Delay is wrapped in try-catch because exceptions thrown
-                    // inside a catch block bypass sibling catch clauses.
-                    try
-                    {
-                        await Task.Delay(RetryDelay, linkedToken).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
-                    {
-                        throw new TimeoutException($"Timed out after waiting {Timeout}ms");
-                    }
-                }
+                return await Observable
+                    .Defer(() => Observable.From(operation(linkedToken)))
+                    .RetryAndRaceWithSignalAndTimer(
+                        Timeout > 0 ? TimeSpan.FromMilliseconds(Timeout) : TimeSpan.Zero,
+                        causeFactory: null,
+                        retryDelay: TimeSpan.FromMilliseconds(RetryDelay),
+                        cancellationToken)
+                    .FirstValueFrom()
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timed out after waiting {Timeout}ms");
+            }
+            catch (OperationCanceledException)
+            {
+                // Retry() never lets the retried operation's own OperationCanceledException (e.g. from
+                // linkedCts's internal timeout) escape - it just retries. So any OperationCanceledException
+                // reaching here can only have come from the combinator's cancellationToken race branch,
+                // i.e. genuine caller cancellation. Rethrow with the caller's token attached, matching what
+                // callers of the pre-RxSharp implementation could already rely on.
+                throw new OperationCanceledException(cancellationToken);
             }
         }
 

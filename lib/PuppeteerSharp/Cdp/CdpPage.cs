@@ -36,8 +36,11 @@ using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
+using RxSharp;
+using RxSharp.Extras;
+using RxSharp.Operators;
+using RxSharp.Subjects;
 using StackTrace = PuppeteerSharp.Cdp.Messaging.StackTrace;
-using Timer = System.Timers.Timer;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -539,37 +542,18 @@ public class CdpPage : Page
         var timeout = options?.Timeout ?? DefaultTimeout;
         var idleTime = options?.IdleTime ?? 500;
 
-        var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var idleTimer = new Timer { Interval = idleTime, };
-
-        idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
-
         var networkManager = FrameManager.NetworkManager;
 
-        void Evaluate()
-        {
-            idleTimer.Stop();
+        // A BehaviorSubject, not Observable.FromEvent + StartWith: StartWith emits its seed before
+        // subscribing upstream, which would evaluate NumRequestsInProgress before the event handlers
+        // below are even attached, leaking a race where a request that starts and finishes in that gap
+        // is never observed. Attaching the raw handlers first and only then seeding the subject (exactly
+        // the old Timer-based implementation's ordering) closes that gap.
+        using var isIdle = new BehaviorSubject<bool>(false);
 
-            if (networkManager.NumRequestsInProgress == 0)
-            {
-                idleTimer.Start();
-            }
-        }
-
+        void Evaluate() => isIdle.OnNext(networkManager.NumRequestsInProgress == 0);
         void RequestEventListener(object sender, RequestEventArgs e) => Evaluate();
         void ResponseEventListener(object sender, ResponseCreatedEventArgs e) => Evaluate();
-
-        void Cleanup()
-        {
-            idleTimer.Stop();
-            idleTimer.Dispose();
-
-            networkManager.Request -= RequestEventListener;
-            networkManager.Response -= ResponseEventListener;
-            networkManager.RequestFinished -= RequestEventListener;
-            networkManager.RequestFailed -= RequestEventListener;
-        }
 
         networkManager.Request += RequestEventListener;
         networkManager.Response += ResponseEventListener;
@@ -578,14 +562,33 @@ public class CdpPage : Page
 
         Evaluate();
 
-        await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
+        try
         {
-            Cleanup();
+            var idleReached = isIdle.AsObservable()
+                .DistinctUntilChanged()
+                .SwitchMap(idle => idle ? Observable.Timer(TimeSpan.FromMilliseconds(idleTime)) : Observable.Never<long>())
+                .Map(_ => Unit.Default);
 
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        }).ConfigureAwait(false);
+            var sessionClosed = SessionClosedTask.ContinueWith(
+                t => t.IsFaulted ? throw t.Exception.GetBaseException() : Unit.Default,
+                TaskScheduler.Default);
 
-        Cleanup();
+            var timeoutSignal = TimeoutExtras.Timeout(
+                TimeSpan.FromMilliseconds(timeout),
+                () => new TimeoutException($"Timeout of {timeout} ms exceeded"));
+
+            await idleReached
+                .RaceWith(Observable.From(sessionClosed), timeoutSignal)
+                .FirstValueFrom()
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            networkManager.Request -= RequestEventListener;
+            networkManager.Response -= ResponseEventListener;
+            networkManager.RequestFinished -= RequestEventListener;
+            networkManager.RequestFailed -= RequestEventListener;
+        }
 
         if (SessionClosedTask.IsFaulted)
         {
