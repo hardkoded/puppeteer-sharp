@@ -143,20 +143,6 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var cancellationToken = options?.CancellationToken ?? default;
 
-            // FromEventBuffered, not Observable.FromEvent: it attaches the handlers immediately (right here),
-            // before checking Targets() below for an already-matching target, exactly like the pre-RxSharp
-            // implementation. A plain, lazily-subscribing FromEvent would evaluate the existing-target check
-            // before subscribing (and therefore before attaching) the event handlers, leaking a race where a
-            // target created in that gap is never observed - TargetCreated/TargetChanged are driven by the CDP
-            // message pump on its own thread, so that gap is real on .NET even though it can't happen in
-            // upstream's single-threaded JS.
-            //
-            // bufferSize is deliberately more than the default of 1: with just 1, if a matching target's event
-            // and a later non-matching target's event both land in that same narrow pre-subscribe gap, the
-            // size-1 buffer keeps only the most recent (non-matching) one, silently losing the match - unlike
-            // the old TrySetResult-based implementation, which processes every firing and lets the first match
-            // win regardless of how many events arrive before anyone awaits it. EventBufferSize gives enough
-            // headroom to absorb a realistic burst in that gap without buffering unboundedly for the whole wait.
             using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h, EventBufferSize);
             using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h, EventBufferSize);
 
