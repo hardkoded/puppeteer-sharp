@@ -22,5 +22,15 @@ namespace PuppeteerSharp.Tests.ElementHandleTests
             Assert.That(await element.IsVisibleAsync(), Is.True);
             Assert.That(await element.IsHiddenAsync(), Is.False);
         }
+
+        [Test, PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden", "should not throw for a detached text node with no parent element")]
+        public async Task ShouldNotThrowForADetachedTextNodeWithNoParentElement()
+        {
+            await Page.SetContentAsync("<div>x</div>");
+            var handle = await Page.EvaluateFunctionHandleAsync("() => document.createTextNode('orphan')");
+            var textHandle = (IElementHandle)handle;
+            Assert.That(await textHandle.IsHiddenAsync(), Is.True);
+            Assert.That(await textHandle.IsVisibleAsync(), Is.False);
+        }
     }
 }
