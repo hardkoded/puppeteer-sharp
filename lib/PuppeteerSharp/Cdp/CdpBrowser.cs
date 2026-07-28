@@ -261,6 +261,91 @@ public class CdpBrowser : Browser
         return extensionsMap;
     }
 
+    /// <inheritdoc/>
+    public override async Task<string> InstallPWAAsync(InstallPWAOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        await Connection.SendAsync(
+            "PWA.install",
+            new PWAInstallRequest { ManifestId = options.ManifestId, InstallUrlOrBundleUrl = options.InstallUrlOrBundleUrl }).ConfigureAwait(false);
+
+        if (options.DisplayMode.HasValue)
+        {
+            await Connection.SendAsync(
+                "PWA.changeAppUserSettings",
+                new PWAChangeAppUserSettingsRequest { ManifestId = options.ManifestId, DisplayMode = options.DisplayMode }).ConfigureAwait(false);
+        }
+
+        return options.ManifestId;
+    }
+
+    /// <inheritdoc/>
+    public override async Task UninstallPWAAsync(UninstallPWAOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        await Connection.SendAsync("PWA.uninstall", new PWAUninstallRequest { ManifestId = options.ManifestId }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IPage> LaunchPWAAsync(LaunchPWAOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        // `PWA.launch` resolves with the id of the launched *tab* target. Tab targets sit above page targets
+        // in the target hierarchy and are not exposed through Targets(), so the returned id can't be awaited
+        // directly.
+        var response = await Connection.SendAsync<PWALaunchResponse>(
+            "PWA.launch",
+            new PWALaunchRequest { ManifestId = options.ManifestId, Url = options.Url }).ConfigureAwait(false);
+
+        var target = (CdpTarget)await WaitForTargetAsync(
+            candidate =>
+            {
+                var tab = TargetManager.GetAvailableTargets().GetValueOrDefault(response.TargetId);
+                if (tab?.Type != TargetType.Tab)
+                {
+                    return false;
+                }
+
+                return TargetManager.GetChildTargets(tab).Contains(candidate);
+            },
+            new WaitForOptions { Timeout = options.Timeout }).ConfigureAwait(false);
+
+        var page = await target.PageAsync().ConfigureAwait(false);
+        if (page == null)
+        {
+            throw new PuppeteerException($"Failed to create a page for the launched PWA (manifestId = {options.ManifestId})");
+        }
+
+        return page;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var response = await Connection.SendAsync<PWAGetOsAppStateResponse>(
+            "PWA.getOsAppState",
+            new PWAGetOsAppStateRequest { ManifestId = options.ManifestId }).ConfigureAwait(false);
+
+        return new PWAState { BadgeCount = response.BadgeCount, FileHandlers = response.FileHandlers };
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
