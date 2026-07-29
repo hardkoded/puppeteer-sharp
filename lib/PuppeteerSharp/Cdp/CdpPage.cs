@@ -36,10 +36,10 @@ using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Media;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
-using RxSharp;
-using RxSharp.Extras;
-using RxSharp.Operators;
-using RxSharp.Subjects;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
+using ReactiveExtensionsSharp.Subjects;
 using StackTrace = PuppeteerSharp.Cdp.Messaging.StackTrace;
 
 namespace PuppeteerSharp.Cdp;

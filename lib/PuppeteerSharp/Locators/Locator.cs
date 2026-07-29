@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Input;
-using RxSharp;
-using RxSharp.Extras;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
 
 namespace PuppeteerSharp.Locators
 {
@@ -517,7 +517,7 @@ namespace PuppeteerSharp.Locators
                 // linkedCts's internal timeout) escape - it just retries. So any OperationCanceledException
                 // reaching here can only have come from the combinator's cancellationToken race branch,
                 // i.e. genuine caller cancellation. Rethrow with the caller's token attached, matching what
-                // callers of the pre-RxSharp implementation could already rely on.
+                // callers of the pre-ReactiveExtensionsSharp implementation could already rely on.
                 throw new OperationCanceledException(cancellationToken);
             }
         }

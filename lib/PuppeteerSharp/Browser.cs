@@ -10,9 +10,9 @@ using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
-using RxSharp;
-using RxSharp.Extras;
-using RxSharp.Operators;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
 
 namespace PuppeteerSharp
 {
@@ -163,7 +163,7 @@ namespace PuppeteerSharp
             catch (OperationCanceledException)
             {
                 // TaskCanceledException, not the plain OperationCanceledException the timeout/cancellation
-                // race defaults to: existing callers (and tests) rely on the exact pre-RxSharp cancellation type.
+                // race defaults to: existing callers (and tests) rely on the exact pre-ReactiveExtensionsSharp cancellation type.
                 throw new TaskCanceledException();
             }
         }
