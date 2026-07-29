@@ -75,12 +75,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         };
 
         // Convert headers
-        Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var header in data.Headers)
-        {
-            var headerName = header.Name.ToLowerInvariant();
-            Headers[headerName] = HttpUtils.NormalizeHeaderValue(headerName, header.Value.Value);
-        }
+        Headers = BuildHeaders(data.Headers);
     }
 
     // Internal constructor for synthetic responses (e.g., cached history navigation)
@@ -105,12 +100,7 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
         FromCache = data.FromCache;
         RemoteAddress = new RemoteAddress { IP = string.Empty, Port = -1 };
 
-        Headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var header in data.Headers)
-        {
-            var headerName = header.Name.ToLowerInvariant();
-            Headers[headerName] = HttpUtils.NormalizeHeaderValue(headerName, header.Value.Value);
-        }
+        Headers = BuildHeaders(data.Headers);
     }
 
     /// <inheritdoc />
@@ -154,6 +144,24 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     internal static BidiHttpResponse FromResponseData(WebDriverBiDi.Network.ResponseData data)
     {
         return new BidiHttpResponse(data);
+    }
+
+    // Combines duplicate header values with a newline before normalizing, so repeated
+    // headers (e.g. multiple Set-Cookie entries) are preserved instead of the last one
+    // silently overwriting the earlier ones.
+    private static Dictionary<string, string> BuildHeaders(IEnumerable<WebDriverBiDi.Network.ReadOnlyHeader> headers)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in headers)
+        {
+            var headerName = header.Name.ToLowerInvariant();
+            var value = result.TryGetValue(headerName, out var existingValue)
+                ? $"{existingValue}\n{header.Value.Value}"
+                : header.Value.Value;
+            result[headerName] = HttpUtils.NormalizeHeaderValue(headerName, value);
+        }
+
+        return result;
     }
 
     private void Initialize()
