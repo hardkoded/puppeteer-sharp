@@ -22,9 +22,6 @@ namespace PuppeteerSharp
     public abstract class Browser : IBrowser
 #pragma warning disable CA1724
     {
-        // See the comment at its only use site (WaitForTargetAsync) for why this isn't the FromEventBuffered default of 1.
-        private const int EventBufferSize = 16;
-
         /// <inheritdoc/>
         public event EventHandler Closed;
 
@@ -143,8 +140,8 @@ namespace PuppeteerSharp
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var cancellationToken = options?.CancellationToken ?? default;
 
-            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h, EventBufferSize);
-            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h, EventBufferSize);
+            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
+            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
 
             try
             {
