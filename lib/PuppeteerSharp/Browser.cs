@@ -13,6 +13,7 @@ using PuppeteerSharp.QueryHandlers;
 using ReactiveExtensionsSharp;
 using ReactiveExtensionsSharp.Extras;
 using ReactiveExtensionsSharp.Operators;
+using RxSharp = ReactiveExtensionsSharp;
 
 namespace PuppeteerSharp
 {

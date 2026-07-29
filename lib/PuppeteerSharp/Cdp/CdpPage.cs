@@ -40,6 +40,7 @@ using ReactiveExtensionsSharp;
 using ReactiveExtensionsSharp.Extras;
 using ReactiveExtensionsSharp.Operators;
 using ReactiveExtensionsSharp.Subjects;
+using RxSharp = ReactiveExtensionsSharp;
 using StackTrace = PuppeteerSharp.Cdp.Messaging.StackTrace;
 
 namespace PuppeteerSharp.Cdp;

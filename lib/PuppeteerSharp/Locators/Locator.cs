@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Input;
 using ReactiveExtensionsSharp;
 using ReactiveExtensionsSharp.Extras;
+using RxSharp = ReactiveExtensionsSharp;
 
 namespace PuppeteerSharp.Locators
 {
