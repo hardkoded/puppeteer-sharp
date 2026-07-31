@@ -154,7 +154,6 @@ namespace PuppeteerSharp
                     .MergeWith(Observable.From(Targets()))
                     .Filter(predicate)
                     .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
-                    .FirstValueFrom()
                     .ConfigureAwait(false);
             }
             catch (TimeoutException)

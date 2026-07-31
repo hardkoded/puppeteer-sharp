@@ -505,7 +505,6 @@ namespace PuppeteerSharp.Locators
                         causeFactory: null,
                         retryDelay: TimeSpan.FromMilliseconds(RetryDelay),
                         cancellationToken)
-                    .FirstValueFrom()
                     .ConfigureAwait(false);
             }
             catch (TimeoutException)
