@@ -322,6 +322,12 @@ public class CdpBrowser : Browser
             },
             new WaitForOptions { Timeout = options.Timeout }).ConfigureAwait(false);
 
+        // The child page target can be discovered (and match the predicate above) before CDP has reported
+        // its real navigated URL, which would otherwise be picked up here with page.Url still empty. Wait
+        // for the target to be fully initialized (i.e. its URL populated) before creating the Page for it,
+        // matching the pattern used by CreateTargetInPageAsync/GetDevToolsTargetPageAsync.
+        await target.InitializedTask.ConfigureAwait(false);
+
         var page = await target.PageAsync().ConfigureAwait(false);
         if (page == null)
         {
