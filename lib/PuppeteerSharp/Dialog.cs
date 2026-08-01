@@ -54,6 +54,12 @@ namespace PuppeteerSharp
         public string Message { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether the dialog has been handled.
+        /// </summary>
+        /// <value><c>true</c> if the dialog has already been accepted or dismissed; otherwise, <c>false</c>.</value>
+        public bool Handled => _handled;
+
+        /// <summary>
         /// Accept the Dialog.
         /// </summary>
         /// <returns>Task which resolves when the dialog has been accepted.</returns>

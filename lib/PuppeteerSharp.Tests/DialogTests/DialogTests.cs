@@ -48,5 +48,18 @@ namespace PuppeteerSharp.Tests.DialogTests
             var result = await Page.EvaluateExpressionAsync<string>("prompt('question?')");
             Assert.That(result, Is.Null);
         }
+
+        [Test, PuppeteerTest("dialog.spec", "Page.Events.Dialog", "should expose handled getter")]
+        public async Task ShouldExposeHandledGetter()
+        {
+            Page.Dialog += async (_, e) =>
+            {
+                Assert.That(e.Dialog.Handled, Is.False);
+                await e.Dialog.Accept();
+                Assert.That(e.Dialog.Handled, Is.True);
+            };
+
+            await Page.EvaluateExpressionAsync("alert('yo');");
+        }
     }
 }

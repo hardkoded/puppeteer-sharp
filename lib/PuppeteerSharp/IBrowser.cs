@@ -335,6 +335,55 @@ namespace PuppeteerSharp
         Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
 
         /// <summary>
+        /// Installs a Progressive Web App (PWA) and returns its manifest id.
+        /// </summary>
+        /// <param name="options">Options for installing the PWA.</param>
+        /// <returns>A task that resolves to the manifest id.</returns>
+        /// <remarks>
+        /// Only available when connected to the browser over a pipe connection. Set <see cref="LaunchOptions.Pipe"/>
+        /// to <c>true</c>; it defaults to <c>false</c>. The underlying <c>PWA</c> CDP domain is not exposed over a
+        /// WebSocket connection.
+        /// The returned manifest id echoes <see cref="InstallPWAOptions.ManifestId"/>, so it can be passed directly
+        /// to <see cref="LaunchPWAAsync(LaunchPWAOptions)"/>, <see cref="GetPWAStateAsync(GetPWAStateOptions)"/>, or
+        /// <see cref="UninstallPWAAsync(UninstallPWAOptions)"/>.
+        /// </remarks>
+        Task<string> InstallPWAAsync(InstallPWAOptions options);
+
+        /// <summary>
+        /// Uninstalls a previously installed Progressive Web App (PWA).
+        /// </summary>
+        /// <param name="options">Options for uninstalling the PWA.</param>
+        /// <returns>A task that completes when the PWA is uninstalled.</returns>
+        /// <remarks>Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>.</remarks>
+        Task UninstallPWAAsync(UninstallPWAOptions options);
+
+        /// <summary>
+        /// Launches an installed Progressive Web App (PWA) and resolves with the <see cref="IPage"/> backing the app window.
+        /// </summary>
+        /// <param name="options">Options for launching the PWA.</param>
+        /// <returns>A task that resolves to the page backing the app window.</returns>
+        /// <remarks>
+        /// Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>.
+        /// <c>PWA.launch</c> resolves with the id of the launched <i>tab</i> target. Puppeteer does not expose tab
+        /// targets through <see cref="Targets"/>; this method instead resolves with the tab's child page target
+        /// (the app's web contents). If Chromium focuses an existing app window, this returns that window's
+        /// existing page.
+        /// </remarks>
+        Task<IPage> LaunchPWAAsync(LaunchPWAOptions options);
+
+        /// <summary>
+        /// Returns the OS-integration state of an installed Progressive Web App (PWA), such as its badge count and
+        /// registered file handlers.
+        /// </summary>
+        /// <param name="options">Options for querying the PWA state.</param>
+        /// <returns>A task that resolves to the PWA state.</returns>
+        /// <remarks>
+        /// Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>. Meaningful
+        /// only for an app that is currently installed; querying an unknown manifest id rejects.
+        /// </remarks>
+        Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
+
+        /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
