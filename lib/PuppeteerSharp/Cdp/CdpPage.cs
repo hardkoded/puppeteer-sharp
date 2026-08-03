@@ -625,7 +625,27 @@ public class CdpPage : Page
 
             // Puppeteer waits for Target.CloseTask. But I found some race condition where IsClose didn't get set to true.
             // So I'm waiting for the task that set IsClose to true.
-            await _closedFinishedTask.ConfigureAwait(false);
+            //
+            // Target.closeTarget can race an in-flight, client-initiated navigation (e.g. window.location = ...
+            // from an evaluate call): Chrome acknowledges the close (success: true) but keeps loading the new
+            // document to completion first, and has been observed (headful Chrome for Testing) to then never
+            // send the follow-up Target.detachedFromTarget/Target.targetDestroyed events at all, which would
+            // leave this await pending forever. Every other protocol round-trip in this codebase is bounded by
+            // ProtocolTimeout (see CdpCDPSession.SendAsync/Connection.SendAsync); mirror that here instead of
+            // hanging indefinitely. The close request was already accepted by Chrome, so on timeout we log and
+            // move on rather than fail the caller - if the events do arrive later, IsClosed will still flip.
+            await _closedFinishedTask.WithTimeout(
+                () =>
+                {
+                    _logger.LogWarning(
+                        "Timed out waiting for confirmation that target {TargetId} was closed. Target.closeTarget " +
+                        "was acknowledged but no Target.detachedFromTarget/targetDestroyed event followed within " +
+                        "{Timeout}ms; this can happen when the close races an in-flight navigation. Continuing.",
+                        PrimaryTarget.TargetId,
+                        PrimaryTargetClient.Connection.ProtocolTimeout);
+                    return Task.CompletedTask;
+                },
+                PrimaryTargetClient.Connection.ProtocolTimeout).ConfigureAwait(false);
         }
     }
 
