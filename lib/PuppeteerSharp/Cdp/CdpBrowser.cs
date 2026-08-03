@@ -334,6 +334,18 @@ public class CdpBrowser : Browser
             throw new PuppeteerException($"Failed to create a page for the launched PWA (manifestId = {options.ManifestId})");
         }
 
+        // target.InitializedTask only guarantees the Target domain reported a URL. page.Url is populated by
+        // a separate, independently-timed pathway: target.PageAsync() above triggers a Page.getFrameTree
+        // call whose response can still carry an empty URL for the main frame even after InitializedTask
+        // resolved. If that happens, wait for the main frame to report its navigated URL via the
+        // FrameNavigated event before handing the page back, so callers never observe page.Url empty.
+        if (string.IsNullOrEmpty(page.Url))
+        {
+            await page.WaitForFrameAsync(
+                frame => frame == page.MainFrame && !string.IsNullOrEmpty(frame.Url),
+                new WaitForOptions { Timeout = options.Timeout }).ConfigureAwait(false);
+        }
+
         return page;
     }
 
