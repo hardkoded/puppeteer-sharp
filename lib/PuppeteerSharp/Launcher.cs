@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -275,7 +276,7 @@ namespace PuppeteerSharp
 
             var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                 ? options.BrowserWSEndpoint
-                : await GetWSEndpointAsync(options.BrowserURL).ConfigureAwait(false);
+                : await GetWSEndpointAsync(options.BrowserURL, options.Headers).ConfigureAwait(false);
 
             if (options.Protocol == ProtocolType.WebdriverBiDi)
             {
@@ -457,7 +458,7 @@ namespace PuppeteerSharp
             }
         }
 
-        private async Task<string> GetWSEndpointAsync(string browserURL)
+        private async Task<string> GetWSEndpointAsync(string browserURL, Dictionary<string, string> headers)
         {
             try
             {
@@ -466,7 +467,18 @@ namespace PuppeteerSharp
                     string data;
                     using (var client = new HttpClient())
                     {
-                        data = await client.GetStringAsync(endpointURL).ConfigureAwait(false);
+                        using var request = new HttpRequestMessage(HttpMethod.Get, endpointURL);
+                        if (headers != null)
+                        {
+                            foreach (var header in headers)
+                            {
+                                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                            }
+                        }
+
+                        using var response = await client.SendAsync(request).ConfigureAwait(false);
+                        response.EnsureSuccessStatusCode();
+                        data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     }
 
                     return JsonSerializer.Deserialize<WSEndpointResponse>(data, JsonHelper.DefaultJsonSerializerSettings.Value).WebSocketDebuggerUrl;
