@@ -80,6 +80,8 @@ namespace PuppeteerSharp
                 "MediaRouter",
                 "OptimizationHints",
                 "WebUIReloadButton",
+                "WebUIOmniboxPopup",
+                "WebUIOmniboxAimPopup",
                 "IPH_ReadingModePageActionLabel",
                 "ReadAnythingOmniboxChip",
                 "ProcessPerSiteUpToMainFrameThreshold",
