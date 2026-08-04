@@ -59,6 +59,12 @@ namespace PuppeteerSharp
         /// <value><c>true</c> if the dialog has already been accepted or dismissed; otherwise, <c>false</c>.</value>
         public bool Handled => _handled;
 
+        private protected bool IsHandled
+        {
+            get => _handled;
+            set => _handled = value;
+        }
+
         /// <summary>
         /// Accept the Dialog.
         /// </summary>
@@ -66,12 +72,12 @@ namespace PuppeteerSharp
         /// <param name="promptText">A text to enter in prompt. Does not cause any effects if the dialog's type is not prompt.</param>
         public Task Accept(string promptText = "")
         {
-            if (_handled)
+            if (IsHandled)
             {
                 throw new InvalidOperationException("Cannot accept dialog which is already handled!");
             }
 
-            _handled = true;
+            IsHandled = true;
             return HandleAsync(true, promptText);
         }
 
@@ -81,12 +87,12 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves when the dialog has been dismissed.</returns>
         public Task Dismiss()
         {
-            if (_handled)
+            if (IsHandled)
             {
                 throw new InvalidOperationException("Cannot dismiss dialog which is already handled!");
             }
 
-            _handled = true;
+            IsHandled = true;
             return HandleAsync(false, null);
         }
 

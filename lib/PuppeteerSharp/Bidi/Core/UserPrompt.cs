@@ -37,6 +37,8 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
     private string _reason;
     private UserPromptClosedEventArgs _result;
 
+    internal event EventHandler HandledChanged;
+
     /// <summary>
     /// Gets the information about the user prompt when it was opened.
     /// </summary>
@@ -133,6 +135,7 @@ internal class UserPrompt(BrowsingContext browsingContext, UserPromptOpenedEvent
         }
 
         _result = e;
+        HandledChanged?.Invoke(this, EventArgs.Empty);
         Dispose("User prompt already handled.");
     }
 

@@ -22,6 +22,7 @@
 
 #if !CDP_ONLY
 
+using System;
 using System.Threading.Tasks;
 using PuppeteerSharp.Bidi.Core;
 
@@ -38,6 +39,14 @@ public class BidiDialog : Dialog
         : base(ConvertDialogType(prompt.Info.PromptType), prompt.Info.Message, prompt.Info.DefaultValue ?? string.Empty)
     {
         _prompt = prompt;
+
+        if (_prompt.Handled)
+        {
+            IsHandled = true;
+            return;
+        }
+
+        _prompt.HandledChanged += OnPromptHandled;
     }
 
     internal static BidiDialog From(UserPrompt prompt)
@@ -60,6 +69,12 @@ public class BidiDialog : Dialog
             WebDriverBiDi.BrowsingContext.UserPromptType.BeforeUnload => DialogType.BeforeUnload,
             _ => DialogType.Alert,
         };
+    }
+
+    private void OnPromptHandled(object sender, EventArgs e)
+    {
+        IsHandled = true;
+        _prompt.HandledChanged -= OnPromptHandled;
     }
 }
 

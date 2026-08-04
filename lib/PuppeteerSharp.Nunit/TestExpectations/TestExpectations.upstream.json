@@ -148,6 +148,38 @@
     "comment": "No DevTools in shell"
   },
   {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog should see dialogs handled by other connections",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome",
+      "pipe"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome can't connect when run with pipe"
+  },
+  {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog should see dialogs handled by other connections",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Firefox does not support multiple active BiDi sessions."
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": [
       "darwin",
