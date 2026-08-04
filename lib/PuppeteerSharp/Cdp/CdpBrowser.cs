@@ -37,6 +37,7 @@ public class CdpBrowser : Browser
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
     private readonly bool _handleDevToolsAsPage;
+    private readonly bool _hasNetworkRestrictions;
     private readonly bool _networkEnabled;
     private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
@@ -77,7 +78,8 @@ public class CdpBrowser : Browser
             contextIds.Select(contextId =>
                 new KeyValuePair<string, CdpBrowserContext>(contextId, new(Connection, this, contextId))));
 
-        Connection.RejectEmulateNetworkConditionsCalls = (blockList != null && blockList.Length > 0) || (allowList != null && allowList.Length > 0);
+        _hasNetworkRestrictions = (blockList != null && blockList.Length > 0) || (allowList != null && allowList.Length > 0);
+        Connection.RejectEmulateNetworkConditionsCalls = _hasNetworkRestrictions;
 
         if (browser == SupportedBrowser.Firefox)
         {
@@ -269,6 +271,11 @@ public class CdpBrowser : Browser
             throw new ArgumentNullException(nameof(options));
         }
 
+        if (_hasNetworkRestrictions)
+        {
+            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+        }
+
         await Connection.SendAsync(
             "PWA.install",
             new PWAInstallRequest { ManifestId = options.ManifestId, InstallUrlOrBundleUrl = options.InstallUrlOrBundleUrl }).ConfigureAwait(false);
@@ -291,6 +298,11 @@ public class CdpBrowser : Browser
             throw new ArgumentNullException(nameof(options));
         }
 
+        if (_hasNetworkRestrictions)
+        {
+            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
+        }
+
         await Connection.SendAsync("PWA.uninstall", new PWAUninstallRequest { ManifestId = options.ManifestId }).ConfigureAwait(false);
     }
 
@@ -300,6 +312,11 @@ public class CdpBrowser : Browser
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
+        }
+
+        if (_hasNetworkRestrictions)
+        {
+            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
         }
 
         // `PWA.launch` resolves with the id of the launched *tab* target. Tab targets sit above page targets
@@ -355,6 +372,11 @@ public class CdpBrowser : Browser
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
+        }
+
+        if (_hasNetworkRestrictions)
+        {
+            throw new PuppeteerException("PWA APIs are not supported when network restrictions are configured.");
         }
 
         var response = await Connection.SendAsync<PWAGetOsAppStateResponse>(
