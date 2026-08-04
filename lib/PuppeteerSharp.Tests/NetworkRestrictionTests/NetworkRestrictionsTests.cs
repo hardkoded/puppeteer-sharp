@@ -635,4 +635,66 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
 
         Assert.That(pageError.Message, Does.Contain("Cannot reset network conditions: rule-based emulation is enabled."));
     }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions PWA validation blocklist", "should throw when calling PWA APIs")]
+    public async Task ShouldThrowWhenCallingPwaApisWithBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/empty.html"];
+        options.Pipe = true;
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        var manifestId = $"{TestConstants.ServerUrl}/pwa/";
+
+        var installError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.InstallPWAAsync(new InstallPWAOptions
+            {
+                ManifestId = manifestId,
+                InstallUrlOrBundleUrl = $"{TestConstants.ServerUrl}/pwa/index.html",
+            }));
+        Assert.That(installError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var launchError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.LaunchPWAAsync(new LaunchPWAOptions { ManifestId = manifestId }));
+        Assert.That(launchError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var uninstallError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.UninstallPWAAsync(new UninstallPWAOptions { ManifestId = manifestId }));
+        Assert.That(uninstallError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var stateError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.GetPWAStateAsync(new GetPWAStateOptions { ManifestId = manifestId }));
+        Assert.That(stateError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions PWA validation allowlist", "should throw when calling PWA APIs")]
+    public async Task ShouldThrowWhenCallingPwaApisWithAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist = ["*://*:*/empty.html"];
+        options.Pipe = true;
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        var manifestId = $"{TestConstants.ServerUrl}/pwa/";
+
+        var installError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.InstallPWAAsync(new InstallPWAOptions
+            {
+                ManifestId = manifestId,
+                InstallUrlOrBundleUrl = $"{TestConstants.ServerUrl}/pwa/index.html",
+            }));
+        Assert.That(installError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var launchError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.LaunchPWAAsync(new LaunchPWAOptions { ManifestId = manifestId }));
+        Assert.That(launchError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var uninstallError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.UninstallPWAAsync(new UninstallPWAOptions { ManifestId = manifestId }));
+        Assert.That(uninstallError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+
+        var stateError = Assert.ThrowsAsync<PuppeteerException>(async () =>
+            await browser.GetPWAStateAsync(new GetPWAStateOptions { ManifestId = manifestId }));
+        Assert.That(stateError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
+    }
 }
