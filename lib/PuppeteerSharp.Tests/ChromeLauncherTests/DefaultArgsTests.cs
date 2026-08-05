@@ -6,6 +6,18 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
 {
     public class DefaultArgsTests : PuppeteerPageBaseTest
     {
+        [Test, PuppeteerTest("ChromeLauncher.test.ts", "ChromeLauncher", "disables WebUIOmniboxPopup and WebUIOmniboxAimPopup by default")]
+        public void DisablesWebUIOmniboxPopupAndWebUIOmniboxAimPopupByDefault()
+        {
+            var args = ChromeLauncher.GetDefaultArgs(new LaunchOptions());
+            var disableFeaturesFlag = args.FirstOrDefault(arg => arg.StartsWith("--disable-features=", System.StringComparison.Ordinal));
+            Assert.That(disableFeaturesFlag, Is.Not.Null);
+
+            var disabledFeatures = disableFeaturesFlag.Split('=')[1].Split(',');
+            Assert.That(disabledFeatures, Does.Contain("WebUIOmniboxPopup"));
+            Assert.That(disabledFeatures, Does.Contain("WebUIOmniboxAimPopup"));
+        }
+
         [Test, PuppeteerTest("ChromeLauncher.test.ts", "ChromeLauncher", "removes disabled features if they are enabled explicitly")]
         public void RemovesDisabledFeaturesIfTheyAreEnabledExplicitly()
         {
