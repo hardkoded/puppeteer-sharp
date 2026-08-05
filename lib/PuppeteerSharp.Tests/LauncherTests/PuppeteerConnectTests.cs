@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -73,6 +76,38 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(response.SecurityDetails, Is.Not.Null);
             Assert.That(TestUtils.CurateProtocol(response.SecurityDetails.Protocol),
                 Is.EqualTo(TestUtils.CurateProtocol(requestTask.Result.ToString())));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should forward headers when connecting with browserURL")]
+        public async Task ShouldForwardHeadersWhenConnectingWithBrowserURL()
+        {
+            const string authorizationHeader = "Bearer forwarded-token";
+            string webSocketAuthorizationHeader = null;
+            Server.SetRoute("/json/version", async context =>
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(
+                    JsonSerializer.Serialize(new { webSocketDebuggerUrl = Browser.WebSocketEndpoint })).ConfigureAwait(false);
+            });
+            var requestHeaderTask = Server.WaitForRequest("/json/version", request => request.Headers["Authorization"].ToString());
+
+            await using var connectedBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserURL = TestConstants.ServerUrl,
+                Headers = new Dictionary<string, string>
+                {
+                    ["Authorization"] = authorizationHeader,
+                },
+                WebSocketFactory = async (uri, socketOptions, cancellationToken) =>
+                {
+                    webSocketAuthorizationHeader = socketOptions.Headers["Authorization"];
+                    return await WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken).ConfigureAwait(false);
+                },
+                Protocol = ((Browser)Browser).Protocol,
+            });
+
+            Assert.That(await requestHeaderTask, Is.EqualTo(authorizationHeader));
+            Assert.That(webSocketAuthorizationHeader, Is.EqualTo(authorizationHeader));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
