@@ -810,6 +810,39 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(responses.Select(response => response.Status), Is.EqualTo(new[] { HttpStatusCode.OK, HttpStatusCode.Found, HttpStatusCode.OK }));
     }
 
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should not override the user agent when nothing is emulated")]
+    public async Task ShouldNotOverrideTheUserAgentWhenNothingIsEmulated()
+    {
+        var client = Substitute.For<ICDPSession>();
+
+        using var loggerFactory = new LoggerFactory();
+        var manager = CreateNetworkManager(loggerFactory);
+
+        await manager.AddClientAsync(client);
+        await client.DidNotReceive().SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+
+        await manager.SetUserAgentAsync("custom-user-agent", null);
+        await client.Received(1).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should reset the override when the emulated accept-language is cleared")]
+    public async Task ShouldResetTheOverrideWhenTheEmulatedAcceptLanguageIsCleared()
+    {
+        var client = Substitute.For<ICDPSession>();
+
+        using var loggerFactory = new LoggerFactory();
+        var manager = CreateNetworkManager(loggerFactory);
+
+        await manager.AddClientAsync(client);
+        await client.DidNotReceive().SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+
+        await manager.SetAcceptLanguageAsync("fr-FR");
+        await client.Received(1).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+
+        await manager.SetAcceptLanguageAsync(null);
+        await client.Received(2).SendAsync("Network.setUserAgentOverride", Arg.Any<NetworkSetUserAgentOverrideRequest>(), Arg.Any<bool>(), Arg.Any<CommandOptions>());
+    }
+
     [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager error handling", "should not throw on target close error")]
     public async Task ShouldNotThrowOnTargetCloseError()
     {
