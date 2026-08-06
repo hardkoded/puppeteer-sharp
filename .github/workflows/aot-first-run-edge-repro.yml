@@ -1,0 +1,115 @@
+name: AOT first-run Edge repro
+
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  windows-aot-edge:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Resolve Edge path
+        shell: pwsh
+        run: |
+          $edgeCandidates = @(
+            "$env:ProgramFiles(x86)\Microsoft\Edge\Application\msedge.exe",
+            "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
+          )
+
+          $edgePath = $edgeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $edgePath) {
+            throw "Microsoft Edge executable was not found on this runner."
+          }
+
+          "EDGE_PATH=$edgePath" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "Using Edge at: $edgePath"
+
+      - name: Create AOT repro app
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path .\artifacts\aot-repro | Out-Null
+
+          @'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <OutputType>Exe</OutputType>
+              <TargetFramework>net10.0</TargetFramework>
+              <ImplicitUsings>enable</ImplicitUsings>
+              <Nullable>enable</Nullable>
+              <PublishAot>true</PublishAot>
+            </PropertyGroup>
+            <ItemGroup>
+              <ProjectReference Include="..\..\lib\PuppeteerSharp\PuppeteerSharp.csproj" />
+            </ItemGroup>
+          </Project>
+          '@ | Set-Content -Path .\artifacts\aot-repro\aot-repro.csproj
+
+          @'
+          using PuppeteerSharp;
+
+          var edgePath = Environment.GetEnvironmentVariable("EDGE_PATH")
+              ?? throw new InvalidOperationException("EDGE_PATH was not provided.");
+
+          async Task<int> LaunchOnceAsync(string label)
+          {
+              Console.WriteLine($"[{label}] Launching Edge: {edgePath}");
+              try
+              {
+                  await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                  {
+                      Headless = true,
+                      Browser = SupportedBrowser.Chrome,
+                      ExecutablePath = edgePath,
+                      Args = ["--no-sandbox", "--headless=new", "--disable-gpu"],
+                  });
+
+                  await using var page = await browser.NewPageAsync();
+                  await page.GoToAsync("https://example.com");
+                  Console.WriteLine($"[{label}] SUCCESS");
+                  return 0;
+              }
+              catch (Exception ex)
+              {
+                  Console.WriteLine($"[{label}] FAILURE");
+                  Console.WriteLine(ex);
+                  return 1;
+              }
+          }
+
+          var firstRun = await LaunchOnceAsync("first-run");
+          var secondRun = await LaunchOnceAsync("second-run");
+
+          if (firstRun == 1 && secondRun == 0)
+          {
+              Console.WriteLine("REPRODUCED: first-run failed and second-run succeeded.");
+              return 2;
+          }
+
+          if (firstRun == 1 || secondRun == 1)
+          {
+              Console.WriteLine("UNSTABLE: launch failed in an unexpected pattern.");
+              return 3;
+          }
+
+          Console.WriteLine("NOT REPRODUCED: both runs succeeded.");
+          return 0;
+          '@ | Set-Content -Path .\artifacts\aot-repro\Program.cs
+
+      - name: Publish Native AOT app
+        run: dotnet publish .\artifacts\aot-repro\aot-repro.csproj -c Release -r win-x64 --self-contained true -f net10.0
+
+      - name: Run repro (first + second launch)
+        shell: pwsh
+        run: |
+          .\artifacts\aot-repro\bin\Release\net10.0\win-x64\publish\aot-repro.exe
+
