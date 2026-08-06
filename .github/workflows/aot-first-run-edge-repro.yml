@@ -27,11 +27,28 @@ jobs:
         shell: pwsh
         run: |
           $edgeCandidates = @(
-            "$env:ProgramFiles(x86)\Microsoft\Edge\Application\msedge.exe",
+            "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
             "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
           )
 
-          $edgePath = $edgeCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          $edgePath = $edgeCandidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+
+          if (-not $edgePath) {
+            $registryPaths = @(
+              "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe",
+              "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe"
+            )
+
+            foreach ($regPath in $registryPaths) {
+              if (Test-Path $regPath) {
+                $edgePath = (Get-ItemProperty -Path $regPath).'(default)'
+                if ($edgePath -and (Test-Path $edgePath)) {
+                  break
+                }
+              }
+            }
+          }
+
           if (-not $edgePath) {
             throw "Microsoft Edge executable was not found on this runner."
           }
