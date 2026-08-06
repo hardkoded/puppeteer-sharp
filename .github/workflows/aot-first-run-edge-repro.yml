@@ -1,4 +1,5 @@
 name: AOT first-run Edge repro
+# Trigger note: branch-scoped workflow for issue #3544 repro.
 
 on:
   workflow_dispatch:
