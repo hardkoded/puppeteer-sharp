@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - kblok-fix-aot-launch-first-run
-    paths:
-      - .github/workflows/aot-first-run-edge-repro.yml
 
 env:
   DOTNET_VERSION: '10.0.x'
