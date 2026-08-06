@@ -86,6 +86,8 @@ jobs:
               <ImplicitUsings>enable</ImplicitUsings>
               <Nullable>enable</Nullable>
               <PublishAot>true</PublishAot>
+              <NoWarn>$(NoWarn);IL2026;IL2075;IL3000;IL3050</NoWarn>
+              <WarningsNotAsErrors>$(WarningsNotAsErrors);IL2026;IL2075;IL3000;IL3050</WarningsNotAsErrors>
             </PropertyGroup>
             <ItemGroup>
               <ProjectReference Include="..\..\lib\PuppeteerSharp\PuppeteerSharp.csproj" />
