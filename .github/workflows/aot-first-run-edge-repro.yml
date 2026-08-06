@@ -16,12 +16,29 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Clone repository
+        shell: pwsh
+        run: |
+          if (Test-Path .git) {
+            Remove-Item -Recurse -Force .git
+          }
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          git init .
+          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          git fetch --depth=1 origin ${{ github.sha }}
+          git checkout --detach FETCH_HEAD
+
+      - name: Ensure .NET SDK
+        shell: pwsh
+        run: |
+          $hasNet10 = dotnet --list-sdks | Select-String '^10\.'
+          if (-not $hasNet10) {
+            Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile ".\dotnet-install.ps1"
+            .\dotnet-install.ps1 -Channel 10.0 -InstallDir "$env:USERPROFILE\.dotnet"
+            "$env:USERPROFILE\.dotnet" | Out-File -FilePath $env:GITHUB_PATH -Append
+            $env:PATH = "$env:USERPROFILE\.dotnet;$env:PATH"
+          }
+          dotnet --info
 
       - name: Resolve Edge path
         shell: pwsh
