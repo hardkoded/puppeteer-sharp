@@ -11,6 +11,8 @@ Everything in PuppeteerSharp is inspired by the original Puppeteer library, but 
 
 When editing C# files, always place static members before non-static members (SA1204/SA1202 style rules). Never place a static method after instance methods.
 
+StyleCop enforces a strict member ordering inside a class, applied in this priority: (1) member *kind* - fields, then constructors, then properties/indexers/events, then methods (SA1201: "a method should not follow a field/property/event"); (2) within each kind, *accessibility* - public, then internal, then protected internal, then protected, then private (SA1202); (3) within each accessibility group, *static before instance* (SA1204). When adding a new private helper method, it does not belong near the top of the class or next to the fields/properties it supports logically - it belongs in the private-methods section, after all public/internal/protected methods, grouped with other private statics before private instance methods.
+
 ## Git Workflow
 
 Always verify which git branch you are on before making commits or creating PRs. Never commit to main/master. If the task requires a new branch, create it immediately and confirm with `git branch --show-current` before proceeding.

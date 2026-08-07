@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IO;
 using PuppeteerSharp.Cdp;
@@ -12,6 +13,10 @@ using PuppeteerSharp.Media;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
+using ReactiveExtensionsSharp.Subjects;
 
 namespace PuppeteerSharp
 {
@@ -42,12 +47,21 @@ namespace PuppeteerSharp
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
+
+        // Tracks in-flight requests for the page's whole lifetime, not just while something is waiting on
+        // it - mirrors upstream's own #inflight$, which is wired up once in Page.ts's constructor for the
+        // same reason: a WaitForNetworkIdleAsync call needs to see requests that were already in flight
+        // before it was called, not just ones that start afterward.
+        private readonly HashSet<string> _inFlightRequestIds = new();
+        private readonly object _inFlightRequestLock = new();
+        private readonly BehaviorSubject<int> _inFlightRequestCount = new(0);
         private int _screencastSessionCount;
         private Task _startScreencastTask;
 
         internal Page(TaskQueue screenshotTaskQueue)
         {
             _screenshotTaskQueue = screenshotTaskQueue;
+            TrackNetworkActivity();
         }
 
         /// <inheritdoc/>
@@ -823,21 +837,107 @@ namespace PuppeteerSharp
             => MainFrame.WaitForNavigationAsync(options);
 
         /// <inheritdoc/>
-        public abstract Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null);
+        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var idleTime = options?.IdleTime ?? 500;
+            var concurrency = options?.Concurrency ?? 0;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            try
+            {
+                // _inFlightRequestCount is a page-lifetime BehaviorSubject (see TrackNetworkActivity), not
+                // something built fresh here - it already reflects any requests that were in flight before
+                // this call, not just ones that start afterward.
+                var idleReached = _inFlightRequestCount.AsObservable()
+                    .Map(count => count <= concurrency)
+                    .DistinctUntilChanged()
+                    .SwitchMap(idle => idle ? Observable.Timer(TimeSpan.FromMilliseconds(idleTime)) : Observable.Never<long>())
+                    .Map(_ => Unit.Default);
+
+                await idleReached
+                    .RaceWith(CloseSignal<Unit>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null)
             => WaitForRequestAsync(request => request.Url == url, options);
 
         /// <inheritdoc/>
-        public abstract Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
+        public async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            var requestReceived = Observable.FromEvent<RequestEventArgs>(h => Request += h, h => Request -= h)
+                .Map(e => e.Request)
+                .Filter(predicate);
+
+            try
+            {
+                return await requestReceived
+                    .RaceWith(CloseSignal<IRequest>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null)
             => WaitForFrameAsync((frame) => frame.Url == url, options);
 
         /// <inheritdoc/>
-        public abstract Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
+        public async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            using var attached = RxExtensions.FromEventBuffered<FrameEventArgs>(h => FrameAttached += h, h => FrameAttached -= h);
+            using var navigated = RxExtensions.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameNavigated += h, h => FrameNavigated -= h);
+
+            try
+            {
+                return await attached.AsObservable().Map(e => e.Frame)
+                    .MergeWith(navigated.AsObservable().Map(e => e.Frame))
+                    .MergeWith(Observable.From(Frames))
+                    .Filter(predicate)
+                    .RaceWith(CloseSignal<IFrame>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null)
@@ -848,9 +948,33 @@ namespace PuppeteerSharp
             => WaitForResponseAsync((response) => Task.FromResult(predicate(response)), options);
 
         /// <inheritdoc/>
-        public abstract Task<IResponse> WaitForResponseAsync(
+        public async Task<IResponse> WaitForResponseAsync(
             Func<IResponse, Task<bool>> predicate,
-            WaitForOptions options = null);
+            WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            var responseReceived = Observable.FromEvent<ResponseCreatedEventArgs>(h => Response += h, h => Response -= h)
+                .Map(e => e.Response)
+                .FilterAsync(predicate);
+
+            try
+            {
+                return await responseReceived
+                    .RaceWith(CloseSignal<IResponse>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public abstract Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null);
@@ -1105,6 +1229,7 @@ namespace PuppeteerSharp
         protected virtual void Dispose(bool disposing)
         {
             Mouse.Dispose();
+            _inFlightRequestCount.Dispose();
             _ = DisposeAsync();
         }
 
@@ -1217,6 +1342,48 @@ namespace PuppeteerSharp
                 Height = (double)result[1],
                 DevicePixelRatio = (double)result[2],
             };
+        }
+
+        private Observable<T> CloseSignal<T>() =>
+            Observable.FromEvent<EventHandler, EventArgs>(
+                    h => Close += h,
+                    h => Close -= h,
+                    onNext => (_, args) => onNext(args))
+                .Map<EventArgs, T>(_ => throw new TargetClosedException("Target closed", "Page closed"));
+
+        // Wires up _inFlightRequestCount for the page's whole life - called once from the constructor, not
+        // per WaitForNetworkIdleAsync call - so it already reflects reality by the time anything waits on
+        // it. Only fires OnNext when the set actually changes, so a request that fires both Response and
+        // RequestFinished (common - Response is headers-received, RequestFinished is body-complete, and not
+        // every request gets both) only counts as one net change, not two.
+        private void TrackNetworkActivity()
+        {
+            void Add(string id)
+            {
+                lock (_inFlightRequestLock)
+                {
+                    if (_inFlightRequestIds.Add(id))
+                    {
+                        _inFlightRequestCount.OnNext(_inFlightRequestIds.Count);
+                    }
+                }
+            }
+
+            void Remove(string id)
+            {
+                lock (_inFlightRequestLock)
+                {
+                    if (_inFlightRequestIds.Remove(id))
+                    {
+                        _inFlightRequestCount.OnNext(_inFlightRequestIds.Count);
+                    }
+                }
+            }
+
+            Request += (_, e) => Add(e.Request.Id);
+            Response += (_, e) => Remove(e.Response.Request.Id);
+            RequestFinished += (_, e) => Remove(e.Request.Id);
+            RequestFailed += (_, e) => Remove(e.Request.Id);
         }
 
         private struct NativePixelDimensions

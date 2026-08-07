@@ -37,7 +37,6 @@ using PuppeteerSharp.Media;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
 using StackTrace = PuppeteerSharp.Cdp.Messaging.StackTrace;
-using Timer = System.Timers.Timer;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -53,7 +52,6 @@ public class CdpPage : Page
     private readonly ConcurrentDictionary<string, Binding> _bindings = new();
     private readonly ConcurrentDictionary<Guid, TaskCompletionSource<FileChooser>> _fileChooserInterceptors = new();
     private readonly ConcurrentDictionary<string, string> _exposedFunctions = new();
-    private TaskCompletionSource<bool> _sessionClosedTcs;
 
     private CdpPage(
         CdpCDPSession client,
@@ -149,27 +147,6 @@ public class CdpPage : Page
     private CdpCDPSession TabTargetClient { get; }
 
     private CdpTarget TabTarget { get; }
-
-    private Task SessionClosedTask
-    {
-        get
-        {
-            if (_sessionClosedTcs == null)
-            {
-                _sessionClosedTcs =
-                    new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                Client.Disconnected += ClientDisconnected;
-
-                void ClientDisconnected(object sender, EventArgs e)
-                {
-                    _sessionClosedTcs.TrySetException(new TargetClosedException("Target closed", "Session closed"));
-                    Client.Disconnected -= ClientDisconnected;
-                }
-            }
-
-            return _sessionClosedTcs.Task;
-        }
-    }
 
     private FrameManager FrameManager { get; set; }
 
@@ -534,154 +511,6 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
-    public override async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
-    {
-        var timeout = options?.Timeout ?? DefaultTimeout;
-        var idleTime = options?.IdleTime ?? 500;
-
-        var networkIdleTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        var idleTimer = new Timer { Interval = idleTime, };
-
-        idleTimer.Elapsed += (_, _) => { networkIdleTcs.TrySetResult(true); };
-
-        var networkManager = FrameManager.NetworkManager;
-
-        void Evaluate()
-        {
-            idleTimer.Stop();
-
-            if (networkManager.NumRequestsInProgress == 0)
-            {
-                idleTimer.Start();
-            }
-        }
-
-        void RequestEventListener(object sender, RequestEventArgs e) => Evaluate();
-        void ResponseEventListener(object sender, ResponseCreatedEventArgs e) => Evaluate();
-
-        void Cleanup()
-        {
-            idleTimer.Stop();
-            idleTimer.Dispose();
-
-            networkManager.Request -= RequestEventListener;
-            networkManager.Response -= ResponseEventListener;
-            networkManager.RequestFinished -= RequestEventListener;
-            networkManager.RequestFailed -= RequestEventListener;
-        }
-
-        networkManager.Request += RequestEventListener;
-        networkManager.Response += ResponseEventListener;
-        networkManager.RequestFinished += RequestEventListener;
-        networkManager.RequestFailed += RequestEventListener;
-
-        Evaluate();
-
-        await Task.WhenAny(networkIdleTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
-        {
-            Cleanup();
-
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        }).ConfigureAwait(false);
-
-        Cleanup();
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
-    {
-        var timeout = options?.Timeout ?? DefaultTimeout;
-        var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        void RequestEventListener(object sender, RequestEventArgs e)
-        {
-            if (predicate(e.Request))
-            {
-                requestTcs.TrySetResult(e.Request);
-                FrameManager.NetworkManager.Request -= RequestEventListener;
-            }
-        }
-
-        FrameManager.NetworkManager.Request += RequestEventListener;
-
-        await Task.WhenAny(requestTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
-        {
-            FrameManager.NetworkManager.Request -= RequestEventListener;
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        }).ConfigureAwait(false);
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-
-        return await requestTcs.Task.ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public override async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
-    {
-        if (predicate == null)
-        {
-            throw new ArgumentNullException(nameof(predicate));
-        }
-
-        var timeout = options?.Timeout ?? DefaultTimeout;
-        var frameTcs = new TaskCompletionSource<IFrame>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        void FrameNavigatedEventListener(object sender, FrameNavigatedEventArgs e)
-        {
-            if (predicate(e.Frame))
-            {
-                frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameNavigated -= FrameNavigatedEventListener;
-            }
-        }
-
-        void FrameAttachedEventListener(object sender, FrameEventArgs e)
-        {
-            if (predicate(e.Frame))
-            {
-                frameTcs.TrySetResult(e.Frame);
-                FrameManager.FrameAttached -= FrameAttachedEventListener;
-            }
-        }
-
-        FrameManager.FrameAttached += FrameAttachedEventListener;
-        FrameManager.FrameNavigated += FrameNavigatedEventListener;
-
-        var eventRace = Task.WhenAny(frameTcs.Task, SessionClosedTask).WithTimeout(timeout, t =>
-        {
-            FrameManager.FrameAttached -= FrameAttachedEventListener;
-            FrameManager.FrameNavigated -= FrameNavigatedEventListener;
-            return new TimeoutException($"Timeout of {t.TotalMilliseconds} ms exceeded");
-        });
-
-        foreach (var frame in Frames)
-        {
-            if (predicate(frame))
-            {
-                return frame;
-            }
-        }
-
-        await eventRace.ConfigureAwait(false);
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-
-        return await frameTcs.Task.ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
     public override Task BringToFrontAsync() => PrimaryTargetClient.SendAsync("Page.bringToFront");
 
     /// <inheritdoc/>
@@ -716,42 +545,6 @@ public class CdpPage : Page
 
     /// <inheritdoc/>
     public override Task<IResponse> GoForwardAsync(NavigationOptions options = null) => GoAsync(1, options);
-
-    /// <inheritdoc/>
-    public override async Task<IResponse> WaitForResponseAsync(
-        Func<IResponse, Task<bool>> predicate,
-        WaitForOptions options = null)
-    {
-        var timeout = options?.Timeout ?? DefaultTimeout;
-        var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        async void ResponseEventListener(object sender, ResponseCreatedEventArgs e)
-        {
-            try
-            {
-                if (await predicate(e.Response).ConfigureAwait(false))
-                {
-                    responseTcs.TrySetResult(e.Response);
-                    FrameManager.NetworkManager.Response -= ResponseEventListener;
-                }
-            }
-            catch (Exception ex)
-            {
-                responseTcs.TrySetException(new PuppeteerException("Predicated failed", ex));
-            }
-        }
-
-        FrameManager.NetworkManager.Response += ResponseEventListener;
-
-        await Task.WhenAny(responseTcs.Task, SessionClosedTask).WithTimeout(timeout).ConfigureAwait(false);
-
-        if (SessionClosedTask.IsFaulted)
-        {
-            await SessionClosedTask.ConfigureAwait(false);
-        }
-
-        return await responseTcs.Task.ConfigureAwait(false);
-    }
 
     /// <inheritdoc/>
     public override async Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null)

@@ -10,6 +10,10 @@ using PuppeteerSharp.Bidi;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
+using RxSharp = ReactiveExtensionsSharp;
 
 namespace PuppeteerSharp
 {
@@ -148,42 +152,31 @@ namespace PuppeteerSharp
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
             var cancellationToken = options?.CancellationToken ?? default;
-            var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            void TargetHandler(object sender, TargetChangedArgs e)
-            {
-                if (predicate(e.Target))
-                {
-                    targetCompletionSource.TrySetResult(e.Target);
-                }
-            }
-
-            CancellationTokenRegistration? cancellationRegistration = null;
+            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
+            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
 
             try
             {
-                TargetCreated += TargetHandler;
-                TargetChanged += TargetHandler;
-
-                if (cancellationToken != default)
-                {
-                    cancellationRegistration = cancellationToken.Register(
-                        () => targetCompletionSource.TrySetCanceled(cancellationToken));
-                }
-
-                var existingTarget = Targets().FirstOrDefault(predicate);
-                if (existingTarget != null)
-                {
-                    return existingTarget;
-                }
-
-                return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
+                // causeFactory: null (the default) so cancellation and timeout keep their own distinct
+                // exception types below - RaceWithSignalAndTimer would otherwise use one factory for both.
+                return await created.AsObservable()
+                    .MergeWith(changed.AsObservable())
+                    .Map(e => (ITarget)e.Target)
+                    .MergeWith(Observable.From(Targets()))
+                    .Filter(predicate)
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
             }
-            finally
+            catch (TimeoutException)
             {
-                cancellationRegistration?.Dispose();
-                TargetCreated -= TargetHandler;
-                TargetChanged -= TargetHandler;
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                // TaskCanceledException, not the plain OperationCanceledException the timeout/cancellation
+                // race defaults to: existing callers (and tests) rely on the exact pre-ReactiveExtensionsSharp cancellation type.
+                throw new TaskCanceledException();
             }
         }
 
