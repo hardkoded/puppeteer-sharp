@@ -118,6 +118,14 @@ namespace PuppeteerSharp.Transport
         {
             var result = new ClientWebSocket();
             result.Options.KeepAliveInterval = TimeSpan.Zero;
+            if (options.Headers != null)
+            {
+                foreach (var header in options.Headers)
+                {
+                    result.Options.SetRequestHeader(header.Key, header.Value);
+                }
+            }
+
             await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
             return result;
         }

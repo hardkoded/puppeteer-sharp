@@ -148,6 +148,38 @@
     "comment": "No DevTools in shell"
   },
   {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog should see dialogs handled by other connections",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome",
+      "pipe"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Chrome can't connect when run with pipe"
+  },
+  {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog should see dialogs handled by other connections",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Firefox does not support multiple active BiDi sessions."
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": [
       "darwin",
@@ -2239,22 +2271,6 @@
     "comment": "Origin (*) is not supported for setPermission in BiDi"
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "In BiDi currently more events than needed are fired (because target is updated more often). We probably need to adjust the test as the behavior is not broken per se"
-  },
-  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
     "platforms": [
       "darwin",
@@ -2756,22 +2772,6 @@
     "parameters": [
       "cdp",
       "chrome"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
-  },
-  {
-    "testIdPattern": "[launcher.spec] Launcher specs Browser target events should work",
-    "platforms": [
-      "darwin",
-      "linux",
-      "win32"
-    ],
-    "parameters": [
-      "firefox",
-      "webDriverBiDi"
     ],
     "expectations": [
       "FAIL"

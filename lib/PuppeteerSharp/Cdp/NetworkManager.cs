@@ -31,6 +31,7 @@ namespace PuppeteerSharp.Cdp
         private UserAgentMetadata _userAgentMetadata;
         private string _platform;
         private string _acceptLanguage;
+        private bool _userAgentOverrideApplied;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkManager"/> class.
@@ -639,6 +640,17 @@ namespace PuppeteerSharp.Cdp
 
         private async Task ApplyUserAgentAsync(ICDPSession client)
         {
+            var nothingToEmulate = _userAgent == null &&
+                _userAgentMetadata == null &&
+                _acceptLanguage == null &&
+                _platform == null;
+
+            // Still need to send once to reset a previously-applied override.
+            if (nothingToEmulate && !_userAgentOverrideApplied)
+            {
+                return;
+            }
+
             var userAgent = _userAgent ?? await _frameManager.Page.Browser.GetUserAgentAsync().ConfigureAwait(false);
             if (userAgent == null)
             {
@@ -656,6 +668,7 @@ namespace PuppeteerSharp.Cdp
                         UserAgentMetadata = _userAgentMetadata,
                         Platform = _platform,
                     }).ConfigureAwait(false);
+                _userAgentOverrideApplied = !nothingToEmulate;
             }
             catch (Exception ex) when (CanIgnoreError(ex))
             {

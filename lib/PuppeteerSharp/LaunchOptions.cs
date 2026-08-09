@@ -150,6 +150,11 @@ namespace PuppeteerSharp
         public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
+        /// Headers that should be sent with connection-related HTTP and WebSocket requests.
+        /// </summary>
+        public Dictionary<string, string> Headers { get; set; }
+
+        /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
         /// </summary>
         public TransportFactory TransportFactory { get; set; }
