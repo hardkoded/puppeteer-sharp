@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
 using PuppeteerSharp.QueryHandlers;
@@ -75,7 +76,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Logger.
         /// </summary>
-        protected ILogger Logger { get; init; }
+        protected ILogger Logger { get; init; } = NullLogger.Instance;
 
         /// <inheritdoc/>
         public abstract Task<IResponse> GoToAsync(string url, NavigationOptions options);

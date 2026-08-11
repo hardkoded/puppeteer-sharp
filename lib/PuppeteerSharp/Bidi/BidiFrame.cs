@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -47,6 +48,7 @@ public class BidiFrame : Frame
     private BidiFrame(BidiPage parentPage, BidiFrame parentFrame, BrowsingContext browsingContext)
     {
         Client = new BidiCdpSession(this, parentPage?.BidiBrowser?.LoggerFactory ?? parentFrame?.BidiPage?.BidiBrowser?.LoggerFactory);
+        Logger = Client.LoggerFactory.CreateLogger<Frame>();
         ParentPage = parentPage;
         ParentFrame = parentFrame;
         BrowsingContext = browsingContext;

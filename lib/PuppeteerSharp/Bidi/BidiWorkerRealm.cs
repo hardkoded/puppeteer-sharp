@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Script;
@@ -39,7 +40,7 @@ internal class BidiWorkerRealm : BidiRealm
     private IJSHandle _puppeteerUtil;
 
     private BidiWorkerRealm(DedicatedWorkerRealm realm, BidiWebWorker worker)
-        : base(realm, worker.TimeoutSettings)
+        : base(realm, worker.TimeoutSettings, worker.Frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
     {
         _realm = realm;
         _worker = worker;

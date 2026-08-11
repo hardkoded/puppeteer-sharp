@@ -25,12 +25,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Bidi;
 
-internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(realm, frame.TimeoutSettings)
+internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
+    realm,
+    frame.TimeoutSettings,
+    frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
 {
     private readonly WindowRealm _realm = realm;
     private readonly TaskQueue _puppeteerUtilQueue = new();
