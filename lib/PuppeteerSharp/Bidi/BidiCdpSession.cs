@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 #if !CDP_ONLY
 
@@ -41,7 +42,7 @@ public class BidiCdpSession : CDPSession
     internal BidiCdpSession(BidiFrame bidiFrame, ILoggerFactory loggerFactory)
     {
         Frame = bidiFrame;
-        LoggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
     }
 
     /// <inheritdoc />
