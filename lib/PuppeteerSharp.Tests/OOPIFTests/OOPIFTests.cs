@@ -478,6 +478,36 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should exposeFunction when an OOP iframe goes away mid-call")]
+        public async Task ShouldExposeFunctionWhenAnOopIframeGoesAwayMidCall()
+        {
+            const int FrameCount = 8;
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            for (var i = 0; i < FrameCount; i++)
+            {
+                await FrameUtils.AttachFrameAsync(
+                    Page,
+                    $"oopif{i}",
+                    TestConstants.CrossProcessHttpPrefix + "/empty.html");
+            }
+
+            Assert.That(Page.Frames, Has.Length.EqualTo(FrameCount + 1));
+
+            var detachedTask = Page.EvaluateFunctionAsync(@"() => {
+                for (const frame of document.querySelectorAll('iframe')) {
+                    frame.remove();
+                }
+            }");
+            var exposedTask = Page.ExposeFunctionAsync("doubleIt", (int value) => value * 2);
+
+            await exposedTask;
+            await detachedTask;
+
+            var result = await Page.EvaluateFunctionAsync<int>("async () => await window.doubleIt(21)");
+            Assert.That(result, Is.EqualTo(42));
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should exposeFunction on a page with a PDF viewer")]
         public async Task ShouldExposeFunctionOnAPageWithAPdfViewer()
         {

@@ -103,8 +103,7 @@ namespace PuppeteerSharp.Cdp
             var preloadScript = new CdpPreloadScript(mainFrame, response.Identifier, source);
             _scriptsToEvaluateOnNewDocument.TryAdd(response.Identifier, preloadScript);
 
-            await Task.WhenAll(
-                GetFrames().Select(frame => ((CdpFrame)frame).AddPreloadScriptAsync(preloadScript))).ConfigureAwait(false);
+            await ForEachFrameAsync(frame => frame.AddPreloadScriptAsync(preloadScript)).ConfigureAwait(false);
 
             return new NewDocumentScriptEvaluation(response.Identifier);
         }
@@ -145,15 +144,13 @@ namespace PuppeteerSharp.Cdp
         internal async Task AddExposedFunctionBindingAsync(Binding binding)
         {
             _bindings.Add(binding);
-            await Task.WhenAll(
-                GetFrames().Select(frame => ((CdpFrame)frame).AddExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+            await ForEachFrameAsync(frame => frame.AddExposedFunctionBindingAsync(binding)).ConfigureAwait(false);
         }
 
         internal async Task RemoveExposedFunctionBindingAsync(Binding binding)
         {
             _bindings.Remove(binding);
-            await Task.WhenAll(
-                GetFrames().Select(frame => ((CdpFrame)frame).RemoveExposedFunctionBindingAsync(binding))).ConfigureAwait(false);
+            await ForEachFrameAsync(frame => frame.RemoveExposedFunctionBindingAsync(binding)).ConfigureAwait(false);
         }
 
         internal void OnAttachedToTarget(CdpTarget target)
@@ -304,6 +301,14 @@ namespace PuppeteerSharp.Cdp
             var slashIndex = pathPart.IndexOf('/');
             return slashIndex == -1 ? pathPart : pathPart.Substring(0, slashIndex);
         }
+
+        private static bool IsTargetClosedError(Exception ex)
+            => ex is TargetClosedException ||
+                ex.Message.Contains("Target closed", StringComparison.Ordinal) ||
+                ex.Message.Contains("Session closed", StringComparison.Ordinal) ||
+                ex.Message.Contains("Session detached", StringComparison.Ordinal) ||
+                ex.Message.Contains("Session with given id not found", StringComparison.Ordinal) ||
+                ex.Message.Contains("No frame with given id", StringComparison.Ordinal);
 
         private CdpFrame GetFrame(string frameId) => FrameTree.GetById(frameId);
 
@@ -632,6 +637,21 @@ namespace PuppeteerSharp.Cdp
                     await HandleFrameTreeAsync(session, child).ConfigureAwait(false);
                 }
             }
+        }
+
+        private async Task ForEachFrameAsync(Func<CdpFrame, Task> action)
+        {
+            await Task.WhenAll(GetFrames().Select(async frame =>
+            {
+                var cdpFrame = (CdpFrame)frame;
+                try
+                {
+                    await action(cdpFrame).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (cdpFrame.IsOopFrame() && IsTargetClosedError(ex))
+                {
+                }
+            })).ConfigureAwait(false);
         }
 
         private async Task CreateIsolatedWorldAsync(CDPSession session, string name)
