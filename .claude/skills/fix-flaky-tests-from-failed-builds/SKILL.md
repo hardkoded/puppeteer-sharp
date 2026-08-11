@@ -66,9 +66,10 @@ git checkout -b fix/flaky-<RUN_ID>-<SHORT_TEST_NAME> origin/master
 
 Use project conventions (build first, then `--no-build`):
 ```bash
-BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet build lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+cd lib
+BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 for i in {1..10}; do
-  BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet test lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~<TEST_NAME>" --no-build -- NUnit.TestOutputXml=TestResults || true
+  BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~<TEST_NAME>" --no-build -- NUnit.TestOutputXml=TestResults || true
 done
 ```
 
