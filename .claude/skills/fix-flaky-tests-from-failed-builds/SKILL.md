@@ -16,8 +16,11 @@ Given `$ARGUMENTS` (a workflow run URL/ID, PR URL/number, or empty), identify fa
 
 Use:
 ```bash
-gh run list --workflow dotnet.yml --status failure --limit 20
+gh workflow list
+WORKFLOW_FILE=$(gh workflow list --json name,path --jq '.[] | select(.name=="build") | .path' | sed 's#\.github/workflows/##')
+WORKFLOW_FILE=${WORKFLOW_FILE:-dotnet.yml}
 gh run view <RUN_ID> --json databaseId,url,displayTitle,headBranch,headSha,event,conclusion,jobs
+gh run list --workflow $WORKFLOW_FILE --status failure --limit 20
 ```
 
 ### Step 2: Inspect Failed Jobs and Extract Candidate Tests
@@ -26,7 +29,7 @@ For each failed job in the run, fetch logs and extract failing test names and fa
 
 Use:
 ```bash
-gh run view <RUN_ID> --job <JOB_ID> --log
+gh run view <RUN_ID> --log
 ```
 
 Capture:
@@ -44,7 +47,7 @@ For each candidate test:
 
 Use:
 ```bash
-gh run list --workflow dotnet.yml --limit 50
+gh run list --workflow $WORKFLOW_FILE --limit 50
 ```
 
 Classify each candidate as:
@@ -56,21 +59,30 @@ Only continue remediation for `likely_flaky` tests.
 
 ### Step 4: Reproduce Flakiness Locally
 
-1. Create a branch from `origin/master`:
+1. Resolve the repository default branch and create a working branch from `origin/<default>`:
 ```bash
+DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
 git fetch origin
-git checkout -b fix/flaky-<RUN_ID>-<SHORT_TEST_NAME> origin/master
+git checkout -b fix/flaky-<RUN_ID>-<SHORT_TEST_NAME> origin/$DEFAULT_BRANCH
 ```
 2. Build once, then run the flaky test repeatedly in the same browser/protocol configuration as CI.
 3. Confirm non-determinism before changing code.
+4. Respect protocol constraints: Chrome must use `PROTOCOL=cdp`; Firefox must use `PROTOCOL=bidi`.
 
 Use project conventions (build first, then `--no-build`):
 ```bash
 cd lib
 BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet build PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
+PASS_COUNT=0
+FAIL_COUNT=0
 for i in {1..10}; do
-  BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~<TEST_NAME>" --no-build -- NUnit.TestOutputXml=TestResults || true
+  if BROWSER=<BROWSER> PROTOCOL=<PROTOCOL> dotnet test PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj --filter "FullyQualifiedName~<TEST_NAME>" --no-build -- NUnit.TestOutputXml=TestResults; then
+    PASS_COUNT=$((PASS_COUNT + 1))
+  else
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+  fi
 done
+echo "Passes: $PASS_COUNT; Fails: $FAIL_COUNT"
 ```
 
 ### Step 5: Implement a Real Flaky-Test Fix
@@ -79,9 +91,10 @@ Implement a root-cause fix in production/test code, focusing on race conditions 
 
 ### Step 6: Validate the Fix
 
-1. Re-run the targeted flaky test repeatedly and confirm stability.
-2. Run related test coverage.
-3. Run broader validation for the affected test area.
+1. Run validation commands from the `lib` directory.
+2. Re-run the targeted flaky test repeatedly and confirm stability.
+3. Run related test coverage.
+4. Run broader validation for the affected test area.
 
 ### Step 7: Commit and Open PR
 
@@ -95,9 +108,10 @@ Implement a root-cause fix in production/test code, focusing on race conditions 
 
 Use:
 ```bash
+git branch --show-current
 git add -A
 git commit -m "Fix flaky test: <TEST_NAME> (run <RUN_ID>)"
-gh pr create --title "Fix flaky test: <TEST_NAME>" --body "<SUMMARY>" --base master
+gh pr create --title "Fix flaky test: <TEST_NAME>" --body "<SUMMARY>" --base $DEFAULT_BRANCH
 ```
 
 ### Step 8: Final Report
