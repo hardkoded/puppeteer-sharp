@@ -33,6 +33,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using PuppeteerSharp.Bidi.Core;
 using WebDriverBiDi.Script;
 
@@ -41,7 +42,7 @@ namespace PuppeteerSharp.Bidi;
 internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILogger logger) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
 {
     private static readonly Regex _sourceUrlRegex = new(@"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$", RegexOptions.Multiline);
-    private readonly ILogger _logger = logger;
+    private readonly ILogger _logger = logger ?? NullLogger.Instance;
 
     public bool Disposed { get; private set; }
 
@@ -86,7 +87,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to destroy BiDi handles");
+            _logger.LogError(ex, "Failed to destroy BiDi handles");
         }
     }
 
@@ -102,7 +103,7 @@ internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILog
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to adopt handle");
+            _logger.LogError(e, "Failed to adopt handle");
             throw;
         }
     }
