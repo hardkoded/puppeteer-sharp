@@ -302,7 +302,15 @@ namespace PuppeteerSharp.Cdp
             return slashIndex == -1 ? pathPart : pathPart.Substring(0, slashIndex);
         }
 
-        private static bool IsTargetClosedError(Exception ex)
+        /// <summary>
+        /// Whether an exception means the frame's own CDP session is gone.
+        /// Upstream only has to check for <c>TargetCloseError</c> because the JS session rejects
+        /// pending calls locally. Here the command can still reach the browser before we notice the
+        /// detach, so Chrome answers with a session/frame lookup error instead.
+        /// </summary>
+        /// <param name="ex">The exception raised by the per-frame call.</param>
+        /// <returns>Whether the error is caused by the session going away.</returns>
+        private static bool IsSessionGoneError(Exception ex)
             => ex is TargetClosedException ||
                 ex.Message.Contains("Target closed", StringComparison.Ordinal) ||
                 ex.Message.Contains("Session closed", StringComparison.Ordinal) ||
@@ -648,8 +656,10 @@ namespace PuppeteerSharp.Cdp
                 {
                     await action(cdpFrame).ConfigureAwait(false);
                 }
-                catch (Exception ex) when (cdpFrame.IsOopFrame() && IsTargetClosedError(ex))
+                catch (Exception ex) when (cdpFrame.IsOopFrame() && IsSessionGoneError(ex))
                 {
+                    // Only an out-of-process frame has a session of its own to lose.
+                    // Losing it mid-call must not fail the whole fan-out.
                 }
             })).ConfigureAwait(false);
         }
