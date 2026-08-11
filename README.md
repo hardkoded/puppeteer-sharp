@@ -173,6 +173,12 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ## Sponsors
 
+PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
+
+<a href="https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor">
+  <img src="https://ironsoftware.com/img/logos/iron.png" alt="IronPDF logo." width="180" />
+</a>
+
 A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
 
 <div style="display:inline">
@@ -183,5 +189,3 @@ A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
 <!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;github.com&#x2F;tolgabalci.png" width="60px" alt="User avatar: Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;nogginbox.png" width="60px" alt="User avatar: Richard Garside" /></a><a href="https://github.com/htmlcsstoimage"><img src="https:&#x2F;&#x2F;github.com&#x2F;htmlcsstoimage.png" width="60px" alt="User avatar: HTML&#x2F;CSS to Image API" /></a><a href="https://github.com/iron-software"><img src="https:&#x2F;&#x2F;github.com&#x2F;iron-software.png" width="60px" alt="User avatar: Iron Software" /></a><!-- sponsors -->
-
-
