@@ -9,6 +9,7 @@ using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.BrowserData
 {
+    // CI retrigger for upstream #15329
     /// <summary>
     /// Chrome info.
     /// </summary>
