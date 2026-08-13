@@ -9,7 +9,6 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp
 {
-    // CI retrigger for upstream #15328
     /// <summary>
     /// You can use <see cref="ITracing.StartAsync(TracingOptions)"/> and <see cref="ITracing.StopAsync"/> to create a trace file which can be opened in Chrome DevTools or timeline viewer.
     /// </summary>
