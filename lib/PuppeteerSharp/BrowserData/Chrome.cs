@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
 {
-    // CI retrigger for upstream #15330
     /// <summary>
     /// Chrome info.
     /// </summary>
