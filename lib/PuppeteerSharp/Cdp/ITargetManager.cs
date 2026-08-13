@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target manager.
     /// </summary>
-    internal interface ITargetManager
+    internal interface ITargetManager : IDisposable
     {
         /// <summary>
         /// Raised when a target is available.

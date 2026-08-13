@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -36,11 +37,16 @@ namespace PuppeteerSharp.Cdp;
 /// --enable-features=WebMCPTesting,DevToolsWebMCPSupport flags.
 /// </summary>
 /// <seealso href="https://github.com/webmachinelearning/webmcp"/>
+[SuppressMessage(
+    "Microsoft.Design",
+    "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+    Justification = "Listener subscriptions are disposed in UpdateClient via DisposableActionsStack.")]
 public class CdpWebMcp
 {
     private readonly FrameManager _frameManager;
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, WebMcpTool>> _tools = new();
     private readonly ConcurrentDictionary<string, WebMcpToolCall> _pendingCalls = new();
+    private DisposableActionsStack _subscriptions = new();
     private CDPSession _client;
 
     internal CdpWebMcp(CDPSession client, FrameManager frameManager)
@@ -96,7 +102,8 @@ public class CdpWebMcp
 
     internal void UpdateClient(CDPSession newClient)
     {
-        UnbindListeners();
+        _subscriptions.Dispose();
+        _subscriptions = new DisposableActionsStack();
         _client = newClient;
         BindListeners();
     }
@@ -104,11 +111,7 @@ public class CdpWebMcp
     private void BindListeners()
     {
         _client.MessageReceived += OnMessageReceived;
-    }
-
-    private void UnbindListeners()
-    {
-        _client.MessageReceived -= OnMessageReceived;
+        _subscriptions.Defer(() => _client.MessageReceived -= OnMessageReceived);
     }
 
     private void OnMessageReceived(object sender, MessageEventArgs e)

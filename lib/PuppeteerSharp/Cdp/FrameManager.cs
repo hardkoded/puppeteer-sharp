@@ -731,8 +731,11 @@ namespace PuppeteerSharp.Cdp
                 void OnFrameSwapped(object sender, EventArgs e) => swappedTcs.TrySetResult(true);
                 void OnPageClosed(object sender, EventArgs e) => swappedTcs.TrySetException(new PuppeteerException("Page closed"));
 
+                using var subscriptions = new DisposableActionsStack();
                 mainFrame.FrameSwappedByActivation += OnFrameSwapped;
+                subscriptions.Defer(() => mainFrame.FrameSwappedByActivation -= OnFrameSwapped);
                 Page.Close += OnPageClosed;
+                subscriptions.Defer(() => Page.Close -= OnPageClosed);
 
                 try
                 {
@@ -741,11 +744,6 @@ namespace PuppeteerSharp.Cdp
                 catch
                 {
                     RemoveFramesRecursively(mainFrame);
-                }
-                finally
-                {
-                    mainFrame.FrameSwappedByActivation -= OnFrameSwapped;
-                    Page.Close -= OnPageClosed;
                 }
             }
             catch (Exception e)
