@@ -66,12 +66,18 @@ namespace PuppeteerSharp
                 throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
             }
 
-            var categories = options?.Categories ?? _defaultCategories;
+            var categories = new List<string>(options?.Categories ?? _defaultCategories);
 
             if (options?.Screenshots == true)
             {
                 categories.Add("disabled-by-default-devtools.screenshot");
             }
+
+            var excludedCategories = categories
+                .FindAll(category => category.StartsWith("-", StringComparison.Ordinal))
+                .ConvertAll(category => category.Substring(1));
+            var includedCategories = categories
+                .FindAll(category => !category.StartsWith("-", StringComparison.Ordinal));
 
             _path = options?.Path;
             _recording = true;
@@ -79,7 +85,12 @@ namespace PuppeteerSharp
             return _client.SendAsync("Tracing.start", new TracingStartRequest
             {
                 TransferMode = "ReturnAsStream",
-                Categories = string.Join(", ", categories),
+                TraceConfig = new TracingTraceConfig
+                {
+                    ExcludedCategories = excludedCategories.ToArray(),
+                    IncludedCategories = includedCategories.ToArray(),
+                    TraceBufferSizeInKb = options?.BufferSize,
+                },
             });
         }
 
