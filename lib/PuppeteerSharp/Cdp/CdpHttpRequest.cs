@@ -16,6 +16,9 @@ namespace PuppeteerSharp.Cdp;
 public class CdpHttpRequest : Request<CdpHttpResponse>
 {
     private readonly bool _allowInterception;
+
+    // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
+    // Upstream equivalent: puppeteer/puppeteer#15338.
     private readonly ILogger _logger;
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private CDPSession _client;
