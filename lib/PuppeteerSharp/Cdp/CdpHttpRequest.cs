@@ -15,6 +15,7 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc/>
 public class CdpHttpRequest : Request<CdpHttpResponse>
 {
+    // CI retrigger for upstream #15338
     private readonly bool _allowInterception;
 
     // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
