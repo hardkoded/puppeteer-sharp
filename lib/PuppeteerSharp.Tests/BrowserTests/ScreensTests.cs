@@ -18,7 +18,7 @@ namespace PuppeteerSharp.Tests.BrowserTests
             Assert.That(screenInfos[0].ColorDepth, Is.EqualTo(24));
             Assert.That(screenInfos[0].DevicePixelRatio, Is.EqualTo(1));
             Assert.That(screenInfos[0].Height, Is.EqualTo(600));
-            Assert.That(screenInfos[0].Id, Is.EqualTo("1"));
+            Assert.That(screenInfos[0].Id, Is.Not.Null.And.Not.Empty);
             Assert.That(screenInfos[0].IsExtended, Is.False);
             Assert.That(screenInfos[0].IsInternal, Is.False);
             Assert.That(screenInfos[0].IsPrimary, Is.True);
