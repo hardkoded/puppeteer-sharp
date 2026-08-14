@@ -10,7 +10,7 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp
 {
-    internal class FirefoxTargetManager : ITargetManager
+    internal class FirefoxTargetManager : ITargetManager, IDisposable
     {
         private readonly Connection _connection;
         private readonly Func<TargetInfo, CDPSession, CDPSession, CdpTarget> _targetFactoryFunc;
@@ -20,6 +20,8 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, CdpTarget> _availableTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
+        private readonly DisposableActionsStack _subscriptions = new();
+        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _attachmentSubscriptions = new();
         private List<string> _targetsIdsForInit = [];
 
         public FirefoxTargetManager(
@@ -32,7 +34,9 @@ namespace PuppeteerSharp.Cdp
             _targetFactoryFunc = targetFactoryFunc;
             _logger = _connection.LoggerFactory.CreateLogger<FirefoxTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
+            _subscriptions.Defer(() => _connection.MessageReceived -= OnMessageReceived);
             _connection.SessionDetached += Connection_SessionDetached;
+            _subscriptions.Defer(() => _connection.SessionDetached -= Connection_SessionDetached);
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -64,6 +68,17 @@ namespace PuppeteerSharp.Cdp
 
         public bool IsUrlAllowed(string url) => true;
 
+        public void Dispose()
+        {
+            _subscriptions.Dispose();
+            foreach (var subscriptions in _attachmentSubscriptions.Values)
+            {
+                subscriptions.Dispose();
+            }
+
+            _attachmentSubscriptions.Clear();
+        }
+
         private void OnMessageReceived(object sender, MessageEventArgs e)
         {
             try
@@ -91,7 +106,27 @@ namespace PuppeteerSharp.Cdp
         }
 
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
-            => e.Session.MessageReceived -= OnMessageReceived;
+            => RemoveAttachmentListeners(e.Session);
+
+        private void SetupAttachmentListeners(ICDPSession session)
+        {
+            var subscriptions = new DisposableActionsStack();
+            session.MessageReceived += OnMessageReceived;
+            subscriptions.Defer(() => session.MessageReceived -= OnMessageReceived);
+            if (!_attachmentSubscriptions.TryAdd(session, subscriptions))
+            {
+                subscriptions.Dispose();
+                throw new PuppeteerException("Attachment listeners already set up for this session.");
+            }
+        }
+
+        private void RemoveAttachmentListeners(ICDPSession session)
+        {
+            if (session != null && _attachmentSubscriptions.TryRemove(session, out var subscriptions))
+            {
+                subscriptions.Dispose();
+            }
+        }
 
         private void OnTargetCreated(TargetCreatedResponse e)
         {
@@ -144,7 +179,7 @@ namespace PuppeteerSharp.Cdp
             var targetInfo = e.TargetInfo;
             var session = _connection.GetSession(e.SessionId) ?? throw new PuppeteerException($"Session {e.SessionId} was not created.");
             _availableTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
-            session.MessageReceived += OnMessageReceived;
+            SetupAttachmentListeners(session);
             session.Target = target;
             _availableTargetsBySessionId.TryAdd(session.Id, target);
 

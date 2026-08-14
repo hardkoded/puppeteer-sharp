@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
@@ -16,12 +17,17 @@ namespace PuppeteerSharp;
 /// <example>
 /// <code source="../PuppeteerSharp.Tests/DeviceRequestPromptTests/WaitForDevicePromptTests.cs" region="DeviceRequestPromptUsage" lang="csharp"/>
 /// </example>
+[SuppressMessage(
+    "Microsoft.Design",
+    "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
+    Justification = "Listener subscriptions are disposed in SelectAsync/CancelAsync via DisposableActionsStack.")]
 public class DeviceRequestPrompt
 {
     private readonly string _id;
     private readonly TimeoutSettings _timeoutSettings;
+    private readonly ICDPSession _client;
+    private readonly DisposableActionsStack _subscriptions = new();
     private bool _handled;
-    private ICDPSession _client;
 
     internal DeviceRequestPrompt(ICDPSession client, TimeoutSettings timeoutSettings, DeviceAccessDeviceRequestPromptedResponse firstEvent)
     {
@@ -30,6 +36,7 @@ public class DeviceRequestPrompt
         _id = firstEvent.Id;
 
         _client.MessageReceived += OnMessageReceived;
+        _subscriptions.Defer(() => _client.MessageReceived -= OnMessageReceived);
 
         UpdateDevices(firstEvent);
     }
@@ -55,11 +62,6 @@ public class DeviceRequestPrompt
             throw new ArgumentNullException(nameof(device));
         }
 
-        if (_client == null)
-        {
-            throw new PuppeteerException("Cannot select device through a detached session!");
-        }
-
         if (!Devices.Contains(device))
         {
             throw new PuppeteerException($"Cannot select unknown device!");
@@ -70,6 +72,7 @@ public class DeviceRequestPrompt
             throw new PuppeteerException("Cannot select DeviceRequestPrompt which is already handled!");
         }
 
+        _subscriptions.Dispose();
         _handled = true;
 
         return _client.SendAsync("DeviceAccess.selectPrompt", new DeviceAccessSelectPrompt
@@ -115,16 +118,12 @@ public class DeviceRequestPrompt
     /// <returns>A task that resolves after the cancel message is processed by the browser.</returns>
     public Task CancelAsync()
     {
-        if (_client == null)
-        {
-            throw new PuppeteerException("Cannot cancel prompt through detached session!");
-        }
-
         if (_handled)
         {
             throw new PuppeteerException("Cannot cancel DeviceRequestPrompt which is already handled!");
         }
 
+        _subscriptions.Dispose();
         _handled = true;
 
         return _client.SendAsync("DeviceAccess.cancelPrompt", new DeviceAccessCancelPrompt
@@ -146,9 +145,6 @@ public class DeviceRequestPrompt
                         UpdateDevices(e.MessageData.ToObject<DeviceAccessDeviceRequestPromptedResponse>());
                     }
 
-                    break;
-                case "Target.detachedFromTarget":
-                    _client = null;
                     break;
             }
         }

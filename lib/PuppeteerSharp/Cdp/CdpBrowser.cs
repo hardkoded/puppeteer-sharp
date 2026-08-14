@@ -41,6 +41,9 @@ public class CdpBrowser : Browser
     private readonly bool _networkEnabled;
     private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Disposed in Detach().")]
+    private readonly DisposableActionsStack _subscriptions = new();
     private Task _closeTask;
     private Task<BrowserGetVersionResponse> _versionTask;
 
@@ -556,20 +559,22 @@ public class CdpBrowser : Browser
     private Task AttachAsync()
     {
         Connection.Disconnected += Connection_Disconnected;
+        _subscriptions.Defer(() => Connection.Disconnected -= Connection_Disconnected);
         TargetManager.TargetAvailable += OnAttachedToTargetAsync;
+        _subscriptions.Defer(() => TargetManager.TargetAvailable -= OnAttachedToTargetAsync);
         TargetManager.TargetGone += OnDetachedFromTargetAsync;
+        _subscriptions.Defer(() => TargetManager.TargetGone -= OnDetachedFromTargetAsync);
         TargetManager.TargetChanged += OnTargetChanged;
+        _subscriptions.Defer(() => TargetManager.TargetChanged -= OnTargetChanged);
         TargetManager.TargetDiscovered += TargetManager_TargetDiscovered;
+        _subscriptions.Defer(() => TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered);
         return TargetManager.InitializeAsync();
     }
 
     private void Detach()
     {
-        Connection.Disconnected -= Connection_Disconnected;
-        TargetManager.TargetAvailable -= OnAttachedToTargetAsync;
-        TargetManager.TargetGone -= OnDetachedFromTargetAsync;
-        TargetManager.TargetChanged -= OnTargetChanged;
-        TargetManager.TargetDiscovered -= TargetManager_TargetDiscovered;
+        _subscriptions.Dispose();
+        TargetManager.Dispose();
     }
 
     private CdpTarget CreateTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)

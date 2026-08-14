@@ -10,7 +10,7 @@ using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp
 {
-    internal class ChromeTargetManager : ITargetManager
+    internal class ChromeTargetManager : ITargetManager, IDisposable
     {
         private readonly List<string> _ignoredTargets = new();
         private readonly Connection _connection;
@@ -21,6 +21,8 @@ namespace PuppeteerSharp.Cdp
         private readonly ConcurrentDictionary<string, CdpTarget> _attachedTargetsBySessionId = new();
         private readonly ConcurrentDictionary<string, TargetInfo> _discoveredTargetsByTargetId = new();
         private readonly TaskCompletionSource<bool> _initializeCompletionSource = new();
+        private readonly DisposableActionsStack _subscriptions = new();
+        private readonly ConcurrentDictionary<ICDPSession, DisposableActionsStack> _attachmentSubscriptions = new();
 
         // IDs of tab targets detected while running the initial Target.setAutoAttach
         // request. These are the targets whose initialization we want to await for
@@ -60,7 +62,9 @@ namespace PuppeteerSharp.Cdp
             _allowList = allowList;
             _logger = _connection.LoggerFactory.CreateLogger<ChromeTargetManager>();
             _connection.MessageReceived += OnMessageReceived;
+            _subscriptions.Defer(() => _connection.MessageReceived -= OnMessageReceived);
             _connection.SessionDetached += Connection_SessionDetached;
+            _subscriptions.Defer(() => _connection.SessionDetached -= Connection_SessionDetached);
         }
 
         public event EventHandler<TargetChangedArgs> TargetAvailable;
@@ -155,6 +159,17 @@ namespace PuppeteerSharp.Cdp
             return true;
         }
 
+        public void Dispose()
+        {
+            _subscriptions.Dispose();
+            foreach (var subscriptions in _attachmentSubscriptions.Values)
+            {
+                subscriptions.Dispose();
+            }
+
+            _attachmentSubscriptions.Clear();
+        }
+
         private static void ValidateUrlPatterns(string[] patterns)
         {
             if (patterns == null)
@@ -235,8 +250,26 @@ namespace PuppeteerSharp.Cdp
         }
 
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
+            => RemoveAttachmentListeners(e.Session);
+
+        private void SetupAttachmentListeners(ICDPSession session)
         {
-            e.Session.MessageReceived -= OnMessageReceived;
+            var subscriptions = new DisposableActionsStack();
+            session.MessageReceived += OnMessageReceived;
+            subscriptions.Defer(() => session.MessageReceived -= OnMessageReceived);
+            if (!_attachmentSubscriptions.TryAdd(session, subscriptions))
+            {
+                subscriptions.Dispose();
+                throw new PuppeteerException("Attachment listeners already set up for this session.");
+            }
+        }
+
+        private void RemoveAttachmentListeners(ICDPSession session)
+        {
+            if (session != null && _attachmentSubscriptions.TryRemove(session, out var subscriptions))
+            {
+                subscriptions.Dispose();
+            }
         }
 
         private void OnTargetCreated(TargetCreatedResponse e)
@@ -408,7 +441,7 @@ namespace PuppeteerSharp.Cdp
                 _targetsIdsForInit.Add(targetInfo.TargetId);
             }
 
-            session.MessageReceived += OnMessageReceived;
+            SetupAttachmentListeners(session);
 
             if (isExistingTarget)
             {

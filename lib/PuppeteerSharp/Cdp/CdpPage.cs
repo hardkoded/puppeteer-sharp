@@ -329,7 +329,9 @@ public class CdpPage : Page
             }
         }
 
+        using var subscriptions = new DisposableActionsStack();
         client.MessageReceived += Handler;
+        subscriptions.Defer(() => client.MessageReceived -= Handler);
 
         try
         {
@@ -339,7 +341,6 @@ public class CdpPage : Page
         }
         finally
         {
-            client.MessageReceived -= Handler;
             await client.SendAsync("HeapProfiler.disable").ConfigureAwait(false);
         }
     }
