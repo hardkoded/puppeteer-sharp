@@ -7,13 +7,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "comment": "Chrome 152 headful on Windows: Target.createTarget fails after closing the last page",
-    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
-    "platforms": ["win32"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["FAIL"]
-  },
-  {
     "comment": "See https://github.com/w3c/webdriver-bidi/issues/1097",
     "testIdPattern": "[console.spec] console should work for different console API calls with group functions",
     "platforms": ["darwin", "linux", "win32"],
