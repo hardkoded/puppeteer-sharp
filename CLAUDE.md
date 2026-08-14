@@ -21,6 +21,8 @@ Always verify which git branch you are on before making commits or creating PRs.
 
 When porting upstream TypeScript/Puppeteer changes to PuppeteerSharp (.NET), translate API naming conventions: camelCase → PascalCase, Promise<T> → Task<T>, interfaces prefixed with I, events use C# event patterns. Use `ReloadOptions`-style single parameter objects rather than creating redundant overloads.
 
+Upstream mapping notes (upstream ↔ PuppeteerSharp file/API mapping, change list, verification) belong in a **GitHub PR comment** (and/or PR description). Do not commit `UPSTREAM-PR-*.md` or similar notes markdown files into the repository.
+
 ## External Sources:
 These external sources are referenced or used as inspiration in the codebase. Feel free to explore them for deeper understanding.
 You are allowed to run git commands to update these repositories locally.

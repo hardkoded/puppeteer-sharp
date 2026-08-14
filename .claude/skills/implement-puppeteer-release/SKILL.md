@@ -81,15 +81,42 @@ You are implementing upstream Puppeteer PR #<PR_NUMBER> (<PR_URL>) into the Pupp
    ```bash
    git push -u origin implement-upstream-change-<PR_NUMBER>
    ```
-10. Create a PR:
+10. Create a PR with a descriptive title (not a generic "Implement upstream PR #N"):
     ```bash
-    gh pr create --title "Implement upstream PR #<PR_NUMBER>" --body "Implements changes from <PR_URL>" --base master
+    gh pr create --title "<descriptive title>" --body "<summary of what/why>" --base master
     ```
+11. Post a **PR comment** with the upstream mapping notes (see below). Do **not** commit `UPSTREAM-PR-*.md` or similar notes files into the repo.
+
+### PR comment template (required for every implemented PR)
+
+Post as a GitHub PR comment after the PR exists:
+
+```markdown
+## Upstream PR #<PR_NUMBER> → PuppeteerSharp
+
+### Upstream
+- **PR**: <PR_URL>
+- **Title**: <upstream title>
+- **Summary**: <1–2 sentences>
+
+### PuppeteerSharp mapping
+
+| Upstream | PuppeteerSharp |
+|----------|----------------|
+| … | … |
+
+### Changes
+1. …
+
+### Verification
+- …
+```
 
 ## Important
 - ALL file operations and commands must run inside the worktree at `../puppeteer-sharp-pr-<PR_NUMBER>`
 - Do NOT modify the main working tree
-- If the PR has no meaningful code changes for PuppeteerSharp (e.g. infra-only, upstream-tooling), commit a no-op with a note and still create the PR
+- Do NOT commit markdown notes files (`UPSTREAM-PR-*.md`, etc.); put that content in a PR comment
+- If the PR has no meaningful code changes for PuppeteerSharp (e.g. infra-only, upstream-tooling), commit a no-op with a note and still create the PR (and still post the mapping comment explaining why it is a no-op)
 ~~~
 
 ### Step 5: Final Report

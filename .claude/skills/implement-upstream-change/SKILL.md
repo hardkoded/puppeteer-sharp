@@ -51,6 +51,14 @@ Look at existing tests in the project for reference on how these attributes are 
 You need to run related tests to ensure everything is working as expected.
 If tests are failing, you will need to fix them.
 
-## Summary
+## Summary (PR comment, not a repo file)
 
-As part of the task you will need to generate a document explaining the changes you made, and how they relate to the original PR.
+After creating the PR, post a **PR comment** (not a committed markdown file) that explains the changes and how they map to the upstream PR.
+
+Include:
+- Upstream PR link, title, and short summary
+- A mapping table (upstream files/APIs → PuppeteerSharp files/APIs)
+- Bullet list of concrete .NET changes
+- Verification notes (what was built/tested)
+
+**Do not** commit files like `UPSTREAM-PR-<NUMBER>.md` (or similar notes markdown) into the repository. Keep that content on the PR as a comment (and/or in the PR description).
