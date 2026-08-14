@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.TracingTests
@@ -143,6 +146,31 @@ namespace PuppeteerSharp.Tests.TracingTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/grid.html");
             var trace = await Page.Tracing.StopAsync();
             Assert.That(trace, Is.Not.Null);
+        }
+
+        [Test, PuppeteerTest("tracing.spec", "Tracing", "should support bufferSize option")]
+        public async Task ShouldSupportBufferSizeOption()
+        {
+            using var loggerFactory = new LoggerFactory();
+            var client = Substitute.For<CDPSession>();
+            client.LoggerFactory.Returns(loggerFactory);
+            client.SendAsync(Arg.Any<string>(), Arg.Any<object>(), Arg.Any<bool>(), Arg.Any<CommandOptions>())
+                .Returns(Task.FromResult<JsonElement?>(null));
+
+            var tracing = new Tracing(client);
+            await tracing.StartAsync(new TracingOptions
+            {
+                Path = _file,
+                BufferSize = 10,
+            });
+
+            await client.Received().SendAsync(
+                "Tracing.start",
+                Arg.Is<TracingStartRequest>(request =>
+                    request.TraceConfig != null &&
+                    request.TraceConfig.TraceBufferSizeInKb == 10),
+                Arg.Any<bool>(),
+                Arg.Any<CommandOptions>());
         }
 
         [Test, PuppeteerTest("tracing.spec", "Tracing", "should support a typedArray without a path")]

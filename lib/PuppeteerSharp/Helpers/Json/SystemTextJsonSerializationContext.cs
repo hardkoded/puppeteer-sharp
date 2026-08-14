@@ -256,6 +256,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(TargetType))]
 [JsonSerializable(typeof(TracingCompleteResponse))]
 [JsonSerializable(typeof(TracingStartRequest))]
+[JsonSerializable(typeof(TracingTraceConfig))]
 [JsonSerializable(typeof(WSEndpointResponse))]
 [JsonSerializable(typeof(TargetInfo))]
 [JsonSerializable(typeof(WaitForFunctionPollingOption))]
