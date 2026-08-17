@@ -291,6 +291,50 @@ namespace PuppeteerSharp
             return await ConnectCdpAsync(browserWSEndpoint, options).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Returns a path to a system-wide Chrome installation for the given release channel.
+        /// </summary>
+        /// <param name="browser">Browser to resolve. Only <see cref="SupportedBrowser.Chrome"/> is supported.</param>
+        /// <param name="channel">Release channel to look for on the system.</param>
+        /// <param name="validatePath">
+        /// If <c>true</c> (default), throws when no candidate exists.
+        /// If <c>false</c>, returns the first resolved candidate even when the file is missing.
+        /// </param>
+        /// <param name="platform">
+        /// Platform whose known install locations should be used.
+        /// Defaults to the current platform.
+        /// </param>
+        /// <returns>The first existing candidate, or the first resolved path when <paramref name="validatePath"/> is <c>false</c>.</returns>
+        internal static string ComputeSystemExecutablePath(
+            SupportedBrowser browser,
+            ChromeReleaseChannel channel,
+            bool validatePath = true,
+            Platform? platform = null)
+        {
+            if (browser != SupportedBrowser.Chrome)
+            {
+                throw new PuppeteerException($"System browser detection is not supported for {browser} yet.");
+            }
+
+            var paths = Chrome.ResolveSystemExecutablePaths(platform ?? BrowserFetcher.GetCurrentPlatform(), channel);
+
+            foreach (var path in paths)
+            {
+                if (File.Exists(path))
+                {
+                    return path;
+                }
+            }
+
+            if (!validatePath)
+            {
+                return paths[0];
+            }
+
+            throw new PuppeteerException(
+                $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
+        }
+
         private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir)
         {
             var message = ex.ToString();
@@ -532,27 +576,6 @@ namespace PuppeteerSharp
             }
 
             return ResolveExecutablePath(options.HeadlessMode, buildId);
-        }
-
-        private string ComputeSystemExecutablePath(SupportedBrowser browser, ChromeReleaseChannel channel)
-        {
-            if (browser != SupportedBrowser.Chrome)
-            {
-                throw new PuppeteerException($"System browser detection is not supported for {browser} yet.");
-            }
-
-            var paths = Chrome.ResolveSystemExecutablePaths(BrowserFetcher.GetCurrentPlatform(), channel);
-
-            foreach (var path in paths)
-            {
-                if (File.Exists(path))
-                {
-                    return path;
-                }
-            }
-
-            throw new PuppeteerException(
-                $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
         }
     }
 }

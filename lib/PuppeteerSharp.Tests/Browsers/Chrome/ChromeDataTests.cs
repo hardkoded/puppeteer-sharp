@@ -138,6 +138,34 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
         }
 
         [Test]
+        public void ComputeSystemExecutablePathShouldHonorValidatePath()
+        {
+            const string macOsBetaPath = "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta";
+
+            Assert.That(
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.MacOS, ChromeReleaseChannel.Beta),
+                Is.EqualTo(new[] { macOsBetaPath }));
+
+            var unresolvedPath = Launcher.ComputeSystemExecutablePath(
+                SupportedBrowser.Chrome,
+                ChromeReleaseChannel.Beta,
+                validatePath: false,
+                platform: Platform.MacOS);
+
+            Assert.That(unresolvedPath, Is.EqualTo(macOsBetaPath));
+            Assert.That(File.Exists(unresolvedPath), Is.False);
+
+            var exception = Assert.Throws<PuppeteerException>(() =>
+                Launcher.ComputeSystemExecutablePath(
+                    SupportedBrowser.Chrome,
+                    ChromeReleaseChannel.Beta,
+                    validatePath: true,
+                    platform: Platform.MacOS));
+
+            Assert.That(exception!.Message, Does.Contain(macOsBetaPath));
+        }
+
+        [Test]
         [Retry(2)]
         public async Task ShouldReturnLatestVersion()
             => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
