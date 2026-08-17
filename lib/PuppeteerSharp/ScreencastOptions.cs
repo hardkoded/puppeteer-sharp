@@ -11,7 +11,8 @@ namespace PuppeteerSharp
         public string Path { get; set; }
 
         /// <summary>
-        /// Specifies whether to overwrite the output file, or exit immediately if it already exists.
+        /// Specifies whether to overwrite the output file if it already exists.
+        /// Defaults to <c>true</c>. When <c>false</c>, an existing file causes an <see cref="System.IO.IOException"/>.
         /// </summary>
         public bool? Overwrite { get; set; }
 

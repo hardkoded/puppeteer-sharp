@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,9 +20,12 @@ namespace PuppeteerSharp
         private const int DefaultCrf = 30;
         private const int DefaultColors = 256;
 
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Page is owned by the caller.")]
         private readonly Page _page;
         private readonly int _fps;
         private readonly Process _ffmpegProcess;
+        private readonly Stream _outputStream;
+        private readonly Task _copyOutputTask;
         private readonly CancellationTokenSource _cts = new();
         private readonly TaskCompletionSource<(byte[] Buffer, double WallTime)> _lastFrameTcs =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -30,9 +34,10 @@ namespace PuppeteerSharp
 
         private bool _stopped;
 
-        internal ScreenRecorder(Page page, int width, int height, ScreencastOptions options)
+        internal ScreenRecorder(Page page, int width, int height, ScreencastOptions options, Stream outputStream = null)
         {
             _page = page;
+            _outputStream = outputStream;
 
             var ffmpegPath = options.FfmpegPath ?? "ffmpeg";
             var fps = options.Fps ?? DefaultFps;
@@ -61,7 +66,6 @@ namespace PuppeteerSharp
             var delay = options.Delay ?? -1;
             var quality = options.Quality ?? DefaultCrf;
             var colors = options.Colors ?? DefaultColors;
-            var overwrite = options.Overwrite ?? true;
 
             var filters = new List<string>
             {
@@ -86,16 +90,6 @@ namespace PuppeteerSharp
             }
 
             var formatArgs = GetFormatArgs(format, fps, loop, delay, quality, colors, filters);
-
-            // Ensure the output directory exists.
-            if (options.Path != null)
-            {
-                var dir = Path.GetDirectoryName(Path.GetFullPath(options.Path));
-                if (!string.IsNullOrEmpty(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-            }
 
             // Build ffmpeg argument list as a single string for compatibility with netstandard2.0.
             var argParts = new List<string>
@@ -133,10 +127,7 @@ namespace PuppeteerSharp
             argParts.AddRange(formatArgs);
             argParts.AddRange(new[] { "-vf", string.Join(",", filters) });
 
-            // Overwrite output, or exit immediately if file already exists.
-            argParts.Add(overwrite ? "-y" : "-n");
-
-            // Output to stdout.
+            // Output to stdout. File overwrite is applied when Page opens the stream.
             argParts.Add("pipe:1");
 
             var startInfo = new ProcessStartInfo(ffmpegPath, string.Join(" ", argParts.Select(QuoteArgument)))
@@ -151,18 +142,9 @@ namespace PuppeteerSharp
             _ffmpegProcess = Process.Start(startInfo)
                 ?? throw new PuppeteerException("Failed to start ffmpeg process.");
 
-            // If a path is specified, pipe output to file.
-            if (options.Path != null)
-            {
-                var outputPath = options.Path;
-                _ = Task.Run(async () =>
-                {
-                    using var fileStream = File.OpenWrite(outputPath);
-                    await _ffmpegProcess.StandardOutput.BaseStream
-                        .CopyToAsync(fileStream)
-                        .ConfigureAwait(false);
-                });
-            }
+            _copyOutputTask = _outputStream != null
+                ? _ffmpegProcess.StandardOutput.BaseStream.CopyToAsync(_outputStream)
+                : Task.CompletedTask;
 
             _ffmpegProcess.ErrorDataReceived += (_, e) =>
             {
@@ -189,42 +171,58 @@ namespace PuppeteerSharp
 
             _stopped = true;
 
-            // Stop sending more frames.
-            await _page.StopScreencastAsync().ConfigureAwait(false);
-
-            // Signal frame processing to stop accepting new frames.
-            _cts.Cancel();
-
-            // Wait for frame processing task to finish.
             try
             {
-                await _frameProcessingTask.ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected.
-            }
+                // Stop sending more frames.
+                await _page.StopScreencastAsync().ConfigureAwait(false);
 
-            // Pad the end with the last frame to fill any remaining time.
-            if (_lastFrameTcs.Task.Status == TaskStatus.RanToCompletion)
-            {
-                var (buffer, lastWallTime) = await _lastFrameTcs.Task.ConfigureAwait(false);
-                if (buffer.Length > 0)
+                // Signal frame processing to stop accepting new frames.
+                _cts.Cancel();
+
+                // Wait for frame processing task to finish.
+                try
                 {
-                    var elapsed = (Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency) - lastWallTime;
-                    var padFrames = Math.Max(1, (int)Math.Round(_fps * elapsed));
-                    for (var i = 0; i < padFrames; i++)
+                    await _frameProcessingTask.ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected.
+                }
+
+                // Pad the end with the last frame to fill any remaining time.
+                if (_lastFrameTcs.Task.Status == TaskStatus.RanToCompletion)
+                {
+                    var (buffer, lastWallTime) = await _lastFrameTcs.Task.ConfigureAwait(false);
+                    if (buffer.Length > 0)
                     {
-                        await WriteFrameAsync(buffer).ConfigureAwait(false);
+                        var elapsed = (Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency) - lastWallTime;
+                        var padFrames = Math.Max(1, (int)Math.Round(_fps * elapsed));
+                        for (var i = 0; i < padFrames; i++)
+                        {
+                            await WriteFrameAsync(buffer).ConfigureAwait(false);
+                        }
                     }
                 }
+
+                // Close stdin to signal ffmpeg we are done.
+                _ffmpegProcess.StandardInput.Close();
+
+                // Wait for ffmpeg to finish.
+                await Task.Run(() => _ffmpegProcess.WaitForExit()).ConfigureAwait(false);
+
+                try
+                {
+                    await _copyOutputTask.ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[ffmpeg] Failed to copy output: {ex.Message}");
+                }
             }
-
-            // Close stdin to signal ffmpeg we are done.
-            _ffmpegProcess.StandardInput.Close();
-
-            // Wait for ffmpeg to finish.
-            await Task.Run(() => _ffmpegProcess.WaitForExit()).ConfigureAwait(false);
+            finally
+            {
+                _outputStream?.Dispose();
+            }
         }
 
         /// <inheritdoc/>
