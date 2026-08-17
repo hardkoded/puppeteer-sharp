@@ -67,6 +67,11 @@ namespace PuppeteerSharp
         public static IJsonTypeInfoResolver ExtraJsonSerializerContext { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether Puppeteer should follow symlinks for file operations.
+        /// </summary>
+        internal static bool FollowSymlinks { get; private set; } = true;
+
+        /// <summary>
         /// Returns an array of argument based on the options provided and the platform where the library is running.
         /// </summary>
         /// <returns>Chromium arguments.</returns>
@@ -112,5 +117,12 @@ namespace PuppeteerSharp
         /// <returns>The browser fetcher.</returns>
         /// <param name="options">Options.</param>
         public static IBrowserFetcher CreateBrowserFetcher(BrowserFetcherOptions options) => new BrowserFetcher(options);
+
+        /// <summary>
+        /// Defines whether Puppeteer should follow symlinks for file operations.
+        /// </summary>
+        /// <param name="followSymlinks">Whether Puppeteer should follow symlinks.</param>
+        public static void SetFollowSymlinks(bool followSymlinks)
+            => FollowSymlinks = followSymlinks;
     }
 }
