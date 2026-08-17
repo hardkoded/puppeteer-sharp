@@ -558,19 +558,31 @@ namespace PuppeteerSharp
             var width = (int)Math.Round(dimensions.Width);
             var height = (int)Math.Round(dimensions.Height);
 
-            var recorder = new ScreenRecorder(this, width, height, options);
-
+            // Open the output file before starting ffmpeg so overwrite / create
+            // failures do not leave a recorder running. Matches upstream Page.screencast.
+            Stream outputStream = null;
             try
             {
-                await StartScreencastAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                await recorder.StopAsync().ConfigureAwait(false);
-                throw;
-            }
+                outputStream = CreateScreencastOutputStream(options);
+                var recorder = new ScreenRecorder(this, width, height, options, outputStream);
+                outputStream = null;
 
-            return recorder;
+                try
+                {
+                    await StartScreencastAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    await recorder.StopAsync().ConfigureAwait(false);
+                    throw;
+                }
+
+                return recorder;
+            }
+            finally
+            {
+                outputStream?.Dispose();
+            }
         }
 
         /// <inheritdoc/>
@@ -1297,6 +1309,26 @@ namespace PuppeteerSharp
         /// <param name="puppeteerFunction">Puppeteer function.</param>
         /// <returns>A <see cref="Task"/> that completes when the function has been added.</returns>
         protected abstract Task ExposeFunctionAsync(string name, Delegate puppeteerFunction);
+
+        private static Stream CreateScreencastOutputStream(ScreencastOptions options)
+        {
+            if (string.IsNullOrEmpty(options.Path))
+            {
+                return null;
+            }
+
+            var directory = Path.GetDirectoryName(Path.GetFullPath(options.Path));
+            if (!string.IsNullOrEmpty(directory))
+            {
+                // Upstream mkdir uses {recursive: overwrite ?? true}. .NET's
+                // Directory.CreateDirectory is always recursive and is a no-op
+                // when the directory already exists.
+                Directory.CreateDirectory(directory);
+            }
+
+            var fileMode = (options.Overwrite ?? true) ? FileMode.Create : FileMode.CreateNew;
+            return AsyncFileHelper.CreateStream(options.Path, fileMode);
+        }
 
         private Clip RoundRectangle(Clip clip)
         {
