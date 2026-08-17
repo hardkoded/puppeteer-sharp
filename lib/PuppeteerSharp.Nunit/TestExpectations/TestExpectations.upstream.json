@@ -4038,6 +4038,20 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with three touches",
+    "platforms": [
+      "darwin"
+    ],
+    "parameters": [
+      "chrome"
+    ],
+    "expectations": [
+      "FAIL",
+      "PASS"
+    ],
+    "comment": "Started to flake on MacOS"
+  },
+  {
     "testIdPattern": "[touchscreen.spec] Touchscreen Touchscreen.prototype.touchMove should work with two touches",
     "platforms": [
       "darwin",

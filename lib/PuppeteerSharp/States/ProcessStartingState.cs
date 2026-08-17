@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -37,6 +38,13 @@ namespace PuppeteerSharp.States
 
         protected virtual async Task StartCoreAsync(LauncherBase p)
         {
+            if (p.ExecutablePath == null || !File.Exists(p.ExecutablePath))
+            {
+                await p.CleanTempUserDataDirAsync().ConfigureAwait(false);
+                throw new ProcessException(
+                    $"Browser was not found at the configured executablePath ({p.ExecutablePath})");
+            }
+
             var output = new StringBuilder();
             var usePipe = p.Options.Pipe;
 

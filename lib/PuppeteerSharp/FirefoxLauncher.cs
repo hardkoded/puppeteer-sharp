@@ -85,23 +85,30 @@ namespace PuppeteerSharp
             // If TempUserDataDir is null it means that the user provided their own userDataDir
             if (TempUserDataDir is null)
             {
-                var backupSuffix = ".puppeteer";
-                string[] backupFiles = ["prefs.js", "user.js"];
-                var basePath = _userDataDir.Unquote();
-                foreach (var backupFile in backupFiles)
+                try
                 {
-                    var backupPath = Path.Combine(basePath, backupFile + backupSuffix);
-                    var originalPath = Path.Combine(basePath, backupFile);
-                    if (File.Exists(backupPath))
+                    var backupSuffix = ".puppeteer";
+                    string[] backupFiles = ["prefs.js", "user.js"];
+                    var basePath = _userDataDir.Unquote();
+                    foreach (var backupFile in backupFiles)
                     {
-                        // We don't have the overwrite parameter in netstandard
-                        if (File.Exists(originalPath))
+                        var backupPath = Path.Combine(basePath, backupFile + backupSuffix);
+                        var originalPath = Path.Combine(basePath, backupFile);
+                        if (File.Exists(backupPath))
                         {
-                            File.Delete(originalPath);
-                        }
+                            // We don't have the overwrite parameter in netstandard
+                            if (File.Exists(originalPath))
+                            {
+                                File.Delete(originalPath);
+                            }
 
-                        File.Move(backupPath, Path.Combine(basePath, backupFile));
+                            File.Move(backupPath, Path.Combine(basePath, backupFile));
+                        }
                     }
+                }
+                catch
+                {
+                    // Cleanup errors must not become uncaught exceptions.
                 }
             }
 

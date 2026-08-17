@@ -233,6 +233,7 @@ namespace PuppeteerSharp
             catch (Exception ex)
             {
                 await Process.KillAsync().ConfigureAwait(false);
+                await Process.CleanTempUserDataDirAsync().ConfigureAwait(false);
 
                 var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
                 if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
