@@ -230,6 +230,7 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             await StopAsync().ConfigureAwait(false);
+            _outputStream?.Dispose();
             _cts.Dispose();
             GC.SuppressFinalize(this);
         }

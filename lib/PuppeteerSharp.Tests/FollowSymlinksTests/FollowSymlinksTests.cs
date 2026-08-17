@@ -180,6 +180,24 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
             }
         }
 
+        [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screencast to an existing symlink path")]
+        public async Task ShouldRejectScreencastToAnExistingSymlinkPath()
+        {
+            IgnoreIfWindowsOrSymlinksUnsupported();
+            Puppeteer.SetFollowSymlinks(false);
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var targetFile = Path.Combine(_tmpDir, "output.webm");
+            var linkFile = Path.Combine(_tmpDir, "output-link.webm");
+            File.WriteAllText(targetFile, "placeholder");
+            File.CreateSymbolicLink(linkFile, targetFile);
+
+            var exception = Assert.ThrowsAsync<IOException>(
+                () => Page.ScreencastAsync(new ScreencastOptions { Path = linkFile }));
+            Assert.That(exception, Is.Not.Null);
+        }
+
         [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is true (default)", "should allow addScriptTag with a symlinked path")]
         public async Task ShouldAllowAddScriptTagWithASymlinkedPath()
         {
