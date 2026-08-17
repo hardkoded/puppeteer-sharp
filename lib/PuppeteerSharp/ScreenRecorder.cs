@@ -44,6 +44,19 @@ namespace PuppeteerSharp
             var fps = options.Fps ?? DefaultFps;
             _fps = fps;
 
+            // Open the output file first so followSymlinks / overwrite errors
+            // surface from construction even when ffmpeg is unavailable.
+            if (options.Path != null)
+            {
+                var dir = Path.GetDirectoryName(Path.GetFullPath(options.Path));
+                if (!string.IsNullOrEmpty(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                _outputStream = AsyncFileHelper.CreateStream(options.Path, FileMode.Create);
+            }
+
             // Validate ffmpeg exists.
             try
             {
@@ -59,6 +72,7 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                _outputStream?.Dispose();
                 throw new PuppeteerException($"Failed to launch ffmpeg: {ex.Message}", ex);
             }
 

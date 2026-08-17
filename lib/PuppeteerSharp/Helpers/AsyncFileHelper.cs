@@ -1,4 +1,7 @@
 using System.IO;
+#if !NET8_0_OR_GREATER
+using System.Runtime.InteropServices;
+#endif
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,16 +67,17 @@ namespace PuppeteerSharp.Helpers
         {
             try
             {
-                var attributes = File.GetAttributes(path);
-                if ((attributes & FileAttributes.ReparsePoint) == 0)
-                {
-                    return false;
-                }
-
 #if NET8_0_OR_GREATER
+                // File.GetAttributes follows symlinks on Unix and will not report
+                // ReparsePoint, so ResolveLinkTarget must be the primary check.
                 return File.ResolveLinkTarget(path, returnFinalTarget: false) != null;
 #else
-                return true;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0;
+                }
+
+                return UnixIsSymbolicLink(path);
 #endif
             }
             catch (FileNotFoundException)
@@ -85,5 +89,16 @@ namespace PuppeteerSharp.Helpers
                 return false;
             }
         }
+
+#if !NET8_0_OR_GREATER
+        [DllImport("libc", SetLastError = true, EntryPoint = "readlink")]
+        private static extern int ReadLink(string path, byte[] buf, ulong bufsiz);
+
+        private static bool UnixIsSymbolicLink(string path)
+        {
+            var buffer = new byte[1];
+            return ReadLink(path, buffer, (ulong)buffer.Length) >= 0;
+        }
+#endif
     }
 }
