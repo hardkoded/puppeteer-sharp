@@ -32,8 +32,10 @@ namespace PuppeteerSharp
                 EnableRaisingEvents = true,
             };
             Process.StartInfo.UseShellExecute = false;
+            Process.StartInfo.CreateNoWindow = true;
             Process.StartInfo.FileName = executable;
             Process.StartInfo.RedirectStandardError = true;
+            ExecutablePath = executable;
 
             SetEnvVariables(Process.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
@@ -72,6 +74,11 @@ namespace PuppeteerSharp
         /// Indicates whether Base process has exited.
         /// </summary>
         public bool HasExited => StateManager.CurrentState.IsExited;
+
+        /// <summary>
+        /// Gets the browser executable path used to launch the process.
+        /// </summary>
+        internal string ExecutablePath { get; }
 
         internal StateManager StateManager { get; }
 
@@ -145,6 +152,16 @@ namespace PuppeteerSharp
             await ExitCompletionSource.Task.ConfigureAwait(false);
             return true;
         }
+
+        /// <summary>
+        /// Deletes the temporary user data directory if one was created for this launch.
+        /// Cleanup errors are swallowed so they cannot become uncaught exceptions.
+        /// </summary>
+        /// <returns>A task that completes when cleanup finishes.</returns>
+        internal Task CleanTempUserDataDirAsync()
+            => TempUserDataDir is { } tempUserDataDir
+                ? tempUserDataDir.DeleteAsync()
+                : Task.CompletedTask;
 
         /// <summary>
         /// Cleans up temporary user data directory.

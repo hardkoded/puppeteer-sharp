@@ -45,7 +45,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            var exception = Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.That(
+                exception!.Message,
+                Is.EqualTo("Browser was not found at the configured executablePath (random-invalid-path)"));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
@@ -55,7 +58,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
             options.ExecutablePath = "/tmp/does-not-exist";
             options.Pipe = true;
 
-            Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            var exception = Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.That(
+                exception!.Message,
+                Does.Contain("Browser was not found at the configured executablePath (/tmp/does-not-exist)"));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option")]

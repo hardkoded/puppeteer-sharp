@@ -46,10 +46,12 @@ namespace PuppeteerSharp.Helpers
 
         public async Task DeleteAsync()
         {
-            const int minDelayInMillis = 200;
+            const int maxRetries = 10;
+            const int retryDelayInMillis = 100;
             const int maxDelayInMillis = 8000;
 
-            var retryDelay = minDelayInMillis;
+            var retryDelay = retryDelayInMillis;
+            var attempt = 0;
             while (Directory.Exists(Path))
             {
                 try
@@ -60,7 +62,8 @@ namespace PuppeteerSharp.Helpers
                 catch
                 {
                     await Task.Delay(retryDelay).ConfigureAwait(false);
-                    if (retryDelay < maxDelayInMillis)
+                    attempt++;
+                    if (attempt >= maxRetries && retryDelay < maxDelayInMillis)
                     {
                         retryDelay = Math.Min(2 * retryDelay, maxDelayInMillis);
                     }
