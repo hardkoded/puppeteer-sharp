@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -508,6 +509,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned recorder.")]
         public async Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null)
         {
             options ??= new ScreencastOptions();

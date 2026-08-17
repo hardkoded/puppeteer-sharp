@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace PuppeteerSharp
         private const int DefaultCrf = 30;
         private const int DefaultColors = 256;
 
+        [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Page is owned by the caller.")]
         private readonly Page _page;
         private readonly int _fps;
         private readonly Process _ffmpegProcess;
