@@ -318,7 +318,7 @@ public class CdpPage : Page
         await client.SendAsync("HeapProfiler.enable").ConfigureAwait(false);
         await client.SendAsync("HeapProfiler.collectGarbage").ConfigureAwait(false);
 
-        using var fileStream = new StreamWriter(options.Path);
+        using var fileStream = new StreamWriter(AsyncFileHelper.CreateStream(options.Path, FileMode.Create));
 
         void Handler(object sender, MessageEventArgs e)
         {
