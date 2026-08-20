@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
 {
-    internal class Chromium
+    internal static class Chromium
     {
         internal static Task<string> ResolveBuildIdAsync(Platform platform)
             => JsonUtils.GetTextAsync($"https://storage.googleapis.com/chromium-browser-snapshots/{GetFolder(platform)}/LAST_CHANGE");
