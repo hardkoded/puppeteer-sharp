@@ -1,6 +1,6 @@
 namespace PuppeteerSharp.Media
 {
-    internal class ScreenOrientationType
+    internal static class ScreenOrientationType
     {
         internal static string LandscapePrimary => "landscapePrimary";
 
