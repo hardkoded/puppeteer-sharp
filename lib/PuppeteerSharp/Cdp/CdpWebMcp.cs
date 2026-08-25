@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Cdp;
 
 /// <summary>
 /// Experimental WebMCP API. Requires Chrome 149+ with
-/// --enable-features=WebMCPTesting,DevToolsWebMCPSupport flags.
+/// --enable-features=WebMCP flag.
 /// </summary>
 /// <seealso href="https://github.com/webmachinelearning/webmcp"/>
 [SuppressMessage(

@@ -58,9 +58,11 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             var tools = page.WebMcp.Tools();
             Assert.That(tools.Length, Is.GreaterThanOrEqualTo(2));
-            Assert.That(tools[0].Annotations, Is.Not.Null);
-            Assert.That(tools[0].Annotations!.ReadOnly, Is.True);
-            Assert.That(tools[0].Annotations!.UntrustedContent, Is.True);
+            var imperativeTool = Array.Find(tools, t => t.Name == "test-tool-1");
+            Assert.That(imperativeTool, Is.Not.Null);
+            Assert.That(imperativeTool.Annotations, Is.Not.Null);
+            Assert.That(imperativeTool.Annotations!.ReadOnly, Is.True);
+            Assert.That(imperativeTool.Annotations!.UntrustedContent, Is.True);
         }
 
         [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should fire toolsadded events")]
