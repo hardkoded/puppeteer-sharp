@@ -407,11 +407,6 @@ public class CdpFrame : Frame
             Regex.Replace(referrerPolicy, "-(.)", match => match.Groups[1].Value.ToUpperInvariant());
     }
 
-    /// <summary>
-    /// Sets the frame HTML content without going through <c>document.write</c>.
-    /// </summary>
-    /// <param name="content">HTML content to set.</param>
-    /// <returns>A task that resolves when the content has been set.</returns>
     private async Task SetFrameContentAsync(string content)
     {
         // Writing the content from the page would go through document.write, which
