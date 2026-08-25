@@ -21,6 +21,11 @@ Cancellation resolves with `WebMcpInvocationStatus.Canceled` (matching upstream)
 
 - `lib/PuppeteerSharp/Cdp/WebMcpToolExecuteOptions.cs` (new)
 - `lib/PuppeteerSharp/Cdp/WebMcpTool.cs` — accept options; register cancel callback
-- `lib/PuppeteerSharp/Cdp/CdpWebMcp.cs` — `CancelInvocationAsync`
-- `lib/PuppeteerSharp.Tests/WebMcpTests/PageWebMcpTests.cs` — two cancel tests
+- `lib/PuppeteerSharp/Cdp/CdpWebMcp.cs` — `CancelInvocationAsync`; update feature-flag docs
+- `lib/PuppeteerSharp.Tests/WebMcpTests/PageWebMcpTests.cs` — cancel tests + align with `document.modelContext` / `--enable-features=WebMCP`
+- `lib/PuppeteerSharp.Nunit/TestExpectations/TestExpectations.upstream.json` — remove outdated Chrome 149+ FAIL so WebMCP runs on Chrome 152
 - `lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj` — fix `ProjectReferenc1e` typo blocking builds
+
+## Verification
+
+`BROWSER=CHROME PROTOCOL=cdp` — all 9 `PageWebMcpTests` passed.
