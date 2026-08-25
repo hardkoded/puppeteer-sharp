@@ -180,6 +180,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(PageReloadRequest))]
 [JsonSerializable(typeof(PageRemoveScriptToEvaluateOnNewDocumentRequest))]
 [JsonSerializable(typeof(PageSetBypassCSPRequest))]
+[JsonSerializable(typeof(PageSetDocumentContentRequest))]
 [JsonSerializable(typeof(PageSetInterceptFileChooserDialog))]
 [JsonSerializable(typeof(PageSetLifecycleEventsEnabledRequest))]
 [JsonSerializable(typeof(PerformanceGetMetricsResponse))]
