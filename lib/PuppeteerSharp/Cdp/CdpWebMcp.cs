@@ -100,6 +100,20 @@ public class CdpWebMcp
         return response?.InvocationId;
     }
 
+    internal async Task CancelInvocationAsync(string invocationId)
+    {
+        try
+        {
+            await _client.SendAsync(
+                "WebMCP.cancelInvocation",
+                new { invocationId }).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Cancellation may fail if the invocation already completed.
+        }
+    }
+
     internal void UpdateClient(CDPSession newClient)
     {
         _subscriptions.Dispose();

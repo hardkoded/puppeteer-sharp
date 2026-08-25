@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Cdp;
@@ -159,6 +160,118 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             Assert.That(response.Status, Is.EqualTo(WebMcpInvocationStatus.Completed));
             Assert.That(response.Output?.ToString(), Contains.Substring("hello world"));
             Assert.That(response.ErrorText, Is.Null);
+            Assert.That(response.Exception, Is.Null);
+        }
+
+        [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should cancel tool execution")]
+        public async Task ShouldCancelToolExecution()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(WebMcpOptions(), TestConstants.LoggerFactory);
+            var page = (CdpPage)await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+            Assert.That(page.WebMcp, Is.Not.Null);
+
+            var toolAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
+
+            // Register an imperative WebMCP tool with a delayed response.
+            await page.EvaluateFunctionAsync(@"() => {
+                window.navigator.modelContext.registerTool({
+                    name: 'test-tool-1',
+                    description: 'A test tool 1',
+                    inputSchema: {
+                        type: 'object',
+                        properties: { text: { type: 'string', description: 'Some text' } },
+                        required: ['text'],
+                    },
+                    execute: () => {
+                        return new Promise(resolve => {
+                            setTimeout(() => {
+                                resolve('done');
+                            }, 5000);
+                        });
+                    },
+                });
+            }");
+
+            await toolAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            var tool = page.WebMcp.Tools()[0];
+
+            var toolCalledTcs = new TaskCompletionSource<WebMcpToolCall>();
+            page.WebMcp.ToolInvoked += (_, call) => toolCalledTcs.TrySetResult(call);
+
+            using var cts = new CancellationTokenSource();
+            var executeTask = tool.ExecuteAsync(
+                new { text = "world" },
+                new WebMcpToolExecuteOptions { CancellationToken = cts.Token });
+
+            var call = await toolCalledTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+            await cts.CancelAsync();
+
+            var response = await executeTask;
+
+            Assert.That(response.Id, Is.EqualTo(call.Id));
+            Assert.That(response.Call, Is.SameAs(call));
+            Assert.That(response.Status, Is.EqualTo(WebMcpInvocationStatus.Canceled));
+            Assert.That(response.Output, Is.Null);
+            Assert.That(response.ErrorText, Is.EqualTo(string.Empty).Or.Null);
+            Assert.That(response.Exception, Is.Null);
+        }
+
+        [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should cancel tool execution with already aborted signal")]
+        public async Task ShouldCancelToolExecutionWithAlreadyAbortedSignal()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(WebMcpOptions(), TestConstants.LoggerFactory);
+            var page = (CdpPage)await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.HttpsPrefix + "/empty.html");
+
+            Assert.That(page.WebMcp, Is.Not.Null);
+
+            var toolAddedTcs = new TaskCompletionSource<bool>();
+            page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
+
+            // Register an imperative WebMCP tool with a delayed response.
+            await page.EvaluateFunctionAsync(@"() => {
+                window.navigator.modelContext.registerTool({
+                    name: 'test-tool-1',
+                    description: 'A test tool 1',
+                    inputSchema: {
+                        type: 'object',
+                        properties: { text: { type: 'string', description: 'Some text' } },
+                        required: ['text'],
+                    },
+                    execute: () => {
+                        return new Promise(resolve => {
+                            setTimeout(() => {
+                                resolve('done');
+                            }, 5000);
+                        });
+                    },
+                });
+            }");
+
+            await toolAddedTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            var tool = page.WebMcp.Tools()[0];
+
+            var toolCalledTcs = new TaskCompletionSource<WebMcpToolCall>();
+            page.WebMcp.ToolInvoked += (_, call) => toolCalledTcs.TrySetResult(call);
+
+            using var cts = new CancellationTokenSource();
+            await cts.CancelAsync();
+            var response = await tool.ExecuteAsync(
+                new { text = "world" },
+                new WebMcpToolExecuteOptions { CancellationToken = cts.Token });
+
+            var call = await toolCalledTcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+            Assert.That(response.Id, Is.EqualTo(call.Id));
+            Assert.That(response.Call, Is.SameAs(call));
+            Assert.That(response.Status, Is.EqualTo(WebMcpInvocationStatus.Canceled));
+            Assert.That(response.Output, Is.Null);
+            Assert.That(response.ErrorText, Is.EqualTo(string.Empty).Or.Null);
             Assert.That(response.Exception, Is.Null);
         }
 

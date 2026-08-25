@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.Cdp;
@@ -54,18 +55,27 @@ public class WebMcpTool
     /// Executes the tool with the given input parameters.
     /// </summary>
     /// <param name="input">Input object matching the tool's <c>inputSchema</c>. Defaults to empty object.</param>
+    /// <param name="options">Optional execution options, including a cancellation token.</param>
     /// <returns>A task resolving to the tool call result.</returns>
-    public async Task<WebMcpToolCallResult> ExecuteAsync(object input = null)
+    public async Task<WebMcpToolCallResult> ExecuteAsync(object input = null, WebMcpToolExecuteOptions options = null)
     {
+        options ??= new WebMcpToolExecuteOptions();
         var invocationId = await WebMcp.InvokeToolAsync(this, input ?? new { }).ConfigureAwait(false);
 
         var tcs = new TaskCompletionSource<WebMcpToolCallResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+        CancellationTokenRegistration registration = default;
+
+        void OnCancel()
+        {
+            _ = WebMcp.CancelInvocationAsync(invocationId);
+        }
 
         EventHandler<WebMcpToolCallResult> handler = null;
         handler = (_, result) =>
         {
             if (result.Id == invocationId)
             {
+                registration.Dispose();
                 WebMcp.ToolResponded -= handler;
                 tcs.TrySetResult(result);
             }
@@ -73,6 +83,26 @@ public class WebMcpTool
 
         WebMcp.ToolResponded += handler;
 
-        return await tcs.Task.ConfigureAwait(false);
+        var token = options.CancellationToken;
+        if (token.CanBeCanceled)
+        {
+            if (token.IsCancellationRequested)
+            {
+                OnCancel();
+            }
+            else
+            {
+                registration = token.Register(OnCancel);
+            }
+        }
+
+        try
+        {
+            return await tcs.Task.ConfigureAwait(false);
+        }
+        finally
+        {
+            registration.Dispose();
+        }
     }
 }
