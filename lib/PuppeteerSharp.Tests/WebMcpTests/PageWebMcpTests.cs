@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.WebMcpTests
     {
         private static LaunchOptions WebMcpOptions() => new()
         {
-            Args = new[] { "--enable-features=WebMCPTesting,DevToolsWebMCPSupport" },
+            Args = new[] { "--enable-features=WebMCP" },
             AcceptInsecureCerts = true,
         };
 
@@ -35,8 +35,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
                 }
             };
 
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'test-tool-1',
                     description: 'A test tool 1',
                     inputSchema: { type: 'object', properties: { text: { type: 'string' } }, required: ['text'] },
@@ -75,8 +75,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             var tcs = new TaskCompletionSource<WebMcpTool[]>();
             page.WebMcp.ToolsAdded += (_, e) => tcs.TrySetResult(e.Tools);
 
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'my-tool',
                     description: 'A tool',
                     execute: () => {},
@@ -99,19 +99,20 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             var addedTcs = new TaskCompletionSource<bool>();
             page.WebMcp.ToolsAdded += (_, _) => addedTcs.TrySetResult(true);
 
-            await page.EvaluateFunctionAsync(@"() => {
-                window._tool = window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                window._controller = new AbortController();
+                await document.modelContext.registerTool({
                     name: 'removable-tool',
                     description: 'A removable tool',
                     execute: () => {},
-                });
+                }, { signal: window._controller.signal });
             }");
             await addedTcs.Task.WaitAsync(System.TimeSpan.FromSeconds(5));
 
             var removedTcs = new TaskCompletionSource<WebMcpTool[]>();
             page.WebMcp.ToolsRemoved += (_, e) => removedTcs.TrySetResult(e.Tools);
 
-            await page.EvaluateFunctionAsync("() => window._tool.unregister()");
+            await page.EvaluateFunctionAsync("() => window._controller.abort()");
 
             var removed = await removedTcs.Task.WaitAsync(System.TimeSpan.FromSeconds(5));
             Assert.That(removed, Has.Length.GreaterThanOrEqualTo(1));
@@ -129,8 +130,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             var toolAddedTcs = new TaskCompletionSource<bool>();
             page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
 
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'test-tool-1',
                     description: 'A test tool 1',
                     inputSchema: {
@@ -159,7 +160,7 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             Assert.That(response.Call, Is.SameAs(call));
             Assert.That(response.Status, Is.EqualTo(WebMcpInvocationStatus.Completed));
             Assert.That(response.Output?.ToString(), Contains.Substring("hello world"));
-            Assert.That(response.ErrorText, Is.Null);
+            Assert.That(response.ErrorText, Is.Null.Or.Empty);
             Assert.That(response.Exception, Is.Null);
         }
 
@@ -176,8 +177,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
 
             // Register an imperative WebMCP tool with a delayed response.
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'test-tool-1',
                     description: 'A test tool 1',
                     inputSchema: {
@@ -233,8 +234,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             page.WebMcp.ToolsAdded += (_, _) => toolAddedTcs.TrySetResult(true);
 
             // Register an imperative WebMCP tool with a delayed response.
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'test-tool-1',
                     description: 'A test tool 1',
                     inputSchema: {
@@ -369,8 +370,8 @@ namespace PuppeteerSharp.Tests.WebMcpTests
             var addedTcs = new TaskCompletionSource<bool>();
             page.WebMcp.ToolsAdded += (_, _) => addedTcs.TrySetResult(true);
 
-            await page.EvaluateFunctionAsync(@"() => {
-                window.navigator.modelContext.registerTool({
+            await page.EvaluateFunctionAsync(@"async () => {
+                await document.modelContext.registerTool({
                     name: 'nav-tool',
                     description: 'A tool',
                     execute: () => {},
