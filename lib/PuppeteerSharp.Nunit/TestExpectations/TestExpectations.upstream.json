@@ -694,7 +694,7 @@
     "comment": "we currently do not detect this siutation for Firefox"
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work when node is added in a shadow root",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work when a shadow root is attached to an existing node",
     "platforms": [
       "darwin",
       "linux",
@@ -704,7 +704,7 @@
     "expectations": [
       "SKIP"
     ],
-    "comment": "See https://github.com/puppeteer/puppeteer/issues/13163"
+    "comment": "Shadow root attachment does not produce a mutation, see https://github.com/whatwg/dom/issues/1287"
   },
   {
     "testIdPattern": "[worker.spec] *",

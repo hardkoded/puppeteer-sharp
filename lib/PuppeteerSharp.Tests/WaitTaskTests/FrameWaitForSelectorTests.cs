@@ -12,6 +12,19 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     public sealed class FrameWaitForSelectorTests : PuppeteerPageBaseTest, IDisposable
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+
+        private const string AddShadowHost = @"tag => {
+            document.body
+                .appendChild(document.createElement(tag))
+                .attachShadow({mode: 'open'});
+        }";
+
+        private const string AddElementToShadowRoot = @"(selector, tag) => {
+            const element = document.createElement(tag);
+            element.textContent = 'inside';
+            document.querySelector(selector).shadowRoot.appendChild(element);
+        }";
+
         private PollerInterceptor _pollerInterceptor;
 
         public FrameWaitForSelectorTests()
@@ -112,8 +125,63 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(AddShadowHost, "div");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(AddElementToShadowRoot, "div", "h1");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a shadow root that predates the wait")]
+        public async Task ShouldWorkWhenNodeIsAddedInAShadowRootThatPredatesTheWait()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(AddShadowHost, "div");
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(AddElementToShadowRoot, "div", "h1");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a nested shadow root")]
+        public async Task ShouldWorkWhenNodeIsAddedInANestedShadowRoot()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(@"() => {
+                const host = document.body.appendChild(document.createElement('div'));
+                const inner = document.createElement('section');
+                inner.attachShadow({mode: 'open'});
+                host.attachShadow({mode: 'open'}).appendChild(inner);
+            }");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(@"() => {
+                const h1 = document.createElement('h1');
+                h1.textContent = 'inside';
+                document
+                    .querySelector('div')
+                    .shadowRoot.querySelector('section')
+                    .shadowRoot.appendChild(h1);
+            }");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        // Attaching a shadow root to a node that is already in the DOM does not
+        // produce a mutation, so MutationPoller has nothing to react to.
+        // See https://github.com/whatwg/dom/issues/1287.
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when a shadow root is attached to an existing node")]
+        public async Task ShouldWorkWhenAShadowRootIsAttachedToAnExistingNode()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
             await Page.EvaluateFunctionAsync(AddElement, "div");
-            await Task.Delay(100);
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
             await Page.EvaluateFunctionAsync(@"() => {
                 const host = document.querySelector('div');
                 const shadow = host.attachShadow({mode: 'open'});
