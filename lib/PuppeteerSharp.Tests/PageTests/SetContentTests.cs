@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -143,6 +145,27 @@ namespace PuppeteerSharp.Tests.PageTests
             var result = await Page.GetContentAsync();
 
             Assert.That(result, Is.EqualTo($"{comment}{ExpectedOutput}"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should not run a cross-origin script through document.write")]
+        public async Task ShouldNotRunACrossOriginScriptThroughDocumentWrite()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var warnings = new List<string>();
+            Page.Console += (_, e) =>
+            {
+                if (e.Message.Type == ConsoleType.Warning)
+                {
+                    warnings.Add(e.Message.Text);
+                }
+            };
+
+            await Page.SetContentAsync(
+                $"<script src=\"{TestConstants.CrossProcessHttpPrefix}/injectedfile.js\"></script>",
+                new SetContentOptions { WaitUntil = new[] { WaitUntilNavigation.Load } });
+
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
+            Assert.That(warnings.Where(warning => warning.Contains("document.write")), Is.Empty);
         }
     }
 }
