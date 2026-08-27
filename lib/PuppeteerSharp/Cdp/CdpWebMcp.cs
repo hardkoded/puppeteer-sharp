@@ -34,7 +34,7 @@ namespace PuppeteerSharp.Cdp;
 
 /// <summary>
 /// Experimental WebMCP API. Requires Chrome 149+ with
-/// --enable-features=WebMCPTesting,DevToolsWebMCPSupport flags.
+/// --enable-features=WebMCP flag.
 /// </summary>
 /// <seealso href="https://github.com/webmachinelearning/webmcp"/>
 [SuppressMessage(
@@ -98,6 +98,20 @@ public class CdpWebMcp
                 input,
             }).ConfigureAwait(false);
         return response?.InvocationId;
+    }
+
+    internal async Task CancelInvocationAsync(string invocationId)
+    {
+        try
+        {
+            await _client.SendAsync(
+                "WebMCP.cancelInvocation",
+                new { invocationId }).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Cancellation may fail if the invocation already completed.
+        }
     }
 
     internal void UpdateClient(CDPSession newClient)
