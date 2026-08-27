@@ -1,5 +1,12 @@
 [
   {
+    "comment": "On Windows, headful Chrome quits when the last tab/window is closed (OS behavior), so this test fails",
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should keep connected after the last page is closed",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
     "comment": "This test verifies Windows-specific path resolution and should only run on Windows",
     "testIdPattern": "[chrome-data.spec] Chrome should resolve system executable path (windows)",
     "platforms": ["darwin", "linux"],
