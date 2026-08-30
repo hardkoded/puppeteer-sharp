@@ -1,6 +1,6 @@
 # Puppeteer Sharp
 
-[![NuGet](https://buildstats.info/nuget/PuppeteerSharp)][NugetUrl]
+[![NuGet](https://img.shields.io/nuget/dt/PuppeteerSharp)][NugetUrl]
 [![Build status](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/dotnet.yml/badge.svg)][BuildUrl]
 [![Demo build status](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/demo.yml/badge.svg)][BuildDemoUrl]
 [![CodeFactor](https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp/badge)][CodeFactorUrl]
