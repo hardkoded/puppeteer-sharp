@@ -222,7 +222,13 @@ namespace PuppeteerSharp
                     var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
                     if (userDataDir != null)
                     {
-                        ThrowIfBrowserAlreadyRunning(ex, userDataDir);
+                        // Pipe mode does not wait on the DevTools endpoint, so stderr
+                        // ProcessSingleton lines can arrive slightly after the connection
+                        // failure. Wait briefly for the process to exit / flush logs.
+                        await Task.WhenAny(
+                            Process.ExitCompletionSource.Task,
+                            Task.Delay(500)).ConfigureAwait(false);
+                        ThrowIfBrowserAlreadyRunning(ex, userDataDir, Process);
                     }
 
                     throw new ProcessException("Failed to create connection", ex);
@@ -236,10 +242,10 @@ namespace PuppeteerSharp
                 var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
                 if (userDataDir != null)
                 {
-                    ThrowIfBrowserAlreadyRunning(ex, userDataDir);
+                    ThrowIfBrowserAlreadyRunning(ex, userDataDir, Process);
                 }
 
-                if (IsMissingXServer(ex) && options.HeadlessMode == HeadlessMode.False)
+                if (IsMissingXServer(ex, Process) && options.HeadlessMode == HeadlessMode.False)
                 {
                     throw new ProcessException(
                         "Missing X server to start the headful browser. Either set Headless to true or use xvfb-run to run your Puppeteer script.",
@@ -331,9 +337,9 @@ namespace PuppeteerSharp
                 $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
         }
 
-        private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir)
+        private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
         {
-            if (!IsBrowserAlreadyRunning(ex, userDataDir))
+            if (!IsBrowserAlreadyRunning(ex, userDataDir, process))
             {
                 return;
             }
@@ -353,9 +359,12 @@ namespace PuppeteerSharp
                 ex);
         }
 
-        private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir)
+        private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
         {
-            var message = ex.ToString();
+            // Prefer recent stderr logs (available even under Pipe=true) over the
+            // exception text, matching upstream browserProcess.getRecentLogs().
+            var logs = process?.GetRecentLogs() ?? string.Empty;
+            var message = string.IsNullOrEmpty(logs) ? ex.ToString() : logs + "\n" + ex;
             if (message.Contains("Failed to create a ProcessSingleton for your profile directory", StringComparison.Ordinal))
             {
                 return true;
@@ -393,8 +402,12 @@ namespace PuppeteerSharp
             }
         }
 
-        private static bool IsMissingXServer(Exception ex)
-            => ex.ToString().Contains("Missing X server", StringComparison.Ordinal);
+        private static bool IsMissingXServer(Exception ex, LauncherBase process)
+        {
+            var logs = process?.GetRecentLogs() ?? string.Empty;
+            var message = string.IsNullOrEmpty(logs) ? ex.ToString() : logs + "\n" + ex;
+            return message.Contains("Missing X server", StringComparison.Ordinal);
+        }
 
 #if !CDP_ONLY
         private static async Task<BiDiDriver> CreateBidiDriverAsync(BidiOverCdpTransport transport, IConnectionOptions options)
