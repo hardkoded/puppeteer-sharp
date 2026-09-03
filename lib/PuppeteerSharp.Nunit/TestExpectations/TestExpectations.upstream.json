@@ -561,7 +561,9 @@
   {
     "testIdPattern": "[page.test] Page Page.record *",
     "platforms": [
-      "linux"
+      "darwin",
+      "linux",
+      "win32"
     ],
     "parameters": [
       "firefox"
