@@ -162,7 +162,11 @@ namespace PuppeteerSharp
 
             public bool Write(ReadOnlySpan<byte> chunk)
             {
+#if NETSTANDARD2_0
+                _stream.Write(chunk.ToArray(), 0, chunk.Length);
+#else
                 _stream.Write(chunk);
+#endif
                 return true;
             }
 
