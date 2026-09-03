@@ -15,9 +15,9 @@ namespace PuppeteerSharp.Tests.TransportTests
     public class WebSocketTransportKeepAliveTests
     {
         [Test]
-        [Obsolete]
         public void GetEffectiveHeaders_PrefersWsOptionsHeaders()
         {
+#pragma warning disable CS0618 // Intentionally testing legacy Headers vs WsOptions.Headers precedence
             var options = new ConnectOptions
             {
                 Headers = new Dictionary<string, string> { ["X-Legacy"] = "legacy" },
@@ -26,6 +26,7 @@ namespace PuppeteerSharp.Tests.TransportTests
                     Headers = new Dictionary<string, string> { ["X-Modern"] = "modern" },
                 },
             };
+#pragma warning restore CS0618
 
             var headers = ConnectionOptionsHelper.GetEffectiveHeaders(options);
 
