@@ -220,11 +220,9 @@ namespace PuppeteerSharp
                     browser?.Dispose();
 
                     var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
-                    if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                    if (userDataDir != null)
                     {
-                        throw new ProcessException(
-                            $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
-                            ex);
+                        ThrowIfBrowserAlreadyRunning(ex, userDataDir);
                     }
 
                     throw new ProcessException("Failed to create connection", ex);
@@ -236,11 +234,9 @@ namespace PuppeteerSharp
                 await Process.CleanTempUserDataDirAsync().ConfigureAwait(false);
 
                 var userDataDir = options.UserDataDir ?? Process.TempUserDataDir?.Path;
-                if (userDataDir != null && IsBrowserAlreadyRunning(ex, userDataDir))
+                if (userDataDir != null)
                 {
-                    throw new ProcessException(
-                        $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
-                        ex);
+                    ThrowIfBrowserAlreadyRunning(ex, userDataDir);
                 }
 
                 if (IsMissingXServer(ex) && options.HeadlessMode == HeadlessMode.False)
@@ -335,6 +331,28 @@ namespace PuppeteerSharp
                 $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
         }
 
+        private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir)
+        {
+            if (!IsBrowserAlreadyRunning(ex, userDataDir))
+            {
+                return;
+            }
+
+            // The browser reports the same ProcessSingleton failure whether another
+            // instance holds the lock or it simply cannot write to the profile
+            // directory, so check for the latter before blaming a running browser.
+            if (!IsWritableDirectory(userDataDir))
+            {
+                throw new ProcessException(
+                    $"The browser cannot write to {userDataDir}. Make the UserDataDir writable or use a different one.",
+                    ex);
+            }
+
+            throw new ProcessException(
+                $"The browser is already running for {userDataDir}. Use a different UserDataDir or stop the running browser first.",
+                ex);
+        }
+
         private static bool IsBrowserAlreadyRunning(Exception ex, string userDataDir)
         {
             var message = ex.ToString();
@@ -353,6 +371,26 @@ namespace PuppeteerSharp
             }
 
             return false;
+        }
+
+        private static bool IsWritableDirectory(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                return true;
+            }
+
+            try
+            {
+                var testPath = Path.Combine(directory, $".puppeteer-write-test-{Guid.NewGuid():N}");
+                File.WriteAllText(testPath, string.Empty);
+                File.Delete(testPath);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsMissingXServer(Exception ex)
