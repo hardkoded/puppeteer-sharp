@@ -94,9 +94,12 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await using var connectedBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserURL = TestConstants.ServerUrl,
-                Headers = new Dictionary<string, string>
+                WsOptions = new WsOptions
                 {
-                    ["Authorization"] = authorizationHeader,
+                    Headers = new Dictionary<string, string>
+                    {
+                        ["Authorization"] = authorizationHeader,
+                    },
                 },
                 WebSocketFactory = async (uri, socketOptions, cancellationToken) =>
                 {
