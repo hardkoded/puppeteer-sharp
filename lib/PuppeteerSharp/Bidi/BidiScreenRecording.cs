@@ -60,7 +60,11 @@ internal sealed class BidiScreenRecording : ScreenRecording
             {
                 try
                 {
+#if NETSTANDARD2_0
+                    var buffer = File.ReadAllBytes(filePath);
+#else
                     var buffer = await File.ReadAllBytesAsync(filePath).ConfigureAwait(false);
+#endif
                     EnqueueChunk(buffer);
                 }
                 catch (Exception ex)
