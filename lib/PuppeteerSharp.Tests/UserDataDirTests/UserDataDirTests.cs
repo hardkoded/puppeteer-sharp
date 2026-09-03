@@ -78,7 +78,8 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
                 FileAccessPermissions.GroupReadWriteExecute |
                 FileAccessPermissions.OtherReadWriteExecute;
 
-            LinuxSysCall.Chmod(userDataDir.Path, readOnlyPermissions);
+            var chmodResult = LinuxSysCall.Chmod(userDataDir.Path, readOnlyPermissions);
+            Assert.That(chmodResult, Is.EqualTo(0));
             try
             {
                 var options = TestConstants.DefaultBrowserOptions();
@@ -94,7 +95,8 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
             }
             finally
             {
-                LinuxSysCall.Chmod(userDataDir.Path, writablePermissions);
+                chmodResult = LinuxSysCall.Chmod(userDataDir.Path, writablePermissions);
+                Assert.That(chmodResult, Is.EqualTo(0));
             }
         }
 
