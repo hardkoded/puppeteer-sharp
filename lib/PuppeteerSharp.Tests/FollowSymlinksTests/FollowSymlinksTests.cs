@@ -145,6 +145,7 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
         }
 
         [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screencast when overwrite is false and file exists")]
+        [Obsolete]
         public async Task ShouldRejectScreencastWhenOverwriteIsFalseAndFileExists()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -181,6 +182,7 @@ namespace PuppeteerSharp.Tests.FollowSymlinksTests
         }
 
         [Test, PuppeteerTest("followSymlinks.test", "followSymlinks when followSymlinks is false", "should reject screencast to an existing symlink path")]
+        [Obsolete]
         public async Task ShouldRejectScreencastToAnExistingSymlinkPath()
         {
             IgnoreIfWindowsOrSymlinksUnsupported();

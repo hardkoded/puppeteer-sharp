@@ -30,6 +30,8 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Media;
@@ -1102,6 +1104,13 @@ public class BidiPage : Page
     /// <inheritdoc />
     protected override Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
         => BidiMainFrame.ExposeFunctionAsync(name, puppeteerFunction);
+
+    /// <inheritdoc/>
+    protected override ScreenRecording CreateScreenRecording(RecordOptions options)
+    {
+        var logger = BidiBrowser.LoggerFactory?.CreateLogger<ScreenRecording>() ?? NullLogger<ScreenRecording>.Instance;
+        return new BidiScreenRecording(this, options, logger);
+    }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

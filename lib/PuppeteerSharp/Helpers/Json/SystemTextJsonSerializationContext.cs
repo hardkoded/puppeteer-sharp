@@ -179,6 +179,8 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(PagePrintToPDFResponse))]
 [JsonSerializable(typeof(PageReloadRequest))]
 [JsonSerializable(typeof(PageRemoveScriptToEvaluateOnNewDocumentRequest))]
+[JsonSerializable(typeof(PageStartScreenRecordingRequest))]
+[JsonSerializable(typeof(PageStartScreenRecordingResponse))]
 [JsonSerializable(typeof(PageSetBypassCSPRequest))]
 [JsonSerializable(typeof(PageSetDocumentContentRequest))]
 [JsonSerializable(typeof(PageSetInterceptFileChooserDialog))]

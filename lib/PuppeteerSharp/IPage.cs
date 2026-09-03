@@ -1024,7 +1024,19 @@ namespace PuppeteerSharp
         /// By default, all recordings will be WebM format using the VP9 video codec, with a frame rate of 30 FPS.
         /// You must have ffmpeg installed on your system.
         /// </remarks>
+        [Obsolete("Use RecordAsync instead.")]
         Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null);
+
+        /// <summary>
+        /// Records this <see cref="IPage"/> using the Chrome DevTools Protocol
+        /// <see href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording">Page.startScreenRecording</see> API.
+        /// </summary>
+        /// <remarks>
+        /// Outputs mp4 video stream.
+        /// </remarks>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A task which resolves to a <see cref="ScreenRecording"/> that can be used to stop the recording.</returns>
+        Task<ScreenRecording> RecordAsync(RecordOptions options = null);
 
         /// <summary>
         /// Captures a screenshot of this <see cref="IPage"/>.
