@@ -103,7 +103,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 },
                 WebSocketFactory = async (uri, socketOptions, cancellationToken) =>
                 {
-                    webSocketAuthorizationHeader = socketOptions.Headers["Authorization"];
+                    webSocketAuthorizationHeader = ConnectionOptionsHelper.GetEffectiveHeaders(socketOptions)?["Authorization"];
                     return await WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken).ConfigureAwait(false);
                 },
                 Protocol = ((Browser)Browser).Protocol,
