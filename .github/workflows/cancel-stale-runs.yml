@@ -11,27 +11,34 @@ permissions:
   actions: write
   contents: read
 
+concurrency:
+  group: cancel-stale-runs-once
+  cancel-in-progress: false
+
 jobs:
   cancel:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Different pools — whichever gets a runner first cancels the stale runs.
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Cancel superseded workflow runs
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          # Superseded builds still in_progress (old SHAs, no concurrency group).
           IDS=(
-            33816203117  # 15408 stale
-            33816164930  # 15387 stale
-            33772684245  # 15406 stale
+            33816203117
+            33816164930
+            33772684245
           )
           for id in "${IDS[@]}"; do
-            echo "Cancelling run $id ..."
-            if gh api -X POST "repos/${{ github.repository }}/actions/runs/${id}/cancel"; then
-              echo "  cancel requested for $id"
-            else
-              echo "  cancel failed for $id (may already be completed)"
-            fi
+            echo "Cancelling run $id from ${{ matrix.os }} ..."
+            gh api -X POST "repos/${{ github.repository }}/actions/runs/${id}/cancel" \
+              && echo "  cancel requested for $id" \
+              || echo "  cancel failed for $id (may already be completed)"
           done
-          echo "Done."
+          echo "Done on ${{ matrix.os }}."
