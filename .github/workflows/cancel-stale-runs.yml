@@ -1,13 +1,14 @@
-# One-shot SINGLE-runner: fix stuck #3576 build queue. NO matrix.
+# Disabled after one-shot cancel completed. Keep as no-op so leftover
+# matrix jobs from prior pushes cannot re-cancel active CI runs.
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
+  workflow_dispatch:
 
 permissions:
-  actions: write
   contents: read
 
 concurrency:
@@ -15,48 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  requeue-3576:
+  noop:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Cancel stale + requeue #3576 build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          REPO="${{ github.repository }}"
-          OLD_RUN=33824147313   # superseded sha b8025f6, still queued
-          HEAD_RUN=33829314314  # HEAD 23ecdb6, queued 277m with 0 runners
-          HEAD_SHA=23ecdb630d92bd356278f97ce331b824e416f26b
-
-          echo "Cancel old run $OLD_RUN ..."
-          gh api -X POST "repos/$REPO/actions/runs/$OLD_RUN/cancel" || true
-
-          sha=$(gh api "repos/$REPO/actions/runs/$HEAD_RUN" --jq .head_sha)
-          st=$(gh api "repos/$REPO/actions/runs/$HEAD_RUN" --jq '.status + "/" + (.conclusion//"null")')
-          echo "HEAD run $HEAD_RUN sha=$sha status=$st"
-          if [[ "$sha" != "$HEAD_SHA" ]]; then
-            echo "SHA mismatch; abort"
-            exit 0
-          fi
-          # Only requeue if still fully stuck (queued, no in_progress jobs)
-          ip=$(gh api "repos/$REPO/actions/runs/$HEAD_RUN/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length')
-          echo "in_progress jobs=$ip"
-          if [[ "$ip" -gt 0 ]]; then
-            echo "HEAD run already has runners; leave it"
-            exit 0
-          fi
-          if [[ "$st" == completed/* ]]; then
-            echo "Already completed; no-op"
-            exit 0
-          fi
-          echo "Cancelling stuck HEAD run $HEAD_RUN ..."
-          gh api -X POST "repos/$REPO/actions/runs/$HEAD_RUN/cancel" || true
-          for i in $(seq 1 36); do
-            s=$(gh api "repos/$REPO/actions/runs/$HEAD_RUN" --jq .status)
-            echo "  status=$s ($i)"
-            [[ "$s" == "completed" ]] && break
-            sleep 5
-          done
-          echo "Re-running entire HEAD run $HEAD_RUN ..."
-          gh api -X POST "repos/$REPO/actions/runs/$HEAD_RUN/rerun" \
-            || gh run rerun "$HEAD_RUN" --repo "$REPO" || true
+      - name: No-op
+        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
