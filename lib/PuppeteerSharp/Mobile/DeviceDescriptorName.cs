@@ -220,6 +220,16 @@ namespace PuppeteerSharp.Mobile
         IPhoneSELandscape,
 
         /// <summary>
+        /// iPhone SE (3rd gen).
+        /// </summary>
+        IPhoneSE3rdGen,
+
+        /// <summary>
+        /// iPhone SE (3rd gen) landscape.
+        /// </summary>
+        IPhoneSE3rdGenLandscape,
+
+        /// <summary>
         /// iPhone X.
         /// </summary>
         IPhoneX,
@@ -268,6 +278,106 @@ namespace PuppeteerSharp.Mobile
         /// iPhone 11 Pro Max landscape.
         /// </summary>
         IPhone11ProMaxLandscape,
+
+        /// <summary>
+        /// iPhone 16.
+        /// </summary>
+        IPhone16,
+
+        /// <summary>
+        /// iPhone 16 landscape.
+        /// </summary>
+        IPhone16Landscape,
+
+        /// <summary>
+        /// iPhone 16 Plus.
+        /// </summary>
+        IPhone16Plus,
+
+        /// <summary>
+        /// iPhone 16 Plus landscape.
+        /// </summary>
+        IPhone16PlusLandscape,
+
+        /// <summary>
+        /// iPhone 16 Pro.
+        /// </summary>
+        IPhone16Pro,
+
+        /// <summary>
+        /// iPhone 16 Pro landscape.
+        /// </summary>
+        IPhone16ProLandscape,
+
+        /// <summary>
+        /// iPhone 16 Pro Max.
+        /// </summary>
+        IPhone16ProMax,
+
+        /// <summary>
+        /// iPhone 16 Pro Max landscape.
+        /// </summary>
+        IPhone16ProMaxLandscape,
+
+        /// <summary>
+        /// iPhone 16e.
+        /// </summary>
+        IPhone16e,
+
+        /// <summary>
+        /// iPhone 16e landscape.
+        /// </summary>
+        IPhone16eLandscape,
+
+        /// <summary>
+        /// iPhone 17.
+        /// </summary>
+        IPhone17,
+
+        /// <summary>
+        /// iPhone 17 landscape.
+        /// </summary>
+        IPhone17Landscape,
+
+        /// <summary>
+        /// iPhone Air.
+        /// </summary>
+        IPhoneAir,
+
+        /// <summary>
+        /// iPhone Air landscape.
+        /// </summary>
+        IPhoneAirLandscape,
+
+        /// <summary>
+        /// iPhone 17 Pro.
+        /// </summary>
+        IPhone17Pro,
+
+        /// <summary>
+        /// iPhone 17 Pro landscape.
+        /// </summary>
+        IPhone17ProLandscape,
+
+        /// <summary>
+        /// iPhone 17 Pro Max.
+        /// </summary>
+        IPhone17ProMax,
+
+        /// <summary>
+        /// iPhone 17 Pro Max landscape.
+        /// </summary>
+        IPhone17ProMaxLandscape,
+
+        /// <summary>
+        /// iPhone 17e.
+        /// </summary>
+        IPhone17e,
+
+        /// <summary>
+        /// iPhone 17e landscape.
+        /// </summary>
+        IPhone17eLandscape,
 
         /// <summary>
         /// JioPhone 2.

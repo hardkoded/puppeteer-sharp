@@ -599,6 +599,34 @@ namespace PuppeteerSharp.Mobile
                     IsLandscape = true,
                 },
             },
+            [DeviceDescriptorName.IPhoneSE3rdGen] = new DeviceDescriptor
+            {
+                Name = "iPhone SE (3rd gen)",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/26.5 Mobile/19E241 Safari/602.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 375,
+                    Height = 667,
+                    DeviceScaleFactor = 2,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhoneSE3rdGenLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone SE (3rd gen) landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/26.5 Mobile/19E241 Safari/602.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 667,
+                    Height = 375,
+                    DeviceScaleFactor = 2,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
             [DeviceDescriptorName.IPhoneX] = new DeviceDescriptor
             {
                 Name = "iPhone X",
@@ -733,6 +761,286 @@ namespace PuppeteerSharp.Mobile
                 {
                     Width = 896,
                     Height = 414,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone16] = new DeviceDescriptor
+            {
+                Name = "iPhone 16",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 393,
+                    Height = 659,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone16Landscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 734,
+                    Height = 343,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone16Plus] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Plus",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 430,
+                    Height = 739,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone16PlusLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Plus landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 814,
+                    Height = 380,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone16Pro] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Pro",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 402,
+                    Height = 681,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone16ProLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Pro landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 756,
+                    Height = 352,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone16ProMax] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Pro Max",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 440,
+                    Height = 763,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone16ProMaxLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 16 Pro Max landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 838,
+                    Height = 390,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone16e] = new DeviceDescriptor
+            {
+                Name = "iPhone 16e",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 390,
+                    Height = 651,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone16eLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 16e landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 726,
+                    Height = 340,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone17] = new DeviceDescriptor
+            {
+                Name = "iPhone 17",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 402,
+                    Height = 681,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone17Landscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 17 landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 756,
+                    Height = 352,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhoneAir] = new DeviceDescriptor
+            {
+                Name = "iPhone Air",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 420,
+                    Height = 719,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhoneAirLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone Air landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 794,
+                    Height = 370,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone17Pro] = new DeviceDescriptor
+            {
+                Name = "iPhone 17 Pro",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 402,
+                    Height = 681,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone17ProLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 17 Pro landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 756,
+                    Height = 352,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone17ProMax] = new DeviceDescriptor
+            {
+                Name = "iPhone 17 Pro Max",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 440,
+                    Height = 763,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone17ProMaxLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 17 Pro Max landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 838,
+                    Height = 390,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = true,
+                },
+            },
+            [DeviceDescriptorName.IPhone17e] = new DeviceDescriptor
+            {
+                Name = "iPhone 17e",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 390,
+                    Height = 651,
+                    DeviceScaleFactor = 3,
+                    IsMobile = true,
+                    HasTouch = true,
+                    IsLandscape = false,
+                },
+            },
+            [DeviceDescriptorName.IPhone17eLandscape] = new DeviceDescriptor
+            {
+                Name = "iPhone 17e landscape",
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Mobile/15E148 Safari/604.1",
+                ViewPort = new ViewPortOptions
+                {
+                    Width = 726,
+                    Height = 340,
                     DeviceScaleFactor = 3,
                     IsMobile = true,
                     HasTouch = true,
