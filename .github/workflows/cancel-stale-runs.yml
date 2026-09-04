@@ -1,4 +1,5 @@
-# One-shot: cancel hung #3570 FF (Test >120m) then rerun-failed. NO matrix.
+# One-shot: cancel hung 3570 FF (Test >120m) then rerun-failed.
+# Use windows-latest to avoid ubuntu runner deadlock with hung FF jobs. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -16,11 +17,12 @@ concurrency:
 
 jobs:
   cancel-3570-ff-hang:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Cancel hung 3570 FF then rerun-failed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
@@ -38,7 +40,6 @@ jobs:
               sleep 5
             done
           fi
-          # Wait until no in_progress, then rerun-failed (FF + chrome-headless flake)
           for i in $(seq 1 36); do
             ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.status=="in_progress")]|length')
