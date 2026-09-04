@@ -1,5 +1,6 @@
 # Hang-cancel via RUN cancel (not job cancel) + idle-rerun. ubuntu.
 # Bugfix: actions/jobs/{id}/cancel is 404; use actions/runs/{id}/cancel.
+# After success: restore noop (do not restore while this helper is still needed).
 name: cancel-stale-runs
 
 on:
@@ -83,25 +84,44 @@ jobs:
             return 1
           }
 
-          # Post-#3580 hang-cancel (attempt N+1) job IDs @ ~11:32Z:
-          # 3571 FF-headful     100979567393 (~92m Test) — hang @120m
-          # 3576 FF-headless    101006478096 (fresh after prior hang cancel)
+          # #3571 HEAD fc0d8e34 superseded e43fa38e. Prior helper re-ran OLD build
+          # (33833625960) which concurrency-cancelled NEW build (33869194949).
+          # Cancel OLD without rerun, then full-rerun NEW HEAD build.
+          OLD3571=33833625960
+          NEW3571=33869194949
+
+          echo "==== 3571: cancel OLD run $OLD3571 (no rerun) ===="
+          gh api -X POST "repos/$REPO/actions/runs/$OLD3571/cancel" || true
+          for i in $(seq 1 40); do
+            st=$(gh api "repos/$REPO/actions/runs/$OLD3571" --jq .status)
+            echo "  old3571 status=$st ($i)"
+            [[ "$st" == "completed" ]] && break
+            sleep 5
+          done
+
+          echo "==== 3571: rerun NEW HEAD build $NEW3571 ===="
+          # Prefer full rerun so all cancelled matrix jobs restart
+          gh api -X POST "repos/$REPO/actions/runs/$NEW3571/rerun" || \
+            gh api -X POST "repos/$REPO/actions/runs/$NEW3571/rerun-failed-jobs" || true
+          sleep 4
+          gh api "repos/$REPO/actions/runs/$NEW3571" --jq '{id,status,conclusion,run_attempt,head_sha}'
+
+          # Post-hang-cancel job IDs still live on #3576/#3580 @ ~11:44Z:
+          # 3576 FF-headless    101006478096
           # 3576 FF-headful     101006478394
           # 3576 chrome-headful 101006478312 — flake watch via idle-rerun
-          # 3580 FF-headful     101008229373 (fresh after hang cancel+rerun)
+          # 3580 FF-headful     101008229373
           # 3580 chrome-headful 101008229334 — flake watch via idle-rerun
           # 3575 FULL GREEN — skip
-          # 3577 FULL GREEN (ignore-fix agent bc-fef9ba41 may push) — skip
+          # 3577 HEAD 806f63a3 fresh CI after ignore-fix — skip hang watch
+          # 3571 HEAD fc0d8e34 just re-triggered — skip hang watch (fresh)
 
-          J3571=100979567393
-          R3571=33833625960
           J3576A=101006478096
           J3576B=101006478394
           R3576=33847311896
           J3580=101008229373
           R3580=33851930748
 
-          done3571=0
           done3576=0
           done3580=0
 
@@ -129,14 +149,7 @@ jobs:
           for i in $(seq 1 180); do
             echo "---- poll $i $(date -u +%H:%M:%S) ----"
 
-            if [[ "$done3571" -eq 0 ]]; then
-              if hang_if_needed "3571" "$R3571" "$J3571"; then done3571=1; fi
-            else
-              echo "3571 already handled"
-            fi
-
             if [[ "$done3576" -eq 0 ]]; then
-              # Prefer whichever FF job is still IP; cancel if either >=120
               handled=0
               for jid in "$J3576A" "$J3576B"; do
                 s=$(gh api "repos/$REPO/actions/jobs/$jid" --jq .status)
@@ -164,11 +177,11 @@ jobs:
               echo "3580 already handled"
             fi
 
-            if [[ "$done3571" -eq 1 && "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
+            if [[ "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
               echo "All handled; done"
               exit 0
             fi
             sleep 30
           done
-          echo "timed out; 3571=$done3571 3576=$done3576 3580=$done3580" >&2
+          echo "timed out; 3576=$done3576 3580=$done3580" >&2
           exit 1
