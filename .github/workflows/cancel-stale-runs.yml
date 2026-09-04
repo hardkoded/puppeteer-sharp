@@ -1,5 +1,5 @@
-# One-shot helper: cancel superseded in-progress build runs that hold runners.
-# Uses less-contended ARM/macOS pools so it can start while ubuntu is busy.
+# One-shot helper: cancel hung/superseded Actions runs (and optionally re-run a job).
+# Uses less-contended pools so it can start while ubuntu-latest is busy.
 name: cancel-stale-runs
 
 on:
@@ -21,32 +21,58 @@ jobs:
       fail-fast: false
       matrix:
         os:
+          - windows-latest
+          - windows-2022
           - ubuntu-24.04-arm
           - ubuntu-22.04-arm
           - macos-15
           - macos-14
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Cancel superseded zombie runs
+      - name: Cancel stale/hung runs
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          # #3580 superseded pull_request run on e9ec7ab (HEAD is a846895).
-          # Holds runners while HEAD build stays queued.
-          RUN_IDS=(33827464581)
+          REPO="${{ github.repository }}"
 
-          for RUN_ID in "${RUN_IDS[@]}"; do
-            status=$(gh api "repos/${{ github.repository }}/actions/runs/${RUN_ID}" --jq '.status + "/" + (.conclusion//"null")')
+          # 1) #3580 superseded pull_request run on e9ec7ab (HEAD is a846895)
+          ZOMBIE_RUN=33827464581
+          # 2) #3575 HEAD build — 16/17 green; FIREFOX-headless hung ~2h+
+          HUNG_RUN=33819078284
+          HUNG_JOB=100857575571
+
+          for RUN_ID in "$ZOMBIE_RUN" "$HUNG_RUN"; do
+            status=$(gh api "repos/${REPO}/actions/runs/${RUN_ID}" --jq '.status + "/" + (.conclusion//"null")')
             echo "Run $RUN_ID status=$status on ${{ matrix.os }}"
             if [[ "$status" == in_progress/* ]] || [[ "$status" == queued/* ]]; then
               echo "Cancelling run $RUN_ID ..."
-              gh api -X POST "repos/${{ github.repository }}/actions/runs/${RUN_ID}/cancel" \
+              gh api -X POST "repos/${REPO}/actions/runs/${RUN_ID}/cancel" \
                 && echo "  cancel requested" \
                 || echo "  cancel failed"
             else
-              echo "  already terminal; skip"
+              echo "  already terminal; skip cancel"
             fi
           done
+
+          # Wait until hung FF job leaves in_progress so rerun is allowed
+          for i in $(seq 1 60); do
+            jstatus=$(gh api "repos/${REPO}/actions/jobs/${HUNG_JOB}" --jq .status)
+            echo "  hung job status=$jstatus (attempt $i)"
+            if [ "$jstatus" != "in_progress" ] && [ "$jstatus" != "queued" ]; then
+              break
+            fi
+            sleep 5
+          done
+
+          echo "Re-running cancelled job $HUNG_JOB ..."
+          gh api -X POST "repos/${REPO}/actions/jobs/${HUNG_JOB}/rerun" \
+            && echo "  job rerun requested" \
+            || echo "  job rerun failed"
+
+          gh run rerun "$HUNG_RUN" --failed --repo "$REPO" \
+            && echo "  run --failed rerun requested" \
+            || echo "  run --failed rerun skipped/failed"
+
           echo "Done on ${{ matrix.os }}."
