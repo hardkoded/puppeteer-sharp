@@ -277,7 +277,7 @@ namespace PuppeteerSharp
 
             var browserWSEndpoint = string.IsNullOrEmpty(options.BrowserURL)
                 ? options.BrowserWSEndpoint
-                : await GetWSEndpointAsync(options.BrowserURL, options.Headers).ConfigureAwait(false);
+                : await GetWSEndpointAsync(options.BrowserURL, ConnectionOptionsHelper.GetEffectiveHeaders(options)).ConfigureAwait(false);
 
             if (options.Protocol == ProtocolType.WebdriverBiDi)
             {

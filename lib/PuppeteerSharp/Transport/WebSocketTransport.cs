@@ -117,10 +117,11 @@ namespace PuppeteerSharp.Transport
         private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
         {
             var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            if (options.Headers != null)
+            ConnectionOptionsHelper.ConfigureWebSocketKeepAlive(result, options.WsOptions);
+            var headers = ConnectionOptionsHelper.GetEffectiveHeaders(options);
+            if (headers != null)
             {
-                foreach (var header in options.Headers)
+                foreach (var header in headers)
                 {
                     result.Options.SetRequestHeader(header.Key, header.Value);
                 }
