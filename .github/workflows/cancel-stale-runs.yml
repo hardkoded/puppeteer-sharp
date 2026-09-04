@@ -1,4 +1,4 @@
-# Idle noop — do not cancel anything. Restore after one-shot helpers.
+# One-shot: when 3576 and/or 3580 go idle with failures, rerun-failed. macos. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -15,8 +15,59 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  noop:
-    runs-on: ubuntu-latest
+  idle-rerun-3576-3580:
+    runs-on: macos-latest
     steps:
-      - name: Noop
-        run: echo "noop — no cancels"
+      - name: Idle-rerun flakes on 3576 and 3580
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+
+          try_rerun() {
+            local label="$1" RUN_ID="$2"
+            local ip fail
+            ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --jq '[.jobs[]|select(.status=="in_progress" or .status=="queued")]|length')
+            fail=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --jq '[.jobs[]|select(.conclusion=="failure")]|length')
+            echo "$label run=$RUN_ID ip_or_q=$ip fail=$fail"
+            if [[ "$ip" -eq 0 && "$fail" -gt 0 ]]; then
+              echo "POST rerun-failed-jobs for $label"
+              gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
+              sleep 4
+              gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+                --jq '.jobs[]|select(.conclusion!="success")|{id,name,status,conclusion}'
+              return 0
+            fi
+            if [[ "$ip" -eq 0 && "$fail" -eq 0 ]]; then
+              echo "$label idle with no failures"
+              return 0
+            fi
+            return 1
+          }
+
+          done3576=0
+          done3580=0
+          # Poll up to ~40 minutes
+          for i in $(seq 1 80); do
+            echo "---- poll $i $(date -u +%H:%M:%S) ----"
+            if [[ "$done3576" -eq 0 ]]; then
+              if try_rerun "3576" 33847311896; then done3576=1; fi
+            else
+              echo "3576 already handled"
+            fi
+            if [[ "$done3580" -eq 0 ]]; then
+              if try_rerun "3580" 33851930748; then done3580=1; fi
+            else
+              echo "3580 already handled"
+            fi
+            if [[ "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
+              echo "Both handled; done"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "timed out; 3576_done=$done3576 3580_done=$done3580" >&2
+          exit 1
