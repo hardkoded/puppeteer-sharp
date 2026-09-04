@@ -1,14 +1,13 @@
-# Disabled after one-shot cancel completed. Keep as no-op so leftover
-# matrix jobs from prior pushes cannot re-cancel active CI runs.
+# One-shot SINGLE-runner: rerun flaky #3577 CHROME-headful failure. NO matrix.
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
-  workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
 
 concurrency:
@@ -16,8 +15,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  noop:
+  rerun-3577-flake:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: No-op
-        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
+      - name: Rerun failed #3577 CHROME-headful job
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          RUN_ID=33838905104
+          JOB_ID=100916970328
+          status=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.status + "/" + (.conclusion//"null")')
+          echo "Job $JOB_ID status=$status"
+          if [[ "$status" != completed/failure ]]; then
+            echo "Not a completed failure ($status); no-op"
+            exit 0
+          fi
+          echo "Re-running failed job $JOB_ID ..."
+          gh api -X POST "repos/$REPO/actions/jobs/$JOB_ID/rerun" \
+            || gh run rerun "$RUN_ID" --failed --repo "$REPO" || true
