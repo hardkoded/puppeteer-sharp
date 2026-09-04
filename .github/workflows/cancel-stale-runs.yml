@@ -1,5 +1,5 @@
-# One-shot helper: cancel superseded in-progress builds that predate concurrency
-# and are holding runners. Safe to delete this branch/workflow afterward.
+# One-shot helper: cancel superseded in-progress build runs that hold runners.
+# Uses less-contended ARM/macOS pools so it can start while ubuntu is busy.
 name: cancel-stale-runs
 
 on:
@@ -20,29 +20,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Prefer less-contended pools so this can start while ubuntu/windows are saturated.
         os:
           - ubuntu-24.04-arm
           - ubuntu-22.04-arm
           - macos-15
           - macos-14
-          - windows-11-arm
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Cancel superseded workflow runs
+      - name: Cancel superseded zombie runs
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          IDS=(
-            33816203117
-            33772684245
-          )
-          for id in "${IDS[@]}"; do
-            echo "Cancelling run $id from ${{ matrix.os }} ..."
-            gh api -X POST "repos/${{ github.repository }}/actions/runs/${id}/cancel" \
-              && echo "  cancel requested for $id" \
-              || echo "  cancel failed for $id (may already be completed)"
+          # #3580 superseded pull_request run on e9ec7ab (HEAD is a846895).
+          # Holds runners while HEAD build stays queued.
+          RUN_IDS=(33827464581)
+
+          for RUN_ID in "${RUN_IDS[@]}"; do
+            status=$(gh api "repos/${{ github.repository }}/actions/runs/${RUN_ID}" --jq '.status + "/" + (.conclusion//"null")')
+            echo "Run $RUN_ID status=$status on ${{ matrix.os }}"
+            if [[ "$status" == in_progress/* ]] || [[ "$status" == queued/* ]]; then
+              echo "Cancelling run $RUN_ID ..."
+              gh api -X POST "repos/${{ github.repository }}/actions/runs/${RUN_ID}/cancel" \
+                && echo "  cancel requested" \
+                || echo "  cancel failed"
+            else
+              echo "  already terminal; skip"
+            fi
           done
           echo "Done on ${{ matrix.os }}."
