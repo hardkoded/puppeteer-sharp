@@ -1,4 +1,4 @@
-# One-shot: poll #3570/#3572/#3577; rerun-failed as soon as each is idle. NO matrix.
+# One-shot: cancel hung #3570 FF (Test >120m) then rerun-failed. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -15,74 +15,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  poll-and-rerun-failed:
+  cancel-3570-ff-hang:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
     steps:
-      - name: Rerun-failed on idle runs (#3570 #3572 #3577)
+      - name: Cancel hung 3570 FF then rerun-failed
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
-          # run_id:label — requeue as soon as each goes idle with failures
-          declare -A DONE=()
-          RUNS="33810685548:#3570 33826226644:#3572 33838905104:#3577"
-
-          rerun_if_idle() {
-            local RUN_ID=$1 LABEL=$2
-            if [[ -n "${DONE[$RUN_ID]:-}" ]]; then
-              return 0
-            fi
-            local ip fails st
+          RUN_ID=33810685548
+          JOB_ID=100831528071
+          status=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.status + "/" + (.conclusion//"null")')
+          echo "Job $JOB_ID status=$status"
+          if [[ "$status" == in_progress/* ]]; then
+            echo "Cancelling hung run $RUN_ID ..."
+            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
+            for i in $(seq 1 60); do
+              s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq .status)
+              echo "  status=$s ($i)"
+              [[ "$s" != "in_progress" && "$s" != "queued" ]] && break
+              sleep 5
+            done
+          fi
+          # Wait until no in_progress, then rerun-failed (FF + chrome-headless flake)
+          for i in $(seq 1 36); do
             ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.status=="in_progress")]|length')
-            st=$(gh api "repos/$REPO/actions/runs/$RUN_ID" \
-              --jq '.status + "/" + (.conclusion//"null") + " a=" + (.run_attempt|tostring)')
-            fails=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '[.jobs[]|select(.conclusion=="failure" or .conclusion=="cancelled")]|length')
-            echo "$LABEL $RUN_ID $st ip=$ip fails=$fails"
-            if [[ "$ip" -ne 0 ]]; then
-              return 0
-            fi
-            if [[ "$fails" -eq 0 ]]; then
-              echo "  $LABEL idle with no fails — mark done"
-              DONE[$RUN_ID]=1
-              return 0
-            fi
-            echo "  $LABEL idle with fails — POST rerun-failed-jobs"
-            if gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs"; then
-              DONE[$RUN_ID]=1
-              sleep 3
-            else
-              echo "  rerun-failed failed (will retry)"
-            fi
-          }
-
-          for i in $(seq 1 280); do
-            echo "$(date -u +%H:%M:%S) === poll $i ==="
-            for item in $RUNS; do
-              RUN_ID=${item%%:*}
-              LABEL=${item##*:}
-              rerun_if_idle "$RUN_ID" "$LABEL"
-            done
-            if [[ ${#DONE[@]} -eq 3 ]]; then
-              echo "All three runs handled"
-              break
-            fi
-            sleep 20
+            echo "in_progress=$ip ($i)"
+            [[ "$ip" -eq 0 ]] && break
+            sleep 5
           done
-
-          echo "=== Final snapshot ==="
-          for item in $RUNS; do
-            RUN_ID=${item%%:*}
-            LABEL=${item##*:}
-            echo "--- $LABEL $RUN_ID done=${DONE[$RUN_ID]:-no} ---"
-            gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '.jobs[] | select(.conclusion != "success") | {id,name,status,conclusion}' || true
-          done
-          # Fail if any still need handling
-          for item in $RUNS; do
-            RUN_ID=${item%%:*}
-            [[ -n "${DONE[$RUN_ID]:-}" ]] || { echo "ERROR: $RUN_ID not handled"; exit 1; }
-          done
+          echo "POST rerun-failed-jobs ..."
+          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
+          sleep 5
+          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+            --jq '.jobs[] | select(.conclusion != "success") | {id,name,status,conclusion}'
