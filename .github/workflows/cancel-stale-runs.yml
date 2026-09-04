@@ -16,7 +16,8 @@ concurrency:
 
 jobs:
   rerun-3572-failed:
-    runs-on: ubuntu-24.04-arm
+    # ubuntu-latest: ARM helper sat queued >10m; use larger pool for this one-shot.
+    runs-on: ubuntu-latest
     steps:
       - name: Rerun failed/cancelled jobs on #3572 run
         env:
