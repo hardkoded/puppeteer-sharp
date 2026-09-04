@@ -1,14 +1,14 @@
-# Disabled after one-shot cancel completed. Keep as no-op so leftover
-# matrix jobs from prior pushes cannot re-cancel active CI runs.
+# One-shot SINGLE-runner: requeue #3575 FF stuck in queue while newer ubuntu jobs run.
+# NO matrix. Only acts if job still queued (not in_progress).
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
-  workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
 
 concurrency:
@@ -16,8 +16,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  noop:
+  intervene-3575-ff:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: No-op
-        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
+      - name: Requeue #3575 FIREFOX-headless if still stuck queued
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          RUN_ID=33819078284
+          JOB_ID=100929375880
+          status=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.status + "/" + (.conclusion//"null")')
+          runner=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.runner_id // 0')
+          echo "Job $JOB_ID status=$status runner_id=$runner"
+          if [[ "$status" == in_progress/* ]]; then
+            echo "Job already has a runner; refusing to cancel"
+            exit 0
+          fi
+          if [[ "$status" != queued/* ]]; then
+            echo "Job already terminal ($status); no-op"
+            exit 0
+          fi
+          echo "Stuck-queue: cancelling run $RUN_ID to requeue FF job ..."
+          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
+          for i in $(seq 1 60); do
+            s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq .status)
+            echo "  status=$s ($i)"
+            [[ "$s" != "in_progress" && "$s" != "queued" ]] && break
+            sleep 5
+          done
+          echo "Re-running job $JOB_ID ..."
+          gh api -X POST "repos/$REPO/actions/jobs/$JOB_ID/rerun" \
+            || gh run rerun "$RUN_ID" --failed --repo "$REPO" || true
