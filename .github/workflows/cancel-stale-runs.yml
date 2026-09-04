@@ -1,6 +1,4 @@
-# One-shot: rerun-failed-jobs for #3577 (CHROME-headful flake).
-# Separate concurrency group so we do NOT cancel the mid-poll hang helper
-# still running under cancel-stale-runs-once (run 33870017590).
+# Idle noop — do not cancel anything. Restore after one-shot helpers.
 name: cancel-stale-runs
 
 on:
@@ -13,47 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: cancel-stale-runs-rerun-3577
-  cancel-in-progress: false
+  group: cancel-stale-runs-once
+  cancel-in-progress: true
 
 jobs:
-  rerun-3577-failed:
-    runs-on: windows-latest
+  noop:
+    runs-on: ubuntu-latest
     steps:
-      - name: POST rerun-failed-jobs for #3577 build
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          REPO="${{ github.repository }}"
-          RUN_ID=33869194428
-
-          echo "==== pre: run $RUN_ID ===="
-          gh api "repos/$REPO/actions/runs/$RUN_ID" \
-            --jq '{id,status,conclusion,run_attempt,head_sha}'
-
-          ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-            --jq '[.jobs[]|select(.status=="in_progress" or .status=="queued")]|length')
-          fail=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-            --jq '[.jobs[]|select(.conclusion=="failure")]|length')
-          echo "in_progress_or_queued=$ip fail=$fail"
-
-          if [[ "$ip" -ne 0 ]]; then
-            echo "ABORT: jobs still in progress/queued" >&2
-            exit 1
-          fi
-          if [[ "$fail" -eq 0 ]]; then
-            echo "No failed jobs; nothing to rerun"
-            exit 0
-          fi
-
-          echo "==== POST rerun-failed-jobs ===="
-          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs"
-          sleep 6
-
-          echo "==== post: run attempt / chrome-headful ===="
-          gh api "repos/$REPO/actions/runs/$RUN_ID" \
-            --jq '{id,status,conclusion,run_attempt,head_sha}'
-          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-            --jq '.jobs[]|select(.name|test("CHROME-headful-ubuntu"))|{id,name,status,conclusion,started_at}'
+      - name: Noop
+        run: echo "noop — no cancels"
