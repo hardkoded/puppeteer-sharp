@@ -1,4 +1,4 @@
-# One-shot SINGLE-runner: wait #3572 idle→rerun-failed; also #3570/#3577 if idle. NO matrix.
+# One-shot: poll #3570/#3572/#3577; rerun-failed as soon as each is idle. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -15,67 +15,74 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wait-and-rerun-failed:
-    # ubuntu-latest: ARM helper repeatedly stuck pending/queued for many minutes
+  poll-and-rerun-failed:
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
-      - name: Wait #3572 idle then rerun-failed; opportunistic #3570/#3577
+      - name: Rerun-failed on idle runs (#3570 #3572 #3577)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
+          # run_id:label — requeue as soon as each goes idle with failures
+          declare -A DONE=()
+          RUNS="33810685548:#3570 33826226644:#3572 33838905104:#3577"
 
           rerun_if_idle() {
             local RUN_ID=$1 LABEL=$2
-            local ip st
+            if [[ -n "${DONE[$RUN_ID]:-}" ]]; then
+              return 0
+            fi
+            local ip fails st
             ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.status=="in_progress")]|length')
             st=$(gh api "repos/$REPO/actions/runs/$RUN_ID" \
-              --jq '.status + "/" + (.conclusion//"null")')
-            echo "$LABEL run $RUN_ID status=$st in_progress=$ip"
-            if [[ "$ip" -ne 0 ]]; then
-              echo "  still running; skip"
-              return 0
-            fi
-            local fails
+              --jq '.status + "/" + (.conclusion//"null") + " a=" + (.run_attempt|tostring)')
             fails=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.conclusion=="failure" or .conclusion=="cancelled")]|length')
-            if [[ "$fails" -eq 0 ]]; then
-              echo "  no failed/cancelled jobs; skip"
+            echo "$LABEL $RUN_ID $st ip=$ip fails=$fails"
+            if [[ "$ip" -ne 0 ]]; then
               return 0
             fi
-            echo "  POST rerun-failed-jobs ($fails non-success) ..."
-            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
-            sleep 3
+            if [[ "$fails" -eq 0 ]]; then
+              echo "  $LABEL idle with no fails — mark done"
+              DONE[$RUN_ID]=1
+              return 0
+            fi
+            echo "  $LABEL idle with fails — POST rerun-failed-jobs"
+            if gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs"; then
+              DONE[$RUN_ID]=1
+              sleep 3
+            else
+              echo "  rerun-failed failed (will retry)"
+            fi
           }
 
-          echo "=== Wait for #3572 idle ==="
-          RUN_3572=33826226644
           for i in $(seq 1 280); do
-            ip=$(gh api "repos/$REPO/actions/runs/$RUN_3572/jobs?per_page=100" \
-              --jq '[.jobs[]|select(.status=="in_progress")]|length')
-            st=$(gh api "repos/$REPO/actions/runs/$RUN_3572" \
-              --jq '.status + "/" + (.conclusion//"null") + " attempt=" + (.run_attempt|tostring)')
-            echo "$(date -u +%H:%M:%S) [$i] #3572 run=$st in_progress=$ip"
-            if [[ "$ip" -eq 0 ]]; then
-              echo "POST rerun-failed-jobs #3572"
-              gh api -X POST "repos/$REPO/actions/runs/$RUN_3572/rerun-failed-jobs"
-              sleep 5
+            echo "$(date -u +%H:%M:%S) === poll $i ==="
+            for item in $RUNS; do
+              RUN_ID=${item%%:*}
+              LABEL=${item##*:}
+              rerun_if_idle "$RUN_ID" "$LABEL"
+            done
+            if [[ ${#DONE[@]} -eq 3 ]]; then
+              echo "All three runs handled"
               break
             fi
             sleep 20
           done
 
-          echo "=== Opportunistic #3570 / #3577 ==="
-          rerun_if_idle 33810685548 "#3570"
-          rerun_if_idle 33838905104 "#3577"
-
-          echo "=== Final non-success snapshot ==="
-          for RUN_ID in 33826226644 33810685548 33838905104; do
-            echo "--- run $RUN_ID ---"
+          echo "=== Final snapshot ==="
+          for item in $RUNS; do
+            RUN_ID=${item%%:*}
+            LABEL=${item##*:}
+            echo "--- $LABEL $RUN_ID done=${DONE[$RUN_ID]:-no} ---"
             gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '.jobs[] | select(.conclusion != "success" and .status != "in_progress") | {id,name,status,conclusion}' \
-              || true
+              --jq '.jobs[] | select(.conclusion != "success") | {id,name,status,conclusion}' || true
+          done
+          # Fail if any still need handling
+          for item in $RUNS; do
+            RUN_ID=${item%%:*}
+            [[ -n "${DONE[$RUN_ID]:-}" ]] || { echo "ERROR: $RUN_ID not handled"; exit 1; }
           done
