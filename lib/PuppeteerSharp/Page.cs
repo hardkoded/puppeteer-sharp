@@ -1169,6 +1169,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Starts a CDP screencast session.
         /// </summary>
+        /// <remarks>
+        /// Registers the screencast frame listener before starting screencast so the first frame is not missed
+        /// while <c>Page.startScreencast</c> is in flight (upstream puppeteer/puppeteer#15389).
+        /// </remarks>
         /// <returns>A <see cref="Task"/> that completes when the screencast has started.</returns>
         internal async Task StartScreencastAsync()
         {
