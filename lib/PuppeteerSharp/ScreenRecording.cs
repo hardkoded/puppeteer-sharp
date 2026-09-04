@@ -172,7 +172,16 @@ namespace PuppeteerSharp
 
             public void End()
             {
-                _stream.Flush();
+                // Match upstream WritableDestination.end(): finish and close the
+                // write stream so Path-backed FileStreams release the file handle.
+                try
+                {
+                    _stream.Flush();
+                }
+                finally
+                {
+                    _stream.Dispose();
+                }
             }
         }
     }
