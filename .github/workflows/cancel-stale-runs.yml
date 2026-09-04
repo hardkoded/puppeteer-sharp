@@ -1,0 +1,37 @@
+# One-shot helper: cancel superseded in-progress builds that predate concurrency
+# and are holding runners. Safe to delete this branch/workflow afterward.
+name: cancel-stale-runs
+
+on:
+  push:
+    branches:
+      - cursor/cancel-stale-runners-c423
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel superseded workflow runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Superseded builds still in_progress (old SHAs, no concurrency group).
+          IDS=(
+            33816203117  # 15408 stale
+            33816164930  # 15387 stale
+            33772684245  # 15406 stale
+          )
+          for id in "${IDS[@]}"; do
+            echo "Cancelling run $id ..."
+            if gh api -X POST "repos/${{ github.repository }}/actions/runs/${id}/cancel"; then
+              echo "  cancel requested for $id"
+            else
+              echo "  cancel failed for $id (may already be completed)"
+            fi
+          done
+          echo "Done."
