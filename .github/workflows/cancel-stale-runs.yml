@@ -1,14 +1,13 @@
-# Disabled after one-shot cancel completed. Keep as no-op so leftover
-# matrix jobs from prior pushes cannot re-cancel active CI runs.
+# One-shot SINGLE-runner: cancel hung #3572 FIREFOX-headless and rerun. NO matrix.
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
-  workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
 
 concurrency:
@@ -16,8 +15,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  noop:
+  requeue-3572-ff-hang:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: No-op
-        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
+      - name: Cancel+rerun hung #3572 FIREFOX-headless
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          RUN_ID=33826226644
+          JOB_ID=100879430641
+          status=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.status + "/" + (.conclusion//"null")')
+          echo "Job $JOB_ID status=$status"
+          if [[ "$status" != in_progress/* ]]; then
+            echo "Not in_progress ($status); no-op (may have finished)"
+            exit 0
+          fi
+          # Confirm still on Test (Linux) with long runtime
+          step=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '[.steps[]|select(.status=="in_progress")|.name]|join(",")')
+          echo "in_progress steps: $step"
+          echo "Cancelling run $RUN_ID to free hung FF runner ..."
+          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
+          for i in $(seq 1 60); do
+            s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq .status)
+            echo "  status=$s ($i)"
+            [[ "$s" != "in_progress" && "$s" != "queued" ]] && break
+            sleep 5
+          done
+          echo "Re-running job $JOB_ID ..."
+          gh api -X POST "repos/$REPO/actions/jobs/$JOB_ID/rerun" \
+            || gh run rerun "$RUN_ID" --failed --repo "$REPO" || true
