@@ -16,7 +16,8 @@ concurrency:
 
 jobs:
   wait-and-rerun-failed:
-    runs-on: ubuntu-24.04-arm
+    # ubuntu-latest: ARM helper repeatedly stuck pending/queued for many minutes
+    runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
       - name: Wait #3572 idle then rerun-failed; opportunistic #3570/#3577
