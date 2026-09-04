@@ -1,7 +1,9 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.Helpers.Linux;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.UserDataDirTests
@@ -55,5 +57,61 @@ namespace PuppeteerSharp.Tests.UserDataDirTests
 
             await browser.CloseAsync();
         }
+
+        [Test, PuppeteerTest("userDataDir.test", "userDataDir", "should report a permission error when the userDataDir is not writable")]
+        public async Task ShouldReportPermissionErrorWhenUserDataDirIsNotWritable()
+        {
+            // Windows ignores the read-only bit for the directory owner, and root
+            // bypasses the write check entirely, so neither can observe the failure.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || IsRunningAsRoot())
+            {
+                Assert.Ignore("Windows and root cannot observe unwritable userDataDir failures.");
+            }
+
+            using var userDataDir = new TempDirectory();
+            const FileAccessPermissions readOnlyPermissions =
+                FileAccessPermissions.UserRead | FileAccessPermissions.UserExecute |
+                FileAccessPermissions.GroupRead | FileAccessPermissions.GroupExecute |
+                FileAccessPermissions.OtherRead | FileAccessPermissions.OtherExecute;
+            const FileAccessPermissions writablePermissions =
+                FileAccessPermissions.UserReadWriteExecute |
+                FileAccessPermissions.GroupReadWriteExecute |
+                FileAccessPermissions.OtherReadWriteExecute;
+
+            var chmodResult = LinuxSysCall.Chmod(userDataDir.Path, readOnlyPermissions);
+            Assert.That(chmodResult, Is.EqualTo(0));
+            try
+            {
+                var options = TestConstants.DefaultBrowserOptions();
+                options.UserDataDir = userDataDir.Path;
+
+                var launcher = new Launcher(TestConstants.LoggerFactory);
+                await using var browser = await launcher.LaunchAsync(options);
+                Assert.Fail("Not reached");
+            }
+            catch (ProcessException ex)
+            {
+                Assert.That(ex.Message, Does.StartWith("The browser cannot write to"));
+            }
+            finally
+            {
+                chmodResult = LinuxSysCall.Chmod(userDataDir.Path, writablePermissions);
+                Assert.That(chmodResult, Is.EqualTo(0));
+            }
+        }
+
+        private static bool IsRunningAsRoot()
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
+                !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return false;
+            }
+
+            return getuid() == 0;
+        }
+
+        [DllImport("libc")]
+        private static extern uint getuid();
     }
 }

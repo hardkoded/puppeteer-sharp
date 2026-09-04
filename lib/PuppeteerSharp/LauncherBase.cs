@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace PuppeteerSharp
     /// </summary>
     public abstract class LauncherBase : IDisposable
     {
+        private const int MaxRecentLogLines = 100;
+        private readonly ConcurrentQueue<string> _recentLogs = new();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LauncherBase"/> class.
         /// </summary>
@@ -39,6 +43,10 @@ namespace PuppeteerSharp
 
             SetEnvVariables(Process.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
+            // Always capture stderr so launch diagnostics (ProcessSingleton, Missing X
+            // server, etc.) are available even when Pipe=true, matching upstream
+            // browserProcess.getRecentLogs().
+            Process.ErrorDataReceived += OnErrorDataReceived;
             if (options.DumpIO)
             {
                 Process.ErrorDataReceived += (_, e) => Console.Error.WriteLine(e.Data);
@@ -164,6 +172,12 @@ namespace PuppeteerSharp
                 : Task.CompletedTask;
 
         /// <summary>
+        /// Recent stderr lines from the browser process, used for launch diagnostics.
+        /// </summary>
+        /// <returns>A snapshot of the most recent stderr lines.</returns>
+        internal string GetRecentLogs() => string.Join("\n", _recentLogs);
+
+        /// <summary>
         /// Cleans up temporary user data directory.
         /// </summary>
         internal virtual void OnExit()
@@ -219,5 +233,18 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
         protected virtual void Dispose(bool disposing) => StateManager.CurrentState.Dispose(this);
+
+        private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data == null)
+            {
+                return;
+            }
+
+            _recentLogs.Enqueue(e.Data);
+            while (_recentLogs.Count > MaxRecentLogLines && _recentLogs.TryDequeue(out _))
+            {
+            }
+        }
     }
 }
