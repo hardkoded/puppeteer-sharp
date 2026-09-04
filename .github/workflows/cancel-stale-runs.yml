@@ -1,4 +1,4 @@
-# One-shot SINGLE-runner: rerun cancelled/failed jobs on #3572 after hang cancel. NO matrix.
+# One-shot SINGLE-runner: requeue each failed/cancelled #3572 job by ID. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -15,22 +15,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rerun-3572-failed:
-    # ubuntu-latest: ARM helper sat queued >10m; use larger pool for this one-shot.
-    runs-on: ubuntu-latest
+  requeue-3572-jobs:
+    runs-on: ubuntu-24.04-arm
     steps:
-      - name: Rerun failed/cancelled jobs on #3572 run
+      - name: Rerun failed/cancelled #3572 jobs by ID
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
           RUN_ID=33826226644
-          st=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '.status + "/" + (.conclusion//"null") + " attempt=" + (.run_attempt|tostring)')
-          echo "Run $RUN_ID $st"
-          # List non-success jobs
+          # Known non-success from attempt 2
+          for JOB_ID in 100945491947 100945520581 100945528573; do
+            info=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '{name,status,conclusion}')
+            echo "Job $JOB_ID $info"
+            concl=$(echo "$info" | jq -r .conclusion)
+            if [[ "$concl" == "success" ]]; then
+              echo "  already success; skip"
+              continue
+            fi
+            echo "  POST jobs/$JOB_ID/rerun ..."
+            gh api -X POST "repos/$REPO/actions/jobs/$JOB_ID/rerun" || true
+          done
+          echo "Also try run-level rerun-failed-jobs ..."
+          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
+          echo "Final non-success jobs:"
           gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-            --jq '.jobs[] | select(.conclusion != "success") | {id,name,status,conclusion}'
-          echo "gh run rerun --failed ..."
-          gh run rerun "$RUN_ID" --failed --repo "$REPO" || \
-            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
+            --jq '.jobs[] | select(.conclusion != "success" and .status != "in_progress") | {id,name,status,conclusion}'
