@@ -13,15 +13,20 @@ permissions:
 
 concurrency:
   group: cancel-stale-runs-once
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cancel:
     strategy:
       fail-fast: false
       matrix:
-        # Different pools — whichever gets a runner first cancels the stale runs.
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Prefer less-contended pools so this can start while ubuntu/windows are saturated.
+        os:
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
+          - macos-15
+          - macos-14
+          - windows-11-arm
     runs-on: ${{ matrix.os }}
     steps:
       - name: Cancel superseded workflow runs
@@ -32,7 +37,6 @@ jobs:
           set -euo pipefail
           IDS=(
             33816203117
-            33816164930
             33772684245
           )
           for id in "${IDS[@]}"; do
