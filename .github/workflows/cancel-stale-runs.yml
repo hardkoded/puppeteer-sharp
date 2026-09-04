@@ -1,4 +1,5 @@
-# Hang-cancel FF Test>=120m + idle-rerun flakes. macos. NO matrix.
+# Hang-cancel via RUN cancel (not job cancel) + idle-rerun. macos. NO matrix.
+# Bugfix: actions/jobs/{id}/cancel is 404; use actions/runs/{id}/cancel.
 name: cancel-stale-runs
 
 on:
@@ -18,43 +19,47 @@ jobs:
   hang-and-idle-rerun:
     runs-on: macos-latest
     steps:
-      - name: Hang-cancel and idle-rerun for open release PRs
+      - name: Hang-cancel runs and idle-rerun flakes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
-          HANG_SECS=$((120 * 60))
 
-          epoch_of() {
-            # macOS BSD date first, GNU fallback
-            date -u -j -f "%Y-%m-%dT%H:%M:%SZ" "$1" +%s 2>/dev/null || date -u -d "$1" +%s
+          test_age_mins() {
+            local job_id="$1"
+            local age
+            age=$(gh api "repos/$REPO/actions/jobs/$job_id" --jq '
+              (.steps[]? | select(.name|startswith("Test")) | select(.status=="in_progress") | .started_at) // empty')
+            if [[ -z "$age" ]]; then echo -1; return; fi
+            python3 -c "import datetime; s=datetime.datetime.fromisoformat('${age}'.replace('Z','+00:00')); print(int((datetime.datetime.now(datetime.timezone.utc)-s).total_seconds()//60))"
           }
 
-          cancel_hung_tests() {
-            local label="$1" RUN_ID="$2"
-            local now jobs_json
-            now=$(date -u +%s)
-            jobs_json=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100")
-            echo "$jobs_json" | jq -c '.jobs[]|select(.status=="in_progress")' | while read -r job; do
-              local jid jname step_start age
-              jid=$(echo "$job" | jq -r '.id')
-              jname=$(echo "$job" | jq -r '.name')
-              step_start=$(echo "$job" | jq -r '[.steps[]?|select(.name=="Test (Linux)" and .status=="in_progress")|.started_at]|first // empty')
-              if [[ -z "$step_start" || "$step_start" == "null" ]]; then
-                echo "$label job=$jid $jname: no in-progress Test (Linux)"
-                continue
-              fi
-              age=$(( now - $(epoch_of "$step_start") ))
-              echo "$label job=$jid $jname TestAge=$((age/60))m"
-              if [[ "$age" -ge "$HANG_SECS" ]]; then
-                echo "CANCEL hung job $jid ($jname) on $label"
-                gh api -X POST "repos/$REPO/actions/jobs/$jid/cancel" || true
-              fi
+          cancel_and_rerun() {
+            local label="$1" RUN_ID="$2" JOB_ID="$3"
+            echo "==== CANCEL $label run=$RUN_ID job=$JOB_ID ===="
+            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
+            for i in $(seq 1 60); do
+              s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq .status)
+              echo "  status=$s ($i)"
+              [[ "$s" != "in_progress" && "$s" != "queued" ]] && break
+              sleep 5
             done
+            for i in $(seq 1 36); do
+              ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+                --jq '[.jobs[]|select(.status=="in_progress")]|length')
+              echo "  in_progress=$ip ($i)"
+              [[ "$ip" -eq 0 ]] && break
+              sleep 5
+            done
+            echo "POST rerun-failed-jobs for $label"
+            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
+            sleep 4
+            gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --jq '.jobs[]|select(.conclusion!="success")|{id,name,status,conclusion}'
           }
 
-          try_rerun() {
+          try_idle_rerun() {
             local label="$1" RUN_ID="$2"
             local ip fail canc
             ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
@@ -63,13 +68,11 @@ jobs:
               --jq '[.jobs[]|select(.conclusion=="failure")]|length')
             canc=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.conclusion=="cancelled")]|length')
-            echo "$label run=$RUN_ID ip_or_q=$ip fail=$fail canc=$canc"
+            echo "$label idle-check ip=$ip fail=$fail canc=$canc"
             if [[ "$ip" -eq 0 && ( "$fail" -gt 0 || "$canc" -gt 0 ) ]]; then
               echo "POST rerun-failed-jobs for $label"
               gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
               sleep 4
-              gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-                --jq '.jobs[]|select(.conclusion!="success")|{id,name,status,conclusion}'
               return 0
             fi
             if [[ "$ip" -eq 0 && "$fail" -eq 0 && "$canc" -eq 0 ]]; then
@@ -79,42 +82,103 @@ jobs:
             return 1
           }
 
-          handle() {
-            local label="$1" RUN_ID="$2"
-            cancel_hung_tests "$label" "$RUN_ID" || true
-            try_rerun "$label" "$RUN_ID"
-          }
+          # Known hung / near-hung job IDs at push time
+          # 3576 FF-headless 100941955060 (>=120m) — cancel whole run then rerun-failed
+          # 3576 FF-headful  100941955236 (~116m)
+          # 3580 FF-headful  100956517230 (~102m)
+          # 3571 FF-headful  100979567393 (~73m)
+          # 3575 FF-headless 100980129425 (~72m)
 
           done3571=0
           done3575=0
           done3576=0
           done3580=0
 
-          # Poll ~100 minutes (covers hang windows past prior 40m timeout)
-          for i in $(seq 1 200); do
+          # Immediate: cancel hung 3576 if still IP
+          j3576=$(gh api "repos/$REPO/actions/jobs/100941955060" --jq .status)
+          echo "3576 headless status=$j3576 age=$(test_age_mins 100941955060)m"
+          if [[ "$j3576" == "in_progress" ]]; then
+            m=$(test_age_mins 100941955060)
+            if [[ "$m" -ge 120 ]]; then
+              cancel_and_rerun "3576" 33847311896 100941955060
+              done3576=1
+            fi
+          fi
+
+          # Poll ~90 minutes for remaining
+          for i in $(seq 1 180); do
             echo "---- poll $i $(date -u +%H:%M:%S) ----"
-            if [[ "$done3571" -eq 0 ]]; then
-              if handle "3571" 33833625960; then done3571=1; fi
-            else
-              echo "3571 already handled"
-            fi
-            if [[ "$done3575" -eq 0 ]]; then
-              if handle "3575" 33819078284; then done3575=1; fi
-            else
-              echo "3575 already handled"
-            fi
+
             if [[ "$done3576" -eq 0 ]]; then
-              if handle "3576" 33847311896; then done3576=1; fi
+              s=$(gh api "repos/$REPO/actions/jobs/100941955060" --jq '.status + "/" + (.conclusion//"-")')
+              echo "3576=$s"
+              if [[ "$s" == in_progress/* ]]; then
+                m=$(test_age_mins 100941955060)
+                echo "3576 Test age=${m}m"
+                if [[ "$m" -ge 120 ]]; then
+                  cancel_and_rerun "3576" 33847311896 100941955060
+                  done3576=1
+                fi
+              else
+                if try_idle_rerun "3576" 33847311896; then done3576=1; fi
+              fi
             else
               echo "3576 already handled"
             fi
+
             if [[ "$done3580" -eq 0 ]]; then
-              if handle "3580" 33851930748; then done3580=1; fi
+              s=$(gh api "repos/$REPO/actions/jobs/100956517230" --jq '.status + "/" + (.conclusion//"-")')
+              echo "3580=$s"
+              if [[ "$s" == in_progress/* ]]; then
+                m=$(test_age_mins 100956517230)
+                echo "3580 Test age=${m}m"
+                if [[ "$m" -ge 120 ]]; then
+                  cancel_and_rerun "3580" 33851930748 100956517230
+                  done3580=1
+                fi
+              else
+                if try_idle_rerun "3580" 33851930748; then done3580=1; fi
+              fi
             else
               echo "3580 already handled"
             fi
+
+            if [[ "$done3571" -eq 0 ]]; then
+              s=$(gh api "repos/$REPO/actions/jobs/100979567393" --jq '.status + "/" + (.conclusion//"-")')
+              echo "3571=$s"
+              if [[ "$s" == in_progress/* ]]; then
+                m=$(test_age_mins 100979567393)
+                echo "3571 Test age=${m}m"
+                if [[ "$m" -ge 120 ]]; then
+                  cancel_and_rerun "3571" 33833625960 100979567393
+                  done3571=1
+                fi
+              else
+                if try_idle_rerun "3571" 33833625960; then done3571=1; fi
+              fi
+            else
+              echo "3571 already handled"
+            fi
+
+            if [[ "$done3575" -eq 0 ]]; then
+              s=$(gh api "repos/$REPO/actions/jobs/100980129425" --jq '.status + "/" + (.conclusion//"-")')
+              echo "3575=$s"
+              if [[ "$s" == in_progress/* ]]; then
+                m=$(test_age_mins 100980129425)
+                echo "3575 Test age=${m}m"
+                if [[ "$m" -ge 120 ]]; then
+                  cancel_and_rerun "3575" 33819078284 100980129425
+                  done3575=1
+                fi
+              else
+                if try_idle_rerun "3575" 33819078284; then done3575=1; fi
+              fi
+            else
+              echo "3575 already handled"
+            fi
+
             if [[ "$done3571" -eq 1 && "$done3575" -eq 1 && "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
-              echo "All tracked runs handled; done"
+              echo "All handled; done"
               exit 0
             fi
             sleep 30
