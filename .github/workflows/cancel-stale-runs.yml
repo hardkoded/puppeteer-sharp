@@ -1,6 +1,6 @@
-# Hang-cancel via RUN cancel (not job cancel) + idle-rerun. ubuntu.
-# Bugfix: actions/jobs/{id}/cancel is 404; use actions/runs/{id}/cancel.
-# After success: restore noop (do not restore while this helper is still needed).
+# One-shot: rerun-failed-jobs for #3577 (CHROME-headful flake).
+# Separate concurrency group so we do NOT cancel the mid-poll hang helper
+# still running under cancel-stale-runs-once (run 33870017590).
 name: cancel-stale-runs
 
 on:
@@ -13,176 +13,47 @@ permissions:
   contents: read
 
 concurrency:
-  group: cancel-stale-runs-once
-  cancel-in-progress: true
+  group: cancel-stale-runs-rerun-3577
+  cancel-in-progress: false
 
 jobs:
-  hang-and-idle-rerun:
-    # windows: ubuntu matrix from open PRs starves ubuntu-latest helpers
+  rerun-3577-failed:
     runs-on: windows-latest
     steps:
-      - name: Hang-cancel runs and idle-rerun flakes
+      - name: POST rerun-failed-jobs for #3577 build
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
+          RUN_ID=33869194428
 
-          test_age_mins() {
-            local job_id="$1"
-            local age
-            age=$(gh api "repos/$REPO/actions/jobs/$job_id" --jq '
-              (.steps[]? | select(.name|startswith("Test")) | select(.status=="in_progress") | .started_at) // empty')
-            if [[ -z "$age" ]]; then echo -1; return; fi
-            python -c "import datetime; s=datetime.datetime.fromisoformat('${age}'.replace('Z','+00:00')); print(int((datetime.datetime.now(datetime.timezone.utc)-s).total_seconds()//60))"
-          }
+          echo "==== pre: run $RUN_ID ===="
+          gh api "repos/$REPO/actions/runs/$RUN_ID" \
+            --jq '{id,status,conclusion,run_attempt,head_sha}'
 
-          cancel_and_rerun() {
-            local label="$1" RUN_ID="$2" JOB_ID="$3"
-            echo "==== CANCEL $label run=$RUN_ID job=$JOB_ID ===="
-            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
-            for i in $(seq 1 60); do
-              s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq .status)
-              echo "  status=$s ($i)"
-              [[ "$s" != "in_progress" && "$s" != "queued" ]] && break
-              sleep 5
-            done
-            for i in $(seq 1 36); do
-              ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-                --jq '[.jobs[]|select(.status=="in_progress")]|length')
-              echo "  in_progress=$ip ($i)"
-              [[ "$ip" -eq 0 ]] && break
-              sleep 5
-            done
-            echo "POST rerun-failed-jobs for $label"
-            gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
-            sleep 4
-            gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '.jobs[]|select(.conclusion!="success")|{id,name,status,conclusion}'
-          }
+          ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+            --jq '[.jobs[]|select(.status=="in_progress" or .status=="queued")]|length')
+          fail=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+            --jq '[.jobs[]|select(.conclusion=="failure")]|length')
+          echo "in_progress_or_queued=$ip fail=$fail"
 
-          try_idle_rerun() {
-            local label="$1" RUN_ID="$2"
-            local ip fail canc
-            ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '[.jobs[]|select(.status=="in_progress" or .status=="queued")]|length')
-            fail=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '[.jobs[]|select(.conclusion=="failure")]|length')
-            canc=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-              --jq '[.jobs[]|select(.conclusion=="cancelled")]|length')
-            echo "$label idle-check ip=$ip fail=$fail canc=$canc"
-            if [[ "$ip" -eq 0 && ( "$fail" -gt 0 || "$canc" -gt 0 ) ]]; then
-              echo "POST rerun-failed-jobs for $label"
-              gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
-              sleep 4
-              return 0
-            fi
-            if [[ "$ip" -eq 0 && "$fail" -eq 0 && "$canc" -eq 0 ]]; then
-              echo "$label idle all success"
-              return 0
-            fi
-            return 1
-          }
+          if [[ "$ip" -ne 0 ]]; then
+            echo "ABORT: jobs still in progress/queued" >&2
+            exit 1
+          fi
+          if [[ "$fail" -eq 0 ]]; then
+            echo "No failed jobs; nothing to rerun"
+            exit 0
+          fi
 
-          # #3571 HEAD fc0d8e34 superseded e43fa38e. Prior helper re-ran OLD build
-          # (33833625960) which concurrency-cancelled NEW build (33869194949).
-          # Cancel OLD without rerun, then full-rerun NEW HEAD build.
-          OLD3571=33833625960
-          NEW3571=33869194949
+          echo "==== POST rerun-failed-jobs ===="
+          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs"
+          sleep 6
 
-          echo "==== 3571: cancel OLD run $OLD3571 (no rerun) ===="
-          gh api -X POST "repos/$REPO/actions/runs/$OLD3571/cancel" || true
-          for i in $(seq 1 40); do
-            st=$(gh api "repos/$REPO/actions/runs/$OLD3571" --jq .status)
-            echo "  old3571 status=$st ($i)"
-            [[ "$st" == "completed" ]] && break
-            sleep 5
-          done
-
-          echo "==== 3571: rerun NEW HEAD build $NEW3571 ===="
-          # Prefer full rerun so all cancelled matrix jobs restart
-          gh api -X POST "repos/$REPO/actions/runs/$NEW3571/rerun" || \
-            gh api -X POST "repos/$REPO/actions/runs/$NEW3571/rerun-failed-jobs" || true
-          sleep 4
-          gh api "repos/$REPO/actions/runs/$NEW3571" --jq '{id,status,conclusion,run_attempt,head_sha}'
-
-          # Post-hang-cancel job IDs still live on #3576/#3580 @ ~11:44Z:
-          # 3576 FF-headless    101006478096
-          # 3576 FF-headful     101006478394
-          # 3576 chrome-headful 101006478312 — flake watch via idle-rerun
-          # 3580 FF-headful     101008229373
-          # 3580 chrome-headful 101008229334 — flake watch via idle-rerun
-          # 3575 FULL GREEN — skip
-          # 3577 HEAD 806f63a3 fresh CI after ignore-fix — skip hang watch
-          # 3571 HEAD fc0d8e34 just re-triggered — skip hang watch (fresh)
-
-          J3576A=101006478096
-          J3576B=101006478394
-          R3576=33847311896
-          J3580=101008229373
-          R3580=33851930748
-
-          done3576=0
-          done3580=0
-
-          hang_if_needed() {
-            local label="$1" RUN_ID="$2" JOB_ID="$3"
-            local s m
-            s=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '.status + "/" + (.conclusion//"-")')
-            echo "$label job=$JOB_ID $s"
-            if [[ "$s" == in_progress/* ]]; then
-              m=$(test_age_mins "$JOB_ID")
-              echo "$label Test age=${m}m"
-              if [[ "$m" -ge 120 ]]; then
-                cancel_and_rerun "$label" "$RUN_ID" "$JOB_ID"
-                return 0
-              fi
-              return 1
-            fi
-            # job terminal — fall through to idle-rerun on the run
-            if try_idle_rerun "$label" "$RUN_ID"; then
-              return 0
-            fi
-            return 1
-          }
-
-          for i in $(seq 1 180); do
-            echo "---- poll $i $(date -u +%H:%M:%S) ----"
-
-            if [[ "$done3576" -eq 0 ]]; then
-              handled=0
-              for jid in "$J3576A" "$J3576B"; do
-                s=$(gh api "repos/$REPO/actions/jobs/$jid" --jq .status)
-                if [[ "$s" == "in_progress" ]]; then
-                  m=$(test_age_mins "$jid")
-                  echo "3576 job=$jid Test age=${m}m"
-                  if [[ "$m" -ge 120 ]]; then
-                    cancel_and_rerun "3576" "$R3576" "$jid"
-                    done3576=1
-                    handled=1
-                    break
-                  fi
-                fi
-              done
-              if [[ "$handled" -eq 0 ]]; then
-                if try_idle_rerun "3576" "$R3576"; then done3576=1; fi
-              fi
-            else
-              echo "3576 already handled"
-            fi
-
-            if [[ "$done3580" -eq 0 ]]; then
-              if hang_if_needed "3580" "$R3580" "$J3580"; then done3580=1; fi
-            else
-              echo "3580 already handled"
-            fi
-
-            if [[ "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
-              echo "All handled; done"
-              exit 0
-            fi
-            sleep 30
-          done
-          echo "timed out; 3576=$done3576 3580=$done3580" >&2
-          exit 1
+          echo "==== post: run attempt / chrome-headful ===="
+          gh api "repos/$REPO/actions/runs/$RUN_ID" \
+            --jq '{id,status,conclusion,run_attempt,head_sha}'
+          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+            --jq '.jobs[]|select(.name|test("CHROME-headful-ubuntu"))|{id,name,status,conclusion,started_at}'
