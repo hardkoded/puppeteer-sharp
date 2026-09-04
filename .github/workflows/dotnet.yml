@@ -15,6 +15,10 @@ on:
     - '**.csproj'
     - '**.runsettings'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
