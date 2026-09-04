@@ -17,9 +17,11 @@ concurrency:
 
 jobs:
   hang-and-idle-rerun:
-    runs-on: macos-latest
+    # windows: macos was queued >4m; hung FF hold ubuntu runners
+    runs-on: windows-latest
     steps:
       - name: Hang-cancel runs and idle-rerun flakes
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -32,7 +34,7 @@ jobs:
             age=$(gh api "repos/$REPO/actions/jobs/$job_id" --jq '
               (.steps[]? | select(.name|startswith("Test")) | select(.status=="in_progress") | .started_at) // empty')
             if [[ -z "$age" ]]; then echo -1; return; fi
-            python3 -c "import datetime; s=datetime.datetime.fromisoformat('${age}'.replace('Z','+00:00')); print(int((datetime.datetime.now(datetime.timezone.utc)-s).total_seconds()//60))"
+            python -c "import datetime; s=datetime.datetime.fromisoformat('${age}'.replace('Z','+00:00')); print(int((datetime.datetime.now(datetime.timezone.utc)-s).total_seconds()//60))"
           }
 
           cancel_and_rerun() {
