@@ -1,13 +1,14 @@
-# One-shot SINGLE-runner: requeue each failed/cancelled #3572 job by ID. NO matrix.
+# Disabled after one-shot cancel completed. Keep as no-op so leftover
+# matrix jobs from prior pushes cannot re-cancel active CI runs.
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
+  workflow_dispatch:
 
 permissions:
-  actions: write
   contents: read
 
 concurrency:
@@ -15,30 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  requeue-3572-jobs:
+  noop:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Rerun failed/cancelled #3572 jobs by ID
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          REPO="${{ github.repository }}"
-          RUN_ID=33826226644
-          # Known non-success from attempt 2
-          for JOB_ID in 100945491947 100945520581 100945528573; do
-            info=$(gh api "repos/$REPO/actions/jobs/$JOB_ID" --jq '{name,status,conclusion}')
-            echo "Job $JOB_ID $info"
-            concl=$(echo "$info" | jq -r .conclusion)
-            if [[ "$concl" == "success" ]]; then
-              echo "  already success; skip"
-              continue
-            fi
-            echo "  POST jobs/$JOB_ID/rerun ..."
-            gh api -X POST "repos/$REPO/actions/jobs/$JOB_ID/rerun" || true
-          done
-          echo "Also try run-level rerun-failed-jobs ..."
-          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
-          echo "Final non-success jobs:"
-          gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
-            --jq '.jobs[] | select(.conclusion != "success" and .status != "in_progress") | {id,name,status,conclusion}'
+      - name: No-op
+        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
