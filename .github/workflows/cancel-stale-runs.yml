@@ -1,4 +1,4 @@
-# One-shot: when 3576 and/or 3580 go idle with failures, rerun-failed. macos. NO matrix.
+# Hang-cancel FF Test>=120m + idle-rerun flakes. macos. NO matrix.
 name: cancel-stale-runs
 
 on:
@@ -15,25 +15,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  idle-rerun-3576-3580:
+  hang-and-idle-rerun:
     runs-on: macos-latest
     steps:
-      - name: Idle-rerun flakes on 3576 and 3580
+      - name: Hang-cancel and idle-rerun for open release PRs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
+          HANG_SECS=$((120 * 60))
+
+          epoch_of() {
+            # macOS BSD date first, GNU fallback
+            date -u -j -f "%Y-%m-%dT%H:%M:%SZ" "$1" +%s 2>/dev/null || date -u -d "$1" +%s
+          }
+
+          cancel_hung_tests() {
+            local label="$1" RUN_ID="$2"
+            local now jobs_json
+            now=$(date -u +%s)
+            jobs_json=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100")
+            echo "$jobs_json" | jq -c '.jobs[]|select(.status=="in_progress")' | while read -r job; do
+              local jid jname step_start age
+              jid=$(echo "$job" | jq -r '.id')
+              jname=$(echo "$job" | jq -r '.name')
+              step_start=$(echo "$job" | jq -r '[.steps[]?|select(.name=="Test (Linux)" and .status=="in_progress")|.started_at]|first // empty')
+              if [[ -z "$step_start" || "$step_start" == "null" ]]; then
+                echo "$label job=$jid $jname: no in-progress Test (Linux)"
+                continue
+              fi
+              age=$(( now - $(epoch_of "$step_start") ))
+              echo "$label job=$jid $jname TestAge=$((age/60))m"
+              if [[ "$age" -ge "$HANG_SECS" ]]; then
+                echo "CANCEL hung job $jid ($jname) on $label"
+                gh api -X POST "repos/$REPO/actions/jobs/$jid/cancel" || true
+              fi
+            done
+          }
 
           try_rerun() {
             local label="$1" RUN_ID="$2"
-            local ip fail
+            local ip fail canc
             ip=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.status=="in_progress" or .status=="queued")]|length')
             fail=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
               --jq '[.jobs[]|select(.conclusion=="failure")]|length')
-            echo "$label run=$RUN_ID ip_or_q=$ip fail=$fail"
-            if [[ "$ip" -eq 0 && "$fail" -gt 0 ]]; then
+            canc=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --jq '[.jobs[]|select(.conclusion=="cancelled")]|length')
+            echo "$label run=$RUN_ID ip_or_q=$ip fail=$fail canc=$canc"
+            if [[ "$ip" -eq 0 && ( "$fail" -gt 0 || "$canc" -gt 0 ) ]]; then
               echo "POST rerun-failed-jobs for $label"
               gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/rerun-failed-jobs" || true
               sleep 4
@@ -41,33 +72,52 @@ jobs:
                 --jq '.jobs[]|select(.conclusion!="success")|{id,name,status,conclusion}'
               return 0
             fi
-            if [[ "$ip" -eq 0 && "$fail" -eq 0 ]]; then
-              echo "$label idle with no failures"
+            if [[ "$ip" -eq 0 && "$fail" -eq 0 && "$canc" -eq 0 ]]; then
+              echo "$label idle all success"
               return 0
             fi
             return 1
           }
 
+          handle() {
+            local label="$1" RUN_ID="$2"
+            cancel_hung_tests "$label" "$RUN_ID" || true
+            try_rerun "$label" "$RUN_ID"
+          }
+
+          done3571=0
+          done3575=0
           done3576=0
           done3580=0
-          # Poll up to ~40 minutes
-          for i in $(seq 1 80); do
+
+          # Poll ~100 minutes (covers hang windows past prior 40m timeout)
+          for i in $(seq 1 200); do
             echo "---- poll $i $(date -u +%H:%M:%S) ----"
+            if [[ "$done3571" -eq 0 ]]; then
+              if handle "3571" 33833625960; then done3571=1; fi
+            else
+              echo "3571 already handled"
+            fi
+            if [[ "$done3575" -eq 0 ]]; then
+              if handle "3575" 33819078284; then done3575=1; fi
+            else
+              echo "3575 already handled"
+            fi
             if [[ "$done3576" -eq 0 ]]; then
-              if try_rerun "3576" 33847311896; then done3576=1; fi
+              if handle "3576" 33847311896; then done3576=1; fi
             else
               echo "3576 already handled"
             fi
             if [[ "$done3580" -eq 0 ]]; then
-              if try_rerun "3580" 33851930748; then done3580=1; fi
+              if handle "3580" 33851930748; then done3580=1; fi
             else
               echo "3580 already handled"
             fi
-            if [[ "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
-              echo "Both handled; done"
+            if [[ "$done3571" -eq 1 && "$done3575" -eq 1 && "$done3576" -eq 1 && "$done3580" -eq 1 ]]; then
+              echo "All tracked runs handled; done"
               exit 0
             fi
             sleep 30
           done
-          echo "timed out; 3576_done=$done3576 3580_done=$done3580" >&2
+          echo "timed out; 3571=$done3571 3575=$done3575 3576=$done3576 3580=$done3580" >&2
           exit 1
