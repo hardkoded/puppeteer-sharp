@@ -1,13 +1,14 @@
-# One-shot: cancel superseded #3576 run holding runners. SINGLE job, NO matrix.
+# Disabled after one-shot cancel completed. Keep as no-op so leftover
+# matrix jobs from prior pushes cannot re-cancel active CI runs.
 name: cancel-stale-runs
 
 on:
   push:
     branches:
       - cursor/cancel-stale-runners-c423
+  workflow_dispatch:
 
 permissions:
-  actions: write
   contents: read
 
 concurrency:
@@ -15,33 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cancel-zombie-3576:
+  noop:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Cancel superseded #3576 run 33824037738
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          REPO="${{ github.repository }}"
-          RUN_ID=33824037738
-          EXPECT_SHA=83110862d946164352cfb8a3230cbc6acaca9420
-          HEAD_SHA=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq .head_sha)
-          STATUS=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '.status + "/" + (.conclusion//"null")')
-          echo "Run $RUN_ID sha=$HEAD_SHA status=$STATUS"
-          if [[ "$HEAD_SHA" != "$EXPECT_SHA" ]]; then
-            echo "SHA mismatch; refusing to cancel"
-            exit 0
-          fi
-          if [[ "$STATUS" == completed/* ]]; then
-            echo "Already completed; no-op"
-            exit 0
-          fi
-          echo "Cancelling zombie run $RUN_ID (superseded by HEAD 23ecdb6) ..."
-          gh api -X POST "repos/$REPO/actions/runs/$RUN_ID/cancel" || true
-          for i in $(seq 1 36); do
-            s=$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq .status)
-            echo "  status=$s ($i)"
-            [[ "$s" == "completed" ]] && break
-            sleep 5
-          done
+      - name: No-op
+        run: echo "cancel-stale-runs is disabled; refusing to cancel anything."
