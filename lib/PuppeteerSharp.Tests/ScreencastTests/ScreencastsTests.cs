@@ -10,6 +10,7 @@ namespace PuppeteerSharp.Tests.ScreencastTests
     public class ScreencastsTests : PuppeteerPageBaseTest
     {
         [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should work")]
+        [Obsolete]
         public async Task ShouldWork()
         {
             var filePath = Path.Combine(Path.GetTempPath(), $"test-video-{Guid.NewGuid()}.webm");
@@ -42,6 +43,7 @@ namespace PuppeteerSharp.Tests.ScreencastTests
         }
 
         [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should work concurrently")]
+        [Obsolete]
         public async Task ShouldWorkConcurrently()
         {
             var filePath1 = Path.Combine(Path.GetTempPath(), $"test-video-{Guid.NewGuid()}.webm");
@@ -85,6 +87,7 @@ namespace PuppeteerSharp.Tests.ScreencastTests
         }
 
         [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should validate options")]
+        [Obsolete]
         public async Task ShouldValidateOptions()
         {
             Assert.ThrowsAsync<PuppeteerException>(() => Page.ScreencastAsync(new ScreencastOptions { Scale = 0 }));

@@ -253,6 +253,15 @@ internal class BrowsingContext : IDisposable
         return result.InterceptId;
     }
 
+    internal async Task<StartScreencastCommandResult> StartScreencastAsync(StartScreencastCommandParameters options)
+    {
+        options.Context = Id;
+        return await Session.Driver.ExecuteCommandAsync(options).ConfigureAwait(false);
+    }
+
+    internal async Task<StopScreencastCommandResult> StopScreencastAsync(string screencast)
+        => await Session.Driver.ExecuteCommandAsync(new StopScreencastCommandParameters(screencast)).ConfigureAwait(false);
+
     internal async Task SetUserAgentAsync(string userAgent)
     {
         var parameters = new SetUserAgentOverrideCommandParameters

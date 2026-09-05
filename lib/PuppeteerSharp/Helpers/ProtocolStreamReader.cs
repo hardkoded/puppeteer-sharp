@@ -49,6 +49,20 @@ namespace PuppeteerSharp.Helpers
 
         internal static async Task ReadProtocolBase64StreamByteAsync(CDPSession client, string handle, Stream outputStream)
         {
+            await ReadProtocolStreamBytesAsync(
+                client,
+                handle,
+                buffer =>
+                {
+                    outputStream.Write(buffer, 0, buffer.Length);
+                }).ConfigureAwait(false);
+        }
+
+        internal static async Task ReadProtocolStreamBytesAsync(
+            CDPSession client,
+            string handle,
+            Action<byte[]> onChunk)
+        {
             var eof = false;
 
             while (!eof)
@@ -59,7 +73,14 @@ namespace PuppeteerSharp.Helpers
                 }).ConfigureAwait(false);
 
                 eof = response.Eof;
-                await DecodeStringInChunksAsync(response.Data, outputStream).ConfigureAwait(false);
+
+                if (!string.IsNullOrEmpty(response.Data))
+                {
+                    var buffer = response.Base64Encoded
+                        ? Convert.FromBase64String(response.Data)
+                        : Encoding.UTF8.GetBytes(response.Data);
+                    onChunk(buffer);
+                }
             }
 
             await client.SendAsync("IO.close", new IOCloseRequest

@@ -886,6 +886,10 @@ public class CdpPage : Page
         }
     }
 
+    /// <inheritdoc/>
+    protected override ScreenRecording CreateScreenRecording(RecordOptions options)
+        => new CdpScreenRecording(this, options, _logger);
+
     private static decimal? GetPixels(string unit) => unit switch
     {
         "px" => 1,

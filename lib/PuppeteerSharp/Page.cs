@@ -508,7 +508,72 @@ namespace PuppeteerSharp
                 SetUserAgentAsync(options.UserAgent));
         }
 
+        /// <summary>
+        /// Records this <see cref="IPage"/> using the Chrome DevTools Protocol
+        /// <see href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording">Page.startScreenRecording</see> API.
+        /// </summary>
+        /// <remarks>
+        /// Outputs mp4 video stream.
+        /// </remarks>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A task which resolves to a <see cref="ScreenRecording"/> that can be used to stop the recording.</returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned recording.")]
+        public async Task<ScreenRecording> RecordAsync(RecordOptions options = null)
+        {
+            options ??= new RecordOptions();
+
+            if (options.MaxWidth is <= 0)
+            {
+                throw new PuppeteerException("`maxWidth` must be greater than 0.");
+            }
+
+            if (options.MaxHeight is <= 0)
+            {
+                throw new PuppeteerException("`maxHeight` must be greater than 0.");
+            }
+
+            if (options.FrameRate is <= 0)
+            {
+                throw new PuppeteerException("`frameRate` must be greater than 0.");
+            }
+
+            if (options.Fps is <= 0)
+            {
+                throw new PuppeteerException("`fps` must be greater than 0.");
+            }
+
+            Stream outputStream = null;
+            try
+            {
+                outputStream = CreateRecordingOutputStream(options);
+                var recording = CreateScreenRecording(options);
+
+                try
+                {
+                    await recording.StartAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    await recording.StopAsync().ConfigureAwait(false);
+                    throw;
+                }
+
+                if (outputStream != null)
+                {
+                    await recording.PipeAsync(outputStream).ConfigureAwait(false);
+                    outputStream = null;
+                }
+
+                return recording;
+            }
+            finally
+            {
+                outputStream?.Dispose();
+            }
+        }
+
         /// <inheritdoc/>
+        [Obsolete("Use RecordAsync instead.")]
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned recorder.")]
         public async Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null)
         {
@@ -1316,14 +1381,27 @@ namespace PuppeteerSharp
         /// <returns>A <see cref="Task"/> that completes when the function has been added.</returns>
         protected abstract Task ExposeFunctionAsync(string name, Delegate puppeteerFunction);
 
+        /// <summary>
+        /// Creates a protocol-specific screen recording instance.
+        /// </summary>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A screen recording instance.</returns>
+        protected abstract ScreenRecording CreateScreenRecording(RecordOptions options);
+
         private static Stream CreateScreencastOutputStream(ScreencastOptions options)
+            => CreateRecordingOutputStream(options.Path, options.Overwrite);
+
+        private static Stream CreateRecordingOutputStream(RecordOptions options)
+            => CreateRecordingOutputStream(options.Path, options.Overwrite);
+
+        private static Stream CreateRecordingOutputStream(string path, bool? overwrite)
         {
-            if (string.IsNullOrEmpty(options.Path))
+            if (string.IsNullOrEmpty(path))
             {
                 return null;
             }
 
-            var directory = Path.GetDirectoryName(Path.GetFullPath(options.Path));
+            var directory = Path.GetDirectoryName(Path.GetFullPath(path));
             if (!string.IsNullOrEmpty(directory))
             {
                 // Upstream mkdir uses {recursive: overwrite ?? true}. .NET's
@@ -1332,8 +1410,8 @@ namespace PuppeteerSharp
                 Directory.CreateDirectory(directory);
             }
 
-            var fileMode = (options.Overwrite ?? true) ? FileMode.Create : FileMode.CreateNew;
-            return AsyncFileHelper.CreateStream(options.Path, fileMode);
+            var fileMode = (overwrite ?? true) ? FileMode.Create : FileMode.CreateNew;
+            return AsyncFileHelper.CreateStream(path, fileMode);
         }
 
         private Clip RoundRectangle(Clip clip)
