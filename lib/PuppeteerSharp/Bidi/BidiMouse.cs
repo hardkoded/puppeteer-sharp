@@ -123,8 +123,8 @@ internal class BidiMouse(BidiPage page) : Mouse
         {
             _wheelSource.Actions.Add(new WheelScrollAction
             {
-                X = (ulong)_lastMovePoint.X,
-                Y = (ulong)_lastMovePoint.Y,
+                X = (long)_lastMovePoint.X,
+                Y = (long)_lastMovePoint.Y,
                 DeltaX = (long)deltaX,
                 DeltaY = (long)deltaY,
             });
@@ -184,7 +184,7 @@ internal class BidiMouse(BidiPage page) : Mouse
         }
     }
 
-    private long GetBidiButton(MouseButton optionsButton)
+    private ulong GetBidiButton(MouseButton optionsButton)
     {
         return optionsButton switch
         {

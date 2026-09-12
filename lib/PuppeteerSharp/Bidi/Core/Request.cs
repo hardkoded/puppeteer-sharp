@@ -187,10 +187,7 @@ internal class Request : IDisposable
 
     private async Task<string> FetchPostDataInternalAsync()
     {
-        var commandParams = new GetDataCommandParameters(Id)
-        {
-            DataType = DataType.Request,
-        };
+        var commandParams = new GetDataCommandParameters(Id, DataType.Request);
 
         var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
 
@@ -207,10 +204,7 @@ internal class Request : IDisposable
     {
         try
         {
-            var commandParams = new GetDataCommandParameters(Id)
-            {
-                DataType = DataType.Response,
-            };
+            var commandParams = new GetDataCommandParameters(Id, DataType.Response);
 
             var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
             return result.Bytes.ValueAsByteArray;

@@ -95,7 +95,7 @@ internal class WindowRealm(BrowsingContext browsingContext, string sandbox = nul
     private void OnDedicatedRealmCreated(RealmCreatedEventArgs args)
     {
         if (args.Type != RealmType.Window ||
-            args.As<WindowRealmInfo>().BrowsingContext != Context.Id ||
+            args.As<WindowRealmInfo>().BrowsingContextId != Context.Id ||
             args.As<WindowRealmInfo>().Sandbox != _sandbox)
         {
             return;

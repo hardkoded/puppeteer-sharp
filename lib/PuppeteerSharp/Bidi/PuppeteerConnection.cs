@@ -23,6 +23,7 @@
 #if !CDP_ONLY
 
 using System;
+using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 using PuppeteerSharp.Transport;
@@ -55,34 +56,33 @@ internal class PuppeteerConnection : BidiConnection
     public override bool IsActive => _isActive;
 
     /// <inheritdoc/>
-    public override ConnectionType ConnectionType => ConnectionType.WebSocket;
+    public override ConnectionKind ConnectionKind => ConnectionKind.WebSocket;
 
     /// <inheritdoc/>
-    public override Task StartAsync(string connectionString, CancellationToken cancellationToken = default)
+    protected override Task StartConnectionAsync(CancellationToken cancellationToken = default)
     {
-        // The transport is already connected (it was created by the TransportFactory)
-        // We just need to mark ourselves as active and set the connection string
-        ConnectionString = connectionString;
         _isActive = true;
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override Task StopAsync(CancellationToken cancellationToken = default)
+    protected override Task StopConnectionAsync(CancellationToken cancellationToken = default)
     {
         _transport.MessageReceived -= OnTransportMessageReceived;
         _transport.Closed -= OnTransportClosed;
         _transport.StopReading();
         _transport.Dispose();
-        ConnectionString = string.Empty;
         _isActive = false;
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public override Task SendDataAsync(byte[] data, CancellationToken cancellationToken = default)
+    protected override Task SendConnectionDataAsync(ReadOnlyMemory<byte> messageBuffer, CancellationToken cancellationToken = default)
     {
-        return _transport.SendAsync(data);
+        // IConnectionTransport.SendAsync takes a byte[], so the buffer has to be copied. The base
+        // SendDataAsync has already checked that the connection is active, raised the trace log
+        // message, and taken the send semaphore that makes this call atomic.
+        return _transport.SendAsync(messageBuffer.ToArray());
     }
 
     /// <inheritdoc/>
@@ -108,7 +108,9 @@ internal class PuppeteerConnection : BidiConnection
     {
         try
         {
-            await InvocableConnectionDataReceivedObservableEvent.InvokeNotifyObserversAsync(new ConnectionDataReceivedEventArgs(e.Message)).ConfigureAwait(false);
+            using var messageBuffer = new MessageBuffer();
+            messageBuffer.Append(e.Message);
+            await this.NotifyDataReceivedObserverAsync(messageBuffer).ConfigureAwait(false);
         }
         catch
         {

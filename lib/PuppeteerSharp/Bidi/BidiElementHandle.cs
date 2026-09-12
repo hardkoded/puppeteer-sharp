@@ -96,7 +96,7 @@ internal class BidiElementHandle(RemoteValue value, BidiRealm realm) : ElementHa
 
         if (value?.Type == RemoteValueType.Window && value is WindowProxyRemoteValue windowProxyValue)
         {
-            var contextId = windowProxyValue.Value.Context;
+            var contextId = windowProxyValue.Value.BrowsingContextId;
             return BidiFrame.BidiPage.Frames.FirstOrDefault(frame => frame.Id == contextId);
         }
 

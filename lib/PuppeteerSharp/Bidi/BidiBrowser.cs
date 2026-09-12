@@ -282,12 +282,12 @@ public class BidiBrowser : Browser
         {
             if (windowBounds.Left.HasValue)
             {
-                parameters.X = (ulong)windowBounds.Left.Value;
+                parameters.X = windowBounds.Left.Value;
             }
 
             if (windowBounds.Top.HasValue)
             {
-                parameters.Y = (ulong)windowBounds.Top.Value;
+                parameters.Y = windowBounds.Top.Value;
             }
 
             if (windowBounds.Width.HasValue)
@@ -338,7 +338,7 @@ public class BidiBrowser : Browser
     {
         var capabilityRequest = new CapabilityRequest()
         {
-            AcceptInsecureCertificates = options.AcceptInsecureCerts,
+            AcceptInsecureCerts = options.AcceptInsecureCerts,
             AdditionalCapabilities = { ["webSocketUrl"] = true, },
 
             // Tell the browser not to auto-handle prompts so we can handle them via the Dialog API.

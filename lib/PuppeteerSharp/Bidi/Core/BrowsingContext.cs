@@ -247,8 +247,7 @@ internal class BrowsingContext : IDisposable
 
     internal async Task<string> AddInterceptAsync(WebDriverBiDi.Network.AddInterceptCommandParameters options)
     {
-        options.BrowsingContextIds ??= new List<string>();
-        options.BrowsingContextIds.Add(Id);
+        options.Contexts.Add(Id);
         var result = await Session.Driver.Network.AddInterceptAsync(options).ConfigureAwait(false);
         return result.InterceptId;
     }
@@ -267,8 +266,8 @@ internal class BrowsingContext : IDisposable
         var parameters = new SetUserAgentOverrideCommandParameters
         {
             UserAgent = userAgent,
-            Contexts = [Id],
         };
+        parameters.Contexts.Add(Id);
         await Session.Driver.Emulation.SetUserAgentOverrideAsync(parameters).ConfigureAwait(false);
     }
 
@@ -277,8 +276,8 @@ internal class BrowsingContext : IDisposable
         var parameters = new SetNetworkConditionsCommandParameters
         {
             NetworkConditions = enabled ? new NetworkConditionsOffline() : null,
-            Contexts = [Id],
         };
+        parameters.Contexts.Add(Id);
         await Session.Driver.Emulation.SetNetworkConditionsAsync(parameters).ConfigureAwait(false);
     }
 
@@ -287,8 +286,8 @@ internal class BrowsingContext : IDisposable
         var parameters = new SetScreenOrientationOverrideCommandParameters
         {
             ScreenOrientation = screenOrientation,
-            Contexts = [Id],
         };
+        parameters.Contexts.Add(Id);
         await Session.Driver.Emulation.SetScreenOrientationOverrideAsync(parameters).ConfigureAwait(false);
     }
 
@@ -445,7 +444,7 @@ internal class BrowsingContext : IDisposable
 
         Session.LogEntryAdded += (_, args) =>
         {
-            if (args.Source.Context != Id)
+            if (args.Source.BrowsingContextId != Id)
             {
                 return;
             }

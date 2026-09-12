@@ -606,7 +606,7 @@ public class BidiFrame : Frame
     internal async Task SetFilesAsync(BidiElementHandle element, string[] files)
     {
         await BrowsingContext.SetFilesAsync(
-            element.Value.ConvertTo<NodeRemoteValue>().ToSharedReference(),
+            element.Value.As<NodeRemoteValue>().ToSharedReference(),
             files).ConfigureAwait(false);
     }
 
@@ -614,7 +614,7 @@ public class BidiFrame : Frame
     {
         return await BrowsingContext.LocateNodesAsync(
             locator,
-            [element.Value.ConvertTo<NodeRemoteValue>().ToSharedReference()]).ConfigureAwait(false);
+            [element.Value.As<NodeRemoteValue>().ToSharedReference()]).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -981,7 +981,7 @@ public class BidiFrame : Frame
 
         BrowsingContext.Log += (sender, args) =>
         {
-            if (Id != args.Source.Context)
+            if (Id != args.Source.BrowsingContextId)
             {
                 return;
             }

@@ -38,6 +38,7 @@ using PuppeteerSharp.Media;
 using WebDriverBiDi.BrowsingContext;
 using WebDriverBiDi.Input;
 using WebDriverBiDi.Network;
+using WebDriverBiDi.Protocol;
 using WebDriverBiDi.Script;
 
 namespace PuppeteerSharp.Bidi;
@@ -215,8 +216,8 @@ public class BidiPage : Page
             var commandParameters = new WebDriverBiDi.Emulation.SetTimeZoneOverrideCommandParameters()
             {
                 TimeZone = timezoneId,
-                Contexts = [BidiMainFrame.BrowsingContext.Id],
             };
+            commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
             await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetTimeZoneOverrideAsync(commandParameters).ConfigureAwait(false);
         }
@@ -246,8 +247,8 @@ public class BidiPage : Page
         var commandParameters = new WebDriverBiDi.Emulation.SetLocaleOverrideCommandParameters()
         {
             Locale = locale,
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetLocaleOverrideAsync(commandParameters).ConfigureAwait(false);
     }
@@ -309,7 +310,7 @@ public class BidiPage : Page
                 return;
             }
 
-            var element = CreateElementHandleFromSharedReference(e.Element);
+            var element = CreateElementHandleFromSharedReference(e.Element.ToSharedReference());
             var chooser = new FileChooser(element, e.IsMultiple);
             fileChooserTcs.TrySetResult(chooser);
         }
@@ -378,8 +379,8 @@ public class BidiPage : Page
         var commandParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters
         {
             Coordinates = coordinates,
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(commandParameters).ConfigureAwait(false);
     }
@@ -390,8 +391,8 @@ public class BidiPage : Page
         var commandParameters = new WebDriverBiDi.Emulation.SetScriptingEnabledCommandParameters
         {
             IsScriptingEnabled = enabled,
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
         };
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetScriptingEnabledAsync(commandParameters).ConfigureAwait(false);
         _isJavaScriptEnabled = enabled;
@@ -409,10 +410,8 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetCacheEnabledAsync(bool enabled = true)
     {
-        var commandParameters = new SetCacheBehaviorCommandParameters(enabled ? CacheBehavior.Default : CacheBehavior.Bypass)
-        {
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
-        };
+        var commandParameters = new SetCacheBehaviorCommandParameters(enabled ? CacheBehavior.Default : CacheBehavior.Bypass);
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         await BidiMainFrame.BrowsingContext.Session.Driver.Network.SetCacheBehaviorAsync(commandParameters).ConfigureAwait(false);
     }
@@ -646,10 +645,8 @@ public class BidiPage : Page
     public override async Task<NewDocumentScriptEvaluation> EvaluateFunctionOnNewDocumentAsync(string pageFunction, params object[] args)
     {
         var expression = EvaluationExpression(pageFunction, args);
-        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(expression)
-        {
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
-        };
+        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(expression);
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         var result = await BidiMainFrame.BrowsingContext.Session.Driver.Script.AddPreloadScriptAsync(commandParameters).ConfigureAwait(false);
         return new NewDocumentScriptEvaluation(result.PreloadScriptId);
@@ -682,10 +679,8 @@ public class BidiPage : Page
     {
         // Wrap the expression in a function so it can be used as a preload script
         var functionExpression = $"() => {{{expression}}}";
-        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(functionExpression)
-        {
-            Contexts = [BidiMainFrame.BrowsingContext.Id],
-        };
+        var commandParameters = new WebDriverBiDi.Script.AddPreloadScriptCommandParameters(functionExpression);
+        commandParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
 
         var result = await BidiMainFrame.BrowsingContext.Session.Driver.Script.AddPreloadScriptAsync(commandParameters).ConfigureAwait(false);
         return new NewDocumentScriptEvaluation(result.PreloadScriptId);
@@ -906,7 +901,7 @@ public class BidiPage : Page
 
         if (remoteValue is WindowProxyRemoteValue windowProxyRemoteValue)
         {
-            var frame = Frames.OfType<BidiFrame>().FirstOrDefault(f => f.Id == windowProxyRemoteValue.Value.Context);
+            var frame = Frames.OfType<BidiFrame>().FirstOrDefault(f => f.Id == windowProxyRemoteValue.Value.BrowsingContextId);
             if (frame != null)
             {
                 return frame;
@@ -965,7 +960,7 @@ public class BidiPage : Page
                 .WithTimeout(timeout).ConfigureAwait(false);
         }
 
-        var pageRanges = new List<object>();
+        var pageRanges = new List<PageRange>();
         if (!string.IsNullOrEmpty(options.PageRanges))
         {
             foreach (var range in options.PageRanges.Split(','))
@@ -1233,7 +1228,7 @@ public class BidiPage : Page
     {
         if (expected && interception == null)
         {
-            var options = new AddInterceptCommandParameters(phases);
+            var options = new AddInterceptCommandParameters(phases[0]);
 
             return await BidiMainFrame.BrowsingContext.AddInterceptAsync(options).ConfigureAwait(false);
         }

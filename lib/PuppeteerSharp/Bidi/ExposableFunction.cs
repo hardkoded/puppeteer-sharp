@@ -164,11 +164,9 @@ internal class ExposableFunction : IAsyncDisposable
         // contexts for addPreloadScript (BiDi requires top-level contexts).
         if (!_isolate)
         {
-            var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration)
-            {
-                Arguments = [channelValue],
-                Contexts = [_frame.BrowsingContext.Id],
-            };
+            var addPreloadParams = new AddPreloadScriptCommandParameters(functionDeclaration);
+            addPreloadParams.Arguments.Add(channelValue);
+            addPreloadParams.Contexts.Add(_frame.BrowsingContext.Id);
 
             var scriptResult = await Connection.Script.AddPreloadScriptAsync(addPreloadParams).ConfigureAwait(false);
             _scripts.Add((_frame, scriptResult.PreloadScriptId));
@@ -402,7 +400,7 @@ internal class ExposableFunction : IAsyncDisposable
 
     private BidiRealm GetRealm(Source source)
     {
-        var frame = FindFrame(source.Context);
+        var frame = FindFrame(source.BrowsingContextId);
         if (frame == null)
         {
             return null;
