@@ -24,6 +24,8 @@
 ```bash
 BROWSER=CHROME PROTOCOL=cdp dotnet build lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj
 BROWSER=CHROME PROTOCOL=cdp dotnet test lib/PuppeteerSharp.Tests/PuppeteerSharp.Tests.csproj \
-  --filter "FullyQualifiedName~BrowserFetcher" --no-build \
+  --filter "FullyQualifiedName~ChromeDataTests|FullyQualifiedName~Browsers.Chrome.CliTests" --no-build \
   -- NUnit.TestOutputXml=TestResults
 ```
+
+Result: build succeeded; `ChromeDataTests` 5 passed / 1 skipped; `CliTests` 1 passed. (`BrowserFetcher` filter matched no tests.)
