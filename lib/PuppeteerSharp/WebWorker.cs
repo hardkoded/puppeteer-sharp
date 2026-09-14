@@ -107,7 +107,7 @@ namespace PuppeteerSharp
         /// <param name="options">Options for configuring waiting behavior.</param>
         /// <param name="args">Arguments to pass to <paramref name="script"/>.</param>
         /// <returns>A <see cref="Task"/> that resolves to a <see cref="IJSHandle"/> of the truthy value returned by the function.</returns>
-        public Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+        public virtual Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
         {
             var opts = options ?? new WaitForFunctionOptions();
 

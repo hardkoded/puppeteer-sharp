@@ -168,6 +168,15 @@ public class CdpWebWorker : WebWorker
         return await base.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public override async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+    {
+        // Match evaluate*: wait until the worker script has run so WaitForFunction does not
+        // start polling before top-level worker setup (e.g. setTimeout) has been scheduled.
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.WaitForFunctionAsync(script, options, args).ConfigureAwait(false);
+    }
+
     private async void OnMessageReceived(object sender, MessageEventArgs e)
     {
         try
