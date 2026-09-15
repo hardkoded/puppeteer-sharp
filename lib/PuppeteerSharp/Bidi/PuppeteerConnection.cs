@@ -53,10 +53,10 @@ internal class PuppeteerConnection : BidiConnection
     }
 
     /// <inheritdoc/>
-    public override bool IsActive => _isActive;
+    public override ConnectionKind ConnectionKind => ConnectionKind.WebSocket;
 
     /// <inheritdoc/>
-    public override ConnectionKind ConnectionKind => ConnectionKind.WebSocket;
+    protected override bool IsConnectionOpen => _isActive;
 
     /// <inheritdoc/>
     protected override Task StartConnectionAsync(CancellationToken cancellationToken = default)
