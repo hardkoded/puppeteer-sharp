@@ -32,7 +32,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             `)");
             var worker = await workerCreatedTcs.Task;
 
-            await worker.WaitForFunctionAsync("() => self.foo === true").WithTimeout();
+            await worker.WaitForFunctionAsync("() => self.foo === true").WithTimeout(5_000);
         }
 
         [Test, PuppeteerTest("worker.spec", "Workers waitForFunction", "should timeout if condition is not met")]
@@ -69,7 +69,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             var worker = await workerCreatedTcs.Task;
 
             await using var handle = await worker.WaitForFunctionAsync(
-                "() => self.status === 'ready' ? 'Operation Success' : false").WithTimeout();
+                "() => self.status === 'ready' ? 'Operation Success' : false").WithTimeout(5_000);
 
             var result = await handle.JsonValueAsync<string>();
             Assert.That(result, Is.EqualTo("Operation Success"));
@@ -93,7 +93,7 @@ namespace PuppeteerSharp.Tests.WorkerTests
             await worker.WaitForFunctionAsync(
                 "(expected) => self.targetValue === expected",
                 null,
-                argHandle).WithTimeout();
+                argHandle).WithTimeout(5_000);
         }
     }
 }

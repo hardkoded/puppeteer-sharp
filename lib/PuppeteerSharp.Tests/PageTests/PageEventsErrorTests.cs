@@ -13,13 +13,23 @@ namespace PuppeteerSharp.Tests.PageTests
         [Test, PuppeteerTest("page.spec", "Page Page.Events.error", "should throw when page crashes")]
         public async Task ShouldThrowWhenPageCrashes()
         {
-            string error = null;
-            Page.Error += (_, e) => error = e.Error;
-            var crashUrl = TestConstants.IsChrome ? "chrome://crash" : "about:crashcontent";
-            var gotoTask = Page.GoToAsync(crashUrl);
+            // Waiter must be registered before GoToAsync — a fast chrome://crash can
+            // otherwise emit Page.Error before WaitForError subscribes (CI hang abort).
+            var errorTask = new TaskCompletionSource<string>();
+            void EventHandler(object sender, ErrorEventArgs e)
+            {
+                errorTask.TrySetResult(e.Error);
+                Page.Error -= EventHandler;
+            }
 
-            await WaitForError();
-            Assert.That(error, Is.EqualTo("Page crashed!"));
+            Page.Error += EventHandler;
+
+            var crashUrl = TestConstants.IsChrome ? "chrome://crash" : "about:crashcontent";
+            await Task.WhenAll(
+                errorTask.Task,
+                Page.GoToAsync(crashUrl).ContinueWith(_ => { }));
+
+            Assert.That(await errorTask.Task, Is.EqualTo("Page crashed!"));
         }
     }
 }
