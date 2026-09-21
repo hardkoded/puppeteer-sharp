@@ -35,7 +35,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to query existing page after connecting")]
+        [Test]
         public async Task ShouldBeAbleToQueryExistingPageAfterConnecting()
         {
             var options = new ConnectOptions()
