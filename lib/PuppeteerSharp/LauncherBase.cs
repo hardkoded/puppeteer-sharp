@@ -164,6 +164,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Deletes the temporary user data directory if one was created for this launch.
         /// Cleanup errors are swallowed so they cannot become uncaught exceptions.
+        /// Also unregisters any process-exit cleanup fallback.
         /// </summary>
         /// <returns>A task that completes when cleanup finishes.</returns>
         internal Task CleanTempUserDataDirAsync()

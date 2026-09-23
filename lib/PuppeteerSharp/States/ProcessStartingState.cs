@@ -79,6 +79,11 @@ namespace PuppeteerSharp.States
                 try
                 {
                     p.Process.Start();
+
+                    // Register after the browser process has started so a host-process
+                    // exit can still remove the temporary profile synchronously when
+                    // async cleanup cannot run (upstream #15441).
+                    p.TempUserDataDir?.RegisterProcessExitCleanup();
                 }
                 catch (Exception ex)
                 {
