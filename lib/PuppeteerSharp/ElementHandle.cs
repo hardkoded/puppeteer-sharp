@@ -536,29 +536,49 @@ namespace PuppeteerSharp
         public Task<DragData> DragAsync(decimal x, decimal y)
             => BindIsolatedHandleAsync<DragData, ElementHandle>(async handle =>
             {
-                await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-
 #pragma warning disable CS0618 // Type or member is obsolete
                 if (Page.IsDragInterceptionEnabled)
                 {
+                    await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                     var start = await handle.ClickablePointAsync().ConfigureAwait(false);
                     return await Page.Mouse.DragAsync(start.X, start.Y, x, y).ConfigureAwait(false);
                 }
 #pragma warning restore CS0618 // Type or member is obsolete
 
+                // The button is down either because an earlier DragAsync pressed it, or
+                // because this call is about to.
+                var isMouseDown = Page.IsDragging;
                 try
                 {
+                    await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                     if (!Page.IsDragging)
                     {
                         Page.IsDragging = true;
                         await handle.HoverAsync().ConfigureAwait(false);
                         await Page.Mouse.DownAsync().ConfigureAwait(false);
-                        await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
+                        isMouseDown = true;
                     }
+
+                    await Page.Mouse.MoveAsync(x, y).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     Page.IsDragging = false;
+                    if (isMouseDown)
+                    {
+                        // DropAsync is the only thing that releases the button and it will never
+                        // run now, so without this the button stays pressed for the rest of the
+                        // session. It must not mask the error that got us here.
+                        try
+                        {
+                            await Page.Mouse.UpAsync().ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // Ignore - must not mask the original error.
+                        }
+                    }
+
                     throw new PuppeteerException("Failed to process drag.", ex);
                 }
 
@@ -574,29 +594,49 @@ namespace PuppeteerSharp
                     throw new ArgumentNullException(nameof(target), "Target cannot be null");
                 }
 
-                await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
-
                 if (Page.IsDragInterceptionEnabled)
                 {
+                    await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                     var start = await handle.ClickablePointAsync().ConfigureAwait(false);
                     var targetPoint = await target.ClickablePointAsync().ConfigureAwait(false);
                     return await Page.Mouse.DragAsync(start.X, start.Y, targetPoint.X, targetPoint.Y)
                         .ConfigureAwait(false);
                 }
 
+                // The button is down either because an earlier DragAsync pressed it, or
+                // because this call is about to.
+                var isMouseDown = Page.IsDragging;
                 try
                 {
+                    await handle.ScrollIntoViewIfNeededAsync().ConfigureAwait(false);
                     if (!Page.IsDragging)
                     {
                         Page.IsDragging = true;
                         await handle.HoverAsync().ConfigureAwait(false);
                         await Page.Mouse.DownAsync().ConfigureAwait(false);
-                        await target.HoverAsync().ConfigureAwait(false);
+                        isMouseDown = true;
                     }
+
+                    await target.HoverAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     Page.IsDragging = false;
+                    if (isMouseDown)
+                    {
+                        // DropAsync is the only thing that releases the button and it will never
+                        // run now, so without this the button stays pressed for the rest of the
+                        // session. It must not mask the error that got us here.
+                        try
+                        {
+                            await Page.Mouse.UpAsync().ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // Ignore - must not mask the original error.
+                        }
+                    }
+
                     throw new PuppeteerException("Failed to process drag.", ex);
                 }
 

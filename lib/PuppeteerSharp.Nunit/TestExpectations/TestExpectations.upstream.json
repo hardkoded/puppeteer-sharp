@@ -210,6 +210,20 @@
     "comment": "TODO: Not yet supported in Puppeteer for WebDriver BiDi"
   },
   {
+    "testIdPattern": "[drag-and-drop.spec] Drag n' Drop should release the mouse button when the drop fails",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox"
+    ],
+    "expectations": [
+      "PASS"
+    ]
+  },
+  {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateFocusedPage *",
     "platforms": [
       "darwin",
