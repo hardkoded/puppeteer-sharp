@@ -544,19 +544,6 @@
     "comment": "Bidi does not have equivalent field"
   },
   {
-    "testIdPattern": "[page.test] Page Page.record *",
-    "platforms": [
-      "linux"
-    ],
-    "parameters": [
-      "firefox"
-    ],
-    "expectations": [
-      "FAIL"
-    ],
-    "comment": "https://bugzilla.mozilla.org/show_bug.cgi?id=2066782"
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.metrics *",
     "platforms": [
       "darwin",
