@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -170,6 +171,32 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
 
             Assert.That(parentInnerHtml, Is.EqualTo(textNodeInnerHtml));
             Assert.That(textNodeInnerHtml, Is.EqualTo("<b>Hello, </b> world!"));
+        }
+
+        [Test, PuppeteerTest("accessibility.spec", "elementHandle()", "should get the shadow host ElementHandle from a text node in a shadow root")]
+        public async Task ShouldGetTheShadowHostElementHandleFromATextNodeInAShadowRoot()
+        {
+            await Page.SetContentAsync("<div id=\"host\"></div>");
+            await Page.EvaluateExpressionAsync(@"
+                document
+                    .querySelector('#host')
+                    .attachShadow({mode: 'open'}).textContent = 'Shadow text';
+            ");
+            var host = await Page.QuerySelectorAsync("#host");
+
+            var snapshot = await Page.Accessibility.SnapshotAsync(new AccessibilitySnapshotOptions
+            {
+                Root = host,
+                InterestingOnly = false,
+            });
+            var textNode = snapshot.Children.First(child => child.Name == "Shadow text");
+            Assert.That(textNode.Role, Is.EqualTo("StaticText"));
+
+            var textNodeHandle = await textNode.ElementHandleAsync();
+            Assert.That(textNodeHandle, Is.Not.Null);
+            Assert.That(
+                await textNodeHandle.EvaluateFunctionAsync<string>("element => element.id"),
+                Is.EqualTo("host"));
         }
 
         [Test, PuppeteerTest("accessibility.spec", "root option", "should work with nested button inside h1 with interestingOnly:true")]

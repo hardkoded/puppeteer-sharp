@@ -270,8 +270,14 @@ namespace PuppeteerSharp.PageAccessibility
 
                         // Since Text nodes are not elements, we want to
                         // return a handle to the parent element for them.
-                        return await ((ElementHandle)handle).EvaluateFunctionHandleAsync(
-                            "node => node.nodeType === Node.TEXT_NODE ? node.parentElement : node").ConfigureAwait(false) as IElementHandle;
+                        // A text node placed directly in a shadow root has no parent
+                        // element, so fall back to the shadow host.
+                        return await ((ElementHandle)handle).EvaluateFunctionHandleAsync(@"node => {
+                            if (node.nodeType !== Node.TEXT_NODE) {
+                                return node;
+                            }
+                            return node.parentElement ?? node.parentNode?.host ?? null;
+                        }").ConfigureAwait(false) as IElementHandle;
                     }
                 : null,
                 Role = _role,
