@@ -18,9 +18,11 @@ internal sealed class StartScreencastCommandParameters : CommandParameters<Start
     public string Context { get; set; }
 
     [JsonPropertyName("audio")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Audio { get; set; }
 
     [JsonPropertyName("video")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public StartScreencastVideoParameters Video { get; set; }
 }
 
