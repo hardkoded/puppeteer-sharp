@@ -409,6 +409,16 @@ namespace PuppeteerSharp
             return message.Contains("Missing X server", StringComparison.Ordinal);
         }
 
+        private static string GetWSEndpointURL(string browserURL)
+        {
+            var uri = new Uri(browserURL);
+            return new UriBuilder(uri)
+            {
+                Path = uri.AbsolutePath.TrimEnd('/') + "/json/version",
+                Fragment = null,
+            }.Uri.ToString();
+        }
+
 #if !CDP_ONLY
         private static async Task<BiDiDriver> CreateBidiDriverAsync(BidiOverCdpTransport transport, IConnectionOptions options)
         {
@@ -558,7 +568,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if (Uri.TryCreate(new Uri(browserURL), "/json/version", out var endpointURL))
+                if (Uri.TryCreate(GetWSEndpointURL(browserURL), UriKind.Absolute, out var endpointURL))
                 {
                     string data;
                     using (var client = new HttpClient())

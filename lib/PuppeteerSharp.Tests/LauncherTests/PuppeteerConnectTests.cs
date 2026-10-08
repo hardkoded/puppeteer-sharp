@@ -113,6 +113,25 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(webSocketAuthorizationHeader, Is.EqualTo(authorizationHeader));
         }
 
+        [Test, PuppeteerTest("BrowserConnector.test.ts", "BrowserConnector getWSEndpoint via browserURL", "rewrites browser URLs to the version endpoint")]
+        public async Task ShouldKeepPathPrefixWhenConnectingWithBrowserURL()
+        {
+            Server.SetRoute("/t/session/json/version?token=secret", async context =>
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(
+                    JsonSerializer.Serialize(new { webSocketDebuggerUrl = Browser.WebSocketEndpoint })).ConfigureAwait(false);
+            });
+
+            await using var connectedBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserURL = TestConstants.ServerUrl + "/t/session/?token=secret#ignored",
+                Protocol = ((Browser)Browser).Protocol,
+            });
+
+            Assert.That(connectedBrowser.WebSocketEndpoint, Is.EqualTo(Browser.WebSocketEndpoint));
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
         public async Task ShouldSupportTargetFilter()
         {
