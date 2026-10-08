@@ -337,6 +337,16 @@ namespace PuppeteerSharp
                 $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
         }
 
+        internal static string GetWSEndpointURL(string browserURL)
+        {
+            var uri = new Uri(browserURL);
+            return new UriBuilder(uri)
+            {
+                Path = uri.AbsolutePath.TrimEnd('/') + "/json/version",
+                Fragment = null,
+            }.Uri.ToString();
+        }
+
         private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
         {
             if (!IsBrowserAlreadyRunning(ex, userDataDir, process))
@@ -407,16 +417,6 @@ namespace PuppeteerSharp
             var logs = process?.GetRecentLogs() ?? string.Empty;
             var message = string.IsNullOrEmpty(logs) ? ex.ToString() : logs + "\n" + ex;
             return message.Contains("Missing X server", StringComparison.Ordinal);
-        }
-
-        private static string GetWSEndpointURL(string browserURL)
-        {
-            var uri = new Uri(browserURL);
-            return new UriBuilder(uri)
-            {
-                Path = uri.AbsolutePath.TrimEnd('/') + "/json/version",
-                Fragment = null,
-            }.Uri.ToString();
         }
 
 #if !CDP_ONLY
