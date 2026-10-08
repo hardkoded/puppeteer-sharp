@@ -144,7 +144,14 @@ public class BidiBrowser : Browser
         {
             try
             {
-                await BrowserCore.CloseAsync().ConfigureAwait(false);
+                try
+                {
+                    await BrowserCore.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send browser close command");
+                }
 
                 if (CloseCallback != null)
                 {
