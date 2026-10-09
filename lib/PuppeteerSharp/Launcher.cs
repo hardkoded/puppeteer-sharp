@@ -337,6 +337,16 @@ namespace PuppeteerSharp
                 $"Could not find Google Chrome executable for channel '{channel}' at:\n - {string.Join("\n - ", paths)}");
         }
 
+        internal static string GetWSEndpointURL(string browserURL)
+        {
+            var uri = new Uri(browserURL);
+            return new UriBuilder(uri)
+            {
+                Path = uri.AbsolutePath.TrimEnd('/') + "/json/version",
+                Fragment = null,
+            }.Uri.ToString();
+        }
+
         private static void ThrowIfBrowserAlreadyRunning(Exception ex, string userDataDir, LauncherBase process)
         {
             if (!IsBrowserAlreadyRunning(ex, userDataDir, process))
@@ -558,7 +568,7 @@ namespace PuppeteerSharp
         {
             try
             {
-                if (Uri.TryCreate(new Uri(browserURL), "/json/version", out var endpointURL))
+                if (Uri.TryCreate(GetWSEndpointURL(browserURL), UriKind.Absolute, out var endpointURL))
                 {
                     string data;
                     using (var client = new HttpClient())

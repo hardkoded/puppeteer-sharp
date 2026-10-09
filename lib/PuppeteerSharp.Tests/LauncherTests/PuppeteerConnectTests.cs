@@ -113,6 +113,14 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(webSocketAuthorizationHeader, Is.EqualTo(authorizationHeader));
         }
 
+        [Test, PuppeteerTest("BrowserConnector.test.ts", "BrowserConnector getWSEndpoint via browserURL", "rewrites browser URLs to the version endpoint")]
+        public void ShouldRewriteBrowserURLsToTheVersionEndpoint()
+        {
+            Assert.That(
+                Launcher.GetWSEndpointURL("http://localhost:1234/t/session/?token=secret#ignored"),
+                Is.EqualTo("http://localhost:1234/t/session/json/version?token=secret"));
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
         public async Task ShouldSupportTargetFilter()
         {
