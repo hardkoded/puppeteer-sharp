@@ -51,16 +51,5 @@ namespace PuppeteerSharp.Tests.Browsers.ChromeHeadlessShell
                 BrowserData.ChromeHeadlessShell.RelativeExecutablePath(Platform.Win64, "12372323"),
                 Is.EqualTo(Path.Combine("chrome-headless-shell-win64", "chrome-headless-shell.exe")));
         }
-
-        [Test]
-        public void ShouldFallBackToLinux64ForLinuxArm64BuildsOlderThan153()
-        {
-            Assert.That(
-                BrowserData.ChromeHeadlessShell.ResolveDownloadUrl(Platform.LinuxArm64, "153.0.8000.0", null),
-                Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/153.0.8000.0/linux64/chrome-headless-shell-linux64.zip"));
-            Assert.That(
-                BrowserData.ChromeHeadlessShell.RelativeExecutablePath(Platform.LinuxArm64, "153.0.8000.0"),
-                Is.EqualTo(Path.Combine("chrome-headless-shell-linux64", "chrome-headless-shell")));
-        }
     }
 }

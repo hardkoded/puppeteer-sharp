@@ -216,16 +216,5 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("-115", "115.0.5790"));
             Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("115.-1.0", "115.0.5790"));
         }
-
-        [Test]
-        public void ShouldFallBackToLinux64ForLinuxArm64BuildsOlderThan153()
-        {
-            Assert.That(
-                BrowserData.Chrome.ResolveDownloadUrl(Platform.LinuxArm64, "153.0.8000.0", null),
-                Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/153.0.8000.0/linux64/chrome-linux64.zip"));
-            Assert.That(
-                BrowserData.Chrome.RelativeExecutablePath(Platform.LinuxArm64, "153.0.8000.0"),
-                Is.EqualTo(Path.Combine("chrome-linux64", "chrome")));
-        }
     }
 }

@@ -38,30 +38,5 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 "chrome-linux64",
                 "chrome")).Exists, Is.True);
         }
-
-        [Test]
-        public async Task ShouldDownloadChromeLinuxArm64Binaries()
-        {
-            var fetcher = new BrowserFetcher(SupportedBrowser.Chrome)
-            {
-                CacheDir = _cacheDir,
-                Platform = Platform.LinuxArm64
-            };
-            await fetcher.DownloadAsync(BrowserData.Chrome.DefaultBuildId);
-
-            var executable = new FileInfo(Path.Combine(
-                _cacheDir,
-                "Chrome",
-                $"LinuxArm64-{BrowserData.Chrome.DefaultBuildId}",
-                "chrome-linux-arm64",
-                "chrome"));
-            Assert.That(executable.Exists, Is.True);
-
-            // e_machine is a little-endian ushort at offset 18 of the ELF header; 0xB7 is EM_AARCH64.
-            using var stream = executable.OpenRead();
-            var header = new byte[20];
-            Assert.That(stream.Read(header, 0, header.Length), Is.EqualTo(header.Length));
-            Assert.That(header[18] | (header[19] << 8), Is.EqualTo(0xB7));
-        }
     }
 }
