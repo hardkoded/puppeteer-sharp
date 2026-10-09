@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -76,6 +79,35 @@ namespace PuppeteerSharp
         {
             var content = await TextAsync().ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(content, options ?? JsonHelper.DefaultJsonSerializerSettings.Value);
+        }
+
+        /// <inheritdoc/>
+        public async Task<HttpResponseMessage> AsFetchResponseAsync()
+        {
+            var isNullBodyStatus = Status is HttpStatusCode.SwitchingProtocols or HttpStatusCode.NoContent or HttpStatusCode.ResetContent or HttpStatusCode.NotModified;
+            var content = isNullBodyStatus ? null : new ByteArrayContent(await BufferAsync().ConfigureAwait(false));
+            var response = new HttpResponseMessage(Status)
+            {
+                Content = content,
+                ReasonPhrase = StatusText,
+            };
+
+            foreach (var header in Headers)
+            {
+                var isContentHeader = content != null && header.Key.StartsWith("content-", StringComparison.OrdinalIgnoreCase);
+                var target = isContentHeader ? (HttpHeaders)content.Headers : response.Headers;
+
+                // Set-Cookie values are joined with newlines, so each one becomes its own header entry.
+                var values = header.Key.Equals("set-cookie", StringComparison.OrdinalIgnoreCase)
+                    ? header.Value.Split('\n')
+                    : [header.Value];
+                foreach (var value in values)
+                {
+                    target.TryAddWithoutValidation(header.Key, value.Trim());
+                }
+            }
+
+            return response;
         }
     }
 }
