@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PuppeteerSharp.BrowserData
@@ -22,17 +24,17 @@ namespace PuppeteerSharp.BrowserData
         internal static string ResolveDownloadUrl(Platform platform, string buildId, string baseUrl)
             => $"{baseUrl ?? "https://storage.googleapis.com/chrome-for-testing-public"}/{string.Join("/", ResolveDownloadPath(platform, buildId))}";
 
-        internal static string RelativeExecutablePath(Platform platform, string builId)
+        internal static string RelativeExecutablePath(Platform platform, string buildId)
             => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                    "chrome-" + GetFolder(platform),
+                    "chrome-" + GetFolder(platform, buildId),
                     "Google Chrome for Testing.app",
                     "Contents",
                     "MacOS",
                     "Google Chrome for Testing"),
-                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-linux64", "chrome"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform), "chrome.exe"),
+                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-" + GetFolder(platform, buildId), "chrome"),
+                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-" + GetFolder(platform, buildId), "chrome.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
@@ -68,16 +70,54 @@ namespace PuppeteerSharp.BrowserData
             }
         }
 
-        internal static string GetFolder(Platform platform)
+        internal static string GetFolder(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux or Platform.LinuxArm64 => "linux64",
+                // Chrome for Testing started publishing linux-arm64 builds in 153.0.8001.0.
+                Platform.LinuxArm64 => buildId != null && CompareVersions(buildId, "153.0.8001.0") < 0 ? "linux64" : "linux-arm64",
+                Platform.Linux => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
                 Platform.MacOS => "mac-x64",
                 Platform.Win32 => "win32",
                 Platform.Win64 => "win64",
                 _ => throw new PuppeteerException($"Unknown platform: {platform}"),
             };
+
+        internal static int CompareVersions(string a, string b)
+        {
+            var aParts = ParseVersion(a);
+            var bParts = ParseVersion(b);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var aPart = i < aParts.Length ? aParts[i] : 0;
+                var bPart = i < bParts.Length ? bParts[i] : 0;
+
+                if (aPart > bPart)
+                {
+                    return 1;
+                }
+
+                if (aPart < bPart)
+                {
+                    return -1;
+                }
+            }
+
+            return 0;
+        }
+
+        private static int[] ParseVersion(string version)
+        {
+            var clean = version.Trim();
+
+            if (!Regex.IsMatch(clean, @"^[0-9]+(?:\.[0-9]+){0,3}$"))
+            {
+                throw new PuppeteerException($"Version {version} is not a valid Chrome version");
+            }
+
+            return clean.Split('.').Select(part => int.Parse(part, CultureInfo.InvariantCulture)).ToArray();
+        }
 
         private static string[] GetChromeWindowsLocations(ChromeReleaseChannel channel)
         {
@@ -143,8 +183,8 @@ namespace PuppeteerSharp.BrowserData
             =>
             [
                 buildId,
-                GetFolder(platform),
-                $"chrome-{GetFolder(platform)}.zip"
+                GetFolder(platform, buildId),
+                $"chrome-{GetFolder(platform, buildId)}.zip"
             ];
     }
 }
