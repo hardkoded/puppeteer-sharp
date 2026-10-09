@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace PuppeteerSharp
 {
@@ -29,6 +30,19 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PageErrorEventArgs"/> class.
+        /// </summary>
+        /// <param name="message">Message.</param>
+        /// <param name="error">Raw error value.</param>
+        /// <param name="stackTrace">Stack trace, innermost frame first.</param>
+        public PageErrorEventArgs(string message, object error, IReadOnlyList<ConsoleMessageLocation> stackTrace)
+        {
+            Message = message;
+            Error = error;
+            StackTrace = stackTrace ?? [];
+        }
+
+        /// <summary>
         /// Error Message.
         /// </summary>
         /// <value>The message.</value>
@@ -39,5 +53,10 @@ namespace PuppeteerSharp
         /// or any other type (including <c>null</c>) when the page throws a primitive value.
         /// </summary>
         public object Error { get; }
+
+        /// <summary>
+        /// Gets the stack trace of the error, innermost frame first. Empty when the browser did not report one.
+        /// </summary>
+        public IReadOnlyList<ConsoleMessageLocation> StackTrace { get; } = [];
     }
 }

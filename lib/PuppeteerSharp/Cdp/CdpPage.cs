@@ -1115,6 +1115,7 @@ public class CdpPage : Page
                     URL = callFrame.URL,
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
+                    FunctionName = callFrame.FunctionName,
                 });
             }
 
@@ -1131,18 +1132,29 @@ public class CdpPage : Page
     private void HandleException(EvaluateExceptionResponseDetails exceptionDetails)
     {
         var exception = exceptionDetails.Exception;
+        var stackTrace = GetStackTrace(exceptionDetails.StackTrace);
 
         if (exception != null &&
             (exception.Type != RemoteObjectType.Object || exception.Subtype != RemoteObjectSubtype.Error) &&
             string.IsNullOrEmpty(exception.ObjectId))
         {
             var primitiveValue = GetPrimitiveValueFromException(exception);
-            OnPageError(new PageErrorEventArgs(exceptionDetails.Text, primitiveValue));
+            OnPageError(new PageErrorEventArgs(exceptionDetails.Text, primitiveValue, stackTrace));
             return;
         }
 
-        OnPageError(new PageErrorEventArgs(GetExceptionMessage(exceptionDetails)));
+        var message = GetExceptionMessage(exceptionDetails);
+        OnPageError(new PageErrorEventArgs(message, message, stackTrace));
     }
+
+    private IReadOnlyList<ConsoleMessageLocation> GetStackTrace(EvaluateExceptionResponseStackTrace stackTrace)
+        => stackTrace?.CallFrames?.Select(callFrame => new ConsoleMessageLocation
+        {
+            URL = callFrame.Url,
+            LineNumber = callFrame.LineNumber,
+            ColumnNumber = callFrame.ColumnNumber,
+            FunctionName = callFrame.FunctionName,
+        }).ToList() ?? [];
 
     private object GetPrimitiveValueFromException(EvaluateExceptionResponseInfo exception)
     {
