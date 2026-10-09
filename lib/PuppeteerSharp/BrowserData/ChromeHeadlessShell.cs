@@ -15,10 +15,12 @@ namespace PuppeteerSharp.BrowserData
             => platform switch
             {
                 Platform.MacOS or Platform.MacOSArm64 => Path.Combine(
-                    "chrome-headless-shell-" + GetFolder(platform),
+                    "chrome-headless-shell-" + GetFolder(platform, buildId),
                     "chrome-headless-shell"),
-                Platform.Linux or Platform.LinuxArm64 => Path.Combine("chrome-headless-shell-linux64", "chrome-headless-shell"),
-                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-headless-shell-" + GetFolder(platform), "chrome-headless-shell.exe"),
+                Platform.Linux or Platform.LinuxArm64 => Path.Combine(
+                    "chrome-headless-shell-" + GetFolder(platform, buildId),
+                    "chrome-headless-shell"),
+                Platform.Win32 or Platform.Win64 => Path.Combine("chrome-headless-shell-" + GetFolder(platform, buildId), "chrome-headless-shell.exe"),
                 _ => throw new ArgumentException("Invalid platform", nameof(platform)),
             };
 
@@ -26,14 +28,16 @@ namespace PuppeteerSharp.BrowserData
             =>
             [
                 buildId,
-                GetFolder(platform),
-                $"chrome-headless-shell-{GetFolder(platform)}.zip"
+                GetFolder(platform, buildId),
+                $"chrome-headless-shell-{GetFolder(platform, buildId)}.zip"
             ];
 
-        private static string GetFolder(Platform platform)
+        private static string GetFolder(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux or Platform.LinuxArm64 => "linux64",
+                // Chrome for Testing started publishing linux-arm64 builds in 153.0.8001.0.
+                Platform.LinuxArm64 => buildId != null && Chrome.CompareVersions(buildId, "153.0.8001.0") < 0 ? "linux64" : "linux-arm64",
+                Platform.Linux => "linux64",
                 Platform.MacOSArm64 => "mac-arm64",
                 Platform.MacOS => "mac-x64",
                 Platform.Win32 => "win32",

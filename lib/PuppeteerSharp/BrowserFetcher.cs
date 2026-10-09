@@ -155,7 +155,7 @@ namespace PuppeteerSharp
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return Platform.Linux;
+                return RuntimeInformation.OSArchitecture == Architecture.Arm64 ? Platform.LinuxArm64 : Platform.Linux;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -487,7 +487,7 @@ namespace PuppeteerSharp
                 await InstallDmgAsync(archivePath, outputPath).ConfigureAwait(false);
             }
 
-            if (GetCurrentPlatform() == Platform.Linux)
+            if (GetCurrentPlatform() is Platform.Linux or Platform.LinuxArm64)
             {
                 var executables = new[]
                 {
@@ -547,7 +547,7 @@ namespace PuppeteerSharp
                 _logger?.LogInformation("Trying to find download URL via {DashboardUrl}", dashboardUrl);
 
                 var version = await JsonUtils.GetAsync<ChromeDashboardVersionResult>(dashboardUrl).ConfigureAwait(false);
-                var platform = Chrome.GetFolder(Platform);
+                var platform = Chrome.GetFolder(Platform, buildId);
 
                 if (version.Downloads.TryGetValue(dashboardKey, out var entries))
                 {
