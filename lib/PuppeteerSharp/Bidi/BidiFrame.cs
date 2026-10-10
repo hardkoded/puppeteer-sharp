@@ -658,6 +658,7 @@ public class BidiFrame : Frame
                 URL = callFrame.Url,
                 LineNumber = (int)callFrame.LineNumber,
                 ColumnNumber = (int)callFrame.ColumnNumber,
+                FunctionName = callFrame.FunctionName,
             };
         }
 
@@ -673,6 +674,7 @@ public class BidiFrame : Frame
                 URL = callFrame.Url,
                 LineNumber = (int)callFrame.LineNumber,
                 ColumnNumber = (int)callFrame.ColumnNumber,
+                FunctionName = callFrame.FunctionName,
             }).ToList();
         }
 
@@ -1041,7 +1043,7 @@ public class BidiFrame : Frame
                 }
 
                 var fullStack = string.Join("\n", messageLines.Concat(stackLines));
-                BidiPage.OnPageError(new PageErrorEventArgs(fullStack));
+                BidiPage.OnPageError(new PageErrorEventArgs(fullStack, fullStack, GetStackTrace(args.StackTrace).ToArray()));
             }
         };
 

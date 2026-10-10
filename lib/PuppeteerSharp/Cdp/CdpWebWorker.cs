@@ -236,6 +236,7 @@ public class CdpWebWorker : WebWorker
                     URL = callFrame.URL,
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
+                    FunctionName = callFrame.FunctionName,
                 });
             }
 

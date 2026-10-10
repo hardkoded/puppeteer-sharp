@@ -130,6 +130,7 @@ internal class BidiWorkerRealm : BidiRealm
                 URL = callFrame.Url,
                 LineNumber = (int)callFrame.LineNumber,
                 ColumnNumber = (int)callFrame.ColumnNumber,
+                FunctionName = callFrame.FunctionName,
             };
         }
 
@@ -145,6 +146,7 @@ internal class BidiWorkerRealm : BidiRealm
                 URL = callFrame.Url,
                 LineNumber = (int)callFrame.LineNumber,
                 ColumnNumber = (int)callFrame.ColumnNumber,
+                FunctionName = callFrame.FunctionName,
             }).ToList();
         }
 
