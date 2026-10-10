@@ -23,6 +23,8 @@ jobs:
         dotnet restore lib/PuppeteerSharp.sln
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
     - name: Build
+      env:
+        SixLaborsLicenseKey: ${{ secrets.IMAGE_SHARP_LICENSE }}
       run: |
         dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
         ls ./lib/PuppeteerSharp/bin/Release
