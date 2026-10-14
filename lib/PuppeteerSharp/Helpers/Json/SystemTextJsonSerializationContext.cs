@@ -147,6 +147,7 @@ namespace PuppeteerSharp.Helpers.Json;
 [JsonSerializable(typeof(MatchedNetworkCondition))]
 [JsonSerializable(typeof(NetworkEmulateNetworkConditionsByRuleRequest))]
 [JsonSerializable(typeof(NetworkEmulateNetworkConditionsRequest))]
+[JsonSerializable(typeof(NetworkOverrideNetworkStateRequest))]
 [JsonSerializable(typeof(NetworkGetCookiesRequest))]
 [JsonSerializable(typeof(NetworkGetCookiesResponse))]
 [JsonSerializable(typeof(NetworkGetResponseBodyRequest))]

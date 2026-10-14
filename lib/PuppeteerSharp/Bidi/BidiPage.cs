@@ -1210,14 +1210,34 @@ public class BidiPage : Page
             return;
         }
 
+        // Network.emulateNetworkConditions is deprecated by Chromium in favor of
+        // Network.emulateNetworkConditionsByRule. Rules only shape the network traffic,
+        // so Network.overrideNetworkState is also sent to emulate the network state
+        // exposed to the page via navigator.onLine and navigator.connection.
         await BidiMainFrame.Client.SendAsync(
-            "Network.emulateNetworkConditions",
-            new Cdp.Messaging.NetworkEmulateNetworkConditionsRequest
+            "Network.overrideNetworkState",
+            new Cdp.Messaging.NetworkOverrideNetworkStateRequest
             {
                 Offline = _emulatedNetworkConditions.Offline,
                 Latency = _emulatedNetworkConditions.Latency,
                 UploadThroughput = _emulatedNetworkConditions.Upload,
                 DownloadThroughput = _emulatedNetworkConditions.Download,
+            }).ConfigureAwait(false);
+        await BidiMainFrame.Client.SendAsync(
+            "Network.emulateNetworkConditionsByRule",
+            new Cdp.Messaging.NetworkEmulateNetworkConditionsByRuleRequest
+            {
+                MatchedNetworkConditions =
+                [
+                    new Cdp.Messaging.MatchedNetworkCondition
+                    {
+                        UrlPattern = string.Empty,
+                        Offline = _emulatedNetworkConditions.Offline,
+                        Latency = _emulatedNetworkConditions.Latency,
+                        DownloadThroughput = _emulatedNetworkConditions.Download,
+                        UploadThroughput = _emulatedNetworkConditions.Upload,
+                    },
+                ],
             }).ConfigureAwait(false);
     }
 

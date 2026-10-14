@@ -730,16 +730,41 @@ namespace PuppeteerSharp.Cdp
                 return;
             }
 
+            if (client is CDPSession { Connection.RejectEmulateNetworkConditionsCalls: true })
+            {
+                throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
+            }
+
             try
             {
+                // Network.emulateNetworkConditions is deprecated by Chromium in favor of
+                // Network.emulateNetworkConditionsByRule. Rules only shape the network traffic,
+                // so Network.overrideNetworkState is also sent to emulate the network state
+                // exposed to the page via navigator.onLine and navigator.connection.
                 await client.SendAsync(
-                    "Network.emulateNetworkConditions",
-                    new NetworkEmulateNetworkConditionsRequest
+                    "Network.overrideNetworkState",
+                    new NetworkOverrideNetworkStateRequest
                     {
                         Offline = _emulatedNetworkConditions.Offline,
                         Latency = _emulatedNetworkConditions.Latency,
                         UploadThroughput = _emulatedNetworkConditions.Upload,
                         DownloadThroughput = _emulatedNetworkConditions.Download,
+                    }).ConfigureAwait(false);
+                await client.SendAsync(
+                    "Network.emulateNetworkConditionsByRule",
+                    new NetworkEmulateNetworkConditionsByRuleRequest
+                    {
+                        MatchedNetworkConditions =
+                        [
+                            new MatchedNetworkCondition
+                            {
+                                UrlPattern = string.Empty,
+                                Offline = _emulatedNetworkConditions.Offline,
+                                Latency = _emulatedNetworkConditions.Latency,
+                                DownloadThroughput = _emulatedNetworkConditions.Download,
+                                UploadThroughput = _emulatedNetworkConditions.Upload,
+                            },
+                        ],
                     }).ConfigureAwait(false);
             }
             catch (Exception ex) when (CanIgnoreError(ex))

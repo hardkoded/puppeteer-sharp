@@ -31,18 +31,18 @@ namespace PuppeteerSharp
         public bool Offline { get; set; }
 
         /// <summary>
-        /// Download speed (bytes/s), `-1` to disable.
+        /// Download speed (bytes/s). If not provided, download throttling is disabled and only the offline mode is emulated.
         /// </summary>
-        public double Download { get; set; } = -1;
+        public double? Download { get; set; }
 
         /// <summary>
-        /// Upload speed (bytes/s), `-1` to disable.
+        /// Upload speed (bytes/s). If not provided, upload throttling is disabled and only the offline mode is emulated.
         /// </summary>
-        public double Upload { get; set; } = -1;
+        public double? Upload { get; set; }
 
         /// <summary>
-        /// Latency (ms), `0` to disable.
+        /// Latency (ms). If not provided, no latency is emulated.
         /// </summary>
-        public double Latency { get; set; } = 0;
+        public double? Latency { get; set; }
     }
 }
