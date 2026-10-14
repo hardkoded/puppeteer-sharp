@@ -86,6 +86,43 @@ namespace PuppeteerSharp.Tests.ScreencastTests
             }
         }
 
+        [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should work with a fractional device scale factor")]
+        [Obsolete]
+        public async Task ShouldWorkWithAFractionalDeviceScaleFactor()
+        {
+            var filePath = Path.Combine(Path.GetTempPath(), $"test-video-{Guid.NewGuid()}.webm");
+
+            try
+            {
+                // 800 * 1.15 and 600 * 1.15 are just below whole numbers in floating
+                // point, while the frames are 920 x 690.
+                var options = TestConstants.DefaultBrowserOptions();
+                options.Args = [.. options.Args ?? [], "--force-device-scale-factor=1.15"];
+                options.DefaultViewport = new ViewPortOptions { Width = 800, Height = 600 };
+
+                await using (var browser = await Puppeteer.LaunchAsync(options))
+                {
+                    var page = await browser.NewPageAsync();
+                    var recorder = await page.ScreencastAsync(new ScreencastOptions { Path = filePath });
+
+                    await page.GoToAsync("data:text/html,<input>");
+                    var input = await page.WaitForSelectorAsync("input");
+                    await input.TypeAsync("ab", new TypeOptions { Delay = 100 });
+
+                    await recorder.StopAsync();
+                }
+
+                Assert.That(new FileInfo(filePath).Length, Is.GreaterThan(0));
+            }
+            finally
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+        }
+
         [Test, PuppeteerTest("screencast.spec", "Screencasts Page.screencast", "should validate options")]
         [Obsolete]
         public async Task ShouldValidateOptions()
