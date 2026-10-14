@@ -697,4 +697,134 @@ public class NetworkRestrictionsTests : PuppeteerBaseTest
             await browser.GetPWAStateAsync(new GetPWAStateOptions { ManifestId = manifestId }));
         Assert.That(stateError.Message, Does.Contain("PWA APIs are not supported when network restrictions are configured."));
     }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions blocklist validation", "should fail fetch requests forwarded by a service worker to URLs in the blocklist")]
+    public async Task ShouldFailFetchRequestsForwardedByServiceWorkerToUrlsInBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/serviceworkers/fetch/style.css"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/fetch/style.css";
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html");
+
+        // Wait until the page is controlled by the worker so that the fetch
+        // below is forwarded by the worker instead of going out directly.
+        await page.EvaluateFunctionAsync("() => window.activationPromise");
+
+        var fetchError = await page.EvaluateFunctionAsync<string>(
+            @"async (url) => {
+                try {
+                    await fetch(url);
+                    return null;
+                } catch (e) {
+                    return e.message;
+                }
+            }",
+            blockedUrl);
+
+        Assert.That(fetchError, Does.Contain("Failed to fetch"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions blocklist validation", "should fail fetch requests made by a service worker during install to URLs in the blocklist")]
+    public async Task ShouldFailFetchRequestsMadeByServiceWorkerDuringInstallToUrlsInBlocklist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.BlockList = ["*://*:*/serviceworkers/fetch-on-install/blocked.json"];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch-on-install/sw.html");
+        var installFetchResults = await page.EvaluateFunctionAsync<Dictionary<string, string>>(
+            "() => window.installFetchResultsPromise");
+
+        Assert.That(installFetchResults, Is.EqualTo(new Dictionary<string, string>
+        {
+            ["./blocked.json"] = "Failed to fetch",
+            ["./allowed.json"] = "success",
+        }));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions allowlist validation with service workers", "should fail fetch requests forwarded by a service worker to URLs not in the allowlist")]
+    public async Task ShouldFailFetchRequestsForwardedByServiceWorkerToUrlsNotInAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist =
+        [
+            "*://*:*/serviceworkers/fetch/sw.html",
+            "*://*:*/serviceworkers/fetch/sw.js",
+        ];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/fetch/style.css";
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html");
+
+        // Wait until the page is controlled by the worker so that the fetch
+        // below is forwarded by the worker instead of going out directly.
+        await page.EvaluateFunctionAsync("() => window.activationPromise");
+
+        var fetchError = await page.EvaluateFunctionAsync<string>(
+            @"async (url) => {
+                try {
+                    await fetch(url);
+                    return null;
+                } catch (e) {
+                    return e.message;
+                }
+            }",
+            blockedUrl);
+
+        Assert.That(fetchError, Does.Contain("Failed to fetch"));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions allowlist validation with service workers", "should fail fetch requests made by a service worker during install to URLs not in the allowlist")]
+    public async Task ShouldFailFetchRequestsMadeByServiceWorkerDuringInstallToUrlsNotInAllowlist()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+        options.Allowlist =
+        [
+            "*://*:*/serviceworkers/fetch-on-install/sw.html",
+            "*://*:*/serviceworkers/fetch-on-install/sw.js",
+            "*://*:*/serviceworkers/fetch-on-install/allowed.json",
+        ];
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch-on-install/sw.html");
+        var installFetchResults = await page.EvaluateFunctionAsync<Dictionary<string, string>>(
+            "() => window.installFetchResultsPromise");
+
+        Assert.That(installFetchResults, Is.EqualTo(new Dictionary<string, string>
+        {
+            ["./blocked.json"] = "Failed to fetch",
+            ["./allowed.json"] = "success",
+        }));
+    }
+
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions no restrictions", "should not affect fetch requests made by a service worker during install")]
+    public async Task ShouldNotAffectFetchRequestsMadeByServiceWorkerDuringInstall()
+    {
+        var options = TestConstants.DefaultBrowserOptions();
+
+        await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+        await using var page = await browser.NewPageAsync();
+
+        await page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch-on-install/sw.html");
+        var installFetchResults = await page.EvaluateFunctionAsync<Dictionary<string, string>>(
+            "() => window.installFetchResultsPromise");
+
+        Assert.That(installFetchResults, Is.EqualTo(new Dictionary<string, string>
+        {
+            ["./blocked.json"] = "success",
+            ["./allowed.json"] = "success",
+        }));
+    }
 }
