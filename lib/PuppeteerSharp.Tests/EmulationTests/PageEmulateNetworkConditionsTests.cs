@@ -27,6 +27,26 @@ namespace PuppeteerSharp.Tests.EmulationTests
             });
         }
 
+        [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should support offline without additional parameters")]
+        public async Task ShouldSupportOfflineWithoutAdditionalParameters()
+        {
+            await Page.EmulateNetworkConditionsAsync(new NetworkConditions
+            {
+                Offline = true,
+            });
+
+            var exception = Assert.ThrowsAsync<NavigationException>(async () =>
+            {
+                await Page.GoToAsync(TestConstants.EmptyPage);
+            });
+            Assert.That(exception!.Message, Does.Contain(TestConstants.IsChrome ? "ERR_INTERNET_DISCONNECTED" : "NS_ERROR_OFFLINE"));
+
+            await Page.EmulateNetworkConditionsAsync(null);
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(response.Status, Is.EqualTo(System.Net.HttpStatusCode.OK));
+        }
+
         [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateNetworkConditions", "should change navigator.connection.effectiveType")]
         public async Task ShouldChangeNavigatorConnectionEffectiveType()
         {
