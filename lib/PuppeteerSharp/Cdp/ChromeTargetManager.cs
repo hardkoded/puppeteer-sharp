@@ -349,6 +349,40 @@ namespace PuppeteerSharp.Cdp
         private bool IsPageTargetBecomingPrimary(CdpTarget target, TargetInfo newTargetInfo)
             => !string.IsNullOrEmpty(target.TargetInfo.Subtype) && string.IsNullOrEmpty(newTargetInfo.Subtype);
 
+        private bool HasNetworkRules()
+            => (_blockList != null && _blockList.Length > 0) || (_allowList != null && _allowList.Length > 0);
+
+        // Registers a service worker session that is kept open so that the session is visible to the
+        // manager's bookkeeping and the worker target reuses it instead of opening a second one.
+        private void AttachServiceWorkerTarget(TargetInfo targetInfo, CDPSession session, CDPSession parentSession)
+        {
+            var isExistingTarget = _attachedTargetsByTargetId.TryGetValue(targetInfo.TargetId, out var target);
+            if (!isExistingTarget)
+            {
+                target = _targetFactoryFunc(targetInfo, session, parentSession);
+            }
+
+            SetupAttachmentListeners(session);
+
+            if (isExistingTarget)
+            {
+                session.Target = target;
+            }
+            else
+            {
+                target.Initialize();
+                _attachedTargetsByTargetId.AddItem(targetInfo.TargetId, target);
+            }
+
+            _attachedTargetsBySessionId.TryAdd(session.Id, target);
+            GetParentTarget(parentSession)?.AddChildTarget(target);
+
+            if (!isExistingTarget)
+            {
+                TargetAvailable?.Invoke(this, new TargetChangedArgs { Target = target });
+            }
+        }
+
         private async Task SilentDetachAsync(CDPSession session, ICDPConnection parentConnection)
         {
             try
@@ -400,6 +434,37 @@ namespace PuppeteerSharp.Cdp
                 if (!IsUrlAllowed(targetInfo.Url))
                 {
                     await BlockServiceWorkerRegistrationAsync(session).ConfigureAwait(false);
+                    return;
+                }
+
+                // When a blocklist/allowlist is configured, we stay attached to every service worker:
+                // network conditions are reset when the session that set them detaches. Staying attached
+                // keeps the rules enforced for requests the worker issues, including the ones it forwards
+                // on behalf of controlled pages. As a consequence, the browser never idle-terminates
+                // service workers while rules are configured.
+                if (HasNetworkRules())
+                {
+                    // The rules are dispatched before the worker is resumed so that requests made during
+                    // install are covered as well. They are only acknowledged once the worker runs,
+                    // so they are awaited after resuming it.
+                    var networkConditionsSetUp = MaybeSetupNetworkBlockListAsync(session, targetInfo);
+                    try
+                    {
+                        await session.SendAsync("Runtime.runIfWaitingForDebugger").ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to resume service worker.");
+                    }
+
+                    await networkConditionsSetUp.ConfigureAwait(false);
+                    if (_ignoredTargets.Contains(targetInfo.TargetId) ||
+                        !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                    {
+                        return;
+                    }
+
+                    AttachServiceWorkerTarget(targetInfo, session, parentSession);
                     return;
                 }
 
