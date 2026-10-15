@@ -49,7 +49,7 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             await page.EvaluateFunctionAsync(@"() => {
                 const form = document.createElement('form');
-                form.setAttribute('toolname', 'declarative tool name');
+                form.setAttribute('toolname', 'declarative-tool-name');
                 form.setAttribute('tooldescription', 'tool description');
                 document.body.appendChild(form);
             }");
@@ -346,7 +346,7 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             await page.EvaluateFunctionAsync(@"() => {
                 const form = document.createElement('form');
-                form.setAttribute('toolname', 'declarative tool name');
+                form.setAttribute('toolname', 'declarative-tool-name');
                 form.setAttribute('tooldescription', 'tool description');
                 document.body.appendChild(form);
             }");
@@ -359,7 +359,7 @@ namespace PuppeteerSharp.Tests.WebMcpTests
 
             // Tools should still be present because context was not destroyed.
             Assert.That(page.WebMcp.Tools().Length, Is.EqualTo(1));
-            Assert.That(page.WebMcp.Tools()[0].Name, Is.EqualTo("declarative tool name"));
+            Assert.That(page.WebMcp.Tools()[0].Name, Is.EqualTo("declarative-tool-name"));
         }
 
         [Test, PuppeteerTest("webmcp.spec", "Page.webmcp", "should remove tools on frame navigation")]
