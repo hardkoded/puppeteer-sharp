@@ -35,6 +35,26 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
+        [Test]
+        public async Task ShouldBeAbleToQueryExistingPageAfterConnecting()
+        {
+            var options = new ConnectOptions()
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
+            };
+
+            await using var originalPage = await Browser.NewPageAsync();
+            await originalPage.SetContentAsync("<html><body><div class='test-element'>Item</div></body></html>");
+
+            await using var connectedBrowser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
+            var pages = await connectedBrowser.PagesAsync();
+            var connectedPage = pages.First(p => p.Url == originalPage.Url);
+
+            var elements = await connectedPage.QuerySelectorAllAsync(".test-element");
+            Assert.That(elements, Has.Length.EqualTo(1));
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to close remote browser")]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {

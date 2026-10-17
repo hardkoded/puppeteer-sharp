@@ -686,7 +686,10 @@ namespace PuppeteerSharp.Cdp
                     .Select(frame => session.SendAsync("Page.createIsolatedWorld", new PageCreateIsolatedWorldRequest
                     {
                         FrameId = frame.Id,
+
+                        // We send both to support older Chromium (< v130) and newer versions.
                         GrantUniveralAccess = true,
+                        GrantUniversalAccess = true,
                         WorldName = name,
                     }))).ConfigureAwait(false);
             }
