@@ -1719,6 +1719,36 @@
     "comment": "Screen recording is not supported in WebDriver BiDi in Chrome yet"
   },
   {
+    "testIdPattern": "[page.test] Page Page.tabInfo *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "Not supported by WebDriver BiDi"
+  },
+  {
+    "testIdPattern": "[page.test] Page Page.tabInfo *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "chrome-headless-shell"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "No tab strip in chrome-headless-shell"
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.reload should enable or disable the cache based on reload params",
     "platforms": [
       "darwin",

@@ -242,6 +242,10 @@ public class BidiPage : Page
         => Task.FromResult(BidiMainFrame.BrowsingContext.WindowId);
 
     /// <inheritdoc />
+    public override Task<TabInfo> TabInfoAsync()
+        => throw new NotSupportedException("TabInfo is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override async Task EmulateLocaleAsync(string locale = null)
     {
         var commandParameters = new WebDriverBiDi.Emulation.SetLocaleOverrideCommandParameters()

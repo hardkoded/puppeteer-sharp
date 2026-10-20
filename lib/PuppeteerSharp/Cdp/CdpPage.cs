@@ -475,6 +475,27 @@ public class CdpPage : Page
     }
 
     /// <inheritdoc/>
+    public override async Task<TabInfo> TabInfoAsync()
+    {
+        var response = await TabTargetClient.SendAsync<TargetGetTargetInfoResponse>(
+            "Target.getTargetInfo").ConfigureAwait(false);
+
+        var data = response.TargetInfo?.EmbedderData;
+        if (data?.TabStripIndex is not int index)
+        {
+            return null;
+        }
+
+        return new TabInfo
+        {
+            Index = index,
+            Active = data.TabActive ?? false,
+            Pinned = data.TabPinned ?? false,
+            GroupId = string.IsNullOrEmpty(data.TabGroupId) ? null : data.TabGroupId,
+        };
+    }
+
+    /// <inheritdoc/>
     public override Task EmulateNetworkConditionsAsync(NetworkConditions networkConditions)
         => FrameManager.NetworkManager.EmulateNetworkConditionsAsync(networkConditions);
 
