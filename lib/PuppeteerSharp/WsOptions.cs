@@ -34,5 +34,12 @@ namespace PuppeteerSharp
         /// Defaults to <see cref="DefaultKeepAliveIntervalMs"/>.
         /// </summary>
         public int? KeepAliveIntervalMs { get; set; }
+
+        /// <summary>
+        /// Time in milliseconds to wait for the WebSocket opening handshake before failing.
+        /// Without it, connecting to a host that accepts the TCP connection but never answers
+        /// the upgrade request waits until the operating system gives up.
+        /// </summary>
+        public int? HandshakeTimeout { get; set; }
     }
 }
