@@ -349,7 +349,10 @@ public class BidiPage : Page
     {
         if (options == null)
         {
-            throw new ArgumentNullException(nameof(options));
+            var resetParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters { Coordinates = null };
+            resetParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
+            await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(resetParameters).ConfigureAwait(false);
+            return;
         }
 
         var longitude = options.Longitude;

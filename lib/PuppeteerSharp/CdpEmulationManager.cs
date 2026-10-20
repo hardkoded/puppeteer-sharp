@@ -127,7 +127,7 @@ namespace PuppeteerSharp
         {
             if (options == null)
             {
-                throw new ArgumentNullException(nameof(options));
+                return _client.SendAsync("Emulation.clearGeolocationOverride");
             }
 
             if (options.Longitude < -180 || options.Longitude > 180)
