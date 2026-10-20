@@ -119,13 +119,15 @@ namespace PuppeteerSharp.Tests.TransportTests
             });
 
             var connectOptions = new ConnectOptions { WsOptions = new WsOptions { HandshakeTimeout = 100 } };
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
-            Assert.ThrowsAsync<System.TimeoutException>(() => WebSocketTransport.DefaultTransportFactory(
+            var connection = WebSocketTransport.DefaultTransportFactory(
                 new Uri($"ws://127.0.0.1:{port}"),
                 connectOptions,
-                CancellationToken.None));
-            Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(5000));
+                CancellationToken.None);
+
+            var completed = await Task.WhenAny(connection, Task.Delay(5000)).ConfigureAwait(false);
+            Assert.That(completed, Is.SameAs(connection), "The handshake did not time out within 5 seconds.");
+            Assert.ThrowsAsync<System.TimeoutException>(() => connection);
 
             foreach (var client in accepted)
             {
