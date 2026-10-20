@@ -718,11 +718,11 @@ namespace PuppeteerSharp.Cdp
         private async Task AttachToServiceWorkersAsync()
         {
             var trackedTargetIds = new HashSet<string>();
-            foreach (var (session, targetInfo) in _networkConditionsSessions)
+            foreach (var pair in _networkConditionsSessions)
             {
-                if (!session.Detached)
+                if (!pair.Key.Detached)
                 {
-                    trackedTargetIds.Add(targetInfo.TargetId);
+                    trackedTargetIds.Add(pair.Value.TargetId);
                 }
             }
 
