@@ -819,5 +819,45 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/cached/one-style-font.html");
             await waitTask;
         }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should emit a single request for a font Chrome restarts")]
+        public async Task ShouldEmitASingleRequestForAFontChromeRestarts()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            await Page.SetCacheEnabledAsync(true);
+            var events = new List<string>();
+            var fontLoaded = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            static bool IsFont(IRequest request) => request.Url.EndsWith(".ttf");
+
+            Page.Request += (_, e) =>
+            {
+                if (IsFont(e.Request))
+                {
+                    events.Add("request");
+                }
+
+                _ = e.Request.ContinueAsync();
+            };
+            Page.RequestFinished += (_, e) =>
+            {
+                if (IsFont(e.Request))
+                {
+                    events.Add("requestfinished");
+                    fontLoaded.TrySetResult(true);
+                }
+            };
+            Page.RequestFailed += (_, e) =>
+            {
+                if (IsFont(e.Request))
+                {
+                    events.Add("requestfailed");
+                }
+            };
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/font-face.html");
+            await fontLoaded.Task.WithTimeout();
+
+            Assert.That(events, Is.EqualTo(new[] { "request", "requestfinished" }));
+        }
     }
 }

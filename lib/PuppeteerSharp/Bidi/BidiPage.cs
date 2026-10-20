@@ -242,6 +242,10 @@ public class BidiPage : Page
         => Task.FromResult(BidiMainFrame.BrowsingContext.WindowId);
 
     /// <inheritdoc />
+    public override Task<TabInfo> TabInfoAsync()
+        => throw new NotSupportedException("TabInfo is not supported in WebDriver BiDi.");
+
+    /// <inheritdoc />
     public override async Task EmulateLocaleAsync(string locale = null)
     {
         var commandParameters = new WebDriverBiDi.Emulation.SetLocaleOverrideCommandParameters()
@@ -349,7 +353,10 @@ public class BidiPage : Page
     {
         if (options == null)
         {
-            throw new ArgumentNullException(nameof(options));
+            var resetParameters = new WebDriverBiDi.Emulation.SetGeolocationOverrideCoordinatesCommandParameters { Coordinates = null };
+            resetParameters.Contexts.Add(BidiMainFrame.BrowsingContext.Id);
+            await BidiMainFrame.BrowsingContext.Session.Driver.Emulation.SetGeolocationOverrideAsync(resetParameters).ConfigureAwait(false);
+            return;
         }
 
         var longitude = options.Longitude;

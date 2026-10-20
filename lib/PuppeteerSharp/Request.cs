@@ -14,7 +14,7 @@ namespace PuppeteerSharp
         public string Id { get; internal init; }
 
         /// <inheritdoc/>
-        public string InterceptionId { get; internal init; }
+        public string InterceptionId { get; internal set; }
 
         /// <inheritdoc/>
         public string FailureText { get; internal set; }

@@ -313,6 +313,9 @@ namespace PuppeteerSharp
         public abstract Task<string> WindowIdAsync();
 
         /// <inheritdoc/>
+        public abstract Task<TabInfo> TabInfoAsync();
+
+        /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => MainFrame.EvaluateExpressionHandleAsync(script);
 
@@ -554,7 +557,15 @@ namespace PuppeteerSharp
                 }
                 catch
                 {
-                    await recording.StopAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await recording.StopAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Let the original start error propagate.
+                    }
+
                     throw;
                 }
 

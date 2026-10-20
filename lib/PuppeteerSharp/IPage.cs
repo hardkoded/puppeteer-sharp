@@ -1183,7 +1183,7 @@ namespace PuppeteerSharp
         /// Sets the page's geolocation.
         /// </summary>
         /// <returns>The task.</returns>
-        /// <param name="options">Geolocation options.</param>
+        /// <param name="options">Geolocation options. Pass <c>null</c> to remove the geolocation override.</param>
         /// <remarks>
         /// Consider using <seealso cref="IBrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
@@ -1579,6 +1579,15 @@ namespace PuppeteerSharp
         /// This is an experimental API.
         /// </remarks>
         Task<string> WindowIdAsync();
+
+        /// <summary>
+        /// Returns information about the browser tab of this page. The result is a snapshot and is not updated when the tab changes.
+        /// </summary>
+        /// <returns>A task that resolves to the tab info, or <c>null</c> if the page is not in a tab strip (for example, in chrome-headless-shell) or the browser does not report tab information.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task<TabInfo> TabInfoAsync();
 
         /// <summary>
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
