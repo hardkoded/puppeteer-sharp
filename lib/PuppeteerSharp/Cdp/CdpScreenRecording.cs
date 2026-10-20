@@ -32,6 +32,11 @@ namespace PuppeteerSharp.Cdp
 
             try
             {
+                if (string.IsNullOrEmpty(_streamHandle))
+                {
+                    return;
+                }
+
                 try
                 {
                     await client.SendAsync("Page.stopScreenRecording").ConfigureAwait(false);
@@ -39,11 +44,6 @@ namespace PuppeteerSharp.Cdp
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Failed to stop screen recording.");
-                }
-
-                if (string.IsNullOrEmpty(_streamHandle))
-                {
-                    throw new PuppeteerException("Screen recording stream handle is missing.");
                 }
 
                 await ProtocolStreamReader.ReadProtocolStreamBytesAsync(
