@@ -458,26 +458,34 @@ namespace PuppeteerSharp.Cdp
             }
 
             var requestWillBeSentEvent = _networkEventManager.GetRequestWillBeSent(e.NetworkId);
+            if (requestWillBeSentEvent == null)
+            {
+                // Chrome may restart a request and send a second Fetch.requestPaused
+                // for a request we already emitted (crbug.com/1196004). Repoint
+                // that request instead of emitting a duplicate that never finishes.
+                var existingRequest = _networkEventManager.GetRequest(e.NetworkId);
+                if (existingRequest != null && IsRestartedRequest(existingRequest, e))
+                {
+                    OnRequestRestarted(existingRequest, e.RequestId);
+                    return;
+                }
 
-            // redirect requests have the same `requestId`,
-            if (
-                requestWillBeSentEvent != null &&
-                (requestWillBeSentEvent.Request.Url != e.Request.Url ||
-                requestWillBeSentEvent.Request.Method != e.Request.Method))
+                _networkEventManager.StoreRequestPaused(e.NetworkId, e, client);
+                return;
+            }
+
+            // Redirect requests have the same `requestId`. Wait for the redirect's
+            // own Network.requestWillBeSent.
+            if (requestWillBeSentEvent.Request.Url != e.Request.Url ||
+                requestWillBeSentEvent.Request.Method != e.Request.Method)
             {
                 _networkEventManager.ForgetRequestWillBeSent(e.NetworkId);
-                requestWillBeSentEvent = null;
+                _networkEventManager.StoreRequestPaused(e.NetworkId, e, client);
+                return;
             }
 
-            if (requestWillBeSentEvent != null)
-            {
-                PatchRequestEventHeaders(requestWillBeSentEvent, e);
-                await OnRequestAsync(client, requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
-            }
-            else
-            {
-                _networkEventManager.StoreRequestPaused(e.NetworkId, e, client);
-            }
+            PatchRequestEventHeaders(requestWillBeSentEvent, e);
+            await OnRequestAsync(client, requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
         }
 
         private async void OnRequestWithoutNetworkInstrumentationAsync(CDPSession client, FetchRequestPausedResponse e)
@@ -560,6 +568,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             _networkEventManager.StoreRequest(e.RequestId, request);
+            _networkEventManager.ForgetRequestWillBeSent(e.RequestId);
 
             Request?.Invoke(this, new RequestEventArgs(request));
 
@@ -628,6 +637,53 @@ namespace PuppeteerSharp.Cdp
             }
 
             await OnRequestAsync(client, e, null).ConfigureAwait(false);
+        }
+
+        private bool IsRestartedRequest(CdpHttpRequest request, FetchRequestPausedResponse e)
+        {
+            // Only a request with no response yet can be restarted. Redirects are
+            // excluded by id because in a same-URL redirect, the pause can arrive
+            // before the response does.
+            if (!string.IsNullOrEmpty(e.RedirectedRequestId) || request.Response != null)
+            {
+                return false;
+            }
+
+            // Chrome usually pauses the request the user continued to, but can pause
+            // the original if it restarts before the overrides are applied.
+            var overrides = request.ResolvedContinueOverrides;
+            var eventUrl = e.Request.Url + (e.Request.UrlFragment ?? string.Empty);
+            var urlMatches = eventUrl == request.Url ||
+                eventUrl == overrides.Url ||
+                e.Request.Url == overrides.Url;
+            var methodMatches = e.Request.Method == request.Method ||
+                e.Request.Method == overrides.Method;
+            return urlMatches && methodMatches;
+        }
+
+        private void OnRequestRestarted(CdpHttpRequest request, string fetchRequestId)
+        {
+            request.InterceptionId = fetchRequestId;
+            if (!_userRequestInterceptionEnabled)
+            {
+                return;
+            }
+
+            // If the user already resolved the interception, the restarted job needs
+            // the same resolution or the request hangs.
+            _ = ReplayInterceptionAsync(request);
+        }
+
+        private async Task ReplayInterceptionAsync(CdpHttpRequest request)
+        {
+            try
+            {
+                await request.ReplayInterceptionAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to replay request interception");
+            }
         }
 
         private void PatchRequestEventHeaders(RequestWillBeSentResponse requestWillBeSentEvent, FetchRequestPausedResponse requestPausedEvent)
