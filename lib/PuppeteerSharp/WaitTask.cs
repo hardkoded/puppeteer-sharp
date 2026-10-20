@@ -151,9 +151,23 @@ namespace PuppeteerSharp
                             ]).ConfigureAwait(false);
                 }
 
+                // Avoid starting a poller created after the task has already terminated.
+                if (_terminated)
+                {
+                    await StopPollerAsync().ConfigureAwait(false);
+                    return;
+                }
+
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
                 // Using void to not await the start promise - matches upstream behavior
                 await _poller.EvaluateFunctionAsync("poller => { void poller.start(); }").ConfigureAwait(false);
+
+                // Termination already stops the poller; only skip the result round trip.
+                if (_terminated)
+                {
+                    await StopPollerAsync().ConfigureAwait(false);
+                    return;
+                }
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
                 _result.TrySetResult(success);
@@ -192,24 +206,7 @@ namespace PuppeteerSharp
                 _result.TrySetException(exception);
             }
 
-            if (_poller is { } poller)
-            {
-                await using (poller.ConfigureAwait(false))
-                {
-                    try
-                    {
-                        await poller.EvaluateFunctionAsync(@"async poller => {
-                            await poller.stop();
-                        }").ConfigureAwait(false);
-
-                        _poller = null;
-                    }
-                    catch (Exception)
-                    {
-                        // swallow error.
-                    }
-                }
-            }
+            await StopPollerAsync().ConfigureAwait(false);
         }
 
         private Exception GetBadException(Exception exception)
@@ -267,6 +264,30 @@ namespace PuppeteerSharp
             }
 
             return exception;
+        }
+
+        private async Task StopPollerAsync()
+        {
+            if (_poller is not { } poller)
+            {
+                return;
+            }
+
+            await using (poller.ConfigureAwait(false))
+            {
+                try
+                {
+                    await poller.EvaluateFunctionAsync(@"async poller => {
+                        await poller.stop();
+                    }").ConfigureAwait(false);
+
+                    _poller = null;
+                }
+                catch (Exception)
+                {
+                    // swallow error.
+                }
+            }
         }
 
         private void Cleanup()
