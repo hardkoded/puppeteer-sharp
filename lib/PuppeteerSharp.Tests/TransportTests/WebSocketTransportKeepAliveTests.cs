@@ -103,6 +103,38 @@ namespace PuppeteerSharp.Tests.TransportTests
         }
 #endif
 
+        [Test]
+        public async Task HandshakeTimeout_RejectsWhenServerNeverAnswersUpgrade()
+        {
+            using var silentServer = new TcpListener(IPAddress.Loopback, 0);
+            silentServer.Start();
+            var port = ((IPEndPoint)silentServer.LocalEndpoint).Port;
+            var accepted = new List<TcpClient>();
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    accepted.Add(await silentServer.AcceptTcpClientAsync().ConfigureAwait(false));
+                }
+            });
+
+            var connectOptions = new ConnectOptions { WsOptions = new WsOptions { HandshakeTimeout = 100 } };
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            Assert.ThrowsAsync<System.TimeoutException>(() => WebSocketTransport.DefaultTransportFactory(
+                new Uri($"ws://127.0.0.1:{port}"),
+                connectOptions,
+                CancellationToken.None));
+            Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(5000));
+
+            foreach (var client in accepted)
+            {
+                client.Dispose();
+            }
+
+            await Task.CompletedTask;
+        }
+
         private static int GetFreePort()
         {
             using var listener = new TcpListener(IPAddress.Loopback, 0);

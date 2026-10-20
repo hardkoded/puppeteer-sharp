@@ -127,7 +127,22 @@ namespace PuppeteerSharp.Transport
                 }
             }
 
-            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
+            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            if (options.WsOptions?.HandshakeTimeout is int handshakeTimeout)
+            {
+                handshakeCts.CancelAfter(handshakeTimeout);
+            }
+
+            try
+            {
+                await result.ConnectAsync(url, handshakeCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                result.Dispose();
+                throw new TimeoutException($"WebSocket opening handshake timed out after {options.WsOptions.HandshakeTimeout}ms.");
+            }
+
             return result;
         }
 
