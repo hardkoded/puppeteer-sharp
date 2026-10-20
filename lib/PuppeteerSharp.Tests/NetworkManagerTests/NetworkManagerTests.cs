@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -178,7 +179,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
                 }, JsonHelper.DefaultJsonSerializerSettings.Value)
             });
 
-        Assert.That(requests, Has.Count.EqualTo(2));
+        Assert.That(requests, Has.Count.EqualTo(1));
     }
 
     [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager",
@@ -910,6 +911,306 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         var manager = new NetworkManager(frameManagerMock, loggerFactory);
 
         await manager.AddClientAsync(client);
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should continue the restarted request with the same overrides")]
+    public async Task ShouldContinueTheRestartedRequestWithTheSameOverrides()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(
+            loggerFactory,
+            request => request.ContinueAsync(new Payload { Headers = new Dictionary<string, string> { ["x-test"] = "1" } }));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+        harness.EmitRequestPaused("interception-job-2.0");
+        harness.FinishRequest();
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Headers[0].Name}={c.Headers[0].Value}"),
+            Is.EqualTo(new[] { "interception-job-1.0|x-test=1", "interception-job-2.0|x-test=1" }));
+        Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { FontUrl }));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when the URL and method were overridden")]
+    public async Task ShouldDetectTheRestartWhenTheUrlAndMethodWereOverridden()
+    {
+        const string url = "https://example.com/fonts/other.woff2";
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(
+            loggerFactory,
+            request => request.ContinueAsync(new Payload { Url = url, Method = HttpMethod.Post }));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+
+        // Chrome pauses the restarted request with the overridden URL and method.
+        harness.EmitRequestPaused("interception-job-2.0", url: url, method: HttpMethod.Post);
+        harness.FinishRequest();
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Url}|{c.Method}"),
+            Is.EqualTo(new[] { $"interception-job-1.0|{url}|POST", $"interception-job-2.0|{url}|POST" }));
+        Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { FontUrl }));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should not mistake a same-URL redirect for a restart")]
+    public async Task ShouldNotMistakeASameUrlRedirectForARestart()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync());
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+
+        // The redirect's Fetch.requestPaused can arrive before its Network.requestWillBeSent.
+        harness.EmitRequestPaused("interception-job-2.0", redirectedRequestId: "interception-job-1.0");
+        harness.EmitRequestWillBeSent(redirectResponse: new ResponsePayload
+        {
+            Url = FontUrl,
+            Status = HttpStatusCode.TemporaryRedirect,
+            StatusText = "Temporary Redirect",
+            Headers = new Dictionary<string, string> { ["location"] = FontUrl },
+        });
+        harness.FinishRequest();
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(2));
+        Assert.That(harness.Requests[1].RedirectChain, Is.EqualTo(new[] { harness.Requests[0] }));
+        Assert.That(
+            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+        Assert.That(
+            harness.Finished.Select(r => (int)r.Response.Status),
+            Is.EqualTo(new[] { 307, 200 }));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when the URL has a fragment")]
+    public async Task ShouldDetectTheRestartWhenTheUrlHasAFragment()
+    {
+        // CDP reports the fragment separately from the URL.
+        const string url = "https://example.com/fonts/font.eot?";
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync());
+
+        harness.EmitRequestWillBeSent(url: url, urlFragment: "#iefix");
+        harness.EmitRequestPaused("interception-job-1.0", url: url, urlFragment: "#iefix");
+        harness.EmitRequestPaused("interception-job-2.0", url: url, urlFragment: "#iefix");
+        harness.FinishRequest();
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+        Assert.That(harness.Finished.Select(r => r.Url), Is.EqualTo(new[] { "https://example.com/fonts/font.eot?#iefix" }));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should detect the restart when it pauses the original URL despite an override")]
+    public async Task ShouldDetectTheRestartWhenItPausesTheOriginalUrlDespiteAnOverride()
+    {
+        const string url = "https://example.com/fonts/other.woff2";
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(loggerFactory, request => request.ContinueAsync(new Payload { Url = url }));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+        harness.EmitRequestPaused("interception-job-2.0");
+        harness.FinishRequest();
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest").Select(c => $"{c.RequestId}|{c.Url}"),
+            Is.EqualTo(new[] { $"interception-job-1.0|{url}", $"interception-job-2.0|{url}" }));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should respond to the restarted request when the user responded")]
+    public async Task ShouldRespondToTheRestartedRequestWhenTheUserResponded()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(
+            loggerFactory,
+            request => request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" }));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+        harness.EmitRequestPaused("interception-job-2.0");
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchFulfillRequest>("Fetch.fulfillRequest").Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+        Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should respond to the restarted request when the user responded cooperatively")]
+    public async Task ShouldRespondToTheRestartedRequestWhenTheUserRespondedCooperatively()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(
+            loggerFactory,
+            request => request.RespondAsync(new ResponseData { Status = HttpStatusCode.OK, Body = "font" }, 0));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+
+        // Cooperative intercepts resolve after the request handlers settle.
+        await Task.Delay(50);
+        harness.EmitRequestPaused("interception-job-2.0");
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchFulfillRequest>("Fetch.fulfillRequest").Select(c => c.RequestId),
+            Is.EqualTo(new[] { "interception-job-1.0", "interception-job-2.0" }));
+        Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager restarted requests (crbug.com/1196004)", "should abort the restarted request when the user aborted")]
+    public async Task ShouldAbortTheRestartedRequestWhenTheUserAborted()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var harness = await RestartHarness.CreateAsync(
+            loggerFactory,
+            request => request.AbortAsync(RequestAbortErrorCode.BlockedByClient));
+
+        harness.EmitRequestWillBeSent();
+        harness.EmitRequestPaused("interception-job-1.0");
+        harness.EmitRequestPaused("interception-job-2.0");
+
+        Assert.That(harness.Requests, Has.Count.EqualTo(1));
+        Assert.That(
+            harness.Sent<FetchFailRequest>("Fetch.failRequest").Select(c => $"{c.RequestId}|{c.ErrorReason}"),
+            Is.EqualTo(new[] { "interception-job-1.0|BlockedByClient", "interception-job-2.0|BlockedByClient" }));
+        Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
+    }
+
+    private const string FontUrl = "https://example.com/fonts/font.woff2";
+    private const string RestartNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50";
+    private const string RestartFrameId = "84AC261A351B86932B775B76D1DD79F8";
+
+    private sealed class RecordingCdpSession : CDPSession
+    {
+        public List<(string Method, object Args)> Sent { get; } = [];
+
+        public override bool Detached => false;
+
+        internal override CDPSession ParentSession => null;
+
+        public override Task<JsonElement?> SendAsync(string method, object args = null, bool waitForCallback = true, CommandOptions options = null)
+        {
+            lock (Sent)
+            {
+                Sent.Add((method, args));
+            }
+
+            return Task.FromResult<JsonElement?>(null);
+        }
+
+        public override Task DetachAsync() => Task.CompletedTask;
+
+        public override void Close(string closeReason)
+        {
+        }
+
+        public void Emit(string messageId, object data)
+            => OnMessageReceived(new MessageEventArgs
+            {
+                MessageID = messageId,
+                MessageData = JsonSerializer.SerializeToElement(data, JsonHelper.DefaultJsonSerializerSettings.Value),
+            });
+    }
+
+    private sealed class RestartHarness
+    {
+        private readonly RecordingCdpSession _client;
+
+        private RestartHarness(RecordingCdpSession client) => _client = client;
+
+        public List<IRequest> Requests { get; } = [];
+
+        public List<IRequest> Finished { get; } = [];
+
+        public static async Task<RestartHarness> CreateAsync(ILoggerFactory loggerFactory, Func<IRequest, Task> onRequest)
+        {
+            var client = new RecordingCdpSession();
+            var manager = CreateNetworkManager(loggerFactory);
+            await manager.AddClientAsync(client);
+            await manager.SetRequestInterceptionAsync(true);
+
+            var harness = new RestartHarness(client);
+            manager.Request += (_, e) =>
+            {
+                harness.Requests.Add(e.Request);
+                _ = onRequest(e.Request);
+            };
+            manager.RequestFinished += (_, e) => harness.Finished.Add(e.Request);
+            return harness;
+        }
+
+        public IEnumerable<T> Sent<T>(string method)
+        {
+            lock (_client.Sent)
+            {
+                return _client.Sent.Where(c => c.Method == method).Select(c => (T)c.Args).ToList();
+            }
+        }
+
+        public void EmitRequestWillBeSent(string url = FontUrl, string urlFragment = null, ResponsePayload redirectResponse = null)
+            => _client.Emit("Network.requestWillBeSent", new RequestWillBeSentResponse
+            {
+                RequestId = RestartNetworkId,
+                LoaderId = "11ACE9783588040D644B905E8B55285B",
+                Request = new Request
+                {
+                    Url = url,
+                    UrlFragment = urlFragment,
+                    Method = HttpMethod.Get,
+                    Headers = new Dictionary<string, string>(),
+                },
+                RedirectResponse = redirectResponse,
+                Initiator = new Initiator { Type = InitiatorType.Parser },
+                RedirectHasExtraInfo = false,
+                Type = ResourceType.Font,
+                FrameId = RestartFrameId,
+            });
+
+        public void EmitRequestPaused(
+            string requestId,
+            string url = FontUrl,
+            string urlFragment = null,
+            HttpMethod method = null,
+            string redirectedRequestId = null)
+            => _client.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
+            {
+                RequestId = requestId,
+                Request = new Request
+                {
+                    Url = url,
+                    UrlFragment = urlFragment,
+                    Method = method ?? HttpMethod.Get,
+                    Headers = new Dictionary<string, string>(),
+                },
+                FrameId = RestartFrameId,
+                ResourceType = ResourceType.Font,
+                NetworkId = RestartNetworkId,
+                RedirectedRequestId = redirectedRequestId,
+            });
+
+        public void FinishRequest()
+        {
+            _client.Emit("Network.responseReceived", new ResponseReceivedResponse
+            {
+                RequestId = RestartNetworkId,
+                Response = new ResponsePayload
+                {
+                    Url = FontUrl,
+                    Status = HttpStatusCode.OK,
+                    StatusText = "OK",
+                    Headers = new Dictionary<string, string>(),
+                },
+            });
+            _client.Emit("Network.loadingFinished", new LoadingFinishedEventResponse { RequestId = RestartNetworkId });
+        }
     }
 
     private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory)

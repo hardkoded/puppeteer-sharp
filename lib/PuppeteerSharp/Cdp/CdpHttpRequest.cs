@@ -26,6 +26,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
     private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+    private Func<Task> _replayResolution;
+    private Payload _resolvedContinueOverrides;
 
     internal CdpHttpRequest(
         CDPSession client,
@@ -86,6 +88,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         get => _client;
         set => _client = value;
     }
+
+    internal Payload ResolvedContinueOverrides => _resolvedContinueOverrides ?? new Payload();
 
     internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
 
@@ -235,6 +239,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
 
+    internal Task ReplayInterceptionAsync() => _replayResolution?.Invoke() ?? Task.CompletedTask;
+
     internal void UpdateHeaders(Dictionary<string, string> headers)
     {
         foreach (var kvp in headers)
@@ -291,6 +297,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private async Task ContinueInternalAsync(Payload overrides = null)
     {
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = overrides;
+        _replayResolution = () => ContinueInternalAsync(overrides);
 
         try
         {
@@ -331,6 +339,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     {
         var errorReason = errorCode.ToString();
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = null;
+        _replayResolution = () => AbortInternalAsync(errorCode);
 
         try
         {
@@ -350,6 +360,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private async Task RespondInternalAsync(ResponseData response)
     {
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = null;
+        _replayResolution = () => RespondInternalAsync(response);
 
         var responseHeaders = new List<Header>();
 
