@@ -643,16 +643,25 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         if (credentials != null && !_authenticationHandled)
         {
             _authenticationHandled = true;
-
-            // Fire-and-forget (matches upstream's `void` pattern)
-            _ = _request.ContinueWithAuthAsync(
+            _ = ContinueWithAuthSafeAsync(
                 ContinueWithAuthActionType.ProvideCredentials,
                 new AuthCredentials(credentials.Username, credentials.Password));
         }
         else
         {
-            // Fire-and-forget (matches upstream's `void` pattern)
-            _ = _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel);
+            _ = ContinueWithAuthSafeAsync(ContinueWithAuthActionType.Cancel);
+        }
+    }
+
+    private async Task ContinueWithAuthSafeAsync(ContinueWithAuthActionType action, AuthCredentials credentials = null)
+    {
+        try
+        {
+            await _request.ContinueWithAuthAsync(action, credentials).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // The request may have been canceled or the page closed before the challenge was answered.
         }
     }
 }
