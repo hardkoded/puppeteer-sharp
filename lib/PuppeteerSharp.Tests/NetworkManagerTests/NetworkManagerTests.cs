@@ -17,6 +17,10 @@ namespace PuppeteerSharp.Tests.NetworkManagerTests;
 
 public class NetworkManagerTests : PuppeteerPageBaseTest
 {
+    private const string FontUrl = "https://example.com/fonts/font.woff2";
+    private const string RestartNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50";
+    private const string RestartFrameId = "84AC261A351B86932B775B76D1DD79F8";
+
     // There are some missing calls in this function, but this is enough.
     [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
     public async Task ShouldProcessExtraInfoOnMultipleRedirects()
@@ -1083,10 +1087,6 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
             Is.EqualTo(new[] { "interception-job-1.0|BlockedByClient", "interception-job-2.0|BlockedByClient" }));
         Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
     }
-
-    private const string FontUrl = "https://example.com/fonts/font.woff2";
-    private const string RestartNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50";
-    private const string RestartFrameId = "84AC261A351B86932B775B76D1DD79F8";
 
     private sealed class RecordingCdpSession : CDPSession
     {
