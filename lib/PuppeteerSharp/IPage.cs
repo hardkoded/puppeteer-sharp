@@ -1183,7 +1183,7 @@ namespace PuppeteerSharp
         /// Sets the page's geolocation.
         /// </summary>
         /// <returns>The task.</returns>
-        /// <param name="options">Geolocation options.</param>
+        /// <param name="options">Geolocation options. Pass <c>null</c> to remove the geolocation override.</param>
         /// <remarks>
         /// Consider using <seealso cref="IBrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
