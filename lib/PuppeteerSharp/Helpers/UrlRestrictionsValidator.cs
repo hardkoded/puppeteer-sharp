@@ -42,7 +42,7 @@ namespace PuppeteerSharp.Helpers
         /// </exception>
         public static void AssertSupportedUrlRestrictions(ProtocolType protocol, string[] blockList, string[] allowList)
         {
-            if (blockList != null && allowList != null)
+            if (blockList is { Length: > 0 } && allowList is { Length: > 0 })
             {
                 throw new PuppeteerException("Cannot specify both blocklist and allowlist");
             }

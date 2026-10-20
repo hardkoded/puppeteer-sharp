@@ -384,6 +384,20 @@ namespace PuppeteerSharp
         Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
 
         /// <summary>
+        /// Sets the network restrictions (blocklist or allowlist) and re-applies them to all targets.
+        /// To clear all restrictions, call it without arguments or pass <c>null</c>.
+        /// </summary>
+        /// <param name="restrictions">The network restrictions to apply.</param>
+        /// <returns>A task that resolves when the restrictions were applied.</returns>
+        /// <remarks>
+        /// Only supported for Chrome and the CDP protocol.
+        /// Targets that are already on a blocked URL when this method is called stay attached and stay on
+        /// the blocked page. This differs from launching the browser with network restrictions, where such
+        /// targets are detached on the initial attach.
+        /// </remarks>
+        Task RestrictNetworkAsync(NetworkRestrictions restrictions = null);
+
+        /// <summary>
         /// Creates a Chrome Devtools Protocol session attached to the browser.
         /// </summary>
         /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>

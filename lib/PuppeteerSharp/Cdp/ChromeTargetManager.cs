@@ -32,8 +32,10 @@ namespace PuppeteerSharp.Cdp
         // initializeDeferred.
         private readonly ConcurrentSet<string> _targetsIdsForInit = [];
 
-        private readonly string[] _blockList;
-        private readonly string[] _allowList;
+        private readonly ConcurrentDictionary<CDPSession, TargetInfo> _networkConditionsSessions = new();
+
+        private string[] _blockList;
+        private string[] _allowList;
 
         // This is false until the connection-level Target.setAutoAttach request is
         // done. It indicates whether we are running the initial auto-attach step or
@@ -47,7 +49,7 @@ namespace PuppeteerSharp.Cdp
             string[] blockList = null,
             string[] allowList = null)
         {
-            if (blockList != null && allowList != null)
+            if (blockList is { Length: > 0 } && allowList is { Length: > 0 })
             {
                 throw new PuppeteerException("Cannot specify both blocklist and allowlist");
             }
@@ -118,8 +120,10 @@ namespace PuppeteerSharp.Cdp
 
         public bool IsUrlAllowed(string url)
         {
-            var hasBlockList = _blockList != null && _blockList.Length > 0;
-            var hasAllowList = _allowList != null && _allowList.Length > 0;
+            var blockList = _blockList;
+            var allowList = _allowList;
+            var hasBlockList = blockList is { Length: > 0 };
+            var hasAllowList = allowList is { Length: > 0 };
 
             if (!hasBlockList && !hasAllowList)
             {
@@ -134,7 +138,7 @@ namespace PuppeteerSharp.Cdp
 
             if (hasBlockList)
             {
-                foreach (var pattern in _blockList)
+                foreach (var pattern in blockList)
                 {
                     if (MatchesUrlPattern(url, pattern))
                     {
@@ -145,7 +149,7 @@ namespace PuppeteerSharp.Cdp
 
             if (hasAllowList)
             {
-                foreach (var pattern in _allowList)
+                foreach (var pattern in allowList)
                 {
                     if (MatchesUrlPattern(url, pattern))
                     {
@@ -157,6 +161,30 @@ namespace PuppeteerSharp.Cdp
             }
 
             return true;
+        }
+
+        public async Task SetNetworkConditionsAsync(NetworkRestrictions restrictions)
+        {
+            var blockList = restrictions?.BlockList;
+            var allowList = restrictions?.Allowlist;
+
+            if (blockList is { Length: > 0 } && allowList is { Length: > 0 })
+            {
+                throw new PuppeteerException("Cannot specify both blocklist and allowlist");
+            }
+
+            ValidateUrlPatterns(blockList);
+            ValidateUrlPatterns(allowList);
+
+            var wasActive = HasNetworkRules();
+            _blockList = blockList;
+            _allowList = allowList;
+            var isActive = HasNetworkRules();
+
+            if (isActive || wasActive)
+            {
+                await ReapplyNetworkConditionsAsync(wasActive && !isActive).ConfigureAwait(false);
+            }
         }
 
         public void Dispose()
@@ -250,7 +278,13 @@ namespace PuppeteerSharp.Cdp
         }
 
         private void Connection_SessionDetached(object sender, SessionEventArgs e)
-            => RemoveAttachmentListeners(e.Session);
+        {
+            RemoveAttachmentListeners(e.Session);
+            if (e.Session is CDPSession cdpSession)
+            {
+                _networkConditionsSessions.TryRemove(cdpSession, out _);
+            }
+        }
 
         private void SetupAttachmentListeners(ICDPSession session)
         {
@@ -417,6 +451,7 @@ namespace PuppeteerSharp.Cdp
 
             if (!_connection.IsAutoAttached(targetInfo.TargetId))
             {
+                _networkConditionsSessions[session] = targetInfo;
                 await MaybeSetupNetworkBlockListAsync(session, targetInfo).ConfigureAwait(false);
                 return;
             }
@@ -444,6 +479,8 @@ namespace PuppeteerSharp.Cdp
                 // service workers while rules are configured.
                 if (HasNetworkRules())
                 {
+                    _networkConditionsSessions[session] = targetInfo;
+
                     // The rules are dispatched before the worker is resumed so that requests made during
                     // install are covered as well. They are only acknowledged once the worker runs,
                     // so they are awaited after resuming it.
@@ -533,6 +570,8 @@ namespace PuppeteerSharp.Cdp
             {
                 FinishInitializationIfReady(parentTarget.TargetId);
             }
+
+            _networkConditionsSessions[session] = targetInfo;
 
             // The browser might be shutting down here, so we ignore potential errors.
             try
@@ -668,12 +707,34 @@ namespace PuppeteerSharp.Cdp
             }
         }
 
-        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session, TargetInfo targetInfo)
+        private async Task ReapplyNetworkConditionsAsync(bool forceClear)
         {
-            var hasBlockList = _blockList != null && _blockList.Length > 0;
-            var hasAllowList = _allowList != null && _allowList.Length > 0;
+            // Iterate every tracked session: workers and manually attached targets have no auto-attached session.
+            var tasks = new List<Task>();
+            foreach (var pair in _networkConditionsSessions)
+            {
+                var session = pair.Key;
+                var targetInfo = pair.Value;
+                if (session.Detached)
+                {
+                    _networkConditionsSessions.TryRemove(session, out _);
+                    continue;
+                }
 
-            if (!hasBlockList && !hasAllowList)
+                tasks.Add(MaybeSetupNetworkBlockListAsync(session, targetInfo, forceClear));
+            }
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private async Task MaybeSetupNetworkBlockListAsync(CDPSession session, TargetInfo targetInfo, bool forceClear = false)
+        {
+            var blockList = _blockList;
+            var allowList = _allowList;
+            var hasBlockList = blockList is { Length: > 0 };
+            var hasAllowList = allowList is { Length: > 0 };
+
+            if (!hasBlockList && !hasAllowList && !forceClear)
             {
                 return;
             }
@@ -682,7 +743,7 @@ namespace PuppeteerSharp.Cdp
 
             if (hasBlockList)
             {
-                foreach (var pattern in _blockList)
+                foreach (var pattern in blockList)
                 {
                     matchedNetworkConditions.Add(new MatchedNetworkCondition
                     {
@@ -697,7 +758,7 @@ namespace PuppeteerSharp.Cdp
 
             if (hasAllowList)
             {
-                foreach (var pattern in _allowList)
+                foreach (var pattern in allowList)
                 {
                     matchedNetworkConditions.Add(new MatchedNetworkCondition
                     {
@@ -736,8 +797,9 @@ namespace PuppeteerSharp.Cdp
                 new NetworkEmulateNetworkConditionsByRuleRequest
                 {
                     // 'Offline' at the request level is for legacy blocklist compatibility (deprecated in Chrome 149).
-                    // Only set it when using a blocklist; allowlist mode uses per-rule offline flags instead.
-                    Offline = hasBlockList ? true : null,
+                    // Blocklist: true. Allowlist: null, so the catch-all offline rule is not overridden.
+                    // No rules: false, to clear any previously applied global offline state.
+                    Offline = hasBlockList ? true : (hasAllowList ? null : false),
                     MatchedNetworkConditions = matchedNetworkConditions.ToArray(),
                 }));
 

@@ -125,6 +125,10 @@ namespace PuppeteerSharp
         public abstract Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
 
         /// <inheritdoc/>
+        public virtual Task RestrictNetworkAsync(NetworkRestrictions restrictions = null)
+            => throw new NotSupportedException("RestrictNetwork is only supported with Chrome and the CDP protocol.");
+
+        /// <inheritdoc/>
         public async Task<IPage[]> PagesAsync(bool includeAll = false)
             => (await Task.WhenAll(
                 BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))
