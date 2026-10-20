@@ -711,8 +711,10 @@ namespace PuppeteerSharp.Cdp
         {
             // Iterate every tracked session: workers and manually attached targets have no auto-attached session.
             var tasks = new List<Task>();
-            foreach (var (session, targetInfo) in _networkConditionsSessions)
+            foreach (var pair in _networkConditionsSessions)
             {
+                var session = pair.Key;
+                var targetInfo = pair.Value;
                 if (session.Detached)
                 {
                     _networkConditionsSessions.TryRemove(session, out _);
