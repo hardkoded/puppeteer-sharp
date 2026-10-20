@@ -181,6 +181,11 @@ namespace PuppeteerSharp.Cdp
             _allowList = allowList;
             var isActive = HasNetworkRules();
 
+            if (isActive && !wasActive)
+            {
+                await AttachToServiceWorkersAsync().ConfigureAwait(false);
+            }
+
             if (isActive || wasActive)
             {
                 await ReapplyNetworkConditionsAsync(wasActive && !isActive).ConfigureAwait(false);
@@ -400,7 +405,7 @@ namespace PuppeteerSharp.Cdp
 
             if (isExistingTarget)
             {
-                session.Target = target;
+                target.SetSession((CdpCDPSession)session);
             }
             else
             {
@@ -466,7 +471,10 @@ namespace PuppeteerSharp.Cdp
 
             if (targetInfo.Type == TargetType.ServiceWorker)
             {
-                if (!IsUrlAllowed(targetInfo.Url))
+                // An already exposed worker target proceeds to AttachServiceWorkerTarget even when its
+                // script URL is now disallowed, so the target receives the kept session.
+                if (!IsUrlAllowed(targetInfo.Url) &&
+                    !(HasNetworkRules() && _attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId)))
                 {
                     await BlockServiceWorkerRegistrationAsync(session).ConfigureAwait(false);
                     return;
@@ -704,6 +712,45 @@ namespace PuppeteerSharp.Cdp
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to block service worker registration");
+            }
+        }
+
+        private async Task AttachToServiceWorkersAsync()
+        {
+            var trackedTargetIds = new HashSet<string>();
+            foreach (var (session, targetInfo) in _networkConditionsSessions)
+            {
+                if (!session.Detached)
+                {
+                    trackedTargetIds.Add(targetInfo.TargetId);
+                }
+            }
+
+            var tasks = new List<Task>();
+            foreach (var targetInfo in _discoveredTargetsByTargetId.Values)
+            {
+                if (targetInfo.Type != TargetType.ServiceWorker ||
+                    trackedTargetIds.Contains(targetInfo.TargetId) ||
+                    _ignoredTargets.Contains(targetInfo.TargetId))
+                {
+                    continue;
+                }
+
+                tasks.Add(CreateServiceWorkerSessionAsync(targetInfo));
+            }
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        private async Task CreateServiceWorkerSessionAsync(TargetInfo targetInfo)
+        {
+            try
+            {
+                await _connection.CreateSessionAsync(targetInfo, true).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to attach to service worker.");
             }
         }
 

@@ -88,7 +88,7 @@ public class CdpTarget : Target
 
     internal TargetInfo TargetInfo { get; set; }
 
-    internal CDPSession Session { get; }
+    internal CDPSession Session { get; private set; }
 
     internal CdpBrowser CdpBrowser => Browser as CdpBrowser;
 
@@ -121,6 +121,12 @@ public class CdpTarget : Target
         // the buffer forever.
         session.FlushEarlyMessages();
         return session;
+    }
+
+    internal void SetSession(CdpCDPSession session)
+    {
+        Session = session;
+        session.Target = this;
     }
 
     internal void TargetInfoChanged(TargetInfo targetInfo)
