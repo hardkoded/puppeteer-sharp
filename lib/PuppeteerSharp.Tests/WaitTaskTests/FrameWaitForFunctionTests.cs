@@ -33,6 +33,43 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             _pollerInterceptor?.Dispose();
         }
 
+        [TestCase("raf")]
+        [TestCase("mutation")]
+        [TestCase("10")]
+        [PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should not poll after timing out during raf poller creation")]
+        [PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should not poll after timing out during mutation poller creation")]
+        [PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should not poll after timing out during 10 poller creation")]
+        public async Task ShouldNotPollAfterTimingOutDuringPollerCreation(string polling)
+        {
+            await Page.EvaluateFunctionAsync("() => { globalThis.__pollCalls = 0; }");
+            var blocking = Page.EvaluateFunctionAsync(@"() => {
+                const deadline = performance.now() + 300;
+                while (performance.now() < deadline) {
+                }
+            }");
+            var options = new WaitForFunctionOptions { Timeout = 50 };
+            if (polling == "10")
+            {
+                options.PollingInterval = 10;
+            }
+            else
+            {
+                options.Polling = polling == "raf" ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation;
+            }
+
+            Assert.ThrowsAsync<WaitTaskTimeoutException>(() => Page.WaitForFunctionAsync(
+                "() => { ++globalThis.__pollCalls; return false; }",
+                options));
+            await blocking;
+            var calls = await Page.EvaluateFunctionAsync<int>("() => globalThis.__pollCalls");
+            await Page.EvaluateFunctionAsync(@"async () => {
+                document.body.append(document.createElement('div'));
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }");
+            Assert.That(await Page.EvaluateFunctionAsync<int>("() => globalThis.__pollCalls"), Is.EqualTo(calls));
+            Assert.That(calls, Is.EqualTo(0));
+        }
+
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForFunction", "should work when resolved right before execution context disposal")]
         public async Task ShouldWorkWhenResolvedRightBeforeExecutionContextDisposal()
         {
