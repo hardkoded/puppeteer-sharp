@@ -554,7 +554,15 @@ namespace PuppeteerSharp
                 }
                 catch
                 {
-                    await recording.StopAsync().ConfigureAwait(false);
+                    try
+                    {
+                        await recording.StopAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Let the original start error propagate.
+                    }
+
                     throw;
                 }
 
