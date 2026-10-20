@@ -313,6 +313,9 @@ namespace PuppeteerSharp
         public abstract Task<string> WindowIdAsync();
 
         /// <inheritdoc/>
+        public abstract Task<TabInfo> TabInfoAsync();
+
+        /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
             => MainFrame.EvaluateExpressionHandleAsync(script);
 
