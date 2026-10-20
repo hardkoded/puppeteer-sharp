@@ -37,13 +37,13 @@ public class CdpBrowser : Browser
     private readonly ConcurrentDictionary<string, CdpBrowserContext> _contexts;
     private readonly ILogger<Browser> _logger;
     private readonly bool _handleDevToolsAsPage;
-    private readonly bool _hasNetworkRestrictions;
     private readonly bool _networkEnabled;
     private readonly Dictionary<string, Extension> _extensions = new();
     private readonly bool _issuesEnabled;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "Disposed in Detach().")]
     private readonly DisposableActionsStack _subscriptions = new();
+    private bool _hasNetworkRestrictions;
     private Task _closeTask;
     private Task<BrowserGetVersionResponse> _versionTask;
 
@@ -389,6 +389,16 @@ public class CdpBrowser : Browser
         return new PWAState { BadgeCount = response.BadgeCount, FileHandlers = response.FileHandlers };
     }
 
+    /// <inheritdoc/>
+    public override async Task RestrictNetworkAsync(NetworkRestrictions restrictions = null)
+    {
+        await TargetManager.SetNetworkConditionsAsync(restrictions).ConfigureAwait(false);
+
+        // Only update the state once the target manager accepted the new restrictions.
+        _hasNetworkRestrictions = restrictions?.BlockList is { Length: > 0 } || restrictions?.Allowlist is { Length: > 0 };
+        Connection.RejectEmulateNetworkConditionsCalls = _hasNetworkRestrictions;
+    }
+
     internal static async Task<CdpBrowser> CreateAsync(
         SupportedBrowser browserToCreate,
         Connection connection,
@@ -406,16 +416,6 @@ public class CdpBrowser : Browser
         string[] blockList = null,
         string[] allowList = null)
     {
-        if (allowList != null)
-        {
-            var versionResponse = await connection.SendAsync<BrowserGetVersionResponse>("Browser.getVersion").ConfigureAwait(false);
-            var match = Regex.Match(versionResponse.Product, @"\d+");
-            if (match.Success && int.TryParse(match.Value, out var majorVersion) && majorVersion < 149)
-            {
-                throw new PuppeteerException("The Allowlist option requires Chrome 149 or greater.");
-            }
-        }
-
         var browser = new CdpBrowser(
             browserToCreate,
             connection,

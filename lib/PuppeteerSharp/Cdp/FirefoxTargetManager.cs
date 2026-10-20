@@ -68,6 +68,9 @@ namespace PuppeteerSharp.Cdp
 
         public bool IsUrlAllowed(string url) => true;
 
+        public Task SetNetworkConditionsAsync(NetworkRestrictions restrictions)
+            => throw new NotSupportedException("Network restrictions are only supported with Chrome and the CDP protocol.");
+
         public void Dispose()
         {
             _subscriptions.Dispose();

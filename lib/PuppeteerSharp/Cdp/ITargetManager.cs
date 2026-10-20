@@ -56,5 +56,12 @@ namespace PuppeteerSharp
         /// <param name="url">URL to validate.</param>
         /// <returns><c>true</c> if the URL is allowed, otherwise <c>false</c>.</returns>
         bool IsUrlAllowed(string url);
+
+        /// <summary>
+        /// Sets the network restrictions and re-applies them to all the tracked targets.
+        /// </summary>
+        /// <param name="restrictions">The restrictions to apply, or <c>null</c> to clear them.</param>
+        /// <returns>A task that resolves when the restrictions were applied.</returns>
+        Task SetNetworkConditionsAsync(NetworkRestrictions restrictions);
     }
 }
