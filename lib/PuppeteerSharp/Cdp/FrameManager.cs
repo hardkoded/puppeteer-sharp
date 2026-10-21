@@ -266,7 +266,11 @@ namespace PuppeteerSharp.Cdp
             var frame = FrameTree.MainFrame;
             if (frame != null)
             {
-                _frameNavigatedReceived.Add(Client.Target.TargetId);
+                lock (_frameNavigatedReceived)
+                {
+                    _frameNavigatedReceived.Add(Client.Target.TargetId);
+                }
+
                 FrameTree.RemoveFrame(frame);
                 frame.Id = Client.Target.TargetId;
                 frame.MainWorld.ClearContext();
@@ -530,7 +534,10 @@ namespace PuppeteerSharp.Cdp
         {
             // This is in the event handler upstream.
             // It's more consistent having this here.
-            _frameNavigatedReceived.Add(framePayload.Id);
+            lock (_frameNavigatedReceived)
+            {
+                _frameNavigatedReceived.Add(framePayload.Id);
+            }
 
             var isMainFrame = string.IsNullOrEmpty(framePayload.ParentId);
             var frame = isMainFrame ? MainFrame : await FrameTree.GetFrameAsync(framePayload.Id).ConfigureAwait(false);
@@ -629,13 +636,15 @@ namespace PuppeteerSharp.Cdp
                 OnFrameAttached(session, frameTree.Frame.Id, frameTree.Frame.ParentId);
             }
 
-            if (!_frameNavigatedReceived.Contains(frameTree.Frame.Id))
+            bool navigatedReceived;
+            lock (_frameNavigatedReceived)
+            {
+                navigatedReceived = _frameNavigatedReceived.Remove(frameTree.Frame.Id);
+            }
+
+            if (!navigatedReceived)
             {
                 await OnFrameNavigatedAsync(frameTree.Frame, NavigationType.Navigation).ConfigureAwait(false);
-            }
-            else
-            {
-                _frameNavigatedReceived.Remove(frameTree.Frame.Id);
             }
 
             if (frameTree.ChildFrames != null)
