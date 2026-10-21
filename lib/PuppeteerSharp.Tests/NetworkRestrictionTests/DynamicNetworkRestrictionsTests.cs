@@ -180,6 +180,27 @@ public class DynamicNetworkRestrictionsTests : PuppeteerPageBaseTest
         await AssertWorkerFetchAsync(worker, true);
     }
 
+    [Test, PuppeteerTest("network_restrictions.spec", "Network Restrictions dynamic restrictions", "applies and clears restrictions on fetches forwarded by an already-running controlling service worker")]
+    public async Task ShouldApplyAndClearRestrictionsOnFetchesForwardedByAnAlreadyRunningControllingServiceWorker()
+    {
+        var blockedUrl = TestConstants.ServerUrl + "/serviceworkers/fetch/style.css";
+        var blocklist = new NetworkRestrictions { BlockList = ["*://*:*/serviceworkers/fetch/style.css"] };
+
+        await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/fetch/sw.html");
+        await Page.EvaluateFunctionAsync("() => window.activationPromise");
+
+        Assert.That(await Page.EvaluateFunctionAsync<bool>(FetchScript, blockedUrl), Is.True);
+
+        await Browser.RestrictNetworkAsync(blocklist);
+        Assert.That(await Page.EvaluateFunctionAsync<bool>(FetchScript, blockedUrl), Is.False);
+
+        await Browser.RestrictNetworkAsync(null);
+        Assert.That(await Page.EvaluateFunctionAsync<bool>(FetchScript, blockedUrl), Is.True);
+
+        await Browser.RestrictNetworkAsync(blocklist);
+        Assert.That(await Page.EvaluateFunctionAsync<bool>(FetchScript, blockedUrl), Is.False);
+    }
+
     private static async Task AssertWorkerFetchAsync(WebWorker worker, bool expected)
         => Assert.That(await worker.EvaluateFunctionAsync<bool>(FetchScript, TestConstants.EmptyPage), Is.EqualTo(expected));
 }
