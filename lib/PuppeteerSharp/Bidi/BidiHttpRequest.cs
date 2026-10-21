@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Network;
@@ -659,9 +660,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             await _request.ContinueWithAuthAsync(action, credentials).ConfigureAwait(false);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // The request may have been canceled or the page closed before the challenge was answered.
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to continue with auth");
         }
     }
 }
