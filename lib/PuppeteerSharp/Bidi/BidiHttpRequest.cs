@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Bidi.Core;
 using PuppeteerSharp.Helpers;
 using WebDriverBiDi.Network;
@@ -643,16 +644,26 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         if (credentials != null && !_authenticationHandled)
         {
             _authenticationHandled = true;
-
-            // Fire-and-forget (matches upstream's `void` pattern)
-            _ = _request.ContinueWithAuthAsync(
+            _ = ContinueWithAuthSafeAsync(
                 ContinueWithAuthActionType.ProvideCredentials,
                 new AuthCredentials(credentials.Username, credentials.Password));
         }
         else
         {
-            // Fire-and-forget (matches upstream's `void` pattern)
-            _ = _request.ContinueWithAuthAsync(ContinueWithAuthActionType.Cancel);
+            _ = ContinueWithAuthSafeAsync(ContinueWithAuthActionType.Cancel);
+        }
+    }
+
+    private async Task ContinueWithAuthSafeAsync(ContinueWithAuthActionType action, AuthCredentials credentials = null)
+    {
+        try
+        {
+            await _request.ContinueWithAuthAsync(action, credentials).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // The request may have been canceled or the page closed before the challenge was answered.
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogDebug(ex, "Failed to continue with auth");
         }
     }
 }
