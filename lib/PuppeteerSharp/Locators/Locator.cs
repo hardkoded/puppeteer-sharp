@@ -296,17 +296,38 @@ namespace PuppeteerSharp.Locators
                 async (handle, ct) =>
                 {
                     var inputType = await handle.EvaluateFunctionAsync<string>(
-                        @"(el) => {
-                            if (el instanceof HTMLSelectElement) return 'select';
-                            if (el instanceof HTMLTextAreaElement) return 'typeable-input';
+                        @"(el, newValue) => {
+                            if (el instanceof HTMLSelectElement) {
+                                if (!Array.from(el.options).some(option => option.value === newValue)) {
+                                    throw new Error(`Element has no option with the value ""${newValue}"".`);
+                                }
+                                return 'select';
+                            }
+                            if (el instanceof HTMLTextAreaElement) {
+                                if (el.readOnly) throw new Error('Element is read-only.');
+                                return 'typeable-input';
+                            }
                             if (el instanceof HTMLInputElement) {
+                                if (el.type === 'checkbox' || el.type === 'radio') return 'other-input';
+                                if (el.readOnly && ['text','search','url','tel','email','password','number','date','month','week','time','datetime-local'].includes(el.type)) {
+                                    throw new Error('Element is read-only.');
+                                }
+                                if (el.type !== 'file' && String(newValue) !== '') {
+                                    const probe = document.createElement('input');
+                                    probe.type = el.type;
+                                    probe.value = String(newValue);
+                                    if (probe.value === '') {
+                                        throw new Error(`Element did not accept the value ""${newValue}"".`);
+                                    }
+                                }
                                 if (new Set(['textarea','text','url','tel','search','password','number','email']).has(el.type))
                                     return 'typeable-input';
                                 else return 'other-input';
                             }
                             if (el.isContentEditable) return 'contenteditable';
                             return 'unknown';
-                        }").ConfigureAwait(false);
+                        }",
+                        value).ConfigureAwait(false);
 
                     switch (inputType)
                     {

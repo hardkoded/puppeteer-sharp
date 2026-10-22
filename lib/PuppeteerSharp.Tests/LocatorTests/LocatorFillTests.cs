@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -136,6 +137,97 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var result = await Page.EvaluateExpressionAsync<bool>(
                 "document.querySelector('div')?.innerText.length === 1000");
             Assert.That(result, Is.True);
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should fill readonly color inputs")]
+        public async Task ShouldFillReadonlyColorInputs()
+        {
+            await Page.SetContentAsync("<input type=\"color\" readonly value=\"#000000\" />");
+
+            await Page.Locator("input").SetTimeout(500).FillAsync("#ff0000");
+
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector(\'input\').value"), Is.EqualTo("#ff0000"));
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should fill readonly range inputs")]
+        public async Task ShouldFillReadonlyRangeInputs()
+        {
+            await Page.SetContentAsync("<input type=\"range\" readonly value=\"25\" />");
+
+            await Page.Locator("input").SetTimeout(500).FillAsync("75");
+
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector(\'input\').value"), Is.EqualTo("75"));
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should reject readonly elements")]
+        public async Task ShouldRejectReadonlyElements()
+        {
+            var cases = new[]
+            {
+                ("<input readonly value=\"fixed\" />", "input", "fixed", "changed"),
+                ("<textarea readonly>fixed</textarea>", "textarea", "fixed", "changed"),
+                ("<input type=\"number\" readonly value=\"7\" />", "input", "7", "9"),
+                ("<input type=\"date\" readonly value=\"2020-01-01\" />", "input", "2020-01-01", "2021-02-03"),
+            };
+
+            foreach (var (markup, selector, value, newValue) in cases)
+            {
+                await Page.SetContentAsync(markup);
+
+                Assert.ThrowsAsync<TimeoutException>(() => Page.Locator(selector).SetTimeout(500).FillAsync(newValue));
+                Assert.That(await Page.EvaluateExpressionAsync<string>($"document.querySelector('{selector}').value"), Is.EqualTo(value), markup);
+            }
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should preserve inputs on rejected values")]
+        public async Task ShouldPreserveInputsOnRejectedValues()
+        {
+            var cases = new[]
+            {
+                ("number", "7", "abc", "12"),
+                ("date", "2020-01-01", "next tuesday", "2021-02-03"),
+                ("time", "10:30", "noon", "12:30"),
+            };
+
+            foreach (var (type, value, newValue, acceptedValue) in cases)
+            {
+                await Page.SetContentAsync($"<input type=\"{type}\" value=\"{value}\" />");
+
+                Assert.ThrowsAsync<TimeoutException>(() => Page.Locator("input").SetTimeout(500).FillAsync(newValue));
+                Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector(\'input\').value"), Is.EqualTo(value), type);
+
+                await Page.Locator("input").FillAsync(acceptedValue);
+                Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector(\'input\').value"), Is.EqualTo(acceptedValue), type);
+            }
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should work if the input becomes writable later")]
+        public async Task ShouldWorkIfTheInputBecomesWritableLater()
+        {
+            await Page.SetContentAsync("<input readonly value=\"fixed\" />");
+
+            var input = await Page.QuerySelectorAsync("input");
+            var resultTask = Page.Locator("input").FillAsync("test");
+
+            Assert.That(await input.EvaluateFunctionAsync<string>("el => el.value"), Is.EqualTo("fixed"));
+
+            await input.EvaluateFunctionAsync("el => el.readOnly = false");
+            await resultTask;
+
+            Assert.That(await input.EvaluateFunctionAsync<string>("el => el.value"), Is.EqualTo("test"));
+        }
+
+        [Test, PuppeteerTest("locator.spec", "Locator Locator.fill", "should preserve the selection if no option matches the value")]
+        public async Task ShouldPreserveTheSelectionIfNoOptionMatchesTheValue()
+        {
+            await Page.SetContentAsync(@"
+                <select>
+                    <option value=""a"">Option A</option>
+                    <option value=""b"" selected>Option B</option>
+                </select>");
+
+            Assert.ThrowsAsync<TimeoutException>(() => Page.Locator("select").SetTimeout(500).FillAsync("zzz"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector(\'select\').value"), Is.EqualTo("b"));
         }
     }
 }
