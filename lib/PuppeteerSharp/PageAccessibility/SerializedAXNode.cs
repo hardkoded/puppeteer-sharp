@@ -189,6 +189,7 @@ namespace PuppeteerSharp.PageAccessibility
         /// <summary>
         /// Gets the element handle for this node.
         /// For text nodes, returns the parent element's handle instead of the text node's.
+        /// Returns <c>null</c> if the frame has navigated to a new document since the snapshot.
         /// </summary>
         /// <returns>An <see cref="IElementHandle"/> for this node, or <c>null</c> if no handle is available.</returns>
         public Task<IElementHandle> ElementHandleAsync()

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -60,6 +61,20 @@ namespace PuppeteerSharp.Tests.AccessibilityTests
             Assert.That(buttonNode.Role, Is.EqualTo("button"));
             Assert.That(buttonNode.Name, Is.EqualTo("value1"));
             Assert.That(buttonNode.LoaderId, Is.EqualTo(frame1LoaderId));
+        }
+
+        [Test, PuppeteerTest("a11yLoaderId.spec", "Accessibility loaderId", "should not resolve an element handle after a cross-process navigation")]
+        public async Task ShouldNotResolveAnElementHandleAfterACrossProcessNavigation()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/button.html");
+            var snapshot = await Page.Accessibility.SnapshotAsync();
+            var button = snapshot.Children.First(node => node.Role == "button");
+
+            await Page.GoToAsync(TestConstants.CrossProcessUrl + "/input/button.html");
+            await Page.Accessibility.SnapshotAsync();
+
+            var handle = await button.ElementHandleAsync();
+            Assert.That(handle, Is.Null);
         }
     }
 }
