@@ -266,7 +266,7 @@ internal class BidiKeyboard(BidiPage page) : Keyboard
             "BracketLeft" => "[",
             "Backslash" => "\\",
             "BracketRight" => "]",
-            "Quote" => "\"",
+            "Quote" => "'",
             _ => throw new KeyNotFoundException($"Unknown key: \"{key}\""),
         };
     }
