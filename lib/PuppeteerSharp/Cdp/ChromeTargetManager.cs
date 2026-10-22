@@ -535,7 +535,9 @@ namespace PuppeteerSharp.Cdp
                 }
 
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
-                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId) ||
+                    _ignoredTargets.Contains(targetInfo.TargetId) ||
+                    !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {
                     return;
                 }
@@ -672,8 +674,10 @@ namespace PuppeteerSharp.Cdp
                 parentSession.Target.RemoveChildTarget(target);
             }
 
-            _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
-            TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+            if (_attachedTargetsByTargetId.TryRemove(target.TargetId, out _))
+            {
+                TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+            }
         }
 
         // Blocks the registration of a disallowed service worker by failing every request it makes
