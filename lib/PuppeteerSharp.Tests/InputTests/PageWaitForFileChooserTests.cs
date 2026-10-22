@@ -106,6 +106,8 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.ThrowsAsync<TimeoutException>(() => Task.WhenAll(
                 Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 200 }),
                 Page.ClickAsync("button")));
+
+            Assert.That(await Page.EvaluateExpressionAsync<int>("1 + 1"), Is.EqualTo(2));
         }
     }
 }
