@@ -5,5 +5,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public string RequestId { get; set; }
 
         public string ErrorText { get; set; }
+
+        public string BlockedReason { get; set; }
     }
 }
