@@ -35,6 +35,7 @@ internal class Request : IDisposable
     private readonly BrowsingContext _browsingContext;
     private readonly BeforeRequestSentEventArgs _eventArgs;
     private string _error;
+    private IList<ReadOnlyHeader> _headers;
     private Request _redirect;
     private WebDriverBiDi.Network.ResponseData _response;
     private Task<byte[]> _responseContentPromise;
@@ -44,6 +45,7 @@ internal class Request : IDisposable
     {
         _browsingContext = browsingContext;
         _eventArgs = args;
+        _headers = args.Request.Headers;
         Timings = args.Request.Timings;
     }
 
@@ -81,7 +83,7 @@ internal class Request : IDisposable
 
     public string Method => _eventArgs.Request.Method;
 
-    public IList<ReadOnlyHeader> Headers => _eventArgs.Request.Headers;
+    public IList<ReadOnlyHeader> Headers => _headers;
 
     public WebDriverBiDi.Network.ResponseData Response => _response;
 
@@ -271,6 +273,8 @@ internal class Request : IDisposable
             }
 
             _error = args.ErrorText;
+            _headers = args.Request.Headers;
+            Timings = args.Request.Timings;
             OnError(_error);
             Dispose();
         };
@@ -285,6 +289,7 @@ internal class Request : IDisposable
             }
 
             _response = args.Response;
+            _headers = args.Request.Headers;
             Timings = args.Request.Timings;
             OnResponseStarted(new ResponseEventArgs(_response));
         };
@@ -299,6 +304,7 @@ internal class Request : IDisposable
             }
 
             _response = args.Response;
+            _headers = args.Request.Headers;
             Timings = args.Request.Timings;
             OnSuccess(new ResponseEventArgs(_response));
 
