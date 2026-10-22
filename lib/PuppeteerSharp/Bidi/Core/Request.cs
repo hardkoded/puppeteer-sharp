@@ -38,7 +38,7 @@ internal class Request : IDisposable
     private Request _redirect;
     private WebDriverBiDi.Network.ResponseData _response;
     private Task<byte[]> _responseContentPromise;
-    private Task<string> _requestBodyPromise;
+    private Task<byte[]> _requestContentPromise;
 
     private Request(BrowsingContext browsingContext, BeforeRequestSentEventArgs args)
     {
@@ -168,15 +168,21 @@ internal class Request : IDisposable
         await Session.Driver.Network.ContinueWithAuthAsync(commandParams).ConfigureAwait(false);
     }
 
-    internal async Task<string> FetchPostDataAsync()
+    internal async Task<byte[]> GetRequestContentAsync()
     {
         if (!HasPostData)
         {
             return null;
         }
 
-        _requestBodyPromise ??= FetchPostDataInternalAsync();
-        return await _requestBodyPromise.ConfigureAwait(false);
+        _requestContentPromise ??= GetRequestContentInternalAsync();
+        return await _requestContentPromise.ConfigureAwait(false);
+    }
+
+    internal async Task<string> FetchPostDataAsync()
+    {
+        var content = await GetRequestContentAsync().ConfigureAwait(false);
+        return content == null ? null : System.Text.Encoding.UTF8.GetString(content);
     }
 
     internal async Task<byte[]> GetResponseContentAsync()
@@ -185,19 +191,12 @@ internal class Request : IDisposable
         return await _responseContentPromise.ConfigureAwait(false);
     }
 
-    private async Task<string> FetchPostDataInternalAsync()
+    private async Task<byte[]> GetRequestContentInternalAsync()
     {
         var commandParams = new GetDataCommandParameters(Id, DataType.Request);
 
         var result = await Session.Driver.Network.GetDataAsync(commandParams).ConfigureAwait(false);
-
-        if (result.Bytes.Type == BytesValueType.String)
-        {
-            return result.Bytes.Value;
-        }
-
-        // Base64 encoding - decode to string
-        return System.Text.Encoding.UTF8.GetString(result.Bytes.ValueAsByteArray);
+        return result.Bytes.ValueAsByteArray;
     }
 
     private async Task<byte[]> GetResponseContentInternalAsync()

@@ -195,12 +195,21 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc />
     public override async Task<string> FetchPostDataAsync()
     {
+        var content = await ContentAsync().ConfigureAwait(false);
+        return content == null ? null : Encoding.UTF8.GetString(content);
+    }
+
+    /// <inheritdoc />
+    public override async Task<byte[]> ContentAsync()
+    {
         try
         {
             var result = await _client.SendAsync<GetRequestPostDataResponse>(
                 "Network.getRequestPostData",
                 new GetRequestPostDataRequest(Id)).ConfigureAwait(false);
-            return result.PostData;
+            return result.Base64Encoded
+                ? Convert.FromBase64String(result.PostData)
+                : Encoding.UTF8.GetBytes(result.PostData);
         }
         catch (Exception ex)
         {

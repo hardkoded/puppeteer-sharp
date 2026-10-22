@@ -94,6 +94,9 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task<string> FetchPostDataAsync();
 
+        /// <inheritdoc />
+        public abstract Task<byte[]> ContentAsync();
+
         /// <inheritdoc/>
         void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
             => EnqueueInterceptionActionCore(pendingHandler);
