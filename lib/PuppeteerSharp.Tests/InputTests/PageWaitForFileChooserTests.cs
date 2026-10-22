@@ -96,5 +96,16 @@ namespace PuppeteerSharp.Tests.InputTests
                 Page.QuerySelectorAsync("input").EvaluateFunctionAsync("input => input.click()"));
             Assert.That(fileChooserTask2.Result, Is.SameAs(fileChooserTask1.Result));
         }
+
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should not throw unhandled rejection when file picker is opened without an input element")]
+        public async Task ShouldNotThrowUnhandledRejectionWhenFilePickerIsOpenedWithoutAnInputElement()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync("<button onclick=\"window.showOpenFilePicker?.().catch(() => {})\"></button>");
+
+            Assert.ThrowsAsync<TimeoutException>(() => Task.WhenAll(
+                Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 200 }),
+                Page.ClickAsync("button")));
+        }
     }
 }

@@ -1286,6 +1286,11 @@ public class CdpPage : Page
             }
         }
 
+        if (e.BackendNodeId == null)
+        {
+            return;
+        }
+
         var frame = await FrameManager.FrameTree.GetFrameAsync(e.FrameId).ConfigureAwait(false);
         var element = await frame.MainWorld.AdoptBackendNodeAsync(e.BackendNodeId).ConfigureAwait(false);
         var fileChooser = new FileChooser(element, e);
