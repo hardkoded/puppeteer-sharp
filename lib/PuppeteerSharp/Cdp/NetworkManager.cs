@@ -249,7 +249,7 @@ namespace PuppeteerSharp.Cdp
             if (redirectInfo != null)
             {
                 _networkEventManager.ResponseExtraInfo(e.RequestId).Add(e);
-                await OnRequestAsync(client, redirectInfo.Event, redirectInfo.FetchRequestId).ConfigureAwait(false);
+                await OnRequestAsync(redirectInfo.Client, redirectInfo.Event, redirectInfo.FetchRequestId, redirectInfo.FetchClient).ConfigureAwait(false);
                 return;
             }
 
@@ -458,6 +458,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             var requestWillBeSentEvent = _networkEventManager.GetRequestWillBeSent(e.NetworkId);
+            var networkClient = _networkEventManager.GetRequestWillBeSentClient(e.NetworkId);
             if (requestWillBeSentEvent == null)
             {
                 // Chrome may restart a request and send a second Fetch.requestPaused
@@ -466,7 +467,7 @@ namespace PuppeteerSharp.Cdp
                 var existingRequest = _networkEventManager.GetRequest(e.NetworkId);
                 if (existingRequest != null && IsRestartedRequest(existingRequest, e))
                 {
-                    OnRequestRestarted(existingRequest, e.RequestId);
+                    OnRequestRestarted(client, existingRequest, e.RequestId);
                     return;
                 }
 
@@ -485,7 +486,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             PatchRequestEventHeaders(requestWillBeSentEvent, e);
-            await OnRequestAsync(client, requestWillBeSentEvent, e.RequestId).ConfigureAwait(false);
+            await OnRequestAsync(networkClient ?? client, requestWillBeSentEvent, e.RequestId, client).ConfigureAwait(false);
         }
 
         private async void OnRequestWithoutNetworkInstrumentationAsync(CDPSession client, FetchRequestPausedResponse e)
@@ -509,7 +510,7 @@ namespace PuppeteerSharp.Cdp
             _ = request.FinalizeInterceptionsAsync();
         }
 
-        private async Task OnRequestAsync(CDPSession client, RequestWillBeSentResponse e, string fetchRequestId)
+        private async Task OnRequestAsync(CDPSession client, RequestWillBeSentResponse e, string fetchRequestId, CDPSession fetchClient = null)
         {
             CdpHttpRequest request;
             var redirectChain = new List<IRequest>();
@@ -525,6 +526,8 @@ namespace PuppeteerSharp.Cdp
                         {
                             Event = e,
                             FetchRequestId = fetchRequestId,
+                            Client = client,
+                            FetchClient = fetchClient ?? client,
                         });
                         return;
                     }
@@ -557,7 +560,8 @@ namespace PuppeteerSharp.Cdp
                 _userRequestInterceptionEnabled,
                 e,
                 redirectChain,
-                _loggerFactory);
+                _loggerFactory,
+                fetchClient);
 
             var requestExtraInfoList = _networkEventManager.RequestExtraInfo(e.RequestId);
             if (requestExtraInfoList.Count > 0)
@@ -617,7 +621,7 @@ namespace PuppeteerSharp.Cdp
             // Request interception doesn't happen for data URLs with Network Service.
             if (_userRequestInterceptionEnabled && !e.Request.Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
             {
-                _networkEventManager.StoreRequestWillBeSent(e.RequestId, e);
+                _networkEventManager.StoreRequestWillBeSent(e.RequestId, e, client);
 
                 var requestPausedEvent = _networkEventManager.GetRequestPaused(e.RequestId);
                 if (requestPausedEvent != null)
@@ -625,11 +629,10 @@ namespace PuppeteerSharp.Cdp
                     var fetchRequestId = requestPausedEvent.RequestId;
                     PatchRequestEventHeaders(e, requestPausedEvent);
 
-                    // Use the client that received Fetch.requestPaused (where Fetch is enabled),
-                    // not the client that received Network.requestWillBeSent (which may be a
-                    // worker session without Fetch support).
+                    // Fetch commands go to the session that paused the request, which may differ
+                    // from the worker session that sent Network.requestWillBeSent.
                     var fetchClient = _networkEventManager.GetRequestPausedClient(e.RequestId) ?? client;
-                    await OnRequestAsync(fetchClient, e, fetchRequestId).ConfigureAwait(false);
+                    await OnRequestAsync(client, e, fetchRequestId, fetchClient).ConfigureAwait(false);
                     _networkEventManager.ForgetRequestPaused(e.RequestId);
                 }
 
@@ -661,9 +664,10 @@ namespace PuppeteerSharp.Cdp
             return urlMatches && methodMatches;
         }
 
-        private void OnRequestRestarted(CdpHttpRequest request, string fetchRequestId)
+        private void OnRequestRestarted(CDPSession client, CdpHttpRequest request, string fetchRequestId)
         {
             request.InterceptionId = fetchRequestId;
+            request.FetchClient = client;
             if (!_userRequestInterceptionEnabled)
             {
                 return;
