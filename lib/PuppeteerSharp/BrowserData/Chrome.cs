@@ -16,7 +16,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default chrome build.
         /// </summary>
-        public static string DefaultBuildId => "155.0.8059.84";
+        public static string DefaultBuildId => "156.0.8078.47";
 
         internal static async Task<string> ResolveBuildIdAsync(ChromeReleaseChannel channel)
             => (await GetLastKnownGoodReleaseForChannel(channel).ConfigureAwait(false)).Version;

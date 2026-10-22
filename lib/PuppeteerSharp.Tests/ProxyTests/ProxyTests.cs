@@ -140,6 +140,16 @@ namespace PuppeteerSharp.Tests.ProxyTests
                     return;
                 }
 
+                // Ignore component update requests triggered on startup.
+                // See https://crbug.com/576202737.
+                if (Uri.TryCreate(requestUrl, UriKind.Absolute, out var requestUri) &&
+                    requestUri.Host == "update.googleapis.com")
+                {
+                    var notFoundResponse = Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n");
+                    await stream.WriteAsync(notFoundResponse, 0, notFoundResponse.Length);
+                    return;
+                }
+
                 _proxiedRequestUrls.Add(requestUrl);
 
                 // Rewrite the URL to point to localhost since the test server
