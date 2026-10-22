@@ -120,13 +120,16 @@ public class CdpFrame : Frame
             task = await Task.WhenAny(watcher.TerminationTask, navigationTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
+
+            var responseTask = watcher.NavigationResponseAsync();
+            await (await Task.WhenAny(watcher.TerminationTask, responseTask).ConfigureAwait(false)).ConfigureAwait(false);
+
+            return await responseTask.ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             throw new NavigationException(ex.Message, ex);
         }
-
-        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
 
         async Task NavigateAsync()
         {

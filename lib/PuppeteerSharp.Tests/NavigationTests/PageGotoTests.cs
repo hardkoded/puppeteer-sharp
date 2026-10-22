@@ -265,6 +265,28 @@ namespace PuppeteerSharp.Tests.NavigationTests
             Assert.That(exception.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
+        [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should settle when the page navigates again while loading")]
+        public async Task ShouldSettleWhenThePageNavigatesAgainWhileLoading()
+        {
+            Server.SetRoute("/navigate-on-load.html", async context =>
+            {
+                await context.Response.WriteAsync("<html><body onload=\"location.href='/hang.html'\">ok</body></html>");
+            });
+            Server.SetRoute("/hang.html", _ => Task.Delay(-1));
+
+            var loaded = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.Load += (_, _) => loaded.TrySetResult(true);
+            var hangRequested = Server.WaitForRequest("/hang.html");
+
+            var goto1 = Page.GoToAsync(TestConstants.ServerUrl + "/navigate-on-load.html", new NavigationOptions { Timeout = 3000 })
+                .ContinueWith(_ => { }, TaskScheduler.Default);
+
+            await Task.WhenAll(loaded.Task, hangRequested);
+
+            var settled = await Task.WhenAny(goto1, Task.Delay(10000));
+            Assert.That(settled, Is.SameAs(goto1));
+        }
+
         [Test, PuppeteerTest("navigation.spec", "navigation Page.goto", "should fail when exceeding default maximum navigation timeout")]
         public void ShouldFailWhenExceedingDefaultMaximumNavigationTimeout()
         {
