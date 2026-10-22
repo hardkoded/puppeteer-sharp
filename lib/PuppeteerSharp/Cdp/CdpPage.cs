@@ -915,8 +915,10 @@ public class CdpPage : Page
     {
         "px" => 1,
         "in" => 96,
-        "cm" => 37.8m,
-        "mm" => 3.78m,
+        "cm" => 96 / 2.54m,
+        "mm" => 96 / 25.4m,
+        "pt" => 96 / 72m,
+        "pc" => 16,
         _ => null,
     };
 
