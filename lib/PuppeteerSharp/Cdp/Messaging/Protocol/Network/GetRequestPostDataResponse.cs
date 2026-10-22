@@ -25,4 +25,6 @@ namespace PuppeteerSharp.Cdp.Messaging.Protocol.Network;
 internal class GetRequestPostDataResponse
 {
     public string PostData { get; set; }
+
+    public bool Base64Encoded { get; set; }
 }

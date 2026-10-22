@@ -230,6 +230,20 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
     /// <inheritdoc />
     public override Task<string> FetchPostDataAsync() => _request.FetchPostDataAsync();
 
+    /// <inheritdoc />
+    public override async Task<byte[]> ContentAsync()
+    {
+        try
+        {
+            return await _request.GetRequestContentAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            BidiPage.BidiBrowser.LoggerFactory?.CreateLogger<BidiHttpRequest>().LogError(ex, ex.ToString());
+            return null;
+        }
+    }
+
     internal static BidiHttpRequest From(Request bidiRequest, BidiFrame frame, BidiHttpRequest redirect = null)
     {
         var isNavigationRequest = bidiRequest.Navigation != null;
