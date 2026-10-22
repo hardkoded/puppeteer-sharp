@@ -26,11 +26,13 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly string _live;
         private readonly bool _ignored;
         private readonly Realm _realm;
+        private readonly string _loaderId;
         private bool? _cachedHasFocusableChild;
 
         private AXNode(Realm realm, AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
             _realm = realm;
+            _loaderId = (realm?.Environment as Frame)?.LoaderId;
             Payload = payload;
 
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
@@ -259,6 +261,7 @@ namespace PuppeteerSharp.PageAccessibility
             }
 
             var realm = _realm;
+            var loaderId = _loaderId;
             var backendDOMNodeId = Payload.BackendDOMNodeId;
 
             var node = new SerializedAXNode
@@ -266,6 +269,12 @@ namespace PuppeteerSharp.PageAccessibility
                 ElementHandleFactory = backendDOMNodeId.ValueKind == JsonValueKind.Number && realm != null
                     ? async () =>
                     {
+                        // After a navigation, the backend node ID can belong to a different node in the new document.
+                        if ((realm.Environment as Frame)?.LoaderId != loaderId)
+                        {
+                            return null;
+                        }
+
                         var handle = await realm.AdoptBackendNodeAsync(backendDOMNodeId.GetInt32()).ConfigureAwait(false);
 
                         // Since Text nodes are not elements, we want to
@@ -284,7 +293,7 @@ namespace PuppeteerSharp.PageAccessibility
 
                 // LoaderId is an experimental mechanism to establish unique IDs across
                 // navigations.
-                LoaderId = (realm?.Environment as Frame)?.LoaderId,
+                LoaderId = loaderId,
                 Name = properties.GetValue("name")?.ToObject<string>(),
                 Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
                 Description = properties.GetValue("description")?.ToObject<string>(),

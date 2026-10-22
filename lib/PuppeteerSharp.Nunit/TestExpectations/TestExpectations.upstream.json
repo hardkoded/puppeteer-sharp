@@ -1,6 +1,6 @@
 [
   {
-    "testIdPattern": "[a11yLoaderId.spec] Accessibility loaderId should match loaderId for iframes",
+    "testIdPattern": "[a11yLoaderId.spec] *",
     "platforms": [
       "darwin",
       "linux",
