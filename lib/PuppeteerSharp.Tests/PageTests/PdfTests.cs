@@ -187,6 +187,19 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(size, Is.GreaterThan(0));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "should accept page ranges without spaces")]
+        public async Task ShouldAcceptPageRangesWithoutSpaces()
+        {
+            await Page.SetContentAsync(@"
+                <div style=""break-after: page"">1</div>
+                <div style=""break-after: page"">2</div>
+                <div>3</div>");
+
+            var pdf = await Page.PdfDataAsync(new PdfOptions { PageRanges = "1-2,3" });
+
+            Assert.That(pdf, Is.Not.Empty);
+        }
+
         [Test, PuppeteerTest("page.spec", "Page.pdf", "should respect timeout")]
         public async Task ShouldRespectTimeout()
         {
