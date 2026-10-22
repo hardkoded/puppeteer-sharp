@@ -161,5 +161,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the request's POST data.</returns>
         Task<string> FetchPostDataAsync();
+
+        /// <summary>
+        /// Fetches the unmodified POST data bytes for the request from the browser.
+        /// </summary>
+        /// <returns>Task which resolves to the request's raw POST data, or <c>null</c> when there is none or fetching it fails.</returns>
+        Task<byte[]> ContentAsync();
     }
 }

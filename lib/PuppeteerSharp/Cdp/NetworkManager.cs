@@ -302,7 +302,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             MaybeReassignRequestClient(client, request);
-            request.FailureText = e.ErrorText;
+            request.FailureText = !string.IsNullOrEmpty(e.ErrorText) ? e.ErrorText : e.BlockedReason;
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);

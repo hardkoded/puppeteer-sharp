@@ -119,5 +119,18 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(request.HasPostData, Is.True);
             Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("{\"foo\":\"bar\"}"));
         }
+
+        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work with binary post data")]
+        public async Task ShouldWorkWithBinaryPostData()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            var requestTask = Page.WaitForRequestAsync(request => !TestUtils.IsFavicon(request));
+            await Page.EvaluateExpressionHandleAsync("fetch('./post', { method: 'POST', body: new Uint8Array([104, 101, 108, 108, 111, 0, 255]) })");
+            var request = await requestTask.WithTimeout();
+            Assert.That(request, Is.Not.Null);
+            Assert.That(request.HasPostData, Is.True);
+            Assert.That(await request.FetchPostDataAsync(), Is.EqualTo("hello\0\uFFFD"));
+        }
     }
 }

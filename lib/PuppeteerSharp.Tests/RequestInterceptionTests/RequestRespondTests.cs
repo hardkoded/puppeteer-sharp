@@ -205,6 +205,29 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
+        [Test, PuppeteerTest("HTTPRequest.test", "CdpHTTPRequest", "should not send response headers whose value is undefined")]
+        public async Task ShouldNotSendResponseHeadersWhoseValueIsNull()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["x-keep"] = "yes",
+                        ["x-drop"] = null,
+                    },
+                    Body = "ok",
+                });
+            };
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(response.Headers["x-keep"], Is.EqualTo("yes"));
+            Assert.That(response.Headers.ContainsKey("x-drop"), Is.False);
+        }
+
         [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should allow mocking multiple headers with same key")]
         public async Task ShouldAllowMockingMultipleHeadersWithSameKey()
         {

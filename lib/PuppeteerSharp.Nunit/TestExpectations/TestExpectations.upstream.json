@@ -1477,6 +1477,21 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed for blocked requests",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "FAIL"
+    ],
+    "comment": "WebDriver BiDi does not populate blockedReason in network.fetchError errorText"
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
     "platforms": [
       "darwin",

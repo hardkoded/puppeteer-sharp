@@ -145,6 +145,31 @@ namespace PuppeteerSharp.Tests.NetworkTests
             Assert.That(failedRequests[0].Frame, Is.Not.Null);
         }
 
+        [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFailed for blocked requests")]
+        public async Task PageEventsRequestFailedForBlockedRequests()
+        {
+            Server.SetCSP("/empty.html", "default-src 'none'");
+            var failedRequests = new List<IRequest>();
+            Page.RequestFailed += (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    failedRequests.Add(e.Request);
+                }
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            try
+            {
+                await Page.AddScriptTagAsync(new AddTagOptions { Url = TestConstants.ServerUrl + "/one-script.js" });
+            }
+            catch
+            {
+            }
+
+            Assert.That(failedRequests, Has.Exactly(1).Items);
+            Assert.That(failedRequests[0].FailureText, Is.EqualTo("csp"));
+        }
+
         [Test, PuppeteerTest("network.spec", "network Network Events", "Page.Events.RequestFinished")]
         public async Task PageEventsRequestFinished()
         {

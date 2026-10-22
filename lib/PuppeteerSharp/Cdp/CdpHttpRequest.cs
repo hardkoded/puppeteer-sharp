@@ -17,6 +17,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 {
     private readonly bool _allowInterception;
     private readonly bool _hasCompletePostData;
+    private readonly byte[] _postDataBytes;
 
     // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
     // Upstream equivalent: puppeteer/puppeteer#15338.
@@ -48,7 +49,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         Url = data.Request.Url + (data.Request.UrlFragment ?? string.Empty);
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = ReconstructPostData(data.Request);
+        _postDataBytes = MergePostDataEntries(data.Request);
+        PostData = _postDataBytes != null ? Encoding.UTF8.GetString(_postDataBytes) : data.Request.PostData;
         _hasCompletePostData = data.Request.PostDataEntries is { Length: > 0 } &&
             data.Request.PostDataEntries.All(entry => !string.IsNullOrEmpty(entry.Bytes));
         HasPostData = data.Request.HasPostData ?? false;
@@ -198,9 +200,16 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc />
     public override async Task<string> FetchPostDataAsync()
     {
+        var content = await ContentAsync().ConfigureAwait(false);
+        return content == null ? null : Encoding.UTF8.GetString(content);
+    }
+
+    /// <inheritdoc />
+    public override async Task<byte[]> ContentAsync()
+    {
         if (InterceptionId != null && _allowInterception && !IsInterceptResolutionHandled && _hasCompletePostData)
         {
-            return PostData;
+            return _postDataBytes;
         }
 
         try
@@ -208,7 +217,9 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
             var result = await _client.SendAsync<GetRequestPostDataResponse>(
                 "Network.getRequestPostData",
                 new GetRequestPostDataRequest(Id)).ConfigureAwait(false);
-            return result.PostData;
+            return result.Base64Encoded
+                ? Convert.FromBase64String(result.PostData)
+                : Encoding.UTF8.GetBytes(result.PostData);
         }
         catch (Exception ex)
         {
@@ -275,28 +286,27 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     protected override bool CanBeIntercepted()
         => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache;
 
-    private static string ReconstructPostData(Messaging.Request request)
+    private static byte[] MergePostDataEntries(Messaging.Request request)
     {
-        if (request.PostDataEntries is { Length: > 0 })
+        if (request.PostDataEntries is not { Length: > 0 })
         {
-            var buffers = request.PostDataEntries
-                .Where(entry => entry.Bytes != null)
-                .Select(entry => Convert.FromBase64String(entry.Bytes))
-                .ToArray();
-
-            var totalLength = buffers.Sum(b => b.Length);
-            var merged = new byte[totalLength];
-            var offset = 0;
-            foreach (var buffer in buffers)
-            {
-                Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
-                offset += buffer.Length;
-            }
-
-            return Encoding.UTF8.GetString(merged);
+            return null;
         }
 
-        return request.PostData;
+        var buffers = request.PostDataEntries
+            .Where(entry => entry.Bytes != null)
+            .Select(entry => Convert.FromBase64String(entry.Bytes))
+            .ToArray();
+
+        var merged = new byte[buffers.Sum(b => b.Length)];
+        var offset = 0;
+        foreach (var buffer in buffers)
+        {
+            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
+            offset += buffer.Length;
+        }
+
+        return merged;
     }
 
     private Header[] HeadersArray(Dictionary<string, string> headers)
