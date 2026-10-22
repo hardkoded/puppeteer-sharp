@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -7,6 +8,79 @@ namespace PuppeteerSharp.Tests.NetworkTests
 {
     public class RequestFetchPostDataTests : PuppeteerPageBaseTest
     {
+        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work for intercepted form submissions")]
+        public async Task ShouldWorkForInterceptedFormSubmissions()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            await Page.SetRequestInterceptionAsync(true);
+            string postData = null;
+            Page.Request += async (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request) && e.Request.Method == HttpMethod.Post)
+                {
+                    postData = await e.Request.FetchPostDataAsync();
+                }
+
+                await e.Request.ContinueAsync();
+            };
+
+            await Task.WhenAll(
+                Page.WaitForNavigationAsync(),
+                Page.EvaluateFunctionAsync(@"() => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/post';
+                    const input = document.createElement('input');
+                    input.name = 'foo';
+                    input.value = 'bar';
+                    form.append(input);
+                    document.body.append(form);
+                    form.submit();
+                }"));
+
+            Assert.That(postData, Is.EqualTo("foo=bar"));
+        }
+
+        [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work for intercepted form submissions in cooperative mode")]
+        public async Task ShouldWorkForInterceptedFormSubmissionsInCooperativeMode()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Server.SetRoute("/post", _ => Task.CompletedTask);
+            await Page.SetRequestInterceptionAsync(true);
+            string postData = null;
+            Page.Request += async (_, e) =>
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    await e.Request.ContinueAsync(new Payload(), 0);
+                }
+            };
+            Page.Request += async (_, e) =>
+            {
+                if (e.Request.Method == HttpMethod.Post)
+                {
+                    postData = await e.Request.FetchPostDataAsync();
+                }
+            };
+
+            await Task.WhenAll(
+                Page.WaitForNavigationAsync(),
+                Page.EvaluateFunctionAsync(@"() => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/post';
+                    const input = document.createElement('input');
+                    input.name = 'foo';
+                    input.value = 'bar';
+                    form.append(input);
+                    document.body.append(form);
+                    form.submit();
+                }"));
+
+            Assert.That(postData, Is.EqualTo("foo=bar"));
+        }
+
         [Test, PuppeteerTest("network.spec", "network Request.fetchPostData", "should work")]
         public async Task ShouldWork()
         {

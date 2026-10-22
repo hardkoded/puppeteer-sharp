@@ -16,6 +16,7 @@ namespace PuppeteerSharp.Cdp;
 public class CdpHttpRequest : Request<CdpHttpResponse>
 {
     private readonly bool _allowInterception;
+    private readonly bool _hasCompletePostData;
 
     // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
     // Upstream equivalent: puppeteer/puppeteer#15338.
@@ -48,6 +49,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
         PostData = ReconstructPostData(data.Request);
+        _hasCompletePostData = data.Request.PostDataEntries is { Length: > 0 } &&
+            data.Request.PostDataEntries.All(entry => !string.IsNullOrEmpty(entry.Bytes));
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
@@ -195,6 +198,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc />
     public override async Task<string> FetchPostDataAsync()
     {
+        if (InterceptionId != null && _allowInterception && !IsInterceptResolutionHandled && _hasCompletePostData)
+        {
+            return PostData;
+        }
+
         try
         {
             var result = await _client.SendAsync<GetRequestPostDataResponse>(
