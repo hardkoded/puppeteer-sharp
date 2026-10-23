@@ -1139,8 +1139,10 @@ public class BidiPage : Page
 
         // Conversion factors to pixels
         const double pxPerInch = 96;
-        const double pxPerCm = 37.8;
-        const double pxPerMm = 3.78;
+        const double pxPerCm = 96 / 2.54;
+        const double pxPerMm = 96 / 25.4;
+        const double pxPerPt = 96d / 72;
+        const double pxPerPc = 16;
 
         double pixels;
         if (parameter is decimal or int or double or float)
@@ -1160,6 +1162,8 @@ public class BidiPage : Page
                 "in" => pxPerInch,
                 "cm" => pxPerCm,
                 "mm" => pxPerMm,
+                "pt" => pxPerPt,
+                "pc" => pxPerPc,
                 _ => null,
             };
 

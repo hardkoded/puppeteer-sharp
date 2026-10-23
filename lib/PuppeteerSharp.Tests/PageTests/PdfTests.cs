@@ -99,6 +99,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(new FileInfo(accessibleOutputFile).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
         }
 
+        [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with custom mm and pt dimensions")]
+        public async Task CanPrintToPdfWithCustomMmAndPtDimensions()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            var mmPdf = await Page.PdfDataAsync(new PdfOptions { Width = "556.27mm", Height = "145.27mm" });
+            var mmText = System.Text.Encoding.Latin1.GetString(mmPdf);
+            var mediaBox = System.Text.RegularExpressions.Regex.Match(mmText, @"/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]");
+            Assert.That(mediaBox.Success, Is.True);
+            Assert.That(Math.Round(double.Parse(mediaBox.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(1577));
+            Assert.That(Math.Round(double.Parse(mediaBox.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(412));
+
+            var ptPdf = await Page.PdfDataAsync(new PdfOptions { Width = "72pt", Height = "6pc" });
+            Assert.That(System.Text.Encoding.Latin1.GetString(ptPdf), Does.Contain("/MediaBox [0 0 72 72]"));
+        }
+
         [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
         public async Task CanPrintToPdfWithOutline()
         {
