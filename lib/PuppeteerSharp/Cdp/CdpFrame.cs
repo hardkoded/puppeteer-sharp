@@ -107,9 +107,10 @@ public class CdpFrame : Frame
         var ensureNewDocumentNavigation = false;
         try
         {
+            var terminationTask = watcher.TerminationTask;
             var navigateTask = NavigateAsync();
             var task = await Task.WhenAny(
-                watcher.TerminationTask,
+                terminationTask,
                 navigateTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
@@ -117,16 +118,19 @@ public class CdpFrame : Frame
             var navigationTask = ensureNewDocumentNavigation
                 ? watcher.NewDocumentNavigationTask
                 : watcher.SameDocumentNavigationTask;
-            task = await Task.WhenAny(watcher.TerminationTask, navigationTask).ConfigureAwait(false);
+            task = await Task.WhenAny(terminationTask, navigationTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
+
+            var responseTask = watcher.NavigationResponseAsync();
+            await (await Task.WhenAny(terminationTask, responseTask).ConfigureAwait(false)).ConfigureAwait(false);
+
+            return await responseTask.ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             throw new NavigationException(ex.Message, ex);
         }
-
-        return await watcher.NavigationResponseAsync().ConfigureAwait(false);
 
         async Task NavigateAsync()
         {
