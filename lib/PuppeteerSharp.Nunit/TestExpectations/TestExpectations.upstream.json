@@ -2051,6 +2051,21 @@
     "comment": "https://github.com/w3c/webdriver-bidi/issues/508"
   },
   {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should intercept parallel fetches from a dedicated worker",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not intercept requests from dedicated workers"
+  },
+  {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with keep alive redirects",
     "platforms": [
       "darwin",

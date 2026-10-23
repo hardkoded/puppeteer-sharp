@@ -8,6 +8,7 @@ namespace PuppeteerSharp.Cdp
     internal class NetworkEventManager
     {
         private readonly ConcurrentDictionary<string, RequestWillBeSentResponse> _requestWillBeSentMap = new();
+        private readonly ConcurrentDictionary<string, CDPSession> _requestWillBeSentClientMap = new();
         private readonly ConcurrentDictionary<string, FetchRequestPausedResponse> _requestPausedMap = new();
         private readonly ConcurrentDictionary<string, CDPSession> _requestPausedClientMap = new();
         private readonly ConcurrentDictionary<string, CdpHttpRequest> _httpRequestsMap = new();
@@ -22,6 +23,7 @@ namespace PuppeteerSharp.Cdp
         internal void Forget(string requestId)
         {
             _requestWillBeSentMap.TryRemove(requestId, out _);
+            _requestWillBeSentClientMap.TryRemove(requestId, out _);
             _requestPausedMap.TryRemove(requestId, out _);
             _requestPausedClientMap.TryRemove(requestId, out _);
             _requestWillBeSentExtraInfoMap.TryRemove(requestId, out _);
@@ -66,8 +68,17 @@ namespace PuppeteerSharp.Cdp
             return result;
         }
 
-        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentResponse e)
-            => _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
+        internal void StoreRequestWillBeSent(string networkRequestId, RequestWillBeSentResponse e, CDPSession client)
+        {
+            _requestWillBeSentMap.AddOrUpdate(networkRequestId, e, (_, _) => e);
+            _requestWillBeSentClientMap.AddOrUpdate(networkRequestId, client, (_, _) => client);
+        }
+
+        internal CDPSession GetRequestWillBeSentClient(string networkRequestId)
+        {
+            _requestWillBeSentClientMap.TryGetValue(networkRequestId, out var result);
+            return result;
+        }
 
         internal RequestWillBeSentResponse GetRequestWillBeSent(string networkRequestId)
         {
@@ -76,7 +87,10 @@ namespace PuppeteerSharp.Cdp
         }
 
         internal void ForgetRequestWillBeSent(string networkRequestId)
-            => _requestWillBeSentMap.TryRemove(networkRequestId, out _);
+        {
+            _requestWillBeSentMap.TryRemove(networkRequestId, out _);
+            _requestWillBeSentClientMap.TryRemove(networkRequestId, out _);
+        }
 
         internal FetchRequestPausedResponse GetRequestPaused(string networkRequestId)
         {
@@ -112,7 +126,7 @@ namespace PuppeteerSharp.Cdp
             => _httpRequestsMap.AddOrUpdate(networkRequestId, request, (_, _) => request);
 
         internal void ForgetRequest(string requestId)
-            => _requestWillBeSentMap.TryRemove(requestId, out _);
+            => ForgetRequestWillBeSent(requestId);
 
         internal void QueuedEventGroup(string networkRequestId, QueuedEventGroup group)
             => _queuedEventGroupMap.AddOrUpdate(networkRequestId, group, (_, _) => group);

@@ -782,6 +782,46 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.SetRequestInterceptionAsync(true);
         }
 
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Page.setRequestInterception", "should intercept parallel fetches from a dedicated worker")]
+        public async Task ShouldInterceptParallelFetchesFromADedicatedWorker()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                if (e.Request.Url.Contains("abort"))
+                {
+                    await e.Request.AbortAsync();
+                }
+                else
+                {
+                    await e.Request.ContinueAsync();
+                }
+            };
+
+            var settled = await Page.EvaluateFunctionAsync<int>(@"() => {
+                const source = `onmessage = async ({data: url}) => {
+                    const results = await Promise.allSettled(
+                        Array.from({length: 20}, (_, i) => {
+                            return fetch(url + (i % 2 ? '?abort=' : '?continue=') + i);
+                        }),
+                    );
+                    postMessage(results.length);
+                };`;
+                const worker = new Worker(
+                    URL.createObjectURL(new Blob([source], {type: 'text/javascript'})),
+                );
+                return new Promise(resolve => {
+                    worker.onmessage = event => {
+                        resolve(event.data);
+                    };
+                    worker.postMessage(location.href);
+                });
+            }");
+
+            Assert.That(settled, Is.EqualTo(20));
+        }
+
         [Test, PuppeteerTest("PuppeteerSharp", "request interception Page.setRequestInterception", "should continue intercepted worker module import")]
         public async Task ShouldContinueInterceptedWorkerModuleImport()
         {

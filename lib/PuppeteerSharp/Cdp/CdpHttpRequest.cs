@@ -22,6 +22,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private readonly ILogger _logger;
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
     private CDPSession _client;
+    private CDPSession _fetchClient;
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
@@ -36,9 +37,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         bool allowInterception,
         RequestWillBeSentResponse data,
         List<IRequest> redirectChain,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        CDPSession fetchClient = null)
     {
         _client = client;
+        _fetchClient = fetchClient ?? client;
         _logger = loggerFactory.CreateLogger<CdpHttpRequest>();
         Id = data.RequestId;
         IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
@@ -87,6 +90,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     {
         get => _client;
         set => _client = value;
+    }
+
+    internal CDPSession FetchClient
+    {
+        get => _fetchClient;
+        set => _fetchClient = value;
     }
 
     internal Payload ResolvedContinueOverrides => _resolvedContinueOverrides ?? new Payload();
@@ -335,7 +344,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                 requestData.Headers = HeadersArray(overrides.Headers);
             }
 
-            await _client.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
+            await _fetchClient.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
         }
         catch (PuppeteerException ex)
         {
@@ -353,7 +362,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         try
         {
-            await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
+            await _fetchClient.SendAsync("Fetch.failRequest", new FetchFailRequest
             {
                 RequestId = InterceptionId,
                 ErrorReason = errorReason,
@@ -414,7 +423,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         try
         {
-            await _client.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
+            await _fetchClient.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
             {
                 RequestId = InterceptionId,
                 ResponseCode = response.Status != null ? (int)response.Status : 200,
