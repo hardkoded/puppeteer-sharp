@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -46,6 +47,11 @@ namespace PuppeteerSharp.Cdp
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
+
+        public IReadOnlyCollection<string> GetDiscoveredTargetIds() => _discoveredTargetsByTargetId.Keys.ToArray();
+
+        public Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null)
+            => Task.CompletedTask;
 
         public async Task InitializeAsync()
         {

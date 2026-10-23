@@ -35,6 +35,39 @@ namespace PuppeteerSharp.Tests.ExtensionsTests
             Assert.That(serviceWorkTarget, Is.Not.Null);
         }
 
+        [Test, PuppeteerTest("extensions.spec", "extensions", "should drop the previous service_worker target when re-installing an extension")]
+        public async Task ShouldDropThePreviousServiceWorkerTargetWhenReinstallingAnExtension()
+        {
+            await using var browserWithExtension = await Puppeteer.LaunchAsync(
+                BrowserWithExtensionOptions(),
+                TestConstants.LoggerFactory);
+            var extensionId = await browserWithExtension.InstallExtensionAsync(_extensionPath);
+            var firstWorkerTarget = await browserWithExtension.WaitForTargetAsync(
+                t => t.Url.Contains(extensionId) && t.Type == TargetType.ServiceWorker);
+            Assert.That(firstWorkerTarget, Is.Not.Null);
+
+            var destroyedTcs = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
+            browserWithExtension.TargetDestroyed += (_, e) => destroyedTcs.TrySetResult(e.Target);
+
+            var reinstalledId = await browserWithExtension.InstallExtensionAsync(_extensionPath);
+            Assert.That(reinstalledId, Is.EqualTo(extensionId));
+
+            var destroyedTarget = await destroyedTcs.Task.WithTimeout(5000);
+            Assert.That(destroyedTarget, Is.SameAs(firstWorkerTarget));
+
+            var secondWorkerTarget = await browserWithExtension.WaitForTargetAsync(
+                t => t.Url.Contains(extensionId) && t.Type == TargetType.ServiceWorker && t != firstWorkerTarget);
+            Assert.That(secondWorkerTarget, Is.Not.Null);
+
+            var serviceWorkerTargets = browserWithExtension.Targets()
+                .Where(t => t.Url.Contains(extensionId) && t.Type == TargetType.ServiceWorker)
+                .ToArray();
+            Assert.That(serviceWorkerTargets, Is.EqualTo(new[] { secondWorkerTarget }));
+
+            await browserWithExtension.UninstallExtensionAsync(extensionId);
+            AssertNoServiceWorkerReported(browserWithExtension.Targets(), extensionId);
+        }
+
         [Test, PuppeteerTest("extensions.spec", "extensions", "can evaluate in the service worker")]
         public async Task CanEvaluateInTheServiceWorker()
         {

@@ -63,5 +63,19 @@ namespace PuppeteerSharp
         /// <param name="restrictions">The restrictions to apply, or <c>null</c> to clear them.</param>
         /// <returns>A task that resolves when the restrictions were applied.</returns>
         Task SetNetworkConditionsAsync(NetworkRestrictions restrictions);
+
+        /// <summary>
+        /// Returns the IDs of the targets discovered so far.
+        /// </summary>
+        /// <returns>The discovered target IDs.</returns>
+        IReadOnlyCollection<string> GetDiscoveredTargetIds();
+
+        /// <summary>
+        /// Destroys the service worker targets of an extension, since Chrome does not emit Target.targetDestroyed for them.
+        /// </summary>
+        /// <param name="extensionId">The extension ID.</param>
+        /// <param name="existingTargetIds">When set, only targets with these IDs are destroyed.</param>
+        /// <returns>A task that resolves when the targets were destroyed.</returns>
+        Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null);
     }
 }

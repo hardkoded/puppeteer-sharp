@@ -223,9 +223,11 @@ public class CdpBrowser : Browser
     /// <inheritdoc/>
     public override async Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null)
     {
+        var existingTargetIds = TargetManager.GetDiscoveredTargetIds();
         var response = await Connection.SendAsync<ExtensionsLoadUnpackedResponse>(
             "Extensions.loadUnpacked",
             new ExtensionsLoadUnpackedRequest { Path = path, EnableInIncognito = options?.EnabledInIncognito ?? false }).ConfigureAwait(false);
+        await TargetManager.DestroyExtensionServiceWorkerTargetsAsync(response.Id, existingTargetIds).ConfigureAwait(false);
         _extensions.Remove(response.Id);
         return response.Id;
     }
@@ -234,6 +236,7 @@ public class CdpBrowser : Browser
     public override async Task UninstallExtensionAsync(string id)
     {
         await Connection.SendAsync("Extensions.uninstall", new ExtensionsUninstallRequest { Id = id }).ConfigureAwait(false);
+        await TargetManager.DestroyExtensionServiceWorkerTargetsAsync(id).ConfigureAwait(false);
         _extensions.Remove(id);
     }
 

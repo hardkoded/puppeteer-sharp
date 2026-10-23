@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -114,6 +115,26 @@ namespace PuppeteerSharp.Cdp
             FinishInitializationIfReady();
 
             await _initializeCompletionSource.Task.ConfigureAwait(false);
+        }
+
+        public IReadOnlyCollection<string> GetDiscoveredTargetIds() => _discoveredTargetsByTargetId.Keys.ToArray();
+
+        public async Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null)
+        {
+            var targetIds = _discoveredTargetsByTargetId
+                .Where(kvp => (existingTargetIds == null || existingTargetIds.Contains(kvp.Key)) &&
+                    kvp.Value.Type == TargetType.ServiceWorker &&
+                    kvp.Value.Url.Contains(extensionId))
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            foreach (var targetId in targetIds)
+            {
+                _ignoredTargets.Add(targetId);
+            }
+
+            await Task.WhenAll(targetIds.Select(targetId =>
+                OnTargetDestroyedAsync("Target.targetDestroyed", new TargetDestroyedResponse { TargetId = targetId }))).ConfigureAwait(false);
         }
 
         public IEnumerable<ITarget> GetChildTargets(ITarget target) => target.ChildTargets;
@@ -514,7 +535,9 @@ namespace PuppeteerSharp.Cdp
                 }
 
                 await SilentDetachAsync(session, parentConnection).ConfigureAwait(false);
-                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId))
+                if (_attachedTargetsByTargetId.ContainsKey(targetInfo.TargetId) ||
+                    _ignoredTargets.Contains(targetInfo.TargetId) ||
+                    !_discoveredTargetsByTargetId.ContainsKey(targetInfo.TargetId))
                 {
                     return;
                 }
@@ -651,8 +674,10 @@ namespace PuppeteerSharp.Cdp
                 parentSession.Target.RemoveChildTarget(target);
             }
 
-            _attachedTargetsByTargetId.TryRemove(target.TargetId, out _);
-            TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+            if (_attachedTargetsByTargetId.TryRemove(target.TargetId, out _))
+            {
+                TargetGone?.Invoke(this, new TargetChangedArgs { Target = target });
+            }
         }
 
         // Blocks the registration of a disallowed service worker by failing every request it makes
