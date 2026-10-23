@@ -97,33 +97,40 @@ namespace PuppeteerSharp
                         return false;
                     }
 
-                    if (filter.Domain != null && filter.Domain == cookie.Domain)
+                    if (filter.Domain != null && filter.Domain != cookie.Domain)
                     {
-                        return true;
+                        return false;
                     }
 
-                    if (filter.Path != null && filter.Path == cookie.Path)
+                    if (filter.Path != null && filter.Path != cookie.Path)
                     {
-                        return true;
+                        return false;
                     }
 
-                    if (filter.PartitionKey != null && cookie.PartitionKey != null)
+                    if (filter.PartitionKey != null)
                     {
-                        if (filter.PartitionKey.SourceOrigin == cookie.PartitionKey.SourceOrigin)
+                        if (cookie.PartitionKey == null)
                         {
-                            return true;
+                            return false;
+                        }
+
+                        if (filter.PartitionKey.SourceOrigin != cookie.PartitionKey.SourceOrigin)
+                        {
+                            return false;
+                        }
+
+                        if (filter.PartitionKey.HasCrossSiteAncestor != null &&
+                            filter.PartitionKey.HasCrossSiteAncestor != cookie.PartitionKey.HasCrossSiteAncestor)
+                        {
+                            return false;
                         }
                     }
 
-                    if (filter.Url != null)
+                    if (filter.Url != null &&
+                        Uri.TryCreate(filter.Url, UriKind.Absolute, out var url) &&
+                        (url.Host != cookie.Domain || url.AbsolutePath != cookie.Path))
                     {
-                        if (Uri.TryCreate(filter.Url, UriKind.Absolute, out var url))
-                        {
-                            if (url.Host == cookie.Domain && url.AbsolutePath == cookie.Path)
-                            {
-                                return true;
-                            }
-                        }
+                        return false;
                     }
 
                     return true;

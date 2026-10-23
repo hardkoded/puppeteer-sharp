@@ -357,6 +357,11 @@ namespace PuppeteerSharp.Tests.CookiesTests
         [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should delete cookies matching {\"name\":\"cookie1\",\"partitionKey\":{\"sourceOrigin\":\"https://example.test\"}}")]
         public async Task ShouldDeleteCookiesMatchingPartitionKey()
         {
+            if (!TestConstants.IsChrome)
+            {
+                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+            }
+
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(await Context.GetCookiesAsync(), Is.Empty);
             var topLevelSite = "https://example.test";
@@ -407,6 +412,255 @@ namespace PuppeteerSharp.Tests.CookiesTests
             var cookies = await Context.GetCookiesAsync();
             Assert.That(cookies, Has.Length.EqualTo(1));
             Assert.That(cookies[0].Name, Is.EqualTo("cookie2"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"url\":\"https://example.test/test\",\"name\":\"cookie1\"}")]
+        public async Task ShouldOnlyDeleteCookiesMatchingUrl()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/test",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                },
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "other.test",
+                    Path = "/other",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Url = "https://example.test/test",
+                Name = "cookie1",
+            });
+            var cookies = await Context.GetCookiesAsync();
+            Assert.That(cookies, Has.Length.EqualTo(1));
+            Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"domain\":\"example.test\",\"name\":\"cookie1\"}")]
+        public async Task ShouldOnlyDeleteCookiesMatchingDomain()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/test",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                },
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "other.test",
+                    Path = "/other",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Domain = "example.test",
+                Name = "cookie1",
+            });
+            var cookies = await Context.GetCookiesAsync();
+            Assert.That(cookies, Has.Length.EqualTo(1));
+            Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies matching {\"path\":\"/test\",\"name\":\"cookie1\"}")]
+        public async Task ShouldOnlyDeleteCookiesMatchingPath()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/test",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                },
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "other.test",
+                    Path = "/other",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Path = "/test",
+                Name = "cookie1",
+            });
+            var cookies = await Context.GetCookiesAsync();
+            Assert.That(cookies, Has.Length.EqualTo(1));
+            Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should only delete cookies in the matching partition")]
+        public async Task ShouldOnlyDeleteCookiesInTheMatchingPartition()
+        {
+            if (!TestConstants.IsChrome)
+            {
+                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+            }
+
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.test",
+                        HasCrossSiteAncestor = false,
+                    },
+                },
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "other.test",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://other.test",
+                        HasCrossSiteAncestor = false,
+                    },
+                });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Name = "cookie1",
+                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
+            });
+            var cookies = await Context.GetCookiesAsync();
+            Assert.That(cookies, Has.Length.EqualTo(1));
+            Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should not delete unpartitioned cookies when partitionKey is given")]
+        public async Task ShouldNotDeleteUnpartitionedCookiesWhenPartitionKeyIsGiven()
+        {
+            if (!TestConstants.IsChrome)
+            {
+                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+            }
+
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.test",
+                        HasCrossSiteAncestor = false,
+                    },
+                },
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "other.test",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(2));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Name = "cookie1",
+                PartitionKey = new CookiePartitionKey { SourceOrigin = "https://example.test" },
+            });
+            var cookies = await Context.GetCookiesAsync();
+            Assert.That(cookies, Has.Length.EqualTo(1));
+            Assert.That(cookies[0].Domain, Is.EqualTo("other.test"));
+        }
+
+        [Test, PuppeteerTest("browsercontext-cookies.spec", "BrowserContext cookies BrowserContext.deleteMatchingCookies", "should match hasCrossSiteAncestor in partitionKey")]
+        public async Task ShouldMatchHasCrossSiteAncestorInPartitionKey()
+        {
+            if (!TestConstants.IsChrome)
+            {
+                Assert.Ignore("In Firefox with WebDriver BiDi, we do not know the actual partition.");
+            }
+
+            await Context.SetCookieAsync(
+                new CookieData
+                {
+                    Name = "cookie1",
+                    Value = "secret",
+                    Domain = "example.test",
+                    Path = "/",
+                    Expires = -1,
+                    HttpOnly = false,
+                    Secure = true,
+                    PartitionKey = new CookiePartitionKey
+                    {
+                        SourceOrigin = "https://example.test",
+                        HasCrossSiteAncestor = false,
+                    },
+                });
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Name = "cookie1",
+                PartitionKey = new CookiePartitionKey
+                {
+                    SourceOrigin = "https://example.test",
+                    HasCrossSiteAncestor = true,
+                },
+            });
+            Assert.That(await Context.GetCookiesAsync(), Has.Length.EqualTo(1));
+            await Context.DeleteMatchingCookiesAsync(new DeleteCookiesRequest
+            {
+                Name = "cookie1",
+                PartitionKey = new CookiePartitionKey
+                {
+                    SourceOrigin = "https://example.test",
+                    HasCrossSiteAncestor = false,
+                },
+            });
+            Assert.That(await Context.GetCookiesAsync(), Is.Empty);
         }
     }
 }
