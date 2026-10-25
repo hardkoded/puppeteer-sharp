@@ -297,11 +297,10 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
                 await ContinueInternalAsync(_continueRequestOverrides).ConfigureAwait(false);
                 break;
             case InterceptResolutionAction.None:
-                // When no explicit action was set but the request is blocked,
-                // we need to continue it to allow the browser to proceed.
-                // This happens when interception is enabled but no handler called
-                // ContinueAsync, AbortAsync, or RespondAsync.
-                if (CanBeIntercepted())
+                // Firefox phantom requests never raise the Request event, so no handler will ever
+                // resolve them. Continue them to let the browser proceed. Requests the user has seen
+                // are left to the user, as upstream does.
+                if (!RequestEventEmitted && CanBeIntercepted())
                 {
                     await ContinueInternalAsync().ConfigureAwait(false);
                 }
