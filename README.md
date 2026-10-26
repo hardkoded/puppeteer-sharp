@@ -20,7 +20,7 @@ PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 releas
 
 ## Useful links
 
-* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* [API Documentation](https://www.puppeteersharp.com/api/)
 * Slack channel [#puppeteer-sharp](https://www.hardkoded.com/goto/pptr-slack)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)

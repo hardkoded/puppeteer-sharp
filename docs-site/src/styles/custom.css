@@ -1,0 +1,49 @@
+:root {
+    --sl-font: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --sl-font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    /* Dark theme. Teal, distinct from the other Hardkoded docs sites. */
+    --sl-color-accent-low: #042f2e;
+    --sl-color-accent: #2dd4bf;
+    --sl-color-accent-high: #ccfbf1;
+    --sl-content-width: 48rem;
+}
+
+:root[data-theme="light"] {
+    --sl-color-accent-low: #ccfbf1;
+    --sl-color-accent: #0f766e;
+    --sl-color-accent-high: #042f2e;
+    --sl-color-gray-6: #f2faf8;
+    --sl-color-gray-7: #f7fdfb;
+    --sl-color-black: #ffffff;
+}
+
+/* The current sidebar item uses the teal accent. Dark ink keeps the label readable on the bright fill. */
+.sidebar-content a[aria-current="page"],
+.sidebar-content a[aria-current="page"]:hover,
+.sidebar-content a[aria-current="page"]:focus {
+    background-color: #2dd4bf;
+    color: #042f2e;
+}
+
+:root[data-theme="light"] .sidebar-content a[aria-current="page"],
+:root[data-theme="light"] .sidebar-content a[aria-current="page"]:hover,
+:root[data-theme="light"] .sidebar-content a[aria-current="page"]:focus {
+    background-color: #0f766e;
+    color: #f0fdfa;
+}
+
+.site-title img {
+    border-radius: 0.45rem;
+    height: 1.85rem;
+    width: auto;
+}
+
+.sl-markdown-content a {
+    text-underline-offset: 0.15em;
+}
+
+.made-with-love {
+    color: var(--sl-color-gray-3);
+    font-size: var(--sl-text-xs);
+    margin: 0.75rem 0 0;
+}

@@ -60,7 +60,7 @@ Console.WriteLine(someObject.GetProperty("a").GetString());
 
 ## Useful links
 
-* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* [API Documentation](https://www.puppeteersharp.com/api/)
 * [GitHub Repository](https://github.com/hardkoded/puppeteer-sharp)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Slack channel #puppeteer-sharp](https://www.hardkoded.com/goto/pptr-slack)
