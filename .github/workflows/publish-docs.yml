@@ -1,51 +1,19 @@
-name: Publish docs
+# Retired. DocFX is no longer published from this workflow.
+# Starlight docs are built and deployed by docs.yml on pushes to master
+# (GitHub Actions → Pages). This file stays so a tag push does not deploy
+# the old DocFX output and fight that deployment.
+#
+# Repository settings: Pages → Source must be "GitHub Actions", not the
+# gh-pages branch. The custom domain stays www.puppeteersharp.com
+# (docs-site/public/CNAME).
+name: Publish docs (retired)
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
-  build:
-
-    name: Publish docs
-    runs-on: windows-latest
-    env:
-      DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
-
+  retired:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Build
-        run: |
-          dotnet tool install --global docfx --version 2.74.1
-
-          docfx metadata docfx_project\docfx.json
-          docfx build docfx_project\docfx.json -o docs
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'docs'
-      - name: Publish Documentation on GitHub Pages
-        uses: actions/deploy-pages@v4
-        id: deployment
-      - name: Upload Site to artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: 'Website'
-          path: docs/
-          retention-days: 1
-          if-no-files-found: ignore
-        if: always()
-        continue-on-error: true
+      - name: Docs moved to docs.yml
+        run: echo "DocFX tag publishing was retired. .github/workflows/docs.yml publishes the Starlight site from master."

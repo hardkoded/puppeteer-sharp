@@ -1,0 +1,82 @@
+[
+  {
+    "label": "Examples",
+    "slug": "docs"
+  },
+  {
+    "label": "Basic Examples",
+    "items": [
+      {
+        "label": "How to take screenshots and save it as a file",
+        "slug": "docs/Page.ScreenshotAsync"
+      },
+      {
+        "label": "How to extract all the link from a page",
+        "slug": "docs/Page.EvaluateExpressionAsync.GetAllLinks"
+      },
+      {
+        "label": "How to map complex javascript objects to .NET objects",
+        "slug": "docs/Page.EvaluateFunctionAsync.ComplexJSObjects"
+      },
+      {
+        "label": "How to wait for a selector",
+        "slug": "docs/Page.WaitForSelectorAsync.Searching"
+      },
+      {
+        "label": "Download and Reuse Chrome from a custom location",
+        "slug": "docs/ReuseChrome"
+      },
+      {
+        "label": "How to test a Chrome Extension",
+        "slug": "docs/ChromeExtension"
+      },
+      {
+        "label": "How to wait for a javascript expression to be true",
+        "slug": "docs/Page.WaitForFunctionAsync"
+      },
+      {
+        "label": "How to log network requests",
+        "slug": "docs/Page.Request"
+      },
+      {
+        "label": "How to download an specific browser",
+        "slug": "docs/DownloadFetcher.Download"
+      },
+      {
+        "label": "Using PuppeteerSharp with AOT compilation",
+        "slug": "docs/AOT"
+      }
+    ]
+  },
+  {
+    "label": "Locators",
+    "items": [
+      {
+        "label": "Getting Started with Locators",
+        "slug": "docs/Locators"
+      },
+      {
+        "label": "Locator Actions",
+        "slug": "docs/LocatorActions"
+      }
+    ]
+  },
+  {
+    "label": "Advanced",
+    "items": [
+      {
+        "label": "How to log CDP communication",
+        "slug": "docs/LogCDPCommunication"
+      }
+    ]
+  },
+  {
+    "label": "Troubleshooting",
+    "items": [
+      {
+        "label": "Issues generating PDF files",
+        "slug": "docs/IssuesGeneratingPdfFiles"
+      }
+    ]
+  }
+]
