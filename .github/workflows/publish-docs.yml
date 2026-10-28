@@ -1,11 +1,9 @@
 # Retired. DocFX is no longer published from this workflow.
-# Starlight docs are built and deployed by docs.yml on pushes to master
-# (GitHub Actions → Pages). This file stays so a tag push does not deploy
-# the old DocFX output and fight that deployment.
+# Starlight docs are built by docs.yml. Vercel publishes the site on push
+# to master. This file stays so a tag push does not deploy the old DocFX output.
 #
-# Repository settings: Pages → Source must be "GitHub Actions", not the
-# gh-pages branch. The custom domain stays www.puppeteersharp.com
-# (docs-site/public/CNAME).
+# Pages deploy was also removed from docs.yml. Disable GitHub Pages in
+# repository settings after that change merges.
 name: Publish docs (retired)
 
 on:
@@ -16,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Docs moved to docs.yml
-        run: echo "DocFX tag publishing was retired. .github/workflows/docs.yml publishes the Starlight site from master."
+        run: echo "DocFX tag publishing was retired. docs.yml builds the Starlight site; Vercel publishes it from master."
