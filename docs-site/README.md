@@ -62,22 +62,23 @@ That needs the .NET 10 SDK. It restores the local DocFX tool (`dotnet-tools.json
 }
 ```
 
-### Move www.puppeteersharp.com to this Vercel project
+### DNS
 
-DNS for `puppeteersharp.com` is Azure DNS (`ns1-09.azure-dns.com`, `ns2-09.azure-dns.net`, `ns3-09.azure-dns.org`, `ns4-09.azure-dns.info`). `www` is a CNAME to `kblok.github.io`, which is why GitHub Pages still serves the domain. The apex has no address record. Leave the nameservers in place so mail and other records stay put.
+DNS for `puppeteersharp.com` is Azure DNS (`ns1-09.azure-dns.com`, `ns2-09.azure-dns.net`, `ns3-09.azure-dns.org`, `ns4-09.azure-dns.info`). The nameservers stay in place so mail and the other records are unchanged.
 
-1. In Vercel project **puppeteer-sharp**, open **Settings → Domains**. Add `www.puppeteersharp.com`. Add `puppeteersharp.com` and redirect it to `www`.
-2. Copy the records Vercel shows for this project. `www` is a CNAME to that project's `*.vercel-dns-*.com` host. The apex is an A record; Vercel's anycast address for apex domains is `76.76.21.21` when the domain card shows that value.
-3. In Azure DNS, replace the `www` CNAME (`kblok.github.io`) with the Vercel CNAME. Add the apex A record when the apex domain is on the project.
-4. Wait until Vercel marks the domain valid. `https://www.puppeteersharp.com/` and `https://puppeteer-sharp.vercel.app/` then serve the same deployment. Canonical URLs stay on `www.puppeteersharp.com`.
-5. Remove the custom domain from the GitHub Pages settings of this repository. `public/CNAME` is what Pages uses to claim the host; delete that file in a follow-up once Pages no longer lists the domain. Vercel does not read it. The Pages workflow can keep building until then.
+The cutover to Vercel is complete. Azure DNS has:
 
-Change DNS only after the Vercel production deployment is Ready, so the cutover is the DNS TTL and not a missing site.
+- Apex `A` records `216.198.79.1` and `64.29.17.1`
+- A `www` CNAME to `6df6a3e9cedb0ea5.vercel-dns-017.com`
+
+Vercel project **puppeteer-sharp** serves `https://www.puppeteersharp.com/` and `https://puppeteersharp.com/`. Canonical URLs stay on `www.puppeteersharp.com`. `https://puppeteer-sharp.vercel.app/` is the same deployment. Vercel publishes that deployment on push to `master`.
+
+Old DocFX `.html` URLs redirect to the new paths. Member anchors from DocFX (`#PuppeteerSharp_Page_GoToAsync_...`) are kept on the generated pages. A redirect preserves the hash when JavaScript runs.
 
 ## GitHub Pages
 
-`.github/workflows/docs.yml` builds this site on every pull request and on every push to `master`. It deploys only from a push to `master`, using GitHub Actions (`actions/deploy-pages`). That deployment is what `www.puppeteersharp.com` serves until the DNS cutover above.
+GitHub Pages is retired for this site. `.github/workflows/docs.yml` still builds on every pull request and on every push to `master`, and uploads the `docs-site` artifact for CI. It does not deploy. `actions/upload-pages-artifact` and `actions/deploy-pages` are gone.
 
-In the repository settings, GitHub Pages **Source** must be **GitHub Actions**, not the `gh-pages` branch. The retired `publish-docs.yml` workflow no longer deploys on tags, so a tag push cannot overwrite this deployment.
+`docs-site/public/CNAME` was removed. That file is what Pages used to claim `www.puppeteersharp.com`. Vercel does not read it.
 
-Old DocFX `.html` URLs redirect to the new paths. Member anchors from DocFX (`#PuppeteerSharp_Page_GoToAsync_...`) are kept on the generated pages. A redirect preserves the hash when JavaScript runs.
+Repository Pages settings will be disabled separately after this change merges, so a leftover Pages source cannot publish over the Vercel site. The retired `publish-docs.yml` workflow no longer deploys on tags.

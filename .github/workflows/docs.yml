@@ -1,3 +1,4 @@
+# Builds the Starlight site for CI. Vercel publishes production on push to master.
 name: Docs
 
 on:
@@ -55,22 +56,3 @@ jobs:
           name: docs-site
           path: docs-site/dist
           if-no-files-found: error
-
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        with:
-          path: docs-site/dist
-
-  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
