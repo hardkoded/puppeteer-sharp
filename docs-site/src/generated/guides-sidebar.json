@@ -1,7 +1,11 @@
 [
   {
-    "label": "Examples",
+    "label": "Docs",
     "slug": "docs"
+  },
+  {
+    "label": "Examples",
+    "slug": "docs/examples"
   },
   {
     "label": "Basic Examples",

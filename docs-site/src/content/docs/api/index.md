@@ -7,7 +7,7 @@ sidebar:
   order: 0
 ---
 
-Generated from the XML documentation of `PuppeteerSharp`. Regenerate it with `npm run api` from `docs-site/` after a public API change. Guides and examples live under [Examples](/docs/).
+Generated from the XML documentation of `PuppeteerSharp`. Regenerate it with `npm run api` from `docs-site/` after a public API change. Guides start at [Docs](/docs/). The example catalog is [Examples](/docs/examples/).
 
 ## PuppeteerSharp
 
