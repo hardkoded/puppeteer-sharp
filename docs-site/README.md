@@ -1,17 +1,17 @@
 # Puppeteer Sharp docs
 
-The documentation site is [Astro Starlight](https://starlight.astro.build/). The published site is [https://www.puppeteersharp.com/](https://www.puppeteersharp.com/).
+The documentation site is [Astro Starlight](https://starlight.astro.build/). The published site root is a dark marketing page at [https://www.puppeteersharp.com/](https://www.puppeteersharp.com/). Guides and the API reference start at [/docs/](https://www.puppeteersharp.com/docs/).
 
 ## Preview locally
 
 From this directory:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open http://localhost:4321/ . The site is served at the root because `siteBase` in `site.mjs` is `/`.
+Open http://localhost:4321/ for the landing page, and http://localhost:4321/docs/ for the guides. The path is the site root because `siteBase` in `site.mjs` is `/`. The landing page stays dark. Guide and API pages still follow the system color scheme.
 
 Search is built with the production output:
 
@@ -20,7 +20,7 @@ npm run build
 npm run preview
 ```
 
-`npm run dev` and `npm run build` copy `docfx_project/index.md` and `docfx_project/docs/` into the site before Astro starts. Those Markdown files stay the MarkdownSnippets source of truth (`on-push-do-docs.yml` still runs `mdsnippets` on the repo). Snippet updates land in the published pages on the next site build.
+`npm run dev` and `npm run build` copy `docfx_project/index.md` to `src/content/docs/docs/index.md` (the docs home) and `docfx_project/docs/` into that same directory. The example catalog is `docs/examples.md`. Those Markdown files stay the MarkdownSnippets source of truth (`on-push-do-docs.yml` still runs `mdsnippets` on the repo). Snippet updates land in the published pages on the next site build. The site root is the marketing page in `src/pages/index.astro`.
 
 ## Regenerate the API reference
 
@@ -73,7 +73,7 @@ The cutover to Vercel is complete. Azure DNS has:
 
 Vercel project **puppeteer-sharp** serves `https://www.puppeteersharp.com/` and `https://puppeteersharp.com/`. Canonical URLs stay on `www.puppeteersharp.com`. `https://puppeteer-sharp.vercel.app/` is the same deployment. Vercel publishes that deployment on push to `master`.
 
-Old DocFX `.html` URLs redirect to the new paths. Member anchors from DocFX (`#PuppeteerSharp_Page_GoToAsync_...`) are kept on the generated pages. A redirect preserves the hash when JavaScript runs.
+Old DocFX `.html` URLs redirect to the new paths. The root DocFX table of contents (`toc.html`) lands on `/docs/`, because the site root is the marketing page. Member anchors from DocFX (`#PuppeteerSharp_Page_GoToAsync_...`) are kept on the generated pages. A redirect preserves the hash when JavaScript runs.
 
 ## GitHub Pages
 

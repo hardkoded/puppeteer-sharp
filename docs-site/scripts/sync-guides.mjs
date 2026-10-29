@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { redirectHtml } from "./redirect.mjs";
@@ -47,15 +47,15 @@ const articles = groups.flatMap((group) => group.items.map(([file, title]) => ({
 const pages = [
     {
         source: path.join(repoRoot, "docfx_project/index.md"),
-        output: "index.md",
+        output: path.join("docs", "index.md"),
         title: "Browser Automation for .NET",
-        label: "Home",
+        label: "Docs",
         order: 0,
         editPath: "docfx_project/index.md",
     },
     {
         source: path.join(articlesDir, "index.md"),
-        output: path.join("docs", "index.md"),
+        output: path.join("docs", "examples.md"),
         title: "Examples",
         label: "Examples",
         editPath: "docfx_project/docs/index.md",
@@ -73,18 +73,21 @@ const pages = [
 
 const pageTargets = new Map();
 for (const page of pages) {
-    const fileName = path.basename(page.source);
-    if (fileName === "index.md" && page.output === "index.md") continue;
-    pageTargets.set(fileName, page.target);
+    if (!page.target) continue;
+    pageTargets.set(path.basename(page.source), page.target);
 }
 
 const sectionRedirects = [
-    ["toc.html", "/"],
+    // The old DocFX root table of contents pointed at the Starlight home.
+    // The site root is the marketing page. That URL lands on the docs home.
+    ["toc.html", "/docs/"],
     ["docs/toc.html", "/docs/"],
     ["docs.html", "/docs/"],
 ];
 
 await mkdir(contentDir, { recursive: true });
+// The marketing page owns /. Drop a stale Starlight home if an older sync wrote one.
+await rm(path.join(contentDir, "index.md"), { force: true });
 
 for (const page of pages) {
     const raw = await readFile(page.source, "utf8");
@@ -114,7 +117,8 @@ for (const [legacy, target] of sectionRedirects) {
 }
 
 const sidebar = [
-    { label: "Examples", slug: "docs" },
+    { label: "Docs", slug: "docs" },
+    { label: "Examples", slug: "docs/examples" },
     ...groups.map((group) => ({
         label: group.label,
         items: group.items.map(([file, label]) => ({

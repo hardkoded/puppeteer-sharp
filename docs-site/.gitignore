@@ -19,6 +19,7 @@ pnpm-debug.log*
 
 # DocFX metadata and generated guide copies.
 # Article sources stay in docfx_project/ so MarkdownSnippets can update them in place.
+# The marketing page owns /. Sync writes the old Starlight home to docs/index.md.
 .api-yaml/
 .redirect-staging/
 src/content/docs/.api-staging/

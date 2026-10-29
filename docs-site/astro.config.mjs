@@ -51,7 +51,6 @@ export default defineConfig({
                 Footer: "./src/components/Footer.astro",
             },
             sidebar: [
-                { label: "Home", slug: "index" },
                 ...guidesSidebar,
                 {
                     label: "API",
