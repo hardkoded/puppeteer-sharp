@@ -610,6 +610,11 @@ namespace PuppeteerSharp.Cdp
             response.BodyLoadedTaskWrapper.TrySetException(
                 new PuppeteerException("Response body is unavailable for redirect responses"));
 
+            // Nobody awaits a redirect's body unless the user asks for it, and a faulted task nobody awaits raises
+            // TaskScheduler.UnobservedTaskException when it is collected. Reading the exception marks it observed;
+            // BufferAsync still throws it to a caller who asks.
+            _ = response.BodyLoadedTaskWrapper.Task.Exception;
+
             ForgetRequest(request, false);
 
             Response?.Invoke(this, new ResponseCreatedEventArgs(response));

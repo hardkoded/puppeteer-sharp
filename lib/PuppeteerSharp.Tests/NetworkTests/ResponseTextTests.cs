@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -40,6 +41,45 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             var exception = Assert.ThrowsAsync<PuppeteerException>(async () => await redirected.TextAsync());
             Assert.That(exception.Message, Does.Contain("Response body is unavailable for redirect responses"));
+        }
+
+        [Test]
+        public async Task ShouldNotRaiseUnobservedTaskExceptionForRedirects()
+        {
+            var unobserved = new System.Collections.Concurrent.ConcurrentBag<System.AggregateException>();
+            void Handler(object sender, UnobservedTaskExceptionEventArgs e) => unobserved.Add(e.Exception);
+
+            TaskScheduler.UnobservedTaskException += Handler;
+            try
+            {
+                Server.SetRedirect("/foo.html", "/empty.html");
+                await NavigateAsync(TestConstants.ServerUrl + "/foo.html");
+
+                for (var i = 0; i < 3; i++)
+                {
+                    System.GC.Collect();
+                    System.GC.WaitForPendingFinalizers();
+                }
+
+                Assert.That(
+                    unobserved.SelectMany(e => e.Flatten().InnerExceptions).Select(e => e.Message),
+                    Has.None.Contains("Response body is unavailable for redirect responses"));
+            }
+            finally
+            {
+                TaskScheduler.UnobservedTaskException -= Handler;
+            }
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private async Task NavigateAsync(string url)
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            await using (var page = await context.NewPageAsync())
+            {
+                var response = await page.GoToAsync(url);
+                Assert.That(response.Request.RedirectChain, Has.Exactly(1).Items);
+            }
         }
 
         [Test, PuppeteerTest("network.spec", "network Response.text", "should wait until response completes")]
