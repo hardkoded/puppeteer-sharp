@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Input;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
@@ -32,10 +35,10 @@ namespace PuppeteerSharp
         public string Name { get; private set; }
 
         /// <inheritdoc/>
-        public string Url { get; private set; } = string.Empty;
+        public virtual string Url { get; private set; } = string.Empty;
 
         /// <inheritdoc/>
-        public bool Detached { get; private set; }
+        public virtual bool Detached { get; private set; }
 
         /// <inheritdoc/>
         public abstract IPage Page { get; }
@@ -47,7 +50,7 @@ namespace PuppeteerSharp
         public string Id { get; internal set; }
 
         /// <inheritdoc/>
-        public abstract CDPSession Client { get; protected set; }
+        public abstract ICDPSession Client { get; protected set; }
 
         /// <inheritdoc/>
         Realm IEnvironment.MainRealm => MainRealm;
@@ -58,9 +61,9 @@ namespace PuppeteerSharp
 
         internal List<string> LifecycleEvents { get; } = new();
 
-        internal Realm MainRealm { get; set; }
+        internal virtual Realm MainRealm { get; set; }
 
-        internal Realm IsolatedRealm { get; set; }
+        internal virtual Realm IsolatedRealm { get; set; }
 
         internal IsolatedWorld MainWorld => MainRealm as IsolatedWorld;
 
@@ -73,7 +76,7 @@ namespace PuppeteerSharp
         /// <summary>
         /// Logger.
         /// </summary>
-        protected ILogger Logger { get; init; }
+        protected ILogger Logger { get; init; } = NullLogger.Instance;
 
         /// <inheritdoc/>
         public abstract Task<IResponse> GoToAsync(string url, NavigationOptions options);
@@ -86,13 +89,13 @@ namespace PuppeteerSharp
         public abstract Task<IResponse> WaitForNavigationAsync(NavigationOptions options = null);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
+        public Task EvaluateExpressionAsync(string script) => MainRealm.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script) => MainRealm.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args) => MainRealm.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args) => MainRealm.EvaluateFunctionAsync<T>(script, args);
@@ -111,9 +114,17 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(selector));
             }
 
-            var (updatedSelector, queryHandler) = Client.Connection.CustomQuerySelectorRegistry.GetQueryHandlerAndSelector(selector);
-            return await queryHandler.WaitForAsync(this, null, updatedSelector, options).ConfigureAwait(false);
+            var (updatedSelector, queryHandler, polling) = CustomQuerySelectorRegistry.Default.GetQueryHandlerAndSelector(selector);
+            return await queryHandler.WaitForAsync(this, null, updatedSelector, options, polling).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
+        public Locators.Locator LocatorFunction(string func)
+            => Locators.FunctionLocator.Create(this, func);
 
         /// <inheritdoc/>
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
@@ -188,6 +199,13 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        public async Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+        {
+            var document = await GetDocumentAsync().ConfigureAwait(false);
+            return await document.QuerySelectorAllAsync(selector, options).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
         public async Task<IElementHandle[]> XPathAsync(string expression)
         {
             var document = await GetDocumentAsync().ConfigureAwait(false);
@@ -195,14 +213,77 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
-        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = default)
+        public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null)
             => GetDeviceRequestPromptManager().WaitForDevicePromptAsync(options);
 
         /// <inheritdoc/>
         public abstract Task<IElementHandle> AddStyleTagAsync(AddTagOptions options);
 
         /// <inheritdoc/>
-        public abstract Task<IElementHandle> AddScriptTagAsync(AddTagOptions options);
+        public async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+        {
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
+                string.IsNullOrEmpty(options.Content))
+            {
+                throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            }
+
+            var content = options.Content;
+
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
+                content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            }
+
+            var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
+                @"async (puppeteerUtil, url, id, type, content) => {
+                      const createDeferredPromise = puppeteerUtil.createDeferredPromise;
+                      const promise = createDeferredPromise();
+                      const script = document.createElement('script');
+                      script.type = type;
+                      script.text = content;
+                      if (url) {
+                        script.src = url;
+                        script.addEventListener(
+                          'load',
+                          () => {
+                            return promise.resolve();
+                          },
+                          {once: true}
+                        );
+                        script.addEventListener(
+                          'error',
+                          event => {
+                            promise.reject(
+                              new Error(event.message ?? 'Could not load script')
+                            );
+                          },
+                          {once: true}
+                        );
+                      } else {
+                        promise.resolve();
+                      }
+                      if (id) {
+                        script.id = id;
+                      }
+                      document.head.appendChild(script);
+                      await promise;
+                      return script;
+                    }",
+                new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
+                options.Url,
+                options.Id,
+                options.Type,
+                content).ConfigureAwait(false);
+
+            return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+        }
 
         /// <inheritdoc/>
         public Task<string> GetContentAsync(GetContentOptions options = null)
@@ -225,7 +306,14 @@ namespace PuppeteerSharp
                 options?.ReplaceLoneSurrogates ?? false);
 
         /// <inheritdoc/>
-        public abstract Task SetContentAsync(string html, NavigationOptions options = null);
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        public abstract Task SetContentAsync(string html, NavigationOptions options);
+
+        /// <inheritdoc/>
+        public Task SetContentAsync(string html, SetContentOptions options = null)
+#pragma warning disable CS0618 // Type or member is obsolete
+            => SetContentAsync(html, options?.ToNavigationOptions());
+#pragma warning restore CS0618
 
         /// <inheritdoc/>
         public Task<string> GetTitleAsync() => IsolatedRealm.EvaluateExpressionAsync<string>("document.title");
@@ -297,7 +385,7 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc />
-        public async Task<ElementHandle> FrameElementAsync()
+        public virtual async Task<ElementHandle> FrameElementAsync()
         {
             var parentFrame = ParentFrame;
             if (parentFrame == null)
@@ -314,7 +402,7 @@ namespace PuppeteerSharp
                 var frame = await iframe.ContentFrameAsync().ConfigureAwait(false);
                 if (frame?.Id == Id)
                 {
-                    return iframe as ElementHandle;
+                    return await parentFrame.MainRealm.AdoptHandleAsync(iframe).ConfigureAwait(false) as ElementHandle;
                 }
 
                 try
@@ -329,6 +417,12 @@ namespace PuppeteerSharp
 
             return null;
         }
+
+        /// <summary>
+        /// Retrieves the list of extension realms within this frame.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
 
         internal void ClearDocumentHandle() => _documentTask = null;
 
@@ -374,11 +468,19 @@ namespace PuppeteerSharp
             Detached = true;
             MainWorld.Detach();
             PuppeteerWorld.Detach();
+            OnDetach();
             FrameDetached?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnFrameSwappedByActivation()
             => FrameSwappedByActivation?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Called when this frame is being detached. Subclasses can override to perform additional cleanup.
+        /// </summary>
+        protected internal virtual void OnDetach()
+        {
+        }
 
         /// <summary>
         /// Gets the prompts manager for the current client.

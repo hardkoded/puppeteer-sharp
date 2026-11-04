@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace PuppeteerSharp
 {
     /// <summary>
@@ -26,5 +28,14 @@ namespace PuppeteerSharp
         /// The default value can be changed by setting the <see cref="IPage.DefaultTimeout"/> property.
         /// </summary>
         public int? Timeout { get; set; }
+
+        /// <summary>
+        /// A <see cref="CancellationToken"/> to abort the wait operation.
+        /// </summary>
+        /// <remarks>
+        /// This is the .NET equivalent of the upstream AbortController/AbortSignal pattern.
+        /// When the token is cancelled, the wait operation will throw a <see cref="System.OperationCanceledException"/>.
+        /// </remarks>
+        public CancellationToken CancellationToken { get; set; }
     }
 }

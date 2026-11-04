@@ -9,6 +9,8 @@ namespace PuppeteerSharp
     /// <inheritdoc/>
     public abstract class JSHandle : IJSHandle
     {
+        private bool _moved;
+
         internal JSHandle()
         {
         }
@@ -16,16 +18,11 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool Disposed { get; protected set; }
 
-        /// <inheritdoc/>
-        public abstract RemoteObject RemoteObject { get; }
-
         internal Func<Task> DisposeAction { get; set; }
 
-        internal abstract IsolatedWorld Realm { get; }
+        internal abstract Realm Realm { get; }
 
         internal Frame Frame => Realm.Environment as Frame;
-
-        internal string Id => RemoteObject.ObjectId;
 
         /// <inheritdoc/>
         public virtual Task<IJSHandle> GetPropertyAsync(string propertyName)
@@ -39,15 +36,7 @@ namespace PuppeteerSharp
         public virtual async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
         {
             var propertyNames = await EvaluateFunctionAsync<string[]>(@"object => {
-                    const enumerableProperties = [];
-                    const descriptors = Object.getOwnPropertyDescriptors(object);
-                    for (const propertyName in descriptors) {
-                        if (descriptors[propertyName]?.enumerable)
-                        {
-                            enumerableProperties.push(propertyName);
-                        }
-                    }
-                    return enumerableProperties;
+                    return Object.keys(object ?? {});
                 }").ConfigureAwait(false);
 
             var dic = new Dictionary<string, IJSHandle>();
@@ -71,6 +60,13 @@ namespace PuppeteerSharp
         public abstract Task<T> JsonValueAsync<T>();
 
         /// <inheritdoc/>
+        public IJSHandle Move()
+        {
+            _moved = true;
+            return this;
+        }
+
+        /// <inheritdoc/>
         public abstract ValueTask DisposeAsync();
 
         /// <inheritdoc/>
@@ -91,6 +87,22 @@ namespace PuppeteerSharp
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
         {
             return Realm.EvaluateFunctionAsync<T>(script, [this, .. args]);
+        }
+
+        /// <summary>
+        /// Checks if the handle has been moved and should skip disposal.
+        /// If moved, resets the flag and returns <c>true</c>.
+        /// </summary>
+        /// <returns><c>true</c> if disposal should be skipped.</returns>
+        protected bool CheckAndResetMoved()
+        {
+            if (_moved)
+            {
+                _moved = false;
+                return true;
+            }
+
+            return false;
         }
     }
 }

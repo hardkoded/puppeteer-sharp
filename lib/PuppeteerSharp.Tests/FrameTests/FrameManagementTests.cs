@@ -65,7 +65,8 @@ namespace PuppeteerSharp.Tests.FrameTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame-url-fragment.html");
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
-            Assert.That(Page.FirstChildFrame().Url, Is.EqualTo(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment"));
+            var frame = await Page.FirstChildFrameAsync();
+            Assert.That(frame.Url, Is.EqualTo(TestConstants.ServerUrl + "/frames/frame.html?param=value#fragment"));
         }
 
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should persist mainFrame on cross-process navigation")]
@@ -164,6 +165,17 @@ namespace PuppeteerSharp.Tests.FrameTests
             var frame2 = await frame2Tcs.Task;
             Assert.That(frame2.Detached, Is.False);
             Assert.That(frame2, Is.Not.SameAs(frame1));
+        }
+
+        [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support lazy frames")]
+        public async Task ShouldSupportLazyFrames()
+        {
+            await Page.SetViewportAsync(new ViewPortOptions { Width = 1000, Height = 1000 });
+            await Page.GoToAsync(TestConstants.ServerUrl + "/frames/lazy-frame.html");
+
+            Assert.That(
+                Page.Frames.Select(frame => ((Frame)frame).HasStartedLoading).ToArray(),
+                Is.EqualTo(new[] { true, true, false }));
         }
 
         [Test, PuppeteerTest("frame.spec", "Frame specs Frame Management", "should support framesets")]

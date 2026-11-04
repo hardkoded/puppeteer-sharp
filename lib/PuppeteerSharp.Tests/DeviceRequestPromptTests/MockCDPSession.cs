@@ -47,11 +47,17 @@ public class MockCDPSession : ICDPSession
 #pragma warning disable CS0067
 
     public string CloseReason { get; }
+    public bool Detached { get; }
     public bool IsClosed { get; }
     public ILoggerFactory LoggerFactory { get; }
     public string Id { get; } = "1";
     public TargetType TargetType { get; }
     public Task DetachAsync() => Task.CompletedTask;
+
+    public void Close(string closeReason)
+    {
+
+    }
 
     internal void OnMessage(ConnectionResponse obj)
         => MessageReceived?.Invoke(this, new MessageEventArgs

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
@@ -11,6 +12,19 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
     public sealed class FrameWaitForSelectorTests : PuppeteerPageBaseTest, IDisposable
     {
         private const string AddElement = "tag => document.body.appendChild(document.createElement(tag))";
+
+        private const string AddShadowHost = @"tag => {
+            document.body
+                .appendChild(document.createElement(tag))
+                .attachShadow({mode: 'open'});
+        }";
+
+        private const string AddElementToShadowRoot = @"(selector, tag) => {
+            const element = document.createElement(tag);
+            element.textContent = 'inside';
+            document.querySelector(selector).shadowRoot.appendChild(element);
+        }";
+
         private PollerInterceptor _pollerInterceptor;
 
         public FrameWaitForSelectorTests()
@@ -32,7 +46,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
 
         public void Dispose()
         {
-            _pollerInterceptor.Dispose();
+            _pollerInterceptor?.Dispose();
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should immediately resolve promise if node exists")]
@@ -43,6 +57,20 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await frame.WaitForSelectorAsync("*");
             await frame.EvaluateFunctionAsync(AddElement, "div");
             await frame.WaitForSelectorAsync("div");
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should be cancellable")]
+        public async Task ShouldBeCancellable()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            using var cts = new CancellationTokenSource();
+            var task = Page.WaitForSelectorAsync("wrong", new WaitForSelectorOptions
+            {
+                CancellationToken = cts.Token,
+            });
+            cts.Cancel();
+            var exception = Assert.ThrowsAsync<OperationCanceledException>(() => task);
+            Assert.That(exception.Message, Does.Contain("cancelled"));
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work with removed MutationObserver")]
@@ -82,12 +110,95 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await watchdog;
         }
 
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work for selector with a pseudo class")]
+        public async Task ShouldWorkForSelectorWithAPseudoClass()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watchdog = Page.WaitForSelectorAsync("input:focus");
+            await Page.SetContentAsync("<input></input>");
+            await Page.ClickAsync("input");
+            await watchdog;
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a shadow root")]
+        public async Task ShouldWorkWhenNodeIsAddedInAShadowRoot()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(AddShadowHost, "div");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(AddElementToShadowRoot, "div", "h1");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a shadow root that predates the wait")]
+        public async Task ShouldWorkWhenNodeIsAddedInAShadowRootThatPredatesTheWait()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync(AddShadowHost, "div");
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(AddElementToShadowRoot, "div", "h1");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when node is added in a nested shadow root")]
+        public async Task ShouldWorkWhenNodeIsAddedInANestedShadowRoot()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(@"() => {
+                const host = document.body.appendChild(document.createElement('div'));
+                const inner = document.createElement('section');
+                inner.attachShadow({mode: 'open'});
+                host.attachShadow({mode: 'open'}).appendChild(inner);
+            }");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(@"() => {
+                const h1 = document.createElement('h1');
+                h1.textContent = 'inside';
+                document
+                    .querySelector('div')
+                    .shadowRoot.querySelector('section')
+                    .shadowRoot.appendChild(h1);
+            }");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
+        // Attaching a shadow root to a node that is already in the DOM does not
+        // produce a mutation, so MutationPoller has nothing to react to.
+        // See https://github.com/whatwg/dom/issues/1287.
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should work when a shadow root is attached to an existing node")]
+        public async Task ShouldWorkWhenAShadowRootIsAttachedToAnExistingNode()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var watcher = Page.WaitForSelectorAsync("div >>> h1");
+            await Page.EvaluateFunctionAsync(AddElement, "div");
+            var completed = await Task.WhenAny(watcher, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(watcher));
+            await Page.EvaluateFunctionAsync(@"() => {
+                const host = document.querySelector('div');
+                const shadow = host.attachShadow({mode: 'open'});
+                const h1 = document.createElement('h1');
+                h1.textContent = 'inside';
+                shadow.appendChild(h1);
+            }");
+            var element = await watcher;
+            Assert.That(await element.EvaluateFunctionAsync<string>("el => el.textContent"), Is.EqualTo("inside"));
+        }
+
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "Page.waitForSelector is shortcut for main frame")]
         public async Task PageWaitForSelectorAsyncIsShortcutForMainFrame()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var otherFrame = Page.FirstChildFrame();
+            var otherFrame = await Page.FirstChildFrameAsync();
             var watchdog = Page.WaitForSelectorAsync("div");
             await otherFrame.EvaluateFunctionAsync(AddElement, "div");
             await Page.EvaluateFunctionAsync(AddElement, "div");
@@ -100,7 +211,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "frame2", TestConstants.EmptyPage);
-            var frame1 = Page.FirstChildFrame();
+            var frame1 = await Page.FirstChildFrameAsync();
             var frame2 = Page.Frames.ElementAt(2);
             var waitForSelectorPromise = frame2.WaitForSelectorAsync("div");
             await frame1.EvaluateFunctionAsync(AddElement, "div");
@@ -113,7 +224,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task ShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var waitTask = frame.WaitForSelectorAsync(".box");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var waitException = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitTask);
@@ -147,6 +258,29 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divFound, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.removeProperty('display')");
             Assert.That(await waitForSelector, Is.True);
+            Assert.That(divFound, Is.True);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible (without DOM mutations)")]
+        public async Task ShouldWaitForVisibleWithoutDOMMutations()
+        {
+            var divFound = false;
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Visible = true })
+                .ContinueWith(_ => divFound = true);
+            await Page.SetContentAsync("<style>div {display: none;}</style><div>text</div>");
+            var element = await Page.EvaluateFunctionHandleAsync("() => document.getElementsByTagName('div')[0]");
+            Assert.That(element, Is.Not.Null);
+            await Task.Delay(100);
+            Assert.That(divFound, Is.False);
+            await Page.EvaluateFunctionAsync(@"() => {
+                const extraSheet = new CSSStyleSheet();
+                extraSheet.replaceSync('div { display: block; }');
+                document.adoptedStyleSheets = [
+                    ...document.adoptedStyleSheets,
+                    extraSheet,
+                ];
+            }");
+            Assert.That(await waitForSelector.WithTimeout(), Is.True);
             Assert.That(divFound, Is.True);
         }
 
@@ -191,7 +325,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divFound, Is.True);
         }
 
-        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for visible recursively")]
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be visible recursively")]
         public async Task ShouldWaitForVisibleRecursively()
         {
             var divVisible = false;
@@ -225,18 +359,36 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             Assert.That(divHidden, Is.True);
         }
 
-        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (removal) ")]
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (bounding box)")]
+        public async Task HiddenShouldWaitForBoundingBox()
+        {
+            var divHidden = false;
+            await Page.SetContentAsync("<div>text</div>");
+            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
+                .ContinueWith(_ => divHidden = true);
+            await Page.WaitForSelectorAsync("div"); // do a round trip
+            Assert.That(divHidden, Is.False);
+            await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('height', '0')");
+            Assert.That(await waitForSelector, Is.True);
+            Assert.That(divHidden, Is.True);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should wait for element to be hidden (removal)")]
         public async Task HiddenShouldWaitForRemoval()
         {
+            var promise = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true });
             await Page.SetContentAsync("<div>text</div>");
-            var divRemoved = false;
-            var waitForSelector = Page.WaitForSelectorAsync("div", new WaitForSelectorOptions { Hidden = true })
-                .ContinueWith(_ => divRemoved = true);
-            await Page.WaitForSelectorAsync("div"); // do a round trip
-            Assert.That(divRemoved, Is.False);
-            await Page.EvaluateExpressionAsync("document.querySelector('div').remove()");
-            Assert.That(await waitForSelector, Is.True);
-            Assert.That(divRemoved, Is.True);
+            await Page.EvaluateFunctionHandleAsync("() => document.getElementsByTagName('div')[0]");
+
+            // The promise should not have resolved yet because the div is still in the DOM
+            var completed = await Task.WhenAny(promise, Task.Delay(40));
+            Assert.That(completed, Is.Not.EqualTo(promise));
+
+            await Page.EvaluateFunctionAsync("e => e.remove()", await Page.QuerySelectorAsync("div"));
+
+            // After removal, waitForSelector should resolve to null
+            var result = await promise;
+            Assert.That(result, Is.Null);
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector", "should return null if waiting to hide non-existing element")]
@@ -318,7 +470,7 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task XpathShouldThrowWhenFrameIsDetached()
         {
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var waitPromise = frame.WaitForSelectorAsync("xpath/.//*[@class=\"box\"]");
             await FrameUtils.DetachFrameAsync(Page, "frame1");
             var exception = Assert.ThrowsAsync<WaitTaskTimeoutException>(() => waitPromise);
@@ -329,11 +481,15 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
         public async Task HiddenShouldWaitForDisplayNone()
         {
             var divHidden = false;
-            var startedPolling = _pollerInterceptor.WaitForStartPollingAsync();
+            var startedPolling = _pollerInterceptor?.WaitForStartPollingAsync();
             await Page.SetContentAsync("<div style='display: block;'></div>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true })
                 .ContinueWith(_ => divHidden = true);
-            await startedPolling;
+            if (startedPolling != null)
+            {
+                await startedPolling;
+            }
+
             Assert.That(divHidden, Is.False);
             await Page.EvaluateExpressionAsync("document.querySelector('div').style.setProperty('display', 'none')");
             Assert.That(await waitForXPath.WithTimeout(), Is.True);
@@ -362,6 +518,22 @@ namespace PuppeteerSharp.Tests.WaitTaskTests
             await Page.SetContentAsync("<div>some text</div>");
             var waitForXPath = Page.WaitForSelectorAsync("xpath/html/body/div");
             Assert.That(await Page.EvaluateFunctionAsync<string>("x => x.textContent", await waitForXPath), Is.EqualTo("some text"));
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should return null if the element is not found")]
+        public async Task XpathHiddenShouldReturnNullIfTheElementIsNotFound()
+        {
+            var waitForSelector = await Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true });
+            Assert.That(waitForSelector, Is.Null);
+        }
+
+        [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "hidden should return an empty element handle if the element is found")]
+        public async Task XpathHiddenShouldReturnAnEmptyElementHandleIfTheElementIsFound()
+        {
+            await Page.SetContentAsync("<div style='display: none;'>text</div>");
+            var waitForSelector = await Page.WaitForSelectorAsync("xpath/.//div", new WaitForSelectorOptions { Hidden = true });
+            Assert.That(waitForSelector, Is.Not.Null);
+            Assert.That(waitForSelector, Is.InstanceOf<IElementHandle>());
         }
 
         [Test, PuppeteerTest("waittask.spec", "waittask specs Frame.waitForSelector xpath", "should respect timeout")]

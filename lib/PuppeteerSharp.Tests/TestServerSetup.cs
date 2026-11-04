@@ -16,13 +16,15 @@ namespace PuppeteerSharp.Tests
             var browserFetcher = new BrowserFetcher(TestConstants.IsChrome ? SupportedBrowser.Chrome : SupportedBrowser.Firefox);
             var downloaderTask = browserFetcher.DownloadAsync();
 
-            Server = SimpleServer.Create(TestConstants.Port, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
-            HttpsServer = SimpleServer.CreateHttps(TestConstants.HttpsPort, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
+            Server = SimpleServer.Create(0, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
+            HttpsServer = SimpleServer.CreateHttps(0, TestUtils.FindParentDirectory("PuppeteerSharp.TestServer"));
 
             var serverStart = Server.StartAsync();
             var httpsServerStart = HttpsServer.StartAsync();
 
             await Task.WhenAll(downloaderTask, serverStart, httpsServerStart);
+
+            TestConstants.Initialize(Server, HttpsServer);
         }
 
         [OneTimeTearDown]

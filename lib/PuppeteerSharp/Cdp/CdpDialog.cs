@@ -40,12 +40,28 @@ public class CdpDialog : Dialog
     public CdpDialog(CDPSession client, DialogType type, string message, string defaultValue) : base(type, message, defaultValue)
     {
         _client = client;
+        _client.MessageReceived += OnClientMessageReceived;
     }
 
-    internal override Task HandleAsync(bool accept, string text)
-        => _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
+    internal override async Task HandleAsync(bool accept, string text)
+    {
+        await _client.SendAsync("Page.handleJavaScriptDialog", new PageHandleJavaScriptDialogRequest
         {
             Accept = accept,
             PromptText = text,
-        });
+        }).ConfigureAwait(false);
+
+        _client.MessageReceived -= OnClientMessageReceived;
+    }
+
+    private void OnClientMessageReceived(object sender, MessageEventArgs e)
+    {
+        if (e.MessageID != "Page.javascriptDialogClosed")
+        {
+            return;
+        }
+
+        IsHandled = true;
+        _client.MessageReceived -= OnClientMessageReceived;
+    }
 }

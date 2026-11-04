@@ -7,14 +7,14 @@ namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     public abstract class Request<TResponse>
-        : IRequest
+        : IRequest, IInterceptableRequest
         where TResponse : IResponse
     {
         /// <inheritdoc/>
         public string Id { get; internal init; }
 
         /// <inheritdoc/>
-        public string InterceptionId { get; internal init; }
+        public string InterceptionId { get; internal set; }
 
         /// <inheritdoc/>
         public string FailureText { get; internal set; }
@@ -41,7 +41,7 @@ namespace PuppeteerSharp
         public string PostData { get; internal init; }
 
         /// <inheritdoc/>
-        public Dictionary<string, string> Headers { get; internal init; }
+        public virtual Dictionary<string, string> Headers { get; protected set; }
 
         /// <inheritdoc/>
         public string Url { get; internal init; }
@@ -54,6 +54,12 @@ namespace PuppeteerSharp
 
         /// <inheritdoc />
         public bool HasPostData { get; internal init; }
+
+        /// <inheritdoc />
+        public abstract bool IsInterceptResolutionHandled { get; protected set; }
+
+        /// <inheritdoc />
+        public abstract InterceptResolutionState InterceptResolutionState { get; }
 
         internal List<IRequest> RedirectChainList { get; init; }
 
@@ -88,8 +94,31 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task<string> FetchPostDataAsync();
 
+        /// <inheritdoc />
+        public abstract Task<byte[]> ContentAsync();
+
+        /// <inheritdoc/>
+        void IInterceptableRequest.EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+            => EnqueueInterceptionActionCore(pendingHandler);
+
         internal abstract Task FinalizeInterceptionsAsync();
 
-        internal abstract void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler);
+        /// <summary>
+        /// Enqueues an interception action to be executed when the request is finalized.
+        /// </summary>
+        /// <param name="pendingHandler">The handler to execute.</param>
+        internal abstract void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler);
+
+        /// <summary>
+        /// Verifies that request interception is enabled and the request has not been handled yet.
+        /// </summary>
+        /// <exception cref="PuppeteerException">Thrown when interception is not enabled or request is already handled.</exception>
+        protected abstract void VerifyInterception();
+
+        /// <summary>
+        /// Determines whether this request can be intercepted.
+        /// </summary>
+        /// <returns><c>true</c> if the request can be intercepted; otherwise, <c>false</c>.</returns>
+        protected abstract bool CanBeIntercepted();
     }
 }

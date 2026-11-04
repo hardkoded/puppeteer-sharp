@@ -50,20 +50,27 @@ public class CdpCDPSession : CDPSession
         _parentSessionId = parentSessionId;
     }
 
+    /// <inheritdoc />
+    public override bool Detached => Connection.IsClosed || IsClosed;
+
     internal override CDPSession ParentSession
         => string.IsNullOrEmpty(_parentSessionId) ? this : Connection.GetSession(_parentSessionId) ?? this;
 
     internal bool IsClosed { get; private set; }
 
+    private protected override bool BufferEarlyMessages
+        => _targetType is TargetType.ServiceWorker or TargetType.SharedWorker or TargetType.Worker;
+
     /// <inheritdoc />
-    public override Task DetachAsync()
+    public override async Task DetachAsync()
     {
-        if (Connection == null)
+        if (Detached)
         {
-            throw new PuppeteerException($"Session already detached.Most likely the {_targetType} has been closed.");
+            throw new PuppeteerException($"Session already detached. Most likely the {_targetType} has been closed.");
         }
 
-        return Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest { SessionId = Id });
+        await Connection.SendAsync("Target.detachFromTarget", new TargetDetachFromTargetRequest { SessionId = Id }).ConfigureAwait(false);
+        IsClosed = true;
     }
 
     /// <inheritdoc />
@@ -73,13 +80,18 @@ public class CdpCDPSession : CDPSession
         bool waitForCallback = true,
         CommandOptions options = null)
     {
-        if (Connection == null)
+        if (Detached)
         {
             throw new TargetClosedException(
                 $"Protocol error ({method}): Session closed. " +
                 $"Most likely the {_targetType} has been closed." +
                 $"Close reason: {CloseReason}",
                 CloseReason);
+        }
+
+        if (method == "Network.emulateNetworkConditions" && Connection.RejectEmulateNetworkConditionsCalls)
+        {
+            throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
         }
 
         var id = GetMessageId();
@@ -116,7 +128,44 @@ public class CdpCDPSession : CDPSession
             : null;
     }
 
+    /// <inheritdoc />
+    public override void Close(string closeReason)
+    {
+        if (IsClosed)
+        {
+            return;
+        }
+
+        CloseReason = closeReason;
+        IsClosed = true;
+
+        foreach (var callback in _callbacks.Values.ToArray())
+        {
+            callback.TaskWrapper.TrySetException(new TargetClosedException(
+                $"Protocol error({callback.Method}): Target closed.",
+                closeReason));
+        }
+
+        _callbacks.Clear();
+        ClearBufferedMessages();
+        OnDisconnected();
+    }
+
     internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
+
+    internal bool HasCallback(int id) => _callbacks.ContainsKey(id);
+
+    internal List<string> GetPendingProtocolErrors()
+    {
+        var result = new List<string>();
+
+        foreach (var callback in _callbacks.Values)
+        {
+            result.Add($"{callback.Method} timed out.");
+        }
+
+        return result;
+    }
 
     internal int GetMessageId() => Interlocked.Increment(ref _lastId);
 
@@ -137,27 +186,5 @@ public class CdpCDPSession : CDPSession
             var method = obj.Method;
             OnMessageReceived(new MessageEventArgs { MessageID = method, MessageData = (JsonElement)obj.Params });
         }
-    }
-
-    internal override void Close(string closeReason)
-    {
-        if (IsClosed)
-        {
-            return;
-        }
-
-        CloseReason = closeReason;
-        IsClosed = true;
-
-        foreach (var callback in _callbacks.Values)
-        {
-            callback.TaskWrapper.TrySetException(new TargetClosedException(
-                $"Protocol error({callback.Method}): Target closed.",
-                closeReason));
-        }
-
-        _callbacks.Clear();
-        OnDisconnected();
-        Connection = null;
     }
 }

@@ -1,30 +1,38 @@
 # Puppeteer Sharp
 
-[![NuGet](https://buildstats.info/nuget/PuppeteerSharp)][NugetUrl]
+[![NuGet](https://img.shields.io/nuget/dt/PuppeteerSharp)][NugetUrl]
 [![Build status](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/dotnet.yml/badge.svg)][BuildUrl]
 [![Demo build status](https://github.com/hardkoded/puppeteer-sharp/actions/workflows/demo.yml/badge.svg)][BuildDemoUrl]
-[![CodeFactor](https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp/badge)][CodeFactorUrl]
 [![Backers](https://opencollective.com/hardkoded-projects/backers/badge.svg)][Backers]
 
 [NugetUrl]: https://www.nuget.org/packages/PuppeteerSharp/
 [BuildUrl]: https://github.com/hardkoded/puppeteer-sharp/actions/workflows/dotnet.yml
 [BuildDemoUrl]: https://github.com/hardkoded/puppeteer-sharp/actions/workflows/demo.yml
-[CodeFactorUrl]: https://www.codefactor.io/repository/github/hardkoded/puppeteer-sharp
 [Backers]: https://opencollective.com/hardkoded-projects
 
 Puppeteer Sharp is a .NET port of the official [Node.JS Puppeteer API](https://github.com/puppeteer/puppeteer).
 
 ## Recent news
 
+Test the latest Firefox versions using WebDriver BiDi! Check the [PuppeteerSharp 21 release notes](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v21.0.0).
+
 PuppeteerSharp now supports AOT compilation! Check the [PuppeteerSharp 19 release notes!](https://github.com/hardkoded/puppeteer-sharp/releases/tag/v19.0.0).
 
 ## Useful links
 
-* [API Documentation](http://www.puppeteersharp.com/api/index.html)
+* [API Documentation](https://www.puppeteersharp.com/api/)
 * Slack channel [#puppeteer-sharp](https://www.hardkoded.com/goto/pptr-slack)
 * [StackOverflow](https://stackoverflow.com/search?q=puppeteer-sharp)
 * [Issues](https://github.com/hardkoded/puppeteer-sharp/issues?utf8=%E2%9C%93&q=is%3Aissue)
 * [Blog](https://www.hardkoded.com/)
+
+## Published Packages
+
+| Package | Description |
+| ------- | ----------- |
+| [PuppeteerSharp](https://www.nuget.org/packages/PuppeteerSharp/) | Our full cross-browser automation tool |
+| [PuppeteerSharp.Cdp](https://www.nuget.org/packages/PuppeteerSharp.Cdp/) | Ideal for Chrome-only AOT apps where binary size matters |
+| [PuppeteerSharp.AspNetFramework](https://www.nuget.org/packages/PuppeteerSharp.AspNetFramework/) | The companion library you need to run PuppeteerSharp in ASP.NET Classic |
 
 ## Prerequisites
 
@@ -74,7 +82,7 @@ await Page.SetViewportAsync(new ViewPortOptions
     Height = 500
 });
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L13-L19' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync_example' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/ScreenshotTests/ElementHandleScreenshotTests.cs#L12-L18' title='Snippet source file'>snippet source</a> | <a href='#snippet-setviewportasync_example' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Generate PDF files
@@ -102,7 +110,7 @@ await using var page = await browser.NewPageAsync();
 await page.SetContentAsync("<div>My Receipt</div>");
 var result = await page.GetContentAsync();
 ```
-<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L14-L20' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync_example' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/hardkoded/puppeteer-sharp/blob/master/lib/PuppeteerSharp.Tests/PageTests/SetContentTests.cs#L16-L22' title='Snippet source file'>snippet source</a> | <a href='#snippet-setcontentasync_example' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 ### Evaluate Javascript
@@ -163,15 +171,19 @@ using (var browser = await PuppeteerSharp.Puppeteer.ConnectAsync(options))
 
 ## Sponsors
 
+PuppeteerSharp is sponsored by [IronPDF](https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor), a commercial C# .NET PDF library and HTML-to-PDF alternative with Chrome rendering, PDF editing, digital signatures, encryption, enterprise licensing, and 24/7 engineering support.
+
+<a href="https://ironpdf.com/?utm_source=github&utm_medium=puppeteer&utm_campaign=sponsor">
+  <img src="https://ironsoftware.com/img/logos/iron.png" alt="IronPDF logo." width="180" />
+</a>
+
 A massive thanks to [JetBrains](https://www.jetbrains.com/?from=PuppeteerSharp) for a community Resharper and Rider license to use on this project.
 
 <div style="display:inline">
-<img src="https://raw.githubusercontent.com/aaubry/YamlDotNet/master/Sponsors/aws-logo-small.png" width="200" height="200"/>
-<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/08/JetBrains_beam_logo.svg/1200px-JetBrains_beam_logo.svg.png" width="200" height="200"/>
+
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
 </div>
 
 And a huge thanks to everyone who sponsors this project through [Github sponsors](https://github.com/sponsors/hardkoded):
 
-<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;github.com&#x2F;tolgabalci.png" width="60px" alt="User avatar: Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;nogginbox.png" width="60px" alt="User avatar: Richard Garside" /></a><!-- sponsors -->
-
-
+<!-- sponsors --><a href="https://github.com/tolgabalci"><img src="https:&#x2F;&#x2F;github.com&#x2F;tolgabalci.png" width="60px" alt="User avatar: Tolga Balci" /></a><a href="https://github.com/nogginbox"><img src="https:&#x2F;&#x2F;github.com&#x2F;nogginbox.png" width="60px" alt="User avatar: Richard Garside" /></a><a href="https://github.com/htmlcsstoimage"><img src="https:&#x2F;&#x2F;github.com&#x2F;htmlcsstoimage.png" width="60px" alt="User avatar: HTML&#x2F;CSS to Image API" /></a><a href="https://github.com/iron-software"><img src="https:&#x2F;&#x2F;github.com&#x2F;iron-software.png" width="60px" alt="User avatar: Iron Software" /></a><!-- sponsors -->

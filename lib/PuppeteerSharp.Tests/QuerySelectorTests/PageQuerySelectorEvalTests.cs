@@ -13,7 +13,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should work")]
         public async Task ShouldWork()
         {
-            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
+            await Page.SetContentAsync(TestUtils.Html("<section id='testAttribute'>43543</section>"));
             var idAttribute = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("e => e.id");
             Assert.That(idAttribute, Is.EqualTo("testAttribute"));
         }
@@ -21,7 +21,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, Ignore("previously not marked as a test")]
         public async Task ShouldWorkWithAwaitedElements()
         {
-            await Page.SetContentAsync("<section id='testAttribute'>43543</section>");
+            await Page.SetContentAsync(TestUtils.Html("<section id='testAttribute'>43543</section>"));
             var section = await Page.QuerySelectorAsync("section");
             var idAttribute = await section.EvaluateFunctionAsync<string>("e => e.id");
             Assert.That(idAttribute, Is.EqualTo("testAttribute"));
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept arguments")]
         public async Task ShouldAcceptArguments()
         {
-            await Page.SetContentAsync("<section>hello</section>");
+            await Page.SetContentAsync(TestUtils.Html("<section>hello</section>"));
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, suffix) => e.textContent + suffix", " world!");
             Assert.That(text, Is.EqualTo("hello world!"));
         }
@@ -38,7 +38,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$eval", "should accept ElementHandles as arguments")]
         public async Task ShouldAcceptElementHandlesAsArguments()
         {
-            await Page.SetContentAsync("<section>hello</section><div> world</div>");
+            await Page.SetContentAsync(TestUtils.Html("<section>hello</section><div> world</div>"));
             var divHandle = await Page.QuerySelectorAsync("div");
             var text = await Page.QuerySelectorAsync("section").EvaluateFunctionAsync<string>("(e, div) => e.textContent + div.textContent", divHandle);
             Assert.That(text, Is.EqualTo("hello world"));

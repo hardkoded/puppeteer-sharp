@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     public class MediaFeatureValue
     {
         /// <summary>
-        /// The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
+        /// The CSS media feature name. Supported names are `'prefers-color-scheme'`, `'prefers-reduced-motion'`, `'prefers-contrast'`, `'prefers-reduced-transparency'` and `'forced-colors'`.
         /// </summary>
         [JsonPropertyName("name")]
         public MediaFeature MediaFeature { get; set; }

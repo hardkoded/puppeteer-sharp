@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using PuppeteerSharp.Helpers;
@@ -18,7 +17,7 @@ namespace PuppeteerSharp.BrowserData
         /// <summary>
         /// Default firefox build.
         /// </summary>
-        public const string DefaultBuildId = "128.0b5";
+        public const string DefaultBuildId = "stable_158.0.1";
 
         private static readonly Dictionary<string, string> _cachedBuildIds = [];
 
@@ -112,6 +111,12 @@ namespace PuppeteerSharp.BrowserData
         internal static void CreateProfile(string tempUserDataDirectory, Dictionary<string, object> preferences)
         {
             tempUserDataDirectory = tempUserDataDirectory.Unquote();
+
+            if (!Directory.Exists(tempUserDataDirectory))
+            {
+                Directory.CreateDirectory(tempUserDataDirectory);
+            }
+
             var defaultPreferences = GetDefaultPreferences(preferences);
 
             SyncPreferences(defaultPreferences, tempUserDataDirectory);
@@ -123,13 +128,25 @@ namespace PuppeteerSharp.BrowserData
             var userPath = Path.Combine(tempUserDataDirectory, "user.js");
             var lines = string.Join(
                 "\n",
-                defaultPreferences.Select(i => $"user_pref({JsonSerializer.Serialize(i.Key)}, {JsonSerializer.Serialize(i.Value)});"));
+                defaultPreferences.Select(i => $"user_pref(\"{EscapeJsonString(i.Key)}\", {SerializePreferenceValue(i.Value)});"));
 
             BackupFile(userPath);
             BackupFile(prefsPath);
             File.WriteAllText(userPath, lines);
             File.WriteAllText(prefsPath, string.Empty);
         }
+
+        private static string SerializePreferenceValue(object value)
+            => value switch
+            {
+                string s => $"\"{EscapeJsonString(s)}\"",
+                bool b => b ? "true" : "false",
+                int n => n.ToString(CultureInfo.InvariantCulture),
+                _ => value?.ToString() ?? "null",
+            };
+
+        private static string EscapeJsonString(string s)
+            => s.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
         private static void BackupFile(string userPath)
         {
@@ -199,7 +216,7 @@ namespace PuppeteerSharp.BrowserData
         private static string GetArchive(Platform platform, string buildId)
             => platform switch
             {
-                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.bz2",
+                Platform.Linux or Platform.LinuxArm64 => $"firefox-{buildId}.tar.{GetFormat(buildId)}",
                 Platform.MacOS or Platform.MacOSArm64 => $"Firefox {buildId}.dmg",
                 Platform.Win32 or Platform.Win64 =>
                     $"Firefox Setup {buildId}.exe",
@@ -222,6 +239,12 @@ namespace PuppeteerSharp.BrowserData
 
                 // Increase the APZ content response timeout to 1 minute
                 ["apz.content_response_timeout"] = 60000,
+
+                // Disables backup service to improve startup performance and stability. See
+                // https://github.com/puppeteer/puppeteer/issues/14194. TODO: can be removed
+                // once the service is disabled on the Firefox side for WebDriver (see
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1988250).
+                ["browser.backup.enabled"] = false,
 
                 // Prevent various error message on the console
                 // jest-puppeteer asserts that no error message is emitted by the console

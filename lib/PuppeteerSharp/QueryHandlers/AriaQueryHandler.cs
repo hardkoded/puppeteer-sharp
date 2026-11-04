@@ -1,7 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+#if !CDP_ONLY
+using PuppeteerSharp.Bidi;
+#endif
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
 using static PuppeteerSharp.Cdp.Messaging.AccessibilityGetFullAXTreeResponse;
@@ -29,6 +35,21 @@ namespace PuppeteerSharp.QueryHandlers
         internal override async IAsyncEnumerable<IElementHandle> QueryAllAsync(IElementHandle element, string selector)
         {
             var ariaSelector = ParseAriaSelector(selector);
+
+#if !CDP_ONLY
+            // Handle BiDi element handles
+            if (element is BidiElementHandle bidiElementHandle)
+            {
+                await foreach (var item in bidiElementHandle.QueryAXTreeAsync(ariaSelector.Name, ariaSelector.Role).ConfigureAwait(false))
+                {
+                    yield return item;
+                }
+
+                yield break;
+            }
+#endif
+
+            // Handle CDP element handles
             if (element is not ElementHandle elementHandle)
             {
                 yield break;
@@ -48,13 +69,75 @@ namespace PuppeteerSharp.QueryHandlers
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : default;
         }
 
-        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(CDPSession client, IElementHandle element, string accessibleName, string role)
+        internal async Task<IJSHandle> QueryAllAsJSArrayAsync(IElementHandle element, string selector)
         {
+            if (element is not ElementHandle elementHandle)
+            {
+                return null;
+            }
+
+            // Create an empty JS array in the same execution context
+            var arrayHandle = await elementHandle.EvaluateFunctionHandleAsync("() => []").ConfigureAwait(false);
+
+            await foreach (var item in QueryAllAsync(element, selector).ConfigureAwait(false))
+            {
+                // Push each element into the JS array
+                await elementHandle.Realm.EvaluateFunctionAsync(
+                    "(arr, elem) => arr.push(elem)",
+                    arrayHandle,
+                    item).ConfigureAwait(false);
+            }
+
+            return arrayHandle;
+        }
+
+        internal override async Task<IElementHandle> WaitForAsync(
+            Frame frame,
+            ElementHandle element,
+            string selector,
+            WaitForSelectorOptions options,
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
+        {
+            // Get frame from element if not provided
+            var targetFrame = frame ?? element?.Frame;
+
+#if !CDP_ONLY
+            // For BiDi frames, use native BiDi approach with polling
+            if (targetFrame is BidiFrame)
+            {
+                return await WaitForBidiAsync(targetFrame, element, selector, options).ConfigureAwait(false);
+            }
+#endif
+
+            // For CDP frames, use the base implementation
+            return await base.WaitForAsync(frame, element, selector, options, polling).ConfigureAwait(false);
+        }
+
+#if NET8_0_OR_GREATER
+        [GeneratedRegex("""\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""")]
+        private static partial Regex GetAriaSelectorAttributeRegex();
+#else
+        private static Regex GetAriaSelectorAttributeRegex() => _ariaSelectorAttributeRegex;
+#endif
+
+#if !CDP_ONLY
+        private static async Task<bool> IsVisibleAsync(IElementHandle element)
+        {
+            return await element.EvaluateFunctionAsync<bool>(@"(element) => {
+                const style = window.getComputedStyle(element);
+                return style && style.visibility !== 'hidden' && style.display !== 'none';
+            }").ConfigureAwait(false);
+        }
+#endif
+
+        private static async Task<IEnumerable<AXTreeNode>> QueryAXTreeAsync(ICDPSession client, IElementHandle element, string accessibleName, string role)
+        {
+            var cdpElementHandle = (CdpElementHandle)element;
             var nodes = await client.SendAsync<AccessibilityQueryAXTreeResponse>(
                 "Accessibility.queryAXTree",
                 new AccessibilityQueryAXTreeRequest()
                 {
-                    ObjectId = element.RemoteObject.ObjectId,
+                    ObjectId = cdpElementHandle.RemoteObject.ObjectId,
                     AccessibleName = accessibleName,
                     Role = role,
                 }).ConfigureAwait(false);
@@ -107,11 +190,95 @@ namespace PuppeteerSharp.QueryHandlers
             return queryOptions;
         }
 
-#if NET8_0_OR_GREATER
-        [GeneratedRegex("""\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]""")]
-        private static partial Regex GetAriaSelectorAttributeRegex();
-#else
-        private static Regex GetAriaSelectorAttributeRegex() => _ariaSelectorAttributeRegex;
+#if !CDP_ONLY
+        private async Task<IElementHandle> WaitForBidiAsync(
+            Frame frame,
+            ElementHandle element,
+            string selector,
+            WaitForSelectorOptions options)
+        {
+            var timeout = options?.Timeout ?? (frame.Page as Page)?.TimeoutSettings.Timeout ?? 30000;
+            var waitForVisible = options?.Visible ?? false;
+            var waitForHidden = options?.Hidden ?? false;
+
+            var sw = Stopwatch.StartNew();
+
+            while (true)
+            {
+                if (sw.ElapsedMilliseconds > timeout)
+                {
+                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                }
+
+                try
+                {
+                    IElementHandle queryElement = element;
+                    if (queryElement == null)
+                    {
+                        // Get the document element as the root
+                        queryElement = await frame.QuerySelectorAsync("body").ConfigureAwait(false) as ElementHandle;
+                        if (queryElement == null)
+                        {
+                            // Fallback to html element
+                            queryElement = await frame.QuerySelectorAsync("html").ConfigureAwait(false) as ElementHandle;
+                        }
+                    }
+
+                    if (queryElement != null)
+                    {
+                        var result = await QueryOneAsync(queryElement, selector).ConfigureAwait(false);
+
+                        if (element == null && queryElement != null)
+                        {
+                            await queryElement.DisposeAsync().ConfigureAwait(false);
+                        }
+
+                        if (result != null)
+                        {
+                            if (waitForVisible)
+                            {
+                                var isVisible = await IsVisibleAsync(result).ConfigureAwait(false);
+                                if (isVisible)
+                                {
+                                    return result;
+                                }
+                            }
+                            else if (waitForHidden)
+                            {
+                                var isVisible = await IsVisibleAsync(result).ConfigureAwait(false);
+                                if (!isVisible)
+                                {
+                                    return result;
+                                }
+                            }
+                            else
+                            {
+                                return result;
+                            }
+
+                            await result.DisposeAsync().ConfigureAwait(false);
+                        }
+                        else if (waitForHidden)
+                        {
+                            // Element not found and we're waiting for hidden - success
+                            return null;
+                        }
+                    }
+                }
+                catch (Exception) when (sw.ElapsedMilliseconds > timeout)
+                {
+                    throw new WaitTaskTimeoutException($"Waiting for selector `{selector}` failed: timeout {timeout}ms exceeded");
+                }
+                catch (Exception)
+                {
+                    // Navigation or context changes may cause transient errors; continue polling
+                }
+
+                // Small delay to avoid busy-waiting
+                await Task.Delay(100).ConfigureAwait(false);
+            }
+        }
 #endif
+
     }
 }

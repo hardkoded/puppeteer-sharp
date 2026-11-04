@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class UrlTests : PuppeteerPageBaseTest
     {
-        public UrlTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("page.spec", "Page Page.url", "should work")]
         public async Task ShouldWork()
         {

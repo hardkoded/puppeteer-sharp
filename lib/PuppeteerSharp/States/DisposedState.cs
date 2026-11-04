@@ -32,7 +32,7 @@ namespace PuppeteerSharp.States
 
         public override Task StartAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 
-        public override Task ExitAsync(LauncherBase p, TimeSpan timeout) => throw new ObjectDisposedException(p.ToString());
+        public override Task ExitAsync(LauncherBase launcher, TimeSpan timeout) => throw new ObjectDisposedException(launcher.ToString());
 
         public override Task KillAsync(LauncherBase p) => throw new ObjectDisposedException(p.ToString());
 

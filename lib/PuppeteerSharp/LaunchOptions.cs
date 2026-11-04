@@ -61,7 +61,7 @@ namespace PuppeteerSharp
         public int Timeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <summary>
-        ///  Whether to pipe browser process stdout and stderr into process.stdout and process.stderr. Defaults to false.
+        ///  Whether to pipe browser process stdout and stderr into process stdout and process stderr. Defaults to false.
         /// </summary>
         public bool DumpIO { get; set; }
 
@@ -94,6 +94,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// Logs process counts after launching chrome and after exiting.
         /// </summary>
+        /// <remarks>
+        /// This property is obsolete and has no effect. It will be removed in a future version.
+        /// </remarks>
+        [Obsolete("This property has no effect and will be removed in a future version.")]
         public bool LogProcess { get; set; }
 
         /// <summary>
@@ -146,9 +150,32 @@ namespace PuppeteerSharp
         public WebSocketFactory WebSocketFactory { get; set; }
 
         /// <summary>
+        /// Options for the WebSocket connection to the browser.
+        /// </summary>
+        public WsOptions WsOptions { get; set; }
+
+        /// <summary>
+        /// Headers that should be sent with connection-related HTTP and WebSocket requests.
+        /// </summary>
+        [Obsolete("Use WsOptions.Headers via LaunchOptions.WsOptions instead. When both are set, WsOptions.Headers wins.")]
+        public Dictionary<string, string> Headers { get; set; }
+
+        /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.
         /// </summary>
         public TransportFactory TransportFactory { get; set; }
+
+        /// <summary>
+        /// Experimental setting to disable monitoring network events by default. When
+        /// set to <c>false</c>, parts of Puppeteer that depend on network events would not
+        /// work such as <see cref="IRequest"/> and <see cref="IResponse"/>.
+        /// </summary>
+        public bool NetworkEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Experimental setting to disable monitoring issue events by default.
+        /// </summary>
+        public bool IssuesEnabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the default Viewport.
@@ -161,7 +188,7 @@ namespace PuppeteerSharp
         /// </summary>
         /// <remarks>
         /// It's set to <c>true</c> by default because it's the safest way to send commands to Chromium.
-        /// Setting this to <c>false</c> proved to work in .NET Core but it tends to fail on .NET Framework.
+        /// Setting this to <c>false</c> proved to work in .NET Core, but it tends to fail on .NET Framework.
         /// </remarks>
         public bool EnqueueTransportMessages { get; set; } = true;
 
@@ -194,6 +221,103 @@ namespace PuppeteerSharp
         /// Additional preferences that can be passed when launching with Firefox. <see fref="https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js">See</see>.
         /// </summary>
         public Dictionary<string, object> ExtraPrefsFirefox { get; set; }
+
+        /// <summary>
+        /// Wait for the initial page before initializing.
+        /// </summary>
+        public bool WaitForInitialPage { get; set; } = true;
+
+        /// <summary>
+        /// If <c>true</c>, avoids passing default arguments to the browser that would
+        /// prevent extensions from being enabled. Passing a list of strings will
+        /// load the provided paths as unpacked extensions.
+        /// </summary>
+        /// <remarks>
+        /// <para>In Chrome, setting this to <c>true</c> or a <c>string[]</c> replaces the
+        /// <c>--disable-extensions</c> flag with <c>--enable-unsafe-extension-debugging</c>.</para>
+        /// <para>Passing a <c>string[]</c> is only supported with Firefox (BiDi) at this time.</para>
+        /// <para>In Firefox, there is no known command line flag to disable addons so they are always enabled.</para>
+        /// </remarks>
+        public EnableExtensionsOption EnableExtensions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of extension paths that will be enabled in Incognito and off-the-record profiles.
+        /// </summary>
+        public string[] ExtensionsEnabledInIncognito { get; set; }
+
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
+
+        /// <summary>
+        /// Connects to the browser over a pipe instead of a WebSocket.
+        /// Only supported for Chrome/Chromium with CDP protocol.
+        /// </summary>
+        public bool Pipe { get; set; }
+
+        /// <summary>
+        /// The protocol to use for browser communication.
+        /// Defaults to <see cref="ProtocolType.Cdp"/>. Set to <see cref="ProtocolType.WebdriverBiDi"/> to use WebDriver BiDi.
+        /// Firefox always uses WebDriver BiDi regardless of this setting.
+        /// </summary>
+        public ProtocolType Protocol { get; set; }
+
+        /// <summary>
+        /// A list of URL patterns to block.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing specific
+        /// URLs or origins. It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL matches a blocked pattern.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="Allowlist"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to block a specific domain: <c>*://example.com/*</c>
+        /// Pattern to block all subdomains: <c>*://*.evil.com/*</c>.
+        /// </example>
+        public string[] BlockList { get; set; }
+
+        /// <summary>
+        /// A list of URL patterns to allow. When set, the browser can only access URLs matching these patterns.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <strong>Requires Chrome 149+.</strong>
+        /// </para>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing any URLs
+        /// except for those that match the patterns in the allowlist.
+        /// It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL does not match any pattern in the allowlist.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="BlockList"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to allow a specific domain: <c>*://example.com/*</c>
+        /// Pattern to allow all subdomains: <c>*://*.example.com/*</c>.
+        /// </example>
+        public string[] Allowlist { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

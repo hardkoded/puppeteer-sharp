@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -13,17 +14,14 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
 #if NETSTANDARD2_0
     private static readonly Regex _extraInfoLines = new(@"[^ ]* [^ ]* (?<text>.*)", RegexOptions.Multiline);
 #endif
-    private readonly CDPSession _client;
     private readonly bool _fromDiskCache;
     private byte[] _buffer;
 
     internal CdpHttpResponse(
-        CDPSession client,
         CdpHttpRequest request,
         ResponsePayload responseMessage,
         ResponseReceivedExtraInfoResponse extraInfo)
     {
-        _client = client;
         Request = request;
         Status = extraInfo != null ? extraInfo.StatusCode : responseMessage.Status;
         StatusText = ParseStatusTextFromExtraInfo(extraInfo) ?? responseMessage.StatusText;
@@ -37,7 +35,11 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
         {
             foreach (var keyValue in headers)
             {
-                Headers[keyValue.Key] = keyValue.Value;
+                var headerName = keyValue.Key.ToLowerInvariant();
+
+                // See https://www.rfc-editor.org/rfc/rfc9110.html#name-field-order for
+                // the set-cookie exception.
+                Headers[headerName] = HttpUtils.NormalizeHeaderValue(headerName, keyValue.Value);
             }
         }
 
@@ -47,6 +49,7 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
             IP = responseMessage.RemoteIPAddress,
             Port = responseMessage.RemotePort,
         };
+        Timing = responseMessage.Timing;
     }
 
     /// <inheritdoc/>
@@ -66,7 +69,9 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
 
             try
             {
-                var response = await _client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
+                // Use CDPSession from corresponding request to retrieve body, as its client
+                // might have been updated (e.g. for an adopted OOPIF).
+                var response = await Request.Client.SendAsync<NetworkGetResponseBodyResponse>("Network.getResponseBody", new NetworkGetResponseBodyRequest
                 {
                     RequestId = Request.Id,
                 }).ConfigureAwait(false);

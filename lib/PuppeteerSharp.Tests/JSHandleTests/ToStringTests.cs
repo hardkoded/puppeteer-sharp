@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class ToStringTests : PuppeteerPageBaseTest
     {
-        public ToStringTests() : base()
-        {
-        }
-
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work for primitives")]
         public async Task ShouldWorkForPrimitives()
         {
@@ -23,7 +19,15 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         public async Task ShouldWorkForComplicatedObjects()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("window");
-            Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@object"));
+
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@object"));
+            }
+            else
+            {
+                Assert.That(aHandle.ToString(), Is.EqualTo("JSHandle@window"));
+            }
         }
 
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with different subtypes")]
@@ -47,6 +51,13 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That((await Page.EvaluateExpressionHandleAsync("new Error()")).ToString(), Is.EqualTo("JSHandle@error"));
             Assert.That((await Page.EvaluateExpressionHandleAsync("new Int32Array()")).ToString(), Is.EqualTo("JSHandle@typedarray"));
             Assert.That((await Page.EvaluateExpressionHandleAsync("new Proxy({}, {})")).ToString(), Is.EqualTo("JSHandle@proxy"));
+        }
+
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.toString", "should work with window subtypes")]
+        public async Task ShouldWorkWithWindowSubtypes()
+        {
+            Assert.That((await Page.EvaluateExpressionHandleAsync("window")).ToString(), Is.EqualTo("JSHandle@window"));
+            Assert.That((await Page.EvaluateExpressionHandleAsync("globalThis")).ToString(), Is.EqualTo("JSHandle@window"));
         }
     }
 }

@@ -8,13 +8,18 @@ namespace PuppeteerSharp.Tests.JSHandleTests
 {
     public class JsonValueTests : PuppeteerPageBaseTest
     {
+        private struct MyObject
+        {
+            public string Foo { get; set; }
+        }
+
         [Test, PuppeteerTest("jshandle.spec", "JSHandle JSHandle.jsonValue", "should work")]
         public async Task ShouldWork()
         {
             var aHandle = await Page.EvaluateExpressionHandleAsync("({ foo: 'bar'})");
 
-            var json = await aHandle.JsonValueAsync<JsonElement>();
-            Assert.That(json.GetProperty("foo").GetString(), Is.EqualTo("bar"));
+            var json = await aHandle.JsonValueAsync<MyObject>();
+            Assert.That(json.Foo, Is.EqualTo("bar"));
         }
 
         [Test, Retry(2),

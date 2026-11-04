@@ -41,6 +41,23 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should work with async predicate")]
+        public async Task ShouldWorkWithAsyncPredicate()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var task = Page.WaitForRequestAsync(request => request.Url == TestConstants.ServerUrl + "/digits/2.png");
+
+            await Task.WhenAll(
+                task,
+                Page.EvaluateFunctionAsync(@"() => {
+                    fetch('/digits/1.png');
+                    fetch('/digits/2.png');
+                    fetch('/digits/3.png');
+                }")
+            );
+            Assert.That(task.Result.Url, Is.EqualTo(TestConstants.ServerUrl + "/digits/2.png"));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.waitForRequest", "should respect timeout")]
         public async Task ShouldRespectTimeout()
         {

@@ -1,0 +1,17 @@
+{
+  "name": "typescript-bidi-test",
+  "version": "1.0.0",
+  "description": "Test to verify Firefox BiDi duplicate BeforeRequestSent events",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "npx tsx test-with-server.ts"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

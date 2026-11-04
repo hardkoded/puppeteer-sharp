@@ -14,13 +14,15 @@ public class PrerenderTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
+        await Page.WaitForNetworkIdleAsync();
+
         var link = await Page.WaitForSelectorAsync("a");
         await Task.WhenAll(
             Page.WaitForNavigationAsync(),
             link.ClickAsync()
         );
 
-        Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("true"));
     }
 
     [Test, PuppeteerTest("prerender.spec", "Prerender", "can navigate to a prerendered page via Puppeteer")]
@@ -31,8 +33,7 @@ public class PrerenderTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
-
         await Page.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
-        Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("false"));
     }
 }

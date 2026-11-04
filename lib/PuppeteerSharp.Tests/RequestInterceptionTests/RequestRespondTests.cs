@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -13,7 +14,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should work")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -41,7 +42,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         /// I found that status 422 is not available in all .NET runtimes (see https://github.com/dotnet/core/blob/4c4642d548074b3fbfd425541a968aadd75fea99/release-notes/2.1/Preview/api-diff/preview2/2.1-preview2_System.Net.md)
         /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
         /// </summary>
-        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should work with status code 422")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should work with status code 422")]
         public async Task ShouldWorkReturnStatusPhrases()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -60,7 +61,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should redirect")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should redirect")]
         public async Task ShouldRedirect()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -90,7 +91,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(response.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should allow mocking binary responses")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should allow mocking binary responses")]
         public async Task ShouldAllowMockingBinaryResponses()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -115,7 +116,73 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(ScreenshotHelper.PixelMatch("mock-binary-response.png", await img.ScreenshotDataAsync()), Is.True);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.respond", "should stringify intercepted request response headers")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should fail if the header value is invalid")]
+        public async Task ShouldFailIfTheHeaderValueIsInvalid()
+        {
+            Exception error = null;
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                try
+                {
+                    await e.Request.RespondAsync(new ResponseData
+                    {
+                        Headers = new Dictionary<string, object>
+                        {
+                            ["X-Invalid-Header"] = "a\nb",
+                        },
+                    });
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Body = "Hello World",
+                });
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should report correct content-length header with string")]
+        public async Task ShouldReportCorrectContentLengthHeaderWithString()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Body = "Correct length \U0001F4CF?",
+                });
+            };
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var headers = response.Headers;
+            Assert.That(headers["content-length"], Is.EqualTo("20"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should report correct content-length header with buffer")]
+        public async Task ShouldReportCorrectContentLengthHeaderWithBuffer()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    BodyData = System.Text.Encoding.UTF8.GetBytes("Correct length \U0001F4CF?"),
+                });
+            };
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var headers = response.Headers;
+            Assert.That(headers["content-length"], Is.EqualTo("20"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should stringify intercepted request response headers")]
         public async Task ShouldStringifyInterceptedRequestResponseHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -138,8 +205,8 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
         }
 
-        [Test, Ignore("previously not marked as a test")]
-        public async Task ShouldAllowMultipleInterceptedRequestResponseHeaders()
+        [Test, PuppeteerTest("HTTPRequest.test", "CdpHTTPRequest", "should not send response headers whose value is undefined")]
+        public async Task ShouldNotSendResponseHeadersWhoseValueIsNull()
         {
             await Page.SetRequestInterceptionAsync(true);
             Page.Request += async (_, e) =>
@@ -149,23 +216,70 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
                     Status = HttpStatusCode.OK,
                     Headers = new Dictionary<string, object>
                     {
-                        ["foo"] = new bool[] { true, false },
-                        ["Set-Cookie"] = new string[] { "sessionId=abcdef", "specialId=123456" }
+                        ["x-keep"] = "yes",
+                        ["x-drop"] = null,
                     },
-                    Body = "Yo, page!"
+                    Body = "ok",
                 });
             };
 
             var response = await Page.GoToAsync(TestConstants.EmptyPage);
-            var cookies = await Page.GetCookiesAsync(TestConstants.EmptyPage);
+            Assert.That(response.Headers["x-keep"], Is.EqualTo("yes"));
+            Assert.That(response.Headers.ContainsKey("x-drop"), Is.False);
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should allow mocking multiple headers with same key")]
+        public async Task ShouldAllowMockingMultipleHeadersWithSameKey()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["foo"] = "bar",
+                        ["arr"] = new string[] { "1", "2" },
+                        ["set-cookie"] = new string[] { "first=1", "second=2" },
+                    },
+                    Body = "Hello \U0001F310",
+                });
+            };
+
+            var response = await Page.GoToAsync(TestConstants.EmptyPage);
+            var cookies = await Page.GetCookiesAsync();
+            var firstCookie = Array.Find(cookies, cookie => cookie.Name == "first");
+            var secondCookie = Array.Find(cookies, cookie => cookie.Name == "second");
 
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(response.Headers["foo"], Is.EqualTo("True\nFalse"));
-            Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
-            Assert.That(cookies[0].Name, Is.EqualTo("specialId"));
-            Assert.That(cookies[0].Value, Is.EqualTo("123456"));
-            Assert.That(cookies[1].Name, Is.EqualTo("sessionId"));
-            Assert.That(cookies[1].Value, Is.EqualTo("abcdef"));
+            Assert.That(response.Headers["foo"], Is.EqualTo("bar"));
+            Assert.That(response.Headers["arr"], Is.EqualTo("1, 2"));
+
+            Assert.That(firstCookie?.Value, Is.EqualTo("1"));
+            Assert.That(secondCookie?.Value, Is.EqualTo("2"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.respond", "should report correct encoding from page when content-type is set")]
+        public async Task ShouldReportCorrectEncodingFromPageWhenContentTypeIsSet()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                await e.Request.RespondAsync(new ResponseData
+                {
+                    Status = HttpStatusCode.OK,
+                    BodyData = System.Text.Encoding.UTF8.GetBytes("Correct length \U0001F4CF?"),
+                    Headers = new Dictionary<string, object>
+                    {
+                        ["Content-Type"] = "text/plain; charset=utf-8"
+                    },
+                });
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var content = await Page.EvaluateExpressionAsync<string>("document.documentElement.innerText");
+            Assert.That(content, Is.EqualTo("Correct length \U0001F4CF?"));
         }
     }
 }

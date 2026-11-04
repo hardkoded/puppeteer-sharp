@@ -40,6 +40,10 @@ namespace PuppeteerSharp.Tests.EmulationTests
             screenshot = await Page.ScreenshotDataAsync();
             Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-tritanopia.png", screenshot), Is.True);
 
+            await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.ReducedContrast);
+            screenshot = await Page.ScreenshotDataAsync();
+            Assert.That(ScreenshotHelper.PixelMatch("vision-deficiency-reducedContrast.png", screenshot), Is.True);
+
             await Page.EmulateVisionDeficiencyAsync(VisionDeficiency.None);
             screenshot = await Page.ScreenshotDataAsync();
             Assert.That(ScreenshotHelper.PixelMatch("screenshot-sanity.png", screenshot), Is.True);

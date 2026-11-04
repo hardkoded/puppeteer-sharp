@@ -21,12 +21,15 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.PageAccessibility;
 
 namespace PuppeteerSharp.Cdp;
 
@@ -42,6 +45,8 @@ public class CdpFrame : Frame
         Client = client;
         ParentId = parentFrameId;
 
+        Accessibility = new Accessibility(client, () => Id, () => MainRealm);
+
         UpdateClient(client);
 
         FrameSwappedByActivation += (_, _) =>
@@ -55,7 +60,7 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc />
-    public sealed override CDPSession Client { get; protected set; }
+    public sealed override ICDPSession Client { get; protected set; }
 
     /// <inheritdoc/>
     public override IPage Page => FrameManager.Page;
@@ -65,18 +70,29 @@ public class CdpFrame : Frame
 
     internal FrameManager FrameManager { get; }
 
+    internal Accessibility Accessibility { get; }
+
     internal CdpPage CdpPage => Page as CdpPage;
 
+    internal ConcurrentDictionary<string, IsolatedWorld> ExtensionWorlds { get; } = new();
+
     internal override Frame ParentFrame => FrameManager.FrameTree.GetParentFrame(Id);
+
+    internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
     /// <inheritdoc/>
     public override async Task<IResponse> GoToAsync(string url, NavigationOptions options)
     {
-        var ensureNewDocumentNavigation = false;
-
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
+        }
+
+        if (CdpPage != null && !CdpPage.IsUrlAllowed(url))
+        {
+            throw new NavigationException(
+                $"Navigation to {url} is blocked by blocklist/allowlist rules",
+                url);
         }
 
         var referrer = string.IsNullOrEmpty(options.Referer)
@@ -88,28 +104,33 @@ public class CdpFrame : Frame
         var timeout = options.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
 
         using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, options.WaitUntil, timeout);
+        var ensureNewDocumentNavigation = false;
         try
         {
+            var terminationTask = watcher.TerminationTask;
             var navigateTask = NavigateAsync();
             var task = await Task.WhenAny(
-                watcher.TerminationTask,
+                terminationTask,
                 navigateTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
 
-            task = await Task.WhenAny(
-                    watcher.TerminationTask,
-                    ensureNewDocumentNavigation ? watcher.NewDocumentNavigationTask : watcher.SameDocumentNavigationTask)
-                .ConfigureAwait(false);
+            var navigationTask = ensureNewDocumentNavigation
+                ? watcher.NewDocumentNavigationTask
+                : watcher.SameDocumentNavigationTask;
+            task = await Task.WhenAny(terminationTask, navigationTask).ConfigureAwait(false);
 
             await task.ConfigureAwait(false);
+
+            var responseTask = watcher.NavigationResponseAsync();
+            await (await Task.WhenAny(terminationTask, responseTask).ConfigureAwait(false)).ConfigureAwait(false);
+
+            return await responseTask.ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             throw new NavigationException(ex.Message, ex);
         }
-
-        return watcher.NavigationResponse;
 
         async Task NavigateAsync()
         {
@@ -147,24 +168,29 @@ public class CdpFrame : Frame
 
         await raceTask.ConfigureAwait(false);
 
-        return watcher.NavigationResponse;
+        var navigationResponseTask = watcher.NavigationResponseAsync();
+        var completedTask = await Task.WhenAny(
+            watcher.TerminationTask,
+            navigationResponseTask).ConfigureAwait(false);
+
+        await completedTask.ConfigureAwait(false);
+
+        return completedTask == navigationResponseTask
+            ? navigationResponseTask.Result
+            : null;
     }
 
     /// <inheritdoc/>
-    public override async Task SetContentAsync(string html, NavigationOptions options = null)
+    [Obsolete]
+    public override async Task SetContentAsync(string html, NavigationOptions options)
     {
         var waitUntil = options?.WaitUntil ?? new[] { WaitUntilNavigation.Load };
         var timeout = options?.Timeout ?? FrameManager.TimeoutSettings.NavigationTimeout;
 
-        // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-        // lifecycle event. @see https://crrev.com/608658
-        await IsolatedRealm.EvaluateFunctionAsync(
-            @"html => {
-                    document.open();
-                    document.write(html);
-                    document.close();
-                }",
-            html).ConfigureAwait(false);
+        // We rely upon the fact that the document is reopened, which resets the
+        // frame lifecycle with an "init" lifecycle event.
+        // @see https://crrev.com/608658
+        await SetFrameContentAsync(html).ConfigureAwait(false);
 
         using var watcher = new LifecycleWatcher(FrameManager.NetworkManager, this, waitUntil, timeout);
         var watcherTask = await Task.WhenAny(
@@ -242,69 +268,96 @@ public class CdpFrame : Frame
     }
 
     /// <inheritdoc/>
-    public override async Task<IElementHandle> AddScriptTagAsync(AddTagOptions options)
+    public override async Task<ElementHandle> FrameElementAsync()
     {
-        if (options == null)
+        var parentFrame = ParentFrame;
+        if (parentFrame == null)
         {
-            throw new ArgumentNullException(nameof(options));
+            return null;
         }
 
-        if (string.IsNullOrEmpty(options.Url) && string.IsNullOrEmpty(options.Path) &&
-            string.IsNullOrEmpty(options.Content))
+        var response = await parentFrame.Client.SendAsync<DomGetFrameOwnerResponse>("DOM.getFrameOwner", new DomGetFrameOwnerRequest
         {
-            throw new ArgumentException("Provide options with a `Url`, `Path` or `Content` property");
+            FrameId = Id,
+        }).ConfigureAwait(false);
+
+        return (ElementHandle)await parentFrame.MainRealm.AdoptBackendNodeAsync(response.BackendNodeId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override IReadOnlyList<Realm> ExtensionRealms()
+        => ExtensionWorlds.Values.Cast<Realm>().ToList();
+
+    internal bool IsOopFrame() => Client != FrameManager.Client;
+
+    internal async Task AddPreloadScriptAsync(CdpPreloadScript preloadScript)
+    {
+        if (!IsOopFrame() && this != FrameManager.MainFrame)
+        {
+            return;
         }
 
-        var content = options.Content;
-
-        if (!string.IsNullOrEmpty(options.Path))
+        if (preloadScript.GetIdForFrame(this) != null)
         {
-            content = await AsyncFileHelper.ReadAllText(options.Path).ConfigureAwait(false);
-            content += "//# sourceURL=" + options.Path.Replace("\n", string.Empty);
+            return;
         }
 
-        var handle = await IsolatedRealm.EvaluateFunctionHandleAsync(
-            @"async (puppeteerUtil, url, id, type, content) => {
-                  const createDeferredPromise = puppeteerUtil.createDeferredPromise;
-                  const promise = createDeferredPromise();
-                  const script = document.createElement('script');
-                  script.type = type;
-                  script.text = content;
-                  if (url) {
-                    script.src = url;
-                    script.addEventListener(
-                      'load',
-                      () => {
-                        return promise.resolve();
-                      },
-                      {once: true}
-                    );
-                    script.addEventListener(
-                      'error',
-                      event => {
-                        promise.reject(
-                          new Error(event.message ?? 'Could not load script')
-                        );
-                      },
-                      {once: true}
-                    );
-                  } else {
-                    promise.resolve();
-                  }
-                  if (id) {
-                    script.id = id;
-                  }
-                  document.head.appendChild(script);
-                  await promise;
-                  return script;
-                }",
-            new LazyArg(async context => await context.GetPuppeteerUtilAsync().ConfigureAwait(false)),
-            options.Url,
-            options.Id,
-            options.Type,
-            content).ConfigureAwait(false);
+        var response = await Client.SendAsync<Messaging.PageAddScriptToEvaluateOnNewDocumentResponse>(
+            "Page.addScriptToEvaluateOnNewDocument",
+            new Messaging.PageAddScriptToEvaluateOnNewDocumentRequest { Source = preloadScript.Source, }).ConfigureAwait(false);
+        preloadScript.SetIdForFrame(this, response.Identifier);
+    }
 
-        return (await MainRealm.TransferHandleAsync(handle).ConfigureAwait(false)) as IElementHandle;
+    internal async Task AddExposedFunctionBindingAsync(Binding binding)
+    {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (this != FrameManager.MainFrame && !HasStartedLoading)
+        {
+            return;
+        }
+
+        await Task.WhenAll(
+            Client.SendAsync("Runtime.addBinding", new RuntimeAddBindingRequest
+            {
+                Name = BindingUtils.CdpBindingPrefix + binding.Name,
+            }),
+            EvaluateExpressionAsync(binding.InitSource)
+                .ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            Logger.LogError(task.Exception?.ToString());
+                        }
+                    },
+                    TaskScheduler.Default)).ConfigureAwait(false);
+    }
+
+    internal async Task RemoveExposedFunctionBindingAsync(Binding binding)
+    {
+        // If a frame has not started loading, it might never start. Rely on
+        // addScriptToEvaluateOnNewDocument in that case.
+        if (this != FrameManager.MainFrame && !HasStartedLoading)
+        {
+            return;
+        }
+
+        await Task.WhenAll(
+            Client.SendAsync("Runtime.removeBinding", new RuntimeRemoveBindingRequest
+            {
+                Name = BindingUtils.CdpBindingPrefix + binding.Name,
+            }),
+            EvaluateFunctionAsync("name => globalThis[name] = undefined", binding.Name)
+                .ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            Logger.LogError(task.Exception?.ToString());
+                        }
+                    },
+                    TaskScheduler.Default)).ConfigureAwait(false);
     }
 
     internal void UpdateClient(CDPSession client, bool keepWorlds = false)
@@ -335,9 +388,20 @@ public class CdpFrame : Frame
         }
     }
 
+    /// <inheritdoc/>
+    protected internal override void OnDetach()
+    {
+        foreach (var world in ExtensionWorlds.Values)
+        {
+            world.Detach();
+        }
+
+        ExtensionWorlds.Clear();
+    }
+
     /// <inheritdoc />
     protected internal override DeviceRequestPromptManager GetDeviceRequestPromptManager()
-        => FrameManager.GetDeviceRequestPromptManager(Client);
+        => FrameManager.GetDeviceRequestPromptManager(CdpCDPSession);
 
     // See https://chromedevtools.github.io/devtools-protocol/tot/Page/#type-ReferrerPolicy.
     private static string ReferrerPolicyToProtocol(string referrerPolicy)
@@ -345,5 +409,17 @@ public class CdpFrame : Frame
         // Transform kebab-case to camelCase
         return string.IsNullOrEmpty(referrerPolicy) ? null :
             Regex.Replace(referrerPolicy, "-(.)", match => match.Groups[1].Value.ToUpperInvariant());
+    }
+
+    private async Task SetFrameContentAsync(string content)
+    {
+        // Writing the content from the page would go through document.write, which
+        // makes Chrome treat parser-blocking cross-site scripts in it as an
+        // intervention candidate and may block them outright.
+        await Client.SendAsync("Page.setDocumentContent", new PageSetDocumentContentRequest
+        {
+            FrameId = Id,
+            Html = content,
+        }).ConfigureAwait(false);
     }
 }

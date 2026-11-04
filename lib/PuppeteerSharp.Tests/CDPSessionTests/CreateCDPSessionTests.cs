@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.CDPSessionTests
@@ -39,6 +42,30 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             Assert.That(events, Has.Exactly(1).Items);
+        }
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should not send extra events")]
+        public async Task ShouldNotSendExtraEvents()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            await client.SendAsync("Network.enable");
+            var events = new HashSet<string>();
+
+            client.MessageReceived += (_, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.MessageID))
+                {
+                    events.Add(e.MessageID.Split('.')[0]);
+                }
+            };
+
+            await Task.WhenAll(
+                WaitEvent(client, "Network.requestWillBeSent"),
+                Page.GoToAsync(TestConstants.EmptyPage));
+
+            var sortedEvents = new List<string>(events);
+            sortedEvents.Sort();
+            Assert.That(sortedEvents, Is.EqualTo(new List<string> { "Network" }));
         }
 
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should enable and disable domains independently")]
@@ -140,5 +167,64 @@ namespace PuppeteerSharp.Tests.CDPSessionTests
         [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose the underlying connection")]
         public async Task ShouldExposeTheUnderlyingConnection()
             => Assert.That(await Page.CreateCDPSessionAsync(), Is.Not.Null);
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should keep the underlying connection after being detached")]
+        public async Task ShouldKeepTheUnderlyingConnectionAfterBeingDetached()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            var cdpSession = client as CDPSession;
+            var connection = cdpSession?.Connection;
+            await client.DetachAsync();
+            Assert.That(cdpSession?.Connection, Is.EqualTo(connection));
+        }
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should expose detached state")]
+        public async Task ShouldExposeDetachedState()
+        {
+            var client = await Page.CreateCDPSessionAsync();
+            Assert.That(client.Detached, Is.False);
+            await client.DetachAsync();
+            Assert.That(client.Detached, Is.True);
+        }
+
+        [Test, PuppeteerTest("puppeteer-sharp", "CDPSession", "should receive events on a service worker session created via CreateCDPSessionAsync")]
+        public async Task ShouldReceiveEventsOnAServiceWorkerSessionCreatedViaCreateCDPSessionAsync()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/serviceworkers/empty/sw.html");
+            var target = await Context.WaitForTargetAsync(t => t.Type == TargetType.ServiceWorker, new WaitForOptions(3_000));
+
+            var client = await target.CreateCDPSessionAsync();
+            var scriptParsedTaskCompletion = new TaskCompletionSource<bool>();
+            client.MessageReceived += (_, e) =>
+            {
+                if (e.MessageID == "Debugger.scriptParsed")
+                {
+                    scriptParsedTaskCompletion.TrySetResult(true);
+                }
+            };
+
+            await client.SendAsync("Debugger.enable");
+
+            var completed = await Task.WhenAny(scriptParsedTaskCompletion.Task, Task.Delay(5_000));
+            Assert.That(completed, Is.EqualTo(scriptParsedTaskCompletion.Task), "Debugger.scriptParsed was not received for the service worker session.");
+        }
+
+        [Test, PuppeteerTest("CDPSession.spec", "Target.createCDPSession", "should handle session callbacks when Chrome sends error without sessionId")]
+        public async Task ShouldHandleSessionCallbacksWhenChromeSendsErrorWithoutSessionId()
+        {
+            var client = (CDPSession)await Page.CreateCDPSessionAsync();
+            var connection = client.Connection;
+
+            var fakeSession = new CdpCDPSession(connection, TargetType.Other, "fake-session-id", null);
+
+            var sessionsField = typeof(Connection).GetField("_sessions", BindingFlags.Instance | BindingFlags.NonPublic);
+            var sessions = (AsyncDictionaryHelper<string, CdpCDPSession>)sessionsField!.GetValue(connection);
+            sessions!.AddItem("fake-session-id", fakeSession);
+
+            var exception = Assert.ThrowsAsync<MessageException>(() => fakeSession.SendAsync(
+                "Runtime.evaluate",
+                new RuntimeEvaluateRequest { Expression = "1 + 1" }));
+            Assert.That(exception!.Message, Does.Contain("Session with given id not found"));
+        }
     }
 }

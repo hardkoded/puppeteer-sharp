@@ -14,12 +14,14 @@ namespace PuppeteerSharp
         /// <param name="text">Text.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="location">Message location.</param>
-        public ConsoleMessage(ConsoleType type, string text, IList<IJSHandle> args, ConsoleMessageLocation location = null)
+        /// <param name="stackTrace">Stack trace.</param>
+        public ConsoleMessage(ConsoleType type, string text, IList<IJSHandle> args, ConsoleMessageLocation location = null, IList<ConsoleMessageLocation> stackTrace = null)
         {
             Type = type;
             Text = text;
             Args = args;
             Location = location;
+            StackTrace = stackTrace ?? [];
         }
 
         /// <summary>
@@ -44,5 +46,10 @@ namespace PuppeteerSharp
         /// Gets the location.
         /// </summary>
         public ConsoleMessageLocation Location { get; }
+
+        /// <summary>
+        /// Gets the stack trace.
+        /// </summary>
+        public IList<ConsoleMessageLocation> StackTrace { get; }
     }
 }

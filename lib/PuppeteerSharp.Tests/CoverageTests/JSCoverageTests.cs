@@ -195,7 +195,7 @@ namespace PuppeteerSharp.Tests.CoverageTests
                     Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 });
             Assert.That(
-                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @"\d{4}\/", "<PORT>/"),
+                Regex.Replace(TestUtils.CompressText(coverageAsJsonString), @":\d{4,5}\/", ":<PORT>/"),
                 Is.EqualTo(TestUtils.CompressText(involved)));
         }
 

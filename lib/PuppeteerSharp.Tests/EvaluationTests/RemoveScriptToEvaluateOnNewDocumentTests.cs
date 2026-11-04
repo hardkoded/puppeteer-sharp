@@ -17,7 +17,7 @@ namespace PuppeteerSharp.Tests.EvaluationTests
             await Page.RemoveScriptToEvaluateOnNewDocumentAsync(id.Identifier);
 
             await Page.ReloadAsync();
-            Assert.That(await Page.EvaluateFunctionAsync("() => globalThis.result ?? null"), Is.Null);
+            Assert.That(await Page.EvaluateFunctionAsync<bool?>("() => globalThis.result ?? null"), Is.Null);
         }
     }
 }

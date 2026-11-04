@@ -94,6 +94,11 @@ namespace PuppeteerSharp
         event EventHandler<MetricEventArgs> Metrics;
 
         /// <summary>
+        /// Raised when a DevTools issue is reported.
+        /// </summary>
+        event EventHandler<IssueEventArgs> Issue;
+
+        /// <summary>
         /// Raised when an uncaught exception happens within the page.
         /// </summary>
         event EventHandler<PageErrorEventArgs> PageError;
@@ -189,7 +194,7 @@ namespace PuppeteerSharp
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
         /// - <see cref="GoForwardAsync(NavigationOptions)"/>
-        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(ReloadOptions)"/>
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
         /// **NOTE** <see cref="DefaultNavigationTimeout"/> takes priority over. <seealso cref="DefaultTimeout"/>
@@ -201,7 +206,7 @@ namespace PuppeteerSharp
         /// - <see cref="GoBackAsync(NavigationOptions)"/>
         /// - <see cref="GoForwardAsync(NavigationOptions)"/>
         /// - <see cref="GoToAsync(string, NavigationOptions)"/>
-        /// - <see cref="ReloadAsync(NavigationOptions)"/>
+        /// - <see cref="ReloadAsync(ReloadOptions)"/>
         /// - <see cref="SetContentAsync(string, NavigationOptions)"/>
         /// - <see cref="WaitForFunctionAsync(string, object[])"/>
         /// - <see cref="WaitForNavigationAsync(NavigationOptions)"/>
@@ -262,6 +267,11 @@ namespace PuppeteerSharp
         /// Gets this page's tracing.
         /// </summary>
         ITracing Tracing { get; }
+
+        /// <summary>
+        /// Gets this page's bluetooth emulation.
+        /// </summary>
+        IBluetoothEmulation Bluetooth { get; }
 
         /// <summary>
         /// Shortcut for <c>page.MainFrame.Url</c>.
@@ -363,6 +373,20 @@ namespace PuppeteerSharp
         Task CloseAsync(PageCloseOptions options = null);
 
         /// <summary>
+        /// Opens DevTools for this page if not already open and returns the DevTools page.
+        /// This method is only available in Chrome.
+        /// </summary>
+        /// <returns>A <see cref="Task{IPage}"/> that completes with the DevTools page.</returns>
+        Task<IPage> OpenDevToolsAsync();
+
+        /// <summary>
+        /// Returns true if DevTools is attached to the current page.
+        /// Use <see cref="OpenDevToolsAsync"/> to get the DevTools page.
+        /// </summary>
+        /// <returns>A <see cref="Task{Boolean}"/> that completes with true if DevTools is attached.</returns>
+        Task<bool> HasDevToolsAsync();
+
+        /// <summary>
         /// Deletes cookies from the page.
         /// </summary>
         /// <param name="cookies">Cookies to delete.</param>
@@ -399,6 +423,13 @@ namespace PuppeteerSharp
         /// <param name="factor">Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).</param>
         /// <returns>A task that resolves when the message has been sent to the browser.</returns>
         Task EmulateCPUThrottlingAsync(decimal? factor = null);
+
+        /// <summary>
+        /// Emulates focus state of the page.
+        /// </summary>
+        /// <param name="enabled">Whether to emulate focus.</param>
+        /// <returns>A task that resolves when the message has been sent to the browser.</returns>
+        Task EmulateFocusedPageAsync(bool enabled);
 
         /// <summary>
         /// Emulates the idle state.
@@ -504,6 +535,13 @@ namespace PuppeteerSharp
         Task EmulateTimezoneAsync(string timezoneId);
 
         /// <summary>
+        /// Emulates the locale of the page.
+        /// </summary>
+        /// <param name="locale">Locale to emulate on the page (e.g., "en-US", "de-DE"). Passing <c>null</c> disables locale emulation.</param>
+        /// <returns>A task that resolves when the locale has been set.</returns>
+        Task EmulateLocaleAsync(string locale = null);
+
+        /// <summary>
         /// Simulates the given vision deficiency on the page.
         /// </summary>
         /// <example>
@@ -538,7 +576,7 @@ namespace PuppeteerSharp
         /// </example>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JsonElement?> EvaluateExpressionAsync(string script);
+        Task EvaluateExpressionAsync(string script);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -591,7 +629,7 @@ namespace PuppeteerSharp
         /// </remarks>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <returns>Task which resolves to script return value.</returns>
-        Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args);
+        Task EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -852,6 +890,13 @@ namespace PuppeteerSharp
         Task<Dictionary<string, decimal>> MetricsAsync();
 
         /// <summary>
+        /// Captures a snapshot of the JavaScript heap and writes it to a file.
+        /// </summary>
+        /// <param name="options">Heap snapshot options.</param>
+        /// <returns>A Task which resolves after the heap snapshot is captured and written to disk.</returns>
+        Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options);
+
+        /// <summary>
         /// generates a pdf of the page with <see cref="MediaType.Print"/> css media. To generate a pdf with <see cref="MediaType.Screen"/> media call <see cref="EmulateMediaTypeAsync(MediaType)"/> with <see cref="MediaType.Screen"/>.
         /// </summary>
         /// <param name="file">The file path to save the PDF to. paths are resolved using <see cref="Path.GetFullPath(string)"/>.</param>
@@ -927,6 +972,15 @@ namespace PuppeteerSharp
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
+        /// Runs <c>document.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query page for.</param>
+        /// <param name="options">Optional query options.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
+        /// <seealso cref="IFrame.QuerySelectorAllAsync(string, QueryOptions)"/>
+        Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options);
+
+        /// <summary>
         /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
         /// </summary>
         /// <param name="selector">A selector to query page for.</param>
@@ -950,7 +1004,7 @@ namespace PuppeteerSharp
         /// <param name="timeout">Maximum navigation time in milliseconds, defaults to 30 seconds, pass <c>0</c> to disable timeout. </param>
         /// <param name="waitUntil">When to consider navigation succeeded, defaults to <see cref="WaitUntilNavigation.Load"/>. Given an array of <see cref="WaitUntilNavigation"/>, navigation is considered to be successful after all events have been fired.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
-        /// <seealso cref="ReloadAsync(NavigationOptions)"/>
+        /// <seealso cref="ReloadAsync(ReloadOptions)"/>
         Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null);
 
         /// <summary>
@@ -959,7 +1013,30 @@ namespace PuppeteerSharp
         /// <param name="options">Navigation options.</param>
         /// <returns>Task which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.</returns>
         /// <seealso cref="ReloadAsync(int?, WaitUntilNavigation[])"/>
-        Task<IResponse> ReloadAsync(NavigationOptions options);
+        Task<IResponse> ReloadAsync(ReloadOptions options);
+
+        /// <summary>
+        /// Captures a screencast of this <see cref="IPage"/>.
+        /// </summary>
+        /// <param name="options">Screencast options.</param>
+        /// <returns>A Task which resolves to a <see cref="ScreenRecorder"/> that can be used to stop the recording.</returns>
+        /// <remarks>
+        /// By default, all recordings will be WebM format using the VP9 video codec, with a frame rate of 30 FPS.
+        /// You must have ffmpeg installed on your system.
+        /// </remarks>
+        [Obsolete("Use RecordAsync instead.")]
+        Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null);
+
+        /// <summary>
+        /// Records this <see cref="IPage"/> using the Chrome DevTools Protocol
+        /// <see href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording">Page.startScreenRecording</see> API.
+        /// </summary>
+        /// <remarks>
+        /// Outputs mp4 video stream.
+        /// </remarks>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A task which resolves to a <see cref="ScreenRecording"/> that can be used to stop the recording.</returns>
+        Task<ScreenRecording> RecordAsync(RecordOptions options = null);
 
         /// <summary>
         /// Captures a screenshot of this <see cref="IPage"/>.
@@ -1062,7 +1139,18 @@ namespace PuppeteerSharp
         /// <param name="options">The navigations options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IFrame.SetContentAsync(string, NavigationOptions)"/>
-        Task SetContentAsync(string html, NavigationOptions options = null);
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        Task SetContentAsync(string html, NavigationOptions options);
+
+        /// <summary>
+        /// Sets the HTML markup to the page.
+        /// </summary>
+        /// <param name="html">HTML markup to assign to the page.</param>
+        /// <param name="options">The options. The <see cref="WaitUntilNavigation.Networkidle0"/> and
+        /// <see cref="WaitUntilNavigation.Networkidle2"/> wait conditions are not supported for SetContent.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="IFrame.SetContentAsync(string, SetContentOptions)"/>
+        Task SetContentAsync(string html, SetContentOptions options = null);
 
         /// <summary>
         /// Clears all of the current cookies and then sets the cookies for the page.
@@ -1095,7 +1183,7 @@ namespace PuppeteerSharp
         /// Sets the page's geolocation.
         /// </summary>
         /// <returns>The task.</returns>
-        /// <param name="options">Geolocation options.</param>
+        /// <param name="options">Geolocation options. Pass <c>null</c> to remove the geolocation override.</param>
         /// <remarks>
         /// Consider using <seealso cref="IBrowserContext.OverridePermissionsAsync(string, IEnumerable{OverridePermission})"/> to grant permissions for the page to read its geolocation.
         /// </remarks>
@@ -1130,6 +1218,13 @@ namespace PuppeteerSharp
         /// <param name="userAgentData">Specific user agent client hint data to use in this page.</param>
         /// <returns>Task.</returns>
         Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
+
+        /// <summary>
+        /// Sets the user agent, user agent metadata, and platform.
+        /// </summary>
+        /// <param name="options">User agent options.</param>
+        /// <returns>Task.</returns>
+        Task SetUserAgentAsync(SetUserAgentOptions options);
 
         /// <summary>
         /// Sets the viewport.
@@ -1394,6 +1489,22 @@ namespace PuppeteerSharp
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
 
         /// <summary>
+        /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="selector">A selector to locate an element.</param>
+        /// <returns>A locator for the provided selector.</returns>
+        Locators.Locator Locator(string selector);
+
+        /// <summary>
+        /// Creates a locator for the provided function. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="func">A JavaScript function expression to evaluate.</param>
+        /// <returns>A locator for the provided function.</returns>
+        Locators.Locator LocatorFunction(string func);
+
+        /// <summary>
         /// Waits for a xpath selector to be added to the DOM.
         /// </summary>
         /// <param name="xpath">A xpath selector of an element to wait for.</param>
@@ -1450,6 +1561,35 @@ namespace PuppeteerSharp
         Task<DeviceRequestPrompt> WaitForDevicePromptAsync(WaitForOptions options = null);
 
         /// <summary>
+        /// Resizes the browser window of this page so that the content area (excluding browser UI) has the specified width and height.
+        /// </summary>
+        /// <param name="contentWidth">The desired width of the content area in pixels.</param>
+        /// <param name="contentHeight">The desired height of the content area in pixels.</param>
+        /// <returns>A task that resolves when the resize operation is complete.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task ResizeAsync(int contentWidth, int contentHeight);
+
+        /// <summary>
+        /// Returns the page's window ID.
+        /// </summary>
+        /// <returns>A task that resolves to the window ID string.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task<string> WindowIdAsync();
+
+        /// <summary>
+        /// Returns information about the browser tab of this page. The result is a snapshot and is not updated when the tab changes.
+        /// </summary>
+        /// <returns>A task that resolves to the tab info, or <c>null</c> if the page is not in a tab strip (for example, in chrome-headless-shell) or the browser does not report tab information.</returns>
+        /// <remarks>
+        /// This is an experimental API.
+        /// </remarks>
+        Task<TabInfo> TabInfoAsync();
+
+        /// <summary>
         /// <see cref="IRequest.RespondAsync"/>, <see cref="IRequest.AbortAsync"/>, and <see cref="IRequest.ContinueAsync"/> can accept an optional `priority` to activate Cooperative Intercept Mode.
         /// In Cooperative Mode, all interception tasks are guaranteed to run and all async handlers are awaited.
         /// The interception is resolved to the highest-priority resolution.
@@ -1482,5 +1622,18 @@ namespace PuppeteerSharp
         /// <param name="bypass">When <c>true</c> bypasses service worker.</param>
         /// <returns>A task that resolves when the message is sent to the browser.</returns>
         Task SetBypassServiceWorkerAsync(bool bypass);
+
+        /// <summary>
+        /// Triggers an extension action for the given extension.
+        /// </summary>
+        /// <param name="extension">The extension to trigger the action for.</param>
+        /// <returns>A task that completes when the extension action has been triggered.</returns>
+        Task TriggerExtensionActionAsync(Extension extension);
+
+        /// <summary>
+        /// Returns the extension content-script realms associated with the page's main frame.
+        /// </summary>
+        /// <returns>A read-only list of extension <see cref="Realm"/> instances.</returns>
+        IReadOnlyList<Realm> ExtensionRealms();
     }
 }

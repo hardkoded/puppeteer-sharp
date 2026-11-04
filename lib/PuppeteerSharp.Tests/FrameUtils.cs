@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests
 
         public static async Task<IEnumerable<string>> DumpFramesAsync(IFrame frame, string indentation = "")
         {
-            var description = indentation + Regex.Replace(frame.Url, @":\d{4}", ":<PORT>");
+            var description = indentation + Regex.Replace(frame.Url, @":\d{4,5}", ":<PORT>");
             await using var frameElement = await frame.FrameElementAsync();
             if (frameElement != null)
             {

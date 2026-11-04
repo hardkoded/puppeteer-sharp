@@ -21,6 +21,73 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
         }
 
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with options parameter")]
+        public async Task ShouldWorkWithOptionsParameter()
+        {
+            Assert.That(await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"), Does.Contain("Mozilla"));
+            await Page.SetUserAgentAsync(new SetUserAgentOptions { UserAgent = "foobar" });
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with platform option")]
+        public async Task ShouldWorkWithPlatformOption()
+        {
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.Not.EqualTo("MockPlatform"));
+
+            await Page.SetUserAgentAsync(new SetUserAgentOptions
+            {
+                UserAgent = "foobar",
+                Platform = "MockPlatform",
+            });
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.EqualTo("MockPlatform"));
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo("foobar"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work with platform option without userAgent")]
+        public async Task ShouldWorkWithPlatformOptionWithoutUserAgent()
+        {
+            var originalUserAgent = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.Not.EqualTo("MockPlatform"));
+
+            await Page.SetUserAgentAsync(new SetUserAgentOptions
+            {
+                Platform = "MockPlatform",
+            });
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.platform"),
+                Is.EqualTo("MockPlatform"));
+
+            // User agent should remain the same
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent"),
+                Is.EqualTo(originalUserAgent));
+
+            var userAgentTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                userAgentTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(userAgentTask.Result, Is.EqualTo(originalUserAgent));
+        }
+
         [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should work for subframes")]
         public async Task ShouldWorkForSubframes()
         {
@@ -81,6 +148,66 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(uaData.GetProperty("platform").GetString(), Is.EqualTo("MockOS"));
             Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("3.1"));
             Assert.That(await requestTask, Is.EqualTo("MockBrowser"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setUserAgent", "should restore original")]
+        public async Task ShouldRestoreOriginal()
+        {
+            var userAgent = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+
+            await Page.SetUserAgentAsync("foobar");
+            var requestWithOverrideTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                requestWithOverrideTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(requestWithOverrideTask.Result, Is.EqualTo("foobar"));
+
+            await Page.SetUserAgentAsync(string.Empty);
+            var requestTask = Server.WaitForRequest("/empty.html", request => request.Headers["User-Agent"].ToString());
+            await Task.WhenAll(
+                requestTask,
+                Page.GoToAsync(TestConstants.EmptyPage));
+            Assert.That(requestTask.Result, Is.EqualTo(userAgent));
+
+            var userAgentRestored = await Page.EvaluateFunctionAsync<string>("() => navigator.userAgent");
+            Assert.That(userAgentRestored, Is.EqualTo(userAgent));
+        }
+
+        [Test, PuppeteerTest("puppeteer-sharp", "Page Page.setUserAgent", "should work with bitness and wow64")]
+        public async Task ShouldWorkWithBitnessAndWow64()
+        {
+            await Page.SetUserAgentAsync(
+                "MockBrowser",
+                new UserAgentMetadata
+                {
+                    Architecture = "x86",
+                    Mobile = false,
+                    Model = "Mockbook",
+                    Platform = "Windows",
+                    PlatformVersion = "10.0.0",
+                    Bitness = "64",
+                    Wow64 = false,
+                });
+
+            await Page.GoToAsync(TestConstants.EmptyPage);
+
+            var uaData = await Page.EvaluateFunctionAsync<JsonElement>(@"() => {
+                return navigator.userAgentData.getHighEntropyValues([
+                  'architecture',
+                  'bitness',
+                  'model',
+                  'platform',
+                  'platformVersion',
+                  'wow64',
+                ]);
+            }");
+
+            Assert.That(uaData.GetProperty("architecture").GetString(), Is.EqualTo("x86"));
+            Assert.That(uaData.GetProperty("bitness").GetString(), Is.EqualTo("64"));
+            Assert.That(uaData.GetProperty("model").GetString(), Is.EqualTo("Mockbook"));
+            Assert.That(uaData.GetProperty("platform").GetString(), Is.EqualTo("Windows"));
+            Assert.That(uaData.GetProperty("platformVersion").GetString(), Is.EqualTo("10.0.0"));
+            Assert.That(uaData.GetProperty("wow64").GetBoolean(), Is.False);
         }
     }
 }

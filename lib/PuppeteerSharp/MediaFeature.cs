@@ -21,5 +21,23 @@ namespace PuppeteerSharp
         /// </summary>
         [EnumMember(Value = "prefers-reduced-motion")]
         PrefersReducedMotion,
+
+        /// <summary>
+        /// prefers-contrast media feature.
+        /// </summary>
+        [EnumMember(Value = "prefers-contrast")]
+        PrefersContrast,
+
+        /// <summary>
+        /// prefers-reduced-transparency media feature.
+        /// </summary>
+        [EnumMember(Value = "prefers-reduced-transparency")]
+        PrefersReducedTransparency,
+
+        /// <summary>
+        /// forced-colors media feature.
+        /// </summary>
+        [EnumMember(Value = "forced-colors")]
+        ForcedColors,
     }
 }

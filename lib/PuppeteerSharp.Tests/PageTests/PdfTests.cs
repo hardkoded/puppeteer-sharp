@@ -99,6 +99,21 @@ namespace PuppeteerSharp.Tests.PageTests
             Assert.That(new FileInfo(accessibleOutputFile).Length, Is.GreaterThan(new FileInfo(outputFile).Length));
         }
 
+        [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with custom mm and pt dimensions")]
+        public async Task CanPrintToPdfWithCustomMmAndPtDimensions()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            var mmPdf = await Page.PdfDataAsync(new PdfOptions { Width = "556.27mm", Height = "145.27mm" });
+            var mmText = System.Text.Encoding.Latin1.GetString(mmPdf);
+            var mediaBox = System.Text.RegularExpressions.Regex.Match(mmText, @"/MediaBox \[0 0 ([\d.]+) ([\d.]+)\]");
+            Assert.That(mediaBox.Success, Is.True);
+            Assert.That(Math.Round(double.Parse(mediaBox.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(1577));
+            Assert.That(Math.Round(double.Parse(mediaBox.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture)), Is.EqualTo(412));
+
+            var ptPdf = await Page.PdfDataAsync(new PdfOptions { Width = "72pt", Height = "6pc" });
+            Assert.That(System.Text.Encoding.Latin1.GetString(ptPdf), Does.Contain("/MediaBox [0 0 72 72]"));
+        }
+
         [Test, PuppeteerTest("pdf.spec", "Page.pdf", "can print to PDF with outline")]
         public async Task CanPrintToPdfWithOutline()
         {
@@ -145,6 +160,72 @@ namespace PuppeteerSharp.Tests.PageTests
             var serialized = JsonSerializer.Serialize(pdfOptions);
             var newPdfOptions = JsonSerializer.Deserialize<PdfOptions>(serialized);
             Assert.That(newPdfOptions, Is.EqualTo(pdfOptions));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "can print to PDF and save to file")]
+        public async Task CanPrintToPdfAndSaveToFile()
+        {
+            var outputFile = Path.Combine(BaseDirectory, "output.pdf");
+            var fileInfo = new FileInfo(outputFile);
+            if (fileInfo.Exists)
+            {
+                fileInfo.Delete();
+            }
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+            await Page.PdfAsync(outputFile);
+            try
+            {
+                Assert.That(new FileInfo(outputFile).Length, Is.GreaterThan(0));
+            }
+            finally
+            {
+                if (File.Exists(outputFile))
+                {
+                    File.Delete(outputFile);
+                }
+            }
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "can print to PDF and stream the result")]
+        public async Task CanPrintToPdfAndStreamTheResult()
+        {
+            var stream = await Page.PdfStreamAsync();
+            var size = 0L;
+            var buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                size += bytesRead;
+            }
+
+            Assert.That(size, Is.GreaterThan(0));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "should accept page ranges without spaces")]
+        public async Task ShouldAcceptPageRangesWithoutSpaces()
+        {
+            await Page.SetContentAsync(@"
+                <div style=""break-after: page"">1</div>
+                <div style=""break-after: page"">2</div>
+                <div>3</div>");
+
+            var pdf = await Page.PdfDataAsync(new PdfOptions { PageRanges = "1-2,3" });
+
+            Assert.That(pdf, Is.Not.Empty);
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page.pdf", "should respect timeout")]
+        public async Task ShouldRespectTimeout()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/pdf.html");
+
+            var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
+            {
+                await Page.PdfDataAsync(new PdfOptions { Timeout = 1 });
+            });
+
+            Assert.That(exception, Is.Not.Null);
         }
 
         [Test]

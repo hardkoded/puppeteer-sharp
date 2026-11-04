@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc/>
     public abstract class BrowserContext : IBrowserContext
     {
+        private ScreenshotMutex _pageScreenshotMutex;
+        private int _screenshotOperationsCount;
+
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
@@ -37,10 +42,10 @@ namespace PuppeteerSharp
             => Browser.WaitForTargetAsync((target) => target.BrowserContext == this && predicate(target), options);
 
         /// <inheritdoc />
-        public abstract Task<IPage[]> PagesAsync();
+        public abstract Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <inheritdoc/>
-        public abstract Task<IPage> NewPageAsync();
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <inheritdoc/>
         public abstract Task CloseAsync();
@@ -49,12 +54,153 @@ namespace PuppeteerSharp
         public abstract Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
 
         /// <inheritdoc/>
+        public abstract Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+
+        /// <inheritdoc/>
         public abstract Task ClearPermissionOverridesAsync();
 
-        internal void OnTargetCreated(Browser browser, TargetChangedArgs args) => TargetCreated?.Invoke(browser, args);
+        /// <inheritdoc/>
+        public abstract Task<CookieParam[]> GetCookiesAsync();
 
-        internal void OnTargetDestroyed(Browser browser, TargetChangedArgs args) => TargetDestroyed?.Invoke(browser, args);
+        /// <inheritdoc/>
+        public abstract Task SetCookieAsync(params CookieData[] cookies);
 
-        internal void OnTargetChanged(Browser browser, TargetChangedArgs args) => TargetChanged?.Invoke(browser, args);
+        /// <inheritdoc/>
+        public async Task DeleteCookieAsync(params CookieParam[] cookies)
+        {
+            await SetCookieAsync(
+                cookies.Select(cookie => new CookieData
+                {
+                    Name = cookie.Name,
+                    Value = cookie.Value,
+                    Domain = cookie.Domain,
+                    Path = cookie.Path,
+                    Secure = cookie.Secure,
+                    HttpOnly = cookie.HttpOnly,
+                    SameSite = cookie.SameSite,
+                    Expires = 1,
+                    Priority = cookie.Priority,
+                    SourceScheme = cookie.SourceScheme,
+                    PartitionKey = cookie.PartitionKey,
+                }).ToArray()).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+        {
+            var cookies = await GetCookiesAsync().ConfigureAwait(false);
+            var cookiesToDelete = cookies.Where(cookie =>
+                filters.Any(filter =>
+                {
+                    if (filter.Name != cookie.Name)
+                    {
+                        return false;
+                    }
+
+                    if (filter.Domain != null && filter.Domain != cookie.Domain)
+                    {
+                        return false;
+                    }
+
+                    if (filter.Path != null && filter.Path != cookie.Path)
+                    {
+                        return false;
+                    }
+
+                    if (filter.PartitionKey != null)
+                    {
+                        if (cookie.PartitionKey == null)
+                        {
+                            return false;
+                        }
+
+                        if (filter.PartitionKey.SourceOrigin != cookie.PartitionKey.SourceOrigin)
+                        {
+                            return false;
+                        }
+
+                        if (filter.PartitionKey.HasCrossSiteAncestor != null &&
+                            filter.PartitionKey.HasCrossSiteAncestor != cookie.PartitionKey.HasCrossSiteAncestor)
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (filter.Url != null &&
+                        Uri.TryCreate(filter.Url, UriKind.Absolute, out var url) &&
+                        (url.Host != cookie.Domain || url.AbsolutePath != cookie.Path))
+                    {
+                        return false;
+                    }
+
+                    return true;
+                })).ToArray();
+            await DeleteCookieAsync(cookiesToDelete).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Closes the browser context. All the targets that belong to the browser context will be closed.
+        /// </summary>
+        /// <returns>ValueTask.</returns>
+        public async ValueTask DisposeAsync()
+        {
+            await CloseAsync().ConfigureAwait(false);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Starts a screenshot operation and returns a guard that should be disposed when the operation completes.
+        /// While screenshot operations are in progress, certain operations like NewPage and Close will wait.
+        /// </summary>
+        /// <returns>A disposable guard for the screenshot operation.</returns>
+        internal async Task<IDisposable> StartScreenshotAsync()
+        {
+            var mutex = _pageScreenshotMutex ?? new ScreenshotMutex();
+            _pageScreenshotMutex = mutex;
+            Interlocked.Increment(ref _screenshotOperationsCount);
+            return await mutex.AcquireAsync(() =>
+            {
+                if (Interlocked.Decrement(ref _screenshotOperationsCount) == 0)
+                {
+                    // Remove the mutex to indicate no ongoing screenshot operation.
+                    _pageScreenshotMutex = null;
+                }
+            }).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Waits for any ongoing screenshot operations to complete.
+        /// Returns null if no screenshot operations are in progress.
+        /// </summary>
+        /// <returns>A disposable guard, or null if no screenshots are in progress.</returns>
+        internal async Task<IDisposable> WaitForScreenshotOperationsAsync()
+        {
+            var mutex = _pageScreenshotMutex;
+            if (mutex == null)
+            {
+                return null;
+            }
+
+            return await mutex.AcquireAsync().ConfigureAwait(false);
+        }
+
+        internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);
+
+        internal void OnTargetDestroyed(TargetChangedArgs args) => TargetDestroyed?.Invoke(this, args);
+
+        internal void OnTargetChanged(TargetChangedArgs args) => TargetChanged?.Invoke(this, args);
+
+        /// <summary>
+        /// Closes the browser context. All the targets that belong to the browser context will be closed.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing) => _ = CloseAsync();
     }
 }

@@ -14,14 +14,14 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             DefaultOptions.AcceptInsecureCerts = true;
         }
 
-        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts", "should work")]
         public async Task ShouldWork()
         {
             var response = await Page.GoToAsync($"{TestConstants.HttpsPrefix}/empty.html");
             Assert.That(response.Ok, Is.True);
         }
 
-        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with request interception")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts", "should work with request interception")]
         public async Task ShouldWorkWithRequestInterception()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -30,7 +30,7 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         }
 
-        [Test, PuppeteerTest("acceptInsecureCerts.spec", "ignoreHTTPSErrors", "should work with mixed content")]
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts", "should work with mixed content")]
         public async Task ShouldWorkWithMixedContent()
         {
             HttpsServer.SetRoute("/mixedcontent.html", async (context) =>
@@ -39,13 +39,25 @@ namespace PuppeteerSharp.Tests.IgnoreHttpsErrorsTests
             });
             await Page.GoToAsync(TestConstants.HttpsPrefix + "/mixedcontent.html", new NavigationOptions
             {
-                WaitUntil = new[] { WaitUntilNavigation.Load }
+                WaitUntil = [WaitUntilNavigation.Load]
             });
             Assert.That(Page.Frames, Has.Length.EqualTo(2));
             // Make sure blocked iframe has functional execution context
             // @see https://github.com/GoogleChrome/puppeteer/issues/2709
             Assert.That(await Page.MainFrame.EvaluateExpressionAsync<int>("1 + 2"), Is.EqualTo(3));
-            Assert.That(await Page.FirstChildFrame().EvaluateExpressionAsync<int>("2 + 3"), Is.EqualTo(5));
+            var frame = await Page.FirstChildFrameAsync();
+            Assert.That(await frame.EvaluateExpressionAsync<int>("2 + 3"), Is.EqualTo(5));
+        }
+
+        [Test, PuppeteerTest("acceptInsecureCerts.spec", "acceptInsecureCerts", "works for service worker")]
+        public async Task WorksForServiceWorker()
+        {
+            await Page.GoToAsync(TestConstants.HttpsPrefix + "/serviceworkers/empty/sw.html");
+            await Page.EvaluateFunctionAsync(@"async () => {
+                return await globalThis.registrationPromise.then((registration) => {
+                    return registration.unregister();
+                });
+            }");
         }
     }
 }

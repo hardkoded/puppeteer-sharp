@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <Authors>Darío Kondratiuk</Authors>
     <Owners>Darío Kondratiuk</Owners>
     <PackageProjectUrl>https://github.com/hardkoded/puppeteer-sharp</PackageProjectUrl>
@@ -21,8 +21,10 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <LangVersion>12</LangVersion>
-    <AnalysisLevel>8.0-Recommended</AnalysisLevel>
+    <LangVersion>14</LangVersion>
+    <AnalysisLevel>10.0-Recommended</AnalysisLevel>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <Import Project="../Common/CommonProps.props" />
   <ItemGroup>
@@ -31,6 +33,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,15 +44,40 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="ReactiveExtensionsSharp" Version="0.3.0" />
+    <PackageReference Include="WebDriverBiDi" Version="0.0.61" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
+    <PackageReference Include="System.Text.Json" Version="10.0.12" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+  <PropertyGroup Condition=" !$(DefineConstants.Contains('CDP_ONLY')) ">
+    <ChromiumBidiVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)Bidi/chromium-bidi.version').Trim())</ChromiumBidiVersion>
+    <MapperTabPath>$(MSBuildThisFileDirectory)Bidi/mapperTab.js</MapperTabPath>
+  </PropertyGroup>
+  <Target Name="DownloadMapperTab" BeforeTargets="PrepareForBuild" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) AND !Exists('$(MapperTabPath)') ">
+    <PropertyGroup>
+      <_TarballUrl>https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballUrl>
+      <_TarballPath>$(IntermediateOutputPath)chromium-bidi-$(ChromiumBidiVersion).tgz</_TarballPath>
+      <_ExtractDir>$(IntermediateOutputPath)chromium-bidi-extract</_ExtractDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <DownloadFile SourceUrl="$(_TarballUrl)" DestinationFolder="$(IntermediateOutputPath)" DestinationFileName="chromium-bidi-$(ChromiumBidiVersion).tgz" SkipUnchangedFiles="true" />
+    <!-- Extract to a TFM-specific temp dir to avoid parallel build races on Windows -->
+    <MakeDir Directories="$(_ExtractDir)" />
+    <Exec Command="tar -xzf &quot;$(_TarballPath)&quot; --strip-components=3 -C &quot;$(_ExtractDir)&quot; package/lib/iife/mapperTab.js" />
+    <Copy SourceFiles="$(_ExtractDir)/mapperTab.js" DestinationFiles="$(MapperTabPath)" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Downloaded chromium-bidi v$(ChromiumBidiVersion) mapperTab.js" />
+  </Target>
   <ItemGroup>
     <EmbeddedResource Include="Injected\injected.js" />
+    <EmbeddedResource Include="Bidi\mapperTab.js" Condition=" !$(DefineConstants.Contains('CDP_ONLY')) " />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

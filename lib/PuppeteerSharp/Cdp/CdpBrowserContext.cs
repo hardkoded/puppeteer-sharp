@@ -46,17 +46,25 @@ public class CdpBrowserContext : BrowserContext
     public override ITarget[] Targets() => Array.FindAll(Browser.Targets(), target => target.BrowserContext == this);
 
     /// <inheritdoc/>
-    public override async Task<IPage[]> PagesAsync()
+    public override async Task<IPage[]> PagesAsync(bool includeAll = false)
         => (await Task.WhenAll(
                 Targets()
                     .Where(t =>
                         t.Type == TargetType.Page ||
-                        (t.Type == TargetType.Other && Browser.IsPageTargetFunc(t as Target)))
+                        ((t.Type == TargetType.Other || includeAll) && Browser.IsPageTargetFunc(t as Target)) ||
+                        (_browser.HandleDevToolsAsPage &&
+                            t.Type == TargetType.Other &&
+                            t.Url.StartsWith("devtools://devtools/bundled/devtools_app.html", StringComparison.OrdinalIgnoreCase)))
                     .Select(t => t.PageAsync())).ConfigureAwait(false))
             .Where(p => p != null).ToArray();
 
     /// <inheritdoc/>
-    public override Task<IPage> NewPageAsync() => _browser.CreatePageInContextAsync(Id);
+    public override async Task<IPage> NewPageAsync(CreatePageOptions options = null)
+    {
+        var guard = await WaitForScreenshotOperationsAsync().ConfigureAwait(false);
+        guard?.Dispose();
+        return await _browser.CreatePageInContextAsync(Id, options).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public override Task CloseAsync()
@@ -79,9 +87,91 @@ public class CdpBrowserContext : BrowserContext
         });
 
     /// <inheritdoc/>
+    public override async Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+    {
+        await Task.WhenAll(permissions.Select(entry =>
+        {
+            var protocolPermission = new BrowserPermissionDescriptor
+            {
+                Name = entry.Permission.Name,
+                UserVisibleOnly = entry.Permission.UserVisibleOnly,
+                Sysex = entry.Permission.Sysex,
+                AllowWithoutSanitization = entry.Permission.AllowWithoutSanitization,
+                PanTiltZoom = entry.Permission.PanTiltZoom,
+            };
+
+            return _connection.SendAsync("Browser.setPermission", new BrowserSetPermissionRequest
+            {
+                Origin = origin == "*" ? null : origin,
+                BrowserContextId = Id,
+                Permission = protocolPermission,
+                Setting = entry.State,
+            });
+        })).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public override Task ClearPermissionOverridesAsync()
         => _connection.SendAsync("Browser.resetPermissions", new BrowserResetPermissionsRequest
         {
             BrowserContextId = Id,
         });
+
+    /// <inheritdoc/>
+    public override async Task<CookieParam[]> GetCookiesAsync()
+    {
+        var response = await _connection.SendAsync<StorageGetCookiesResponse>(
+            "Storage.getCookies",
+            new StorageGetCookiesRequest { BrowserContextId = Id }).ConfigureAwait(false);
+        return response.Cookies;
+    }
+
+    /// <inheritdoc/>
+    public override async Task SetCookieAsync(params CookieData[] cookies)
+    {
+        if (cookies == null)
+        {
+            throw new ArgumentNullException(nameof(cookies));
+        }
+
+        var cookiesToSet = cookies.Select(cookie => new CookieData
+        {
+            Name = cookie.Name,
+            Value = cookie.Value,
+            Domain = cookie.Domain,
+            Path = cookie.Path,
+            Secure = cookie.Secure,
+            HttpOnly = cookie.HttpOnly,
+            SameSite = ConvertSameSiteForCdp(cookie.SameSite),
+            Expires = cookie.Expires,
+            Priority = cookie.Priority,
+            SourceScheme = cookie.SourceScheme,
+            PartitionKey = cookie.PartitionKey,
+        }).ToArray();
+
+        await _connection.SendAsync(
+            "Storage.setCookies",
+            new StorageSetCookiesRequest
+            {
+                BrowserContextId = Id,
+                Cookies = cookiesToSet,
+            }).ConfigureAwait(false);
+    }
+
+    internal Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior)
+        => _connection.SendAsync("Browser.setDownloadBehavior", new Messaging.BrowserSetDownloadBehaviorRequest
+        {
+            Behavior = downloadBehavior.Policy,
+            DownloadPath = downloadBehavior.DownloadPath,
+            BrowserContextId = Id,
+        });
+
+    private static SameSite? ConvertSameSiteForCdp(SameSite? sameSite)
+    {
+        return sameSite switch
+        {
+            SameSite.Strict or SameSite.Lax or SameSite.None => sameSite,
+            _ => null,
+        };
+    }
 }

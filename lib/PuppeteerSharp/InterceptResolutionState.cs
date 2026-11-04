@@ -22,9 +22,20 @@
 
 namespace PuppeteerSharp;
 
-internal class InterceptResolutionState(InterceptResolutionAction action, int? priority = null)
+/// <summary>
+/// Represents the current state of request interception resolution.
+/// </summary>
+/// <param name="action">The interception action.</param>
+/// <param name="priority">The interception priority.</param>
+public class InterceptResolutionState(InterceptResolutionAction action, int? priority = null)
 {
+    /// <summary>
+    /// Gets or sets the intercept resolution action.
+    /// </summary>
     public InterceptResolutionAction Action { get; set; } = action;
 
+    /// <summary>
+    /// Gets or sets the intercept resolution priority.
+    /// </summary>
     public int? Priority { get; set; } = priority;
 }

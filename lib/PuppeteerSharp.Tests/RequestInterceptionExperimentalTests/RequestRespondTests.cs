@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -31,6 +32,34 @@ public class RequestRespondTests : PuppeteerPageBaseTest
     /// I found that status 422 is not available in all .NET runtimes (see https://github.com/dotnet/core/blob/4c4642d548074b3fbfd425541a968aadd75fea99/release-notes/2.1/Preview/api-diff/preview2/2.1-preview2_System.Net.md)
     /// As the goal here is testing HTTP codes that are not in Chromium (see https://cs.chromium.org/chromium/src/net/http/http_status_code_list.h?sq=package:chromium&g=0) we will use code 426: Upgrade Required
     /// </summary>
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should be able to access the response")]
+    public async Task ShouldBeAbleToAccessTheResponse()
+    {
+        await Page.SetRequestInterceptionAsync(true);
+        ResponseData response = null;
+        Page.AddRequestInterceptor(async request =>
+        {
+            await request.RespondAsync(new ResponseData
+            {
+                Status = HttpStatusCode.OK,
+                Body = "Yo, page!"
+            }, 0);
+
+            if (request is Cdp.CdpHttpRequest cdpRequest)
+            {
+                response = cdpRequest.ResponseForRequest;
+            }
+            else if (request is Bidi.BidiHttpRequest bidiRequest)
+            {
+                response = bidiRequest.ResponseForRequest;
+            }
+        });
+        await Page.GoToAsync(TestConstants.EmptyPage);
+        Assert.That(response, Is.Not.Null);
+        Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(response.Body, Is.EqualTo("Yo, page!"));
+    }
+
     [Test, PuppeteerTest("requestinterception-experimental.spec", "Request.respond", "should work with status code 422")]
     public async Task ShouldWorkReturnStatusPhrases()
     {
@@ -110,6 +139,46 @@ public class RequestRespondTests : PuppeteerPageBaseTest
         Assert.That(response.Status, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(response.Headers["foo"], Is.EqualTo("True"));
         Assert.That(await Page.EvaluateExpressionAsync<string>("document.body.textContent"), Is.EqualTo("Yo, page!"));
+    }
+
+    [Test, PuppeteerTest("requestinterception-experimental.spec", "Request.respond",
+        "should indicate already-handled if an intercept has been handled")]
+    public async Task ShouldIndicateAlreadyHandledIfAnInterceptHasBeenHandled()
+    {
+        await Page.SetRequestInterceptionAsync(true);
+        Page.Request += (_, e) =>
+        {
+            _ = e.Request.ContinueAsync();
+        };
+        Exception requestError = null;
+        Page.Request += (_, e) =>
+        {
+            try
+            {
+                Assert.That(e.Request.IsInterceptResolutionHandled, Is.True);
+            }
+            catch (Exception error)
+            {
+                requestError = error;
+            }
+        };
+        Page.Request += (_, e) =>
+        {
+            var state = e.Request.InterceptResolutionState;
+            try
+            {
+                Assert.That(state.Action, Is.EqualTo(InterceptResolutionAction.AlreadyHandled));
+            }
+            catch (Exception error)
+            {
+                requestError = error;
+            }
+        };
+        await Page.GoToAsync(TestConstants.EmptyPage);
+        if (requestError != null)
+        {
+            throw requestError;
+        }
     }
 
     [Test, Ignore("previously not marked as a test")]

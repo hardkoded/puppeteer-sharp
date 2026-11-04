@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -29,26 +30,31 @@ using PuppeteerSharp.Helpers;
 namespace PuppeteerSharp.Cdp;
 
 /// <inheritdoc/>
-public class CdpJSHandle : JSHandle
+public class CdpJSHandle : JSHandle, ICdpHandle
 {
     internal CdpJSHandle(IsolatedWorld world, RemoteObject remoteObject)
     {
         Realm = world;
         RemoteObject = remoteObject;
-        Logger = Client.Connection.LoggerFactory.CreateLogger(GetType());
+        Logger = Client.LoggerFactory.CreateLogger(GetType());
     }
 
-    /// <inheritdoc/>
-    public override RemoteObject RemoteObject { get; }
+    /// <summary>
+    /// CDP remote object.
+    /// </summary>
+    public RemoteObject RemoteObject { get; }
 
-    internal override IsolatedWorld Realm { get; }
+    internal string Id => RemoteObject.ObjectId;
+
+    /// <inheritdoc/>
+    internal override Realm Realm { get; }
 
     /// <summary>
     /// Logger.
     /// </summary>
     private ILogger Logger { get; }
 
-    private CDPSession Client => Realm.Environment.Client;
+    private ICDPSession Client => Realm.Environment.Client;
 
     /// <inheritdoc/>
     public override async Task<T> JsonValueAsync<T>()
@@ -66,9 +72,39 @@ public class CdpJSHandle : JSHandle
     }
 
     /// <inheritdoc/>
+    public override async Task<Dictionary<string, IJSHandle>> GetPropertiesAsync()
+    {
+        // We use Runtime.getProperties rather than the iterative version for
+        // improved performance as it allows getting everything at once.
+        var response = await Client.SendAsync<RuntimeGetPropertiesResponse>(
+            "Runtime.getProperties",
+            new RuntimeGetPropertiesRequest
+            {
+                ObjectId = RemoteObject.ObjectId,
+                OwnProperties = true,
+            }).ConfigureAwait(false);
+
+        var result = new Dictionary<string, IJSHandle>();
+
+        foreach (var property in response.Result)
+        {
+            if (!property.Enumerable || property.Value == null)
+            {
+                continue;
+            }
+
+            result[property.Name] = property.Value.Subtype == RemoteObjectSubtype.Node && ((IsolatedWorld)Realm).Frame != null
+                ? new CdpElementHandle((IsolatedWorld)Realm, property.Value)
+                : new CdpJSHandle((IsolatedWorld)Realm, property.Value);
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
     public override async ValueTask DisposeAsync()
     {
-        if (Disposed)
+        if (Disposed || CheckAndResetMoved())
         {
             return;
         }

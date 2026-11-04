@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Helpers
                 : ValueFromType<T>((JsonElement)value, remoteObject.Type, stringify);
         }
 
-        internal static async Task ReleaseObjectAsync(CDPSession client, RemoteObject remoteObject, ILogger logger)
+        internal static async Task ReleaseObjectAsync(ICDPSession client, RemoteObject remoteObject, ILogger logger)
         {
             if (remoteObject.ObjectId == null)
             {

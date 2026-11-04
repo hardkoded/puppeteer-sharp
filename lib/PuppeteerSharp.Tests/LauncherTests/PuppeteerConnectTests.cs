@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
@@ -15,9 +18,10 @@ namespace PuppeteerSharp.Tests.LauncherTests
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             };
-            var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
+            await using var browser = await Puppeteer.ConnectAsync(options, TestConstants.LoggerFactory);
             await using (var page = await browser.NewPageAsync())
             {
                 var response = await page.EvaluateExpressionAsync<int>("7 * 8");
@@ -34,8 +38,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to close remote browser")]
         public async Task ShouldBeAbleToCloseRemoteBrowser()
         {
-            var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
-            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
+            await using var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint
             });
@@ -47,14 +51,15 @@ namespace PuppeteerSharp.Tests.LauncherTests
               remoteBrowser.CloseAsync());
         }
 
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support ignoreHTTPSErrors option")]
-        public async Task ShouldSupportIgnoreHTTPSErrorsOption()
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support acceptInsecureCerts option")]
+        public async Task ShouldSupportAcceptInsecureCertsOption()
         {
             await using var originalBrowser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions());
             await using var browser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
                 BrowserWSEndpoint = originalBrowser.WebSocketEndpoint,
-                AcceptInsecureCerts = true
+                AcceptInsecureCerts = true,
+                Protocol = ((Browser)Browser).Protocol,
             });
             await using var page = await browser.NewPageAsync();
             var requestTask = HttpsServer.WaitForRequest(
@@ -73,6 +78,49 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Is.EqualTo(TestUtils.CurateProtocol(requestTask.Result.ToString())));
         }
 
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should forward headers when connecting with browserURL")]
+        public async Task ShouldForwardHeadersWhenConnectingWithBrowserURL()
+        {
+            const string authorizationHeader = "Bearer forwarded-token";
+            string webSocketAuthorizationHeader = null;
+            Server.SetRoute("/json/version", async context =>
+            {
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(
+                    JsonSerializer.Serialize(new { webSocketDebuggerUrl = Browser.WebSocketEndpoint })).ConfigureAwait(false);
+            });
+            var requestHeaderTask = Server.WaitForRequest("/json/version", request => request.Headers["Authorization"].ToString());
+
+            await using var connectedBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserURL = TestConstants.ServerUrl,
+                WsOptions = new WsOptions
+                {
+                    Headers = new Dictionary<string, string>
+                    {
+                        ["Authorization"] = authorizationHeader,
+                    },
+                },
+                WebSocketFactory = async (uri, socketOptions, cancellationToken) =>
+                {
+                    webSocketAuthorizationHeader = ConnectionOptionsHelper.GetEffectiveHeaders(socketOptions)?["Authorization"];
+                    return await WebSocketTransport.DefaultWebSocketFactory(uri, socketOptions, cancellationToken).ConfigureAwait(false);
+                },
+                Protocol = ((Browser)Browser).Protocol,
+            });
+
+            Assert.That(await requestHeaderTask, Is.EqualTo(authorizationHeader));
+            Assert.That(webSocketAuthorizationHeader, Is.EqualTo(authorizationHeader));
+        }
+
+        [Test, PuppeteerTest("BrowserConnector.test.ts", "BrowserConnector getWSEndpoint via browserURL", "rewrites browser URLs to the version endpoint")]
+        public void ShouldRewriteBrowserURLsToTheVersionEndpoint()
+        {
+            Assert.That(
+                Launcher.GetWSEndpointURL("http://localhost:1234/t/session/?token=secret#ignored"),
+                Is.EqualTo("http://localhost:1234/t/session/json/version?token=secret"));
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option")]
         public async Task ShouldSupportTargetFilter()
         {
@@ -87,6 +135,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             {
                 BrowserWSEndpoint = browser.WebSocketEndpoint,
                 TargetFilter = target => !target.Url.Contains("should-be-ignored"),
+                Protocol = ((Browser)browser).Protocol,
             }, TestConstants.LoggerFactory);
 
             var pages = await remoteBrowser.PagesAsync();
@@ -124,12 +173,33 @@ namespace PuppeteerSharp.Tests.LauncherTests
             await browser.CloseAsync();
         }
 
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to a browser with no page targets")]
+        public async Task ShouldBeAbleToConnectToABrowserWithNoPageTargets()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+
+            var pages = await browser.PagesAsync();
+            await Task.WhenAll(pages.Select(page => page.CloseAsync()));
+
+            await using var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = browser.WebSocketEndpoint,
+                Protocol = ((Browser)browser).Protocol,
+            });
+
+            var disconnectedTask = WaitForBrowserDisconnect(browser);
+            await Task.WhenAll(
+                disconnectedTask,
+                remoteBrowser.CloseAsync());
+        }
+
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect to a disconnected browser")]
         public async Task ShouldBeAbleToReconnectToADisconnectedBrowser()
         {
             var options = new ConnectOptions()
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             };
 
             var url = TestConstants.ServerUrl + "/frames/nested-frames.html";
@@ -151,10 +221,11 @@ namespace PuppeteerSharp.Tests.LauncherTests
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to connect to the same page simultaneously")]
         public async Task ShouldBeAbleToConnectToTheSamePageSimultaneously()
         {
-            var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
-            var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
+            await using var browserOne = await Puppeteer.LaunchAsync(new LaunchOptions());
+            await using var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserOne.WebSocketEndpoint
+                BrowserWSEndpoint = browserOne.WebSocketEndpoint,
+                Protocol = ((Browser)browserOne).Protocol,
             });
             var tcs = new TaskCompletionSource<IPage>();
             async void TargetCreated(object sender, TargetChangedArgs e)
@@ -171,7 +242,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             Assert.That(await page1.EvaluateExpressionAsync<int>("7 * 8"), Is.EqualTo(56));
             Assert.That(await page2.EvaluateExpressionAsync<int>("7 * 6"), Is.EqualTo(42));
-            await browserOne.CloseAsync();
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should be able to reconnect")]
@@ -185,7 +255,8 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
             var browserTwo = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = browserWSEndpoint
+                BrowserWSEndpoint = browserWSEndpoint,
+                Protocol = ((Browser)browserOne).Protocol,
             });
 
             var pages = await browserTwo.PagesAsync();

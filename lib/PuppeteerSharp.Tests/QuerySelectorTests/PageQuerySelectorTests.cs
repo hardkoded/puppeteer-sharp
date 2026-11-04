@@ -9,7 +9,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "Page.$", "should query existing element")]
         public async Task ShouldQueryExistingElement()
         {
-            await Page.SetContentAsync("<section>test</section>");
+            await Page.SetContentAsync(TestUtils.Html("<section>test</section>"));
             var element = await Page.QuerySelectorAsync("section");
             Assert.That(element, Is.Not.Null);
         }
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should query existing element")]
         public async Task XPathShouldQueryExistingElement()
         {
-            await Page.SetContentAsync("<section>test</section>");
+            await Page.SetContentAsync(TestUtils.Html("<section>test</section>"));
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/section");
             Assert.That(elements[0], Is.Not.Null);
             Assert.That(elements, Has.Exactly(1).Items);
@@ -40,7 +40,7 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "querySelector Page.$$ xpath", "should return multiple elements")]
         public async Task XpathShouldReturnMultipleElements()
         {
-            await Page.SetContentAsync("<div></div><div></div>");
+            await Page.SetContentAsync(TestUtils.Html("<div></div> <div></div>"));
             var elements = await Page.QuerySelectorAllAsync("xpath/html/body/div");
             Assert.That(elements, Has.Length.EqualTo(2));
         }

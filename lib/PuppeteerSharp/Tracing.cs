@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
@@ -65,12 +66,18 @@ namespace PuppeteerSharp
                 throw new InvalidOperationException("Cannot start recording trace while already recording trace.");
             }
 
-            var categories = options?.Categories ?? _defaultCategories;
+            var categories = new List<string>(options?.Categories ?? _defaultCategories);
 
             if (options?.Screenshots == true)
             {
                 categories.Add("disabled-by-default-devtools.screenshot");
             }
+
+            var excludedCategories = categories
+                .FindAll(category => category.StartsWith("-", StringComparison.Ordinal))
+                .ConvertAll(category => category.Substring(1));
+            var includedCategories = categories
+                .FindAll(category => !category.StartsWith("-", StringComparison.Ordinal));
 
             _path = options?.Path;
             _recording = true;
@@ -78,7 +85,12 @@ namespace PuppeteerSharp
             return _client.SendAsync("Tracing.start", new TracingStartRequest
             {
                 TransferMode = "ReturnAsStream",
-                Categories = string.Join(", ", categories),
+                TraceConfig = new TracingTraceConfig
+                {
+                    ExcludedCategories = excludedCategories.ToArray(),
+                    IncludedCategories = includedCategories.ToArray(),
+                    TraceBufferSizeInKb = options?.BufferSize,
+                },
             });
         }
 
@@ -97,7 +109,8 @@ namespace PuppeteerSharp
                     if (e.MessageID == "Tracing.tracingComplete")
                     {
                         var stream = e.MessageData.ToObject<TracingCompleteResponse>().Stream;
-                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_client, stream, _path).ConfigureAwait(false);
+                        using var outputStream = !string.IsNullOrEmpty(_path) ? AsyncFileHelper.CreateStream(_path, FileMode.Create) : null;
+                        var tracingData = await ProtocolStreamReader.ReadProtocolStreamStringAsync(_client, stream, outputStream).ConfigureAwait(false);
 
                         _client.MessageReceived -= EventHandler;
                         taskWrapper.TrySetResult(tracingData);
@@ -107,6 +120,8 @@ namespace PuppeteerSharp
                 {
                     var message = $"Tracing failed to process the tracing complete. {ex.Message}. {ex.StackTrace}";
                     _logger.LogError(ex, message);
+                    _client.MessageReceived -= EventHandler;
+                    taskWrapper.TrySetException(ex);
                     _client.Close(message);
                 }
             }

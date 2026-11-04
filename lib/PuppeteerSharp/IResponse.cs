@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -22,6 +23,8 @@ namespace PuppeteerSharp
 
         /// <summary>
         /// An object with HTTP headers associated with the response. All header names are lower-case.
+        /// Duplicate header values are combined into a single comma-separated list except for
+        /// <c>Set-Cookie</c> that is separated by <c>\n</c>.
         /// </summary>
         /// <value>The headers.</value>
         Dictionary<string, string> Headers { get; }
@@ -78,6 +81,11 @@ namespace PuppeteerSharp
         IFrame Frame { get; }
 
         /// <summary>
+        /// Resource timing information for this response.
+        /// </summary>
+        ResourceTiming Timing { get; }
+
+        /// <summary>
         /// Returns a Task which resolves to a buffer with response body.
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body.</returns>
@@ -105,5 +113,15 @@ namespace PuppeteerSharp
         /// <seealso cref="JsonAsync"/>
         /// <returns>A Task which resolves to a <typeparamref name="T"/> representation of response body.</returns>
         Task<T> JsonAsync<T>(JsonSerializerOptions options = default);
+
+        /// <summary>
+        /// Converts the response to an <see cref="HttpResponseMessage"/> instance.
+        /// </summary>
+        /// <remarks>
+        /// Headers are copied to the new response, with multi-line <c>set-cookie</c> headers split into
+        /// individual header entries. For responses with null body statuses (101, 204, 205, 304), the body is omitted.
+        /// </remarks>
+        /// <returns>A Task which resolves to an <see cref="HttpResponseMessage"/> representation of the response.</returns>
+        Task<HttpResponseMessage> AsFetchResponseAsync();
     }
 }

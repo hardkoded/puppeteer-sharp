@@ -51,4 +51,9 @@ public class Initiator
     /// Set if another request triggered this request (e.g. preflight).
     /// </summary>
     public string RequestId { get; set; }
+
+    /// <summary>
+    /// Initiator JavaScript stack trace, set for Script type only.
+    /// </summary>
+    public InitiatorStackTrace Stack { get; set; }
 }

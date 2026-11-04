@@ -95,14 +95,11 @@ namespace PuppeteerSharp.Cdp
 
         internal AsyncMessageQueue MessageQueue { get; }
 
-        // The connection is a good place to keep the state of custom queries and injectors.
-        // Although I consider that the Browser class would be a better place for this,
-        // The connection is being shared between all the components involved in one browser instance
-        internal CustomQuerySelectorRegistry CustomQuerySelectorRegistry { get; } = new();
-
-        internal ScriptInjector ScriptInjector { get; } = new();
+        internal ScriptInjector ScriptInjector => ScriptInjector.Default;
 
         internal int ProtocolTimeout { get; }
+
+        internal bool RejectEmulateNetworkConditionsCalls { get; set; }
 
         /// <inheritdoc />
         public void Dispose()
@@ -117,6 +114,11 @@ namespace PuppeteerSharp.Cdp
             if (IsClosed)
             {
                 throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+            }
+
+            if (method == "Network.emulateNetworkConditions" && RejectEmulateNetworkConditionsCalls)
+            {
+                throw new PuppeteerException("Cannot reset network conditions: rule-based emulation is enabled.");
             }
 
             var id = GetMessageId();
@@ -134,7 +136,18 @@ namespace PuppeteerSharp.Cdp
                 _callbacks[id] = callback;
             }
 
-            await RawSendAsync(message, options).ConfigureAwait(false);
+            try
+            {
+                await RawSendAsync(message, options).ConfigureAwait(false);
+            }
+            catch (System.Net.WebSockets.WebSocketException)
+            {
+                // The WebSocket was aborted (e.g. Chrome exited) between the IsClosed check and the send.
+                // Treat this as a closed connection so callers get TargetClosedException instead.
+                Close("WebSocket error");
+                throw new TargetClosedException($"Protocol error({method}): Target closed.", CloseReason);
+            }
+
             return waitForCallback ? await callback.TaskWrapper.Task.WithTimeout(ProtocolTimeout).ConfigureAwait(false) : null;
         }
 
@@ -151,6 +164,11 @@ namespace PuppeteerSharp.Cdp
             var transport = await transportFactory(new Uri(url), connectionOptions, cancellationToken).ConfigureAwait(false);
 
             return new Connection(url, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
+        }
+
+        internal static Connection CreateFromTransport(IConnectionTransport transport, IConnectionOptions connectionOptions, ILoggerFactory loggerFactory = null)
+        {
+            return new Connection(string.Empty, connectionOptions.SlowMo, connectionOptions.EnqueueAsyncMessages, transport, loggerFactory, connectionOptions.ProtocolTimeout);
         }
 
         internal static Connection FromSession(CdpCDPSession session) => session.Connection;
@@ -195,6 +213,23 @@ namespace PuppeteerSharp.Cdp
 
         internal bool HasPendingCallbacks() => !_callbacks.IsEmpty;
 
+        internal List<string> GetPendingProtocolErrors()
+        {
+            var result = new List<string>();
+
+            foreach (var callback in _callbacks.Values)
+            {
+                result.Add($"{callback.Method} timed out.");
+            }
+
+            foreach (var session in _sessions.Values)
+            {
+                result.AddRange(session.GetPendingProtocolErrors());
+            }
+
+            return result;
+        }
+
         internal void Close(string closeReason)
         {
             if (IsClosed)
@@ -228,6 +263,8 @@ namespace PuppeteerSharp.Cdp
 
         internal CdpCDPSession GetSession(string sessionId) => _sessions.GetValueOrDefault(sessionId);
 
+        internal Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
+
         /// <summary>
         /// Releases all resource used by the <see cref="Connection"/> object.
         /// It will raise the <see cref="Disconnected"/> event and dispose <see cref="Transport"/>.
@@ -247,12 +284,19 @@ namespace PuppeteerSharp.Cdp
             _callbackQueue.Dispose();
         }
 
-        private Task<CdpCDPSession> GetSessionAsync(string sessionId) => _sessions.GetItemAsync(sessionId);
-
         private async void Transport_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             try
             {
+                // Apply SlowMo delay before entering the serialized queue.
+                // In upstream Puppeteer (JS), the delay runs independently per message.
+                // If we delay inside the serialized queue, delays accumulate and cause
+                // timeouts on busy pages (see #2659).
+                if (e.Message.Length > 0 && Delay > 0)
+                {
+                    await Task.Delay(Delay).ConfigureAwait(false);
+                }
+
                 await _callbackQueue.Enqueue(() => ProcessMessage(e)).ConfigureAwait(false);
             }
             catch (Exception exception)
@@ -268,12 +312,7 @@ namespace PuppeteerSharp.Cdp
             try
             {
                 var response = e.Message;
-                ConnectionResponse obj = null;
-
-                if (response.Length > 0 && Delay > 0)
-                {
-                    await Task.Delay(Delay).ConfigureAwait(false);
-                }
+                ConnectionResponse obj;
 
                 try
                 {
@@ -341,11 +380,25 @@ namespace PuppeteerSharp.Cdp
             }
             else if (obj.Id.HasValue)
             {
-                // If we get the object we are waiting for we return if
-                // if not we add this to the list, sooner or later some one will come for it
+                // If we get the object we are waiting for we return it.
+                // If not we add this to the list, sooner or later someone will come for it
                 if (_callbacks.TryRemove(obj.Id.Value, out var callback))
                 {
                     MessageQueue.Enqueue(callback, obj);
+                }
+                else
+                {
+                    // Chrome can occasionally omit the sessionId on responses. Fall back
+                    // to a per-session callback lookup so the response is routed to the
+                    // session that originally issued the command (upstream #14975).
+                    foreach (var session in _sessions.Values)
+                    {
+                        if (session.HasCallback(obj.Id.Value))
+                        {
+                            session.OnMessage(obj);
+                            break;
+                        }
+                    }
                 }
             }
             else

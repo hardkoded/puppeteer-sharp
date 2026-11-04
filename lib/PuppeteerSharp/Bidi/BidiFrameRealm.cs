@@ -1,0 +1,130 @@
+// * MIT License
+//  *
+//  * Copyright (c) Darío Kondratiuk
+//  *
+//  * Permission is hereby granted, free of charge, to any person obtaining a copy
+//  * of this software and associated documentation files (the "Software"), to deal
+//  * in the Software without restriction, including without limitation the rights
+//  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  * copies of the Software, and to permit persons to whom the Software is
+//  * furnished to do so, subject to the following conditions:
+//  *
+//  * The above copyright notice and this permission notice shall be included in all
+//  * copies or substantial portions of the Software.
+//  *
+//  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  * SOFTWARE.
+
+#if !CDP_ONLY
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
+
+namespace PuppeteerSharp.Bidi;
+
+internal class BidiFrameRealm(WindowRealm realm, BidiFrame frame) : BidiRealm(
+    realm,
+    frame.TimeoutSettings,
+    frame.Client.LoggerFactory.CreateLogger<BidiRealm>())
+{
+    private readonly WindowRealm _realm = realm;
+    private readonly TaskQueue _puppeteerUtilQueue = new();
+    private readonly List<ExposableFunction> _ariaBindings = new();
+    private IJSHandle _puppeteerUtil;
+    private bool _bindingsInstalled;
+
+    internal override IEnvironment Environment => frame;
+
+    internal BidiFrame Frame => frame;
+
+    internal WindowRealm WindowRealm => _realm;
+
+    public static BidiFrameRealm From(WindowRealm realm, BidiFrame frame)
+    {
+        var frameRealm = new BidiFrameRealm(realm, frame);
+        frameRealm.Initialize();
+        return frameRealm;
+    }
+
+    public override async Task<IJSHandle> GetPuppeteerUtilAsync()
+    {
+        if (!_bindingsInstalled)
+        {
+            _bindingsInstalled = true;
+            await InstallAriaBindingsAsync().ConfigureAwait(false);
+        }
+
+        var scriptInjector = frame.BrowsingContext.Session.ScriptInjector;
+
+        await _puppeteerUtilQueue.Enqueue(async () =>
+        {
+            if (_puppeteerUtil == null)
+            {
+                await scriptInjector.InjectAsync(
+                    async (script) =>
+                    {
+                        if (_puppeteerUtil != null)
+                        {
+                            await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
+                        }
+
+                        _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+                    },
+                    _puppeteerUtil == null).ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+        return _puppeteerUtil;
+    }
+
+    protected override void ThrowIfDetached()
+    {
+        if (Frame.Detached)
+        {
+            throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
+        }
+    }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        _realm.Updated += (_, __) =>
+        {
+            (Environment as Frame)?.ClearDocumentHandle();
+            _puppeteerUtil = null;
+            _bindingsInstalled = false;
+        };
+    }
+
+    private async Task InstallAriaBindingsAsync()
+    {
+        var ariaHandler = (AriaQueryHandler)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
+        var isolate = !string.IsNullOrEmpty(_realm.Target?.Sandbox);
+
+        var queryOneBinding = await ExposableFunction.FromAsync(
+            frame,
+            "__ariaQuerySelector",
+            (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
+            isolate).ConfigureAwait(false);
+
+        var queryAllBinding = await ExposableFunction.FromAsync(
+            frame,
+            "__ariaQuerySelectorAll",
+            (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
+            isolate).ConfigureAwait(false);
+
+        _ariaBindings.Add(queryOneBinding);
+        _ariaBindings.Add(queryAllBinding);
+    }
+}
+
+#endif

@@ -15,5 +15,13 @@ namespace PuppeteerSharp
         /// Bypass the proxy for the given semi-colon-separated list of hosts.
         /// </summary>
         public string[] ProxyBypassList { get; set; }
+
+        /// <summary>
+        /// Behavior definition for when downloading a file.
+        /// </summary>
+        /// <remarks>
+        /// If not set, the default behavior will be used.
+        /// </remarks>
+        public DownloadBehavior DownloadBehavior { get; set; }
     }
 }

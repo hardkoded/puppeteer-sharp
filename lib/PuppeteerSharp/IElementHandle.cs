@@ -144,6 +144,14 @@ namespace PuppeteerSharp
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
 
         /// <summary>
+        /// Runs <c>element.querySelectorAll</c> within the page. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query element for.</param>
+        /// <param name="options">Optional query options.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
+        Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options);
+
+        /// <summary>
         /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
         /// </summary>
         /// <param name="selector">A selector to query element for.</param>
@@ -316,14 +324,15 @@ namespace PuppeteerSharp
         /// <summary>
         /// Dispatches a <c>touchstart</c> event.
         /// </summary>
-        /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        Task TouchStartAsync();
+        /// <returns>A Task that resolves to the <see cref="ITouchHandle"/> for the started touch.</returns>
+        Task<ITouchHandle> TouchStartAsync();
 
         /// <summary>
         /// Dispatches a <c>touchmove</c> event.
         /// </summary>
+        /// <param name="touch">Optional touch handle to move. If not provided, the first active touch is moved.</param>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
-        Task TouchMoveAsync();
+        Task TouchMoveAsync(ITouchHandle touch = null);
 
         /// <summary>
         /// /// Dispatches a <c>touchendt</c> event.
@@ -336,5 +345,30 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task that resolves when the message was confirmed by the browser.</returns>
         Task ScrollIntoViewAsync();
+
+        /// <summary>
+        /// When connected using Chrome DevTools Protocol, it returns a DOM.BackendNodeId for the element.
+        /// </summary>
+        /// <returns>A task that resolves to the backend node ID.</returns>
+        Task<int> BackendNodeIdAsync();
+
+        /// <summary>
+        /// If the element is a form input, you can use <see cref="AutofillAsync(AutofillData)"/>
+        /// to test if the form is compatible with the browser's autofill implementation.
+        /// Throws an error if the form cannot be autofilled.
+        /// </summary>
+        /// <param name="data">The autofill data.</param>
+        /// <returns>A task that resolves when the autofill is complete.</returns>
+        /// <remarks>
+        /// Currently, Puppeteer supports auto-filling credit card information only and
+        /// in Chrome in the new headless and headful modes only.
+        /// </remarks>
+        Task AutofillAsync(AutofillData data);
+
+        /// <summary>
+        /// Converts this <see cref="IElementHandle"/> into a <see cref="Locators.Locator"/>.
+        /// </summary>
+        /// <returns>A <see cref="Locators.Locator"/> backed by this element handle.</returns>
+        Locators.Locator AsLocator();
     }
 }

@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp
 {
     /// <inheritdoc cref="IExecutionContext"/>
-    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable
+    public sealed partial class ExecutionContext : IExecutionContext, IDisposable, IAsyncDisposable, IPuppeteerUtilWrapper
     {
-        internal const string EvaluationScriptUrl = "__puppeteer_evaluation_script__";
-        private const string EvaluationScriptSuffix = $"//# sourceURL={EvaluationScriptUrl}";
-
 #if NETSTANDARD2_0
         private static readonly Regex _sourceUrlRegex =
             new(@"^[\040\t]*\/\/[@#] sourceURL=\s*\S*?\s*$", RegexOptions.Multiline);
 #endif
+
+        private static string _evaluationScriptUrl = "__puppeteer_evaluation_script__";
 
         private readonly TaskQueue _puppeteerUtilQueue = new();
         private IJSHandle _puppeteerUtil;
@@ -34,6 +34,16 @@ namespace PuppeteerSharp
             ContextId = contextPayload.Id;
             ContextName = contextPayload.Name;
             World = world;
+        }
+
+        /// <summary>
+        /// Gets or sets the URL used to identify evaluation scripts.
+        /// This can be changed to avoid bot detection by services that look for known automation markers.
+        /// </summary>
+        public static string EvaluationScriptUrl
+        {
+            get => _evaluationScriptUrl;
+            set => _evaluationScriptUrl = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <inheritdoc/>
@@ -86,11 +96,6 @@ namespace PuppeteerSharp
                 await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
             }
 
-            if (World != null)
-            {
-                await World.DisposeAsync().ConfigureAwait(false);
-            }
-
             GC.SuppressFinalize(this);
         }
 
@@ -101,7 +106,8 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
-        internal async Task<IJSHandle> GetPuppeteerUtilAsync()
+        /// <inheritdoc />
+        public async Task<IJSHandle> GetPuppeteerUtilAsync()
         {
             await _puppeteerUtilQueue.Enqueue(async () =>
             {
@@ -115,10 +121,20 @@ namespace PuppeteerSharp
                                 await _puppeteerUtil.DisposeAsync().ConfigureAwait(false);
                             }
 
+                            var ariaHandler = (QueryHandlers.AriaQueryHandler)CustomQuerySelectorRegistry.Default.InternalQueryHandlers["aria"];
+
                             await InstallGlobalBindingAsync(new Binding(
                                 "__ariaQuerySelector",
-                                (Func<IElementHandle, string, Task<IElementHandle>>)Client.Connection.CustomQuerySelectorRegistry.InternalQueryHandlers["aria"].QueryOneAsync))
+                                (Func<IElementHandle, string, Task<IElementHandle>>)ariaHandler.QueryOneAsync,
+                                string.Empty))
                                 .ConfigureAwait(false);
+
+                            await InstallGlobalBindingAsync(new Binding(
+                                "__ariaQuerySelectorAll",
+                                (Func<IElementHandle, string, Task<IJSHandle>>)ariaHandler.QueryAllAsJSArrayAsync,
+                                string.Empty))
+                                .ConfigureAwait(false);
+
                             _puppeteerUtil = await EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
                         },
                         _puppeteerUtil == null).ConfigureAwait(false);
@@ -190,7 +206,7 @@ namespace PuppeteerSharp
         private Task<RemoteObject> EvaluateExpressionInternalAsync(bool returnByValue, string script)
             => ExecuteEvaluationAsync("Runtime.evaluate", new Dictionary<string, object>
             {
-                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n{EvaluationScriptSuffix}",
+                ["expression"] = GetSourceUrlRegex().IsMatch(script) ? script : $"{script}\n//# sourceURL={EvaluationScriptUrl}",
                 ["contextId"] = ContextId,
                 ["returnByValue"] = returnByValue,
                 ["awaitPromise"] = true,
@@ -200,7 +216,7 @@ namespace PuppeteerSharp
         private async Task<RemoteObject> EvaluateFunctionInternalAsync(bool returnByValue, string script, params object[] args)
             => await ExecuteEvaluationAsync("Runtime.callFunctionOn", new RuntimeCallFunctionOnRequest
             {
-                FunctionDeclaration = $"{script}\n{EvaluationScriptSuffix}\n",
+                FunctionDeclaration = $"{script}\n//# sourceURL={EvaluationScriptUrl}\n",
                 ExecutionContextId = ContextId,
                 Arguments = await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false),
                 ReturnByValue = returnByValue,
@@ -228,6 +244,13 @@ namespace PuppeteerSharp
                     ex.Message.Contains("Object couldn't be returned by value"))
                 {
                     return default;
+                }
+
+                if (ex.Message.Contains("Cannot find context with specified id") ||
+                    ex.Message.Contains("Inspected target navigated or closed"))
+                {
+                    throw new EvaluationFailedException(
+                        "Execution context was destroyed, most likely because of a navigation.", ex);
                 }
 
                 throw new EvaluationFailedException(ex.Message, ex);
@@ -284,7 +307,7 @@ namespace PuppeteerSharp
 
                     break;
 
-                case IJSHandle objectHandle:
+                case ICdpHandle objectHandle:
                     return objectHandle.FormatArgument(this);
             }
 

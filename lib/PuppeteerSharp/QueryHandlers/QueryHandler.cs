@@ -88,11 +88,12 @@ namespace PuppeteerSharp.QueryHandlers
             return null;
         }
 
-        internal async Task<IElementHandle> WaitForAsync(
+        internal virtual async Task<IElementHandle> WaitForAsync(
             Frame frame,
             ElementHandle element,
             string selector,
-            WaitForSelectorOptions options)
+            WaitForSelectorOptions options,
+            WaitForFunctionPollingOption polling = WaitForFunctionPollingOption.Mutation)
         {
             if (element != null)
             {
@@ -105,6 +106,12 @@ namespace PuppeteerSharp.QueryHandlers
                 var waitForVisible = options?.Visible ?? false;
                 var waitForHidden = options?.Hidden ?? false;
                 var timeout = options?.Timeout;
+                var cancellationToken = options?.CancellationToken ?? default;
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                }
 
                 var predicate = @$"async (PuppeteerUtil, query, selector, root, visible) => {{
                   if (!PuppeteerUtil) {{
@@ -138,11 +145,18 @@ namespace PuppeteerSharp.QueryHandlers
                     predicate,
                     new()
                     {
-                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : WaitForFunctionPollingOption.Mutation,
+                        Polling = waitForVisible || waitForHidden ? WaitForFunctionPollingOption.Raf : polling,
                         Root = element,
                         Timeout = timeout,
+                        CancellationToken = cancellationToken,
                     },
                     args.ToArray()).ConfigureAwait(false);
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    await jsHandle.DisposeAsync().ConfigureAwait(false);
+                    throw new OperationCanceledException("WaitForSelector has been cancelled.");
+                }
 
                 if (jsHandle is not ElementHandle elementHandle)
                 {
@@ -151,6 +165,10 @@ namespace PuppeteerSharp.QueryHandlers
                 }
 
                 return await frame.MainRealm.TransferHandleAsync(elementHandle).ConfigureAwait(false) as IElementHandle;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

@@ -4,10 +4,6 @@ namespace PuppeteerSharp.Tests
 {
     public class WontImplementTests : PuppeteerPageBaseTest
     {
-        // We don't implement pipes
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe option")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should support the pipe argument")]
-        [PuppeteerTest("chromiumonly.spec", "Puppeteer.launch |pipe| option", "should fire \"disconnected\" when closing with pipe")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during bad navigation")]
         [PuppeteerTest("navigation.spec", "Page.goto", "should not leak listeners during navigation of 11 pages")]
@@ -16,6 +12,7 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "falls back to launching chrome if there is an unknown product but logs a warning")]
         [PuppeteerTest("tracing.spec", "Tracing", "should return null in case of Buffer error")]
         [PuppeteerTest("tracing.spec", "Tracing", "should properly fail if readProtocolStream errors out")]
+        // The dumpio+pipe fixture test requires spawning a separate Node.js process with a fixture script
         [PuppeteerTest("fixtures.spec", "Fixtures", "dumpio option should work with pipe option")]
         [PuppeteerTest("EventEmitter.spec", "once", "only calls the listener once and then removes it")]
         [PuppeteerTest("EventEmitter.spec", "once", "supports chaining")]
@@ -38,7 +35,6 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("network.spec", "network Page.setExtraHTTPHeaders", "should throw for non-string header values")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly fire event handlers as they are added and then removed")]
         [PuppeteerTest("page.spec", "Page removing and adding event handlers", "should correctly added and removed request events")]
-        [PuppeteerTest("page.spec", "Page BrowserContext.overridePermissions", "should fail when bad permission is given")]
         [PuppeteerTest("page.spec", "Page Page.select", "should throw if passed in non-strings")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should support throwing \"null\"")]
         [PuppeteerTest("page.spec", "Page Page.exposeFunction", "should work with function shorthands")]
@@ -46,6 +42,25 @@ namespace PuppeteerSharp.Tests
         [PuppeteerTest("tracing.spec", "Tracing", "should return undefined in case of Buffer error")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "waitForDevicePrompt", "should listen and shortcut when there are no watchdogs")]
         [PuppeteerTest("DeviceRequestPrompt.test.ts", "DeviceRequestPrompt.waitForDevice", "should listen and shortcut when there are no watchdogs")]
+        [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands")]
+        [PuppeteerTest("evaluation.spec", "Evaluation specs Page.evaluate", "should work with function shorthands and nested arrow functions")]
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.toElement", "should work")]
+        // These test JavaScript-internal utilities (PuppeteerUtil, createFunction) injected into the isolated realm via LazyArg - no C# equivalent
+        [PuppeteerTest("injected.spec", "PuppeteerUtil tests", "should work")]
+        [PuppeteerTest("injected.spec", "createFunction tests", "should work")]
+        // Symbol.dispose / Symbol.asyncDispose are JavaScript-specific disposal patterns (using/await using). C# has IDisposable/IAsyncDisposable which are already tested via DisposeAsync.
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.dispose]", "should work")]
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle[Symbol.asyncDispose]", "should work")]
+        // ElementHandle.move() is a JS-specific internal method for moving handles between realms - no C# equivalent
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.move", "should work")]
+        // ElementHandle.touchStart returning a Touch handle for chaining: C# ElementHandle.TouchStartAsync returns Task, not Task<ITouchHandle>
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchStart", "should work with the returned Touch")]
+        // ElementHandle.touchMove with a pre-existing Touch parameter: C# ElementHandle.TouchMoveAsync takes no parameters
+        [PuppeteerTest("elementhandle.spec", "ElementHandle specs ElementHandle.touchMove", "should work with a pre-existing Touch")]
+        // PuppeteerSharp does not have a DebuggingPort property; users pass --remote-debugging-port as an arg
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should not allow setting debuggingPort and pipe")]
+        // AbortSignal is a JS concept; C# uses CancellationToken which is not yet wired into LaunchAsync
+        [PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should support the AbortSignal")]
         public void TheseTestWontBeImplemented()
         {
         }

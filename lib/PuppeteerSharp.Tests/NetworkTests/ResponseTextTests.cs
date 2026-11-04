@@ -47,39 +47,30 @@ namespace PuppeteerSharp.Tests.NetworkTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             // Setup server to trap request.
-            var serverResponseCompletion = new TaskCompletionSource<bool>();
-            HttpResponse serverResponse = null;
-            Server.SetRoute("/get", context =>
+            var serverResponseTcs = new TaskCompletionSource<HttpResponse>();
+            var serverResponseEnd = new TaskCompletionSource<bool>();
+            Server.SetRoute("/get", async context =>
             {
-                serverResponse = context.Response;
-                context.Response.WriteAsync("hello ");
-                return serverResponseCompletion.Task;
+                // In Firefox, |fetch| will be hanging until it receives |Content-Type| header
+                // from server.
+                context.Response.ContentType = "text/plain; charset=utf-8";
+                await context.Response.WriteAsync("hello ");
+                await context.Response.Body.FlushAsync();
+                serverResponseTcs.TrySetResult(context.Response);
+                await serverResponseEnd.Task;
             });
             // Setup page to trap response.
-            IResponse pageResponse = null;
             var requestFinished = false;
-            Page.Response += (_, e) => pageResponse = e.Response;
-            Page.RequestFinished += (_, _) => requestFinished = requestFinished || pageResponse.Url.Contains("/get");
+            Page.RequestFinished += (_, e) => requestFinished = requestFinished || e.Request.Url.Contains("/get");
             // send request and wait for server response
-            Task WaitForPageResponseEvent()
-            {
-                var completion = new TaskCompletionSource<bool>();
-                Page.Response += (_, e) =>
-                {
-                    if (!TestUtils.IsFavicon(e.Response.Request))
-                    {
-                        completion.SetResult(true);
-                    }
-                };
-                return completion.Task;
-            }
-
+            var waitForResponseTask = Page.WaitForResponseAsync(r => !TestUtils.IsFavicon(r.Request));
             await Task.WhenAll(
-                Server.WaitForRequest("/get"),
+                waitForResponseTask,
                 Page.EvaluateExpressionAsync("fetch('/get', { method: 'GET'})"),
-                WaitForPageResponseEvent()
-            );
+                Server.WaitForRequest("/get"));
+            var pageResponse = await waitForResponseTask;
 
+            var serverResponse = await serverResponseTcs.Task;
             Assert.That(serverResponse, Is.Not.Null);
             Assert.That(pageResponse, Is.Not.Null);
             Assert.That(pageResponse.Status, Is.EqualTo(HttpStatusCode.OK));
@@ -88,9 +79,10 @@ namespace PuppeteerSharp.Tests.NetworkTests
             var responseText = pageResponse.TextAsync();
             // Write part of the response and wait for it to be flushed.
             await serverResponse.WriteAsync("wor");
+            await serverResponse.Body.FlushAsync();
             // Finish response.
             await serverResponse.WriteAsync("ld!");
-            serverResponseCompletion.SetResult(true);
+            serverResponseEnd.TrySetResult(true);
             Assert.That(await responseText, Is.EqualTo("hello world!"));
         }
     }

@@ -1,0 +1,58 @@
+[
+  {
+    "label": "Overview",
+    "slug": "api"
+  },
+  {
+    "label": "PuppeteerSharp",
+    "slug": "api/PuppeteerSharp"
+  },
+  {
+    "label": "PuppeteerSharp.Bidi",
+    "slug": "api/PuppeteerSharp.Bidi"
+  },
+  {
+    "label": "PuppeteerSharp.BrowserData",
+    "slug": "api/PuppeteerSharp.BrowserData"
+  },
+  {
+    "label": "PuppeteerSharp.Cdp",
+    "slug": "api/PuppeteerSharp.Cdp"
+  },
+  {
+    "label": "PuppeteerSharp.Cdp.Messaging",
+    "slug": "api/PuppeteerSharp.Cdp.Messaging"
+  },
+  {
+    "label": "PuppeteerSharp.Helpers",
+    "slug": "api/PuppeteerSharp.Helpers"
+  },
+  {
+    "label": "PuppeteerSharp.Input",
+    "slug": "api/PuppeteerSharp.Input"
+  },
+  {
+    "label": "PuppeteerSharp.Locators",
+    "slug": "api/PuppeteerSharp.Locators"
+  },
+  {
+    "label": "PuppeteerSharp.Media",
+    "slug": "api/PuppeteerSharp.Media"
+  },
+  {
+    "label": "PuppeteerSharp.Mobile",
+    "slug": "api/PuppeteerSharp.Mobile"
+  },
+  {
+    "label": "PuppeteerSharp.PageAccessibility",
+    "slug": "api/PuppeteerSharp.PageAccessibility"
+  },
+  {
+    "label": "PuppeteerSharp.PageCoverage",
+    "slug": "api/PuppeteerSharp.PageCoverage"
+  },
+  {
+    "label": "PuppeteerSharp.Transport",
+    "slug": "api/PuppeteerSharp.Transport"
+  }
+]

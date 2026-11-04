@@ -49,6 +49,9 @@
         globalThis.addEventListener(
             name,
             (event) => {
+                if (event.pointerType !== 'touch') {
+                    return;
+                }
                 allEvents.push({
                     type: name,
                     x: event.x,

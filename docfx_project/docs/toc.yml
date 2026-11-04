@@ -20,6 +20,12 @@
       href: DownloadFetcher.Download.md
     - name: Using PuppeteerSharp with AOT compilation
       href: AOT.md
+- name: Locators
+  items:
+    - name: Getting Started with Locators
+      href: Locators.md
+    - name: Locator Actions
+      href: LocatorActions.md
 - name: Advanced
   items:
     - name: How to log CDP communication

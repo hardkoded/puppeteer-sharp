@@ -10,9 +10,13 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task ShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
-            await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">A</div></div></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var second = await html.QuerySelectorAsync(".second");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+          <body>
+            <div class=""second""><div class=""inner"">A</div></div>
+          </body>
+        </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var second = await htmlEl.QuerySelectorAsync(".second");
             var inner = await second.QuerySelectorAsync(".inner");
             var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner);
             Assert.That(content, Is.EqualTo("A"));
@@ -21,9 +25,13 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$", "should return null for non-existing element")]
         public async Task ShouldReturnNullForNonExistingElement()
         {
-            await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var second = await html.QuerySelectorAsync(".third");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+          <body>
+            <div class=""second""><div class=""inner"">B</div></div>
+          </body>
+        </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var second = await htmlEl.QuerySelectorAsync(".third");
             Assert.That(second, Is.Null);
         }
 
@@ -31,9 +39,13 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         public async Task XPathShouldQueryExistingElement()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/playground.html");
-            await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">A</div></div></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var second = await html.QuerySelectorAllAsync("xpath/./body/div[contains(@class, 'second')]");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+            <body>
+              <div class=""second""><div class=""inner"">A</div></div>
+            </body>
+          </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var second = await htmlEl.QuerySelectorAllAsync("xpath/./body/div[contains(@class, 'second')]");
             var inner = await second[0].QuerySelectorAllAsync("xpath/./div[contains(@class, 'inner')]");
             var content = await Page.EvaluateFunctionAsync<string>("e => e.textContent", inner[0]);
             Assert.That(content, Is.EqualTo("A"));
@@ -42,9 +54,13 @@ namespace PuppeteerSharp.Tests.QuerySelectorTests
         [Test, PuppeteerTest("queryselector.spec", "ElementHandle.$$ xpath", "should return null for non-existing element")]
         public async Task XPathShouldReturnNullForNonExistingElement()
         {
-            await Page.SetContentAsync("<html><body><div class=\"second\"><div class=\"inner\">B</div></div></body></html>");
-            var html = await Page.QuerySelectorAsync("html");
-            var second = await html.QuerySelectorAllAsync("xpath/div[contains(@class, 'third')]");
+            await Page.SetContentAsync(TestUtils.Html(@"<html>
+            <body>
+              <div class=""second""><div class=""inner"">B</div></div>
+            </body>
+          </html>"));
+            var htmlEl = await Page.QuerySelectorAsync("html");
+            var second = await htmlEl.QuerySelectorAllAsync("xpath/div[contains(@class, 'third')]");
             Assert.That(second, Is.Empty);
         }
     }

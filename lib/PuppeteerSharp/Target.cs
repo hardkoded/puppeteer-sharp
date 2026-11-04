@@ -15,39 +15,21 @@ namespace PuppeteerSharp
     {
         private readonly ConcurrentSet<ITarget> _childTargets = [];
 
-        internal Target(
-            TargetInfo targetInfo,
-            CDPSession session,
-            BrowserContext context,
-            ITargetManager targetManager,
-            Func<bool, Task<CDPSession>> sessionFactory)
+        internal Target()
         {
-            Session = session;
-            TargetInfo = targetInfo;
-            SessionFactory = sessionFactory;
-            BrowserContext = context;
-            TargetManager = targetManager;
-
-            if (session != null)
-            {
-                session.Target = this;
-            }
         }
 
         /// <inheritdoc/>
-        public string Url => TargetInfo.Url;
+        public abstract string Url { get; }
 
         /// <inheritdoc/>
-        public virtual TargetType Type => TargetInfo.Type;
-
-        /// <inheritdoc/>
-        public string TargetId => TargetInfo.TargetId;
+        public abstract TargetType Type { get; }
 
         /// <inheritdoc/>
         public abstract ITarget Opener { get; }
 
         /// <inheritdoc/>
-        IBrowser ITarget.Browser => Browser;
+        IBrowser ITarget.Browser { get; }
 
         /// <inheritdoc/>
         IBrowserContext ITarget.BrowserContext => BrowserContext;
@@ -55,27 +37,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         IEnumerable<ITarget> ITarget.ChildTargets => _childTargets;
 
-        internal BrowserContext BrowserContext { get; }
+        internal abstract BrowserContext BrowserContext { get; }
 
-        internal Browser Browser => BrowserContext.Browser;
-
-        internal Task<InitializationStatus> InitializedTask => InitializedTaskWrapper.Task;
-
-        internal TaskCompletionSource<InitializationStatus> InitializedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal Task CloseTask => CloseTaskWrapper.Task;
-
-        internal TaskCompletionSource<bool> CloseTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        internal Func<bool, Task<CDPSession>> SessionFactory { get; private set; }
-
-        internal ITargetManager TargetManager { get; }
-
-        internal bool IsInitialized { get; set; }
-
-        internal CDPSession Session { get; }
-
-        internal TargetInfo TargetInfo { get; set; }
+        internal abstract Browser Browser { get; }
 
         /// <inheritdoc/>
         public virtual Task<IPage> PageAsync() => Task.FromResult<IPage>(null);

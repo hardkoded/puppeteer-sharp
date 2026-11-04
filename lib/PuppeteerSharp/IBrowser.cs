@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -80,11 +81,6 @@ namespace PuppeteerSharp
         int DefaultWaitForTimeout { get; set; }
 
         /// <summary>
-        /// Gets or Sets whether to ignore HTTPS errors during navigation.
-        /// </summary>
-        bool AcceptInsecureCerts { get; set; }
-
-        /// <summary>
         /// Gets a value indicating if the browser is closed.
         /// </summary>
         bool IsClosed { get; }
@@ -115,6 +111,14 @@ namespace PuppeteerSharp
         /// and the browser endpoint <see href="https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target"/>.
         /// </remarks>
         string WebSocketEndpoint { get; }
+
+        /// <summary>
+        /// Get debug information from Puppeteer.
+        /// </summary>
+        /// <remarks>
+        /// Currently, includes pending protocol calls. In the future, more info might be added.
+        /// </remarks>
+        DebugInfo DebugInfo { get; }
 
         /// <summary>
         /// Returns an array of all open <see cref="IBrowserContext"/>. In a newly created browser, this will return a single instance of <see cref="IBrowserContext"/>.
@@ -176,17 +180,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page.
         /// </summary>
+        /// <param name="options">Options for creating the page.</param>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
-        Task<IPage> NewPageAsync();
+        Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <summary>
         /// Returns a Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here. You can find them using <see cref="PuppeteerSharp.Target.PageAsync"/>.
         /// </summary>
+        /// <param name="includeAll">Experimental. When true, includes all kinds of pages.</param>
         /// <returns>Task which resolves to an array of all open pages inside the Browser.
         /// In case of multiple browser contexts, the method will return an array with all the pages in all browser contexts.
         /// </returns>
-        Task<IPage[]> PagesAsync();
+        Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <summary>
         /// Returns An Array of all active targets.
@@ -234,5 +240,167 @@ namespace PuppeteerSharp
         /// Clears all registered handlers.
         /// </summary>
         void ClearCustomQueryHandlers();
+
+        /// <summary>
+        /// Gets the specified window bounds.
+        /// </summary>
+        /// <param name="windowId">The window ID.</param>
+        /// <returns>A task that resolves to the <see cref="WindowBounds"/>.</returns>
+        Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <summary>
+        /// Sets the specified window bounds.
+        /// </summary>
+        /// <param name="windowId">The window ID.</param>
+        /// <param name="windowBounds">The bounds to set.</param>
+        /// <returns>A task that resolves when the bounds have been set.</returns>
+        Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
+
+        /// <summary>
+        /// Gets a list of <see cref="ScreenInfo"/> objects.
+        /// </summary>
+        /// <returns>A task that resolves to an array of screen information objects.</returns>
+        Task<ScreenInfo[]> ScreensAsync();
+
+        /// <summary>
+        /// Adds a new screen with specified parameters and returns a <see cref="ScreenInfo"/> object, including the new screen's ID.
+        /// </summary>
+        /// <param name="params">The parameters for the new screen.</param>
+        /// <returns>A task that resolves to the added screen information.</returns>
+        /// <remarks>Only supported in headless mode.</remarks>
+        Task<ScreenInfo> AddScreenAsync(AddScreenParams @params);
+
+        /// <summary>
+        /// Removes the screen associated with the given screen ID, unless it is the primary screen.
+        /// </summary>
+        /// <param name="screenId">The ID of the screen to remove.</param>
+        /// <returns>A task that completes when the screen is removed.</returns>
+        /// <remarks>Only supported in headless mode. Fails if the primary screen ID is specified.</remarks>
+        Task RemoveScreenAsync(string screenId);
+
+        /// <summary>
+        /// Sets the permission for a specific origin on the default browser context.
+        /// </summary>
+        /// <param name="origin">The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only).</param>
+        /// <param name="permissions">The permissions to set.</param>
+        /// <returns>The task.</returns>
+        Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+
+        /// <summary>
+        /// Gets all cookies in the default browser context.
+        /// </summary>
+        /// <returns>Task which resolves to an array of <see cref="CookieParam"/>.</returns>
+        Task<CookieParam[]> GetCookiesAsync();
+
+        /// <summary>
+        /// Sets cookies in the default browser context.
+        /// </summary>
+        /// <param name="cookies">Cookies to set.</param>
+        /// <returns>Task.</returns>
+        Task SetCookieAsync(params CookieData[] cookies);
+
+        /// <summary>
+        /// Removes cookies from the default browser context.
+        /// </summary>
+        /// <param name="cookies">Complete <see cref="CookieParam"/> objects to be removed.</param>
+        /// <returns>Task.</returns>
+        Task DeleteCookieAsync(params CookieParam[] cookies);
+
+        /// <summary>
+        /// Deletes cookies matching the provided filters from the default <see cref="IBrowserContext"/>.
+        /// </summary>
+        /// <param name="filters">Filters to match cookies against.</param>
+        /// <returns>Task.</returns>
+        Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters);
+
+        /// <summary>
+        /// Installs an unpacked extension and returns the extension ID.
+        /// </summary>
+        /// <param name="path">The path to the unpacked extension directory.</param>
+        /// <param name="options">Options for installing the extension.</param>
+        /// <returns>A task that resolves to the extension ID.</returns>
+        Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null);
+
+        /// <summary>
+        /// Uninstalls a previously installed extension by its ID.
+        /// </summary>
+        /// <param name="id">The extension ID to uninstall.</param>
+        /// <returns>A task that completes when the extension is uninstalled.</returns>
+        Task UninstallExtensionAsync(string id);
+
+        /// <summary>
+        /// Returns a map of installed extensions, keyed by extension ID.
+        /// </summary>
+        /// <returns>A task that resolves to a dictionary of extension ID to <see cref="Extension"/>.</returns>
+        Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
+
+        /// <summary>
+        /// Installs a Progressive Web App (PWA) and returns its manifest id.
+        /// </summary>
+        /// <param name="options">Options for installing the PWA.</param>
+        /// <returns>A task that resolves to the manifest id.</returns>
+        /// <remarks>
+        /// Only available when connected to the browser over a pipe connection. Set <see cref="LaunchOptions.Pipe"/>
+        /// to <c>true</c>; it defaults to <c>false</c>. The underlying <c>PWA</c> CDP domain is not exposed over a
+        /// WebSocket connection.
+        /// The returned manifest id echoes <see cref="InstallPWAOptions.ManifestId"/>, so it can be passed directly
+        /// to <see cref="LaunchPWAAsync(LaunchPWAOptions)"/>, <see cref="GetPWAStateAsync(GetPWAStateOptions)"/>, or
+        /// <see cref="UninstallPWAAsync(UninstallPWAOptions)"/>.
+        /// </remarks>
+        Task<string> InstallPWAAsync(InstallPWAOptions options);
+
+        /// <summary>
+        /// Uninstalls a previously installed Progressive Web App (PWA).
+        /// </summary>
+        /// <param name="options">Options for uninstalling the PWA.</param>
+        /// <returns>A task that completes when the PWA is uninstalled.</returns>
+        /// <remarks>Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>.</remarks>
+        Task UninstallPWAAsync(UninstallPWAOptions options);
+
+        /// <summary>
+        /// Launches an installed Progressive Web App (PWA) and resolves with the <see cref="IPage"/> backing the app window.
+        /// </summary>
+        /// <param name="options">Options for launching the PWA.</param>
+        /// <returns>A task that resolves to the page backing the app window.</returns>
+        /// <remarks>
+        /// Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>.
+        /// <c>PWA.launch</c> resolves with the id of the launched <i>tab</i> target. Puppeteer does not expose tab
+        /// targets through <see cref="Targets"/>; this method instead resolves with the tab's child page target
+        /// (the app's web contents). If Chromium focuses an existing app window, this returns that window's
+        /// existing page.
+        /// </remarks>
+        Task<IPage> LaunchPWAAsync(LaunchPWAOptions options);
+
+        /// <summary>
+        /// Returns the OS-integration state of an installed Progressive Web App (PWA), such as its badge count and
+        /// registered file handlers.
+        /// </summary>
+        /// <param name="options">Options for querying the PWA state.</param>
+        /// <returns>A task that resolves to the PWA state.</returns>
+        /// <remarks>
+        /// Only available over a pipe connection. See <see cref="InstallPWAAsync(InstallPWAOptions)"/>. Meaningful
+        /// only for an app that is currently installed; querying an unknown manifest id rejects.
+        /// </remarks>
+        Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
+
+        /// <summary>
+        /// Sets the network restrictions (blocklist or allowlist) and re-applies them to all targets.
+        /// To clear all restrictions, call it without arguments or pass <c>null</c>.
+        /// </summary>
+        /// <param name="restrictions">The network restrictions to apply.</param>
+        /// <returns>A task that resolves when the restrictions were applied.</returns>
+        /// <remarks>
+        /// Only supported for Chrome and the CDP protocol.
+        /// Targets that are already on a blocked URL when this method is called stay attached and stay on
+        /// the blocked page. This differs from launching the browser with network restrictions, where such
+        /// targets are detached on the initial attach.
+        /// </remarks>
+        Task RestrictNetworkAsync(NetworkRestrictions restrictions = null);
+
+        /// <summary>
+        /// Creates a Chrome Devtools Protocol session attached to the browser.
+        /// </summary>
+        /// <returns>A task that returns a <see cref="ICDPSession"/>.</returns>
+        Task<ICDPSession> CreateCDPSessionAsync();
     }
 }

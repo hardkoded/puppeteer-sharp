@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.States;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp
 {
@@ -14,7 +16,8 @@ namespace PuppeteerSharp
     /// </summary>
     public abstract class LauncherBase : IDisposable
     {
-        private readonly StateManager _stateManager;
+        private const int MaxRecentLogLines = 100;
+        private readonly ConcurrentQueue<string> _recentLogs = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LauncherBase"/> class.
@@ -23,8 +26,8 @@ namespace PuppeteerSharp
         /// <param name="options">Options for launching Base.</param>
         protected LauncherBase(string executable, LaunchOptions options)
         {
-            _stateManager = new StateManager();
-            _stateManager.Starting = new ProcessStartingState(_stateManager);
+            StateManager = new StateManager();
+            StateManager.Starting = new ProcessStartingState(StateManager);
 
             Options = options ?? throw new ArgumentNullException(nameof(options));
 
@@ -33,11 +36,17 @@ namespace PuppeteerSharp
                 EnableRaisingEvents = true,
             };
             Process.StartInfo.UseShellExecute = false;
+            Process.StartInfo.CreateNoWindow = true;
             Process.StartInfo.FileName = executable;
             Process.StartInfo.RedirectStandardError = true;
+            ExecutablePath = executable;
 
             SetEnvVariables(Process.StartInfo.Environment, options.Env, Environment.GetEnvironmentVariables());
 
+            // Always capture stderr so launch diagnostics (ProcessSingleton, Missing X
+            // server, etc.) are available even when Pipe=true, matching upstream
+            // browserProcess.getRecentLogs().
+            Process.ErrorDataReceived += OnErrorDataReceived;
             if (options.DumpIO)
             {
                 Process.ErrorDataReceived += (_, e) => Console.Error.WriteLine(e.Data);
@@ -67,12 +76,19 @@ namespace PuppeteerSharp
         /// <summary>
         /// Indicates whether Base process is exiting.
         /// </summary>
-        public bool IsExiting => _stateManager.CurrentState.IsExiting;
+        public bool IsExiting => StateManager.CurrentState.IsExiting;
 
         /// <summary>
         /// Indicates whether Base process has exited.
         /// </summary>
-        public bool HasExited => _stateManager.CurrentState.IsExited;
+        public bool HasExited => StateManager.CurrentState.IsExited;
+
+        /// <summary>
+        /// Gets the browser executable path used to launch the process.
+        /// </summary>
+        internal string ExecutablePath { get; }
+
+        internal StateManager StateManager { get; }
 
         internal TaskCompletionSource<bool> ExitCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -83,15 +99,14 @@ namespace PuppeteerSharp
         internal TempDirectory TempUserDataDir { get; init; }
 
         /// <summary>
-        /// Gets Base process current state.
+        /// Gets the pipe transport when pipe mode is enabled.
         /// </summary>
-        internal State CurrentState => _stateManager.CurrentState;
+        internal virtual PipeTransport PipeTransport => null;
 
         /// <summary>
-        /// Default build.
+        /// Gets Base process current state.
         /// </summary>
-        /// <returns>A tasks that resolves when the build is obtained.</returns>
-        public abstract Task<string> GetDefaultBuildIdAsync();
+        internal State CurrentState => StateManager.CurrentState;
 
         /// <inheritdoc />
         public void Dispose()
@@ -104,7 +119,7 @@ namespace PuppeteerSharp
         /// Asynchronously starts Base process.
         /// </summary>
         /// <returns>Task which resolves when after start process begins.</returns>
-        public Task StartAsync() => _stateManager.CurrentState.StartAsync(this);
+        public Task StartAsync() => StateManager.CurrentState.StartAsync(this);
 
         /// <summary>
         /// Asynchronously waits for graceful Base process exit within a given timeout period.
@@ -113,14 +128,14 @@ namespace PuppeteerSharp
         /// <param name="timeout">The maximum waiting time for a graceful process exit.</param>
         /// <returns>Task which resolves when the process is exited or killed.</returns>
         public Task EnsureExitAsync(TimeSpan? timeout) => timeout.HasValue
-            ? _stateManager.CurrentState.ExitAsync(this, timeout.Value)
-            : _stateManager.CurrentState.KillAsync(this);
+            ? StateManager.CurrentState.ExitAsync(this, timeout.Value)
+            : StateManager.CurrentState.KillAsync(this);
 
         /// <summary>
         /// Asynchronously kills Base process.
         /// </summary>
         /// <returns>Task which resolves when the process is killed.</returns>
-        public Task KillAsync() => _stateManager.CurrentState.KillAsync(this);
+        public Task KillAsync() => StateManager.CurrentState.KillAsync(this);
 
         /// <summary>
         /// Waits for Base process exit within a given timeout.
@@ -145,6 +160,23 @@ namespace PuppeteerSharp
             await ExitCompletionSource.Task.ConfigureAwait(false);
             return true;
         }
+
+        /// <summary>
+        /// Deletes the temporary user data directory if one was created for this launch.
+        /// Cleanup errors are swallowed so they cannot become uncaught exceptions.
+        /// Also unregisters any process-exit cleanup fallback.
+        /// </summary>
+        /// <returns>A task that completes when cleanup finishes.</returns>
+        internal Task CleanTempUserDataDirAsync()
+            => TempUserDataDir is { } tempUserDataDir
+                ? tempUserDataDir.DeleteAsync()
+                : Task.CompletedTask;
+
+        /// <summary>
+        /// Recent stderr lines from the browser process, used for launch diagnostics.
+        /// </summary>
+        /// <returns>A snapshot of the most recent stderr lines.</returns>
+        internal string GetRecentLogs() => string.Join("\n", _recentLogs);
 
         /// <summary>
         /// Cleans up temporary user data directory.
@@ -201,6 +233,19 @@ namespace PuppeteerSharp
         /// Disposes Base process and any temporary user directory.
         /// </summary>
         /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing) => _stateManager.CurrentState.Dispose(this);
+        protected virtual void Dispose(bool disposing) => StateManager.CurrentState.Dispose(this);
+
+        private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data == null)
+            {
+                return;
+            }
+
+            _recentLogs.Enqueue(e.Data);
+            while (_recentLogs.Count > MaxRecentLogLines && _recentLogs.TryDequeue(out _))
+            {
+            }
+        }
     }
 }

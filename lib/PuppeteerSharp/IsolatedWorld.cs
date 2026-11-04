@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -16,16 +17,21 @@ namespace PuppeteerSharp
     /// </summary>
     /// <param name="context">Execution context.</param>
     /// <returns>Resolved argument.</returns>
-    public delegate Task<object> LazyArg(ExecutionContext context);
+    public delegate Task<object> LazyArg(IPuppeteerUtilWrapper context);
 
     internal class IsolatedWorld : Realm, IDisposable, IAsyncDisposable
     {
+        internal const string MainWorldId = "__main_world__";
+        internal const string PuppeteerWorldId = "__puppeteer_utility_world__";
+
         private readonly ILogger _logger;
         private readonly List<string> _contextBindings = new();
         private readonly TaskQueue _bindingQueue = new();
         private bool _detached;
         private TaskCompletionSource<ExecutionContext> _contextResolveTaskWrapper = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private ExecutionContext _context;
+        private string _worldId;
+        private string _origin;
 
         public IsolatedWorld(
             Frame frame,
@@ -36,11 +42,17 @@ namespace PuppeteerSharp
             Frame = frame;
             Worker = worker;
             IsMainWorld = isMainWorld;
-            _logger = Client.Connection.LoggerFactory.CreateLogger<IsolatedWorld>();
+            _worldId = isMainWorld ? MainWorldId : PuppeteerWorldId;
+            _logger = Client.LoggerFactory.CreateLogger<IsolatedWorld>();
 
             _detached = false;
             FrameUpdated();
         }
+
+        internal event EventHandler ContextCleared;
+
+        /// <inheritdoc/>
+        public override string Origin => _origin;
 
         /// <summary>
         /// This property is not upstream. It's helpful for debugging.
@@ -49,7 +61,9 @@ namespace PuppeteerSharp
 
         internal Frame Frame { get; }
 
-        internal CDPSession Client => Frame?.Client ?? Worker?.Client;
+        internal ICDPSession Client => Frame?.Client ?? Worker?.Client;
+
+        internal CdpCDPSession CdpCDPSession => (CdpCDPSession)Client;
 
         internal bool HasContext => _contextResolveTaskWrapper?.Task.IsCompleted == true;
 
@@ -62,19 +76,46 @@ namespace PuppeteerSharp
         public void Dispose()
         {
             _bindingQueue.Dispose();
-            _context?.Dispose();
+            var context = _context;
+            _context = null;
+            context?.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
             await _bindingQueue.DisposeAsync().ConfigureAwait(false);
-            if (_context != null)
+            var context = _context;
+            _context = null;
+            if (context != null)
             {
-                await _context.DisposeAsync().ConfigureAwait(false);
+                await context.DisposeAsync().ConfigureAwait(false);
             }
         }
 
+        /// <inheritdoc/>
+        public override async Task<Extension> ExtensionAsync()
+        {
+            if (Worker != null)
+            {
+                throw new PuppeteerException("Unable to get extension from a worker Realm.");
+            }
+
+            if (_worldId == MainWorldId || _worldId == PuppeteerWorldId)
+            {
+                return null;
+            }
+
+            // _worldId is the extension ID for extension worlds
+            var extensions = await ((IPage)((CdpFrame)Frame).FrameManager.Page).Browser.ExtensionsAsync().ConfigureAwait(false);
+            extensions.TryGetValue(_worldId, out var extension);
+            return extension;
+        }
+
         internal void FrameUpdated() => Client.MessageReceived += Client_MessageReceived;
+
+        internal void SetOrigin(string origin) => _origin = origin;
+
+        internal void SetWorldId(string worldId) => _worldId = worldId;
 
         internal async Task AddBindingToContextAsync(ExecutionContext context, string name)
         {
@@ -94,7 +135,7 @@ namespace PuppeteerSharp
                         "Runtime.addBinding",
                         new RuntimeAddBindingRequest
                         {
-                            Name = name,
+                            Name = BindingUtils.CdpBindingPrefix + name,
                             ExecutionContextName = !string.IsNullOrEmpty(context.ContextName) ? context.ContextName : null,
                             ExecutionContextId = string.IsNullOrEmpty(context.ContextName) ? context.ContextId : null,
                         }).ConfigureAwait(false);
@@ -130,12 +171,13 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (ICdpHandle)handle;
+            if (((JSHandle)cdpHandle).Realm == this)
             {
                 return handle;
             }
 
-            if (handle.RemoteObject.ObjectId == null)
+            if (cdpHandle.RemoteObject.ObjectId == null)
             {
                 return handle;
             }
@@ -144,7 +186,7 @@ namespace PuppeteerSharp
                 "DOM.describeNode",
                 new DomDescribeNodeRequest
                 {
-                    ObjectId = handle.RemoteObject.ObjectId,
+                    ObjectId = cdpHandle.RemoteObject.ObjectId,
                 }).ConfigureAwait(false);
 
             var newHandle = await AdoptBackendNodeAsync(info.Node.BackendNodeId).ConfigureAwait(false);
@@ -154,14 +196,15 @@ namespace PuppeteerSharp
 
         internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
         {
-            if ((handle as JSHandle)?.Realm == this)
+            var cdpHandle = (ICdpHandle)handle;
+            if (((JSHandle)cdpHandle).Realm == this)
             {
                 return handle;
             }
 
             var nodeInfo = await Client.SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest
             {
-                ObjectId = ((JSHandle)handle).RemoteObject.ObjectId,
+                ObjectId = cdpHandle.RemoteObject.ObjectId,
             }).ConfigureAwait(false);
             return await AdoptBackendNodeAsync(nodeInfo.Node.BackendNodeId).ConfigureAwait(false);
         }
@@ -173,14 +216,16 @@ namespace PuppeteerSharp
             TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
         }
 
-        internal Task<ExecutionContext> GetExecutionContextAsync()
+        internal async Task<ExecutionContext> GetExecutionContextAsync()
         {
             if (_detached)
             {
                 throw new PuppeteerException($"Execution Context is not available in detached frame \"{Frame.Url}\" (are you trying to evaluate?)");
             }
 
-            return _contextResolveTaskWrapper.Task;
+            return await _contextResolveTaskWrapper.Task
+                .WithTimeout(TimeoutSettings.Timeout)
+                .ConfigureAwait(false);
         }
 
         internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
@@ -201,10 +246,10 @@ namespace PuppeteerSharp
             return await context.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateExpressionAsync(string script)
+        internal override async Task EvaluateExpressionAsync(string script)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
+            await context.EvaluateExpressionAsync(script).ConfigureAwait(false);
         }
 
         internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -213,10 +258,10 @@ namespace PuppeteerSharp
             return await context.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
         }
 
-        internal override async Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
+        internal override async Task EvaluateFunctionAsync(string script, params object[] args)
         {
             var context = await GetExecutionContextAsync().ConfigureAwait(false);
-            return await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+            await context.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
         }
 
         internal void ClearContext()
@@ -226,6 +271,7 @@ namespace PuppeteerSharp
             _context?.Dispose();
             _context = null;
             Frame?.ClearDocumentHandle();
+            ContextCleared?.Invoke(this, EventArgs.Empty);
         }
 
         internal void SetNewContext(
@@ -248,6 +294,7 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(context));
             }
 
+            _context = context;
             _contextBindings.Clear();
             _contextResolveTaskWrapper.TrySetResult(context);
             TaskManager.RerunAll();
@@ -274,6 +321,11 @@ namespace PuppeteerSharp
 
         private async Task OnBindingCalledAsync(BindingCalledResponse e)
         {
+            if (e.ExecutionContextId != _context?.ContextId)
+            {
+                return;
+            }
+
             var payload = e.BindingPayload;
 
             if (payload.Type != "internal")
@@ -289,11 +341,6 @@ namespace PuppeteerSharp
             try
             {
                 var context = await GetExecutionContextAsync().ConfigureAwait(false);
-
-                if (e.ExecutionContextId != context.ContextId)
-                {
-                    return;
-                }
 
                 if (Bindings.TryGetValue(payload.Name, out var binding))
                 {

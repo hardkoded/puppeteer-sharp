@@ -1,0 +1,897 @@
+// * MIT License
+//  *
+//  * Copyright (c) Darío Kondratiuk
+//  *
+//  * Permission is hereby granted, free of charge, to any person obtaining a copy
+//  * of this software and associated documentation files (the "Software"), to deal
+//  * in the Software without restriction, including without limitation the rights
+//  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  * copies of the Software, and to permit persons to whom the Software is
+//  * furnished to do so, subject to the following conditions:
+//  *
+//  * The above copyright notice and this permission notice shall be included in all
+//  * copies or substantial portions of the Software.
+//  *
+//  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  * SOFTWARE.
+
+#if !CDP_ONLY
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using PuppeteerSharp.Bidi.Core;
+using WebDriverBiDi.Script;
+
+namespace PuppeteerSharp.Bidi;
+
+internal class BidiRealm(Core.Realm realm, TimeoutSettings timeoutSettings, ILogger logger) : Realm(timeoutSettings), IDisposable, IPuppeteerUtilWrapper
+{
+    private static readonly Regex _sourceUrlRegex = new(@"^[\x20\t]*//([@#])\s*sourceURL=\s{0,10}(\S*?)\s{0,10}$", RegexOptions.Multiline);
+    private readonly ILogger _logger = logger ?? NullLogger.Instance;
+
+    public bool Disposed { get; private set; }
+
+    public JSHandle InternalPuppeteerUtilHandle { get; set; }
+
+    /// <inheritdoc/>
+    public override string Origin => throw new NotSupportedException("Origin is not supported in WebDriver BiDi.");
+
+    internal override IEnvironment Environment { get; }
+
+    /// <inheritdoc/>
+    public override Task<Extension> ExtensionAsync()
+        => throw new NotSupportedException("Extension is not supported in WebDriver BiDi.");
+
+    public void Dispose()
+    {
+        Disposed = true;
+        TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
+    }
+
+    public virtual Task<IJSHandle> GetPuppeteerUtilAsync() => throw new NotImplementedException();
+
+    public async Task DestroyHandlesAsync(params BidiJSHandle[] handles)
+    {
+        if (Disposed)
+        {
+            return;
+        }
+
+        var handleIds = handles
+            .Select((handle) => handle.Id)
+            .Where(id => !string.IsNullOrEmpty(id)).ToArray();
+
+        if (handleIds.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await realm.DisownAsync(handleIds).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to destroy BiDi handles");
+        }
+    }
+
+    internal override async Task<IJSHandle> AdoptHandleAsync(IJSHandle handle)
+    {
+        try
+        {
+            return await EvaluateFunctionHandleAsync(
+                @"node => {
+                return node;
+            }",
+                handle).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to adopt handle");
+            throw;
+        }
+    }
+
+    internal override Task<IElementHandle> AdoptBackendNodeAsync(object backendNodeId) => throw new System.NotImplementedException();
+
+    internal override async Task<IJSHandle> TransferHandleAsync(IJSHandle handle)
+    {
+        if (handle is JSHandle handleImpl && handleImpl.Realm == this)
+        {
+            return handle;
+        }
+
+        var transferredHandle = AdoptHandleAsync(handle);
+        await handle.DisposeAsync().ConfigureAwait(false);
+        return await transferredHandle.ConfigureAwait(false);
+    }
+
+    internal override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+        => CreateHandleAsync(await EvaluateAsync(false, true, script).ConfigureAwait(false));
+
+    internal override async Task<IJSHandle> EvaluateFunctionHandleAsync(string script, params object[] args)
+        => CreateHandleAsync(await EvaluateAsync(false, false, script, args).ConfigureAwait(false));
+
+    internal override async Task<T> EvaluateExpressionAsync<T>(string script)
+        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, true, script).ConfigureAwait(false)).Result));
+
+    internal override async Task EvaluateExpressionAsync(string script)
+        => await EvaluateAsync(true, true, script).ConfigureAwait(false);
+
+    internal override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+        => DeserializeResult<T>(GetValueObject((await EvaluateAsync(true, false, script, args).ConfigureAwait(false)).Result));
+
+    internal override async Task EvaluateFunctionAsync(string script, params object[] args)
+    {
+        await EvaluateAsync(true, false, script, args).ConfigureAwait(false);
+    }
+
+    internal IJSHandle CreateHandle(RemoteValue remoteValue)
+    {
+        if (
+            remoteValue.Type is RemoteValueType.Node or RemoteValueType.Window &&
+            this is BidiFrameRealm)
+        {
+            return BidiElementHandle.From(remoteValue, this);
+        }
+
+        return BidiJSHandle.From(remoteValue, this);
+    }
+
+    protected virtual void ThrowIfDetached()
+    {
+        // Base implementation does nothing
+        // BidiFrameRealm will override this to check if frame is detached
+    }
+
+    protected virtual void Initialize()
+    {
+        realm.Destroyed += (_, e) =>
+        {
+            // Always use "frame got detached" message for consistency with upstream
+            // The e.Reason might be "Browsing context already closed." or similar
+            TaskManager.TerminateAll(new PuppeteerException("waitForFunction failed: frame got detached."));
+            Dispose();
+        };
+
+        realm.Updated += (_, _) =>
+        {
+            InternalPuppeteerUtilHandle = null;
+            TaskManager.RerunAll();
+        };
+    }
+
+    private static bool IsAnonymousType(Type type)
+    {
+        // Anonymous types in C# have specific characteristics:
+        // - They are generic types
+        // - They are sealed
+        // - Their name contains "AnonymousType"
+        // - They have CompilerGeneratedAttribute
+#if NET8_0_OR_GREATER
+        var nameContainsAnonymousType = type.Name.Contains("AnonymousType", StringComparison.Ordinal);
+#else
+        var nameContainsAnonymousType = type.Name.IndexOf("AnonymousType", StringComparison.Ordinal) >= 0;
+#endif
+        return type.IsGenericType &&
+               type.IsSealed &&
+               nameContainsAnonymousType &&
+               type.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length > 0;
+    }
+
+    /// <summary>
+    /// Checks if a RemoteValue represents a null or undefined JavaScript value.
+    /// These types have HasValue=false but are valid values, not circular references.
+    /// </summary>
+    private static bool IsNullOrUndefinedType(RemoteValue remoteValue)
+        => remoteValue.Type is RemoteValueType.Null or RemoteValueType.Undefined;
+
+    /// <summary>
+    /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be deserialized
+    /// as an empty object rather than treated as a circular reference or null.
+    /// Matches upstream Puppeteer's Deserializer behavior where promises return {}.
+    /// </summary>
+    private static bool IsEmptyObjectType(RemoteValue remoteValue)
+        => remoteValue.Type is RemoteValueType.Promise;
+
+    /// <summary>
+    /// Checks if a RemoteValue represents a non-serializable JavaScript type that should be treated as null/undefined.
+    /// Symbols, functions, weakmaps, weaksets, errors, proxies, and other non-serializable types
+    /// should return null rather than being treated as circular references.
+    /// </summary>
+    private static bool IsNonSerializableType(RemoteValue remoteValue)
+        => remoteValue.Type is RemoteValueType.Symbol or RemoteValueType.Function or RemoteValueType.WeakMap or RemoteValueType.WeakSet or RemoteValueType.Error or RemoteValueType.Proxy
+            or RemoteValueType.TypedArray or RemoteValueType.ArrayBuffer or RemoteValueType.Generator or RemoteValueType.Window;
+
+    private static object GetValueObject(RemoteValue remoteValue) => remoteValue switch
+    {
+        ValueHoldingRemoteValue vh => vh.ValueObject,
+        CollectionRemoteValue crv => crv.Value,
+        KeyValuePairCollectionRemoteValue kvp => kvp.Value,
+        _ => null,
+    };
+
+    private static string ToCamelCase(string name)
+    {
+        if (string.IsNullOrEmpty(name) || char.IsLower(name[0]))
+        {
+            return name;
+        }
+
+        return char.ToLowerInvariant(name[0]) + name.Substring(1);
+    }
+
+    private IJSHandle CreateHandleAsync(EvaluateResultSuccess evaluateResult)
+    {
+        var result = evaluateResult.Result;
+
+        if (
+            result.Type is RemoteValueType.Node or RemoteValueType.Window &&
+            this is BidiFrameRealm)
+        {
+            return BidiElementHandle.From(result, this);
+        }
+
+        return BidiJSHandle.From(result, this);
+    }
+
+    private async Task<EvaluateResultSuccess> EvaluateAsync(bool returnByValue, bool isExpression, string script, params object[] args)
+    {
+        ThrowIfDetached();
+        var sourceUrlComment = ExecutionUtils.GetSourceUrlComment();
+        var resultOwnership = returnByValue
+            ? ResultOwnership.None
+            : ResultOwnership.Root;
+
+        var serializationOptions = new SerializationOptions();
+
+        if (!returnByValue)
+        {
+            serializationOptions.MaxObjectDepth = 0;
+            serializationOptions.MaxDomDepth = 0;
+        }
+
+        var functionDeclaration = _sourceUrlRegex.IsMatch(script)
+            ? script
+            : $"{script}\n{sourceUrlComment}\n";
+
+        var options = new CallFunctionParameters();
+
+        options.Arguments.AddRange(
+            await Task.WhenAll(args.Select(FormatArgumentAsync).ToArray()).ConfigureAwait(false));
+        options.ResultOwnership = resultOwnership;
+        options.UserActivation = true;
+        options.SerializationOptions = serializationOptions;
+
+        EvaluateResult result;
+
+        try
+        {
+            if (isExpression)
+            {
+                result = await realm.EvaluateAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
+            else
+            {
+                result = await realm.CallFunctionAsync(
+                    functionDeclaration,
+                    true,
+                    options).ConfigureAwait(false);
+            }
+        }
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("no such frame") || ex.Message.Contains("DiscardedBrowsingContextError"))
+        {
+            // Check if the frame is actually detached (page closed) vs navigation/reload
+            if (this is BidiFrameRealm frameRealm && frameRealm.Frame.Detached)
+            {
+                throw new TargetClosedException($"Protocol error ({ex.Message})", "Browsing context closed");
+            }
+
+            throw new EvaluationFailedException($"Protocol error ({ex.Message})", ex);
+        }
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("no such handle"))
+        {
+            throw new PuppeteerException("Could not serialize referenced object", ex);
+        }
+        catch (WebDriverBiDi.WebDriverBiDiException ex)
+            when (ex.Message.Contains("are both null") || ex.Message.Contains("was canceled before a result was received"))
+        {
+            // This happens when the browser closes while a command is pending
+            // The command result is null because the connection closed
+            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
+        }
+        catch (WebDriverBiDi.WebDriverBiDiConnectionException ex)
+        {
+            throw new TargetClosedException($"Protocol error ({ex.Message})", "Browser disconnected");
+        }
+
+        if (result.ResultType == EvaluateResultType.Exception)
+        {
+            // TODO: Improve text details
+            throw new EvaluationFailedException(((EvaluateResultException)result).ExceptionDetails.Text);
+        }
+
+        return result as EvaluateResultSuccess;
+    }
+
+    private T DeserializeResult<T>(object result)
+    {
+        if (result is null)
+        {
+            return default;
+        }
+
+        if (typeof(T) == typeof(object))
+        {
+            // When requesting object type, we need to deserialize complex types properly
+            return (T)DeserializeToObject(result);
+        }
+
+        // Handle JsonElement? - return default since BiDi doesn't use JsonElement
+        if (typeof(T) == typeof(JsonElement?))
+        {
+            return default;
+        }
+
+        // Convert known types first
+        if (typeof(T) == typeof(int))
+        {
+            return (T)(object)Convert.ToInt32(result, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(double))
+        {
+            return (T)(object)Convert.ToDouble(result, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(string))
+        {
+            return (T)result;
+        }
+
+        if (typeof(T) == typeof(bool))
+        {
+            return (T)(object)Convert.ToBoolean(result, CultureInfo.InvariantCulture);
+        }
+
+        if (typeof(T) == typeof(decimal))
+        {
+            return (T)(object)Convert.ToDecimal(result, CultureInfo.InvariantCulture);
+        }
+
+        // Handle JsonElement - deserialize the result to plain object first, then serialize to JSON
+        if (typeof(T) == typeof(JsonElement))
+        {
+            var deserializedResult = DeserializeToObject(result);
+            var json = JsonSerializer.Serialize(deserializedResult);
+            using var document = JsonDocument.Parse(json);
+            return (T)(object)document.RootElement.Clone();
+        }
+
+        if (result is RemoteValueDictionary remoteValueDictionary)
+        {
+            return DeserializeRemoteValueDictionary<T>(remoteValueDictionary);
+        }
+
+        if (typeof(T).IsArray)
+        {
+            // Get the element type of the array
+            var elementType = typeof(T).GetElementType();
+
+            if (elementType != null && result is IEnumerable enumerable)
+            {
+                // Create a list of the element type
+                var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+
+                // Iterate over the input and add converted items to the list
+                foreach (var item in enumerable)
+                {
+                    var itemToSerialize = item is RemoteValue rv ? GetValueObject(rv) ?? item : item;
+
+                    // Maybe there is a better way to do this.
+                    var deserializedItem = typeof(BidiRealm)
+                        .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                        ?.MakeGenericMethod(elementType)
+                        .Invoke(this, [itemToSerialize]);
+
+                    list.Add(deserializedItem);
+                }
+
+                // Convert the list to an array
+                return (T)list.GetType().GetMethod("ToArray")!.Invoke(list, null)!;
+            }
+        }
+
+        return (T)result;
+    }
+
+    private T DeserializeRemoteValueDictionary<T>(RemoteValueDictionary remoteValueDictionary)
+    {
+        var type = typeof(T);
+
+        // Handle nullable value types (e.g., Point?)
+        var underlyingType = Nullable.GetUnderlyingType(type);
+        if (underlyingType != null)
+        {
+            // Recursively deserialize to the underlying type and convert back to nullable
+            var deserializedValue = typeof(BidiRealm)
+                .GetMethod(nameof(DeserializeRemoteValueDictionary), BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.MakeGenericMethod(underlyingType)
+                .Invoke(this, [remoteValueDictionary]);
+            return (T)deserializedValue;
+        }
+
+        // Handle Dictionary<string, object> specially - add entries instead of setting properties
+        if (type == typeof(Dictionary<string, object>))
+        {
+            var dict = new Dictionary<string, object>();
+            foreach (var entry in remoteValueDictionary)
+            {
+                var key = entry.Key?.ToString();
+                if (string.IsNullOrEmpty(key))
+                {
+                    continue;
+                }
+
+                var remoteValue = entry.Value;
+
+                if (IsNullOrUndefinedType(remoteValue))
+                {
+                    dict[key] = null;
+                }
+                else
+                {
+                    var value = GetValueObject(remoteValue);
+                    dict[key] = value != null ? DeserializeResult<object>(value) : null;
+                }
+            }
+
+            return (T)(object)dict;
+        }
+
+        // Create an instance of T
+        var instance = Activator.CreateInstance<T>();
+
+        // Box the instance if it's a value type (struct) to properly handle property setting
+        object boxedInstance = instance;
+
+        // Iterate through the dictionary and populate properties
+        foreach (var entry in remoteValueDictionary)
+        {
+            var propertyName = entry.Key?.ToString();
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                continue;
+            }
+
+            var remoteValue = entry.Value;
+
+            // Find the property on the type (case-insensitive)
+            var property = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            if (property != null && property.CanWrite)
+            {
+                if (IsNullOrUndefinedType(remoteValue))
+                {
+                    property.SetValue(boxedInstance, null);
+                }
+                else
+                {
+                    var value = GetValueObject(remoteValue);
+                    if (value == null)
+                    {
+                        property.SetValue(boxedInstance, null);
+                    }
+                    else
+                    {
+                        // Recursively deserialize the value to the property type
+                        var deserializedValue = typeof(BidiRealm)
+                            .GetMethod(nameof(DeserializeResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                            ?.MakeGenericMethod(property.PropertyType)
+                            .Invoke(this, [value]);
+
+                        property.SetValue(boxedInstance, deserializedValue);
+                    }
+                }
+            }
+        }
+
+        // Unbox back to T
+        return (T)boxedInstance;
+    }
+
+    /// <summary>
+    /// Deserializes a BiDi result value to a plain .NET object.
+    /// Handles RemoteValueDictionary, RemoteValue, and primitive types.
+    /// Circular references within the object are set to null for the specific property,
+    /// matching upstream BiDi behavior where the rest of the object is still accessible.
+    /// </summary>
+    private object DeserializeToObject(object value)
+    {
+        var hasCircularRef = false;
+        return DeserializeToObjectInternal(value, ref hasCircularRef);
+    }
+
+    private object DeserializeToObjectInternal(object value, ref bool hasCircularRef)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        // Handle RemoteValueDictionary (represents objects/maps)
+        if (value is RemoteValueDictionary dict)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (var entry in dict)
+            {
+                var key = entry.Key?.ToString();
+                if (string.IsNullOrEmpty(key))
+                {
+                    continue;
+                }
+
+                var remoteValue = entry.Value;
+
+                if (IsNullOrUndefinedType(remoteValue))
+                {
+                    result[key] = null;
+                }
+                else if (IsEmptyObjectType(remoteValue))
+                {
+                    result[key] = new Dictionary<string, object>();
+                }
+                else if (IsNonSerializableType(remoteValue))
+                {
+                    // Non-serializable types (symbol, function, etc.) are treated as null
+                    result[key] = null;
+                }
+                else
+                {
+                    var val = GetValueObject(remoteValue);
+                    if (val == null)
+                    {
+                        hasCircularRef = true;
+                        result[key] = null;
+                    }
+                    else
+                    {
+                        result[key] = DeserializeToObjectInternal(val, ref hasCircularRef);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Handle RemoteValue directly (for nested values)
+        if (value is RemoteValue remoteVal)
+        {
+            if (IsNullOrUndefinedType(remoteVal))
+            {
+                return null;
+            }
+
+            if (IsEmptyObjectType(remoteVal))
+            {
+                return new Dictionary<string, object>();
+            }
+
+            if (IsNonSerializableType(remoteVal))
+            {
+                // Non-serializable types (symbol, function, etc.) are treated as null
+                return null;
+            }
+
+            var nestedVal = GetValueObject(remoteVal);
+            if (nestedVal == null)
+            {
+                hasCircularRef = true;
+                return null;
+            }
+
+            return DeserializeToObjectInternal(nestedVal, ref hasCircularRef);
+        }
+
+        // Handle IEnumerable for arrays (but not strings)
+        if (value is IEnumerable enumerable && value is not string)
+        {
+            var list = new List<object>();
+            foreach (var item in enumerable)
+            {
+                if (item is RemoteValue rv)
+                {
+                    if (IsNullOrUndefinedType(rv))
+                    {
+                        list.Add(null);
+                    }
+                    else if (IsEmptyObjectType(rv))
+                    {
+                        list.Add(new Dictionary<string, object>());
+                    }
+                    else if (IsNonSerializableType(rv))
+                    {
+                        // Non-serializable types (symbol, function, etc.) are treated as null
+                        list.Add(null);
+                    }
+                    else
+                    {
+                        var rvVal = GetValueObject(rv);
+                        if (rvVal == null)
+                        {
+                            hasCircularRef = true;
+                            list.Add(null);
+                        }
+                        else
+                        {
+                            list.Add(DeserializeToObjectInternal(rvVal, ref hasCircularRef));
+                        }
+                    }
+                }
+                else
+                {
+                    list.Add(DeserializeToObjectInternal(item, ref hasCircularRef));
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        // Handle RegularExpressionValue - deserialize to a dictionary representation
+        // that can be serialized to JSON as an object, matching upstream behavior
+        if (value is RegularExpressionValue regExpValue)
+        {
+            var regExpDict = new Dictionary<string, object>();
+            regExpDict["pattern"] = regExpValue.Pattern;
+            if (regExpValue.Flags != null)
+            {
+                regExpDict["flags"] = regExpValue.Flags;
+            }
+
+            return regExpDict;
+        }
+
+        // Check for non-serializable BiDi types like WindowProxyProperties
+        // These types should be treated as non-serializable and return null
+        // to match the behavior of CDP (which returns null for window objects)
+        var valueType = value.GetType();
+        if (valueType.Namespace?.StartsWith("WebDriverBiDi", StringComparison.Ordinal) == true)
+        {
+            return null;
+        }
+
+        // For primitive types (string, numbers, bool, etc.), return as-is
+        return value;
+    }
+
+    private async Task<LocalValue> FormatArgumentAsync(object arg)
+    {
+        if (arg is TaskCompletionSource<object> tcs)
+        {
+            arg = await tcs.Task.ConfigureAwait(false);
+        }
+
+        if (arg is LazyArg lazyArg)
+        {
+            arg = await lazyArg(this).ConfigureAwait(false);
+        }
+
+        if (arg is null)
+        {
+            return LocalValue.Null;
+        }
+
+        switch (arg)
+        {
+            case BigInteger big:
+                return LocalValue.BigInt(big);
+
+            case int integer when integer == -0:
+                return LocalValue.NegativeZero;
+
+            case decimal decimalValue:
+                return LocalValue.Number(decimalValue);
+
+            case double d:
+                if (double.IsPositiveInfinity(d))
+                {
+                    return LocalValue.Infinity;
+                }
+
+                if (double.IsNegativeInfinity(d))
+                {
+                    return LocalValue.NegativeInfinity;
+                }
+
+                if (double.IsNaN(d))
+                {
+                    return LocalValue.NaN;
+                }
+
+                break;
+            case string stringValue:
+                return LocalValue.String(stringValue);
+            case int intValue:
+                return LocalValue.Number(intValue);
+            case bool boolValue:
+                return LocalValue.Boolean(boolValue);
+            case long longValue:
+                return LocalValue.Number(longValue);
+            case float floatValue:
+                return LocalValue.Number(floatValue);
+            case IDictionary dictionary:
+                return await SerializeDictionaryAsync(dictionary).ConfigureAwait(false);
+            case IEnumerable enumerable:
+                var list = new List<LocalValue>();
+                foreach (var item in enumerable)
+                {
+                    list.Add(await FormatArgumentAsync(item).ConfigureAwait(false));
+                }
+
+                return LocalValue.Array(list);
+            case BidiJSHandle objectHandle:
+                ValidateHandle(objectHandle);
+
+                // If the handle doesn't have a valid handle ID (e.g., from console log args),
+                // serialize its value directly instead of using it as a remote reference
+                if (string.IsNullOrEmpty(objectHandle.Id))
+                {
+                    return objectHandle.RemoteValue.ToLocalValue();
+                }
+
+                return ((IObjectReferenceRemoteValue)objectHandle.RemoteValue).ToRemoteObjectReference();
+            case BidiElementHandle elementHandle:
+                ValidateHandle(elementHandle.BidiJSHandle);
+                if (string.IsNullOrEmpty(elementHandle.BidiJSHandle.Id))
+                {
+                    return elementHandle.Value.ToLocalValue();
+                }
+
+                return ((IObjectReferenceRemoteValue)elementHandle.Value).ToRemoteObjectReference();
+        }
+
+        // Handle Regex as BiDi RegExp
+        if (arg is Regex regex)
+        {
+            var flags = string.Empty;
+            if (regex.Options.HasFlag(RegexOptions.IgnoreCase))
+            {
+                flags += "i";
+            }
+
+            if (regex.Options.HasFlag(RegexOptions.Multiline))
+            {
+                flags += "m";
+            }
+
+            if (regex.Options.HasFlag(RegexOptions.Singleline))
+            {
+                flags += "s";
+            }
+
+            return LocalValue.RegExp(regex.ToString(), flags.Length > 0 ? flags : null);
+        }
+
+        // Handle plain objects (anonymous types, POCOs, etc.) by serializing them as BiDi objects
+        if (arg.GetType().IsClass || IsAnonymousType(arg.GetType()))
+        {
+            return SerializePlainObject(arg);
+        }
+
+        return null;
+    }
+
+    private void ValidateHandle(BidiJSHandle handle)
+    {
+        if (handle.Realm != this)
+        {
+            if (handle.Realm is not BidiFrameRealm || this is not BidiFrameRealm)
+            {
+                throw new PuppeteerException(
+                    "Trying to evaluate JSHandle from different global types. Usually this means you're using a handle from a worker in a page or vice versa.");
+            }
+
+            if (handle.Realm.Environment != Environment)
+            {
+                throw new PuppeteerException(
+                    "JSHandles can be evaluated only in the context they were created!");
+            }
+        }
+
+        if (handle.Disposed)
+        {
+            throw new PuppeteerException("JSHandle is disposed!");
+        }
+    }
+
+    private LocalValue SerializePlainObject(object arg, List<object> seen = null)
+    {
+        seen ??= new List<object>();
+
+        foreach (var item in seen)
+        {
+            if (ReferenceEquals(item, arg))
+            {
+                throw new PuppeteerException("Recursive objects are not allowed.");
+            }
+        }
+
+        seen.Add(arg);
+
+        var dict = new Dictionary<string, LocalValue>();
+        var properties = arg.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var prop in properties)
+        {
+            var value = prop.GetValue(arg);
+            var key = ToCamelCase(prop.Name);
+            dict[key] = SerializeValue(value, seen);
+        }
+
+        return LocalValue.Object(dict);
+    }
+
+    private async Task<LocalValue> SerializeDictionaryAsync(IDictionary dictionary)
+    {
+        var dict = new Dictionary<string, LocalValue>();
+        foreach (DictionaryEntry entry in dictionary)
+        {
+            var key = entry.Key?.ToString();
+            if (key == null)
+            {
+                continue;
+            }
+
+            // Recursively serialize the value using FormatArgumentAsync
+            var serializedValue = await FormatArgumentAsync(entry.Value).ConfigureAwait(false);
+            dict[key] = serializedValue as LocalValue ?? LocalValue.Null;
+        }
+
+        return LocalValue.Object(dict);
+    }
+
+    private LocalValue SerializeValue(object value, List<object> seen = null)
+    {
+        return value switch
+        {
+            null => LocalValue.Null,
+            string s => LocalValue.String(s),
+            bool b => LocalValue.Boolean(b),
+            int i => LocalValue.Number(i),
+            long l => LocalValue.Number(l),
+            float f => LocalValue.Number(f),
+            double d when double.IsPositiveInfinity(d) => LocalValue.Infinity,
+            double d when double.IsNegativeInfinity(d) => LocalValue.NegativeInfinity,
+            double d when double.IsNaN(d) => LocalValue.NaN,
+            double d => LocalValue.Number(d),
+            decimal m => LocalValue.Number(m),
+            BigInteger big => LocalValue.BigInt(big),
+            IJSHandle => throw new PuppeteerException("Unable to make function call. Are you passing a nested JSHandle?"),
+            _ when value.GetType().IsClass || IsAnonymousType(value.GetType()) => SerializePlainObject(value, seen),
+            _ => LocalValue.Null,
+        };
+    }
+}
+
+#endif

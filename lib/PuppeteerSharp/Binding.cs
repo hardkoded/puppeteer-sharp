@@ -3,21 +3,25 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 
 namespace PuppeteerSharp
 {
     internal class Binding
     {
-        public Binding(string name, Delegate fn)
+        public Binding(string name, Delegate fn, string initSource)
         {
             Name = name;
             Function = fn;
+            InitSource = initSource;
         }
 
         public string Name { get; }
 
         public Delegate Function { get; }
+
+        public string InitSource { get; }
 
         internal async Task RunAsync(
             ExecutionContext context,
@@ -51,7 +55,7 @@ namespace PuppeteerSharp
                             // aren't plain objects so add subtypes when the use-case arises.
                             if (int.TryParse(kv.Key, out var index) && args.Length > index)
                             {
-                                switch (handle.RemoteObject.Subtype)
+                                switch (((ICdpHandle)handle).RemoteObject.Subtype)
                                 {
                                     case RemoteObjectSubtype.Node:
                                         args[index] = handle;

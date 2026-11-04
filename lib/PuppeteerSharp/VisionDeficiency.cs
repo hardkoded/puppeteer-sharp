@@ -41,6 +41,12 @@ namespace PuppeteerSharp
         Protanopia,
 
         /// <summary>
+        /// ReducedContrast.
+        /// </summary>
+        [EnumMember(Value = "reducedContrast")]
+        ReducedContrast,
+
+        /// <summary>
         /// Tritanopia.
         /// </summary>
         [EnumMember(Value = "tritanopia")]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
@@ -15,36 +16,56 @@ namespace PuppeteerSharp.PageAccessibility
         private readonly bool _richlyEditable;
         private readonly bool _editable;
         private readonly bool _hidden;
+        private readonly bool _busy;
+        private readonly bool _modal;
+        private readonly bool _hasErrormessage;
+        private readonly bool _hasDetails;
         private readonly string _role;
+        private readonly string _description;
+        private readonly string _roledescription;
+        private readonly string _live;
         private readonly bool _ignored;
+        private readonly Realm _realm;
+        private readonly string _loaderId;
         private bool? _cachedHasFocusableChild;
 
-        private AXNode(AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
+        private AXNode(Realm realm, AccessibilityGetFullAXTreeResponse.AXTreeNode payload)
         {
+            _realm = realm;
+            _loaderId = (realm?.Environment as Frame)?.LoaderId;
             Payload = payload;
 
-            _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
             _role = payload.Role != null ? payload.Role.Value.ToObject<string>() : "Unknown";
             _ignored = payload.Ignored;
+            _name = payload.Name != null ? payload.Name.Value.ToObject<string>() : string.Empty;
+            _description = payload.Description != null ? payload.Description.Value.ToObject<string>() : null;
 
             _richlyEditable = payload.Properties?.FirstOrDefault(p => p.Name == "editable")?.Value.Value.ToObject<string>() == "richtext";
             _editable |= _richlyEditable;
             _hidden = payload.Properties?.FirstOrDefault(p => p.Name == "hidden")?.Value.Value.ToObject<bool>() == true;
             Focusable = payload.Properties?.FirstOrDefault(p => p.Name == "focusable")?.Value.Value.ToObject<bool>() == true;
+            _busy = GetBooleanProperty(payload, "busy");
+            _live = payload.Properties?.FirstOrDefault(p => p.Name == "live")?.Value.Value.ToObject<string>();
+            _modal = GetBooleanProperty(payload, "modal");
+            _roledescription = payload.Properties?.FirstOrDefault(p => p.Name == "roledescription")?.Value.Value.ToObject<string>();
+            _hasErrormessage = payload.Properties?.Any(p => p.Name == "errormessage") == true;
+            _hasDetails = payload.Properties?.Any(p => p.Name == "details") == true;
         }
 
         public List<AXNode> Children { get; } = new();
 
         public bool Focusable { get; set; }
 
+        internal SerializedAXNode IframeSnapshot { get; set; }
+
         internal AccessibilityGetFullAXTreeResponse.AXTreeNode Payload { get; }
 
-        internal static AXNode CreateTree(IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
+        internal static AXNode CreateTree(Realm realm, IEnumerable<AccessibilityGetFullAXTreeResponse.AXTreeNode> payloads)
         {
             var nodeById = new Dictionary<string, AXNode>();
             foreach (var payload in payloads)
             {
-                nodeById[payload.NodeId] = new AXNode(payload);
+                nodeById[payload.NodeId] = new AXNode(realm, payload);
             }
 
             foreach (var node in nodeById.Values)
@@ -111,15 +132,9 @@ namespace PuppeteerSharp.PageAccessibility
                     return true;
             }
 
-            // Here and below: Android heuristics
             if (HasFocusableChild())
             {
                 return false;
-            }
-
-            if (Focusable && !string.IsNullOrEmpty(_name))
-            {
-                return true;
             }
 
             if (_role == "heading" && !string.IsNullOrEmpty(_name))
@@ -161,6 +176,24 @@ namespace PuppeteerSharp.PageAccessibility
             }
         }
 
+        internal bool IsLandmark()
+        {
+            switch (_role)
+            {
+                case "banner":
+                case "complementary":
+                case "contentinfo":
+                case "form":
+                case "main":
+                case "navigation":
+                case "region":
+                case "search":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         internal bool IsInteresting(bool insideControl)
         {
             if (_role == "Ignored" || _hidden || _ignored)
@@ -168,7 +201,19 @@ namespace PuppeteerSharp.PageAccessibility
                 return false;
             }
 
-            if (Focusable || _richlyEditable)
+            if (IsLandmark())
+            {
+                return true;
+            }
+
+            if (Focusable ||
+                _richlyEditable ||
+                _busy ||
+                (_live != null && _live != "off") ||
+                _modal ||
+                _hasErrormessage ||
+                _hasDetails ||
+                _roledescription != null)
             {
                 return true;
             }
@@ -185,7 +230,7 @@ namespace PuppeteerSharp.PageAccessibility
                 return false;
             }
 
-            return IsLeafNode() && !string.IsNullOrEmpty(_name);
+            return IsLeafNode() && (!string.IsNullOrEmpty(_name) || !string.IsNullOrEmpty(_description));
         }
 
         internal SerializedAXNode Serialize()
@@ -215,19 +260,51 @@ namespace PuppeteerSharp.PageAccessibility
                 properties["description"] = Payload.Description.Value;
             }
 
+            var realm = _realm;
+            var loaderId = _loaderId;
+            var backendDOMNodeId = Payload.BackendDOMNodeId;
+
             var node = new SerializedAXNode
             {
+                ElementHandleFactory = backendDOMNodeId.ValueKind == JsonValueKind.Number && realm != null
+                    ? async () =>
+                    {
+                        // After a navigation, the backend node ID can belong to a different node in the new document.
+                        if ((realm.Environment as Frame)?.LoaderId != loaderId)
+                        {
+                            return null;
+                        }
+
+                        var handle = await realm.AdoptBackendNodeAsync(backendDOMNodeId.GetInt32()).ConfigureAwait(false);
+
+                        // Since Text nodes are not elements, we want to
+                        // return a handle to the parent element for them.
+                        // A text node placed directly in a shadow root has no parent
+                        // element, so fall back to the shadow host.
+                        return await ((ElementHandle)handle).EvaluateFunctionHandleAsync(@"node => {
+                            if (node.nodeType !== Node.TEXT_NODE) {
+                                return node;
+                            }
+                            return node.parentElement ?? node.parentNode?.host ?? null;
+                        }").ConfigureAwait(false) as IElementHandle;
+                    }
+                : null,
                 Role = _role,
+
+                // LoaderId is an experimental mechanism to establish unique IDs across
+                // navigations.
+                LoaderId = loaderId,
                 Name = properties.GetValue("name")?.ToObject<string>(),
                 Value = properties.GetValue("value")?.ToObject<object>()?.ToString(),
                 Description = properties.GetValue("description")?.ToObject<string>(),
                 KeyShortcuts = properties.GetValue("keyshortcuts")?.ToObject<string>(),
                 RoleDescription = properties.GetValue("roledescription")?.ToObject<string>(),
                 ValueText = properties.GetValue("valuetext")?.ToObject<string>(),
+                Url = GetIfNotEmpty(properties.GetValue("url")?.ToObject<string>()),
                 Disabled = properties.GetValue("disabled")?.ToObject<bool>() ?? false,
                 Expanded = properties.GetValue("expanded")?.ToObject<bool>() ?? false,
 
-                // RootWebArea's treat focus differently than other nodes. They report whether their frame  has focus,
+                // RootWebArea's treat focus differently than other nodes. They report whether their frame has focus,
                 // not whether focus is specifically on the root node.
                 Focused = properties.GetValue("focused")?.ToObject<bool>() == true && _role != "RootWebArea",
                 Modal = properties.GetValue("modal")?.ToObject<bool>() ?? false,
@@ -236,6 +313,8 @@ namespace PuppeteerSharp.PageAccessibility
                 Readonly = properties.GetValue("readonly")?.ToObject<bool>() ?? false,
                 Required = properties.GetValue("required")?.ToObject<bool>() ?? false,
                 Selected = properties.GetValue("selected")?.ToObject<bool>() ?? false,
+                Busy = GetBooleanPropertyValue(properties, "busy"),
+                Atomic = GetBooleanPropertyValue(properties, "atomic"),
                 Checked = GetCheckedState(properties.GetValue("checked")?.ToObject<string>()),
                 Pressed = GetCheckedState(properties.GetValue("pressed")?.ToObject<string>()),
                 Level = properties.GetValue("level")?.ToObject<int>() ?? 0,
@@ -245,24 +324,63 @@ namespace PuppeteerSharp.PageAccessibility
                 HasPopup = GetIfNotFalse(properties.GetValue("haspopup")?.ToObject<string>()),
                 Invalid = GetIfNotFalse(properties.GetValue("invalid")?.ToObject<string>()),
                 Orientation = GetIfNotFalse(properties.GetValue("orientation")?.ToObject<string>()),
+                Live = GetIfNotFalse(properties.GetValue("live")?.ToObject<string>()),
+                Relevant = GetIfNotFalse(properties.GetValue("relevant")?.ToObject<string>()),
+                Errormessage = GetIfNotFalse(properties.GetValue("errormessage")?.ToObject<string>()),
+                Details = GetIfNotFalse(properties.GetValue("details")?.ToObject<string>()),
             };
 
             return node;
         }
 
+        private static bool GetBooleanProperty(AccessibilityGetFullAXTreeResponse.AXTreeNode payload, string propertyName)
+        {
+            var prop = payload.Properties?.FirstOrDefault(p => p.Name == propertyName);
+            if (prop == null)
+            {
+                return false;
+            }
+
+            var element = prop.Value.Value;
+            return element.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.Number => element.GetInt32() != 0,
+                _ => false,
+            };
+        }
+
+        private static bool GetBooleanPropertyValue(Dictionary<string, JsonElement?> properties, string key)
+        {
+            var element = properties.GetValue(key);
+            if (element == null)
+            {
+                return false;
+            }
+
+            return element.Value.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.Number => element.Value.GetInt32() != 0,
+                _ => false,
+            };
+        }
+
+        private static string GetIfNotEmpty(string value) => !string.IsNullOrEmpty(value) ? value : null;
+
+        private bool HasFocusableChild()
+        {
+            return _cachedHasFocusableChild ??= Children.Any(c => c.Focusable || c.HasFocusableChild());
+        }
+
         private bool IsPlainTextField()
-            => !_richlyEditable && (_editable || _role == "textbox" || _role == "ComboBox" || _role == "searchbox");
+            => !_richlyEditable && (_editable || _role == "textbox" || _role == "searchbox");
 
         private bool IsTextOnlyObject()
             => _role == "LineBreak" ||
                 _role == "text" ||
                 _role == "InlineTextBox" ||
                 _role == "StaticText";
-
-        private bool HasFocusableChild()
-        {
-            return _cachedHasFocusableChild ??= Children.Any(c => c.Focusable || c.HasFocusableChild());
-        }
 
         private string GetIfNotFalse(string value) => value != null && value != "false" ? value : null;
 

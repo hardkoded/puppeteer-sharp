@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -14,7 +15,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
         {
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should work")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should work")]
         public async Task ShouldWork()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -22,7 +23,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             await Page.GoToAsync(TestConstants.EmptyPage);
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend HTTP headers")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend HTTP headers")]
         public async Task ShouldAmendHTTPHeaders()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -43,7 +44,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(requestTask.Result, Is.EqualTo("bar"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should redirect in a way non-observable to page")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should redirect in a way non-observable to page")]
         public async Task ShouldRedirectInAWayNonObservableToPage()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -61,7 +62,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(consoleMessage, Is.EqualTo("yellow"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend method")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend method")]
         public async Task ShouldAmendMethodData()
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
@@ -81,7 +82,7 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(requestTask.Result, Is.EqualTo("POST"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend post data")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend post data")]
         public async Task ShouldAmendPostData()
         {
             await Page.SetRequestInterceptionAsync(true);
@@ -109,7 +110,35 @@ namespace PuppeteerSharp.Tests.RequestInterceptionTests
             Assert.That(await requestTask.Result, Is.EqualTo("doggo"));
         }
 
-        [Test, PuppeteerTest("requestinterception.spec", "Request.continue", "should amend both post data and method on navigation")]
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should fail if the header value is invalid")]
+        public async Task ShouldFailIfTheHeaderValueIsInvalid()
+        {
+            Exception error = null;
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += async (_, e) =>
+            {
+                try
+                {
+                    await e.Request.ContinueAsync(new Payload
+                    {
+                        Headers = new Dictionary<string, string>
+                        {
+                            ["X-Invalid-Header"] = "a\nb",
+                        },
+                    });
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+
+                await e.Request.ContinueAsync();
+            };
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            Assert.That(error.Message, Does.Match("Invalid header|Expected \"header\"|invalid argument"));
+        }
+
+        [Test, PuppeteerTest("requestinterception.spec", "request interception Request.continue", "should amend both post data and method on navigation")]
         public async Task ShouldAmendBothPostDataAndMethodOnNavigation()
         {
             await Page.SetRequestInterceptionAsync(true);

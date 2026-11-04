@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.JSHandleTests
@@ -13,6 +14,14 @@ namespace PuppeteerSharp.Tests.JSHandleTests
         [Test, PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should work")]
         public async Task ShouldWork()
             => Assert.That(await Page.EvaluateFunctionHandleAsync("() => window"), Is.Not.Null);
+
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should return the RemoteObject")]
+        public async Task ShouldReturnTheRemoteObject()
+        {
+            var windowHandle = await Page.EvaluateFunctionHandleAsync("() => window");
+            Assert.That(windowHandle, Is.Not.Null);
+            Assert.That(((CdpJSHandle)windowHandle).RemoteObject, Is.Not.Null);
+        }
 
         [Test, PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle as an argument")]
         public async Task ShouldAcceptObjectHandleAsAnArgument()
@@ -43,6 +52,16 @@ namespace PuppeteerSharp.Tests.JSHandleTests
             Assert.That(exception.Message, Does.Contain("Are you passing a nested JSHandle?"));
         }
 
+        [Test, PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should warn about recursive objects")]
+        public async Task ShouldWarnAboutRecursiveObjects()
+        {
+            var test = new RecursiveObject();
+            test.Obj = test;
+            var exception = Assert.CatchAsync<System.Exception>(() =>
+                Page.EvaluateFunctionHandleAsync("(opts) => opts", test));
+            Assert.That(exception, Is.Not.Null);
+        }
+
         [Test, PuppeteerTest("jshandle.spec", "JSHandle Page.evaluateHandle", "should accept object handle to unserializable value")]
         public async Task ShouldAcceptObjectHandleToUnserializableValue()
         {
@@ -63,5 +82,10 @@ namespace PuppeteerSharp.Tests.JSHandleTests
                 "(e) => e.FOO",
                 aHandle), Is.EqualTo(123));
         }
+    }
+
+    internal sealed class RecursiveObject
+    {
+        public object Obj { get; set; }
     }
 }

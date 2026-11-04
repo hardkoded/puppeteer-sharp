@@ -7,34 +7,67 @@ using System.Text.Json.Serialization;
 
 namespace PuppeteerSharp.Helpers.Json
 {
-    internal sealed class CookiePartitionKeyConverter : JsonConverter<string>
+    internal sealed class CookiePartitionKeyConverter : JsonConverter<CookiePartitionKey>
     {
         /// <inheritdoc cref="JsonConverter"/>
-        public override bool CanConvert(Type objectType) => typeof(string).IsAssignableFrom(objectType);
+        public override bool CanConvert(Type objectType) => typeof(CookiePartitionKey).IsAssignableFrom(objectType);
 
         /// <inheritdoc cref="JsonConverter"/>
-        public override string? Read(
+        public override CookiePartitionKey? Read(
             ref Utf8JsonReader reader,
             Type objectType,
             JsonSerializerOptions options)
         {
-            JsonNode? node = JsonNode.Parse(ref reader);
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                return null;
+            }
 
-            return node?["topLevelSite"]?.GetValue<string>() ?? null;
+            // Handle string format (legacy)
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                var value = reader.GetString();
+                return value == null ? null : new CookiePartitionKey { SourceOrigin = value };
+            }
+
+            // Handle object format (from CDP)
+            JsonNode? node = JsonNode.Parse(ref reader);
+            if (node == null)
+            {
+                return null;
+            }
+
+            var sourceOrigin = node["topLevelSite"]?.GetValue<string>() ?? node["sourceOrigin"]?.GetValue<string>();
+            if (sourceOrigin == null)
+            {
+                return null;
+            }
+
+            var result = new CookiePartitionKey { SourceOrigin = sourceOrigin };
+            if (node["hasCrossSiteAncestor"] != null)
+            {
+                result.HasCrossSiteAncestor = node["hasCrossSiteAncestor"]?.GetValue<bool>();
+            }
+
+            return result;
         }
 
         /// <inheritdoc cref="JsonConverter"/>
         public override void Write(
             Utf8JsonWriter writer,
-            string value,
+            CookiePartitionKey? value,
             JsonSerializerOptions options)
         {
-            if (value != null && writer != null)
+            if (value != null)
             {
-                writer.WriteStartObject("partitionKey");
-                writer.WriteString("topLevelSite", value);
-                writer.WriteBoolean("hasCrossSiteAncestor", false);
+                writer.WriteStartObject();
+                writer.WriteString("topLevelSite", value.SourceOrigin);
+                writer.WriteBoolean("hasCrossSiteAncestor", value.HasCrossSiteAncestor ?? false);
                 writer.WriteEndObject();
+            }
+            else
+            {
+                writer.WriteNullValue();
             }
         }
     }

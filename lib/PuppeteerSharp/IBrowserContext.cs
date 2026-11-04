@@ -8,7 +8,7 @@ namespace PuppeteerSharp
     /// BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
     /// a single <see cref="IBrowserContext"/> used by default. The method <see cref="IBrowser.NewPageAsync"/> creates a <see cref="IPage"/> in the default <see cref="IBrowserContext"/>.
     /// </summary>
-    public interface IBrowserContext
+    public interface IBrowserContext : IDisposable, IAsyncDisposable
     {
         /// <summary>
         /// Raised when the url of a target changes
@@ -16,7 +16,7 @@ namespace PuppeteerSharp
         event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <summary>
-        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync"/>.
+        /// Raised when a target is created, for example when a new page is opened by <c>window.open</c> <see href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open"/> or <see cref="NewPageAsync(CreatePageOptions)"/>.
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetCreated;
 
@@ -47,6 +47,33 @@ namespace PuppeteerSharp
         Task ClearPermissionOverridesAsync();
 
         /// <summary>
+        /// Gets all cookies in the browser context.
+        /// </summary>
+        /// <returns>Task which resolves to an array of <see cref="CookieParam"/>.</returns>
+        Task<CookieParam[]> GetCookiesAsync();
+
+        /// <summary>
+        /// Sets cookies in the browser context.
+        /// </summary>
+        /// <param name="cookies">Cookies to set.</param>
+        /// <returns>Task.</returns>
+        Task SetCookieAsync(params CookieData[] cookies);
+
+        /// <summary>
+        /// Removes cookies from the browser context.
+        /// </summary>
+        /// <param name="cookies">Complete <see cref="CookieParam"/> objects to be removed.</param>
+        /// <returns>Task.</returns>
+        Task DeleteCookieAsync(params CookieParam[] cookies);
+
+        /// <summary>
+        /// Deletes cookies matching the provided filters in this browser context.
+        /// </summary>
+        /// <param name="filters">Filters to match cookies against.</param>
+        /// <returns>Task.</returns>
+        Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters);
+
+        /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed.
         /// </summary>
         /// <returns>Task.</returns>
@@ -55,8 +82,9 @@ namespace PuppeteerSharp
         /// <summary>
         /// Creates a new page.
         /// </summary>
+        /// <param name="options">Options for creating the page.</param>
         /// <returns>Task which resolves to a new <see cref="IPage"/> object.</returns>
-        Task<IPage> NewPageAsync();
+        Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <summary>
         /// Overrides the browser context permissions.
@@ -76,12 +104,21 @@ namespace PuppeteerSharp
         Task OverridePermissionsAsync(string origin, IEnumerable<OverridePermission> permissions);
 
         /// <summary>
+        /// Sets the permission for a specific origin.
+        /// </summary>
+        /// <param name="origin">The origin to set the permission for, e.g. "https://example.com". Use "*" for all origins (CDP only).</param>
+        /// <param name="permissions">The permissions to set.</param>
+        /// <returns>The task.</returns>
+        Task SetPermissionAsync(string origin, params PermissionEntry[] permissions);
+
+        /// <summary>
         /// An array of all pages inside the browser context.
         /// </summary>
+        /// <param name="includeAll">Experimental. When true, includes all kinds of pages.</param>
         /// <returns>Task which resolves to an array of all open pages.
         /// Non visible pages, such as <c>"background_page"</c>, will not be listed here.
         /// You can find them using <see cref="ITarget.PageAsync"/>.</returns>
-        Task<IPage[]> PagesAsync();
+        Task<IPage[]> PagesAsync(bool includeAll = false);
 
         /// <summary>
         /// Gets an array of all active targets inside the browser context.

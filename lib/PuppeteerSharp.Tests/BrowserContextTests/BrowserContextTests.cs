@@ -11,23 +11,30 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var defaultContext = Browser.BrowserContexts()[0];
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            Assert.That(Browser.BrowserContexts().Length, Is.GreaterThanOrEqualTo(1));
+        }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should not be able to close default context")]
+        public void ShouldNotBeAbleToCloseDefaultContext()
+        {
+            var defaultContext = Browser.DefaultContext;
+            Assert.That(defaultContext, Is.Not.Null);
             var exception = Assert.ThrowsAsync<PuppeteerException>(defaultContext.CloseAsync);
-            Assert.That(Browser.DefaultContext, Is.SameAs(defaultContext));
             Assert.That(exception!.Message, Does.Contain("cannot be closed"));
         }
 
-        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new incognito context")]
-        public async Task ShouldCreateNewIncognitoContext()
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should create new context")]
+        public async Task ShouldCreateNewContext()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            var contextCount = Browser.BrowserContexts().Length;
+            Assert.That(contextCount, Is.GreaterThanOrEqualTo(1));
             var context = await Browser.CreateBrowserContextAsync();
-            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount + 1));
             Assert.That(Browser.BrowserContexts(), Does.Contain(context));
             await context.CloseAsync();
             Assert.That(context.IsClosed, Is.True);
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should close all belonging targets once closing context")]
@@ -47,7 +54,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "window.open should use parent tab context")]
         public async Task WindowOpenShouldUseParentTabContext()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var popupTargetCompletion = new TaskCompletionSource<ITarget>();
@@ -60,13 +67,12 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 
             var popupTarget = await popupTargetCompletion.Task;
             Assert.That(popupTarget.BrowserContext, Is.SameAs(context));
-            await context.CloseAsync();
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should fire target events")]
         public async Task ShouldFireTargetEvents()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var events = new List<string>();
             context.TargetCreated += (_, e) => events.Add("CREATED: " + e.Target.Url);
             context.TargetChanged += (_, e) => events.Add("CHANGED: " + e.Target.Url);
@@ -82,12 +88,14 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 $"CHANGED: {TestConstants.EmptyPage}",
                 $"DESTROYED: {TestConstants.EmptyPage}"
             }));
-            await context.CloseAsync();
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should isolate localStorage and cookies")]
         public async Task ShouldIsolateLocalStorageAndCookies()
         {
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            var contextCount = Browser.BrowserContexts().Length;
+
             // Create two incognito contexts.
             var context1 = await Browser.CreateBrowserContextAsync();
             var context2 = await Browser.CreateBrowserContextAsync();
@@ -128,58 +136,56 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await Task.WhenAll(context1.CloseAsync(), context2.CloseAsync());
             Assert.That(context1.IsClosed, Is.True);
             Assert.That(context2.IsClosed, Is.True);
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount));
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should work across sessions")]
         public async Task ShouldWorkAcrossSessions()
         {
             Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
 
             var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
             {
-                BrowserWSEndpoint = Browser.WebSocketEndpoint
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
             });
             var contexts = remoteBrowser.BrowserContexts();
             Assert.That(contexts, Has.Length.EqualTo(2));
             remoteBrowser.Disconnect();
-            await context.CloseAsync();
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should provide a context id")]
         public async Task ShouldProvideAContextId()
         {
-            Assert.That(Browser.BrowserContexts(), Has.Exactly(1).Items);
-            Assert.That(Browser.BrowserContexts()[0].Id, Is.Null);
+            // Firefox with BiDi returns multiple user contexts (container tabs) by default
+            var contextCount = Browser.BrowserContexts().Length;
+            Assert.That(contextCount, Is.GreaterThanOrEqualTo(1));
 
-            var context = await Browser.CreateBrowserContextAsync();
-            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(2));
-            Assert.That(Browser.BrowserContexts()[1].Id, Is.Not.Null);
-            await context.CloseAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
+            Assert.That(Browser.BrowserContexts(), Has.Length.EqualTo(contextCount + 1));
+            Assert.That(context.Id, Is.Not.Null);
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should wait for a target")]
         public async Task ShouldWaitForTarget()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             var targetPromise = context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage);
             var page = await context.NewPageAsync();
             await page.GoToAsync(TestConstants.EmptyPage);
             var promiseTarget = await targetPromise;
             var targetPage = await promiseTarget.PageAsync();
             Assert.That(page, Is.EqualTo(targetPage));
-            await context.CloseAsync();
         }
 
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should timeout waiting for a non-existent target")]
         public async Task ShouldTimeoutWaitingForNonExistentTarget()
         {
-            var context = await Browser.CreateBrowserContextAsync();
+            await using var context = await Browser.CreateBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
-            await context.CloseAsync();
         }
     }
 }

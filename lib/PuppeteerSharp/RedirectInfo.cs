@@ -7,5 +7,9 @@ namespace PuppeteerSharp
         public RequestWillBeSentResponse Event { get; set; }
 
         public string FetchRequestId { get; set; }
+
+        public CDPSession Client { get; set; }
+
+        public CDPSession FetchClient { get; set; }
     }
 }

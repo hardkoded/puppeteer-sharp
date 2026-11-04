@@ -11,15 +11,35 @@ on:
     paths:
     - '**.yml'
     - '**.cs'
+    - '**.json'
     - '**.csproj'
     - '**.runsettings'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
-  DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
+  build-cdp-only:
+    name: build (CDP only)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Restore (CDP only)
+      run: |
+        dotnet restore lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY
+    - name: Build (CDP only)
+      run: |
+        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY --configuration Release --no-restore --no-incremental
   build:
-    name: build-${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}
+    name: ${{ matrix.browser }}-${{ matrix.mode }}-${{ matrix.os }}-${{ matrix.protocol }}${{ matrix.pipe && '-pipe' || '' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -28,33 +48,45 @@ jobs:
           - os: ubuntu-latest
             browser: CHROME
             mode: headless
+            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headful
+            protocol: cdp
           - os: ubuntu-latest
             browser: CHROME
             mode: headless-shell
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headless
-          - os: ubuntu-latest
-            browser: FIREFOX
-            mode: headful
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headful
+            protocol: cdp
           - os: windows-latest
             browser: CHROME
             mode: headless-shell
+            protocol: cdp
+          - os: ubuntu-latest
+            browser: CHROME
+            mode: headless
+            protocol: cdp
+            pipe: true
           - os: windows-latest
+            browser: CHROME
+            mode: headless
+            protocol: cdp
+            pipe: true
+          - os: ubuntu-latest
             browser: FIREFOX
             mode: headless
-          - os: windows-latest
+            protocol: webdriverbidi
+          - os: ubuntu-latest
             browser: FIREFOX
             mode: headful
+            protocol: webdriverbidi
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET Core
@@ -82,10 +114,12 @@ jobs:
         New-SelfSignedCertificate -Subject "localhost" -FriendlyName "Puppeteer" -CertStoreLocation "cert:\CurrentUser\My"
         Get-ChildItem -Path cert:\CurrentUSer\my | where { $_.friendlyname -eq "Puppeteer" } | Export-Certificate -FilePath $env:GITHUB_WORKSPACE\lib\PuppeteerSharp.TestServer\testCert.cer
     - name: Check formatting
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.browser == 'CHROME' && matrix.mode == 'headless' && matrix.protocol == 'cdp' }}
       run: dotnet format ./lib/PuppeteerSharp.sln --verify-no-changes --exclude-diagnostics CA1865
     - name: Build
       working-directory: lib
+      env:
+        SixLaborsLicenseKey: ${{ secrets.IMAGE_SHARP_LICENSE }}
       run: dotnet build PuppeteerSharp.sln
     - name: Disable AppArmor
       if: matrix.os == 'ubuntu-latest'
@@ -93,19 +127,25 @@ jobs:
     - name: Test (Linux)
       if: matrix.os == 'ubuntu-latest'
       env:
+        SixLaborsLicenseKey: ${{ secrets.IMAGE_SHARP_LICENSE }}
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
+        PROTOCOL: ${{ matrix.protocol }}
+        PIPE: ${{ matrix.pipe && 'true' || '' }}
       run: |
-          Xvfb :1 -screen 5 1024x768x8 &
+          Xvfb :1 -screen 5 1024x768x8 2>/dev/null &
           export DISPLAY=:1.5
           cd lib/PuppeteerSharp.Tests
           dotnet tool update -g dotnet-retest
-          dotnet retest --verbosity normal -- -s test.runsettings -c Debug --logger "trx;LogFileName=TestResults.xml" --blame-hang-timeout 300000
+          dotnet retest --verbosity normal -- -s test.runsettings --blame-hang-timeout 300000
     - name: Test (Windows)
       if: matrix.os == 'windows-latest'
       env:
+        SixLaborsLicenseKey: ${{ secrets.IMAGE_SHARP_LICENSE }}
         BROWSER: ${{ matrix.browser }}
         HEADLESS_MODE: ${{ matrix.mode }}
+        PROTOCOL: ${{ matrix.protocol }}
+        PIPE: ${{ matrix.pipe && 'true' || '' }}
       run: |
         cd .\lib\PuppeteerSharp.Tests
         dotnet tool update -g dotnet-retest

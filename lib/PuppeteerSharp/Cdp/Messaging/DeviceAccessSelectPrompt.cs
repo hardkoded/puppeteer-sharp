@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Cdp.Messaging;
 
 internal class DeviceAccessSelectPrompt
 {
-    public string RequestId { get; set; }
+    public string Id { get; set; }
 
     public string DeviceId { get; set; }
 }

@@ -23,6 +23,11 @@ namespace PuppeteerSharp
         /// </summary>
         public int? ColumnNumber { get; set; }
 
+        /// <summary>
+        /// Name of the function if known.
+        /// </summary>
+        public string FunctionName { get; set; }
+
         /// <summary>Overriding == operator for <see cref="ConsoleMessageLocation"/>.</summary>
         /// <param name="location1">the value to compare against <paramref name="location2" />.</param>
         /// <param name="location2">the value to compare against <paramref name="location1" />.</param>

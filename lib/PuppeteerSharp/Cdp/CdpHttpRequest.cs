@@ -15,14 +15,22 @@ namespace PuppeteerSharp.Cdp;
 /// <inheritdoc/>
 public class CdpHttpRequest : Request<CdpHttpResponse>
 {
-    private readonly CDPSession _client;
     private readonly bool _allowInterception;
+    private readonly bool _hasCompletePostData;
+    private readonly byte[] _postDataBytes;
+
+    // Owned by the request (not looked up via Frame) so error handlers remain safe after frame detach.
+    // Upstream equivalent: puppeteer/puppeteer#15338.
     private readonly ILogger _logger;
     private readonly List<Func<IRequest, Task>> _interceptHandlers = [];
+    private CDPSession _client;
+    private CDPSession _fetchClient;
     private Payload _continueRequestOverrides = new();
     private ResponseData _responseForRequest;
     private RequestAbortErrorCode _abortErrorReason;
     private InterceptResolutionState _interceptResolutionState = new(InterceptResolutionAction.None);
+    private Func<Task> _replayResolution;
+    private Payload _resolvedContinueOverrides;
 
     internal CdpHttpRequest(
         CDPSession client,
@@ -31,18 +39,23 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         bool allowInterception,
         RequestWillBeSentResponse data,
         List<IRequest> redirectChain,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        CDPSession fetchClient = null)
     {
         _client = client;
+        _fetchClient = fetchClient ?? client;
         _logger = loggerFactory.CreateLogger<CdpHttpRequest>();
         Id = data.RequestId;
         IsNavigationRequest = data.RequestId == data.LoaderId && data.Type == ResourceType.Document;
         InterceptionId = interceptionId;
         _allowInterception = allowInterception;
-        Url = data.Request.Url;
+        Url = data.Request.Url + (data.Request.UrlFragment ?? string.Empty);
         ResourceType = data.Type ?? ResourceType.Other;
         Method = data.Request.Method;
-        PostData = data.Request.PostData;
+        _postDataBytes = MergePostDataEntries(data.Request);
+        PostData = _postDataBytes != null ? Encoding.UTF8.GetString(_postDataBytes) : data.Request.PostData;
+        _hasCompletePostData = data.Request.PostDataEntries is { Length: > 0 } &&
+            data.Request.PostDataEntries.All(entry => !string.IsNullOrEmpty(entry.Bytes));
         HasPostData = data.Request.HasPostData ?? false;
 
         Frame = frame;
@@ -59,46 +72,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc cref="Response"/>
     public override CdpHttpResponse Response { get; internal set; }
 
-    internal override Payload ContinueRequestOverrides
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            return _continueRequestOverrides;
-        }
-    }
-
-    internal override ResponseData ResponseForRequest
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            return _responseForRequest;
-        }
-    }
-
-    internal override RequestAbortErrorCode AbortErrorReason
-    {
-        get
-        {
-            if (!_allowInterception)
-            {
-                throw new PuppeteerException("Request Interception is not enabled!");
-            }
-
-            return _abortErrorReason;
-        }
-    }
-
-    private InterceptResolutionState InterceptResolutionState
+    /// <inheritdoc/>
+    public override InterceptResolutionState InterceptResolutionState
     {
         get
         {
@@ -113,25 +88,37 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    private bool IsInterceptResolutionHandled { get; set; }
+    /// <inheritdoc/>
+    public override bool IsInterceptResolutionHandled { get; protected set; }
+
+    internal CDPSession Client
+    {
+        get => _client;
+        set => _client = value;
+    }
+
+    internal CDPSession FetchClient
+    {
+        get => _fetchClient;
+        set => _fetchClient = value;
+    }
+
+    internal Payload ResolvedContinueOverrides => _resolvedContinueOverrides ?? new Payload();
+
+    internal override Payload ContinueRequestOverrides => _continueRequestOverrides;
+
+    internal override ResponseData ResponseForRequest => _responseForRequest;
+
+    internal override RequestAbortErrorCode AbortErrorReason => _abortErrorReason;
 
     /// <inheritdoc/>
     public override async Task ContinueAsync(Payload overrides = null, int? priority = null)
     {
-        // Request interception is not supported for data: urls.
-        if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -163,19 +150,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task RespondAsync(ResponseData response, int? priority = null)
     {
-        if (Url.StartsWith("data:", StringComparison.Ordinal))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -206,20 +185,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc/>
     public override async Task AbortAsync(RequestAbortErrorCode errorCode = RequestAbortErrorCode.Failed, int? priority = null)
     {
-        // Request interception is not supported for data: urls.
-        if (Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase))
+        VerifyInterception();
+
+        if (!CanBeIntercepted())
         {
             return;
-        }
-
-        if (!_allowInterception)
-        {
-            throw new PuppeteerException("Request Interception is not enabled!");
-        }
-
-        if (IsInterceptResolutionHandled)
-        {
-            throw new PuppeteerException("Request is already handled!");
         }
 
         if (priority is null)
@@ -239,12 +209,26 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     /// <inheritdoc />
     public override async Task<string> FetchPostDataAsync()
     {
+        var content = await ContentAsync().ConfigureAwait(false);
+        return content == null ? null : Encoding.UTF8.GetString(content);
+    }
+
+    /// <inheritdoc />
+    public override async Task<byte[]> ContentAsync()
+    {
+        if (InterceptionId != null && _allowInterception && !IsInterceptResolutionHandled && _hasCompletePostData)
+        {
+            return _postDataBytes;
+        }
+
         try
         {
             var result = await _client.SendAsync<GetRequestPostDataResponse>(
                 "Network.getRequestPostData",
                 new GetRequestPostDataRequest(Id)).ConfigureAwait(false);
-            return result.PostData;
+            return result.Base64Encoded
+                ? Convert.FromBase64String(result.PostData)
+                : Encoding.UTF8.GetBytes(result.PostData);
         }
         catch (Exception ex)
         {
@@ -280,8 +264,59 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
     }
 
-    internal override void EnqueueInterceptionAction(Func<IRequest, Task> pendingHandler)
+    internal override void EnqueueInterceptionActionCore(Func<IRequest, Task> pendingHandler)
         => _interceptHandlers.Add(pendingHandler);
+
+    internal Task ReplayInterceptionAsync() => _replayResolution?.Invoke() ?? Task.CompletedTask;
+
+    internal void UpdateHeaders(Dictionary<string, string> headers)
+    {
+        foreach (var kvp in headers)
+        {
+            Headers[kvp.Key.ToLowerInvariant()] = kvp.Value;
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void VerifyInterception()
+    {
+        if (!_allowInterception)
+        {
+            throw new PuppeteerException("Request Interception is not enabled!");
+        }
+
+        if (IsInterceptResolutionHandled)
+        {
+            throw new PuppeteerException("Request is already handled!");
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override bool CanBeIntercepted()
+        => !Url.StartsWith("data:", StringComparison.InvariantCultureIgnoreCase) && !FromMemoryCache;
+
+    private static byte[] MergePostDataEntries(Messaging.Request request)
+    {
+        if (request.PostDataEntries is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var buffers = request.PostDataEntries
+            .Where(entry => entry.Bytes != null)
+            .Select(entry => Convert.FromBase64String(entry.Bytes))
+            .ToArray();
+
+        var merged = new byte[buffers.Sum(b => b.Length)];
+        var offset = 0;
+        foreach (var buffer in buffers)
+        {
+            Buffer.BlockCopy(buffer, 0, merged, offset, buffer.Length);
+            offset += buffer.Length;
+        }
+
+        return merged;
+    }
 
     private Header[] HeadersArray(Dictionary<string, string> headers)
         => headers?.Select(pair => new Header { Name = pair.Key, Value = pair.Value }).ToArray();
@@ -289,6 +324,8 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     private async Task ContinueInternalAsync(Payload overrides = null)
     {
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = overrides;
+        _replayResolution = () => ContinueInternalAsync(overrides);
 
         try
         {
@@ -316,15 +353,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                 requestData.Headers = HeadersArray(overrides.Headers);
             }
 
-            await _client.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
+            await _fetchClient.SendAsync("Fetch.continueRequest", requestData).ConfigureAwait(false);
         }
         catch (PuppeteerException ex)
         {
             IsInterceptResolutionHandled = false;
-
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
+            HandleError(ex);
         }
     }
 
@@ -332,10 +366,12 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
     {
         var errorReason = errorCode.ToString();
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = null;
+        _replayResolution = () => AbortInternalAsync(errorCode);
 
         try
         {
-            await _client.SendAsync("Fetch.failRequest", new FetchFailRequest
+            await _fetchClient.SendAsync("Fetch.failRequest", new FetchFailRequest
             {
                 RequestId = InterceptionId,
                 ErrorReason = errorReason,
@@ -343,16 +379,16 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (PuppeteerException ex)
         {
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
             IsInterceptResolutionHandled = false;
+            HandleError(ex);
         }
     }
 
     private async Task RespondInternalAsync(ResponseData response)
     {
         IsInterceptResolutionHandled = true;
+        _resolvedContinueOverrides = null;
+        _replayResolution = () => RespondInternalAsync(response);
 
         var responseHeaders = new List<Header>();
 
@@ -377,11 +413,11 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
                     responseHeaders.Add(new Header { Name = keyValuePair.Key, Value = keyValuePair.Value.ToString() });
                 }
             }
+        }
 
-            if (!response.Headers.ContainsKey("content-length") && response.BodyData != null)
-            {
-                responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.CurrentCulture) });
-            }
+        if (response.BodyData is { Length: > 0 } && (response.Headers == null || !response.Headers.ContainsKey("content-length")))
+        {
+            responseHeaders.Add(new Header { Name = "content-length", Value = response.BodyData.Length.ToString(CultureInfo.InvariantCulture) });
         }
 
         if (response.ContentType != null)
@@ -396,7 +432,7 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
 
         try
         {
-            await _client.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
+            await _fetchClient.SendAsync("Fetch.fulfillRequest", new FetchFulfillRequest
             {
                 RequestId = InterceptionId,
                 ResponseCode = response.Status != null ? (int)response.Status : 200,
@@ -406,10 +442,23 @@ public class CdpHttpRequest : Request<CdpHttpResponse>
         }
         catch (PuppeteerException ex)
         {
-            // In certain cases, protocol will return error if the request was already canceled
-            // or the page was closed. We should tolerate these errors
-            _logger.LogError(ex.ToString());
             IsInterceptResolutionHandled = false;
+            HandleError(ex);
         }
+    }
+
+    private void HandleError(PuppeteerException ex)
+    {
+        if (ex.Message.Contains("Invalid header") ||
+            ex.Message.Contains("Unsafe header") ||
+            ex.Message.Contains("Expected \"header\"") ||
+            ex.Message.Contains("invalid argument"))
+        {
+            throw ex;
+        }
+
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        _logger.LogError(ex.ToString());
     }
 }

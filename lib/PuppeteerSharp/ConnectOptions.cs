@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Transport;
@@ -36,6 +37,29 @@ namespace PuppeteerSharp
         /// If <see cref="Transport"/> is set this property will be ignored.
         /// </summary>
         public WebSocketFactory WebSocketFactory { get; set; }
+
+        /// <summary>
+        /// Options for the WebSocket connection to the browser.
+        /// </summary>
+        public WsOptions WsOptions { get; set; }
+
+        /// <summary>
+        /// Headers that should be sent with connection-related HTTP and WebSocket requests.
+        /// </summary>
+        [Obsolete("Use WsOptions.Headers via ConnectOptions.WsOptions instead. When both are set, WsOptions.Headers wins.")]
+        public Dictionary<string, string> Headers { get; set; }
+
+        /// <summary>
+        /// Experimental setting to disable monitoring network events by default. When
+        /// set to <c>false</c>, parts of Puppeteer that depend on network events would not
+        /// work such as <see cref="IRequest"/> and <see cref="IResponse"/>.
+        /// </summary>
+        public bool NetworkEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Experimental setting to disable monitoring issue events by default.
+        /// </summary>
+        public bool IssuesEnabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the default Viewport.
@@ -81,6 +105,82 @@ namespace PuppeteerSharp
         /// Optional callback to initialize properties as soon as the <see cref="IBrowser"/> instance is created, i.e., set up event handlers.
         /// </summary>
         public Action<IBrowser> InitAction { get; set; }
+
+        /// <summary>
+        /// Whether to handle the DevTools windows as pages in Puppeteer. Supported only in Chrome with CDP.
+        /// </summary>
+        public bool HandleDevToolsAsPage { get; set; }
+
+        /// <summary>
+        /// The protocol to use for browser communication.
+        /// Defaults to <see cref="ProtocolType.Cdp"/>. Set to <see cref="ProtocolType.WebdriverBiDi"/> to use WebDriver BiDi.
+        /// Firefox always uses WebDriver BiDi regardless of this setting.
+        /// </summary>
+        public ProtocolType Protocol { get; set; } = ProtocolType.Cdp;
+
+        /// <summary>
+        /// A list of URL patterns to block.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing specific
+        /// URLs or origins. It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// When connecting to an existing browser, Puppeteer will silently detach from any
+        /// already open targets that violate the patterns.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL matches a blocked pattern.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="Allowlist"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to block a specific domain: <c>*://example.com/*</c>
+        /// Pattern to block all subdomains: <c>*://*.evil.com/*</c>.
+        /// </example>
+        public string[] BlockList { get; set; }
+
+        /// <summary>
+        /// A list of URL patterns to allow. When set, the browser can only access URLs matching these patterns.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <strong>Requires Chrome 149+.</strong>
+        /// </para>
+        /// <para>
+        /// This option allows you to restrict the browser from accessing any URLs
+        /// except for those that match the patterns in the allowlist.
+        /// It uses the standard <see href="https://urlpattern.spec.whatwg.org/">URLPattern</see> API to match URLs.
+        /// </para>
+        /// <para>
+        /// When connecting to an existing browser, Puppeteer will silently detach from any
+        /// already open targets that violate the patterns.
+        /// </para>
+        /// <para>
+        /// For any network requests made by the browser (including navigations and
+        /// subresources like images or scripts), the request will fail with an error
+        /// if the URL does not match any pattern in the allowlist.
+        /// </para>
+        /// <para>
+        /// Currently only supported for CDP connections.
+        /// </para>
+        /// <para>
+        /// Cannot be used along with <see cref="BlockList"/>.
+        /// </para>
+        /// </remarks>
+        /// <example>
+        /// Pattern to allow a specific domain: <c>*://example.com/*</c>
+        /// Pattern to allow all subdomains: <c>*://*.example.com/*</c>.
+        /// </example>
+        public string[] Allowlist { get; set; }
 
         /// <summary>
         /// Callback to decide if Puppeteer should connect to a given target or not.

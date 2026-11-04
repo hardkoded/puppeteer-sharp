@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "..",
+          "files": ["lib/PuppeteerSharp/PuppeteerSharp.csproj"]
+        }
+      ],
+      "dest": ".api-yaml",
+      "includePrivateMembers": false,
+      "disableDefaultFilter": false,
+      "memberLayout": "samePage",
+      "properties": {
+        "TargetFramework": "net10.0"
+      }
+    }
+  ]
+}

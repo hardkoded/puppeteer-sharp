@@ -28,7 +28,8 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="message">Message.</param>
         /// <param name="url">Url.</param>
-        public NavigationException(string message, string url) : base(message)
+        /// <param name="innerException">Inner exception.</param>
+        public NavigationException(string message, string url, Exception innerException = null) : base(message, innerException)
         {
             Url = url;
         }

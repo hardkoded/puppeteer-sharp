@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -43,6 +44,33 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             Assert.That(await Page.EvaluateExpressionAsync<string>("document.querySelector('textarea').value"), Is.EqualTo("Hello World!"));
         }
 
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should trigger commands of keyboard shortcuts")]
+        public async Task ShouldTriggerCommandsOfKeyboardShortcuts()
+        {
+            var cmdKey = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Meta" : "Control";
+
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/textarea.html");
+            await Page.TypeAsync("textarea", "hello");
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.PressAsync("a", new PressOptions { Commands = new[] { "SelectAll" } });
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.DownAsync("c", new DownOptions { Commands = new[] { "Copy" } });
+            await Page.Keyboard.UpAsync("c");
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            await Page.Keyboard.DownAsync(cmdKey);
+            await Page.Keyboard.PressAsync("v", new PressOptions { Commands = new[] { "Paste" } });
+            await Page.Keyboard.PressAsync("v", new PressOptions { Commands = new[] { "Paste" } });
+            await Page.Keyboard.UpAsync(cmdKey);
+
+            Assert.That(
+                await Page.EvaluateFunctionAsync<string>("() => document.querySelector('textarea').value"),
+                Is.EqualTo("hellohello"));
+        }
+
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with ElementHandle.press")]
         public async Task ShouldSendACharacterWithElementHandlePress()
         {
@@ -83,26 +111,26 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
             var keyboard = Page.Keyboard;
-            var codeForKey = new Dictionary<string, int> { ["Shift"] = 16, ["Alt"] = 18, ["Control"] = 17 };
-            foreach (var modifier in codeForKey)
+            var codeForKey = new HashSet<string> { "Shift", "Alt", "Control" };
+            foreach (var modifierKey in codeForKey)
             {
-                await keyboard.DownAsync(modifier.Key);
-                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: {modifier.Key} {modifier.Key}Left {modifier.Value} [{modifier.Key}]"));
+                await keyboard.DownAsync(modifierKey);
+                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: {modifierKey} {modifierKey}Left [{modifierKey}]"));
                 await keyboard.DownAsync("!");
-                // Shift+! will generate a keypress
-                if (modifier.Key == "Shift")
+                // Shift+! will generate an input event
+                if (modifierKey == "Shift")
                 {
-                    Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: ! Digit1 49 [{modifier.Key}]\nKeypress: ! Digit1 33 33 [{modifier.Key}]"));
+                    Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: ! Digit1 [{modifierKey}]\ninput: ! insertText false"));
                 }
                 else
                 {
-                    Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: ! Digit1 49 [{modifier.Key}]"));
+                    Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keydown: ! Digit1 [{modifierKey}]"));
                 }
 
                 await keyboard.UpAsync("!");
-                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keyup: ! Digit1 49 [{modifier.Key}]"));
-                await keyboard.UpAsync(modifier.Key);
-                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keyup: {modifier.Key} {modifier.Key}Left {modifier.Value} []"));
+                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keyup: ! Digit1 [{modifierKey}]"));
+                await keyboard.UpAsync(modifierKey);
+                Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo($"Keyup: {modifierKey} {modifierKey}Left []"));
             }
         }
 
@@ -112,17 +140,17 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
             var keyboard = Page.Keyboard;
             await keyboard.DownAsync("Control");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: Control ControlLeft 17 [Control]"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: Control ControlLeft [Control]"));
             await keyboard.DownAsync("Alt");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: Alt AltLeft 18 [Alt Control]"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: Alt AltLeft [Alt Control]"));
             await keyboard.DownAsync(";");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: ; Semicolon 186 [Alt Control]"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keydown: ; Semicolon [Alt Control]"));
             await keyboard.UpAsync(";");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: ; Semicolon 186 [Alt Control]"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: ; Semicolon [Alt Control]"));
             await keyboard.UpAsync("Control");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: Control ControlLeft 17 [Alt]"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: Control ControlLeft [Alt]"));
             await keyboard.UpAsync("Alt");
-            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: Alt AltLeft 18 []"));
+            Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"), Is.EqualTo("Keyup: Alt AltLeft []"));
         }
 
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing")]
@@ -132,15 +160,15 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             await Page.Keyboard.TypeAsync("!");
             Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"),
                 Is.EqualTo(string.Join("\n", new[] {
-                    "Keydown: ! Digit1 49 []",
-                    "Keypress: ! Digit1 33 33 []",
-                    "Keyup: ! Digit1 49 []" })));
+                    "Keydown: ! Digit1 []",
+                    "input: ! insertText false",
+                    "Keyup: ! Digit1 []" })));
             await Page.Keyboard.TypeAsync("^");
             Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"),
                 Is.EqualTo(string.Join("\n", new[] {
-                    "Keydown: ^ Digit6 54 []",
-                    "Keypress: ^ Digit6 94 94 []",
-                    "Keyup: ^ Digit6 54 []" })));
+                    "Keydown: ^ Digit6 []",
+                    "input: ^ insertText false",
+                    "Keyup: ^ Digit6 []" })));
         }
 
         [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send proper codes while typing with shift")]
@@ -152,10 +180,10 @@ namespace PuppeteerSharp.Tests.KeyboardTests
             await Page.Keyboard.TypeAsync("~");
             Assert.That(await Page.EvaluateExpressionAsync<string>("getResult()"),
                 Is.EqualTo(string.Join("\n", new[] {
-                    "Keydown: Shift ShiftLeft 16 [Shift]",
-                    "Keydown: ~ Backquote 192 [Shift]", // 192 is ` keyCode
-                    "Keypress: ~ Backquote 126 126 [Shift]", // 126 is ~ charCode
-                    "Keyup: ~ Backquote 192 [Shift]" })));
+                    "Keydown: Shift ShiftLeft [Shift]",
+                    "Keydown: ~ Backquote [Shift]",
+                    "input: ~ insertText false",
+                    "Keyup: ~ Backquote [Shift]" })));
             await keyboard.UpAsync("Shift");
         }
 
@@ -256,7 +284,7 @@ namespace PuppeteerSharp.Tests.KeyboardTests
         {
             await Page.GoToAsync(TestConstants.EmptyPage);
             await FrameUtils.AttachFrameAsync(Page, "emoji-test", TestConstants.ServerUrl + "/input/textarea.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var textarea = await frame.QuerySelectorAsync("textarea");
             await textarea.TypeAsync("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5");
             Assert.That(
@@ -264,7 +292,98 @@ namespace PuppeteerSharp.Tests.KeyboardTests
                 Is.EqualTo("👹 Tokyo street Japan \uD83C\uDDEF\uD83C\uDDF5"));
         }
 
-        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should press the metaKey")]
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should send a character with sendCharacter in iframe")]
+        public async Task ShouldSendACharacterWithSendCharacterInIframe()
+        {
+            await Page.SetContentAsync(
+                "<iframe srcdoc=\"<iframe name='test' srcdoc='<textarea></textarea>'></iframe>\"></iframe>");
+            var frame = await Page.WaitForFrameAsync(f => f.ParentFrame != null && f.ParentFrame != Page.MainFrame);
+            await frame.FocusAsync("textarea");
+
+            await frame.EvaluateFunctionAsync(@"() => {
+                globalThis.inputCount = 0;
+                globalThis.keyDownCount = 0;
+                window.addEventListener('input', () => { globalThis.inputCount += 1; }, true);
+                window.addEventListener('keydown', () => { globalThis.keyDownCount += 1; }, true);
+            }");
+
+            await Page.Keyboard.SendCharacterAsync("嗨");
+            Assert.That(
+                await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"),
+                Is.EqualTo("嗨"));
+            Assert.That(await frame.EvaluateExpressionAsync<int>("globalThis.inputCount"), Is.EqualTo(1));
+            Assert.That(await frame.EvaluateExpressionAsync<int>("globalThis.keyDownCount"), Is.EqualTo(0));
+
+            await Page.Keyboard.SendCharacterAsync("a");
+            Assert.That(
+                await frame.QuerySelectorAsync("textarea").EvaluateFunctionAsync<string>("t => t.value"),
+                Is.EqualTo("嗨a"));
+            Assert.That(await frame.EvaluateExpressionAsync<int>("globalThis.inputCount"), Is.EqualTo(2));
+            Assert.That(await frame.EvaluateExpressionAsync<int>("globalThis.keyDownCount"), Is.EqualTo(0));
+        }
+
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should report modifiers")]
+        public async Task ShouldReportModifiers()
+        {
+            await Page.GoToAsync(TestConstants.ServerUrl + "/input/keyboard.html");
+            var keyboard = Page.Keyboard;
+
+            // Shift modifier
+            await keyboard.DownAsync("Shift");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: Shift ShiftLeft [Shift]"));
+            await keyboard.DownAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: ! Digit1 [Shift]\ninput: ! insertText false"));
+            await keyboard.UpAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: ! Digit1 [Shift]"));
+            await keyboard.UpAsync("Shift");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: Shift ShiftLeft []"));
+
+            // Alt modifier
+            await keyboard.DownAsync("Alt");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: Alt AltLeft [Alt]"));
+            await keyboard.DownAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: ! Digit1 [Alt]"));
+            await keyboard.UpAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: ! Digit1 [Alt]"));
+            await keyboard.UpAsync("Alt");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: Alt AltLeft []"));
+
+            // Control modifier
+            await keyboard.DownAsync("Control");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: Control ControlLeft [Control]"));
+            await keyboard.DownAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keydown: ! Digit1 [Control]"));
+            await keyboard.UpAsync("!");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: ! Digit1 [Control]"));
+            await keyboard.UpAsync("Control");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("getResult()"),
+                Is.EqualTo("Keyup: Control ControlLeft []"));
+        }
+
+        [Test, PuppeteerTest("keyboard.spec", "Keyboard", "should press the meta key")]
         public async Task ShouldPressTheMetaKey()
         {
             await Page.EvaluateFunctionAsync(@"() =>

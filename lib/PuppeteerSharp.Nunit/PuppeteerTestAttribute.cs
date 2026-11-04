@@ -20,10 +20,13 @@ namespace PuppeteerSharp.Nunit
     public class PuppeteerTestAttribute : NUnitAttribute, IApplyToTest
     {
         private static TestExpectation[] _localExpectations;
+        private static TestExpectation[] _canaryExpectations;
         private static TestExpectation[] _upstreamExpectations;
+
         public static readonly bool IsChrome = Environment.GetEnvironmentVariable("BROWSER") != "FIREFOX";
-        // TODO: Change implementation when we implement Webdriver Bidi
-        public static readonly bool IsCdp = true;
+        public static readonly bool IsCdp = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROTOCOL")) || Environment.GetEnvironmentVariable("PROTOCOL")!.Equals("cdp");
+        public static readonly bool IsPipe = Environment.GetEnvironmentVariable("PIPE") == "true";
+
         public static readonly HeadlessMode Headless =
             string.IsNullOrEmpty(Environment.GetEnvironmentVariable("HEADLESS_MODE")) ?
             (System.Diagnostics.Debugger.IsAttached ? HeadlessMode.False : HeadlessMode.True) :
@@ -118,24 +121,47 @@ namespace PuppeteerSharp.Nunit
                         : TestExpectation.TestExpectationsParameter.ChromeHeadlessShell
             ];
 
+            if (IsPipe)
+            {
+                parameters.Add(TestExpectation.TestExpectationsParameter.Pipe);
+            }
+
             var localExpectations = GetLocalExpectations();
+            var canaryExpectations = GetCanaryExpectations();
             var upstreamExpectations = GetUpstreamExpectations();
-            // Join local and upstream in one variable
-            var allExpectations = localExpectations.Concat(upstreamExpectations).ToArray();
+            // Join local, canary, and upstream in one variable
+            var allExpectations = localExpectations.Concat(canaryExpectations).Concat(upstreamExpectations).ToArray();
+
+            var testIdStr = ToString();
 
             foreach (var expectation in allExpectations)
             {
-                if (expectation.TestIdRegex.IsMatch(ToString()))
+                if (expectation.TestIdRegex.IsMatch(testIdStr))
                 {
-                    if (expectation.Platforms.Contains(currentExpectationPlatform) &&
-                        expectation.Parameters.All(parameters.Contains) &&
-                        (
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
-                            expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout)))
+                    var platformMatch = expectation.Platforms.Contains(currentExpectationPlatform);
+                    var paramsMatch = expectation.Parameters.All(parameters.Contains);
+
+                    if (platformMatch && paramsMatch)
                     {
-                        output = expectation;
-                        return true;
+                        // If expectation contains FAIL, SKIP, or TIMEOUT, skip the test.
+                        // This handles flaky tests marked as ["FAIL", "PASS"] - we skip them
+                        // rather than running and failing CI.
+                        var shouldSkip = expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Skip) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Fail) ||
+                                expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Timeout);
+
+                        if (shouldSkip)
+                        {
+                            output = expectation;
+                            return true;
+                        }
+
+                        // If expectation contains only PASS, don't skip - run the test
+                        if (expectation.Expectations.Contains(TestExpectation.TestExpectationResult.Pass))
+                        {
+                            output = null;
+                            return false;
+                        }
                     }
                 }
             }
@@ -167,6 +193,9 @@ namespace PuppeteerSharp.Nunit
 
         private static TestExpectation[] GetLocalExpectations() =>
             _localExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.local.json");
+
+        private static TestExpectation[] GetCanaryExpectations() =>
+            _canaryExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.canary.json");
 
         private static TestExpectation[] GetUpstreamExpectations() =>
             _upstreamExpectations ??= LoadExpectationsFromResource("PuppeteerSharp.Nunit.TestExpectations.TestExpectations.upstream.json");

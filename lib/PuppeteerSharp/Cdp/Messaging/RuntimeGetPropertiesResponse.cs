@@ -8,7 +8,7 @@ namespace PuppeteerSharp.Cdp.Messaging
 
         public class RuntimeGetPropertiesResponseItem
         {
-            public object Enumerable { get; set; }
+            public bool Enumerable { get; set; }
 
             public string Name { get; set; }
 

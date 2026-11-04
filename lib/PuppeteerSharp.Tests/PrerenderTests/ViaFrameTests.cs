@@ -14,6 +14,8 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         var button = await Page.WaitForSelectorAsync("button");
         await button.ClickAsync();
 
+        await Page.WaitForNetworkIdleAsync();
+
         var mainFrame = Page.MainFrame;
         var link = await mainFrame.WaitForSelectorAsync("a");
         await Task.WhenAll(
@@ -22,7 +24,7 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         );
 
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
-        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("true"));
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 
@@ -37,7 +39,7 @@ public class ViaFrameTests : PuppeteerPageBaseTest
         var mainFrame = Page.MainFrame;
         await mainFrame.GoToAsync(TestConstants.ServerUrl + "/prerender/target.html");
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
-        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.body.innerText"), Is.EqualTo("target"));
+        Assert.That(await mainFrame.EvaluateExpressionAsync<string>("document.querySelector('div')?.innerText"), Is.EqualTo("false"));
         Assert.That(Page.MainFrame, Is.SameAs(mainFrame));
     }
 }

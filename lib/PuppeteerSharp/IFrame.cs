@@ -117,7 +117,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="EvaluateFunctionAsync{T}(string, object[])"/>
         /// <seealso cref="IPage.EvaluateExpressionAsync{T}(string)"/>
-        Task<JsonElement?> EvaluateExpressionAsync(string script);
+        Task EvaluateExpressionAsync(string script);
 
         /// <summary>
         /// Executes a script in browser context.
@@ -158,7 +158,7 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to script return value.</returns>
         /// <seealso cref="EvaluateExpressionAsync{T}(string)"/>
         /// <seealso cref="IPage.EvaluateFunctionAsync{T}(string, object[])"/>
-        Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args);
+        Task EvaluateFunctionAsync(string script, params object[] args);
 
         /// <summary>
         /// Executes a function in browser context.
@@ -243,6 +243,7 @@ namespace PuppeteerSharp
         /// - the `timeout` is exceeded during navigation.
         /// - the remote server does not respond or is unreachable.
         /// - the main resource failed to load.
+        /// - the URL is blocked by blocklist/allowlist rules.
         ///
         /// <see cref="GoToAsync(string, int?, WaitUntilNavigation[])"/> will not throw an error when any valid HTTP status code is returned by the remote server,
         /// including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling <see cref="IResponse.Status"/>
@@ -273,6 +274,15 @@ namespace PuppeteerSharp
         /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
         /// <seealso cref="IPage.QuerySelectorAllAsync(string)"/>
         Task<IElementHandle[]> QuerySelectorAllAsync(string selector);
+
+        /// <summary>
+        /// Queries frame for the selector. If no elements match the selector, the return value resolve to <see cref="Array.Empty{T}"/>.
+        /// </summary>
+        /// <param name="selector">A selector to query frame for.</param>
+        /// <param name="options">Optional query options.</param>
+        /// <returns>Task which resolves to ElementHandles pointing to the frame elements.</returns>
+        /// <seealso cref="IPage.QuerySelectorAllAsync(string, QueryOptions)"/>
+        Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options);
 
         /// <summary>
         /// A utility function to be used with <see cref="PuppeteerHandleExtensions.EvaluateFunctionAsync{T}(Task{IJSHandle}, string, object[])"/>.
@@ -308,7 +318,18 @@ namespace PuppeteerSharp
         /// <param name="options">The options.</param>
         /// <returns>Task.</returns>
         /// <seealso cref="IPage.SetContentAsync(string, NavigationOptions)"/>
-        Task SetContentAsync(string html, NavigationOptions options = null);
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        Task SetContentAsync(string html, NavigationOptions options);
+
+        /// <summary>
+        /// Sets the HTML markup to the page.
+        /// </summary>
+        /// <param name="html">HTML markup to assign to the page.</param>
+        /// <param name="options">The options. The <see cref="WaitUntilNavigation.Networkidle0"/> and
+        /// <see cref="WaitUntilNavigation.Networkidle2"/> wait conditions are not supported for SetContent.</param>
+        /// <returns>Task.</returns>
+        /// <seealso cref="IPage.SetContentAsync(string, SetContentOptions)"/>
+        Task SetContentAsync(string html, SetContentOptions options = null);
 
         /// <summary>
         /// Sends a <c>keydown</c>, <c>keypress</c>/<c>input</c>, and <c>keyup</c> event for each character in the text.
@@ -385,6 +406,22 @@ namespace PuppeteerSharp
         /// <seealso cref="IPage.WaitForSelectorAsync(string, WaitForSelectorOptions)"/>
         /// <exception cref="WaitTaskTimeoutException">If timeout occurred.</exception>
         Task<IElementHandle> WaitForSelectorAsync(string selector, WaitForSelectorOptions options = null);
+
+        /// <summary>
+        /// Creates a locator for the provided selector. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="selector">A selector to locate an element.</param>
+        /// <returns>A locator for the provided selector.</returns>
+        Locators.Locator Locator(string selector);
+
+        /// <summary>
+        /// Creates a locator for the provided function. See <see cref="Locators.Locator"/> for
+        /// details and supported actions.
+        /// </summary>
+        /// <param name="func">A JavaScript function expression to evaluate.</param>
+        /// <returns>A locator for the provided function.</returns>
+        Locators.Locator LocatorFunction(string func);
 
         /// <summary>
         /// Waits for a selector to be added to the DOM.

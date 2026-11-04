@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "docfx": {
+      "version": "2.80.1",
+      "commands": [
+        "docfx"
+      ],
+      "rollForward": false
+    }
+  }
+}

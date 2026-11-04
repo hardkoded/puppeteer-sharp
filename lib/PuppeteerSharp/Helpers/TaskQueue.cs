@@ -21,7 +21,12 @@ namespace PuppeteerSharp.Helpers
 
             if (!_held.Value)
             {
-                _semaphore.Wait();
+                // Wait briefly for an in-flight task to release the semaphore. If a task
+                // is still running when teardown is requested (e.g. Connection.Dispose
+                // called from the user thread while a message is mid-process), we don't
+                // want to block forever. In-flight tasks tolerate a disposed semaphore
+                // via TryRelease catching ObjectDisposedException.
+                _semaphore.Wait(TimeSpan.FromSeconds(1));
             }
 
             _semaphore.Dispose();

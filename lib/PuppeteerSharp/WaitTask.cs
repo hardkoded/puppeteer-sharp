@@ -16,10 +16,12 @@ namespace PuppeteerSharp
         private readonly IElementHandle _root;
         private readonly CancellationTokenSource _cts = new();
         private readonly TaskCompletionSource<IJSHandle> _result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly CancellationTokenRegistration _cancellationTokenRegistration;
 
         private bool _isDisposed;
         private IJSHandle _poller;
         private bool _terminated;
+        private CancellationTokenSource _rerunCts;
 
         internal WaitTask(
             Realm realm,
@@ -29,6 +31,7 @@ namespace PuppeteerSharp
             int? pollingInterval,
             int timeout,
             IElementHandle root,
+            CancellationToken cancellationToken = default,
             object[] args = null)
         {
             if (string.IsNullOrEmpty(fn))
@@ -49,6 +52,12 @@ namespace PuppeteerSharp
             _root = root;
 
             _realm.TaskManager.Add(this);
+
+            if (cancellationToken != default)
+            {
+                _cancellationTokenRegistration = cancellationToken.Register(
+                    () => _ = TerminateAsync(new OperationCanceledException("WaitTask has been cancelled.")));
+            }
 
             if (timeout > 0)
             {
@@ -75,13 +84,20 @@ namespace PuppeteerSharp
                 timeoutTimer.Dispose();
             }
 
+            _cancellationTokenRegistration.Dispose();
             _cts.Dispose();
+            _rerunCts?.Dispose();
 
             _isDisposed = true;
         }
 
         internal async Task RerunAsync()
         {
+            // Cancel any previous rerun
+            _rerunCts?.Cancel();
+            _rerunCts?.Dispose();
+            var rerunCts = _rerunCts = new CancellationTokenSource();
+
             try
             {
                 if (_pollingInterval.HasValue)
@@ -135,8 +151,23 @@ namespace PuppeteerSharp
                             ]).ConfigureAwait(false);
                 }
 
+                // Avoid starting a poller created after the task has already terminated.
+                if (_terminated)
+                {
+                    await StopPollerAsync().ConfigureAwait(false);
+                    return;
+                }
+
                 // Note that FrameWaitForFunctionTests listen for this particular message to orchestrate the test execution
-                await _poller.EvaluateFunctionAsync("poller => poller.start()").ConfigureAwait(false);
+                // Using void to not await the start promise - matches upstream behavior
+                await _poller.EvaluateFunctionAsync("poller => { void poller.start(); }").ConfigureAwait(false);
+
+                // Termination already stops the poller; only skip the result round trip.
+                if (_terminated)
+                {
+                    await StopPollerAsync().ConfigureAwait(false);
+                    return;
+                }
 
                 var success = await _poller.EvaluateFunctionHandleAsync("poller => poller.result()").ConfigureAwait(false);
                 _result.TrySetResult(success);
@@ -144,10 +175,16 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
+                // If this rerun was cancelled, don't process the error
+                if (rerunCts.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 var exception = GetBadException(ex);
                 if (exception != null)
                 {
-                    await TerminateAsync(exception).ConfigureAwait(false);
+                    await TerminateAsync(new PuppeteerException("Waiting failed", exception)).ConfigureAwait(false);
                 }
             }
         }
@@ -169,24 +206,7 @@ namespace PuppeteerSharp
                 _result.TrySetException(exception);
             }
 
-            if (_poller is { } poller)
-            {
-                await using (poller.ConfigureAwait(false))
-                {
-                    try
-                    {
-                        await poller.EvaluateFunctionAsync(@"async poller => {
-                            await poller.stop();
-                        }").ConfigureAwait(false);
-
-                        _poller = null;
-                    }
-                    catch (Exception)
-                    {
-                        // swallow error.
-                    }
-                }
-            }
+            await StopPollerAsync().ConfigureAwait(false);
         }
 
         private Exception GetBadException(Exception exception)
@@ -228,7 +248,46 @@ namespace PuppeteerSharp
                 return null;
             }
 
+            // Errors coming from WebDriver BiDi. TODO: Adjust messages after
+            // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
+            if (exception.Message.Contains("DiscardedBrowsingContextError") || exception.Message.Contains("Polling never started"))
+            {
+                return null;
+            }
+
+            // BiDi error when a handle from previous context is used after navigation.
+            // We should retry in the new context.
+            if (exception.Message.Contains("no such handle") ||
+                exception.Message.Contains("Could not serialize referenced object"))
+            {
+                return null;
+            }
+
             return exception;
+        }
+
+        private async Task StopPollerAsync()
+        {
+            if (_poller is not { } poller)
+            {
+                return;
+            }
+
+            await using (poller.ConfigureAwait(false))
+            {
+                try
+                {
+                    await poller.EvaluateFunctionAsync(@"async poller => {
+                        await poller.stop();
+                    }").ConfigureAwait(false);
+
+                    _poller = null;
+                }
+                catch (Exception)
+                {
+                    // swallow error.
+                }
+            }
         }
 
         private void Cleanup()

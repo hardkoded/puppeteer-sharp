@@ -10,7 +10,7 @@ namespace PuppeteerSharp
     public class ScreenshotOptions
     {
         /// <summary>
-        /// Specifies clipping region of the page.
+        /// Specifies clipping region of the page/element.
         /// </summary>
         /// <value>The clip.</value>
         public Clip Clip { get; set; }

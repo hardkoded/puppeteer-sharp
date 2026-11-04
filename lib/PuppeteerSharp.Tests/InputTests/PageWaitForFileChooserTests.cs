@@ -11,7 +11,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should work when file input is attached to DOM")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should work when file input is attached to DOM")]
         public async Task ShouldWorkWhenFileInputIsAttachedToDOM()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -24,7 +24,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should work when file input is not attached to DOM")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should work when file input is not attached to DOM")]
         public async Task ShouldWorkWhenFileInputIsNotAttachedToDOM()
         {
             var waitForTask = Page.WaitForFileChooserAsync();
@@ -41,7 +41,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should respect timeout")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should respect timeout")]
         public void ShouldRespectTimeout()
         {
             Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync(new WaitForOptions
@@ -50,14 +50,14 @@ namespace PuppeteerSharp.Tests.InputTests
             }));
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should respect default timeout when there is no custom timeout")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should respect default timeout when there is no custom timeout")]
         public void ShouldRespectTimeoutWhenThereIsNoCustomTimeout()
         {
             Page.DefaultTimeout = 1;
             Assert.ThrowsAsync<TimeoutException>(() => Page.WaitForFileChooserAsync());
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should prioritize exact timeout over default timeout")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should prioritize exact timeout over default timeout")]
         public void ShouldPrioritizeExactTimeoutOverDefaultTimeout()
         {
             Page.DefaultTimeout = 0;
@@ -67,7 +67,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }));
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should work with no timeout")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should work with no timeout")]
         public async Task ShouldWorkWithNoTimeout()
         {
             var waitForTask = Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 0 });
@@ -83,7 +83,7 @@ namespace PuppeteerSharp.Tests.InputTests
             Assert.That(waitForTask.Result, Is.Not.Null);
         }
 
-        [Test, PuppeteerTest("input.spec", "Page.waitForFileChooser", "should return the same file chooser when there are many watchdogs simultaneously")]
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should return the same file chooser when there are many watchdogs simultaneously")]
         public async Task ShouldReturnTheSameFileChooserWhenThereAreManyWatchdogsSimultaneously()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -95,6 +95,19 @@ namespace PuppeteerSharp.Tests.InputTests
                 fileChooserTask2,
                 Page.QuerySelectorAsync("input").EvaluateFunctionAsync("input => input.click()"));
             Assert.That(fileChooserTask2.Result, Is.SameAs(fileChooserTask1.Result));
+        }
+
+        [Test, PuppeteerTest("input.spec", "input tests Page.waitForFileChooser", "should not throw unhandled rejection when file picker is opened without an input element")]
+        public async Task ShouldNotThrowUnhandledRejectionWhenFilePickerIsOpenedWithoutAnInputElement()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.SetContentAsync("<button onclick=\"window.showOpenFilePicker?.().catch(() => {})\"></button>");
+
+            Assert.ThrowsAsync<TimeoutException>(() => Task.WhenAll(
+                Page.WaitForFileChooserAsync(new WaitForOptions { Timeout = 200 }),
+                Page.ClickAsync("button")));
+
+            Assert.That(await Page.EvaluateExpressionAsync<int>("1 + 1"), Is.EqualTo(2));
         }
     }
 }

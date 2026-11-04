@@ -21,10 +21,12 @@
 //  * SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PuppeteerSharp.Cdp.Messaging;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Helpers.Json;
 
 namespace PuppeteerSharp.Cdp;
@@ -37,6 +39,7 @@ public class CdpWebWorker : WebWorker
     private readonly Action<EvaluateExceptionResponseDetails> _exceptionThrown;
     private readonly string _id;
     private readonly TargetType _targetType;
+    private readonly TaskCompletionSource<bool> _workerScriptLoaded = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     internal CdpWebWorker(
         CDPSession client,
@@ -54,6 +57,13 @@ public class CdpWebWorker : WebWorker
         _consoleAPICalled = consoleAPICalled;
         _exceptionThrown = exceptionThrown;
         client.MessageReceived += OnMessageReceived;
+
+        // Both listeners (the isolated world above and this worker) are now attached, so replay any
+        // init events Chrome already delivered on this freshly-attached worker session
+        // (Inspector.workerScriptLoaded, Runtime.executionContextCreated) to both of them. Without
+        // this, those one-shot events race the subscriptions and can be dropped, leaving
+        // EvaluateFunctionAsync awaiting _workerScriptLoaded forever.
+        client.FlushEarlyMessages();
 
         _ = client.SendAsync("Runtime.enable").ContinueWith(
             task =>
@@ -77,7 +87,9 @@ public class CdpWebWorker : WebWorker
     }
 
     /// <inheritdoc/>
-    public override CDPSession Client { get; }
+    public override ICDPSession Client { get; }
+
+    internal CDPSession CdpCDPSession => (CdpCDPSession)Client;
 
     internal override IsolatedWorld World { get; }
 
@@ -90,22 +102,35 @@ public class CdpWebWorker : WebWorker
         switch (_targetType)
         {
             case TargetType.ServiceWorker:
-            case TargetType.SharedWorker:
-                // For service and shared workers we need to close the target and detach to allow
-                // the worker to stop.
-                await Client.Connection.SendAsync(
-                    "Target.closeTarget",
-                    new TargetCloseTargetRequest()
-                    {
-                        TargetId = _id,
-                    }).ConfigureAwait(false);
+                if (!CdpCDPSession.Detached)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
 
-                await Client.Connection.SendAsync(
-                    "Target.detachFromTarget",
-                    new TargetDetachFromTargetRequest()
-                    {
-                        SessionId = Client.Id,
-                    }).ConfigureAwait(false);
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.detachFromTarget",
+                        new TargetDetachFromTargetRequest()
+                        {
+                            SessionId = Client.Id,
+                        }).ConfigureAwait(false);
+                }
+
+                break;
+            case TargetType.SharedWorker:
+                if (!CdpCDPSession.Detached)
+                {
+                    await CdpCDPSession.Connection.SendAsync(
+                        "Target.closeTarget",
+                        new TargetCloseTargetRequest()
+                        {
+                            TargetId = _id,
+                        }).ConfigureAwait(false);
+                }
+
                 break;
             default:
                 await EvaluateFunctionAsync(@"() => {
@@ -113,6 +138,43 @@ public class CdpWebWorker : WebWorker
                     }").ConfigureAwait(false);
                 break;
         }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateFunctionAsync<T>(script, args).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task EvaluateFunctionAsync(string script, params object[] args)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        await base.EvaluateFunctionAsync(script, args).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<T> EvaluateExpressionAsync<T>(string script)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateExpressionAsync<T>(script).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
+    {
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.EvaluateExpressionHandleAsync(script).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IJSHandle> WaitForFunctionAsync(string script, WaitForFunctionOptions options = null, params object[] args)
+    {
+        // Match evaluate*: wait until the worker script has run so WaitForFunction does not
+        // start polling before top-level worker setup (e.g. setTimeout) has been scheduled.
+        await _workerScriptLoaded.Task.ConfigureAwait(false);
+        return await base.WaitForFunctionAsync(script, options, args).ConfigureAwait(false);
     }
 
     private async void OnMessageReceived(object sender, MessageEventArgs e)
@@ -130,6 +192,9 @@ public class CdpWebWorker : WebWorker
                 case "Runtime.exceptionThrown":
                     OnExceptionThrown(e.MessageData.ToObject<RuntimeExceptionThrownResponse>());
                     break;
+                case "Inspector.workerScriptLoaded":
+                    _workerScriptLoaded.TrySetResult(true);
+                    break;
             }
         }
         catch (Exception ex)
@@ -145,18 +210,50 @@ public class CdpWebWorker : WebWorker
     private async Task OnConsoleAPICalledAsync(MessageEventArgs e)
     {
         var consoleData = e.MessageData.ToObject<PageConsoleResponse>();
-        await _consoleAPICalled(
-            consoleData.Type,
-            consoleData.Args.Select(i => new CdpJSHandle(World, i)).ToArray(),
-            consoleData.StackTrace)
-                .ConfigureAwait(false);
+        var handles = consoleData.Args.Select(i => new CdpJSHandle(World, i)).ToArray<IJSHandle>();
+
+        var tokens = handles.Select(i =>
+        {
+            var handle = (ICdpHandle)i;
+            if (handle.RemoteObject.Subtype == RemoteObjectSubtype.Error && !string.IsNullOrEmpty(handle.RemoteObject.Description))
+            {
+                return handle.RemoteObject.Description.Split('\n')[0];
+            }
+
+            return handle.RemoteObject.ObjectId != null || handle.RemoteObject.Type == RemoteObjectType.Object
+                ? i.ToString()
+                : RemoteObjectHelper.ValueFromRemoteObject<object>(handle.RemoteObject)?.ToString() ?? "null";
+        });
+
+        var location = new ConsoleMessageLocation();
+        var stackTraceLocations = new List<ConsoleMessageLocation>();
+        if (consoleData.StackTrace?.CallFrames?.Length > 0)
+        {
+            foreach (var callFrame in consoleData.StackTrace.CallFrames)
+            {
+                stackTraceLocations.Add(new ConsoleMessageLocation
+                {
+                    URL = callFrame.URL,
+                    LineNumber = callFrame.LineNumber,
+                    ColumnNumber = callFrame.ColumnNumber,
+                    FunctionName = callFrame.FunctionName,
+                });
+            }
+
+            location = stackTraceLocations[0];
+        }
+
+        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations);
+        OnConsole(new ConsoleEventArgs(consoleMessage));
+
+        await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace).ConfigureAwait(false);
     }
 
     private void OnExecutionContextCreated(RuntimeExecutionContextCreatedResponse e)
     {
         if (!World.HasContext)
         {
-            World.SetNewContext(Client, e.Context, World);
+            World.SetNewContext(CdpCDPSession, e.Context, World);
         }
     }
 }

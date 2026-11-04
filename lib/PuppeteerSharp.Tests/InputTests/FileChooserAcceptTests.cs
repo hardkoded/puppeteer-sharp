@@ -10,7 +10,7 @@ namespace PuppeteerSharp.Tests.InputTests
         {
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should accept single file")]
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should accept single file")]
         public async Task ShouldAcceptSingleFile()
         {
             await Page.SetContentAsync("<input type=file oninput='javascript:console.timeStamp()'>");
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 Is.EqualTo("file-to-upload.txt"));
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should be able to read selected file")]
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should be able to read selected file")]
         public async Task ShouldBeAbleToReadSelectedFile()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -51,7 +51,7 @@ namespace PuppeteerSharp.Tests.InputTests
                 }"), Is.EqualTo("contents of the file"));
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should be able to reset selected files with empty file list")]
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should be able to reset selected files with empty file list")]
         public async Task ShouldBeAbleToResetSelectedFilesWithEmptyFileList()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -76,7 +76,7 @@ namespace PuppeteerSharp.Tests.InputTests
             }"), Is.EqualTo(0));
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should not accept multiple files for single-file input")]
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should not accept multiple files for single-file input")]
         public async Task ShouldNotAcceptMultipleFilesForSingleFileInput()
         {
             await Page.SetContentAsync("<input type=file>");
@@ -91,8 +91,8 @@ namespace PuppeteerSharp.Tests.InputTests
                 "./assets/pptr.png"));
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should fail for non-existent files")]
-        public async Task ShouldFailForNonExistentFiles()
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should succeed even for non-existent files")]
+        public async Task ShouldSucceedEvenForNonExistentFiles()
         {
             await Page.SetContentAsync("<input type=file>");
             var waitForTask = Page.WaitForFileChooserAsync();
@@ -101,10 +101,28 @@ namespace PuppeteerSharp.Tests.InputTests
                 waitForTask,
                 Page.ClickAsync("input"));
 
-            Assert.ThrowsAsync<PuppeteerException>(() => waitForTask.Result.AcceptAsync("file-does-not-exist.txt"));
+            await waitForTask.Result.AcceptAsync("file-does-not-exist.txt");
         }
 
-        [Test, PuppeteerTest("input.spec", "FileChooser.accept", "should fail when accepting file chooser twice")]
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should error on read of non-existent files")]
+        public async Task ShouldErrorOnReadOfNonExistentFiles()
+        {
+            await Page.SetContentAsync("<input type=file>");
+            _ = Page.WaitForFileChooserAsync().ContinueWith(t => t.Result.AcceptAsync("file-does-not-exist.txt"));
+
+            Assert.That(
+                await Page.QuerySelectorAsync("input").EvaluateFunctionAsync<bool>(@"async picker =>
+                {
+                    picker.click();
+                    await new Promise(x => picker.oninput = x);
+                    const reader = new FileReader();
+                    const promise = new Promise(fulfill => reader.onerror = fulfill);
+                    reader.readAsText(picker.files[0]);
+                    return await promise.then(() => false);
+                }"), Is.False);
+        }
+
+        [Test, PuppeteerTest("input.spec", "input tests FileChooser.accept", "should fail when accepting file chooser twice")]
         public async Task ShouldFailWhenAcceptingFileChooserTwice()
         {
             await Page.SetContentAsync("<input type=file>");

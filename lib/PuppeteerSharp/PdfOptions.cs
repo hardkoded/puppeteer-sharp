@@ -107,5 +107,22 @@ namespace PuppeteerSharp
         /// Currently only works in old Headless (headless = true).
         /// </remarks>
         public bool Outline { get; set; } = false;
+
+        /// <summary>
+        /// If <c>true</c>, waits for <c>document.fonts.ready</c> to resolve. This might require
+        /// activating the page using <see cref="IPage.BringToFrontAsync"/> if the page is in the
+        /// background.
+        /// </summary>
+        /// <remarks>Defaults to <c>true</c>.</remarks>
+        public bool WaitForFonts { get; set; } = true;
+
+        /// <summary>
+        /// Timeout in milliseconds. Pass <c>0</c> to disable timeout.
+        /// </summary>
+        /// <remarks>
+        /// The default value can be changed by using the <see cref="IPage.DefaultTimeout"/> property.
+        /// </remarks>
+        [JsonIgnore]
+        public int? Timeout { get; set; }
     }
 }

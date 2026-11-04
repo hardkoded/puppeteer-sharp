@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -7,7 +9,7 @@ namespace PuppeteerSharp.Tests.PageTests
 {
     public class SetContentTests : PuppeteerPageBaseTest
     {
-        const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
+        private const string ExpectedOutput = "<html><head></head><body><div>hello</div></body></html>";
 
         public async Task Usage(IBrowser browser)
         {
@@ -60,12 +62,12 @@ namespace PuppeteerSharp.Tests.PageTests
 
             await Page.GoToAsync(TestConstants.EmptyPage);
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
-                await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>", new NavigationOptions
+                await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>", new SetContentOptions
                 {
                     Timeout = 1
                 }));
 
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception!.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should respect default navigation timeout")]
@@ -79,7 +81,7 @@ namespace PuppeteerSharp.Tests.PageTests
             var exception = Assert.ThrowsAsync<TimeoutException>(async () =>
                 await Page.SetContentAsync($"<img src='{TestConstants.ServerUrl + imgPath}'></img>"));
 
-            Assert.That(exception.Message, Does.Contain("Timeout of 1 ms exceeded"));
+            Assert.That(exception!.Message, Does.Contain("Navigation timeout of 1 ms exceeded"));
         }
 
         [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should await resources to load")]
@@ -133,6 +135,37 @@ namespace PuppeteerSharp.Tests.PageTests
         {
             await Page.SetContentAsync("<div>\n</div>");
             Assert.That(await Page.QuerySelectorAsync("div").EvaluateFunctionAsync<string>("div => div.textContent"), Is.EqualTo("\n"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should work with comments outside HTML tag")]
+        public async Task ShouldWorkWithCommentsOutsideHtmlTag()
+        {
+            const string comment = "<!-- Comment -->";
+            await Page.SetContentAsync($"{comment}<div>hello</div>");
+            var result = await Page.GetContentAsync();
+
+            Assert.That(result, Is.EqualTo($"{comment}{ExpectedOutput}"));
+        }
+
+        [Test, PuppeteerTest("page.spec", "Page Page.setContent", "should not run a cross-origin script through document.write")]
+        public async Task ShouldNotRunACrossOriginScriptThroughDocumentWrite()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var warnings = new List<string>();
+            Page.Console += (_, e) =>
+            {
+                if (e.Message.Type == ConsoleType.Warning)
+                {
+                    warnings.Add(e.Message.Text);
+                }
+            };
+
+            await Page.SetContentAsync(
+                $"<script src=\"{TestConstants.CrossProcessHttpPrefix}/injectedfile.js\"></script>",
+                new SetContentOptions { WaitUntil = new[] { WaitUntilNavigation.Load } });
+
+            Assert.That(await Page.EvaluateExpressionAsync<int>("window.__injected"), Is.EqualTo(42));
+            Assert.That(warnings.Where(warning => warning.Contains("document.write")), Is.Empty);
         }
     }
 }

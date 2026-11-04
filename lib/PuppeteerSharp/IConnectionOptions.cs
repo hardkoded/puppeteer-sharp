@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Transport;
@@ -46,5 +47,16 @@ namespace PuppeteerSharp
         /// Defaults to 180_000.
         /// </summary>
         public int ProtocolTimeout { get; set; }
+
+        /// <summary>
+        /// Options for the WebSocket connection to the browser.
+        /// </summary>
+        WsOptions WsOptions { get; set; }
+
+        /// <summary>
+        /// Headers that should be sent with connection-related HTTP and WebSocket requests.
+        /// </summary>
+        [Obsolete("Use WsOptions.Headers via IConnectionOptions.WsOptions instead. When both are set, WsOptions.Headers wins.")]
+        Dictionary<string, string> Headers { get; set; }
     }
 }

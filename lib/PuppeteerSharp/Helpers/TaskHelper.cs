@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -186,6 +187,35 @@ namespace PuppeteerSharp.Helpers
             }
 
             return await task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Awaits all tasks, but fails immediately if any task fails (like JavaScript's Promise.all).
+        /// Unlike <see cref="Task.WhenAll(Task[])"/> which waits for all tasks to complete before throwing,
+        /// this method throws immediately when any task fails or is canceled.
+        /// </summary>
+        /// <param name="tasks">The tasks to await.</param>
+        /// <returns>A task that completes when all tasks complete successfully.</returns>
+        public static async Task WhenAllFailFast(this Task[] tasks)
+        {
+            if (tasks == null)
+            {
+                throw new ArgumentNullException(nameof(tasks));
+            }
+
+            var remaining = new HashSet<Task>(tasks);
+
+            while (remaining.Count > 0)
+            {
+                var completed = await Task.WhenAny(remaining).ConfigureAwait(false);
+                remaining.Remove(completed);
+
+                // If the task failed or was canceled, throw immediately (don't wait for others)
+                if (completed.IsFaulted || completed.IsCanceled)
+                {
+                    await completed.ConfigureAwait(false);
+                }
+            }
         }
 
         private static async Task<bool> TimeoutTask(Task task, TimeSpan timeout)

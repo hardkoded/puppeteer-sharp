@@ -6,10 +6,6 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
 {
     public class IdleOverrideTests : PuppeteerPageBaseTest
     {
-        public IdleOverrideTests() : base()
-        {
-        }
-
         private async Task<string> GetIdleStateAsync()
         {
             var stateElement = await Page.QuerySelectorAsync("#state");
@@ -31,10 +27,9 @@ namespace PuppeteerSharp.Tests.IdleOverrideTests
         {
             await Context.OverridePermissionsAsync(
                 TestConstants.ServerUrl + "/idle-detector.html",
-                new[]
-                {
-                    OverridePermission.IdleDetection,
-                });
+                [
+                    OverridePermission.IdleDetection
+                ]);
 
             await Page.GoToAsync(TestConstants.ServerUrl + "/idle-detector.html");
 

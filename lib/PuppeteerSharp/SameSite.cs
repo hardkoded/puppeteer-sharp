@@ -29,5 +29,10 @@ namespace PuppeteerSharp
         /// Extended.
         /// </summary>
         Extended,
+
+        /// <summary>
+        /// Default. The browser applies its default SameSite behavior.
+        /// </summary>
+        Default,
     }
 }

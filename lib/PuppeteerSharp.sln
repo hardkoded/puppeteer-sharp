@@ -25,6 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.github\workflows\PushNugetPackageToNugetOrg.yml = ..\.github\workflows\PushNugetPackageToNugetOrg.yml
 		..\.github\workflows\sponsors-in-readme.yml = ..\.github\workflows\sponsors-in-readme.yml
 		stylecop.json = stylecop.json
+		CLAUDE.md = CLAUDE.md
+		.claude\commands\implement-upstream-change.md = .claude\commands\implement-upstream-change.md
+		.claude\commands\implement-bidi-feature.md = .claude\commands\implement-bidi-feature.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuppeteerSharp.Nunit", "PuppeteerSharp.Nunit\PuppeteerSharp.Nunit.csproj", "{EE53767C-D321-4BCF-B372-57949F38AB40}"

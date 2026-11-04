@@ -155,7 +155,7 @@ namespace PuppeteerSharp
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return Platform.Linux;
+                return RuntimeInformation.OSArchitecture == Architecture.Arm64 ? Platform.LinuxArm64 : Platform.Linux;
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -237,6 +237,30 @@ namespace PuppeteerSharp
             process.WaitForExit();
         }
 
+        // On Windows, an installer .exe can stay briefly locked (e.g. by antivirus scanning)
+        // right after WaitForExit() returns, so deleting it immediately can fail transiently.
+        private static async Task DeleteFileWithRetryAsync(string path)
+        {
+            const int maxAttempts = 5;
+            const int minDelayInMillis = 200;
+            const int maxDelayInMillis = 2000;
+
+            var retryDelay = minDelayInMillis;
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                try
+                {
+                    new FileInfo(path).Delete();
+                    return;
+                }
+                catch (IOException) when (attempt < maxAttempts)
+                {
+                    await Task.Delay(retryDelay).ConfigureAwait(false);
+                    retryDelay = Math.Min(retryDelay * 2, maxDelayInMillis);
+                }
+            }
+        }
+
         private async Task<InstalledBrowser> DownloadAsync(SupportedBrowser browser, string buildId)
         {
             var url = GetDownloadURL(browser, Platform, BaseUrl, buildId);
@@ -252,11 +276,11 @@ namespace PuppeteerSharp
 
             var outputPath = cache.GetInstallationDir(browser, Platform, buildId);
 
-            if (new DirectoryInfo(outputPath).Exists)
+            var installedBrowserCandidate = new InstalledBrowser(cache, browser, buildId, Platform);
+            if (new FileInfo(installedBrowserCandidate.GetExecutablePath()).Exists)
             {
-                var existingBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
-                existingBrowser.PermissionsFixed = RunSetup(existingBrowser);
-                return existingBrowser;
+                installedBrowserCandidate.PermissionsFixed = RunSetup(installedBrowserCandidate);
+                return installedBrowserCandidate;
             }
 
             try
@@ -265,11 +289,27 @@ namespace PuppeteerSharp
             }
             catch (Exception ex)
             {
-                throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+                var fallbackUrl = await TryResolveFallbackDownloadUrlAsync(browser, buildId).ConfigureAwait(false);
+                if (fallbackUrl != null)
+                {
+                    _logger?.LogWarning("Failed to download from {Url}, falling back to dashboard URL: {FallbackUrl}", url, fallbackUrl);
+                    try
+                    {
+                        await _customFileDownload(fallbackUrl, archivePath).ConfigureAwait(false);
+                    }
+                    catch (Exception fallbackEx)
+                    {
+                        throw new PuppeteerException($"Failed to download {browser} for {Platform} from {fallbackUrl}", fallbackEx);
+                    }
+                }
+                else
+                {
+                    throw new PuppeteerException($"Failed to download {browser} for {Platform} from {url}", ex);
+                }
             }
 
             await UnpackArchiveAsync(archivePath, outputPath, fileName).ConfigureAwait(false);
-            new FileInfo(archivePath).Delete();
+            await DeleteFileWithRetryAsync(archivePath).ConfigureAwait(false);
 
             var installedBrowser = new InstalledBrowser(cache, browser, buildId, Platform);
             installedBrowser.PermissionsFixed = RunSetup(installedBrowser);
@@ -447,7 +487,7 @@ namespace PuppeteerSharp
                 await InstallDmgAsync(archivePath, outputPath).ConfigureAwait(false);
             }
 
-            if (GetCurrentPlatform() == Platform.Linux)
+            if (GetCurrentPlatform() is Platform.Linux or Platform.LinuxArm64)
             {
                 var executables = new[]
                 {
@@ -480,6 +520,47 @@ namespace PuppeteerSharp
                     }
                 }
             }
+        }
+
+        private async Task<string> TryResolveFallbackDownloadUrlAsync(SupportedBrowser browser, string buildId)
+        {
+            if (!string.IsNullOrEmpty(BaseUrl))
+            {
+                return null;
+            }
+
+            var dashboardKey = browser switch
+            {
+                SupportedBrowser.Chrome => "chrome",
+                SupportedBrowser.ChromeHeadlessShell => "chrome-headless-shell",
+                _ => null,
+            };
+
+            if (dashboardKey == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var dashboardUrl = $"https://googlechromelabs.github.io/chrome-for-testing/{buildId}.json";
+                _logger?.LogInformation("Trying to find download URL via {DashboardUrl}", dashboardUrl);
+
+                var version = await JsonUtils.GetAsync<ChromeDashboardVersionResult>(dashboardUrl).ConfigureAwait(false);
+                var platform = Chrome.GetFolder(Platform, buildId);
+
+                if (version.Downloads.TryGetValue(dashboardKey, out var entries))
+                {
+                    var entry = entries?.FirstOrDefault(e => e.Platform == platform);
+                    return entry?.Url;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to resolve fallback download URL from dashboard");
+            }
+
+            return null;
         }
 
         private async Task DownloadFileUsingHttpClientTaskAsync(string address, string filename)

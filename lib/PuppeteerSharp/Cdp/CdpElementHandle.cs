@@ -21,6 +21,7 @@
 //  * SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,39 +31,53 @@ using PuppeteerSharp.QueryHandlers;
 
 namespace PuppeteerSharp.Cdp;
 
-/// <inheritdoc />
-public class CdpElementHandle : ElementHandle
+/// <inheritdoc cref="ElementHandle" />
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public class CdpElementHandle : ElementHandle, ICdpHandle
 {
     private readonly CdpFrame _cdpFrame;
+    private int? _backendNodeId;
 
     internal CdpElementHandle(
         IsolatedWorld world,
-        RemoteObject remoteObject)
+#pragma warning disable CA2000
+        RemoteObject remoteObject) : base(new CdpJSHandle(world, remoteObject))
+#pragma warning restore CA2000
     {
-        Handle = new CdpJSHandle(world, remoteObject);
-        Logger = Realm.Environment.Client.Connection.LoggerFactory.CreateLogger(GetType());
-        _cdpFrame = Realm.Frame as CdpFrame;
+        Logger = world.CdpCDPSession.Connection.LoggerFactory.CreateLogger(GetType());
+        _cdpFrame = IsolatedWorld.Frame as CdpFrame;
     }
 
-    /// <inheritdoc />
-    public override RemoteObject RemoteObject => Handle.RemoteObject;
+    /// <summary>
+    /// CDP Remote object.
+    /// </summary>
+    public RemoteObject RemoteObject => ((CdpJSHandle)Handle).RemoteObject;
 
-    internal override IsolatedWorld Realm => Handle.Realm;
+    /// <inheritdoc/>
+    internal override Realm Realm => Handle.Realm;
 
     /// <summary>
     /// Logger.
     /// </summary>
     internal ILogger Logger { get; }
 
-    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry =>
-        Client.Connection.CustomQuerySelectorRegistry;
+    internal override CustomQuerySelectorRegistry CustomQuerySelectorRegistry => CustomQuerySelectorRegistry.Default;
+
+    internal string Id => RemoteObject.ObjectId;
 
     /// <inheritdoc/>
     protected override Page Page => _cdpFrame.FrameManager.Page;
 
-    private CDPSession Client => Handle.Realm.Environment.Client;
+    private IsolatedWorld IsolatedWorld => (IsolatedWorld)Realm;
+
+    private ICDPSession Client => Handle.Realm.Environment.Client;
 
     private FrameManager FrameManager => _cdpFrame.FrameManager;
+
+    private string DebuggerDisplay =>
+        string.IsNullOrEmpty(RemoteObject.ClassName)
+            ? ToString()
+            : $"{RemoteObject.ClassName}@{RemoteObject.Description}";
 
     /// <inheritdoc/>
     public override async Task<IFrame> ContentFrameAsync()
@@ -134,7 +149,6 @@ public class CdpElementHandle : ElementHandle
                 var backendNodeId = node.Node.BackendNodeId;
 
                 var files = resolveFilePaths ? filePaths.Select(Path.GetFullPath).ToArray() : filePaths;
-                CheckForFileAccess(files);
                 await handle.Client.SendAsync(
                     "DOM.setFileInputFiles",
                     new DomSetFileInputFilesRequest
@@ -148,35 +162,46 @@ public class CdpElementHandle : ElementHandle
                 return handle;
             });
 
-    /// <inheritdoc />
-    public override async ValueTask DisposeAsync()
+    /// <inheritdoc/>
+    public override async Task<int> BackendNodeIdAsync()
     {
-        if (Disposed)
+        if (_backendNodeId.HasValue)
         {
-            return;
+            return _backendNodeId.Value;
         }
 
-        Disposed = true;
+        var response = await Client
+            .SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest { ObjectId = Id, })
+            .ConfigureAwait(false);
 
-        await Handle.DisposeAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
+        _backendNodeId = response.Node.BackendNodeId.GetInt32();
+        return _backendNodeId.Value;
+    }
+
+    /// <inheritdoc/>
+    public override async Task AutofillAsync(AutofillData data)
+    {
+        if (data is null)
+        {
+            throw new ArgumentNullException(nameof(data));
+        }
+
+        var nodeInfo = await Client
+            .SendAsync<DomDescribeNodeResponse>("DOM.describeNode", new DomDescribeNodeRequest { ObjectId = Id, })
+            .ConfigureAwait(false);
+        var fieldId = nodeInfo.Node.BackendNodeId.GetInt32();
+        var frameId = _cdpFrame.Id;
+        await Client.SendAsync(
+            "Autofill.trigger",
+            new AutofillTriggerRequest
+            {
+                FieldId = fieldId,
+                FrameId = frameId,
+                Card = data.CreditCard,
+                Address = data.Address,
+            }).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public override string ToString() => Handle.ToString();
-
-    private void CheckForFileAccess(string[] files)
-    {
-        foreach (var file in files)
-        {
-            try
-            {
-                File.Open(file, FileMode.Open).Dispose();
-            }
-            catch (Exception ex)
-            {
-                throw new PuppeteerException($"{files} does not exist or is not readable", ex);
-            }
-        }
-    }
 }

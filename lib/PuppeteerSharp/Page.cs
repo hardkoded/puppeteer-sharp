@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IO;
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers;
@@ -12,6 +14,10 @@ using PuppeteerSharp.Media;
 using PuppeteerSharp.Mobile;
 using PuppeteerSharp.PageAccessibility;
 using PuppeteerSharp.PageCoverage;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
+using ReactiveExtensionsSharp.Subjects;
 
 namespace PuppeteerSharp
 {
@@ -39,12 +45,24 @@ namespace PuppeteerSharp
             "JSHeapTotalSize",
         };
 
+        private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
         private readonly TaskQueue _screenshotTaskQueue;
         private readonly ConcurrentSet<Func<IRequest, Task>> _requestInterceptionTask = [];
+
+        // Tracks in-flight requests for the page's whole lifetime, not just while something is waiting on
+        // it - mirrors upstream's own #inflight$, which is wired up once in Page.ts's constructor for the
+        // same reason: a WaitForNetworkIdleAsync call needs to see requests that were already in flight
+        // before it was called, not just ones that start afterward.
+        private readonly HashSet<string> _inFlightRequestIds = new();
+        private readonly object _inFlightRequestLock = new();
+        private readonly BehaviorSubject<int> _inFlightRequestCount = new(0);
+        private int _screencastSessionCount;
+        private Task _startScreencastTask;
 
         internal Page(TaskQueue screenshotTaskQueue)
         {
             _screenshotTaskQueue = screenshotTaskQueue;
+            TrackNetworkActivity();
         }
 
         /// <inheritdoc/>
@@ -90,6 +108,9 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestServedFromCache;
 
         /// <inheritdoc/>
+        public event EventHandler<IssueEventArgs> Issue;
+
+        /// <inheritdoc/>
         public event EventHandler<PageErrorEventArgs> PageError;
 
         /// <inheritdoc/>
@@ -133,6 +154,14 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public abstract WebWorker[] Workers { get; }
 
+        /// <summary>
+        /// Experimental API for WebMCP. Requires Chrome 149+ with
+        /// --enable-features=WebMCPTesting,DevToolsWebMCPSupport flags enabled.
+        /// Only supported with CDP protocol.
+        /// </summary>
+        /// <exception cref="PuppeteerException">Thrown when not supported by the current browser/protocol.</exception>
+        public virtual Cdp.CdpWebMcp WebMcp => throw new PuppeteerException("WebMCP is only supported with Chrome DevTools Protocol.");
+
         /// <inheritdoc/>
         public bool IsServiceWorkerBypassed { get; protected set; }
 
@@ -156,6 +185,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         ITracing IPage.Tracing => Tracing;
+
+        /// <inheritdoc/>
+        IBluetoothEmulation IPage.Bluetooth => Bluetooth;
 
         /// <inheritdoc/>
         IMouse IPage.Mouse => Mouse;
@@ -202,6 +234,10 @@ namespace PuppeteerSharp
 
         internal Mouse Mouse { get; init; }
 
+        internal IBluetoothEmulation Bluetooth { get; init; }
+
+        internal string TabId { get; set; } = string.Empty;
+
         internal bool IsDragging { get; set; }
 
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
@@ -238,6 +274,9 @@ namespace PuppeteerSharp
         public abstract Task<Dictionary<string, decimal>> MetricsAsync();
 
         /// <inheritdoc/>
+        public abstract Task CaptureHeapSnapshotAsync(HeapSnapshotOptions options);
+
+        /// <inheritdoc/>
         public Task TapAsync(string selector)
             => MainFrame.TapAsync(selector);
 
@@ -248,6 +287,10 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public Task<IElementHandle[]> QuerySelectorAllAsync(string selector)
             => MainFrame.QuerySelectorAllAsync(selector);
+
+        /// <inheritdoc/>
+        public Task<IElementHandle[]> QuerySelectorAllAsync(string selector, QueryOptions options)
+            => MainFrame.QuerySelectorAllAsync(selector, options);
 
         /// <inheritdoc/>
         public Task<IJSHandle> QuerySelectorAllHandleAsync(string selector)
@@ -262,6 +305,15 @@ namespace PuppeteerSharp
         public Task<DeviceRequestPrompt> WaitForDevicePromptAsync(
             WaitForOptions options = default(WaitForOptions))
             => MainFrame.WaitForDevicePromptAsync(options);
+
+        /// <inheritdoc/>
+        public abstract Task ResizeAsync(int contentWidth, int contentHeight);
+
+        /// <inheritdoc/>
+        public abstract Task<string> WindowIdAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<TabInfo> TabInfoAsync();
 
         /// <inheritdoc/>
         public Task<IJSHandle> EvaluateExpressionHandleAsync(string script)
@@ -352,7 +404,14 @@ namespace PuppeteerSharp
         public Task<string> GetContentAsync(GetContentOptions options = null) => MainFrame.GetContentAsync(options);
 
         /// <inheritdoc/>
-        public Task SetContentAsync(string html, NavigationOptions options = null)
+        [System.Obsolete("Use SetContentAsync(string, SetContentOptions) instead. The networkidle0 and networkidle2 wait conditions never worked reliably with SetContent.")]
+        public Task SetContentAsync(string html, NavigationOptions options)
+#pragma warning disable CS0618 // Type or member is obsolete
+            => MainFrame.SetContentAsync(html, options);
+#pragma warning restore CS0618
+
+        /// <inheritdoc/>
+        public Task SetContentAsync(string html, SetContentOptions options = null)
             => MainFrame.SetContentAsync(html, options);
 
         /// <inheritdoc/>
@@ -373,12 +432,18 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public async Task PdfAsync(string file, PdfOptions options)
         {
-            if (options == null)
+            if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            await PdfInternalAsync(file, options).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
+            using var outputStream = AsyncFileHelper.CreateStream(file, FileMode.Create);
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -386,20 +451,36 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public async Task<Stream> PdfStreamAsync(PdfOptions options)
-            => new MemoryStream(await PdfDataAsync(options).ConfigureAwait(false));
+        {
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            // The consumer will dispose the stream
+            var outputStream = _memoryStreamManager.GetStream();
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
+            outputStream.Position = 0;
+            return outputStream;
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> PdfDataAsync() => PdfDataAsync(new PdfOptions());
 
         /// <inheritdoc/>
-        public Task<byte[]> PdfDataAsync(PdfOptions options)
+        public async Task<byte[]> PdfDataAsync(PdfOptions options)
         {
-            if (options == null)
+            if (options is null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return PdfInternalAsync(null, options);
+            using var outputStream = _memoryStreamManager.GetStream();
+            await PdfInternalAsync(outputStream, options).ConfigureAwait(false);
+            outputStream.Position = 0;
+
+            // We have to return a copy here because the underlying stream will be returned to the pool and cleared after this method returns.
+            return outputStream.ToArray();
         }
 
         /// <inheritdoc/>
@@ -428,6 +509,158 @@ namespace PuppeteerSharp
             return Task.WhenAll(
                 SetViewportAsync(options.ViewPort),
                 SetUserAgentAsync(options.UserAgent));
+        }
+
+        /// <summary>
+        /// Records this <see cref="IPage"/> using the Chrome DevTools Protocol
+        /// <see href="https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-startScreenRecording">Page.startScreenRecording</see> API.
+        /// </summary>
+        /// <remarks>
+        /// Outputs mp4 video stream.
+        /// </remarks>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A task which resolves to a <see cref="ScreenRecording"/> that can be used to stop the recording.</returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned recording.")]
+        public async Task<ScreenRecording> RecordAsync(RecordOptions options = null)
+        {
+            options ??= new RecordOptions();
+
+            if (options.MaxWidth is <= 0)
+            {
+                throw new PuppeteerException("`maxWidth` must be greater than 0.");
+            }
+
+            if (options.MaxHeight is <= 0)
+            {
+                throw new PuppeteerException("`maxHeight` must be greater than 0.");
+            }
+
+            if (options.FrameRate is <= 0)
+            {
+                throw new PuppeteerException("`frameRate` must be greater than 0.");
+            }
+
+            if (options.Fps is <= 0)
+            {
+                throw new PuppeteerException("`fps` must be greater than 0.");
+            }
+
+            Stream outputStream = null;
+            try
+            {
+                outputStream = CreateRecordingOutputStream(options);
+                var recording = CreateScreenRecording(options);
+
+                try
+                {
+                    await recording.StartAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    try
+                    {
+                        await recording.StopAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Let the original start error propagate.
+                    }
+
+                    throw;
+                }
+
+                if (outputStream != null)
+                {
+                    await recording.PipeAsync(outputStream).ConfigureAwait(false);
+                    outputStream = null;
+                }
+
+                return recording;
+            }
+            finally
+            {
+                outputStream?.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        [Obsolete("Use RecordAsync instead.")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The caller is responsible for disposing the returned recorder.")]
+        public async Task<ScreenRecorder> ScreencastAsync(ScreencastOptions options = null)
+        {
+            options ??= new ScreencastOptions();
+
+            var dimensions = await GetNativePixelDimensionsAsync().ConfigureAwait(false);
+            var viewportWidth = dimensions.Width / dimensions.DevicePixelRatio;
+            var viewportHeight = dimensions.Height / dimensions.DevicePixelRatio;
+
+            if (options.Crop != null)
+            {
+                var crop = options.Crop;
+                var cropX = crop.X;
+                var cropY = crop.Y;
+                var cropWidth = crop.Width;
+                var cropHeight = crop.Height;
+
+                if (cropX < 0 || cropY < 0)
+                {
+                    throw new PuppeteerException("`crop.x` and `crop.y` must be greater than or equal to 0.");
+                }
+
+                if (cropWidth <= 0 || cropHeight <= 0)
+                {
+                    throw new PuppeteerException("`crop.height` and `crop.width` must be greater than or equal to 0.");
+                }
+
+                if (cropX + cropWidth > (decimal)viewportWidth)
+                {
+                    throw new PuppeteerException($"`crop.width` cannot be larger than the viewport width ({viewportWidth}).");
+                }
+
+                if (cropY + cropHeight > (decimal)viewportHeight)
+                {
+                    throw new PuppeteerException($"`crop.height` cannot be larger than the viewport height ({viewportHeight}).");
+                }
+            }
+
+            if (options.Speed is not null && options.Speed <= 0)
+            {
+                throw new PuppeteerException("`speed` must be greater than 0.");
+            }
+
+            if (options.Scale is not null && options.Scale <= 0)
+            {
+                throw new PuppeteerException("`scale` must be greater than 0.");
+            }
+
+            var width = (int)Math.Round(dimensions.Width);
+            var height = (int)Math.Round(dimensions.Height);
+
+            // Open the output file before starting ffmpeg so overwrite / create
+            // failures do not leave a recorder running. Matches upstream Page.screencast.
+            Stream outputStream = null;
+            try
+            {
+                outputStream = CreateScreencastOutputStream(options);
+                var recorder = new ScreenRecorder(this, width, height, options, outputStream);
+                outputStream = null;
+
+                try
+                {
+                    await StartScreencastAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    await recorder.StopAsync().ConfigureAwait(false);
+                    throw;
+                }
+
+                return recorder;
+            }
+            finally
+            {
+                outputStream?.Dispose();
+            }
         }
 
         /// <inheritdoc/>
@@ -468,8 +701,10 @@ namespace PuppeteerSharp
         public Task<string> ScreenshotBase64Async() => ScreenshotBase64Async(new ScreenshotOptions());
 
         /// <inheritdoc/>
-        public Task<string> ScreenshotBase64Async(ScreenshotOptions options)
-            => _screenshotTaskQueue.Enqueue(async () =>
+        public async Task<string> ScreenshotBase64Async(ScreenshotOptions options)
+        {
+            using var guard = await ((BrowserContext)BrowserContext).StartScreenshotAsync().ConfigureAwait(false);
+            return await _screenshotTaskQueue.Enqueue(async () =>
             {
                 if (options == null)
                 {
@@ -511,11 +746,6 @@ namespace PuppeteerSharp
                 var stack = new DisposableTasksStack();
                 await using (stack.ConfigureAwait(false))
                 {
-                    if (!ScreenshotBurstModeOn)
-                    {
-                        await BringToFrontAsync().ConfigureAwait(false);
-                    }
-
                     // FromSurface is not supported on Firefox.
                     // It seems that Puppeteer solved this just by ignoring screenshot tests in firefox.
                     if (Browser.BrowserType == SupportedBrowser.Firefox)
@@ -524,10 +754,6 @@ namespace PuppeteerSharp
                         {
                             throw new NotSupportedException("Screenshots from surface are not supported on Firefox.");
                         }
-                    }
-                    else
-                    {
-                        options.FromSurface ??= true;
                     }
 
                     if (options.Clip != null && options.FullPage)
@@ -558,9 +784,9 @@ namespace PuppeteerSharp
                                             };
                                         }").ConfigureAwait(false);
 
-                                    var viewport = Viewport with { };
+                                    var viewport = Viewport;
 
-                                    await SetViewportAsync(viewport with
+                                    await SetViewportAsync((viewport ?? new ViewPortOptions()) with
                                     {
                                         Width = Convert.ToInt32(scrollDimensions.Width),
                                         Height = Convert.ToInt32(scrollDimensions.Height),
@@ -588,7 +814,8 @@ namespace PuppeteerSharp
 
                     return result;
                 }
-            });
+            }).ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public Task<byte[]> ScreenshotDataAsync() => ScreenshotDataAsync(new ScreenshotOptions());
@@ -602,6 +829,12 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public abstract Task CloseAsync(PageCloseOptions options = null);
+
+        /// <inheritdoc/>
+        public abstract Task<IPage> OpenDevToolsAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<bool> HasDevToolsAsync();
 
         /// <inheritdoc/>
         public abstract Task SetCacheEnabledAsync(bool enabled = true);
@@ -621,16 +854,16 @@ namespace PuppeteerSharp
             => MainFrame.TypeAsync(selector, text, options);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateExpressionAsync(string script)
-            => MainFrame.EvaluateExpressionAsync<JsonElement?>(script);
+        public Task EvaluateExpressionAsync(string script)
+            => MainFrame.EvaluateExpressionAsync(script);
 
         /// <inheritdoc/>
         public Task<T> EvaluateExpressionAsync<T>(string script)
             => MainFrame.EvaluateExpressionAsync<T>(script);
 
         /// <inheritdoc/>
-        public Task<JsonElement?> EvaluateFunctionAsync(string script, params object[] args)
-            => MainFrame.EvaluateFunctionAsync<JsonElement?>(script, args);
+        public Task EvaluateFunctionAsync(string script, params object[] args)
+            => MainFrame.EvaluateFunctionAsync(script, args);
 
         /// <inheritdoc/>
         public Task<T> EvaluateFunctionAsync<T>(string script, params object[] args)
@@ -640,17 +873,20 @@ namespace PuppeteerSharp
         public abstract Task SetUserAgentAsync(string userAgent, UserAgentMetadata userAgentData = null);
 
         /// <inheritdoc/>
+        public abstract Task SetUserAgentAsync(SetUserAgentOptions options);
+
+        /// <inheritdoc/>
         public abstract Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers);
 
         /// <inheritdoc/>
         public abstract Task AuthenticateAsync(Credentials credentials);
 
         /// <inheritdoc/>
-        public abstract Task<IResponse> ReloadAsync(NavigationOptions options);
+        public abstract Task<IResponse> ReloadAsync(ReloadOptions options);
 
         /// <inheritdoc/>
         public Task<IResponse> ReloadAsync(int? timeout = null, WaitUntilNavigation[] waitUntil = null)
-            => ReloadAsync(new NavigationOptions { Timeout = timeout, WaitUntil = waitUntil });
+            => ReloadAsync(new ReloadOptions { Timeout = timeout, WaitUntil = waitUntil });
 
         /// <inheritdoc/>
         public Task<string[]> SelectAsync(string selector, params string[] values)
@@ -673,6 +909,14 @@ namespace PuppeteerSharp
             => MainFrame.WaitForSelectorAsync(selector, options ?? new WaitForSelectorOptions());
 
         /// <inheritdoc/>
+        public Locators.Locator Locator(string selector)
+            => Locators.NodeLocator.Create(this, selector);
+
+        /// <inheritdoc/>
+        public Locators.Locator LocatorFunction(string func)
+            => Locators.FunctionLocator.Create(this, func);
+
+        /// <inheritdoc/>
 #pragma warning disable CS0618 // WaitForXPathAsync is obsolete
         public Task<IElementHandle> WaitForXPathAsync(string xpath, WaitForSelectorOptions options = null)
             => MainFrame.WaitForXPathAsync(xpath, options ?? new WaitForSelectorOptions());
@@ -683,21 +927,107 @@ namespace PuppeteerSharp
             => MainFrame.WaitForNavigationAsync(options);
 
         /// <inheritdoc/>
-        public abstract Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null);
+        public async Task WaitForNetworkIdleAsync(WaitForNetworkIdleOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var idleTime = options?.IdleTime ?? 500;
+            var concurrency = options?.Concurrency ?? 0;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            try
+            {
+                // _inFlightRequestCount is a page-lifetime BehaviorSubject (see TrackNetworkActivity), not
+                // something built fresh here - it already reflects any requests that were in flight before
+                // this call, not just ones that start afterward.
+                var idleReached = _inFlightRequestCount.AsObservable()
+                    .Map(count => count <= concurrency)
+                    .DistinctUntilChanged()
+                    .SwitchMap(idle => idle ? Observable.Timer(TimeSpan.FromMilliseconds(idleTime)) : Observable.Never<long>())
+                    .Map(_ => Unit.Default);
+
+                await idleReached
+                    .RaceWith(CloseSignal<Unit>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IRequest> WaitForRequestAsync(string url, WaitForOptions options = null)
             => WaitForRequestAsync(request => request.Url == url, options);
 
         /// <inheritdoc/>
-        public abstract Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null);
+        public async Task<IRequest> WaitForRequestAsync(Func<IRequest, bool> predicate, WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            var requestReceived = Observable.FromEvent<RequestEventArgs>(h => Request += h, h => Request -= h)
+                .Map(e => e.Request)
+                .Filter(predicate);
+
+            try
+            {
+                return await requestReceived
+                    .RaceWith(CloseSignal<IRequest>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IFrame> WaitForFrameAsync(string url, WaitForOptions options = null)
             => WaitForFrameAsync((frame) => frame.Url == url, options);
 
         /// <inheritdoc/>
-        public abstract Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null);
+        public async Task<IFrame> WaitForFrameAsync(Func<IFrame, bool> predicate, WaitForOptions options = null)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            using var attached = RxExtensions.FromEventBuffered<FrameEventArgs>(h => FrameAttached += h, h => FrameAttached -= h);
+            using var navigated = RxExtensions.FromEventBuffered<FrameNavigatedEventArgs>(h => FrameNavigated += h, h => FrameNavigated -= h);
+
+            try
+            {
+                return await attached.AsObservable().Map(e => e.Frame)
+                    .MergeWith(navigated.AsObservable().Map(e => e.Frame))
+                    .MergeWith(Observable.From(Frames))
+                    .Filter(predicate)
+                    .RaceWith(CloseSignal<IFrame>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public Task<IResponse> WaitForResponseAsync(string url, WaitForOptions options = null)
@@ -708,9 +1038,33 @@ namespace PuppeteerSharp
             => WaitForResponseAsync((response) => Task.FromResult(predicate(response)), options);
 
         /// <inheritdoc/>
-        public abstract Task<IResponse> WaitForResponseAsync(
+        public async Task<IResponse> WaitForResponseAsync(
             Func<IResponse, Task<bool>> predicate,
-            WaitForOptions options = null);
+            WaitForOptions options = null)
+        {
+            var timeout = options?.Timeout ?? DefaultTimeout;
+            var cancellationToken = options?.CancellationToken ?? default;
+
+            var responseReceived = Observable.FromEvent<ResponseCreatedEventArgs>(h => Response += h, h => Response -= h)
+                .Map(e => e.Response)
+                .FilterAsync(predicate);
+
+            try
+            {
+                return await responseReceived
+                    .RaceWith(CloseSignal<IResponse>())
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (TimeoutException)
+            {
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new TaskCanceledException();
+            }
+        }
 
         /// <inheritdoc/>
         public abstract Task<FileChooser> WaitForFileChooserAsync(WaitForOptions options = null);
@@ -734,10 +1088,16 @@ namespace PuppeteerSharp
         public abstract Task EmulateTimezoneAsync(string timezoneId);
 
         /// <inheritdoc/>
+        public abstract Task EmulateLocaleAsync(string locale = null);
+
+        /// <inheritdoc/>
         public abstract Task EmulateIdleStateAsync(EmulateIdleOverrides idleOverrides = null);
 
         /// <inheritdoc/>
         public abstract Task EmulateCPUThrottlingAsync(decimal? factor = null);
+
+        /// <inheritdoc/>
+        public abstract Task EmulateFocusedPageAsync(bool enabled);
 
         /// <inheritdoc />
         public void Dispose()
@@ -776,6 +1136,18 @@ namespace PuppeteerSharp
         /// <inheritdoc />
         public abstract Task SetBypassServiceWorkerAsync(bool bypass);
 
+        /// <inheritdoc />
+        public abstract Task TriggerExtensionActionAsync(Extension extension);
+
+        /// <summary>
+        /// Retrieves the list of extension realms inside the main frame of this page.
+        /// Shortcut for <c>MainFrame.ExtensionRealms()</c>.
+        /// </summary>
+        /// <returns>A list of <see cref="Realm"/> instances representing extension execution contexts.</returns>
+        public abstract IReadOnlyList<Realm> ExtensionRealms();
+
+        internal void OnIssue(IssueEventArgs e) => Issue?.Invoke(this, e);
+
         internal void OnPopup(IPage popupPage) => Popup?.Invoke(this, new PopupEventArgs { PopupPage = popupPage });
 
         /// <summary>
@@ -789,85 +1161,170 @@ namespace PuppeteerSharp
         }
 
         /// <summary>
-        /// Dispose resources.
+        /// Raises the <see cref="Dialog"/> event.
         /// </summary>
-        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
-        protected virtual void Dispose(bool disposing)
+        /// <param name="e">Dialog event args.</param>
+        internal void OnDialog(DialogEventArgs e)
         {
-            Mouse.Dispose();
-            _ = DisposeAsync();
+            Dialog?.Invoke(this, e);
         }
 
         /// <summary>
         /// Raises the <see cref="FrameAttached"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="FrameNavigated"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+        internal void OnFrameAttached(FrameEventArgs e) => FrameAttached?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="FrameDetached"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnFrameDetached(FrameEventArgs e) => FrameDetached?.Invoke(this, e);
-
-        /// <summary>
-        /// Raises the <see cref="RequestFailed"/> event.
-        /// </summary>
-        /// <param name="e">Event arguments.</param>
-        protected void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+        internal void OnFrameDetached(FrameEventArgs e) => FrameDetached?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="RequestFinished"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
 
         /// <summary>
-        /// Raises the <see cref="Response"/> event.
+        /// Raises the <see cref="RequestFailed"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="RequestServedFromCache"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        protected void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
 
         /// <summary>
-        /// Raises the <see cref="DOMContentLoaded"/> event.
+        /// Raises the <see cref="Response"/> event.
         /// </summary>
-        protected void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
-
-        /// <summary>
-        /// Raises the <see cref="Load"/> event.
-        /// </summary>
-        protected void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+        /// <param name="e">Event arguments.</param>
+        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="Request"/> event.
         /// </summary>
         /// <param name="request">Request object.</param>
-        protected void OnRequest(IRequest request)
+        internal void OnRequest(IRequest request)
         {
             if (request == null)
             {
                 return;
             }
 
-            // Run tasks one after the other
-            foreach (var subscriber in _requestInterceptionTask)
+            EnqueueInterceptorHandlers(request);
+            Request?.Invoke(this, new RequestEventArgs(request));
+        }
+
+        /// <summary>
+        /// Enqueues registered interceptor handlers for the request without firing the Request event.
+        /// This is used for duplicate requests (e.g., Firefox BiDi speculative loading) where we need
+        /// to run the handlers but don't want to notify the user multiple times.
+        /// </summary>
+        /// <param name="request">Request object.</param>
+        internal void EnqueueInterceptorHandlers(IRequest request)
+        {
+            if (request == null)
             {
-                (request as CdpHttpRequest)?.EnqueueInterceptionAction(subscriber);
+                return;
             }
 
-            Request?.Invoke(this, new RequestEventArgs(request));
+            if (request is IInterceptableRequest interceptableRequest)
+            {
+                foreach (var subscriber in _requestInterceptionTask)
+                {
+                    interceptableRequest.EnqueueInterceptionAction(subscriber);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starts a CDP screencast session.
+        /// </summary>
+        /// <remarks>
+        /// Registers the screencast frame listener before starting screencast so the first frame is not missed
+        /// while <c>Page.startScreencast</c> is in flight (upstream puppeteer/puppeteer#15389).
+        /// </remarks>
+        /// <returns>A <see cref="Task"/> that completes when the screencast has started.</returns>
+        internal async Task StartScreencastAsync()
+        {
+            _screencastSessionCount++;
+            if (_startScreencastTask == null)
+            {
+                var tcs = new TaskCompletionSource<bool>();
+                void OnScreencastFrame(object sender, MessageEventArgs e)
+                {
+                    if (e.MessageID == "Page.screencastFrame")
+                    {
+                        Client.MessageReceived -= OnScreencastFrame;
+                        tcs.TrySetResult(true);
+                    }
+                }
+
+                Client.MessageReceived += OnScreencastFrame;
+                _startScreencastTask = Client.SendAsync("Page.startScreencast", new { format = "png" })
+                    .ContinueWith(_ => tcs.Task, TaskScheduler.Default)
+                    .Unwrap();
+            }
+
+            await _startScreencastTask.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Stops a CDP screencast session.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that completes when the screencast has stopped.</returns>
+        internal async Task StopScreencastAsync()
+        {
+            _screencastSessionCount--;
+            if (_startScreencastTask == null)
+            {
+                return;
+            }
+
+            _startScreencastTask = null;
+            if (_screencastSessionCount == 0)
+            {
+                await Client.SendAsync("Page.stopScreencast").ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Request"/> event without enqueueing handlers.
+        /// Used when handlers have already been enqueued separately.
+        /// </summary>
+        /// <param name="e">Request event arguments.</param>
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
+
+        /// <summary>
+        /// Raises the <see cref="DOMContentLoaded"/> event.
+        /// </summary>
+        internal void OnDOMContentLoaded() => DOMContentLoaded?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="Load"/> event.
+        /// </summary>
+        internal void OnLoad() => Load?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Raises the <see cref="FrameNavigated"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        internal void OnFrameNavigated(FrameNavigatedEventArgs e) => FrameNavigated?.Invoke(this, e);
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether disposal was initiated by <see cref="Dispose()"/> operation.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Mouse.Dispose();
+            _inFlightRequestCount.Dispose();
+            _ = DisposeAsync();
         }
 
         /// <summary>
@@ -914,10 +1371,10 @@ namespace PuppeteerSharp
         /// <summary>
         /// PDF implementation.
         /// </summary>
-        /// <param name="file">File path.</param>
+        /// <param name="outputStream">Where to write the PDF bytes.</param>
         /// <param name="options">PDF options.</param>
         /// <returns>PDF data.</returns>
-        protected abstract Task<byte[]> PdfInternalAsync(string file, PdfOptions options);
+        protected abstract Task PdfInternalAsync(Stream outputStream, PdfOptions options);
 
         /// <summary>
         /// Screenshot implementation.
@@ -934,6 +1391,39 @@ namespace PuppeteerSharp
         /// <param name="puppeteerFunction">Puppeteer function.</param>
         /// <returns>A <see cref="Task"/> that completes when the function has been added.</returns>
         protected abstract Task ExposeFunctionAsync(string name, Delegate puppeteerFunction);
+
+        /// <summary>
+        /// Creates a protocol-specific screen recording instance.
+        /// </summary>
+        /// <param name="options">Recording options.</param>
+        /// <returns>A screen recording instance.</returns>
+        protected abstract ScreenRecording CreateScreenRecording(RecordOptions options);
+
+        private static Stream CreateScreencastOutputStream(ScreencastOptions options)
+            => CreateRecordingOutputStream(options.Path, options.Overwrite);
+
+        private static Stream CreateRecordingOutputStream(RecordOptions options)
+            => CreateRecordingOutputStream(options.Path, options.Overwrite);
+
+        private static Stream CreateRecordingOutputStream(string path, bool? overwrite)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            var directory = Path.GetDirectoryName(Path.GetFullPath(path));
+            if (!string.IsNullOrEmpty(directory))
+            {
+                // Upstream mkdir uses {recursive: overwrite ?? true}. .NET's
+                // Directory.CreateDirectory is always recursive and is a no-op
+                // when the directory already exists.
+                Directory.CreateDirectory(directory);
+            }
+
+            var fileMode = (overwrite ?? true) ? FileMode.Create : FileMode.CreateNew;
+            return AsyncFileHelper.CreateStream(path, fileMode);
+        }
 
         private Clip RoundRectangle(Clip clip)
         {
@@ -960,6 +1450,79 @@ namespace PuppeteerSharp
                 Width = Math.Abs(clip.Width),
                 Height = Math.Abs(clip.Height),
             };
+        }
+
+        private async Task<NativePixelDimensions> GetNativePixelDimensionsAsync()
+        {
+            var result = await MainFrame.EvaluateFunctionAsync<decimal[]>(
+                @"() => {
+                    // Frames are whole pixels, so round off any floating-point error
+                    // (e.g. 800 * 1.15 = 919.99...) that would make ffmpeg's pad filter
+                    // one pixel smaller than the frames.
+                    return [
+                        Math.round(window.visualViewport.width * window.devicePixelRatio),
+                        Math.round(window.visualViewport.height * window.devicePixelRatio),
+                        window.devicePixelRatio,
+                    ];
+                }").ConfigureAwait(false);
+
+            return new NativePixelDimensions
+            {
+                Width = (double)result[0],
+                Height = (double)result[1],
+                DevicePixelRatio = (double)result[2],
+            };
+        }
+
+        private Observable<T> CloseSignal<T>() =>
+            Observable.FromEvent<EventHandler, EventArgs>(
+                    h => Close += h,
+                    h => Close -= h,
+                    onNext => (_, args) => onNext(args))
+                .Map<EventArgs, T>(_ => throw new TargetClosedException("Target closed", "Page closed"));
+
+        // Wires up _inFlightRequestCount for the page's whole life - called once from the constructor, not
+        // per WaitForNetworkIdleAsync call - so it already reflects reality by the time anything waits on
+        // it. Only fires OnNext when the set actually changes, so a request that fires both Response and
+        // RequestFinished (common - Response is headers-received, RequestFinished is body-complete, and not
+        // every request gets both) only counts as one net change, not two.
+        private void TrackNetworkActivity()
+        {
+            void Add(string id)
+            {
+                lock (_inFlightRequestLock)
+                {
+                    if (_inFlightRequestIds.Add(id))
+                    {
+                        _inFlightRequestCount.OnNext(_inFlightRequestIds.Count);
+                    }
+                }
+            }
+
+            void Remove(string id)
+            {
+                lock (_inFlightRequestLock)
+                {
+                    if (_inFlightRequestIds.Remove(id))
+                    {
+                        _inFlightRequestCount.OnNext(_inFlightRequestIds.Count);
+                    }
+                }
+            }
+
+            Request += (_, e) => Add(e.Request.Id);
+            Response += (_, e) => Remove(e.Response.Request.Id);
+            RequestFinished += (_, e) => Remove(e.Request.Id);
+            RequestFailed += (_, e) => Remove(e.Request.Id);
+        }
+
+        private struct NativePixelDimensions
+        {
+            public double Width { get; set; }
+
+            public double Height { get; set; }
+
+            public double DevicePixelRatio { get; set; }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldWork()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             var waitForNavigationResult = frame.WaitForNavigationAsync();
 
             await Task.WhenAll(
@@ -33,7 +33,7 @@ namespace PuppeteerSharp.Tests.NavigationTests
         public async Task ShouldFailWhenFrameDetaches()
         {
             await Page.GoToAsync(TestConstants.ServerUrl + "/frames/one-frame.html");
-            var frame = Page.FirstChildFrame();
+            var frame = await Page.FirstChildFrameAsync();
             Server.SetRoute("/empty.html", _ => Task.Delay(10000));
             var waitForNavigationResult = frame.WaitForNavigationAsync();
             await Task.WhenAll(

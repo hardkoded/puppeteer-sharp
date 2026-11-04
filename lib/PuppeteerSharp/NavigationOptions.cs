@@ -29,6 +29,11 @@ namespace PuppeteerSharp
         /// </summary>
         public string ReferrerPolicy { get; set; }
 
+        /// <summary>
+        /// Optional cancellation token to abort navigation.
+        /// </summary>
+        public System.Threading.CancellationToken? CancellationToken { get; set; }
+
         internal bool IgnoreSameDocumentNavigation { get; set; }
     }
 }

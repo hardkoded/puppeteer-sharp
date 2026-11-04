@@ -24,5 +24,7 @@ namespace PuppeteerSharp.Cdp.Messaging
         public string RemoteIPAddress { get; set; }
 
         public int RemotePort { get; set; }
+
+        public ResourceTiming Timing { get; set; }
     }
 }

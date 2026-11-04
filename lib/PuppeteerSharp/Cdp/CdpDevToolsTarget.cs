@@ -15,14 +15,10 @@ namespace PuppeteerSharp.Cdp
             BrowserContext context,
             ITargetManager targetManager,
             Func<bool, Task<CDPSession>> sessionFactory,
-            bool acceptInsecureCerts,
             ViewPortOptions defaultViewport,
             TaskQueue screenshotTaskQueue)
-            : base(targetInfo, session, context, targetManager, sessionFactory, acceptInsecureCerts, defaultViewport, screenshotTaskQueue)
+            : base(targetInfo, session, context, targetManager, sessionFactory, defaultViewport, screenshotTaskQueue)
         {
         }
-
-        /// <inheritdoc/>
-        public override TargetType Type => TargetType.Other;
     }
 }

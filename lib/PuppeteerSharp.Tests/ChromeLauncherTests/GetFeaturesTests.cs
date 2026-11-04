@@ -41,5 +41,12 @@ namespace PuppeteerSharp.Tests.ChromeLauncherTests
             var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar", "--foo=baz" });
             Assert.That(result, Is.EqualTo(new[] { "bar", "baz" }));
         }
+
+        [Test, PuppeteerTest("ChromeLauncher.test.ts", "getFeatures", "handles comma-separated values")]
+        public void HandlesCommaSeparatedValues()
+        {
+            var result = ChromeLauncher.GetFeatures("--foo", new[] { "--foo=bar,baz", "--foo=qux" });
+            Assert.That(result, Is.EqualTo(new[] { "bar", "baz", "qux" }));
+        }
     }
 }

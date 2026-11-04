@@ -7,10 +7,6 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class DefaultBrowserContextTests : PuppeteerPageBaseTest
     {
-        public DefaultBrowserContextTests() : base()
-        {
-        }
-
         [SetUp]
         public async Task CreateNewPageAsync()
         {

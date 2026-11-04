@@ -62,6 +62,7 @@ public class CdpKeyboard : Keyboard
             AutoRepeat = autoRepeat,
             Location = description.Location,
             IsKeypad = description.Location == 3,
+            Commands = options?.Commands,
         });
     }
 

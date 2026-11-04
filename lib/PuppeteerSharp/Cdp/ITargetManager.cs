@@ -9,7 +9,7 @@ namespace PuppeteerSharp
     /// <summary>
     /// Target manager.
     /// </summary>
-    internal interface ITargetManager
+    internal interface ITargetManager : IDisposable
     {
         /// <summary>
         /// Raised when a target is available.
@@ -49,5 +49,33 @@ namespace PuppeteerSharp
         /// <param name="target">Target to evaluate.</param>
         /// <returns>A list of targets.</returns>
         IEnumerable<ITarget> GetChildTargets(ITarget target);
+
+        /// <summary>
+        /// Validates a URL against the configured blocklist/allowlist patterns.
+        /// </summary>
+        /// <param name="url">URL to validate.</param>
+        /// <returns><c>true</c> if the URL is allowed, otherwise <c>false</c>.</returns>
+        bool IsUrlAllowed(string url);
+
+        /// <summary>
+        /// Sets the network restrictions and re-applies them to all the tracked targets.
+        /// </summary>
+        /// <param name="restrictions">The restrictions to apply, or <c>null</c> to clear them.</param>
+        /// <returns>A task that resolves when the restrictions were applied.</returns>
+        Task SetNetworkConditionsAsync(NetworkRestrictions restrictions);
+
+        /// <summary>
+        /// Returns the IDs of the targets discovered so far.
+        /// </summary>
+        /// <returns>The discovered target IDs.</returns>
+        IReadOnlyCollection<string> GetDiscoveredTargetIds();
+
+        /// <summary>
+        /// Destroys the service worker targets of an extension, since Chrome does not emit Target.targetDestroyed for them.
+        /// </summary>
+        /// <param name="extensionId">The extension ID.</param>
+        /// <param name="existingTargetIds">When set, only targets with these IDs are destroyed.</param>
+        /// <returns>A task that resolves when the targets were destroyed.</returns>
+        Task DestroyExtensionServiceWorkerTargetsAsync(string extensionId, IReadOnlyCollection<string> existingTargetIds = null);
     }
 }

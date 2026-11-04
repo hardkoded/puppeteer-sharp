@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0.x' # The .NET SDK version to use
 
 jobs:
   PushToIntNugetOrg:
@@ -16,12 +16,14 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 10.0.x
     - name: Install dependencies
       run: |
         dotnet restore lib/PuppeteerSharp.sln
         dotnet dev-certs https -ep lib/PuppeteerSharp.TestServer/testCert.cer
     - name: Build
+      env:
+        SixLaborsLicenseKey: ${{ secrets.IMAGE_SHARP_LICENSE }}
       run: |
         dotnet build lib/PuppeteerSharp.sln --configuration Release --no-restore
         ls ./lib/PuppeteerSharp/bin/Release
@@ -31,3 +33,19 @@ jobs:
       if: env.NUGET_TOKEN_TEST_EXISTS != ''
       run: |
         dotnet nuget push ./lib/PuppeteerSharp/bin/Release/*.nupkg --api-key ${{secrets.NUGET_INT_API_KEY}} --source https://apiint.nugettest.org/v3/index.json
+    - name: Restore (CDP only)
+      run: |
+        dotnet restore lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY
+    - name: Build (CDP only)
+      run: |
+        dotnet build lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY --configuration Release --no-restore --no-incremental
+    - name: Pack (CDP only)
+      run: |
+        dotnet pack lib/PuppeteerSharp/PuppeteerSharp.csproj /p:DefineConstants=CDP_ONLY /p:Title=PuppeteerSharp.Cdp /p:PackageId=PuppeteerSharp.Cdp /p:Description="Headless Browser .NET API with CDP support only (no WebDriverBiDi)" --configuration Release --no-restore --no-build
+        ls ./lib/PuppeteerSharp/bin/Release
+    - name: NugetPush to int.nuget.org (CDP only)
+      env:
+        NUGET_TOKEN_TEST_EXISTS: ${{ secrets.NUGET_INT_API_KEY }}
+      if: env.NUGET_TOKEN_TEST_EXISTS != ''
+      run: |
+        dotnet nuget push ./lib/PuppeteerSharp/bin/Release/PuppeteerSharp.Cdp*.nupkg --api-key ${{secrets.NUGET_INT_API_KEY}} --source https://apiint.nugettest.org/v3/index.json

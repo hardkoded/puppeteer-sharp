@@ -44,7 +44,7 @@ namespace PuppeteerSharp.Tests.NetworkTests
 
             await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.EmptyPage);
             Assert.That(requests, Has.Count.EqualTo(2));
-            Assert.That(requests[1].Frame, Is.EqualTo(Page.FirstChildFrame()));
+            Assert.That(requests[1].Frame, Is.EqualTo(await Page.FirstChildFrameAsync()));
         }
 
         [Test, PuppeteerTest("network.spec", "network Request.Frame", "should work for fetch requests")]

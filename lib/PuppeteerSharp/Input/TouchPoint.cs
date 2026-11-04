@@ -11,5 +11,7 @@ namespace PuppeteerSharp.Input
         public decimal RadiusY { get; set; }
 
         public decimal Force { get; set; }
+
+        public int Id { get; set; }
     }
 }

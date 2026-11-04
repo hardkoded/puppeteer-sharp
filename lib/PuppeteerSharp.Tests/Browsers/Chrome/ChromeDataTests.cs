@@ -66,6 +66,9 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.Linux, "113.0.5672.0", null),
                 Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/linux64/chrome-linux64.zip"));
             Assert.That(
+                BrowserData.Chrome.ResolveDownloadUrl(Platform.LinuxArm64, "153.0.8001.0", null),
+                Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/153.0.8001.0/linux-arm64/chrome-linux-arm64.zip"));
+            Assert.That(
                 BrowserData.Chrome.ResolveDownloadUrl(Platform.MacOS, "113.0.5672.0", null),
                 Is.EqualTo("https://storage.googleapis.com/chrome-for-testing-public/113.0.5672.0/mac-x64/chrome-mac-x64.zip"));
             Assert.That(
@@ -85,6 +88,10 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
             Assert.That(
                 BrowserData.Chrome.RelativeExecutablePath(Platform.Linux, "12372323"),
                 Is.EqualTo(Path.Combine("chrome-linux64", "chrome")));
+
+            Assert.That(
+                BrowserData.Chrome.RelativeExecutablePath(Platform.LinuxArm64, "12372323"),
+                Is.EqualTo(Path.Combine("chrome-linux-arm64", "chrome")));
 
             Assert.That(
                 BrowserData.Chrome.RelativeExecutablePath(Platform.MacOS, "12372323"),
@@ -115,35 +122,99 @@ namespace PuppeteerSharp.Tests.Browsers.Chrome
                 Is.EqualTo(BrowserData.Chrome.RelativeExecutablePath(Platform.Win64, "12372323")));
         }
 
-        // This has a custom name
         [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path (windows)")]
         public void ShouldResolveSystemExecutablePathWindows()
         {
-            Assert.That(
-                BrowserData.Chrome.ResolveSystemExecutablePath(Platform.Win32, ChromeReleaseChannel.Dev),
-                Is.EqualTo("C:\\Program Files\\Google\\Chrome Dev\\Application\\chrome.exe"));
+            var paths = BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.Win32, ChromeReleaseChannel.Dev);
+            // Should include env-based paths plus fallback paths
+            Assert.That(paths, Has.Length.GreaterThanOrEqualTo(5));
+            var suffix = Path.Combine("Google", "Chrome Dev", "Application", "chrome.exe");
+            Assert.That(paths, Has.All.EndsWith(suffix));
         }
 
         [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should resolve system executable path")]
         public void ShouldResolveSystemExecutablePath()
         {
             Assert.That(
-                BrowserData.Chrome.ResolveSystemExecutablePath(Platform.MacOS, ChromeReleaseChannel.Beta),
-                Is.EqualTo("/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta"));
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.MacOS, ChromeReleaseChannel.Beta),
+                Is.EqualTo(new[] { "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta" }));
 
-            var ex = Assert.Throws<PuppeteerException>(() =>
-            {
-                BrowserData.Chrome.ResolveSystemExecutablePath(
-                    Platform.Linux,
-                    ChromeReleaseChannel.Canary);
-            });
+            Assert.That(
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.Linux, ChromeReleaseChannel.Canary),
+                Is.EqualTo(new[] { "/opt/google/chrome-canary/chrome" }));
+        }
 
-            Assert.That(ex.Message, Is.EqualTo("Canary is not supported"));
+        [Test]
+        public void ComputeSystemExecutablePathShouldHonorValidatePath()
+        {
+            const string macOsBetaPath = "/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta";
+
+            Assert.That(
+                BrowserData.Chrome.ResolveSystemExecutablePaths(Platform.MacOS, ChromeReleaseChannel.Beta),
+                Is.EqualTo(new[] { macOsBetaPath }));
+
+            var unresolvedPath = Launcher.ComputeSystemExecutablePath(
+                SupportedBrowser.Chrome,
+                ChromeReleaseChannel.Beta,
+                validatePath: false,
+                platform: Platform.MacOS);
+
+            Assert.That(unresolvedPath, Is.EqualTo(macOsBetaPath));
+            Assert.That(File.Exists(unresolvedPath), Is.False);
+
+            var exception = Assert.Throws<PuppeteerException>(() =>
+                Launcher.ComputeSystemExecutablePath(
+                    SupportedBrowser.Chrome,
+                    ChromeReleaseChannel.Beta,
+                    validatePath: true,
+                    platform: Platform.MacOS));
+
+            Assert.That(exception!.Message, Does.Contain(macOsBetaPath));
         }
 
         [Test]
         [Retry(2)]
         public async Task ShouldReturnLatestVersion()
             => await BrowserData.Chrome.ResolveBuildIdAsync(ChromeReleaseChannel.Stable);
+
+        [Test, PuppeteerTest("chrome-data.spec", "Chrome", "should compare versions")]
+        public void ShouldCompareVersions()
+        {
+            // 3-part comparison (like '115.0.5789')
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790", "115.0.5789"), Is.EqualTo(1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5789", "115.0.5790"), Is.EqualTo(-1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5789", "115.0.5789"), Is.EqualTo(0));
+
+            // 4-part comparison
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790.170", "115.0.5790.169"), Is.EqualTo(1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790.169", "115.0.5790.170"), Is.EqualTo(-1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790.170", "115.0.5790.170"), Is.EqualTo(0));
+
+            // Major version difference
+            Assert.That(BrowserData.Chrome.CompareVersions("116.0.0.0", "115.100.1000.10000"), Is.EqualTo(1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.100.1000.10000", "116.0.0.0"), Is.EqualTo(-1));
+
+            // Minor/build/patch differences
+            Assert.That(BrowserData.Chrome.CompareVersions("115.1.5790.170", "115.0.5790.170"), Is.EqualTo(1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5791.170", "115.0.5790.170"), Is.EqualTo(1));
+
+            // Different number of parts (missing parts treated as 0)
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790", "115.0.5790.0"), Is.EqualTo(0));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790.1", "115.0.5790"), Is.EqualTo(1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115.0.5790", "115.0.5790.1"), Is.EqualTo(-1));
+            Assert.That(BrowserData.Chrome.CompareVersions("115", "115.0.0.0"), Is.EqualTo(0));
+
+            // Leading/trailing whitespace
+            Assert.That(BrowserData.Chrome.CompareVersions(" 115.0.5790.170 ", "115.0.5790.170"), Is.EqualTo(0));
+
+            // Invalid formats should throw
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("invalid", "115.0.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("115.0.5790", "115.a.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("115.0.5790.170.5", "115.0.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("115.0.5790.", "115.0.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions(".115", "115.0.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("-115", "115.0.5790"));
+            Assert.Throws<PuppeteerException>(() => BrowserData.Chrome.CompareVersions("115.-1.0", "115.0.5790"));
+        }
     }
 }

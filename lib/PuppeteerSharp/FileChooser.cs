@@ -37,6 +37,13 @@ namespace PuppeteerSharp
             _handled = false;
         }
 
+        internal FileChooser(IElementHandle element, bool isMultiple)
+        {
+            _element = element;
+            IsMultiple = isMultiple;
+            _handled = false;
+        }
+
         /// <summary>
         /// Whether file chooser allow for <see href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple">multiple</see> file selection.
         /// </summary>

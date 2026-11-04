@@ -7,5 +7,7 @@ namespace PuppeteerSharp
         public ContextPayloadAuxData AuxData { get; set; }
 
         public string Name { get; set; }
+
+        public string Origin { get; set; }
     }
 }

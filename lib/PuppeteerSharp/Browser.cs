@@ -2,14 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+#if !CDP_ONLY
+using PuppeteerSharp.Bidi;
+#endif
 using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Helpers;
+using PuppeteerSharp.QueryHandlers;
+using ReactiveExtensionsSharp;
+using ReactiveExtensionsSharp.Extras;
+using ReactiveExtensionsSharp.Operators;
+using RxSharp = ReactiveExtensionsSharp;
 
 namespace PuppeteerSharp
 {
+    // We won't change the name just because WebDriver has a namespace with the same name.
+#pragma warning disable CA1724
     /// <inheritdoc/>
     public abstract class Browser : IBrowser
+#pragma warning disable CA1724
     {
         /// <inheritdoc/>
         public event EventHandler Closed;
@@ -30,7 +42,7 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <inheritdoc/>
-        public string WebSocketEndpoint => Connection.Url;
+        public virtual string WebSocketEndpoint => Connection.Url;
 
         /// <inheritdoc/>
         public SupportedBrowser BrowserType { get; protected init; }
@@ -39,22 +51,22 @@ namespace PuppeteerSharp
         public Process Process => Launcher?.Process;
 
         /// <inheritdoc/>
-        public bool AcceptInsecureCerts { get; set; }
-
-        /// <inheritdoc/>
         public abstract bool IsClosed { get; }
 
         /// <inheritdoc/>
-        public IBrowserContext DefaultContext { get; protected set; }
+        public virtual IBrowserContext DefaultContext { get; protected set; }
 
         /// <inheritdoc/>
         public int DefaultWaitForTimeout { get; set; } = Puppeteer.DefaultTimeout;
 
         /// <inheritdoc/>
-        public bool IsConnected => !Connection.IsClosed;
+        public virtual bool IsConnected => !Connection.IsClosed;
 
         /// <inheritdoc/>
-        public ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+        public abstract DebugInfo DebugInfo { get; }
+
+        /// <inheritdoc/>
+        public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
@@ -64,10 +76,14 @@ namespace PuppeteerSharp
 
         internal LauncherBase Launcher { get; init; }
 
+        internal Func<Task> CloseCallback { get; init; }
+
         internal Func<Target, bool> IsPageTargetFunc { get; init; }
 
+        internal abstract ProtocolType Protocol { get; }
+
         /// <inheritdoc/>
-        public abstract Task<IPage> NewPageAsync();
+        public abstract Task<IPage> NewPageAsync(CreatePageOptions options = null);
 
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
@@ -79,9 +95,43 @@ namespace PuppeteerSharp
         public abstract IBrowserContext[] BrowserContexts();
 
         /// <inheritdoc/>
-        public async Task<IPage[]> PagesAsync()
+        public abstract Task<ScreenInfo[]> ScreensAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<ScreenInfo> AddScreenAsync(AddScreenParams @params);
+
+        /// <inheritdoc/>
+        public abstract Task RemoveScreenAsync(string screenId);
+
+        /// <inheritdoc/>
+        public abstract Task<string> InstallExtensionAsync(string path, ExtensionInstallOptions options = null);
+
+        /// <inheritdoc/>
+        public abstract Task UninstallExtensionAsync(string id);
+
+        /// <inheritdoc/>
+        public abstract Task<IReadOnlyDictionary<string, Extension>> ExtensionsAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<string> InstallPWAAsync(InstallPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task UninstallPWAAsync(UninstallPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task<IPage> LaunchPWAAsync(LaunchPWAOptions options);
+
+        /// <inheritdoc/>
+        public abstract Task<PWAState> GetPWAStateAsync(GetPWAStateOptions options);
+
+        /// <inheritdoc/>
+        public virtual Task RestrictNetworkAsync(NetworkRestrictions restrictions = null)
+            => throw new NotSupportedException("RestrictNetwork is only supported with Chrome and the CDP protocol.");
+
+        /// <inheritdoc/>
+        public async Task<IPage[]> PagesAsync(bool includeAll = false)
             => (await Task.WhenAll(
-                BrowserContexts().Select(t => t.PagesAsync())).ConfigureAwait(false))
+                BrowserContexts().Select(t => t.PagesAsync(includeAll))).ConfigureAwait(false))
                 .SelectMany(p => p).ToArray();
 
         /// <inheritdoc/>
@@ -105,33 +155,32 @@ namespace PuppeteerSharp
             }
 
             var timeout = options?.Timeout ?? DefaultWaitForTimeout;
-            var targetCompletionSource = new TaskCompletionSource<ITarget>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var cancellationToken = options?.CancellationToken ?? default;
 
-            void TargetHandler(object sender, TargetChangedArgs e)
-            {
-                if (predicate(e.Target))
-                {
-                    targetCompletionSource.TrySetResult(e.Target);
-                }
-            }
+            using var created = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetCreated += h, h => TargetCreated -= h);
+            using var changed = RxExtensions.FromEventBuffered<TargetChangedArgs>(h => TargetChanged += h, h => TargetChanged -= h);
 
             try
             {
-                TargetCreated += TargetHandler;
-                TargetChanged += TargetHandler;
-
-                var existingTarget = Targets().FirstOrDefault(predicate);
-                if (existingTarget != null)
-                {
-                    return existingTarget;
-                }
-
-                return await targetCompletionSource.Task.WithTimeout(timeout).ConfigureAwait(false);
+                // causeFactory: null (the default) so cancellation and timeout keep their own distinct
+                // exception types below - RaceWithSignalAndTimer would otherwise use one factory for both.
+                return await created.AsObservable()
+                    .MergeWith(changed.AsObservable())
+                    .Map(e => (ITarget)e.Target)
+                    .MergeWith(Observable.From(Targets()))
+                    .Filter(predicate)
+                    .RaceWithSignalAndTimer(TimeSpan.FromMilliseconds(timeout), cancellationToken)
+                    .ConfigureAwait(false);
             }
-            finally
+            catch (TimeoutException)
             {
-                TargetCreated -= TargetHandler;
-                TargetChanged -= TargetHandler;
+                throw new TimeoutException($"Timeout of {timeout} ms exceeded");
+            }
+            catch (OperationCanceledException)
+            {
+                // TaskCanceledException, not the plain OperationCanceledException the timeout/cancellation
+                // race defaults to: existing callers (and tests) rely on the exact pre-ReactiveExtensionsSharp cancellation type.
+                throw new TaskCanceledException();
             }
         }
 
@@ -148,16 +197,45 @@ namespace PuppeteerSharp
                 throw new ArgumentNullException(nameof(queryHandler));
             }
 
-            Connection.CustomQuerySelectorRegistry.RegisterCustomQueryHandler(name, queryHandler);
+            CustomQuerySelectorRegistry.Default.RegisterCustomQueryHandler(name, queryHandler);
         }
 
         /// <inheritdoc/>
         public void UnregisterCustomQueryHandler(string name)
-            => Connection.CustomQuerySelectorRegistry.UnregisterCustomQueryHandler(name);
+            => CustomQuerySelectorRegistry.Default.UnregisterCustomQueryHandler(name);
 
         /// <inheritdoc/>
         public void ClearCustomQueryHandlers()
-            => Connection.CustomQuerySelectorRegistry.ClearCustomQueryHandlers();
+            => CustomQuerySelectorRegistry.Default.ClearCustomQueryHandlers();
+
+        /// <inheritdoc/>
+        public Task SetPermissionAsync(string origin, params PermissionEntry[] permissions)
+            => DefaultContext.SetPermissionAsync(origin, permissions);
+
+        /// <inheritdoc/>
+        public Task<CookieParam[]> GetCookiesAsync()
+            => DefaultContext.GetCookiesAsync();
+
+        /// <inheritdoc/>
+        public Task SetCookieAsync(params CookieData[] cookies)
+            => DefaultContext.SetCookieAsync(cookies);
+
+        /// <inheritdoc/>
+        public Task DeleteCookieAsync(params CookieParam[] cookies)
+            => DefaultContext.DeleteCookieAsync(cookies);
+
+        /// <inheritdoc/>
+        public Task DeleteMatchingCookiesAsync(params DeleteCookiesRequest[] filters)
+            => DefaultContext.DeleteMatchingCookiesAsync(filters);
+
+        /// <inheritdoc/>
+        public Task<ICDPSession> CreateCDPSessionAsync() => Target.CreateCDPSessionAsync();
+
+        /// <inheritdoc/>
+        public abstract Task<WindowBounds> GetWindowBoundsAsync(string windowId);
+
+        /// <inheritdoc/>
+        public abstract Task SetWindowBoundsAsync(string windowId, WindowBounds windowBounds);
 
         /// <inheritdoc />
         public void Dispose()
@@ -174,7 +252,8 @@ namespace PuppeteerSharp
         public async ValueTask DisposeAsync()
         {
             // On disposal, the browser doesn't get closed. It gets disconnected.
-            if (Launcher == null)
+            // TODO: See a better way to handle this instead of checking for BidiBrowser.
+            if (CloseCallback == null)
             {
                 Disconnect();
             }
@@ -187,8 +266,12 @@ namespace PuppeteerSharp
             GC.SuppressFinalize(this);
         }
 
+        internal virtual bool IsNetworkEnabled() => true;
+
+        internal virtual bool IsIssuesEnabled() => true;
+
         internal IEnumerable<string> GetCustomQueryHandlerNames()
-            => Connection.CustomQuerySelectorRegistry.GetCustomQueryHandlerNames();
+            => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was

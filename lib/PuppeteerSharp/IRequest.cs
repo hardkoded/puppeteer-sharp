@@ -118,6 +118,16 @@ namespace PuppeteerSharp
         bool HasPostData { get; }
 
         /// <summary>
+        /// Gets whether the intercept resolution has already been handled.
+        /// </summary>
+        bool IsInterceptResolutionHandled { get; }
+
+        /// <summary>
+        /// Gets the current intercept resolution state.
+        /// </summary>
+        InterceptResolutionState InterceptResolutionState { get; }
+
+        /// <summary>
         /// Continues request with optional request overrides. To use this, request interception should be enabled with <see cref="IPage.SetRequestInterceptionAsync(bool)"/>. Exception is immediately thrown if the request interception is not enabled.
         /// If the URL is set it won't perform a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
         /// </summary>
@@ -151,5 +161,11 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>Task which resolves to the request's POST data.</returns>
         Task<string> FetchPostDataAsync();
+
+        /// <summary>
+        /// Fetches the unmodified POST data bytes for the request from the browser.
+        /// </summary>
+        /// <returns>Task which resolves to the request's raw POST data, or <c>null</c> when there is none or fetching it fails.</returns>
+        Task<byte[]> ContentAsync();
     }
 }

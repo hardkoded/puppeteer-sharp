@@ -82,22 +82,17 @@ namespace PuppeteerSharp
         public CookiePriority? Priority { get; set; }
 
         /// <summary>
-        /// True if cookie is SameParty. Supported only in Chrome.
-        /// </summary>
-        public bool? SameParty { get; set; }
-
-        /// <summary>
         /// Cookie source scheme type. Supported only in Chrome.
         /// </summary>
         public CookieSourceScheme? SourceScheme { get; set; }
 
         /// <summary>
-        /// Cookie partition key. The site of the top-level URL the browser was visiting at the
-        /// start of the request to the endpoint that set the cookie. Supported only in Chrome.
-        /// TODO: a breaking change is needed to support other partition keys.
+        /// Cookie partition key. In Chrome, it matches the top-level site the
+        /// partitioned cookie is available in. In Firefox, it matches the
+        /// source origin.
         /// </summary>
         [JsonConverter(typeof(CookiePartitionKeyConverter))]
-        public string PartitionKey { get; set; }
+        public CookiePartitionKey PartitionKey { get; set; }
 
         /// <summary>
         /// True if cookie partition key is opaque. Supported only in Chrome.

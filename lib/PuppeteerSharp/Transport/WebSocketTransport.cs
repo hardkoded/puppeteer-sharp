@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IO;
 using PuppeteerSharp.Helpers;
 
 namespace PuppeteerSharp.Transport
@@ -28,6 +29,8 @@ namespace PuppeteerSharp.Transport
         /// Gets the default <see cref="TransportTaskScheduler"/>.
         /// </summary>
         public static readonly TransportTaskScheduler DefaultTransportScheduler = ScheduleTransportTask;
+
+        private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
 
         private readonly WebSocket _client;
         private readonly bool _queueRequests;
@@ -114,8 +117,32 @@ namespace PuppeteerSharp.Transport
         private static async Task<WebSocket> CreateDefaultWebSocket(Uri url, IConnectionOptions options, CancellationToken cancellationToken)
         {
             var result = new ClientWebSocket();
-            result.Options.KeepAliveInterval = TimeSpan.Zero;
-            await result.ConnectAsync(url, cancellationToken).ConfigureAwait(false);
+            ConnectionOptionsHelper.ConfigureWebSocketKeepAlive(result, options.WsOptions);
+            var headers = ConnectionOptionsHelper.GetEffectiveHeaders(options);
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    result.Options.SetRequestHeader(header.Key, header.Value);
+                }
+            }
+
+            using var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            if (options.WsOptions?.HandshakeTimeout is int handshakeTimeout)
+            {
+                handshakeCts.CancelAfter(handshakeTimeout);
+            }
+
+            try
+            {
+                await result.ConnectAsync(url, handshakeCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                result.Dispose();
+                throw new TimeoutException($"WebSocket opening handshake timed out after {options.WsOptions.HandshakeTimeout}ms.");
+            }
+
             return result;
         }
 
@@ -140,49 +167,64 @@ namespace PuppeteerSharp.Transport
         private async Task GetResponseAsync(CancellationToken cancellationToken)
         {
             var buffer = new byte[2048];
+            MemoryStream memoryStream = null;
 
-            while (!IsClosed)
+            try
             {
-                MemoryStream memoryStream = null;
-                WebSocketReceiveResult result;
-                do
+                while (!IsClosed)
                 {
-                    try
+                    WebSocketReceiveResult result;
+                    do
                     {
-                        result = await _client.ReceiveAsync(
-                            new ArraySegment<byte>(buffer),
-                            cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        OnClose(ex.Message);
-                        return;
-                    }
+                        try
+                        {
+                            result = await _client.ReceiveAsync(
+                                new ArraySegment<byte>(buffer),
+                                cancellationToken).ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            OnClose(ex.Message);
+                            return;
+                        }
 
-                    if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        OnClose("WebSocket closed");
-                        return;
-                    }
-                    else if (result.MessageType == WebSocketMessageType.Binary)
-                    {
-                        continue;
-                    }
+                        if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            OnClose("WebSocket closed");
+                            return;
+                        }
 
-                    if (memoryStream is null && !result.EndOfMessage)
-                    {
-                        memoryStream = new MemoryStream(buffer.Length);
-                    }
+                        if (result.MessageType == WebSocketMessageType.Binary)
+                        {
+                            continue;
+                        }
 
-                    memoryStream?.Write(buffer, 0, result.Count);
+                        if (memoryStream is null && !result.EndOfMessage)
+                        {
+                            memoryStream = _memoryStreamManager.GetStream(null, buffer.Length * 2);
+                        }
+
+                        memoryStream?.Write(buffer, 0, result.Count);
+                    }
+                    while (!result.EndOfMessage);
+
+                    MessageReceived?.Invoke(
+                        this,
+                        new MessageReceivedEventArgs(memoryStream is null
+                            ? buffer.AsSpan(0, result.Count).ToArray()
+                            : memoryStream.ToArray()));
+
+                    memoryStream?.Dispose();
+                    memoryStream = null;
                 }
-                while (!result.EndOfMessage);
-
-                MessageReceived?.Invoke(this, new MessageReceivedEventArgs(memoryStream is null ? buffer.AsSpan(0, result.Count).ToArray() : memoryStream.ToArray()));
+            }
+            finally
+            {
+                memoryStream?.Dispose();
             }
         }
 

@@ -10,7 +10,8 @@
       <Link>keypair.snk</Link>
     </None>
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent"
+          Condition=" !$(DefineConstants.Contains('CDP_ONLY')) ">
     <Exec Command="dotnet format $(ProjectPath) --exclude-diagnostics CA1865" />
   </Target>
 </Project>

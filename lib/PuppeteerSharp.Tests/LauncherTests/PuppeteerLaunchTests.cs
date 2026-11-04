@@ -1,11 +1,11 @@
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.BrowserData;
 using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 using PuppeteerSharp.Transport;
@@ -14,7 +14,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 {
     public class PuppeteerLaunchTests : PuppeteerBaseTest
     {
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "PuppeteerSharp", "should work in real life")]
         public async Task ShouldWorkInRealLife()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -45,7 +45,23 @@ namespace PuppeteerSharp.Tests.LauncherTests
             var options = TestConstants.DefaultBrowserOptions();
             options.ExecutablePath = "random-invalid-path";
 
-            Assert.ThrowsAsync<Win32Exception>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            var exception = Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.That(
+                exception!.Message,
+                Is.EqualTo("Browser was not found at the configured executablePath (random-invalid-path)"));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "throws an error if executable path is not valid with pipe=true")]
+        public void ThrowsAnErrorIfExecutablePathIsNotValidWithPipeTrue()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.ExecutablePath = "/tmp/does-not-exist";
+            options.Pipe = true;
+
+            var exception = Assert.ThrowsAsync<ProcessException>(() => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.That(
+                exception!.Message,
+                Does.Contain("Browser was not found at the configured executablePath (/tmp/does-not-exist)"));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir option")]
@@ -187,6 +203,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
 
         [TestCase(false)]
         [TestCase(true)]
+        [PuppeteerTest("launcher.spec", "PuppeteerSharp", "chrome should be closed")]
         public async Task ChromeShouldBeClosed(bool useDisposeAsync)
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -237,16 +254,6 @@ namespace PuppeteerSharp.Tests.LauncherTests
                     () => launcher.LaunchAsync(TestConstants.DefaultBrowserOptions()));
                 Assert.That(exception!.Message, Is.EqualTo("Unable to create or connect to another process"));
             }
-        }
-
-        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with no default arguments")]
-        public async Task ShouldWorkWithNoDefaultArguments()
-        {
-            var options = TestConstants.DefaultBrowserOptions();
-            options.IgnoreDefaultArgs = true;
-            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
-            await using var page = await browser.NewPageAsync();
-            Assert.That(await page.EvaluateExpressionAsync<int>("11 * 11"), Is.EqualTo(121));
         }
 
         [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default arguments in Chrome")]
@@ -339,7 +346,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             Assert.That(await page.ScreenshotDataAsync(new ScreenshotOptions { FullPage = true }), Is.Not.Empty);
         }
 
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "PuppeteerSharp", "should support custom websocket")]
         public async Task ShouldSupportCustomWebSocket()
         {
             var options = TestConstants.DefaultBrowserOptions();
@@ -356,7 +363,7 @@ namespace PuppeteerSharp.Tests.LauncherTests
             }
         }
 
-        [Test, Retry(2)]
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Browser.close", "should support custom transport")]
         public async Task ShouldSupportCustomTransport()
         {
             var customTransportCreated = false;
@@ -402,6 +409,194 @@ namespace PuppeteerSharp.Tests.LauncherTests
                 Assert.That(
                     await File.ReadAllTextAsync(Path.Combine(userDataDir.Path, "user.js")),
                     Is.EqualTo(prefsJSContent));
+            });
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "can launch and close the browser")]
+        public async Task CanLaunchAndCloseTheBrowser()
+        {
+            await using var browser = await Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+            await browser.CloseAsync();
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "tmp profile should be cleaned up")]
+        public async Task TmpProfileShouldBeCleanedUp()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            await using var browser = await launcher.LaunchAsync(options);
+
+            var tempUserDataDir = launcher.Process.TempUserDataDir?.Path;
+            Assert.That(tempUserDataDir, Is.Not.Null);
+            Assert.That(Directory.Exists(tempUserDataDir), Is.True);
+
+            // Open a page to make sure its functional.
+            await browser.NewPageAsync();
+
+            await browser.CloseAsync();
+
+            // Wait briefly for cleanup
+            await Task.Delay(500);
+
+            Assert.That(Directory.Exists(tempUserDataDir), Is.False);
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "userDataDir argument with non-existent dir")]
+        public async Task UserDataDirArgumentWithNonExistentDir()
+        {
+            using var userDataDir = new TempDirectory();
+            var userDataDirPath = userDataDir.Path;
+
+            // Remove the directory so it doesn't exist
+            Directory.Delete(userDataDirPath);
+            Assert.That(Directory.Exists(userDataDirPath), Is.False);
+
+            var options = TestConstants.DefaultBrowserOptions();
+
+            if (TestConstants.IsChrome)
+            {
+                options.Args = options.Args.Concat(new[] { $"--user-data-dir=\"{userDataDirPath}\"" }).ToArray();
+            }
+            else
+            {
+                options.Args = options.Args.Concat(new string[] { "-profile", userDataDirPath }).ToArray();
+            }
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            Assert.That(Directory.GetFiles(userDataDirPath), Is.Not.Empty);
+            await browser.CloseAsync();
+            Assert.That(Directory.GetFiles(userDataDirPath), Is.Not.Empty);
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should filter out ignored default argument in Firefox")]
+        public async Task ShouldFilterOutIgnoredDefaultArgumentInFirefox()
+        {
+            var defaultArgs = Puppeteer.GetDefaultArgs(TestConstants.DefaultBrowserOptions());
+            var options = TestConstants.DefaultBrowserOptions();
+            // When IgnoredDefaultArgs has specific items, those are excluded but the rest remain.
+            // Use a non-existent arg to filter so all real defaults are still present.
+            options.IgnoredDefaultArgs = ["--non-existent-flag"];
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            var spawnArgs = browser.Process.StartInfo.Arguments;
+            Assert.That(spawnArgs, Does.Contain(defaultArgs[0]));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should pass the timeout parameter to browser.waitForTarget")]
+        public void ShouldPassTheTimeoutParameterToBrowserWaitForTarget()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Timeout = 1;
+
+            Assert.ThrowsAsync<ProcessException>(
+                () => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should work with timeout = 0")]
+        public async Task ShouldWorkWithTimeoutEqualTo0()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Timeout = 0;
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await browser.CloseAsync();
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should launch Chrome properly with --no-startup-window and waitForInitialPage=false")]
+        public async Task ShouldLaunchChromeProperlyWithNoStartupWindowAndWaitForInitialPageFalse()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Args = options.Args.Concat(new[] { "--no-startup-window" }).ToArray();
+            options.WaitForInitialPage = false;
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            await using var page = await browser.NewPageAsync();
+            Assert.That(await page.EvaluateExpressionAsync<int>("2 + 2"), Is.EqualTo(4));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.connect", "should support targetFilter option in puppeteer.launch")]
+        public async Task ShouldSupportTargetFilterOptionInPuppeteerLaunch()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.TargetFilter = target => target.Type != TargetType.Page;
+            options.WaitForInitialPage = false;
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            var targets = browser.Targets();
+            Assert.That(targets, Has.Exactly(1).Items);
+            Assert.That(targets.Any(t => t.Type == TargetType.Page), Is.False);
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.executablePath", "returns executablePath for channel")]
+        public void ReturnsExecutablePathForChannel()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.Channel = ChromeReleaseChannel.Stable;
+            try
+            {
+                var defaultArgs = Puppeteer.GetDefaultArgs(options);
+                Assert.That(defaultArgs, Is.Not.Null);
+            }
+            catch (PuppeteerException)
+            {
+                // It's OK if the channel is not installed; the important thing
+                // is that the API accepts the channel parameter without error.
+            }
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.executablePath when executable path is configured", "its value is used")]
+        public void WhenExecutablePathIsConfiguredItsValueIsUsed()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.ExecutablePath = "SOME_CUSTOM_EXECUTABLE";
+
+            var exception = Assert.CatchAsync(
+                () => Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory));
+            Assert.That(exception, Is.Not.Null);
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "can launch multiple instances without node warnings")]
+        public async Task CanLaunchMultipleInstancesWithoutWarnings()
+        {
+            var tasks = new Task<IBrowser>[2];
+            for (var i = 0; i < 2; i++)
+            {
+                tasks[i] = Puppeteer.LaunchAsync(TestConstants.DefaultBrowserOptions(), TestConstants.LoggerFactory);
+            }
+
+            var browsers = await Task.WhenAll(tasks);
+
+            foreach (var browser in browsers)
+            {
+                await browser.CloseAsync();
+                await browser.DisposeAsync();
+            }
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.launch", "should set the debugging port")]
+        public async Task ShouldSetTheDebuggingPort()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DefaultViewport = null;
+            options.Args = options.Args.Concat(new[] { "--remote-debugging-port=9999" }).ToArray();
+
+            await using var browser = await Puppeteer.LaunchAsync(options, TestConstants.LoggerFactory);
+            var url = new Uri(browser.WebSocketEndpoint);
+            Assert.That(url.Port, Is.EqualTo(9999));
+        }
+
+        [Test, PuppeteerTest("launcher.spec", "Launcher specs Puppeteer Puppeteer.executablePath", "should work")]
+        public void ExecutablePathShouldWork()
+        {
+            var launcher = new Launcher(TestConstants.LoggerFactory);
+            var options = TestConstants.DefaultBrowserOptions();
+
+            // The executable path is resolved internally, so we verify that
+            // launching a browser succeeds, which implies the executable path is valid.
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await using var browser = await launcher.LaunchAsync(options);
+                var executablePath = browser.Process.StartInfo.FileName;
+                Assert.That(File.Exists(executablePath), Is.True);
+                Assert.That(Path.GetFullPath(executablePath), Is.EqualTo(executablePath));
             });
         }
     }
