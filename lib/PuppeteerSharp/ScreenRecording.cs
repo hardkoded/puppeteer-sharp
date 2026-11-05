@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,12 +15,7 @@ namespace PuppeteerSharp
     /// </summary>
     public abstract class ScreenRecording : IAsyncEnumerable<byte[]>, IAsyncDisposable
     {
-        private readonly Channel<byte[]> _channel = Channel.CreateUnbounded<byte[]>(
-            new UnboundedChannelOptions
-            {
-                SingleReader = false,
-                SingleWriter = true,
-            });
+        private readonly Channel<byte[]>? _channel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScreenRecording"/> class.
@@ -26,11 +23,19 @@ namespace PuppeteerSharp
         /// <param name="page">The page being recorded.</param>
         /// <param name="options">Recording options.</param>
         /// <param name="logger">Logger instance.</param>
-        protected ScreenRecording(Page page, RecordOptions options, ILogger logger)
+        protected ScreenRecording(Page page, RecordOptions? options, ILogger logger)
         {
             Page = page;
             Options = options ?? new RecordOptions();
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            if (Options.BufferForEnumeration != false)
+            {
+                _channel = Channel.CreateUnbounded<byte[]>(new UnboundedChannelOptions
+                {
+                    SingleReader = false,
+                    SingleWriter = true,
+                });
+            }
         }
 
         /// <summary>
@@ -107,8 +112,16 @@ namespace PuppeteerSharp
         }
 
         /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Buffering for enumeration was disabled when the recording was created.</exception>
         public IAsyncEnumerator<byte[]> GetAsyncEnumerator(CancellationToken cancellationToken = default)
-            => _channel.Reader.ReadAllAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
+        {
+            if (_channel == null)
+            {
+                throw new InvalidOperationException("Recording enumeration is disabled. Set RecordOptions.BufferForEnumeration to true to enumerate recording chunks.");
+            }
+
+            return _channel.Reader.ReadAllAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
+        }
 
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
@@ -129,7 +142,7 @@ namespace PuppeteerSharp
         /// <param name="buffer">The chunk to enqueue.</param>
         protected void EnqueueChunk(byte[] buffer)
         {
-            _channel.Writer.TryWrite(buffer);
+            _channel?.Writer.TryWrite(buffer);
 
             foreach (var destination in Destinations)
             {
@@ -143,7 +156,7 @@ namespace PuppeteerSharp
         /// <returns>A task that completes when destinations are closed.</returns>
         protected Task CloseDestinationsAsync()
         {
-            _channel.Writer.TryComplete();
+            _channel?.Writer.TryComplete();
 
             foreach (var destination in Destinations)
             {
