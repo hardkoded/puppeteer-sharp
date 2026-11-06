@@ -23,6 +23,14 @@ namespace PuppeteerSharp
         public bool? Audio { get; set; }
 
         /// <summary>
+        /// Whether to buffer recording chunks for asynchronous enumeration.
+        /// Defaults to <c>true</c>. Set to <c>false</c> when writing only to a path or piped destination
+        /// to avoid retaining recording chunks in an unread queue.
+        /// Enumeration is unavailable when buffering is disabled.
+        /// </summary>
+        public bool? BufferForEnumeration { get; set; }
+
+        /// <summary>
         /// Maximum frame width in pixels.
         /// </summary>
         public int? MaxWidth { get; set; }
