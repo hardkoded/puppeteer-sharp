@@ -38,6 +38,14 @@ namespace PuppeteerSharp
         event EventHandler Closed;
 
         /// <summary>
+        /// Raised when JavaScript within any page or worker in the browser calls one of the console API methods, e.g. <c>console.log</c> or <c>console.dir</c>.
+        /// Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via <c>Targets()</c>.
+        /// Service and shared workers are not attached automatically: their messages are only delivered after <c>WorkerAsync()</c> has been called for their target.
+        /// With WebDriver BiDi, service and shared worker console messages are not reported.
+        /// </summary>
+        event EventHandler<ConsoleEventArgs> Console;
+
+        /// <summary>
         /// Raised when puppeteer gets disconnected from the Chromium instance. This might happen because one of the following
         /// - Chromium is closed or crashed
         /// - <see cref="Disconnect"/> method was called

@@ -45,6 +45,51 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             }
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report console messages from OOP iframes to the browser and context")]
+        public async Task ShouldReportConsoleMessagesFromOopIframesToTheBrowserAndContext()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame = await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html");
+
+            var browserMessageTask = new TaskCompletionSource<ConsoleMessage>();
+            var contextMessageTask = new TaskCompletionSource<ConsoleMessage>();
+            void BrowserHandler(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "from-oopif")
+                {
+                    browserMessageTask.TrySetResult(e.Message);
+                }
+            }
+
+            void ContextHandler(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "from-oopif")
+                {
+                    contextMessageTask.TrySetResult(e.Message);
+                }
+            }
+
+            Page.Browser.Console += BrowserHandler;
+            Page.BrowserContext.Console += ContextHandler;
+            try
+            {
+                await Task.WhenAll(
+                    browserMessageTask.Task,
+                    contextMessageTask.Task,
+                    frame.EvaluateFunctionAsync("() => console.log('from-oopif')"));
+
+                Assert.That(browserMessageTask.Task.Result, Is.SameAs(contextMessageTask.Task.Result));
+            }
+            finally
+            {
+                Page.Browser.Console -= BrowserHandler;
+                Page.BrowserContext.Console -= ContextHandler;
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should treat OOP iframes and normal iframes the same")]
         public async Task ShouldTreatOopIframesAndNormalIframesTheSame()
         {

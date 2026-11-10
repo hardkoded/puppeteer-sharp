@@ -8,6 +8,33 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextTests : PuppeteerBrowserBaseTest
     {
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from its own pages")]
+        public async Task ShouldOnlyReportConsoleMessagesFromItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var messages = new List<string>();
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+            context.Console += (_, e) =>
+            {
+                messages.Add(e.Message.Text);
+                if (e.Message.Text == "from-own-context")
+                {
+                    messageTask.TrySetResult(e.Message);
+                }
+            };
+
+            await otherPage.EvaluateFunctionAsync("() => console.log('from-other-context')");
+            await Task.WhenAll(
+                messageTask.Task,
+                page.EvaluateFunctionAsync("() => console.log('from-own-context')"));
+
+            Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
+        }
+
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {
