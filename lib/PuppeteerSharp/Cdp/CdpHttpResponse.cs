@@ -16,6 +16,7 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
 #endif
     private readonly bool _fromDiskCache;
     private byte[] _buffer;
+    private long _encodedDataLength;
 
     internal CdpHttpResponse(
         CdpHttpRequest request,
@@ -50,10 +51,14 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
             Port = responseMessage.RemotePort,
         };
         Timing = responseMessage.Timing;
+        SetEncodedDataLength(responseMessage.EncodedDataLength);
     }
 
     /// <inheritdoc/>
     public override bool FromCache => _fromDiskCache || (Request?.FromMemoryCache ?? false);
+
+    /// <inheritdoc/>
+    public override long EncodedDataLength => _encodedDataLength;
 
     internal TaskCompletionSource<bool> BodyLoadedTaskWrapper { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -87,6 +92,16 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
         }
 
         return _buffer;
+    }
+
+    internal void SetEncodedDataLength(long encodedDataLength)
+    {
+        // Chromium reports -1 when no data was transferred over the network (e.g. data: or file: URLs) or when the
+        // size is unknown. Keep the last known value in that case, defaulting to 0.
+        if (encodedDataLength >= 0)
+        {
+            _encodedDataLength = encodedDataLength;
+        }
     }
 
 #if NET8_0_OR_GREATER

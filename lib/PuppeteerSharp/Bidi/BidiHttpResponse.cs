@@ -107,6 +107,9 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
     public override bool FromCache { get; }
 
     /// <inheritdoc />
+    public override long EncodedDataLength => Math.Max((long)(_data?.BytesReceived ?? 0), 0L);
+
+    /// <inheritdoc />
     public override async ValueTask<byte[]> BufferAsync()
     {
         if (_request == null)
