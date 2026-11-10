@@ -136,20 +136,22 @@ namespace PuppeteerSharp.Locators
         /// If the predicate does not match, the locator will retry.
         /// </summary>
         /// <param name="predicate">A JavaScript function expression that takes an element and returns a boolean.</param>
+        /// <param name="args">Additional serializable values or handles forwarded to the predicate after the element.</param>
         /// <returns>A new locator that filters based on the predicate.</returns>
-        public Locator Filter(string predicate)
+        public Locator Filter(string predicate, params object[] args)
         {
-            return new FilteredLocator(this, predicate);
+            return new FilteredLocator(this, predicate, args);
         }
 
         /// <summary>
         /// Maps the locator using the provided mapper.
         /// </summary>
         /// <param name="mapper">A JavaScript function expression that transforms the element.</param>
+        /// <param name="args">Additional serializable values or handles forwarded to the mapper after the element.</param>
         /// <returns>A new locator that maps the element.</returns>
-        public Locator Map(string mapper)
+        public Locator Map(string mapper, params object[] args)
         {
-            return new MappedLocator(this, mapper);
+            return new MappedLocator(this, mapper, args);
         }
 
         /// <summary>
