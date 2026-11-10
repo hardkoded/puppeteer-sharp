@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -102,6 +103,16 @@ namespace PuppeteerSharp
         /// </summary>
         /// <returns>A Task which resolves to a buffer with response body.</returns>
         ValueTask<byte[]> BufferAsync();
+
+        /// <summary>
+        /// Returns a Task which resolves to a stream of the response body, with chunks delivered as they arrive from the network.
+        /// </summary>
+        /// <remarks>
+        /// Call this from the <see cref="Page.Response"/> event to receive the body while it is still loading.
+        /// If the body has already finished loading, the stream contains the whole body as a single chunk.
+        /// </remarks>
+        /// <returns>A Task which resolves to a stream of the response body.</returns>
+        Task<Stream> StreamAsync();
 
         /// <summary>
         /// Returns a Task which resolves to a text representation of response body.

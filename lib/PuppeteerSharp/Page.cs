@@ -43,6 +43,8 @@ namespace PuppeteerSharp
             "TaskDuration",
             "JSHeapUsedSize",
             "JSHeapTotalSize",
+            "DomContentLoaded",
+            "NavigationStart",
         };
 
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();

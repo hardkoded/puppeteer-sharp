@@ -206,6 +206,56 @@ namespace PuppeteerSharp.Tests.OOPIFTests
             Assert.That(frame.Url, Is.EqualTo(TestConstants.EmptyPage));
         }
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should report requests from OOP iframes to the browser and context")]
+        public async Task ShouldReportRequestsFromOopIframesToTheBrowserAndContext()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var frame = await FrameUtils.AttachFrameAsync(
+                Page,
+                "frame1",
+                TestConstants.CrossProcessHttpPrefix + "/empty.html"
+            );
+
+            var url = TestConstants.CrossProcessHttpPrefix + "/one-style.css";
+            var browserTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var contextTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnBrowserRequest(object sender, RequestEventArgs e)
+            {
+                if (e.Request.Url == url)
+                {
+                    browserTcs.TrySetResult(e.Request);
+                }
+            }
+
+            void OnContextRequest(object sender, RequestEventArgs e)
+            {
+                if (e.Request.Url == url)
+                {
+                    contextTcs.TrySetResult(e.Request);
+                }
+            }
+
+            Browser.Request += OnBrowserRequest;
+            Context.Request += OnContextRequest;
+            try
+            {
+                await frame.EvaluateFunctionAsync("async (url) => { await fetch(url, {cache: 'no-store'}); }", url);
+
+                var browserRequest = await browserTcs.Task.WithTimeout();
+                var contextRequest = await contextTcs.Task.WithTimeout();
+
+                Assert.That(browserRequest, Is.SameAs(contextRequest));
+                Assert.That(browserRequest.Frame, Is.EqualTo(frame));
+                Assert.That(browserRequest.Frame.Page, Is.EqualTo(Page));
+            }
+            finally
+            {
+                Browser.Request -= OnBrowserRequest;
+                Context.Request -= OnContextRequest;
+            }
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should support evaluating in oop iframes")]
         public async Task ShouldSupportEvaluatingInOopIframes()
         {

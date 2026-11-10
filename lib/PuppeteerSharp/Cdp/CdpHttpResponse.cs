@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -94,6 +95,25 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
         return _buffer;
     }
 
+    /// <inheritdoc/>
+    public override async Task<Stream> StreamAsync()
+    {
+        if (BodyLoadedTaskWrapper.Task.IsCompleted)
+        {
+            return await BufferedStreamAsync().ConfigureAwait(false);
+        }
+
+        try
+        {
+            // Use CDPSession from corresponding request, as its client might have been updated (e.g. for an adopted OOPIF).
+            return await ResponseBodyStream.CreateAsync(Request.Client, Request.Id).ConfigureAwait(false);
+        }
+        catch (MessageException ex) when (ex.Message.Contains("already finished loading"))
+        {
+            return await BufferedStreamAsync().ConfigureAwait(false);
+        }
+    }
+
     internal void SetEncodedDataLength(long encodedDataLength)
     {
         // Chromium reports -1 when no data was transferred over the network (e.g. data: or file: URLs) or when the
@@ -110,6 +130,12 @@ public partial class CdpHttpResponse : Response<CdpHttpRequest>
 #else
     private static Regex GetExtraInfoLines() => _extraInfoLines;
 #endif
+
+    private async Task<Stream> BufferedStreamAsync()
+    {
+        var content = await BufferAsync().ConfigureAwait(false);
+        return new MemoryStream(content, writable: false);
+    }
 
     private string ParseStatusTextFromExtraInfo(ResponseReceivedExtraInfoResponse extraInfo)
     {
