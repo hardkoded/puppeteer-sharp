@@ -145,5 +145,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "Not supported in WebDriver BiDi yet - https://github.com/w3c/webdriver-bidi/issues/958. Mirrors upstream test/TestExpectations.json; remove when upstream is synced.",
+    "testIdPattern": "[network.spec] network Response.stream *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
   }
 ]
