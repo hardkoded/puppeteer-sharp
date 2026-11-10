@@ -65,6 +65,28 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <summary>
+        /// Raised when a request issued by any page in the browser is served from the memory cache.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestServedFromCache;
+
+        /// <summary>
+        /// Raised when a response is received for a request issued by any page in the browser.
+        /// Use <see cref="IResponse.Request"/> to access the originating request.
+        /// </summary>
+        event EventHandler<ResponseCreatedEventArgs> Response;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser fails, for example by timing out.
+        /// HTTP error responses, such as 404 or 503, complete with <see cref="RequestFinished"/> instead.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFailed;
+
+        /// <summary>
+        /// Raised when a request issued by any page in the browser finishes successfully.
+        /// </summary>
+        event EventHandler<RequestEventArgs> RequestFinished;
+
+        /// <summary>
         /// Returns the default browser context. The default browser context can not be closed.
         /// </summary>
         /// <value>The default context.</value>

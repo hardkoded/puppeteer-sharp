@@ -145,5 +145,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "comment": "CDP worker targets do not forward dedicated worker network events to Browser.Response/RequestFinished, so the test waits forever. Remove when worker network forwarding is ported.",
+    "testIdPattern": "[browser.spec] Browser specs Browser network events should report responses from dedicated workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "cdp"],
+    "expectations": ["SKIP"]
   }
 ]

@@ -1185,25 +1185,45 @@ namespace PuppeteerSharp
         /// Raises the <see cref="RequestFinished"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+        internal void OnRequestFinished(RequestEventArgs e)
+        {
+            RequestFinished?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestFinished(e);
+            Browser?.OnRequestFinished(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="RequestFailed"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
+        internal void OnRequestFailed(RequestEventArgs e)
+        {
+            RequestFailed?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestFailed(e);
+            Browser?.OnRequestFailed(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="RequestServedFromCache"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnRequestServedFromCache(RequestEventArgs e) => RequestServedFromCache?.Invoke(this, e);
+        internal void OnRequestServedFromCache(RequestEventArgs e)
+        {
+            RequestServedFromCache?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnRequestServedFromCache(e);
+            Browser?.OnRequestServedFromCache(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Response"/> event.
         /// </summary>
         /// <param name="e">Event arguments.</param>
-        internal void OnResponse(ResponseCreatedEventArgs e) => Response?.Invoke(this, e);
+        internal void OnResponse(ResponseCreatedEventArgs e)
+        {
+            Response?.Invoke(this, e);
+            (BrowserContext as PuppeteerSharp.BrowserContext)?.OnResponse(e);
+            Browser?.OnResponse(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Request"/> event.
