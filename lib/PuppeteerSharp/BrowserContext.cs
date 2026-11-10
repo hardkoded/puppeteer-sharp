@@ -35,6 +35,9 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFinished;
 
         /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
+
+        /// <inheritdoc/>
         public string Id { get; protected init; }
 
         /// <inheritdoc/>
@@ -216,6 +219,8 @@ namespace PuppeteerSharp
         internal void OnRequestFailed(RequestEventArgs e) => RequestFailed?.Invoke(this, e);
 
         internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+
+        internal void OnRequest(RequestEventArgs args) => Request?.Invoke(this, args);
 
         /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed.

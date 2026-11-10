@@ -54,6 +54,9 @@ namespace PuppeteerSharp
         public event EventHandler<RequestEventArgs> RequestFinished;
 
         /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
+
+        /// <inheritdoc/>
         public virtual string WebSocketEndpoint => Connection.Url;
 
         /// <inheritdoc/>
@@ -281,6 +284,12 @@ namespace PuppeteerSharp
         internal virtual bool IsNetworkEnabled() => true;
 
         internal virtual bool IsIssuesEnabled() => true;
+
+        /// <summary>
+        /// Emits <see cref="Request"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
 
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();

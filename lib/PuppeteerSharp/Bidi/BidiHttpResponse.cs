@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using PuppeteerSharp.Helpers;
@@ -116,6 +117,10 @@ public class BidiHttpResponse : Response<BidiHttpRequest>
 
         return await _request.GetResponseContentAsync().ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public override Task<Stream> StreamAsync()
+        => Task.FromException<Stream>(new NotSupportedException("Response.StreamAsync is not supported in WebDriver BiDi."));
 
     internal static BidiHttpResponse From(WebDriverBiDi.Network.ResponseData data, BidiHttpRequest request, bool cdpSupported)
     {

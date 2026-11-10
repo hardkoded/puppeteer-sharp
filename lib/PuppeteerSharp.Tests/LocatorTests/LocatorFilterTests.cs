@@ -24,5 +24,29 @@ namespace PuppeteerSharp.Tests.LocatorTests
             await hoverTask;
         }
 
+        [Test, PuppeteerTest("locator.spec", "Locator.prototype.filter", "should work with arguments")]
+        public async Task ShouldWorkWithArguments()
+        {
+            await Page.SetContentAsync("<div>test</div>");
+            await using var expectedValue = await Page.EvaluateExpressionHandleAsync("'true'");
+            var hoverTask = Page
+                .Locator("div")
+                .SetTimeout(5000)
+                .Filter(
+                    "async (element, attr, value) => element.getAttribute(attr) === value",
+                    "clickable",
+                    expectedValue)
+                .Filter(
+                    "(element, attr, value) => element.getAttribute(attr) === value",
+                    "clickable",
+                    expectedValue)
+                .HoverAsync();
+
+            await Task.Delay(2000);
+            await Page.EvaluateExpressionAsync(
+                "document.querySelector('div')?.setAttribute('clickable', 'true')");
+
+            await hoverTask;
+        }
     }
 }
