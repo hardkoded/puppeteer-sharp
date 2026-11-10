@@ -35,6 +35,63 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
         }
 
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from workers of its own pages")]
+        public async Task ShouldOnlyReportConsoleMessagesFromWorkersOfItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var messages = new List<ConsoleMessage>();
+            context.Console += (_, e) => messages.Add(e.Message);
+
+            var otherDone = new TaskCompletionSource<ConsoleMessage>();
+            void OnOtherConsole(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "other-done")
+                {
+                    otherDone.TrySetResult(e.Message);
+                }
+            }
+
+            var ownWorkerCreated = new TaskCompletionSource<WebWorker>();
+            var ownDone = new TaskCompletionSource<ConsoleMessage>();
+            void OnWorkerCreated(object _, WorkerEventArgs e) => ownWorkerCreated.TrySetResult(e.Worker);
+            void OnOwnConsole(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "own-done")
+                {
+                    ownDone.TrySetResult(e.Message);
+                }
+            }
+
+            otherContext.Console += OnOtherConsole;
+            page.WorkerCreated += OnWorkerCreated;
+            context.Console += OnOwnConsole;
+            try
+            {
+                await Task.WhenAll(
+                    otherDone.Task,
+                    otherPage.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-other-worker');console.log('other-done')"));
+
+                await Task.WhenAll(
+                    ownWorkerCreated.Task,
+                    ownDone.Task,
+                    page.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-own-worker');console.log('own-done')"));
+
+                Assert.That(
+                    messages.ConvertAll(m => m.Text),
+                    Is.EqualTo(new[] { "from-own-worker", "own-done" }));
+            }
+            finally
+            {
+                otherContext.Console -= OnOtherConsole;
+                page.WorkerCreated -= OnWorkerCreated;
+                context.Console -= OnOwnConsole;
+            }
+        }
+
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {

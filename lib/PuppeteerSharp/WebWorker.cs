@@ -47,6 +47,8 @@ namespace PuppeteerSharp
 
         internal abstract IsolatedWorld World { get; }
 
+        internal bool HasConsoleListeners => Console != null;
+
         /// <summary>
         /// Executes a script in browser context.
         /// </summary>
