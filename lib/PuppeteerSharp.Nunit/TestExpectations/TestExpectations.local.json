@@ -145,12 +145,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "comment": "BiDi does not support service worker targets. Mirrors upstream test/TestExpectations.json; remove when upstream is synced.",
-    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from service workers",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
   }
 ]
