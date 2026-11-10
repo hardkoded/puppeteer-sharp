@@ -325,6 +325,44 @@ namespace PuppeteerSharp.Tests.ConsoleTests
                     ColumnNumber = 6,
                 },
             }));
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(message.Location.ScriptId, Is.Not.Null.And.Not.Empty);
+                Assert.That(message.StackTrace.Select(f => f.ScriptId), Is.All.Not.Null.And.Not.Empty);
+            }
+        }
+
+        [Test, PuppeteerTest("console.spec", "console", "should have scriptId in stack trace for eval console API calls")]
+        public async Task ShouldHaveScriptIdInStackTraceForEvalConsoleAPICalls()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var consoleTask = new TaskCompletionSource<ConsoleMessage>();
+
+            void ConsoleHandler(object sender, ConsoleEventArgs e)
+            {
+                if (e.Message.Type == ConsoleType.Trace)
+                {
+                    consoleTask.TrySetResult(e.Message);
+                    Page.Console -= ConsoleHandler;
+                }
+            }
+
+            Page.Console += ConsoleHandler;
+
+            await Task.WhenAll(
+                consoleTask.Task,
+                Page.EvaluateFunctionAsync(@"() => {
+                    eval(""function dynamicFoo() { console.trace('from eval'); }\ndynamicFoo();"");
+                }"));
+
+            var message = await consoleTask.Task;
+            Assert.That(message.Text, Is.EqualTo("from eval"));
+            Assert.That(message.Type, Is.EqualTo(ConsoleType.Trace));
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(message.Location.ScriptId, Is.Not.Null.And.Not.Empty);
+                Assert.That(message.StackTrace[0].ScriptId, Is.Not.Null.And.Not.Empty);
+            }
         }
 
         // @see https://github.com/puppeteer/puppeteer/issues/3865
