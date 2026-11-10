@@ -41,6 +41,45 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(Page.Workers, Is.Empty);
         }
 
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests")]
+        public async Task ShouldReportNetworkRequests()
+        {
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var requestTask = Page.WaitForRequestAsync(TestConstants.EmptyPage);
+            await worker.EvaluateFunctionAsync("url => fetch(url)", TestConstants.EmptyPage);
+            var request = await requestTask;
+
+            Assert.That(request.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(request.Worker, Is.SameAs(worker));
+            Assert.That(request.Frame, Is.Null);
+            Assert.That(request.Page, Is.Null);
+        }
+
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests with request interception")]
+        public async Task ShouldReportNetworkRequestsWithRequestInterception()
+        {
+            await Page.SetRequestInterceptionAsync(true);
+            Page.Request += (_, e) => _ = e.Request.ContinueAsync();
+
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var requestTask = Page.WaitForRequestAsync(TestConstants.EmptyPage);
+            await worker.EvaluateFunctionAsync("url => fetch(url)", TestConstants.EmptyPage);
+            var request = await requestTask;
+
+            Assert.That(request.Url, Is.EqualTo(TestConstants.EmptyPage));
+            Assert.That(request.Worker, Is.SameAs(worker));
+            Assert.That(request.Frame, Is.Null);
+            Assert.That(request.Page, Is.Null);
+        }
+
         [Test, PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {

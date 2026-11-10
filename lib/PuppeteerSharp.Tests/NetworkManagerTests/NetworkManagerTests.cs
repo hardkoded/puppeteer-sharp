@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
     private const string FontUrl = "https://example.com/fonts/font.woff2";
     private const string RestartNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F50";
     private const string RestartFrameId = "84AC261A351B86932B775B76D1DD79F8";
+    private const string WorkerUrl = "http://localhost:8907/empty.html";
+    private const string WorkerNetworkId = "3C6E9E2A5D1B4F3F5E8C0B1A2D3E4F51";
 
     // There are some missing calls in this function, but this is enough.
     [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager", "should process extra info on multiple redirects")]
@@ -1088,6 +1091,101 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(harness.Sent<FetchContinueRequestRequest>("Fetch.continueRequest"), Is.Empty);
     }
 
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should report the worker when Fetch.requestPaused arrives first")]
+    public async Task ShouldReportTheWorkerWhenFetchRequestPausedArrivesFirst()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var pageSession = new RecordingCdpSession();
+        var workerSession = new RecordingCdpSession();
+        var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
+        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        await manager.AddClientAsync(pageSession);
+        await manager.AddClientAsync(workerSession);
+        await manager.SetRequestInterceptionAsync(true);
+
+        var requests = new List<IRequest>();
+        manager.Request += (_, e) =>
+        {
+            requests.Add(e.Request);
+            _ = e.Request.ContinueAsync();
+        };
+
+        pageSession.Emit("Fetch.requestPaused", new FetchRequestPausedResponse
+        {
+            RequestId = "interception-job-1.0",
+            Request = new Request { Url = WorkerUrl, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
+            ResourceType = ResourceType.Fetch,
+            NetworkId = WorkerNetworkId,
+        });
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(WorkerUrl));
+
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(requests[0].Worker, Is.SameAs(worker));
+        Assert.That(requests[0].Frame, Is.Null);
+        Assert.That(requests[0].Page, Is.Null);
+        Assert.That(pageSession.Sent.Count(c => c.Method == "Fetch.continueRequest"), Is.EqualTo(1));
+        Assert.That(workerSession.Sent.Count(c => c.Method == "Fetch.continueRequest"), Is.EqualTo(0));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should keep the worker across redirects")]
+    public async Task ShouldKeepTheWorkerAcrossRedirects()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var pageSession = new RecordingCdpSession();
+        var workerSession = new RecordingCdpSession();
+        var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
+        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        await manager.AddClientAsync(pageSession);
+        await manager.AddClientAsync(workerSession);
+        await manager.SetRequestInterceptionAsync(true);
+
+        var requests = new List<IRequest>();
+        manager.Request += (_, e) =>
+        {
+            requests.Add(e.Request);
+            _ = e.Request.ContinueAsync();
+        };
+
+        const string url1 = "http://localhost:8907/redirect/1.html";
+        const string url2 = "http://localhost:8907/redirect/2.html";
+
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(url1));
+        pageSession.Emit("Fetch.requestPaused", WorkerRequestPaused("interception-job-1.0", url1));
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent(url2, new ResponsePayload
+        {
+            Url = url1,
+            Status = HttpStatusCode.Found,
+            StatusText = "Found",
+            Headers = new Dictionary<string, string>(),
+        }));
+        pageSession.Emit("Fetch.requestPaused", WorkerRequestPaused("interception-job-2.0", url2));
+
+        Assert.That(requests, Has.Count.EqualTo(2));
+        Assert.That(requests[1].Url, Is.EqualTo(url2));
+        Assert.That(requests[1].Worker, Is.SameAs(worker));
+        Assert.That(requests[1].RedirectChain, Has.Length.EqualTo(1));
+    }
+
+    private static RequestWillBeSentResponse WorkerRequestWillBeSent(string url, ResponsePayload redirectResponse = null)
+        => new()
+        {
+            RequestId = WorkerNetworkId,
+            LoaderId = string.Empty,
+            Request = new Request { Url = url, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
+            RedirectResponse = redirectResponse,
+            Initiator = new Initiator { Type = InitiatorType.Script },
+            RedirectHasExtraInfo = false,
+            Type = ResourceType.Fetch,
+        };
+
+    private static FetchRequestPausedResponse WorkerRequestPaused(string requestId, string url) => new()
+    {
+        RequestId = requestId,
+        Request = new Request { Url = url, Method = HttpMethod.Get, Headers = new Dictionary<string, string>() },
+        ResourceType = ResourceType.Fetch,
+        NetworkId = WorkerNetworkId,
+    };
+
     private sealed class RecordingCdpSession : CDPSession
     {
         public List<(string Method, object Args)> Sent { get; } = [];
@@ -1213,7 +1311,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         }
     }
 
-    private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory)
+    private static NetworkManager CreateNetworkManager(ILoggerFactory loggerFactory, Func<CDPSession, WebWorker> workerForSession = null)
     {
         var frameManagerMock = Substitute.For<IFrameProvider>();
         var pageMock = Substitute.For<IPage>();
@@ -1221,6 +1319,7 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         browserMock.GetUserAgentAsync().Returns("user-agent");
         pageMock.Browser.Returns(browserMock);
         frameManagerMock.Page.Returns(pageMock);
+        frameManagerMock.Worker(Arg.Any<CDPSession>()).Returns(ci => workerForSession?.Invoke(ci.Arg<CDPSession>()));
 
         return new NetworkManager(frameManagerMock, loggerFactory);
     }

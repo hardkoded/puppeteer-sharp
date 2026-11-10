@@ -500,6 +500,7 @@ namespace PuppeteerSharp.Cdp
             var request = new CdpHttpRequest(
                     client,
                     frame,
+                    _frameManager.Worker(client),
                     e.RequestId,
                     _userRequestInterceptionEnabled,
                     e,
@@ -556,6 +557,7 @@ namespace PuppeteerSharp.Cdp
             request = new CdpHttpRequest(
                 client,
                 frame,
+                _frameManager.Worker(client),
                 fetchRequestId,
                 _userRequestInterceptionEnabled,
                 e,

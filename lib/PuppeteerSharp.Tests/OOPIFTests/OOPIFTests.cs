@@ -550,6 +550,42 @@ namespace PuppeteerSharp.Tests.OOPIFTests
         }
 
 
+        [Test, PuppeteerTest("oopif.spec", "OOPIF", "should continue intercepted requests from workers in OOPIFs")]
+        public async Task ShouldContinueInterceptedRequestsFromWorkersInOopifs()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await FrameUtils.AttachFrameAsync(Page, "frame1", TestConstants.CrossProcessHttpPrefix + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            await Page.SetRequestInterceptionAsync(true);
+            var requests = new List<IRequest>();
+            Page.Request += (_, e) =>
+            {
+                requests.Add(e.Request);
+                _ = e.Request.ContinueAsync();
+            };
+
+            // Requests from a worker in an OOPIF are paused on the OOPIF session, so
+            // continuing them on any other session leaves the fetch hanging.
+            var url = TestConstants.CrossProcessHttpPrefix + "/empty.html";
+            var result = await worker.EvaluateFunctionAsync<string>(
+                @"async url => {
+                    try {
+                        await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+                        return 'ok';
+                    } catch {
+                        return 'error';
+                    }
+                }",
+                url);
+
+            Assert.That(result, Is.EqualTo("ok"));
+            var request = requests.Find(r => r.Url == url);
+            Assert.That(request?.Worker, Is.SameAs(worker));
+        }
+
         [Test, PuppeteerTest("oopif.spec", "OOPIF", "should expose events within OOPIFs")]
         public async Task OOPIFShouldExposeEventsWithinOOPIFs()
         {
