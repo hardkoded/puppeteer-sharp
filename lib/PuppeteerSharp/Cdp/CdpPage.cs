@@ -1128,7 +1128,7 @@ public class CdpPage : Page
         IFrame frame = null,
         WebWorker worker = null)
     {
-        if (HasConsoleEventListeners)
+        if (!HasAnyConsoleListeners)
         {
             await Task.WhenAll(values.Select(v =>
                 RemoteObjectHelper.ReleaseObjectAsync(session, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);

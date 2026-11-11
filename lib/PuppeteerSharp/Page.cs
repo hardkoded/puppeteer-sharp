@@ -226,6 +226,14 @@ namespace PuppeteerSharp
 
         internal bool HasConsoleListeners => Console != null;
 
+        /// <summary>
+        /// Whether the console messages of this page are observed by anyone: the page, its browser context or its browser.
+        /// </summary>
+        internal bool HasAnyConsoleListeners
+            => HasConsoleListeners
+               || ((BrowserContext)BrowserContext).HasConsoleListeners
+               || ((Browser)Browser).HasConsoleListeners;
+
         internal Accessibility Accessibility { get; init; }
 
         internal Keyboard Keyboard { get; init; }
@@ -247,11 +255,6 @@ namespace PuppeteerSharp
         internal bool HasPopupEventListeners => Popup?.GetInvocationList().Length > 0;
 
         internal bool HasErrorEventListeners => Error?.GetInvocationList().Length > 0;
-
-        /// <summary>
-        /// Whether the <see cref="Console"/> event has listeners.
-        /// </summary>
-        protected bool HasConsoleEventListeners => Console?.GetInvocationList().Length == 0;
 
         /// <summary>
         /// Browser.
