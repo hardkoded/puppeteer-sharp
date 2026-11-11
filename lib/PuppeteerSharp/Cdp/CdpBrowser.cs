@@ -417,7 +417,8 @@ public class CdpBrowser : Browser
         bool networkEnabled = true,
         bool issuesEnabled = true,
         string[] blockList = null,
-        string[] allowList = null)
+        string[] allowList = null,
+        DownloadBehavior downloadBehavior = null)
     {
         var browser = new CdpBrowser(
             browserToCreate,
@@ -445,6 +446,11 @@ public class CdpBrowser : Browser
             }
 
             await browser.AttachAsync().ConfigureAwait(false);
+            if (downloadBehavior != null)
+            {
+                await ((CdpBrowserContext)browser.DefaultContext).SetDownloadBehaviorAsync(downloadBehavior).ConfigureAwait(false);
+            }
+
             return browser;
         }
         catch

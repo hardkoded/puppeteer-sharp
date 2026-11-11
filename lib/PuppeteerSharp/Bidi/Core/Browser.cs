@@ -97,10 +97,50 @@ internal sealed class Browser(Session session) : IDisposable
         Session?.Dispose();
     }
 
-    public async Task<UserContext> CreateUserContextAsync()
+    public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
         var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
+        if (downloadBehavior != null)
+        {
+            await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+        }
+
         return CreateUserContext(result.UserContextId);
+    }
+
+    /// <summary>
+    /// Sets the download behavior for the given user contexts. If no user
+    /// contexts are provided, the behavior is applied globally.
+    /// </summary>
+    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, IEnumerable<string> userContexts = null)
+    {
+        WebDriverBiDi.Browser.DownloadBehavior bidiBehavior;
+        switch (downloadBehavior.Policy)
+        {
+            case DownloadPolicy.AllowAndName:
+                throw new NotSupportedException("`allowAndName` is not supported in WebDriver BiDi");
+            case DownloadPolicy.Allow:
+                if (downloadBehavior.DownloadPath == null)
+                {
+                    throw new NotSupportedException("`downloadPath` is required in `allow` download behavior");
+                }
+
+                bidiBehavior = new DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
+                break;
+            case DownloadPolicy.Deny:
+                bidiBehavior = new DownloadBehaviorDenied();
+                break;
+            default:
+                return;
+        }
+
+        var parameters = new SetDownloadBehaviorCommandParameters { DownloadBehavior = bidiBehavior };
+        if (userContexts != null)
+        {
+            parameters.UserContexts.AddRange(userContexts);
+        }
+
+        await Session.Driver.Browser.SetDownloadBehaviorAsync(parameters).ConfigureAwait(false);
     }
 
     public async Task RemoveInterceptAsync(string intercept)
