@@ -1027,7 +1027,8 @@ public class BidiFrame : Frame
                     text,
                     handleArgs,
                     location,
-                    stackTrace);
+                    stackTrace,
+                    frame: this);
 
                 BidiPage.OnConsole(new ConsoleEventArgs(consoleMessage));
             }

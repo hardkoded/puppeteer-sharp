@@ -954,12 +954,13 @@ public class CdpPage : Page
 
         if (session.Target.Type == TargetType.Worker)
         {
-            var worker = new CdpWebWorker(
+            CdpWebWorker worker = null;
+            worker = new CdpWebWorker(
                 session,
                 session.Target.Url,
                 session.Target.TargetId,
                 session.Target.TargetInfo.Type,
-                (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client),
+                (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client, worker: worker),
                 HandleException);
             _workers[session.Id] = worker;
             _ = FrameManager.NetworkManager.AddClientAsync(session);
@@ -1116,10 +1117,16 @@ public class CdpPage : Page
 
         var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
-        return AddConsoleMessageAsync(message.Type, values, message.StackTrace, session);
+        return AddConsoleMessageAsync(message.Type, values, message.StackTrace, session, ctx.World?.Frame);
     }
 
-    private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace, CDPSession session)
+    private async Task AddConsoleMessageAsync(
+        ConsoleType type,
+        IJSHandle[] values,
+        StackTrace stackTrace,
+        CDPSession session,
+        IFrame frame = null,
+        WebWorker worker = null)
     {
         if (HasConsoleEventListeners)
         {
@@ -1159,7 +1166,7 @@ public class CdpPage : Page
             location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations);
+        var consoleMessage = new ConsoleMessage(type, string.Join(" ", tokens), values, location, stackTraceLocations, frame, worker);
         OnConsole(new ConsoleEventArgs(consoleMessage));
     }
 

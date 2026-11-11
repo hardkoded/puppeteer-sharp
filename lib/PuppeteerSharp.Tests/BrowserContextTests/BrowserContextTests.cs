@@ -34,6 +34,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 messageTask.Task,
                 page.EvaluateFunctionAsync("() => console.log('from-own-context')"));
 
+            Assert.That(messageTask.Task.Result.Page, Is.SameAs(page));
             Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
         }
 
