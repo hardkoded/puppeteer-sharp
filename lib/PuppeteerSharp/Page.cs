@@ -224,6 +224,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
 
+        internal bool HasConsoleListeners => Console != null;
+
         internal Accessibility Accessibility { get; init; }
 
         internal Keyboard Keyboard { get; init; }

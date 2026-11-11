@@ -40,6 +40,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         IBrowser IBrowserContext.Browser => Browser;
 
+        internal bool HasConsoleListeners => Console != null;
+
         /// <inheritdoc/>
         public abstract ITarget[] Targets();
 

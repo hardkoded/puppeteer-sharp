@@ -4970,5 +4970,37 @@
       "FAIL"
     ],
     "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext.on(\"console\") should only report console messages from workers of its own pages",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
   }
 ]
