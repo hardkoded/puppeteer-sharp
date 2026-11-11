@@ -27,6 +27,9 @@ namespace PuppeteerSharp
         public event EventHandler Closed;
 
         /// <inheritdoc/>
+        public event EventHandler<ConsoleEventArgs> Console;
+
+        /// <inheritdoc/>
         public event EventHandler Disconnected;
 
         /// <inheritdoc/>
@@ -40,6 +43,9 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
+
+        /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
 
         /// <inheritdoc/>
         public virtual string WebSocketEndpoint => Connection.Url;
@@ -67,6 +73,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
+
+        internal bool HasConsoleListeners => Console != null;
 
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
@@ -270,8 +278,20 @@ namespace PuppeteerSharp
 
         internal virtual bool IsIssuesEnabled() => true;
 
+        /// <summary>
+        /// Emits <see cref="Request"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnRequest(RequestEventArgs e) => Request?.Invoke(this, e);
+
         internal IEnumerable<string> GetCustomQueryHandlerNames()
             => CustomQuerySelectorRegistry.Default.GetCustomQueryHandlerNames();
+
+        /// <summary>
+        /// Emits <see cref="Console"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was

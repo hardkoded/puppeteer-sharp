@@ -798,6 +798,8 @@ public class BidiPage : Page
 
     internal new void OnConsole(ConsoleEventArgs e) => base.OnConsole(e);
 
+    internal bool HasWorkerWithRealm(string realmId) => _workers.ContainsKey(realmId);
+
     internal void OnWorkerCreated(BidiWebWorker worker)
     {
         _workers[worker.RealmId] = worker;

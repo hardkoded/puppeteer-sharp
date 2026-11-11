@@ -990,6 +990,13 @@ public class BidiFrame : Frame
 
             if (args.Type == "console")
             {
+                // Chromium sets source.context of dedicated worker logs to the frame that created the worker,
+                // so they reach this handler. BidiWorkerRealm already emits them with the right worker and realm.
+                if (args.Source.RealmId != null && BidiPage.HasWorkerWithRealm(args.Source.RealmId))
+                {
+                    return;
+                }
+
                 var consoleArgs = args.Arguments;
                 var handleArgs = consoleArgs?.Select(arg => ((BidiFrameRealm)MainRealm).CreateHandle(arg)).ToArray() ?? [];
 

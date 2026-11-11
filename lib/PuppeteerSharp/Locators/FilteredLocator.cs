@@ -11,11 +11,13 @@ namespace PuppeteerSharp.Locators
     internal class FilteredLocator : DelegatedLocator
     {
         private readonly string _predicate;
+        private readonly object[] _args;
 
-        internal FilteredLocator(Locator @base, string predicate)
+        internal FilteredLocator(Locator @base, string predicate, object[] args)
             : base(@base)
         {
             _predicate = predicate;
+            _args = args;
         }
 
         internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
@@ -33,7 +35,7 @@ namespace PuppeteerSharp.Locators
             await frame.WaitForFunctionAsync(
                 _predicate,
                 new WaitForFunctionOptions { Timeout = Timeout },
-                handle).ConfigureAwait(false);
+                [handle, .. _args]).ConfigureAwait(false);
 
             return handle;
         }

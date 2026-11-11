@@ -30,6 +30,21 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from service workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "BiDi does not support service worker targets"
+  },
+  {
     "testIdPattern": "[browser.spec] Browser specs Browser.get|setWindowBounds should get and set browser window bounds",
     "platforms": [
       "win32"
@@ -541,6 +556,21 @@
       "SKIP"
     ],
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.stream *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Not supported in WebDriver BiDi yet - https://github.com/w3c/webdriver-bidi/issues/958"
   },
   {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
@@ -4940,5 +4970,37 @@
       "FAIL"
     ],
     "comment": "Experimental support for WebMCP is not supported in BiDi"
+  },
+  {
+    "testIdPattern": "[browser.spec] Browser specs Browser.on(\"console\") should report console messages from dedicated workers",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext.on(\"console\") should only report console messages from workers of its own pages",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "firefox",
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Firefox does not support web worker targets in Puppeteer, see [worker.spec] *"
   }
 ]
