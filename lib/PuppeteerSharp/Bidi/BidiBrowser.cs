@@ -245,7 +245,24 @@ public class BidiBrowser : Browser
         var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
         if (options?.DownloadBehavior != null)
         {
-            await BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [userContext.Id]).ConfigureAwait(false);
+            try
+            {
+                await BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [userContext.Id]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the user context when the download policy cannot be applied.
+                try
+                {
+                    await userContext.RemoveAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Preserve the original failure.
+                }
+
+                throw;
+            }
         }
 
         return CreateBrowserContext(userContext);
@@ -414,7 +431,16 @@ public class BidiBrowser : Browser
 
         if (options.DownloadBehavior != null)
         {
-            await browser.BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [UserContext.DEFAULT]).ConfigureAwait(false);
+            try
+            {
+                await browser.BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [UserContext.DEFAULT]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the browser when the download policy cannot be applied.
+                await browser.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
         }
 
         return browser;
