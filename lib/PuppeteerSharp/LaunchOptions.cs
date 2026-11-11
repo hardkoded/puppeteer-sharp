@@ -178,6 +178,11 @@ namespace PuppeteerSharp
         public bool IssuesEnabled { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the download behavior for the default browser context.
+        /// </summary>
+        public DownloadBehavior DownloadBehavior { get; set; }
+
+        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>

@@ -243,6 +243,11 @@ public class BidiBrowser : Browser
     public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
     {
         var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
+        if (options?.DownloadBehavior != null)
+        {
+            await BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [userContext.Id]).ConfigureAwait(false);
+        }
+
         return CreateBrowserContext(userContext);
     }
 
@@ -406,6 +411,12 @@ public class BidiBrowser : Browser
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
+
+        if (options.DownloadBehavior != null)
+        {
+            await browser.BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [UserContext.DEFAULT]).ConfigureAwait(false);
+        }
+
         return browser;
     }
 

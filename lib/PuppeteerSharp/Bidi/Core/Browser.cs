@@ -103,6 +103,39 @@ internal sealed class Browser(Session session) : IDisposable
         return CreateUserContext(result.UserContextId);
     }
 
+    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, string[] userContexts = null)
+    {
+        var parameters = new SetDownloadBehaviorCommandParameters();
+        switch (downloadBehavior.Policy)
+        {
+            case DownloadPolicy.AllowAndName:
+                throw new NotSupportedException("`allowAndName` is not supported in WebDriver BiDi");
+            case DownloadPolicy.Allow:
+                if (downloadBehavior.DownloadPath == null)
+                {
+                    throw new NotSupportedException("`downloadPath` is required in `allow` download behavior");
+                }
+
+                parameters.DownloadBehavior = new DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
+                break;
+            case DownloadPolicy.Deny:
+                parameters.DownloadBehavior = new DownloadBehaviorDenied();
+                break;
+            default:
+                return;
+        }
+
+        if (userContexts != null)
+        {
+            foreach (var userContext in userContexts)
+            {
+                parameters.UserContexts.Add(userContext);
+            }
+        }
+
+        await Session.Driver.Browser.SetDownloadBehaviorAsync(parameters).ConfigureAwait(false);
+    }
+
     public async Task RemoveInterceptAsync(string intercept)
     {
         await Session.Driver.Network.RemoveInterceptAsync(new WebDriverBiDi.Network.RemoveInterceptCommandParameters(intercept)).ConfigureAwait(false);
