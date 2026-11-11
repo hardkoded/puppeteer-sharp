@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserTests
@@ -253,24 +254,15 @@ namespace PuppeteerSharp.Tests.BrowserTests
         [Test, PuppeteerTest("browser.spec", "Browser specs Browser network events", "should report responses from dedicated workers")]
         public async Task ShouldReportResponsesFromDedicatedWorkers()
         {
-            var workerTcs = new TaskCompletionSource<WebWorker>();
-            void OnWorkerCreated(object sender, WorkerEventArgs e) => workerTcs.TrySetResult(e.Worker);
-
-            Page.WorkerCreated += OnWorkerCreated;
-            try
-            {
-                await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
-            }
-            finally
-            {
-                Page.WorkerCreated -= OnWorkerCreated;
-            }
-
-            var worker = await workerTcs.Task;
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
             var url = TestConstants.ServerUrl + "/one-style.css";
 
-            var responseTcs = new TaskCompletionSource<IResponse>();
-            var requestTcs = new TaskCompletionSource<IRequest>();
+            var responseTcs = new TaskCompletionSource<IResponse>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
             void OnResponse(object sender, ResponseCreatedEventArgs e)
             {
                 if (e.Response.Url == url)
@@ -292,11 +284,12 @@ namespace PuppeteerSharp.Tests.BrowserTests
             try
             {
                 await worker.EvaluateFunctionAsync("async (url) => { await (await fetch(url)).text(); }", url);
-                var response = await responseTcs.Task;
-                var request = await requestTcs.Task;
+                var response = await responseTcs.Task.WithTimeout();
+                var request = await requestTcs.Task.WithTimeout();
 
-                Assert.That(response.Url, Is.EqualTo(url));
-                Assert.That(request.Url, Is.EqualTo(url));
+                Assert.That(response.Request.Worker, Is.SameAs(worker));
+                Assert.That(request.Worker, Is.SameAs(worker));
+                Assert.That(request.Page, Is.Null);
             }
             finally
             {
