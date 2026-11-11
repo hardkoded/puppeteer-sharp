@@ -292,7 +292,7 @@ namespace PuppeteerSharp.Tests.OOPIFTests
 
                 Assert.That(browserRequest, Is.SameAs(contextRequest));
                 Assert.That(browserRequest.Frame, Is.EqualTo(frame));
-                Assert.That(browserRequest.Frame.Page, Is.EqualTo(Page));
+                Assert.That(browserRequest.Page, Is.EqualTo(Page));
             }
             finally
             {

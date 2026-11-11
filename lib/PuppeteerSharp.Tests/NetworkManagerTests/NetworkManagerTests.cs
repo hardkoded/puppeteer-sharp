@@ -13,6 +13,7 @@ using PuppeteerSharp.Cdp;
 using PuppeteerSharp.Cdp.Messaging;
 using PuppeteerSharp.Helpers.Json;
 using PuppeteerSharp.Nunit;
+using PuppeteerSharp.Transport;
 
 namespace PuppeteerSharp.Tests.NetworkManagerTests;
 
@@ -1166,6 +1167,100 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         Assert.That(requests[1].RedirectChain, Has.Length.EqualTo(1));
     }
 
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not fail pending worker requests when the whole connection closes")]
+    public async Task ShouldNotFailPendingWorkerRequestsWhenTheWholeConnectionCloses()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
+
+        workerSession.Connection = Connection.CreateFromTransport(
+            Substitute.For<IConnectionTransport>(),
+            new ConnectOptions(),
+            loggerFactory);
+        workerSession.Connection.IsClosed = true;
+        workerSession.RaiseDisconnected();
+
+        Assert.That(failed, Is.Empty);
+        Assert.That(manager.NumRequestsInProgress, Is.EqualTo(0));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should fail pending requests when the worker session disconnects")]
+    public async Task ShouldFailPendingRequestsWhenTheWorkerSessionDisconnects()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (manager, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
+
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
+
+        workerSession.RaiseDisconnected();
+
+        Assert.That(failed, Is.EqualTo(new[] { requests[0] }));
+        Assert.That(failed[0].FailureText, Is.EqualTo("net::ERR_ABORTED"));
+        Assert.That(manager.NumRequestsInProgress, Is.EqualTo(0));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not fail pending page requests when a session disconnects")]
+    public async Task ShouldNotFailPendingPageRequestsWhenASessionDisconnects()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (manager, pageSession, _, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, false);
+
+        pageSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        pageSession.RaiseDisconnected();
+
+        Assert.That(requests, Has.Count.EqualTo(1));
+        Assert.That(failed, Is.Empty);
+        Assert.That(manager.NumRequestsInProgress, Is.EqualTo(1));
+    }
+
+    [Test, PuppeteerTest("NetworkManager.test.ts", "NetworkManager worker requests", "should not emit requestfailed for worker requests that were never surfaced")]
+    public async Task ShouldNotEmitRequestFailedForWorkerRequestsThatWereNeverSurfaced()
+    {
+        using var loggerFactory = new LoggerFactory();
+        var (_, _, workerSession, requests, failed) = await SetupWorkerNetworkManagerAsync(loggerFactory, true);
+
+        // With interception enabled, no request is emitted until
+        // Fetch.requestPaused arrives, which never happens here.
+        workerSession.Emit("Network.requestWillBeSent", WorkerRequestWillBeSent("http://localhost/hang"));
+        workerSession.RaiseDisconnected();
+
+        Assert.That(requests, Is.Empty);
+        Assert.That(failed, Is.Empty);
+    }
+
+    private static async Task<(NetworkManager Manager, RecordingCdpSession PageSession, RecordingCdpSession WorkerSession, List<IRequest> Requests, List<IRequest> Failed)>
+        SetupWorkerNetworkManagerAsync(ILoggerFactory loggerFactory, bool interception)
+    {
+        var pageSession = new RecordingCdpSession();
+        var workerSession = new RecordingCdpSession();
+        var worker = (WebWorker)RuntimeHelpers.GetUninitializedObject(typeof(CdpWebWorker));
+        var manager = CreateNetworkManager(loggerFactory, session => session == workerSession ? worker : null);
+        await manager.AddClientAsync(pageSession);
+        await manager.AddClientAsync(workerSession);
+        if (interception)
+        {
+            await manager.SetRequestInterceptionAsync(true);
+        }
+
+        var requests = new List<IRequest>();
+        manager.Request += (_, e) =>
+        {
+            requests.Add(e.Request);
+            if (interception)
+            {
+                _ = e.Request.ContinueAsync();
+            }
+        };
+        var failed = new List<IRequest>();
+        manager.RequestFailed += (_, e) => failed.Add(e.Request);
+        return (manager, pageSession, workerSession, requests, failed);
+    }
+
     private static RequestWillBeSentResponse WorkerRequestWillBeSent(string url, ResponsePayload redirectResponse = null)
         => new()
         {
@@ -1209,6 +1304,8 @@ public class NetworkManagerTests : PuppeteerPageBaseTest
         public override void Close(string closeReason)
         {
         }
+
+        public void RaiseDisconnected() => OnDisconnected();
 
         public void Emit(string messageId, object data)
             => OnMessageReceived(new MessageEventArgs

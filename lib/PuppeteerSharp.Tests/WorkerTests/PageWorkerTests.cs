@@ -80,6 +80,35 @@ namespace PuppeteerSharp.Tests.WorkerTests
             Assert.That(request.Page, Is.Null);
         }
 
+        [Test, PuppeteerTest("worker.spec", "Workers", "should report network requests as failed when the worker is terminated")]
+        public async Task ShouldReportNetworkRequestsAsFailedWhenTheWorkerIsTerminated()
+        {
+            // Never responds, so the request stays pending until the worker dies.
+            Server.SetRoute("/hang", _ => new TaskCompletionSource<bool>().Task);
+
+            var workerCreatedTcs = new TaskCompletionSource<WebWorker>();
+            Page.WorkerCreated += (_, e) => workerCreatedTcs.TrySetResult(e.Worker);
+            await Page.GoToAsync(TestConstants.ServerUrl + "/worker/worker.html");
+            var worker = await workerCreatedTcs.Task.WithTimeout();
+
+            var requestTask = Page.WaitForRequestAsync(TestConstants.ServerUrl + "/hang");
+            await worker.EvaluateFunctionAsync("url => { void fetch(url); }", TestConstants.ServerUrl + "/hang");
+            var request = await requestTask;
+
+            var failedTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Page.RequestFailed += (_, e) =>
+            {
+                if (e.Request == request)
+                {
+                    failedTcs.TrySetResult(e.Request);
+                }
+            };
+            await Page.EvaluateFunctionAsync("() => globalThis.worker.terminate()");
+            await failedTcs.Task.WithTimeout();
+
+            Assert.That(request.FailureText, Is.EqualTo("net::ERR_ABORTED"));
+        }
+
         [Test, PuppeteerTest("worker.spec", "Workers", "should emit created and destroyed events")]
         public async Task ShouldEmitCreatedAndDestroyedEvents()
         {
