@@ -79,6 +79,9 @@ namespace PuppeteerSharp.Cdp
 
         public Task<CdpFrame> GetFrameAsync(string frameId) => FrameTree.TryGetFrameAsync(frameId);
 
+        /// <inheritdoc/>
+        public WebWorker Worker(CDPSession client) => (Page as CdpPage)?.GetWorker(client);
+
         internal ExecutionContext ExecutionContextById(int contextId, CDPSession session = null)
         {
             session ??= Client;

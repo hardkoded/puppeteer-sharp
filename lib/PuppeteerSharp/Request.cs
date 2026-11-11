@@ -32,6 +32,12 @@ namespace PuppeteerSharp
         public IFrame Frame { get; internal init; }
 
         /// <inheritdoc/>
+        public IPage Page => Frame?.Page;
+
+        /// <inheritdoc/>
+        public virtual WebWorker Worker { get; internal init; }
+
+        /// <inheritdoc/>
         public bool IsNavigationRequest { get; internal init; }
 
         /// <inheritdoc/>
