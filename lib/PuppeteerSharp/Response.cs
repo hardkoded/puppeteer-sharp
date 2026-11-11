@@ -56,6 +56,9 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public ResourceTiming Timing { get; protected init; }
 
+        /// <inheritdoc/>
+        public abstract long EncodedDataLength { get; }
+
         /// <inheritdoc cref="Request"/>
         protected TRequest Request { get; init; }
 
