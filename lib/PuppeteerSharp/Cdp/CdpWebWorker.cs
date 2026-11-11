@@ -244,7 +244,7 @@ public class CdpWebWorker : WebWorker
             location = stackTraceLocations[0];
         }
 
-        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations);
+        var consoleMessage = new ConsoleMessage(consoleData.Type, string.Join(" ", tokens), handles, location, stackTraceLocations, worker: this);
         OnConsole(new ConsoleEventArgs(consoleMessage));
 
         await _consoleAPICalled(consoleData.Type, handles, consoleData.StackTrace).ConfigureAwait(false);
