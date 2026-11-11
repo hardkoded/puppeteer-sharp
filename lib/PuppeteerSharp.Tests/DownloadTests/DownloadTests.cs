@@ -77,6 +77,7 @@ namespace PuppeteerSharp.Tests.DownloadTests
                 Policy = DownloadPolicy.Allow,
                 DownloadPath = _tempDir,
             };
+
             await using var browser = await Puppeteer.LaunchAsync(options);
             var page = await browser.NewPageAsync();
             await page.GoToAsync(TestConstants.ServerUrl + "/download.html");

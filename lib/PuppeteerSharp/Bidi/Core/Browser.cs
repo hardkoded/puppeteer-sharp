@@ -97,15 +97,42 @@ internal sealed class Browser(Session session) : IDisposable
         Session?.Dispose();
     }
 
-    public async Task<UserContext> CreateUserContextAsync()
+    public async Task<UserContext> CreateUserContextAsync(DownloadBehavior downloadBehavior = null)
     {
         var result = await Session.Driver.Browser.CreateUserContextAsync(new CreateUserContextCommandParameters()).ConfigureAwait(false);
-        return CreateUserContext(result.UserContextId);
+        var userContext = CreateUserContext(result.UserContextId);
+        if (downloadBehavior != null)
+        {
+            try
+            {
+                await SetDownloadBehaviorAsync(downloadBehavior, [result.UserContextId]).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Do not leak the user context when the download policy cannot be applied.
+                try
+                {
+                    await userContext.RemoveAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Preserve the original failure.
+                }
+
+                throw;
+            }
+        }
+
+        return userContext;
     }
 
-    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, string[] userContexts = null)
+    /// <summary>
+    /// Sets the download behavior for the given user contexts. If no user
+    /// contexts are provided, the behavior is applied globally.
+    /// </summary>
+    public async Task SetDownloadBehaviorAsync(DownloadBehavior downloadBehavior, IEnumerable<string> userContexts = null)
     {
-        var parameters = new SetDownloadBehaviorCommandParameters();
+        WebDriverBiDi.Browser.DownloadBehavior bidiBehavior;
         switch (downloadBehavior.Policy)
         {
             case DownloadPolicy.AllowAndName:
@@ -116,21 +143,19 @@ internal sealed class Browser(Session session) : IDisposable
                     throw new NotSupportedException("`downloadPath` is required in `allow` download behavior");
                 }
 
-                parameters.DownloadBehavior = new DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
+                bidiBehavior = new DownloadBehaviorAllowed(downloadBehavior.DownloadPath);
                 break;
             case DownloadPolicy.Deny:
-                parameters.DownloadBehavior = new DownloadBehaviorDenied();
+                bidiBehavior = new DownloadBehaviorDenied();
                 break;
             default:
                 return;
         }
 
+        var parameters = new SetDownloadBehaviorCommandParameters { DownloadBehavior = bidiBehavior };
         if (userContexts != null)
         {
-            foreach (var userContext in userContexts)
-            {
-                parameters.UserContexts.Add(userContext);
-            }
+            parameters.UserContexts.AddRange(userContexts);
         }
 
         await Session.Driver.Browser.SetDownloadBehaviorAsync(parameters).ConfigureAwait(false);

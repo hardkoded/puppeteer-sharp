@@ -242,29 +242,7 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
     {
-        var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
-        if (options?.DownloadBehavior != null)
-        {
-            try
-            {
-                await BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [userContext.Id]).ConfigureAwait(false);
-            }
-            catch
-            {
-                // Do not leak the user context when the download policy cannot be applied.
-                try
-                {
-                    await userContext.RemoveAsync().ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Preserve the original failure.
-                }
-
-                throw;
-            }
-        }
-
+        var userContext = await BrowserCore.CreateUserContextAsync(options?.DownloadBehavior).ConfigureAwait(false);
         return CreateBrowserContext(userContext);
     }
 
@@ -428,12 +406,11 @@ public class BidiBrowser : Browser
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
-
         if (options.DownloadBehavior != null)
         {
             try
             {
-                await browser.BrowserCore.SetDownloadBehaviorAsync(options.DownloadBehavior, [UserContext.DEFAULT]).ConfigureAwait(false);
+                await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
             }
             catch
             {

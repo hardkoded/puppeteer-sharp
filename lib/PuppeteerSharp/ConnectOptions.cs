@@ -62,15 +62,16 @@ namespace PuppeteerSharp
         public bool IssuesEnabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the download behavior for the default browser context.
-        /// </summary>
-        public DownloadBehavior DownloadBehavior { get; set; }
-
-        /// <summary>
         /// Gets or sets the default Viewport.
         /// </summary>
         /// <value>The default Viewport.</value>
         public ViewPortOptions DefaultViewport { get; set; } = ViewPortOptions.Default;
+
+        /// <summary>
+        /// Gets or sets the download behavior applied to the default browser context.
+        /// </summary>
+        /// <value>The download behavior.</value>
+        public DownloadBehavior DownloadBehavior { get; set; }
 
         /// <summary>
         /// Optional factory for <see cref="IConnectionTransport"/> implementations.

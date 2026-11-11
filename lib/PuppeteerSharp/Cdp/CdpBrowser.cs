@@ -446,7 +446,6 @@ public class CdpBrowser : Browser
             }
 
             await browser.AttachAsync().ConfigureAwait(false);
-
             if (downloadBehavior != null)
             {
                 await ((CdpBrowserContext)browser.DefaultContext).SetDownloadBehaviorAsync(downloadBehavior).ConfigureAwait(false);
