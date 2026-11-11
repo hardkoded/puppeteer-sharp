@@ -306,7 +306,7 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
                 await page.GoToAsync(TestConstants.EmptyPage);
                 var request = await requestTcs.Task.WithTimeout();
 
-                Assert.That(request.Frame.Page, Is.EqualTo(page));
+                Assert.That(request.Page, Is.EqualTo(page));
                 Assert.That(requests.Select(r => r.Url).ToArray(), Is.EqualTo(new[] { TestConstants.EmptyPage }));
             }
             finally

@@ -750,6 +750,9 @@ public class CdpPage : Page
 
     internal bool IsUrlAllowed(string url) => _targetManager.IsUrlAllowed(url);
 
+    internal CdpWebWorker GetWorker(CDPSession client)
+        => client != null && _workers.TryGetValue(client.Id, out var worker) ? worker : null;
+
     /// <inheritdoc />
     protected override async Task ExposeFunctionAsync(string name, Delegate puppeteerFunction)
     {
