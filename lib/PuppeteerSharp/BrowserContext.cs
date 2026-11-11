@@ -14,6 +14,9 @@ namespace PuppeteerSharp
         private int _screenshotOperationsCount;
 
         /// <inheritdoc/>
+        public event EventHandler<ConsoleEventArgs> Console;
+
+        /// <inheritdoc/>
         public event EventHandler<TargetChangedArgs> TargetChanged;
 
         /// <inheritdoc/>
@@ -205,6 +208,8 @@ namespace PuppeteerSharp
 
             return await mutex.AcquireAsync().ConfigureAwait(false);
         }
+
+        internal void OnConsole(ConsoleEventArgs args) => Console?.Invoke(this, args);
 
         internal void OnTargetCreated(TargetChangedArgs args) => TargetCreated?.Invoke(this, args);
 

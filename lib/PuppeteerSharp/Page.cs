@@ -1370,7 +1370,12 @@ namespace PuppeteerSharp
         /// Raises the <see cref="Console"/> event.
         /// </summary>
         /// <param name="e">Event args.</param>
-        protected void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
+        protected void OnConsole(ConsoleEventArgs e)
+        {
+            Console?.Invoke(this, e);
+            ((BrowserContext)BrowserContext).OnConsole(e);
+            ((Browser)Browser).OnConsole(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Metrics"/> event.

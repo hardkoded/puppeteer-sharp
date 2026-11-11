@@ -27,6 +27,9 @@ namespace PuppeteerSharp
         public event EventHandler Closed;
 
         /// <inheritdoc/>
+        public event EventHandler<ConsoleEventArgs> Console;
+
+        /// <inheritdoc/>
         public event EventHandler Disconnected;
 
         /// <inheritdoc/>
@@ -317,6 +320,12 @@ namespace PuppeteerSharp
         /// </summary>
         /// <param name="e">The event arguments.</param>
         internal void OnRequestFinished(RequestEventArgs e) => RequestFinished?.Invoke(this, e);
+
+        /// <summary>
+        /// Emits <see cref="Console"/> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        internal void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
 
         /// <summary>
         /// Closes <see cref="Connection"/> and any Chromium <see cref="Process"/> that was
