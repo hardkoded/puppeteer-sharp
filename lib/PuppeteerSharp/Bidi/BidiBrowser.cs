@@ -242,7 +242,7 @@ public class BidiBrowser : Browser
     /// <inheritdoc />
     public override async Task<IBrowserContext> CreateBrowserContextAsync(BrowserContextOptions options = null)
     {
-        var userContext = await BrowserCore.CreateUserContextAsync().ConfigureAwait(false);
+        var userContext = await BrowserCore.CreateUserContextAsync(options?.DownloadBehavior).ConfigureAwait(false);
         return CreateBrowserContext(userContext);
     }
 

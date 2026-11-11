@@ -29,6 +29,10 @@ namespace PuppeteerSharp.Tests.EmulationTests
             await Page.EmulateTimezoneAsync("Europe/Berlin");
             Assert.That(
                 await Page.EvaluateExpressionAsync<string>("date.toString()"), Is.EqualTo("Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)"));
+
+            await Page.EmulateTimezoneAsync("GMT");
+            Assert.That(
+                await Page.EvaluateExpressionAsync<string>("date.toString()"), Is.EqualTo("Sat Nov 19 2016 18:12:34 GMT+0000 (Greenwich Mean Time)"));
         }
 
         [Test, PuppeteerTest("emulation.spec", "Emulation Page.emulateTimezone", "should support timezone offset")]
