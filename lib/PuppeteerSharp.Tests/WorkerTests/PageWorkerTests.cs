@@ -110,6 +110,10 @@ namespace PuppeteerSharp.Tests.WorkerTests
                 LineNumber = 0,
                 ColumnNumber = 8
             }));
+            if (PuppeteerTestAttribute.IsCdp)
+            {
+                Assert.That(log.Location.ScriptId, Is.Not.Null.And.Not.Empty);
+            }
         }
 
         [Test, PuppeteerTest("worker.spec", "Workers", "should have JSHandles for console logs")]

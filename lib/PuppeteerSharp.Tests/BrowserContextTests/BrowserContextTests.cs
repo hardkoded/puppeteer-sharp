@@ -1,13 +1,99 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserContextTests
 {
     public class BrowserContextTests : PuppeteerBrowserBaseTest
     {
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from its own pages")]
+        public async Task ShouldOnlyReportConsoleMessagesFromItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var messages = new List<string>();
+            var messageTask = new TaskCompletionSource<ConsoleMessage>();
+            context.Console += (_, e) =>
+            {
+                messages.Add(e.Message.Text);
+                if (e.Message.Text == "from-own-context")
+                {
+                    messageTask.TrySetResult(e.Message);
+                }
+            };
+
+            await otherPage.EvaluateFunctionAsync("() => console.log('from-other-context')");
+            await Task.WhenAll(
+                messageTask.Task,
+                page.EvaluateFunctionAsync("() => console.log('from-own-context')"));
+
+            Assert.That(messages, Is.EqualTo(new[] { "from-own-context" }));
+        }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"console\")", "should only report console messages from workers of its own pages")]
+        public async Task ShouldOnlyReportConsoleMessagesFromWorkersOfItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var messages = new List<ConsoleMessage>();
+            context.Console += (_, e) => messages.Add(e.Message);
+
+            var otherDone = new TaskCompletionSource<ConsoleMessage>();
+            void OnOtherConsole(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "other-done")
+                {
+                    otherDone.TrySetResult(e.Message);
+                }
+            }
+
+            var ownWorkerCreated = new TaskCompletionSource<WebWorker>();
+            var ownDone = new TaskCompletionSource<ConsoleMessage>();
+            void OnWorkerCreated(object _, WorkerEventArgs e) => ownWorkerCreated.TrySetResult(e.Worker);
+            void OnOwnConsole(object _, ConsoleEventArgs e)
+            {
+                if (e.Message.Text == "own-done")
+                {
+                    ownDone.TrySetResult(e.Message);
+                }
+            }
+
+            otherContext.Console += OnOtherConsole;
+            page.WorkerCreated += OnWorkerCreated;
+            context.Console += OnOwnConsole;
+            try
+            {
+                await Task.WhenAll(
+                    otherDone.Task,
+                    otherPage.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-other-worker');console.log('other-done')"));
+
+                await Task.WhenAll(
+                    ownWorkerCreated.Task,
+                    ownDone.Task,
+                    page.EvaluateFunctionAsync("url => new Worker(url)", "data:text/javascript,console.log('from-own-worker');console.log('own-done')"));
+
+                Assert.That(
+                    messages.ConvertAll(m => m.Text),
+                    Is.EqualTo(new[] { "from-own-worker", "own-done" }));
+            }
+            finally
+            {
+                otherContext.Console -= OnOtherConsole;
+                page.WorkerCreated -= OnWorkerCreated;
+                context.Console -= OnOwnConsole;
+            }
+        }
+
         [Test, PuppeteerTest("browsercontext.spec", "BrowserContext", "should have default context")]
         public void ShouldHaveDefaultContext()
         {
@@ -186,6 +272,46 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await using var context = await Browser.CreateBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
+        }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"request\")", "should only report requests from its own pages")]
+        public async Task ShouldOnlyReportRequestsFromItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var requests = new List<IRequest>();
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnRequest(object sender, RequestEventArgs e)
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+
+                if (e.Request.Url == TestConstants.EmptyPage)
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            }
+
+            context.Request += OnRequest;
+            try
+            {
+                await otherPage.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+                await page.GoToAsync(TestConstants.EmptyPage);
+                var request = await requestTcs.Task.WithTimeout();
+
+                Assert.That(request.Frame.Page, Is.EqualTo(page));
+                Assert.That(requests.Select(r => r.Url).ToArray(), Is.EqualTo(new[] { TestConstants.EmptyPage }));
+            }
+            finally
+            {
+                context.Request -= OnRequest;
+            }
         }
     }
 }

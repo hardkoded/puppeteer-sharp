@@ -638,6 +638,9 @@ public class BidiHttpRequest : Request<BidiHttpResponse>
         {
             RequestEventEmitted = true;
             BidiPage.OnRequest(this);
+            var requestArgs = new RequestEventArgs(this);
+            ((BidiBrowserContext)BidiPage.BrowserContext).OnRequest(requestArgs);
+            BidiPage.BidiBrowser.OnRequest(requestArgs);
         }
 
         if (HasInternalHeaderOverwrite && CanBeIntercepted())

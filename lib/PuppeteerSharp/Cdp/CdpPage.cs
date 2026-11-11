@@ -84,7 +84,12 @@ public class CdpPage : Page
         FrameManager.FrameDetached += (_, e) => OnFrameDetached(e);
         FrameManager.FrameNavigated += (_, e) => OnFrameNavigated(e);
 
-        FrameManager.NetworkManager.Request += (_, e) => OnRequest(e.Request);
+        FrameManager.NetworkManager.Request += (_, e) =>
+        {
+            OnRequest(e.Request);
+            ((BrowserContext)BrowserContext).OnRequest(e);
+            Browser.OnRequest(e);
+        };
         FrameManager.NetworkManager.RequestFailed += (_, e) => OnRequestFailed(e);
         FrameManager.NetworkManager.Response += (_, e) => OnResponse(e);
         FrameManager.NetworkManager.RequestFinished += (_, e) => OnRequestFinished(e);
@@ -957,7 +962,7 @@ public class CdpPage : Page
                 session.Target.Url,
                 session.Target.TargetId,
                 session.Target.TargetInfo.Type,
-                AddConsoleMessageAsync,
+                (type, values, stackTrace) => AddConsoleMessageAsync(type, values, stackTrace, Client),
                 HandleException);
             _workers[session.Id] = worker;
             _ = FrameManager.NetworkManager.AddClientAsync(session);
@@ -976,11 +981,18 @@ public class CdpPage : Page
     {
         try
         {
-            if (e.MessageID == "Runtime.bindingCalled")
+            switch (e.MessageID)
             {
-                await OnBindingCalledAsync(
-                    e.MessageData.ToObject<BindingCalledResponse>(),
-                    sender as CDPSession).ConfigureAwait(false);
+                case "Runtime.bindingCalled":
+                    await OnBindingCalledAsync(
+                        e.MessageData.ToObject<BindingCalledResponse>(),
+                        sender as CDPSession).ConfigureAwait(false);
+                    break;
+                case "Runtime.consoleAPICalled":
+                    await OnConsoleAPIAsync(
+                        e.MessageData.ToObject<PageConsoleResponse>(),
+                        sender as CDPSession).ConfigureAwait(false);
+                    break;
             }
         }
         catch (Exception ex)
@@ -1002,7 +1014,7 @@ public class CdpPage : Page
                     OnLoad();
                     break;
                 case "Runtime.consoleAPICalled":
-                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>())
+                    await OnConsoleAPIAsync(e.MessageData.ToObject<PageConsoleResponse>(), Client)
                         .ConfigureAwait(false);
                     break;
                 case "Page.javascriptDialogOpening":
@@ -1089,14 +1101,15 @@ public class CdpPage : Page
         }
     }
 
-    private Task OnConsoleAPIAsync(PageConsoleResponse message)
+    private Task OnConsoleAPIAsync(PageConsoleResponse message, CDPSession session = null)
     {
         if (message.ExecutionContextId == 0)
         {
             return Task.CompletedTask;
         }
 
-        var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, Client);
+        session ??= Client;
+        var ctx = FrameManager.ExecutionContextById(message.ExecutionContextId, session);
 
         if (ctx == null)
         {
@@ -1106,15 +1119,15 @@ public class CdpPage : Page
 
         var values = message.Args.Select(ctx.CreateJSHandle).ToArray();
 
-        return AddConsoleMessageAsync(message.Type, values, message.StackTrace);
+        return AddConsoleMessageAsync(message.Type, values, message.StackTrace, session);
     }
 
-    private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace)
+    private async Task AddConsoleMessageAsync(ConsoleType type, IJSHandle[] values, StackTrace stackTrace, CDPSession session)
     {
         if (HasConsoleEventListeners)
         {
             await Task.WhenAll(values.Select(v =>
-                RemoteObjectHelper.ReleaseObjectAsync(Client, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
+                RemoteObjectHelper.ReleaseObjectAsync(session, ((ICdpHandle)v).RemoteObject, _logger))).ConfigureAwait(false);
             return;
         }
 
@@ -1142,6 +1155,7 @@ public class CdpPage : Page
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
                     FunctionName = callFrame.FunctionName,
+                    ScriptId = callFrame.ScriptId,
                 });
             }
 

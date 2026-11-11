@@ -333,6 +333,7 @@ namespace PuppeteerSharp.Cdp
             }
 
             MaybeReassignRequestClient(client, request);
+            request.Response?.SetEncodedDataLength(e.EncodedDataLength);
             request.Response?.BodyLoadedTaskWrapper.TrySetResult(true);
 
             ForgetRequest(request, true);

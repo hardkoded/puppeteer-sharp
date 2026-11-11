@@ -70,5 +70,21 @@ namespace PuppeteerSharp.Tests.LocatorTests
             var result = await resultTask;
             Assert.That(result, Is.EqualTo("true"));
         }
+
+        [Test, PuppeteerTest("locator.spec", "Locator.prototype.map", "should work with arguments")]
+        public async Task ShouldWorkWithArguments()
+        {
+            await Page.SetContentAsync("<div>test</div>");
+            await using var suffixHandle = await Page.EvaluateExpressionHandleAsync("'-handle'");
+            var result = await Page
+                .Locator("div")
+                .Map(
+                    "(element, suffix, handleSuffix) => (element.textContent ?? '') + suffix + handleSuffix",
+                    "-mapped",
+                    suffixHandle)
+                .WaitAsync<string>();
+
+            Assert.That(result, Is.EqualTo("test-mapped-handle"));
+        }
     }
 }

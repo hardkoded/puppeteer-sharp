@@ -43,6 +43,8 @@ namespace PuppeteerSharp
             "TaskDuration",
             "JSHeapUsedSize",
             "JSHeapTotalSize",
+            "DomContentLoaded",
+            "NavigationStart",
         };
 
         private static readonly RecyclableMemoryStreamManager _memoryStreamManager = new();
@@ -221,6 +223,8 @@ namespace PuppeteerSharp
 
         /// <inheritdoc/>
         public bool IsDragInterceptionEnabled { get; protected set; }
+
+        internal bool HasConsoleListeners => Console != null;
 
         internal Accessibility Accessibility { get; init; }
 
@@ -1348,7 +1352,12 @@ namespace PuppeteerSharp
         /// Raises the <see cref="Console"/> event.
         /// </summary>
         /// <param name="e">Event args.</param>
-        protected void OnConsole(ConsoleEventArgs e) => Console?.Invoke(this, e);
+        protected void OnConsole(ConsoleEventArgs e)
+        {
+            Console?.Invoke(this, e);
+            ((BrowserContext)BrowserContext).OnConsole(e);
+            ((Browser)Browser).OnConsole(e);
+        }
 
         /// <summary>
         /// Raises the <see cref="Metrics"/> event.

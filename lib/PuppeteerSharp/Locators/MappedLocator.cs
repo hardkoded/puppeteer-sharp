@@ -9,11 +9,13 @@ namespace PuppeteerSharp.Locators
     internal class MappedLocator : DelegatedLocator
     {
         private readonly string _mapper;
+        private readonly object[] _args;
 
-        internal MappedLocator(Locator @base, string mapper)
+        internal MappedLocator(Locator @base, string mapper, object[] args)
             : base(@base)
         {
             _mapper = mapper;
+            _args = args;
         }
 
         internal override async Task<IJSHandle> WaitHandleCoreAsync(LocatorActionOptions options, CancellationToken cancellationToken)
@@ -22,7 +24,7 @@ namespace PuppeteerSharp.Locators
 
             try
             {
-                return await handle.EvaluateFunctionHandleAsync(_mapper).ConfigureAwait(false);
+                return await handle.EvaluateFunctionHandleAsync(_mapper, _args).ConfigureAwait(false);
             }
             finally
             {
