@@ -731,10 +731,24 @@ public class BidiFrame : Frame
         List<Task> tasks = new();
         var cleanupActions = new List<Action>();
 
+        // Lifecycle events that arrive before the navigation commits belong to the
+        // previous document (e.g. the error page of a failed navigation), so ignore them.
+        var committed = 0;
+        void OnNavigationCommitted(object sender, EventArgs args) => Interlocked.Exchange(ref committed, 1);
+        BrowsingContext.NavigationCommitted += OnNavigationCommitted;
+        cleanupActions.Add(() => BrowsingContext.NavigationCommitted -= OnNavigationCommitted);
+
         if (waitUntil.Contains(WaitUntilNavigation.Load))
         {
             var loadTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void OnLoad(object sender, EventArgs args) => loadTcs.TrySetResult(true);
+            void OnLoad(object sender, EventArgs args)
+            {
+                if (Volatile.Read(ref committed) == 1)
+                {
+                    loadTcs.TrySetResult(true);
+                }
+            }
+
             BrowsingContext.Load += OnLoad;
             tasks.Add(loadTcs.Task);
             cleanupActions.Add(() => BrowsingContext.Load -= OnLoad);
@@ -743,7 +757,14 @@ public class BidiFrame : Frame
         if (waitUntil.Contains(WaitUntilNavigation.DOMContentLoaded))
         {
             var domContentLoadedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            void OnDomContentLoaded(object sender, EventArgs args) => domContentLoadedTcs.TrySetResult(true);
+            void OnDomContentLoaded(object sender, EventArgs args)
+            {
+                if (Volatile.Read(ref committed) == 1)
+                {
+                    domContentLoadedTcs.TrySetResult(true);
+                }
+            }
+
             BrowsingContext.DomContentLoaded += OnDomContentLoaded;
             tasks.Add(domContentLoadedTcs.Task);
             cleanupActions.Add(() => BrowsingContext.DomContentLoaded -= OnDomContentLoaded);

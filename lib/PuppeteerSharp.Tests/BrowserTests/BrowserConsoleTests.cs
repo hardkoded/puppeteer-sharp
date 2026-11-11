@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using PuppeteerSharp.Nunit;
@@ -31,6 +32,61 @@ namespace PuppeteerSharp.Tests.BrowserTests
             finally
             {
                 Browser.Console -= Handler;
+            }
+        }
+
+        [Test, PuppeteerTest("browser.spec", "Browser specs Browser.on(\"console\")", "should report console messages replayed when attaching after connect")]
+        public async Task ShouldReportConsoleMessagesReplayedWhenAttachingAfterConnect()
+        {
+            await Page.GoToAsync(TestConstants.EmptyPage);
+            await Page.EvaluateFunctionAsync("() => { console.log('logged-before-connect'); }");
+
+            var remoteBrowser = await Puppeteer.ConnectAsync(new ConnectOptions
+            {
+                BrowserWSEndpoint = Browser.WebSocketEndpoint,
+                Protocol = ((Browser)Browser).Protocol,
+            });
+
+            try
+            {
+                // The listener is registered before any page is attached, so the
+                // messages replayed on attachment must not be dropped.
+                var messages = new List<ConsoleMessage>();
+                var afterConnect = new TaskCompletionSource<ConsoleMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+                remoteBrowser.Console += (_, e) =>
+                {
+                    lock (messages)
+                    {
+                        messages.Add(e.Message);
+                    }
+
+                    if (e.Message.Text == "logged-after-connect")
+                    {
+                        afterConnect.TrySetResult(e.Message);
+                    }
+                };
+                var remotePage = (await remoteBrowser.PagesAsync()).First(p => p.Url == TestConstants.EmptyPage);
+
+                // Log a marker after attaching: once it arrives, any duplicate of the
+                // replayed message would have arrived too.
+                await Task.WhenAll(
+                    afterConnect.Task,
+                    remotePage.EvaluateFunctionAsync("() => { console.log('logged-after-connect'); }"));
+
+                ConsoleMessage[] replayed;
+                lock (messages)
+                {
+                    replayed = messages.Where(m => m.Text == "logged-before-connect").ToArray();
+                }
+
+                Assert.That(replayed, Has.Length.EqualTo(1));
+
+                // ConsoleMessage.Page() and ConsoleMessage.Frame() do not exist in PuppeteerSharp yet,
+                // so the upstream assertions on them cannot be ported.
+            }
+            finally
+            {
+                remoteBrowser.Disconnect();
             }
         }
 
