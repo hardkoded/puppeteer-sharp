@@ -73,6 +73,14 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDiscovered;
 
         /// <summary>
+        /// Raised when any page in the browser issues a request. Contains an <see cref="IRequest"/> instance.
+        /// Use <see cref="IPage"/> or <see cref="IFrame"/> from the request to identify the originating context.
+        /// Events are only delivered for pages that have an <see cref="IPage"/> instance, for example one created via <see cref="PagesAsync"/>.
+        /// These listeners only observe requests. Do not call <c>Continue</c>, <c>Abort</c> or <c>Respond</c> from them. To intercept requests, use <see cref="IPage.SetRequestInterceptionAsync"/> with an <see cref="IPage.Request"/> listener.
+        /// </summary>
+        event EventHandler<RequestEventArgs> Request;
+
+        /// <summary>
         /// Returns the default browser context. The default browser context can not be closed.
         /// </summary>
         /// <value>The default context.</value>

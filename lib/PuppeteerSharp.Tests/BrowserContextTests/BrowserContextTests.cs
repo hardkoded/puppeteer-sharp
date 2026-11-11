@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using PuppeteerSharp.Helpers;
 using PuppeteerSharp.Nunit;
 
 namespace PuppeteerSharp.Tests.BrowserContextTests
@@ -270,6 +272,46 @@ namespace PuppeteerSharp.Tests.BrowserContextTests
             await using var context = await Browser.CreateBrowserContextAsync();
             Assert.ThrowsAsync<TimeoutException>(()
                 => context.WaitForTargetAsync((target) => target.Url == TestConstants.EmptyPage, new WaitForOptions(1)));
+        }
+
+        [Test, PuppeteerTest("browsercontext.spec", "BrowserContext.on(\"request\")", "should only report requests from its own pages")]
+        public async Task ShouldOnlyReportRequestsFromItsOwnPages()
+        {
+            await using var context = await Browser.CreateBrowserContextAsync();
+            var page = await context.NewPageAsync();
+            await using var otherContext = await Browser.CreateBrowserContextAsync();
+            var otherPage = await otherContext.NewPageAsync();
+
+            var requests = new List<IRequest>();
+            var requestTcs = new TaskCompletionSource<IRequest>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnRequest(object sender, RequestEventArgs e)
+            {
+                if (!TestUtils.IsFavicon(e.Request))
+                {
+                    requests.Add(e.Request);
+                }
+
+                if (e.Request.Url == TestConstants.EmptyPage)
+                {
+                    requestTcs.TrySetResult(e.Request);
+                }
+            }
+
+            context.Request += OnRequest;
+            try
+            {
+                await otherPage.GoToAsync(TestConstants.ServerUrl + "/one-style.html");
+                await page.GoToAsync(TestConstants.EmptyPage);
+                var request = await requestTcs.Task.WithTimeout();
+
+                Assert.That(request.Frame.Page, Is.EqualTo(page));
+                Assert.That(requests.Select(r => r.Url).ToArray(), Is.EqualTo(new[] { TestConstants.EmptyPage }));
+            }
+            finally
+            {
+                context.Request -= OnRequest;
+            }
         }
     }
 }

@@ -558,6 +558,21 @@
     "comment": "TODO: add a comment explaining why this expectation is required (include links to issues)"
   },
   {
+    "testIdPattern": "[network.spec] network Response.stream *",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ],
+    "parameters": [
+      "webDriverBiDi"
+    ],
+    "expectations": [
+      "SKIP"
+    ],
+    "comment": "Not supported in WebDriver BiDi yet - https://github.com/w3c/webdriver-bidi/issues/958"
+  },
+  {
     "testIdPattern": "[network.spec] network Response.remoteAddress *",
     "platforms": [
       "darwin",

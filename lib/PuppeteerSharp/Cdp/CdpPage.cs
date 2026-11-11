@@ -84,7 +84,12 @@ public class CdpPage : Page
         FrameManager.FrameDetached += (_, e) => OnFrameDetached(e);
         FrameManager.FrameNavigated += (_, e) => OnFrameNavigated(e);
 
-        FrameManager.NetworkManager.Request += (_, e) => OnRequest(e.Request);
+        FrameManager.NetworkManager.Request += (_, e) =>
+        {
+            OnRequest(e.Request);
+            ((BrowserContext)BrowserContext).OnRequest(e);
+            Browser.OnRequest(e);
+        };
         FrameManager.NetworkManager.RequestFailed += (_, e) => OnRequestFailed(e);
         FrameManager.NetworkManager.Response += (_, e) => OnResponse(e);
         FrameManager.NetworkManager.RequestFinished += (_, e) => OnRequestFinished(e);
@@ -1147,6 +1152,7 @@ public class CdpPage : Page
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
                     FunctionName = callFrame.FunctionName,
+                    ScriptId = callFrame.ScriptId,
                 });
             }
 

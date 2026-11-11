@@ -26,6 +26,9 @@ namespace PuppeteerSharp
         public event EventHandler<TargetChangedArgs> TargetDestroyed;
 
         /// <inheritdoc/>
+        public event EventHandler<RequestEventArgs> Request;
+
+        /// <inheritdoc/>
         public string Id { get; protected init; }
 
         /// <inheritdoc/>
@@ -203,6 +206,8 @@ namespace PuppeteerSharp
         internal void OnTargetDestroyed(TargetChangedArgs args) => TargetDestroyed?.Invoke(this, args);
 
         internal void OnTargetChanged(TargetChangedArgs args) => TargetChanged?.Invoke(this, args);
+
+        internal void OnRequest(RequestEventArgs args) => Request?.Invoke(this, args);
 
         /// <summary>
         /// Closes the browser context. All the targets that belong to the browser context will be closed.

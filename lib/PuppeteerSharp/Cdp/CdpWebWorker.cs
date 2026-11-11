@@ -237,6 +237,7 @@ public class CdpWebWorker : WebWorker
                     LineNumber = callFrame.LineNumber,
                     ColumnNumber = callFrame.ColumnNumber,
                     FunctionName = callFrame.FunctionName,
+                    ScriptId = callFrame.ScriptId,
                 });
             }
 
