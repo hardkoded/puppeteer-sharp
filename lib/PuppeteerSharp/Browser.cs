@@ -86,6 +86,8 @@ namespace PuppeteerSharp
         /// <inheritdoc/>
         public virtual ITarget Target => Targets().FirstOrDefault(t => t.Type == TargetType.Browser);
 
+        internal bool HasConsoleListeners => Console != null;
+
         internal TaskQueue ScreenshotTaskQueue { get; } = new();
 
         internal Connection Connection { get; init; }
