@@ -11,6 +11,14 @@ namespace PuppeteerSharp
     public interface IBrowserContext : IDisposable, IAsyncDisposable
     {
         /// <summary>
+        /// Raised when JavaScript within any page or worker in the browser context calls one of the console API methods, e.g. <c>console.log</c> or <c>console.dir</c>.
+        /// Only messages from pages and workers that PuppeteerSharp has attached to are delivered, e.g. via <c>Targets()</c>.
+        /// Service and shared workers are not attached automatically: their messages are only delivered after <c>WorkerAsync()</c> has been called for their target.
+        /// With WebDriver BiDi, service and shared worker console messages are not reported.
+        /// </summary>
+        event EventHandler<ConsoleEventArgs> Console;
+
+        /// <summary>
         /// Raised when the url of a target changes
         /// </summary>
         event EventHandler<TargetChangedArgs> TargetChanged;

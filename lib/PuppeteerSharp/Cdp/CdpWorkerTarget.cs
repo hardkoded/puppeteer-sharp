@@ -32,13 +32,24 @@ namespace PuppeteerSharp.Cdp
         private async Task<WebWorker> WorkerInternalAsync()
         {
             var client = Session ?? await SessionFactory(false).ConfigureAwait(false);
-            return new CdpWebWorker(
+            var worker = new CdpWebWorker(
                 client,
                 TargetInfo.Url,
                 TargetInfo.TargetId,
                 TargetInfo.Type,
                 (_, _, _) => Task.CompletedTask,
                 _ => { });
+
+            // Service and shared workers are not owned by a page, so their console messages are bubbled up
+            // to the browser context and the browser here.
+            worker.Console += (_, e) => OnWorkerConsole(e);
+            return worker;
+        }
+
+        private void OnWorkerConsole(ConsoleEventArgs e)
+        {
+            BrowserContext.OnConsole(e);
+            Browser.OnConsole(e);
         }
     }
 }
