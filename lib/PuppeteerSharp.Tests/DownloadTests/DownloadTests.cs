@@ -68,6 +68,23 @@ namespace PuppeteerSharp.Tests.DownloadTests
                 await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt")));
         }
 
+        [Test, PuppeteerTest("download.spec", "Download Puppeteer.launch", "should download to configured location in the default context")]
+        public async Task ShouldDownloadToConfiguredLocationInTheDefaultContext()
+        {
+            var options = TestConstants.DefaultBrowserOptions();
+            options.DownloadBehavior = new DownloadBehavior
+            {
+                Policy = DownloadPolicy.Allow,
+                DownloadPath = _tempDir,
+            };
+
+            await using var browser = await Puppeteer.LaunchAsync(options);
+            var page = await browser.NewPageAsync();
+            await page.GoToAsync(TestConstants.ServerUrl + "/download.html");
+            await page.ClickAsync("#download");
+            await WaitForFileExistenceAsync(Path.Combine(_tempDir, "download.txt"));
+        }
+
         private static async Task WaitForFileExistenceAsync(string filePath, int timeout = 1000)
         {
             var deadline = DateTime.UtcNow.AddMilliseconds(timeout);

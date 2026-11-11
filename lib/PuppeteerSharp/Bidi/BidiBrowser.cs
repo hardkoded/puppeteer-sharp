@@ -406,6 +406,11 @@ public class BidiBrowser : Browser
 
         var browser = new BidiBrowser(session.Browser, options, loggerFactory, webSocketEndpoint) { Launcher = launcher, CloseCallback = closeCallback };
         browser.InitializeAsync();
+        if (options.DownloadBehavior != null)
+        {
+            await session.Browser.SetDownloadBehaviorAsync(options.DownloadBehavior, [Core.UserContext.DEFAULT]).ConfigureAwait(false);
+        }
+
         return browser;
     }
 
