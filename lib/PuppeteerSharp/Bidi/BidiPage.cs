@@ -163,6 +163,8 @@ public class BidiPage : Page
     /// <inheritdoc />
     public override async Task SetExtraHttpHeadersAsync(Dictionary<string, string> headers)
     {
+        HttpUtils.ValidateHeaders(headers);
+
         // Clear existing extra headers
         ExtraHttpHeaders.Clear();
 
