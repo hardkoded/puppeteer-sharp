@@ -192,7 +192,7 @@ internal class BidiWorkerRealm : BidiRealm
 
         var location = GetStackTraceLocation(args.StackTrace);
         var stackTrace = GetStackTrace(args.StackTrace);
-        var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace);
+        var consoleMessage = new ConsoleMessage(ConvertConsoleMessageLevel(args.Method), text, handleArgs, location, stackTrace, worker: _worker);
         var consoleEventArgs = new ConsoleEventArgs(consoleMessage);
         _worker.OnConsole(consoleEventArgs);
         page.OnConsole(consoleEventArgs);
